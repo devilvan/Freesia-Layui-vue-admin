@@ -1,0 +1,14 @@
+package com.freesia.entity;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+/**
+ * @author Evad.Wu
+ * @Description Entity通用父类
+ * @date 2023-08-31
+ */
+@Data
+@Schema(description = "Entity通用父类")
+public class BaseEntity {
+}
