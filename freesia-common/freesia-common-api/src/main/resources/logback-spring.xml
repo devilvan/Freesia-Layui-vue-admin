@@ -5,7 +5,7 @@
     <contextName>logback</contextName>
 
     <!--输出sql语句-->
-    <logger name="com.devilvan.betrice" level="INFO"/>
+    <logger name="com.freesia" level="INFO"/>
     <property name="log.path" value="./logs/"/>
     <property name="maxHistory" value="7"/>
     <property name="maxFileSize" value="50MB"/>
@@ -13,7 +13,7 @@
     <property name="consolePattern"
               value="%red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) %yellow([%file : %line]%n) * %msg%n"/>
     <property name="logPattern" value="%date %level [%thread] %logger{36} [%file : %line] %msg%n"/>
-    <springProperty name="springName" source="spring.application.name" defaultValue="betrice-default"/>
+    <springProperty name="springName" source="spring.application.name" defaultValue="freesia-default"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
