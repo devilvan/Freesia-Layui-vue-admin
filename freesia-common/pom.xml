@@ -10,7 +10,7 @@
     </parent>
     <artifactId>freesia-common</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>${freesia.version}</version>
     <modules>
         <module>freesia-common-framework</module>
         <module>freesia-common-api</module>
@@ -28,22 +28,22 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-api</artifactId>
-                <version>1.0.0</version>
+                <version>${freesia.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-framework</artifactId>
-                <version>1.0.0</version>
+                <version>${freesia.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-service</artifactId>
-                <version>1.0.0</version>
+                <version>${freesia.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-codegen</artifactId>
-                <version>1.0.0</version>
+                <version>${freesia.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

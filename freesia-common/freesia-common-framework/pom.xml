@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-api</artifactId>
-            <version>1.0.0</version>
+            <version>${freesia.version}</version>
         </dependency>
     </dependencies>
 </project>

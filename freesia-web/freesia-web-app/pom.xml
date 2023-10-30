@@ -20,17 +20,17 @@
         <dependency>
             <groupId>com.freesia</groupId>
             <artifactId>freesia-web-admin</artifactId>
-            <version>1.0.0</version>
+            <version>${freesia.version}</version>
         </dependency>
         <dependency>
             <groupId>com.freesia</groupId>
             <artifactId>freesia-web-framework</artifactId>
-            <version>1.0.0</version>
+            <version>${freesia.version}</version>
         </dependency>
         <dependency>
             <groupId>com.freesia</groupId>
             <artifactId>freesia-web-api</artifactId>
-            <version>1.0.0</version>
+            <version>${freesia.version}</version>
         </dependency>
     </dependencies>
 

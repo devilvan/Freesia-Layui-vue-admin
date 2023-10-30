@@ -23,7 +23,7 @@
       <module name="freesia-common-codegen" target="16" />
       <module name="freesia-common-framework" target="16" />
       <module name="freesia-common-service" target="16" />
-      <module name="freesia-web" target="1.5" />
+      <module name="freesia-web" target="16" />
       <module name="freesia-web-admin" target="16" />
       <module name="freesia-web-api" target="16" />
       <module name="freesia-web-app" target="16" />
@@ -36,6 +36,10 @@
       <module name="freesia-common-codegen" options="-parameters" />
       <module name="freesia-common-framework" options="-parameters" />
       <module name="freesia-common-service" options="-parameters" />
+      <module name="freesia-web-admin" options="-parameters" />
+      <module name="freesia-web-api" options="-parameters" />
+      <module name="freesia-web-app" options="-parameters" />
+      <module name="freesia-web-framework" options="-parameters" />
     </option>
   </component>
 </project>
