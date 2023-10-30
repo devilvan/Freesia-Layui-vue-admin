@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @date 2023-10-20
  */
 @Data
-@Schema(description = "PO的父类")
+@Schema(description = "中间关系表 通用父类")
 public abstract class RelationPo implements Serializable {
     @Serial
     private static final long serialVersionUID = 989292947732513953L;
