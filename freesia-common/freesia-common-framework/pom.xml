@@ -17,6 +17,11 @@
     </properties>
 
     <dependencies>
+        <!-- Spring相关-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-actuator-autoconfigure</artifactId>
+        </dependency>
         <!-- 基础模块-->
         <dependency>
             <groupId>com.freesia</groupId>

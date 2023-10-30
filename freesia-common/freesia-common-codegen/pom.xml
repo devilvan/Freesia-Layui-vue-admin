@@ -17,6 +17,16 @@
     </properties>
 
     <dependencies>
+        <!-- 自定义模板Freemarker-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <!-- MySQL-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-framework</artifactId>
