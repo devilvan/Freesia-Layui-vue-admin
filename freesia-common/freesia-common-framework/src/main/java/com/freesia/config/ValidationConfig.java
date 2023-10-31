@@ -1,5 +1,6 @@
 package com.freesia.config;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -17,9 +18,9 @@ import java.util.Properties;
  * @date 2023-10-08
  */
 @Configuration
+@RequiredArgsConstructor
 public class ValidationConfig {
-    @Resource(name = "webApplicationContext")
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
 
     /**
      * 配置校验框架 快速返回模式

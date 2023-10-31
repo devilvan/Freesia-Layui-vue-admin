@@ -27,7 +27,7 @@ import java.util.*;
  */
 @SuppressWarnings(value = "all")
 @Slf4j
-public class BetriceCodeGenerator {
+public class CodeGenerator {
     private static final List<String> textType = List.of("VARCHAR", "CHAR", "TINYTEXT", "MEDIUNTEXT", "TEXT", "LONGTEXT");
     private static final List<String> dateType = List.of("DATE", "TIME", "DATETIME", "TIMESTAMP", "YEAR");
     private static final List<String> intType = List.of("TINYINT", "SMALLINT", "MEDIUMINT", "INT");
@@ -76,7 +76,7 @@ public class BetriceCodeGenerator {
         HashMap<String, Object> map = new HashMap<>();
         Properties pro = new Properties();
         try {
-            pro.load(new FileReader("betrice-common\\betrice-common-codegen\\src\\main\\resources\\basic.properties"));
+            pro.load(new FileReader("freesia-common\\freesia-common-codegen\\src\\main\\resources\\basic.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -8,7 +8,7 @@ spring:
 spring:
   datasource:
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-    url: jdbc:p6spy:mysql://localhost:3306/freesia?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&generateSimpleParameterMetadata=true&nullCatalogMeansCurrent=true
+    url: jdbc:p6spy:mysql://localhost:3306/betrice?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&generateSimpleParameterMetadata=true&nullCatalogMeansCurrent=true
     username: root
     password: lklpos
     type: com.alibaba.druid.pool.DruidDataSource

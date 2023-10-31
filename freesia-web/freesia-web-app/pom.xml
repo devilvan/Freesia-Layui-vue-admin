@@ -32,6 +32,19 @@
             <artifactId>freesia-web-api</artifactId>
             <version>${freesia.version}</version>
         </dependency>
+        <!-- 基础模块-->
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-service</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

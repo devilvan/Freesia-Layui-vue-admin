@@ -1,6 +1,7 @@
 package com.freesia;
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -20,10 +21,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 @SpringBootApplication(scanBasePackages = "com.freesia")
-@MapperScan(basePackages = {"com.freesia.mapper", "com.freesia.*.mapper"})
-@EnableJpaRepositories(basePackages = {"com.freesia.repository", "com.freesia.*.repository"})
+@MapperScan(basePackages = {"com.freesia.mapper"})
+@EnableJpaRepositories(basePackages = {"com.freesia.repository"})
 public class FreesiaAdminApplication {
     public static void main(String[] args) {
-
+        SpringApplication.run(FreesiaAdminApplication.class, args);
     }
 }

@@ -58,6 +58,13 @@
             </activation>
         </profile>
         <profile>
+            <id>test</id>
+            <properties>
+                <profiles.active>test</profiles.active>
+                <logging.level>info</logging.level>
+            </properties>
+        </profile>
+        <profile>
             <id>prod</id>
             <properties>
                 <profiles.active>prod</profiles.active>

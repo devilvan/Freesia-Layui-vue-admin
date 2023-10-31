@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2022-07-13
  */
 @Configuration
-public class BetriceMybatisConfig {
+public class MybatisConfig {
     /**
      * Mybatis-Plus拦截器
      */

@@ -32,7 +32,7 @@ public class ThreadPoolConfig {
     @Bean(value = "threadPoolExecutor")
     public ThreadPoolExecutor getThreadPoolExecutor() {
         ArrayBlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(1024);
-        ThreadFactory threadFactory = ThreadFactoryBuilder.create().setNamePrefix("betrice-threadPoolExecutor").build();
+        ThreadFactory threadFactory = ThreadFactoryBuilder.create().setNamePrefix("freesia-threadPoolExecutor").build();
         return new ThreadPoolExecutor(
                 AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS * 4, 300,
                 TimeUnit.SECONDS, blockingQueue, threadFactory, RejectPolicy.DISCARD_OLDEST.getValue()
