@@ -19,7 +19,7 @@ import java.io.Serial;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class BetriceException extends RuntimeException {
+public class BaseException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 6461682216952052835L;
 
@@ -43,19 +43,19 @@ public class BetriceException extends RuntimeException {
      */
     private String defaultMessage;
 
-    public BetriceException(String defaultMessage) {
+    public BaseException(String defaultMessage) {
         this(null, null, null, defaultMessage);
     }
 
-    public BetriceException(String code, Object[] args) {
+    public BaseException(String code, Object[] args) {
         this(null, code, args, null);
     }
 
-    public BetriceException(String module, String defaultMessage) {
+    public BaseException(String module, String defaultMessage) {
         this(module, null, null, defaultMessage);
     }
 
-    public BetriceException(String module, String code, Object[] args) {
+    public BaseException(String module, String code, Object[] args) {
         this(module, code, args, null);
     }
 

@@ -1,6 +1,6 @@
 package com.freesia.util;
 
-import com.freesia.exception.BetriceException;
+import com.freesia.exception.BaseException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -108,7 +108,7 @@ public class UCollection {
             if (map.containsKey(key)) {
                 subMap.put(key, map.get(key));
             } else {
-                throw new BetriceException("子map字段：" + key + "不能为空");
+                throw new BaseException("子map字段：" + key + "不能为空");
             }
         }
         return subMap;

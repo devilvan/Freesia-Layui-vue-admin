@@ -1,6 +1,5 @@
 package com.freesia.dto;
 
-import com.devilvan.betrice.pojo.BetriceCgField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +28,7 @@ public class DataBaseDto implements Serializable {
     @Schema(description = "表描述")
     private String comment;
     @Schema(description = "字段值对象")
-    private List<BetriceCgField> fieldList;
+    private List<ColumnFieldDto> fieldList;
 
     public DataBaseDto(String tableName, String className, String comment) {
         this.tableName = tableName;

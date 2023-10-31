@@ -1,4 +1,4 @@
-package com.freesia.pojo;
+package com.freesia.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "表字段及转换相关字段")
-public class BetriceCgField {
+public class ColumnFieldDto {
     @Schema(description = "字段名称")
     private String columnName;
     @Schema(description = "字段名称转换的属性名称")

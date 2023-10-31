@@ -3,8 +3,10 @@ package com.freesia;
 import cn.hutool.core.util.StrUtil;
 import com.freesia.dto.DataBaseDto;
 import com.freesia.dto.TableDto;
-import com.freesia.pojo.BetriceCgField;
+import com.freesia.dto.ColumnFieldDto;
+import com.freesia.exception.BaseException;
 import com.freesia.util.FreemarkerTemplateUtil;
+import com.freesia.util.UEmpty;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
@@ -40,9 +42,9 @@ public class BetriceCodeGenerator {
     public static void main(String[] args) {
         List<String> tableList = Optional.of(Arrays.asList(String.valueOf(basicMap.get("tableName")).toUpperCase(Locale.ROOT).split(",")))
                 .filter(f -> f.size() > 0)
-                .orElseThrow(() -> new BetriceException("待生成的数据库表名不能为空！"));
-        TableDto betriceTableDto = assemDataSourceTbDto(tableList);
-        List<DataBaseDto> dataBaseDtoList = printTableStructure(betriceTableDto);
+                .orElseThrow(() -> new BaseException("待生成的数据库表名不能为空！"));
+        TableDto tableDto = assemDataSourceTbDto(tableList);
+        List<DataBaseDto> dataBaseDtoList = printTableStructure(tableDto);
         generate(dataBaseDtoList);
     }
 
@@ -109,7 +111,7 @@ public class BetriceCodeGenerator {
         ClassPathResource resource = new ClassPathResource("application.yml");
         YamlPropertiesFactoryBean ymlFactory = new YamlPropertiesFactoryBean();
         ymlFactory.setResources(resource);
-        Properties pro = Optional.ofNullable(ymlFactory.getObject()).orElseThrow(() -> new BetriceException("获取配置失败！"));
+        Properties pro = Optional.ofNullable(ymlFactory.getObject()).orElseThrow(() -> new BaseException("获取配置失败！"));
         String driver = String.valueOf(pro.get("spring.datasource.driver-class-name"));
         String url = String.valueOf(pro.get("spring.datasource.url"));
         String uname = String.valueOf(pro.get("spring.datasource.username"));
@@ -147,13 +149,13 @@ public class BetriceCodeGenerator {
                     // 获取数据表的描述-comment
                     String comment = tableResultSet.getString("REMARKS");
                     if (StrUtil.isEmpty(comment)) {
-                        throw new BetriceException("表描述不能为空！");
+                        throw new BaseException("表描述不能为空！");
                     }
                     System.out.println("comment: " + comment);
                     DataBaseDto dataBaseDto = new DataBaseDto(table, className, comment);
                     // 获取表字段结构
                     ResultSet columnResultSet = metaData.getColumns(null, "%", tableName, "%");
-                    List<BetriceCgField> betriceCgFieldList = new ArrayList<>();
+                    List<ColumnFieldDto> columnFieldDtoList = new ArrayList<>();
                     // 遍历表中每个字段
                     while (columnResultSet.next()) {
                         String columnName = columnResultSet.getString("COLUMN_NAME");
@@ -168,10 +170,10 @@ public class BetriceCodeGenerator {
                         // false-不可为空
                         boolean nullable = columnResultSet.getInt("NULLABLE") == 1;
                         String remarks = columnResultSet.getString("REMARKS");
-                        BetriceCgField betriceCgField = new BetriceCgField(columnName, fieldName, columnType, javaType, datasize, digits, nullable, remarks);
-                        betriceCgFieldList.add(betriceCgField);
+                        ColumnFieldDto columnFieldDto = new ColumnFieldDto(columnName, fieldName, columnType, javaType, datasize, digits, nullable, remarks);
+                        columnFieldDtoList.add(columnFieldDto);
                     }
-                    dataBaseDto.setFieldList(betriceCgFieldList);
+                    dataBaseDto.setFieldList(columnFieldDtoList);
                     dataBaseDtoList.add(dataBaseDto);
                     System.out.println("=================================");
                 }

@@ -21,7 +21,7 @@ import java.util.Date;
 @Slf4j
 @Aspect
 @Component
-public class BetriceRuntimeAdvice {
+public class RuntimeAspect {
     @Around(value = "@annotation(runTime))")
     protected Object around(ProceedingJoinPoint proceedingJoinPoint, RunTime runTime) {
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();

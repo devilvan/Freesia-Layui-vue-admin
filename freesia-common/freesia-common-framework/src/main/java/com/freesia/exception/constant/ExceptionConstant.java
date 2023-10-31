@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @SuppressWarnings(value = "unused")
-public enum BetriceExceptionConstant {
+public enum ExceptionConstant {
     /**
      * 内部服务异常
      */
