@@ -1,0 +1,65 @@
+package com.freesia.controller;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.constant.MenuPermission;
+import com.freesia.dto.SysUserDto;
+import com.freesia.entity.FindPageSysUserByDeptEntity;
+import com.freesia.entity.FindPageSysUserListEntity;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
+import com.freesia.service.SysUserService;
+import com.freesia.util.UCopy;
+import com.freesia.util.USecurity;
+import com.freesia.vo.R;
+import com.freesia.vo.SysUserVo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * @author Evad.Wu
+ * @Description 用户管理 控制器
+ * @date 2023-08-30
+ */
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(value = "/api/sysUserController")
+@Tag(name = "SysUserController", description = "用户信息表 控制器")
+public class SysUserController {
+    private final SysUserService sysUserService;
+
+    @Operation(summary = "获取用户列表分页")
+    @GetMapping("findPageSysUserList")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
+    public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserVo sysUserVo, PageQuery pageQuery) {
+        SysUserDto sysUserDto = new SysUserDto();
+        UCopy.fullCopy(sysUserVo, sysUserDto);
+        TableResult<FindPageSysUserListEntity> tableResult = sysUserService.findPageSysUserList(sysUserDto, pageQuery);
+        return tableResult;
+    }
+
+    @Operation(summary = "获取部门下的用户")
+    @GetMapping("findPageSysUserByDept")
+    public TableResult<FindPageSysUserByDeptEntity> findPageSysUserByDept(SysUserVo sysUserVo, PageQuery pageQuery) {
+        SysUserDto sysUserDto = new SysUserDto();
+        UCopy.fullCopy(sysUserVo, sysUserDto);
+        return sysUserService.findPageSysUserByDept(sysUserDto, pageQuery);
+    }
+
+    @Operation(summary = "查询用户信息")
+    @GetMapping("findCurrentUserProfile")
+    public R<SysUserDto> findCurrentUserProfile() {
+        SysUserDto sysUserDto = sysUserService.findCurrentUserProfile(USecurity.getUserId());
+        return R.ok(sysUserDto);
+    }
+
+
+    @Operation(summary = "修改用户信息")
+    @PutMapping("saveUserInfo")
+    public R<Void> saveUserInfo(@RequestBody SysUserVo sysUserVo) {
+        SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
+        sysUserService.saveUserInfo(sysUserDto);
+        return R.ok();
+    }
+}

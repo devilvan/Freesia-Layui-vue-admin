@@ -10,7 +10,7 @@
     </parent>
     <artifactId>freesia-web</artifactId>
     <packaging>pom</packaging>
-    <version>${freesia.version}</version>
+    <version>1.0.0</version>
     <modules>
         <module>freesia-web-app</module>
         <module>freesia-web-api</module>

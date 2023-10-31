@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @author Evad.Wu
- * @Description {@link sysMenuMapper#FindAllMenuTree} 持久层传输对象
+ * @Description {@link SysMenuMapper#findAllMenuTree} 持久层传输对象
  * @date 2023-09-05
  */
 @Data

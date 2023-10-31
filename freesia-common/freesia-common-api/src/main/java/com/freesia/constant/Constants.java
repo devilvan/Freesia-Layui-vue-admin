@@ -36,4 +36,17 @@ public final class Constants {
     public static final String YMD_HM = "yyyy-MM-dd HH:mm";
     public static final String YMD_HMS = "yyyy-MM-dd HH:mm:ss";
     public static final String YMD_HMS_SSS = "yyyy-MM-dd HH:mm:ss:SSS";
+
+    /**
+     * 令牌
+     */
+    public static final String TOKEN = "token";
+    /**
+     * User-Agent
+     */
+    public static final String USER_AGENT = "User-Agent";
+    /**
+     * 字符集 UTF_8
+     */
+    public static final String UTF_8 = "UTF-8";
 }

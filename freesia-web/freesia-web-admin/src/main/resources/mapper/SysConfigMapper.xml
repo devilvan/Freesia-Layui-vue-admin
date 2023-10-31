@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysConfigMapper">
+    <select id="findPageSysConfig" resultType="com.freesia.po.SysConfigPo">
+        SELECT ID,
+               CREATE_TIME,
+               REC_VER,
+               CONFIG_NAME,
+               CONFIG_KEY,
+               CONFIG_VALUE,
+               CONFIG_TYPE
+        FROM sys_config C
+            ${ew.getCustomSqlSegment}
+    </select>
+</mapper>

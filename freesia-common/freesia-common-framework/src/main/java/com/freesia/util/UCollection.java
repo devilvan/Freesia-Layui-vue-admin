@@ -19,7 +19,7 @@ public class UCollection {
     public static final int LIST_INIT_CAPACITY = 10;
     public static final int LIST_MAX_LENGTH = Integer.MAX_VALUE - 8;
 
-    public static <T> List<T> optmizeInitialCapacityArrayList(int expectSize) {
+    public static <T> List<T> optimizeInitialCapacityArrayList(int expectSize) {
         if (expectSize < 0) {
             return new ArrayList<>(LIST_INIT_CAPACITY);
         } else if (expectSize > LIST_MAX_LENGTH) {
@@ -44,8 +44,8 @@ public class UCollection {
         }
     }
 
-    public static <T> Set<T> optmizeInitialCapacitySet(int expectSize) {
-        return optmizeInitialCapacitySet(expectSize, LOAD_FACTOR);
+    public static <T> Set<T> optimizeInitialCapacitySet(int expectSize) {
+        return optimizeInitialCapacitySet(expectSize, LOAD_FACTOR);
     }
 
     /**
@@ -55,7 +55,7 @@ public class UCollection {
      * @param loadFactor 负载因子（默认0.75）
      * @return 初始化容量的set
      */
-    public static <T> Set<T> optmizeInitialCapacitySet(int expectSize, float loadFactor) {
+    public static <T> Set<T> optimizeInitialCapacitySet(int expectSize, float loadFactor) {
         if (expectSize < 0) {
             return new HashSet<>(1);
         } else if (expectSize > MAXIMUM_CAPACITY) {
@@ -69,8 +69,8 @@ public class UCollection {
         }
     }
 
-    public static <T> Map<String, T> optmizeInitialCapacityMap(int expectSize) {
-        return optmizeInitialCapacityMap(expectSize, LOAD_FACTOR);
+    public static <T> Map<String, T> optimizeInitialCapacityMap(int expectSize) {
+        return optimizeInitialCapacityMap(expectSize, LOAD_FACTOR);
     }
 
     /**
@@ -80,7 +80,7 @@ public class UCollection {
      * @param loadFactor 负载因子（默认0.75）
      * @return 初始化容量的map
      */
-    public static <T> Map<String, T> optmizeInitialCapacityMap(int expectSize, float loadFactor) {
+    public static <T> Map<String, T> optimizeInitialCapacityMap(int expectSize, float loadFactor) {
         if (expectSize < 0) {
             return new HashMap<>(1);
         } else if (expectSize > MAXIMUM_CAPACITY) {

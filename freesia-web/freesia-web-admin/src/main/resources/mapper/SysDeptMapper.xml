@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysDeptMapper">
+    <select id="findPageSysDeptList" resultType="com.freesia.entity.FindPageSysDeptListEntity">
+        <include refid="sysDept"/>
+        ${ew.getCustomSqlSegment}
+    </select>
+
+    <sql id="sysDept">
+        SELECT D.ID,
+               D.CREATOR,
+               D.MODIFIER,
+               D.LOGIC_DEL,
+               D.REC_VER,
+               D.PARENT_ID,
+               D.ANCESTORS,
+               D.DEPT_NAME,
+               D.ORDER_NUM,
+               D.LEADER,
+               D.TEL_NO,
+               D.EMAIL,
+               D.DEPT_STATUS,
+               D.REMARK,
+               D.REC_VER
+        FROM sys_dept D
+    </sql>
+</mapper>

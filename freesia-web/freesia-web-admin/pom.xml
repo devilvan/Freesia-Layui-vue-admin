@@ -21,5 +21,9 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-web-framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-service</artifactId>
+        </dependency>
     </dependencies>
 </project>

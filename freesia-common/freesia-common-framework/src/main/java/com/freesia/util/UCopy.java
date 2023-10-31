@@ -214,7 +214,7 @@ public class UCopy {
      */
     public static <E, T> List<T> fullCopyCollections(Collection<E> source, Class<T> targetType, String... excludes) {
         Iterator<E> sourceIter = source.iterator();
-        List<T> list = UCollection.optmizeInitialCapacityArrayList(source.size());
+        List<T> list = UCollection.optimizeInitialCapacityArrayList(source.size());
         try {
             while (sourceIter.hasNext()) {
                 E s = sourceIter.next();
