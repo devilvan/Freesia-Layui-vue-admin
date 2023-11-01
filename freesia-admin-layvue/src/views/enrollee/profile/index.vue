@@ -276,7 +276,7 @@ function profileFormClearValidate() {
 }
 
 function profileFormReset() {
-  sysUserVo.value = currentUserProfileTemplate.value;
+  sysUserVo.value = {...currentUserProfileTemplate.value};
   // profileFormRef.value.reset()
 }
 

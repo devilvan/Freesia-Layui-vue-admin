@@ -1,4 +1,4 @@
-package com.freesia.component.datasource;
+package com.freesia.component;
 
 import com.freesia.model.LoginUserModel;
 import com.freesia.util.USecurity;

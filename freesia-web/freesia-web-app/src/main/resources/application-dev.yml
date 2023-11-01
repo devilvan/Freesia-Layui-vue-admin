@@ -79,10 +79,10 @@ springdoc:
     contact:
       name: Evad Devilvan
       email: evaddevilvan@outlook.com
-      url: https://gitee.com/devilvan/betrice-b
+      url: https://gitee.com/devilvan/freesia
   externalDocs:
     description: Git仓库地址
-    url: https://gitee.com/devilvan/betrice-b
+    url: https://gitee.com/devilvan/freesia
   components:
     # 鉴权方式配置
     security-schemes:

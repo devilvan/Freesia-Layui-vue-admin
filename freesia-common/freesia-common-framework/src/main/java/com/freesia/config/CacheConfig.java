@@ -44,7 +44,7 @@ public class CacheConfig {
         FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
         FastJsonConfig fastJsonConfig = fastJsonRedisSerializer.getFastJsonConfig();
         SerializeConfig serializeConfig = fastJsonConfig.getSerializeConfig();
-        //加入的locadatetime序列化，也可以不加（但是要用@JSONField(format = "yyyy-MM-dd HH:mm:ss")）格式化
+        //加入的localDatetime序列化，也可以不加（但是要用@JSONField(format = "yyyy-MM-dd HH:mm:ss")）格式化
         serializeConfig.put(LocalDateTime.class, (serializer, object, fieldName, fieldType, features) -> {
             SerializeWriter out = serializer.out;
             if (object == null) {
@@ -67,19 +67,19 @@ public class CacheConfig {
      */
     @Bean
     @DependsOn(value = "freesiaRedisTemplate")
-    public RedisCacheManager betriceRedisCacheManager(@Autowired RedisTemplate<String, Object> betriceRedisTemplate) {
+    public RedisCacheManager freesiaRedisCacheManager(@Autowired RedisTemplate<String, Object> freesiaRedisTemplate) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
                 .defaultCacheConfig()
                 // 设置key为String
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(betriceRedisTemplate.getStringSerializer()))
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(freesiaRedisTemplate.getStringSerializer()))
                 // 设置value 为自动转Json的Object
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(betriceRedisTemplate.getValueSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(freesiaRedisTemplate.getValueSerializer()))
                 // 不缓存null
                 .disableCachingNullValues();
         // 构造一个redis缓存管理器
         return RedisCacheManager.RedisCacheManagerBuilder
                 // Redis 连接工厂
-                .fromConnectionFactory(Objects.requireNonNull(betriceRedisTemplate.getConnectionFactory()))
+                .fromConnectionFactory(Objects.requireNonNull(freesiaRedisTemplate.getConnectionFactory()))
                 // 设置默认缓存配置
                 .cacheDefaults(redisCacheConfiguration)
                 // 配置同步修改或删除 put/evict

@@ -1,4 +1,4 @@
-package com.freesia.component.datasource;
+package com.freesia.component;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
