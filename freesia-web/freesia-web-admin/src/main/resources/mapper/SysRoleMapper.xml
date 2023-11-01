@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysRoleMapper">
+    <delete id="deleteRoleMenu">
+        DELETE FROM sys_role_menu
+        WHERE 1=1
+        <foreach collection="idList" item="menuId" open="AND MENU_ID IN (" close=")" separator=",">
+            #{menuId}
+        </foreach>
+    </delete>
+    <select id="findRolePermissionStrByUserId" resultType="com.freesia.po.SysRolePo">
+        SELECT DISTINCT SR.ROLE_KEY
+        FROM sys_role SR
+                 LEFT JOIN sys_user_role sur on SR.ID = sur.ROLE_ID
+                 LEFT JOIN sys_user su on sur.USER_ID = su.ID
+        WHERE 1 = 1
+          AND SUR.USER_ID = #{id}
+          AND SR.LOGIC_DEL = false
+    </select>
+    <select id="findPageSysRoleList" resultType="com.freesia.entity.FindPageSysRoleListEntity">
+        SELECT DISTINCT R.ID,
+                        R.ROLE_NAME,
+                        R.ROLE_KEY,
+                        R.ORDER_NUM,
+                        R.DATA_SCOPE,
+                        R.MENU_CHECK_STRICTLY,
+                        R.DEPT_CHECK_STRICTLY,
+                        R.STATUS,
+                        R.LOGIC_DEL,
+                        R.CREATE_TIME,
+                        R.REMARK
+        FROM sys_role R
+                 LEFT JOIN sys_user_role SUR ON R.ID = SUR.ROLE_ID
+                 LEFT JOIN SYS_USER U ON SUR.USER_ID = U.ID
+                 LEFT JOIN sys_dept D ON U.DEPT_ID = D.ID
+            ${ew.getCustomSqlSegment}
+    </select>
+</mapper>

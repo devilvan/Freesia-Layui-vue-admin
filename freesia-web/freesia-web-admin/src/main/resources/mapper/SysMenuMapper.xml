@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysMenuMapper">
+    <select id="findMenuPermissionByUserId" resultType="java.lang.String">
+        SELECT DISTINCT SM.PERMS
+        FROM sys_menu SM
+                 LEFT JOIN sys_role_menu srm on SM.ID = srm.MENU_ID
+                 LEFT JOIN sys_user_role SUR ON SUR.ROLE_ID = SRM.ROLE_ID
+                 LEFT JOIN sys_role sr on sr.ID = SUR.ROLE_ID
+        WHERE 1 = 1
+          AND SM.STATUS = '0'
+          AND SR.STATUS = '0'
+          AND SUR.USER_ID = #{id}
+    </select>
+
+    <select id="findDirAndMenuByUserId" resultType="com.freesia.po.SysMenuPo">
+        SELECT DISTINCT M.ID,
+                        M.PARENT_ID,
+                        M.MENU_NAME,
+                        M.PATH,
+                        M.COMPONENT,
+                        M.QUERY_PARAM,
+                        M.VISIBLE,
+                        M.STATUS,
+                        M.PERMS,
+                        M.IS_FRAME,
+                        M.IS_CACHE,
+                        M.MENU_TYPE,
+                        M.ICON,
+                        M.ORDER_NUM,
+                        M.CREATE_TIME
+        FROM sys_menu M
+                 LEFT JOIN sys_role_menu RM on M.ID = RM.MENU_ID
+                 LEFT JOIN sys_user_role SUR on RM.ROLE_ID = SUR.ROLE_ID
+                 LEFT JOIN sys_role R on R.ID = SUR.ROLE_ID
+                 LEFT JOIN sys_user U ON U.ID = SUR.USER_ID
+        WHERE 1 = 1
+          AND U.ID = #{userId}
+          AND M.MENU_TYPE IN ('D', 'M')
+          AND M.STATUS = '0'
+          AND R.STATUS = '0'
+        ORDER BY M.PARENT_ID, M.ORDER_NUM
+
+    </select>
+    <select id="findAllMenuTree" resultType="com.freesia.po.SysMenuPo">
+        SELECT DISTINCT M.ID,
+                        M.MENU_NAME,
+                        M.PARENT_ID,
+                        M.ORDER_NUM,
+                        M.VISIBLE,
+                        M.ICON
+        FROM sys_menu M
+                 LEFT JOIN sys_role_menu srm on M.ID = srm.MENU_ID
+                 LEFT JOIN sys_user_role SUR ON SUR.ROLE_ID = SRM.ROLE_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findSelectedMenuListByRoleId" resultType="java.lang.Long">
+        SELECT RM.MENU_ID
+        FROM sys_menu M
+                 LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
+        WHERE 1 = 1
+          AND M.LOGIC_DEL = '0'
+          AND M.STATUS = '0'
+          AND RM.ROLE_ID = #{roleId}
+
+    </select>
+    <select id="findAdminMenuList" resultType="java.lang.Long">
+        SELECT M.ID
+        FROM sys_menu M
+                 LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
+        WHERE 1 = 1
+          AND M.LOGIC_DEL = '0'
+          AND M.STATUS = '0'
+    </select>
+    <select id="findMenuListByUserId" resultType="com.freesia.entity.FindMenuListByUserIdEntity">
+        SELECT DISTINCT M.ID,
+                        M.PARENT_ID,
+                        M.MENU_NAME,
+                        M.MENU_TYPE,
+                        M.ORDER_NUM,
+                        M.ICON,
+                        M.PATH,
+                        M.COMPONENT,
+                        M.PERMS,
+                        M.VISIBLE,
+                        M.STATUS,
+                        M.IS_FRAME,
+                        M.REMARK
+        FROM sys_menu M
+                 LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
+                 LEFT JOIN sys_user_role SUR ON RM.ROLE_ID = SUR.ROLE_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+
+    <select id="findTreeMenuSelect" resultType="com.freesia.entity.FindTreeMenuSelectEntity">
+        SELECT DISTINCT M.ID,
+                        M.PARENT_ID,
+                        M.MENU_NAME AS TITLE,
+                        M.ID        AS FIELD
+        FROM sys_menu M
+                 LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
+                 LEFT JOIN sys_user_role SUR ON RM.ROLE_ID = SUR.ROLE_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+</mapper>
