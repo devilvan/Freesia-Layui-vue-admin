@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.freesia.annotation.DataColumn;
-import com.freesia.annotation.DataPermission;
 import com.freesia.po.SysSensitiveLogPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -25,9 +23,6 @@ public interface SysSensitiveLogMapper extends BaseMapper<SysSensitiveLogPo> {
      * @param wrapper 查询条件
      * @return 分页返回
      */
-    @DataPermission({
-            @DataColumn(key = "deptName", value = "D.ID"),
-    })
     Page<SysSensitiveLogPo> findPageLoginLog(@Param("page") Page<SysSensitiveLogPo> page, @Param(Constants.WRAPPER) Wrapper<SysSensitiveLogPo> wrapper);
 
     /**
@@ -37,9 +32,6 @@ public interface SysSensitiveLogMapper extends BaseMapper<SysSensitiveLogPo> {
      * @param wrapper 查询条件
      * @return 分页返回
      */
-    @DataPermission({
-            @DataColumn(key = "deptName", value = "D.ID"),
-    })
     Page<SysSensitiveLogPo> findPageOptionLog(@Param("page") Page<SysSensitiveLogPo> page, @Param(Constants.WRAPPER) Wrapper<SysSensitiveLogPo> wrapper);
 
 }

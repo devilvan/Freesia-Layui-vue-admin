@@ -2,6 +2,7 @@ package com.freesia.dto;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.constant.Constants;
+import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
