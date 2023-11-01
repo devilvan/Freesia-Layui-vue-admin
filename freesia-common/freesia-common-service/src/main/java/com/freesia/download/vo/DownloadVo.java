@@ -1,5 +1,6 @@
-package com.freesia.pojo;
+package com.freesia.download.vo;
 
+import com.freesia.download.constant.PictureSuffixConstant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class DownloadVo {
     @Schema(description = "导出文件名")
     private String fileName;
     /**
-     * {@link com.freesia.pojo.PictureSuffixConstant}
+     * {@link PictureSuffixConstant}
      */
     @Schema(description = "文件后缀")
     private String suffix;

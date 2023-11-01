@@ -1,4 +1,4 @@
-package com.freesia.pojo;
+package com.freesia.download.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,9 +1,9 @@
-package com.freesia.component;
+package com.freesia.httpclient.component;
 
-import com.freesia.builder.HttpBuilder;
+import com.freesia.httpclient.builder.HttpBuilder;
 import com.freesia.constant.ExceptionConstant;
-import com.freesia.handler.HttpClientRetryHandler;
-import com.freesia.pojo.HttpClientDto;
+import com.freesia.httpclient.handler.HttpClientRetryHandler;
+import com.freesia.httpclient.dto.HttpClientDto;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,6 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;

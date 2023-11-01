@@ -1,4 +1,4 @@
-package com.freesia.handler;
+package com.freesia.httpclient.handler;
 
 
 import com.freesia.constant.ExceptionConstant;

@@ -1,4 +1,4 @@
-package com.freesia.pojo;
+package com.freesia.httpclient.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,8 +46,7 @@ public enum HttpContentType {
     /**
      * TRACE
      */
-    TRACE(HttpTrace::new)
-    ;
+    TRACE(HttpTrace::new);
 
     private final Function<String, HttpRequestBase> method;
 

@@ -1,6 +1,6 @@
-package com.freesia.config;
+package com.freesia.httpclient.config;
 
-import com.freesia.handler.HttpClientRetryHandler;
+import com.freesia.httpclient.handler.HttpClientRetryHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;

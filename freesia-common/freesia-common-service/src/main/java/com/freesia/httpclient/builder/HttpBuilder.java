@@ -1,7 +1,7 @@
-package com.freesia.builder;
+package com.freesia.httpclient.builder;
 
 import com.freesia.exception.BaseException;
-import com.freesia.pojo.HttpContentType;
+import com.freesia.httpclient.constant.HttpContentType;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UServlet;
 import lombok.extern.slf4j.Slf4j;

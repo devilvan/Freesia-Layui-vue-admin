@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 @SpringBootApplication(scanBasePackages = "com.freesia")
-@MapperScan(basePackages = {"com.freesia.mapper"})
-@EnableJpaRepositories(basePackages = {"com.freesia.repository"})
+@MapperScan(basePackages = {"com.freesia.mapper", "com.freesia.*.mapper"})
+@EnableJpaRepositories(basePackages = {"com.freesia.repository", "com.freesia.*.repository"})
 public class FreesiaAdminApplication {
     public static void main(String[] args) {
         SpringApplication.run(FreesiaAdminApplication.class, args);

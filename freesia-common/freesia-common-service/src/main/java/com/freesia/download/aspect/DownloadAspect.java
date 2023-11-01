@@ -1,4 +1,4 @@
-package com.freesia.aspect;
+package com.freesia.download.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class DownloadAspect {
-    @Around(value = "execution(public void com.freesia.component.DownloadComponent.download(..))")
+    @Around(value = "execution(public void com.freesia.download.component.DownloadComponent.download(..))")
     protected Object around(ProceedingJoinPoint proceedingJoinPoint) {
         Object[] args = proceedingJoinPoint.getArgs();
         String filePath = String.valueOf(args[1]);

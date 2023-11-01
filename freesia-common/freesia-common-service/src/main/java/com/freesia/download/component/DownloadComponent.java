@@ -1,4 +1,4 @@
-package com.freesia.component;
+package com.freesia.download.component;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
