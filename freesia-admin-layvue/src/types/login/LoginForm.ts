@@ -2,8 +2,8 @@
  * 登录功能 值对象传递
  */
 export interface LoginVo {
-    username: string;
-    password: string;
+    username?: string;
+    password?: string;
     code?: string;
-    uuid?: string;
+    captchaKey?: string;
 }

@@ -37,7 +37,7 @@ public class SysRegisterServiceImpl implements SysRegisterService {
         String username = registerDto.getUsername();
         String password = registerDto.getPassword();
         String userType = UserType.getInstanceByKey(registerDto.getUserType()).getUserType();
-        sysConfigService.validateCaptcha(username, registerDto.getCode(), registerDto.getUuid());
+        sysConfigService.validateCaptcha(username, registerDto.getCode(), registerDto.getCaptchaKey());
         SysUserDto sysUserDto = new SysUserDto();
         sysUserDto.setUserName(username);
         sysUserDto.setNickName(username);

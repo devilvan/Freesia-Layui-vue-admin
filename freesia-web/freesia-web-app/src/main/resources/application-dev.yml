@@ -11,6 +11,12 @@ login.password:
   # 密码锁定时间（默认10分钟 Duration）
   lockTime: 10M
 ---
+captcha:
+  type: CALCULATE
+  strategy: CIRCLE
+  numberLength: 1
+  charLength: 4
+---
 spring:
   messages:
     basename: i18n/messages_common,i18n/messages
@@ -72,7 +78,7 @@ springdoc:
     title: Devilvan's Freesia Admin Document
     decription: Freesia后台管理系统_接口文档
     license:
-      name: Apache 2.0
+      name: APACHE LICENSE VERSION 2.0
       url: https://www.apache.org/licenses/LICENSE-2.0.html
     version: '版本号: ${project.version}'
     termsOfService: 'http://localhost:${server.port}}'

@@ -42,8 +42,8 @@ public class SysLoginServiceImpl implements SysLoginService {
 
 
     @Override
-    public String login(String username, String password, String code, String uuid) {
-        sysConfigService.validateCaptcha(username, code, uuid);
+    public String login(String username, String password, String code, String captchaKey) {
+        sysConfigService.validateCaptcha(username, code, captchaKey);
         SysUserPo sysUserPo = findByUsername(username);
         // 检查登录状态
         checkLogin(LoginRetryType.PASSWORD, username, () -> !BCrypt.checkpw(password, sysUserPo.getPassword()));

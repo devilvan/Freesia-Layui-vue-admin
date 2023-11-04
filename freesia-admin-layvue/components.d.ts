@@ -40,6 +40,7 @@ declare module '@vue/runtime-core' {
     LayLayer: typeof import('@layui/layer-vue')['LayLayer']
     LayLayout: typeof import('@layui/layui-vue')['LayLayout']
     LayLine: typeof import('@layui/layui-vue')['LayLine']
+    LayLoading: typeof import('@layui/layui-vue')['LayLoading']
     LayLogo: typeof import('@layui/layui-vue')['LayLogo']
     LayMenu: typeof import('@layui/layui-vue')['LayMenu']
     LayMenuItem: typeof import('@layui/layui-vue')['LayMenuItem']

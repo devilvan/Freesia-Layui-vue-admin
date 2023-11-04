@@ -53,9 +53,9 @@ public interface SysConfigService {
      *
      * @param username 用户名
      * @param code     用户输入的验证码
-     * @param uuid     唯一ID
+     * @param captchaKey     唯一ID
      */
-    void validateCaptcha(String username, String code, String uuid);
+    void validateCaptcha(String username, String code, String captchaKey);
 
     /**
      * 应用启动初始化数据字典

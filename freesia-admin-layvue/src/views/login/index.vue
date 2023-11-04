@@ -28,7 +28,7 @@
                                v-model="loginForm.username"></lay-input>
                   </lay-form-item>
                   <lay-form-item :label-width="0">
-                    <lay-input :allow-clear="true" prefix-icon="layui-icon-password" placeholder="密码" password
+                    <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="密码" password
                                type="password" v-model="loginForm.password"></lay-input>
                   </lay-form-item>
                   <lay-form-item :label-width="0">
@@ -36,10 +36,12 @@
                       <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="验证码"
                                  v-model="loginForm.code"></lay-input>
                     </div>
-
                     <div class="login-captach" @click="toRefreshImg">
-                      <img style="width: 100%" src="../../assets/login/login-yzm.jpg" alt="获取验证码"/>
+                      <img style="width: 100%" :src="captchaImg" alt="获取验证码"/>
                     </div>
+                  </lay-form-item>
+                  <lay-form-item :hidden="true">
+                    <lay-input v-model="loginForm.captchaKey"></lay-input>
                   </lay-form-item>
                   <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>
                   <lay-form-item :label-width="0">
@@ -94,80 +96,76 @@
   </div>
 </template>
 
-<script lang="ts">
-import {loginQrcode, verificationImg} from '../../api/module/commone'
-import {defineComponent, onMounted, reactive, ref} from 'vue'
+<script lang="ts" setup>
+import {loginQrcode} from '../../api/module/commone'
+import {onMounted, reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {useUserStore} from '../../store/user'
 import {layer} from '@layui/layer-vue'
 import {LoginVo} from "../../types/login/LoginForm";
 import {login} from "../../api/Login";
+import {getCaptchaCode} from "../../api/captcha/Captcha";
+import {findCaptchaEnabled} from "../../api/system/Config";
 
-export default defineComponent({
-  setup() {
-    const router = useRouter()
-    const userStore = useUserStore()
-    const method = ref('1')
-    const verificationImgUrl = ref('')
-    const loging = ref(false);
-    const loginQrcodeText = ref('')
-    const remember = ref(false)
-    const loginForm: LoginVo = reactive({
-      username: 'admin',
-      password: '123456',
-      // code: 'DqJFN'
-    })
-
-    onMounted(() => {
-      // toRefreshImg()
-      // toRefreshQrcode()
-    })
-
-    const loginSubmit = async () => {
-      loging.value = true;
-      const {data, code, msg} = await login(loginForm)
-      setTimeout(() => {
-        loging.value = false;
-        if (code == 200) {
-          layer.msg(msg, {icon: 1}, async () => {
-            userStore.token = data.token
-            await userStore.getInfo()
-            router.push('/')
-          })
-        } else {
-          layer.msg(msg, {icon: 2})
-        }
-      }, 1000)
-    }
-
-    const toRefreshImg = async () => {
-      let {data, code, msg} = await verificationImg()
-      if (code == 200) {
-        verificationImgUrl.value = data.data
-      } else {
-        layer.msg(msg, {icon: 2})
-      }
-    }
-    const toRefreshQrcode = async () => {
-      let {data, code, msg} = await loginQrcode()
-      if (code == 200) {
-        loginQrcodeText.value = data.data
-      } else {
-        layer.msg(msg, {icon: 2})
-      }
-    }
-
-    return {
-      toRefreshQrcode,
-      toRefreshImg,
-      loginSubmit,
-      loginForm,
-      remember,
-      method,
-      loging
+onMounted(async () => {
+  const {data, code} = await findCaptchaEnabled()
+  if (code === 200) {
+    if (data === true) {
+      captchaEnabled.value = true;
+      toRefreshImg();
     }
   }
+  // toRefreshQrcode()
 })
+
+const router = useRouter()
+const userStore = useUserStore()
+const method = ref('1')
+const captchaImg = ref('')
+const loging = ref(false);
+const loading = ref(false);
+const loginQrcodeText = ref('')
+const remember = ref(false)
+const loginForm: LoginVo = reactive<LoginVo>({})
+const captchaEnabled = ref(false);
+
+const loginSubmit = async () => {
+  loging.value = true;
+  const {data, code, msg} = await login(loginForm)
+  setTimeout(() => {
+    loging.value = false;
+    if (code == 200) {
+      layer.msg(msg, {icon: 1}, async () => {
+        userStore.token = data.token
+        await userStore.getInfo()
+        router.push('/')
+      })
+    } else {
+      layer.msg(msg, {icon: 2})
+    }
+  }, 1000)
+}
+
+const toRefreshImg = () => {
+  // setTimeout(() => {
+    getCaptchaCode().then((res: any) => {
+      if (res.code == 200) {
+        captchaImg.value = "data:image/gif;base64," + res.data?.captchaImg
+        loginForm.captchaKey = res.data?.captchaKey;
+      } else {
+        layer.msg(res.msg, {icon: 2})
+      }
+    })
+  // }, 1000)
+}
+const toRefreshQrcode = async () => {
+  let {data, code, msg} = await loginQrcode()
+  if (code == 200) {
+    loginQrcodeText.value = data.data
+  } else {
+    layer.msg(msg, {icon: 2})
+  }
+}
 </script>
 
 <style scoped>
@@ -332,7 +330,7 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   margin: 0;
-  padding: 0;
+  padding: 20px;
   list-style: none;
   font-size: 14px;
   font-weight: 400;

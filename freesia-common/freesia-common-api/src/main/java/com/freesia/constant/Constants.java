@@ -5,8 +5,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * @Description 公共静态类
  * @author Evad.Wu
+ * @Description 公共静态类
  * @date 2022-07-06
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -49,4 +49,8 @@ public final class Constants {
      * 字符集 UTF_8
      */
     public static final String UTF_8 = "UTF-8";
+    /**
+     * 验证码过期时间（分钟）
+     */
+    public static final long CAPTCHA_EXPIRATION = 2;
 }

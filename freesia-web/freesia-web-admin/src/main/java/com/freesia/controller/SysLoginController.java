@@ -51,7 +51,7 @@ public class SysLoginController {
     public R<Map<String, Object>> sysLogin(@Validated @RequestBody LoginVo loginVo) {
         Map<String, Object> ajax = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
         // 生成令牌
-        String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getUuid());
+        String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getCaptchaKey());
         ajax.put(Constants.TOKEN, token);
         return R.ok(ajax);
     }

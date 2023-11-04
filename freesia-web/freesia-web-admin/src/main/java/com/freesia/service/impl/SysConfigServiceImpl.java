@@ -77,9 +77,9 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     }
 
     @Override
-    public void validateCaptcha(String username, String code, String uuid) {
+    public void validateCaptcha(String username, String code, String captchaKey) {
         if (findCaptchaEnabled()) {
-            checkCaptcha(username, code, uuid);
+            checkCaptcha(username, code, captchaKey);
         }
     }
 
@@ -102,8 +102,8 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         return TableResult.build(UCopy.convertPagePo2Dto(page, SysConfigDto.class));
     }
 
-    public void checkCaptcha(String username, String code, String uuid) {
-        String verifyKey = CacheConstant.CAPTCHA_CODE_KEY + StrUtil.emptyToDefault(uuid, "");
+    public void checkCaptcha(String username, String code, String captchaKey) {
+        String verifyKey = CacheConstant.CAPTCHA_CODE_KEY + StrUtil.emptyToDefault(captchaKey, "");
         String captcha = URedis.get(verifyKey);
         URedis.delete(verifyKey);
         String ip = UServlet.getInitiatedRequestIp();
