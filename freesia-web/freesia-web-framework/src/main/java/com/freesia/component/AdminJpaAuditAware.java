@@ -1,5 +1,6 @@
 package com.freesia.component;
 
+import com.freesia.constant.AdminConstant;
 import com.freesia.model.LoginUserModel;
 import com.freesia.util.USecurity;
 import lombok.NonNull;
@@ -20,11 +21,11 @@ public class AdminJpaAuditAware implements AuditorAware<String> {
     @NonNull
     @Override
     public Optional<String> getCurrentAuditor() {
-        LoginUserModel loginUser = USecurity.getLoginUser();
         try {
+            LoginUserModel loginUser = USecurity.getLoginUser();
             return Optional.ofNullable(loginUser).map(LoginUserModel::getUsername);
         } catch (Exception ignored) {
-            return Optional.of("Evad");
+            return Optional.of(AdminConstant.SYSTEM);
         }
     }
 }

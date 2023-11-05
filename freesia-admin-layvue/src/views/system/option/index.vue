@@ -236,6 +236,12 @@ const columns = ref([
   {title: '部门名称', key: 'deptName', sort: 'desc', width: '120px'},
   {title: 'IP地址', key: 'ipAddress', hide: true},
   {title: '请求地址', key: 'url', customSlot: 'url', width: '360px'},
+  {
+    title: '操作结果',
+    width: '80px',
+    key: 'result',
+    customSlot: 'result'
+  },
   {title: '所属模块', key: 'module', width: '200px'},
   {title: '子模块', key: 'subModule', width: '200px'},
   {title: '操作类型', key: 'type', width: '200px'},
@@ -245,12 +251,6 @@ const columns = ref([
     key: 'os',
     sort: 'desc',
     customSlot: 'os'
-  },
-  {
-    title: '操作结果',
-    width: '80px',
-    key: 'result',
-    customSlot: 'result'
   },
   {title: '浏览器', key: 'browser', width: '100px'},
   {title: '操作时间', key: 'operateTime', width: '160px'},

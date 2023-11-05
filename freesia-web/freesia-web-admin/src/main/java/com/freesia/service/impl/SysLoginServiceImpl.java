@@ -197,6 +197,8 @@ public class SysLoginServiceImpl implements SysLoginService {
             SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
                 SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
                 loginOperLog.setOperatorId(0L);
+                loginOperLog.setDeptId(-1L);
+                loginOperLog.setDeptName(AdminConstant.UNKNOWN);
                 loginOperLog.setOperatorName(username);
                 loginOperLog.setMethodType(UServlet.getMethod());
                 loginOperLog.setUrl(UServlet.getRequestUri());
@@ -231,6 +233,8 @@ public class SysLoginServiceImpl implements SysLoginService {
                 SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
                     SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
                     loginOperLog.setOperatorId(0L);
+                    loginOperLog.setDeptId(-1L);
+                    loginOperLog.setDeptName(AdminConstant.UNKNOWN);
                     loginOperLog.setOperatorName(username);
                     loginOperLog.setMethodType(UServlet.getMethod());
                     loginOperLog.setUrl(UServlet.getRequestUri());
@@ -259,6 +263,8 @@ public class SysLoginServiceImpl implements SysLoginService {
                 SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
                     SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
                     loginOperLog.setOperatorId(0L);
+                    loginOperLog.setDeptId(-1L);
+                    loginOperLog.setDeptName(AdminConstant.UNKNOWN);
                     loginOperLog.setOperatorName(username);
                     loginOperLog.setMethodType(UServlet.getMethod());
                     loginOperLog.setUrl(UServlet.getRequestUri());
@@ -270,7 +276,7 @@ public class SysLoginServiceImpl implements SysLoginService {
                     loginOperLog.setBrowser(UServlet.getBrowser());
                     loginOperLog.setOs(UServlet.getOs());
                     loginOperLog.setModule(SysModule.USER_MANAGEMENT);
-                    loginOperLog.setSubModule(UMessage.message(SysModule.CHECK_CAPTCHA));
+                    loginOperLog.setSubModule(SysModule.CHECK_CAPTCHA);
                     loginOperLog.setType(SysModule.LOGIN);
                     loginOperLog.setResult(FlagConstant.FAILED);
                     loginOperLog.setContextOld(null);
@@ -315,7 +321,7 @@ public class SysLoginServiceImpl implements SysLoginService {
             }
             StpUtil.logout();
             SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
-                String username = ObjectUtil.defaultIfNull(loginUser.getUsername(), AdminConstant.UNKWNOW);
+                String username = ObjectUtil.defaultIfNull(loginUser.getUsername(), AdminConstant.UNKNOWN);
                 String ip = UServlet.getInitiatedRequestIp();
                 SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
                 loginOperLog.setOperatorId(loginUser.getUserId());

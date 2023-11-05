@@ -7,6 +7,7 @@ import com.freesia.util.UCopy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,6 +29,7 @@ public class SysSensitiveLogEventListener {
      * @param sysSensitiveLogBean 敏感日志对象
      */
     @EventListener
+    @Async("threadPoolExecutor")
     public void recordLoginOperLog(SysSensitiveLogBean sysSensitiveLogBean) {
         SysSensitiveLogDto sysSensitiveLogDto = new SysSensitiveLogDto();
         UCopy.fullCopy(sysSensitiveLogBean, sysSensitiveLogDto);

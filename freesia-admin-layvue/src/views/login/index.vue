@@ -22,33 +22,36 @@
             </div>
             <lay-tab type="brief" v-model="method">
               <lay-tab-item title="用户名" id="1">
-                <div style="height: 250px">
-                  <lay-form-item :label-width="0">
-                    <lay-input :allow-clear="true" prefix-icon="layui-icon-username" placeholder="用户名"
-                               v-model="loginForm.username"></lay-input>
-                  </lay-form-item>
-                  <lay-form-item :label-width="0">
-                    <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="密码" password
-                               type="password" v-model="loginForm.password"></lay-input>
-                  </lay-form-item>
-                  <lay-form-item :label-width="0">
-                    <div style="width: 264px; display: inline-block">
-                      <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="验证码"
-                                 v-model="loginForm.code"></lay-input>
-                    </div>
-                    <div class="login-captach" @click="toRefreshImg">
-                      <img style="width: 100%" :src="captchaImg" alt="获取验证码"/>
-                    </div>
-                  </lay-form-item>
-                  <lay-form-item :hidden="true">
-                    <lay-input v-model="loginForm.captchaKey"></lay-input>
-                  </lay-form-item>
-                  <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>
-                  <lay-form-item :label-width="0">
-                    <lay-button style="margin-top: 20px" type="primary" :loading="loging" :fluid="true"
-                                loadingIcon="layui-icon-loading" @click="loginSubmit">登录
-                    </lay-button>
-                  </lay-form-item>
+                <div style="height: 400px">
+                  <lay-form :model="loginForm" label-position="top" ref="loginFormRef" :rules="loginFormRules" @keyup.enter="loginSubmit">
+                    <lay-form-item label="用户名" :label-width="0" prop="username">
+                      <lay-input :allow-clear="true" prefix-icon="layui-icon-username" placeholder="用户名"
+                                 v-model="loginForm.username"></lay-input>
+                    </lay-form-item>
+                    <lay-form-item label="密码" :label-width="0" prop="password">
+                      <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="密码" password
+                                 type="password" v-model="loginForm.password"></lay-input>
+                    </lay-form-item>
+                    <lay-form-item label="验证码" :label-width="0" prop="code" :hidden="!captchaEnabled"
+                                   :required="!captchaEnabled">
+                      <div style="width: 264px; display: inline-block">
+                        <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="验证码"
+                                   v-model="loginForm.code"></lay-input>
+                      </div>
+                      <div class="login-captcha" @click="toRefreshImg">
+                        <img style="width: 100%" :src="captchaImg" alt="获取验证码"/>
+                      </div>
+                    </lay-form-item>
+                    <lay-form-item :hidden="true" prop="captchaKey">
+                      <lay-input v-model="loginForm.captchaKey"></lay-input>
+                    </lay-form-item>
+                    <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>
+                    <lay-form-item :label-width="0">
+                      <lay-button style="margin-top: 20px" type="primary" :loading="loging" :fluid="true"
+                                  loadingIcon="layui-icon-loading" @click="loginSubmit">登录
+                      </lay-button>
+                    </lay-form-item>
+                  </lay-form>
                 </div>
               </lay-tab-item>
               <lay-tab-item title="二维码" id="2">
@@ -97,16 +100,17 @@
 </template>
 
 <script lang="ts" setup>
-import {loginQrcode} from '../../api/module/commone'
 import {onMounted, reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {useUserStore} from '../../store/user'
 import {layer} from '@layui/layer-vue'
 import {LoginVo} from "../../types/login/LoginForm";
 import {login} from "../../api/Login";
-import {getCaptchaCode} from "../../api/captcha/Captcha";
 import {findCaptchaEnabled} from "../../api/system/Config";
+import {getCaptchaCode} from "../../api/captcha/Captcha";
+import {loginQrcode} from "../../api/module/commone";
 
+/* INIT*/
 onMounted(async () => {
   const {data, code} = await findCaptchaEnabled()
   if (code === 200) {
@@ -117,7 +121,9 @@ onMounted(async () => {
   }
   // toRefreshQrcode()
 })
+/* INIT*/
 
+/* VAR*/
 const router = useRouter()
 const userStore = useUserStore()
 const method = ref('1')
@@ -127,35 +133,58 @@ const loading = ref(false);
 const loginQrcodeText = ref('')
 const remember = ref(false)
 const loginForm: LoginVo = reactive<LoginVo>({})
+const loginFormRef = ref()
 const captchaEnabled = ref(false);
-
-const loginSubmit = async () => {
-  loging.value = true;
-  const {data, code, msg} = await login(loginForm)
-  setTimeout(() => {
-    loging.value = false;
-    if (code == 200) {
-      layer.msg(msg, {icon: 1}, async () => {
-        userStore.token = data.token
-        await userStore.getInfo()
-        router.push('/')
-      })
-    } else {
-      layer.msg(msg, {icon: 2})
+const loginFormRules = ref({
+  code: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (captchaEnabled.value === true) {
+        if (!value) {
+          callback(new Error('验证码不能为空！'));
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
     }
-  }, 1000)
-}
+  }
+})
 
+/* VAR*/
+
+/* FUNCTION */
+const loginSubmit = async () => {
+  loginFormRef.value.validate(async (isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      loging.value = true;
+      const {data, code, msg} = await login(loginForm)
+      setTimeout(() => {
+        loging.value = false;
+        if (code == 200) {
+          layer.msg(msg, {icon: 1}, async () => {
+            userStore.token = data.token
+            await userStore.getInfo()
+            router.push('/')
+          })
+        } else {
+          toRefreshImg()
+        }
+      }, 1000)
+    }
+  })
+
+}
 const toRefreshImg = () => {
   // setTimeout(() => {
-    getCaptchaCode().then((res: any) => {
-      if (res.code == 200) {
-        captchaImg.value = "data:image/gif;base64," + res.data?.captchaImg
-        loginForm.captchaKey = res.data?.captchaKey;
-      } else {
-        layer.msg(res.msg, {icon: 2})
-      }
-    })
+  getCaptchaCode().then((res: any) => {
+    if (res.code == 200) {
+      captchaImg.value = "data:image/gif;base64," + res.data?.captchaImg
+      loginForm.captchaKey = res.data?.captchaKey;
+    } else {
+      layer.msg(res.msg, {icon: 2})
+    }
+  })
   // }, 1000)
 }
 const toRefreshQrcode = async () => {
@@ -166,10 +195,11 @@ const toRefreshQrcode = async () => {
     layer.msg(msg, {icon: 2})
   }
 }
+/* FUNCTION*/
 </script>
 
 <style scoped>
-.login-captach {
+.login-captcha {
   display: inline-block;
   vertical-align: bottom;
   width: 108px;
@@ -259,7 +289,7 @@ const toRefreshQrcode = async () => {
   position: relative;
   overflow: hidden;
   width: 940px;
-  height: 520px;
+  height: 720px;
   max-width: calc(100vw - 28px);
   border-radius: 4px;
   background: hsla(0, 0%, 100%, 0.5);

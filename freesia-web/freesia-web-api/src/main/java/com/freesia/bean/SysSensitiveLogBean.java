@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Schema(description = "敏感操作信息表 模块传输对象")
 public class SysSensitiveLogBean extends BaseBean {
     @Schema(description = "操作人ID")

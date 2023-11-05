@@ -108,7 +108,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
             sensitiveLog.setContextOld(JSONObject.toJSONString(oldMenuIdList));
             sensitiveLog.setContext(JSONObject.toJSONString(newMenuIdList));
             sensitiveLog.setSign(loginUser.getUsername());
-            sensitiveLog.setRemark(UMessage.message("user.login.success"));
+            sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_success"));
             return sensitiveLog;
         });
         USpring.context().publishEvent(sysSensitiveLogBean);

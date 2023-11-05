@@ -73,6 +73,7 @@ public class AdminExceptionAspect {
     public R<Void> notLoginException(HttpServletRequest request, NotLoginException e) {
         String message = e.getMessage();
         log.error("所属模块：【{}】，请求地址：【{}】，错误信息：{}", SysModule.LOGIN, request.getRequestURL(), message);
+        e.printStackTrace();
         return R.failed(HttpStatus.HTTP_UNAUTHORIZED, message);
     }
 }

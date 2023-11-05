@@ -58,6 +58,10 @@ public final class AdminConstant {
      */
     public static final long ADMIN_ID = 1L;
     /**
+     * 系统对象
+     */
+    public static final String SYSTEM = "system";
+    /**
      * 管理员
      */
     public static final String ADMIN = "admin";
@@ -73,7 +77,7 @@ public final class AdminConstant {
     /**
      * 未知
      */
-    public static final String UNKWNOW = "unknown";
+    public static final String UNKNOWN = "unknown";
     /**
      * 注册
      */
