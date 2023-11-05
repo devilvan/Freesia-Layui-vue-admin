@@ -247,22 +247,22 @@
   resolved "https://registry.npmmirror.com/@layui/icons-vue/-/icons-vue-1.1.0.tgz"
   integrity sha512-ndc53qyUZSslUkO8ZHeBMh6i4gSTtAUqsPpKQZWML0JH6E/X3LIySe6LATeqEMmD7wWSnHJ+WBVGO4ij85Dk1g==
 
-"@layui/layer-vue@1.9.0":
-  version "1.9.0"
-  resolved "https://registry.npmmirror.com/@layui/layer-vue/-/layer-vue-1.9.0.tgz"
-  integrity sha512-RJYYdQm4J59Df/BWfEsA5f6PXFjkfkEkemhuyAJGNHgM6CI41BoftFwVzr7lR0bw5fF7aLLI9RM83Cb39K38QQ==
+"@layui/layer-vue@2.1.1":
+  version "2.1.1"
+  resolved "https://registry.npmmirror.com/@layui/layer-vue/-/layer-vue-2.1.1.tgz#9a831ed07d7e76a2d3884effd178389d8a83031d"
+  integrity sha512-lk9UoDQmLvtqrgdK+zeizp8KZy8pQfzX7dzHhAv+Qc74L1WC2jipb2hpYmaksiKX1lihy0D9eWWycMbnRn7V9A==
   dependencies:
     "@layui/icons-vue" "1.1.0"
 
-"@layui/layui-vue@2.3.12":
-  version "2.3.12"
-  resolved "https://registry.npmmirror.com/@layui/layui-vue/-/layui-vue-2.3.12.tgz"
-  integrity sha512-Mrz71to3T4Gfs1uRTeRYgt9VfNZM41eaJmiU5WZYocwSDHSMghcpA+MpqSy5x0xvOkaGRNJpqHm6DpnuPCkksA==
+"@layui/layui-vue@^2.11.3":
+  version "2.11.3"
+  resolved "https://registry.npmmirror.com/@layui/layui-vue/-/layui-vue-2.11.3.tgz#339606729f05c66f71ace7d40b29e8f302759477"
+  integrity sha512-0z3cT4AYPvz4vNC0XsQquhUb2KyrnI4ZPTVCP/w2FjuT/SAA0jUcRa1JeJNwM5RENvTWi1xyjWLBV5BuyKrH4Q==
   dependencies:
     "@babel/types" "7.21.0"
     "@ctrl/tinycolor" "^3.4.1"
     "@layui/icons-vue" "1.1.0"
-    "@layui/layer-vue" "1.9.0"
+    "@layui/layer-vue" "2.1.1"
     "@rollup/plugin-terser" "0.4.3"
     "@types/qrcode" "1.5.0"
     "@umijs/ssr-darkreader" "^4.9.45"
