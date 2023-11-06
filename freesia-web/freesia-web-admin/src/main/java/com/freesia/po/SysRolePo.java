@@ -5,12 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -30,6 +31,8 @@ import java.util.Set;
 @TableName(value = "SYS_ROLE")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_ROLE")
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "角色信息表 映射")

@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serial;
@@ -28,6 +30,8 @@ import java.util.Set;
 @TableName(value = "SYS_USER")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_USER")
 @Schema(description = "用户信息表 映射")
 public class SysUserPo extends BasePo implements Serializable {

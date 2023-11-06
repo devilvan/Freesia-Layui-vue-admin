@@ -27,6 +27,8 @@ import java.util.Set;
 @TableName(value = "SYS_MENU")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_MENU")
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "目录/菜单/按钮信息表 映射")

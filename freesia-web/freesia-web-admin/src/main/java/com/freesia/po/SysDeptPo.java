@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -26,6 +28,8 @@ import java.util.Set;
 @TableName(value = "SYS_DEPT")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_DEPT")
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "部门信息表 映射")

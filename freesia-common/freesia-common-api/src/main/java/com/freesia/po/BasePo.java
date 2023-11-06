@@ -28,8 +28,6 @@ import java.util.Date;
  * @date 2022-07-10
  */
 @Data
-@DynamicInsert
-@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass

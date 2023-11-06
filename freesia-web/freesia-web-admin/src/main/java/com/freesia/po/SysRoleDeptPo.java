@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -25,8 +26,9 @@ import java.io.Serializable;
 @TableName(value = "SYS_ROLE_DEPT")
 
 @Entity
-@Table(name = "SYS_ROLE_DEPT")
 @DynamicInsert
+@DynamicUpdate
+@Table(name = "SYS_ROLE_DEPT")
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "角色-部门关联表 映射")
 public class SysRoleDeptPo extends RelationPo {

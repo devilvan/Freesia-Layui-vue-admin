@@ -33,6 +33,8 @@ import java.util.Date;
 @TableName(value = "SYS_SENSITIVE_LOG")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_SENSITIVE_LOG")
 @DynamicInsert
 @EntityListeners(AuditingEntityListener.class)

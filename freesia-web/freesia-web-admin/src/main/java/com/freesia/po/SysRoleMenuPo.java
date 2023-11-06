@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serial;
@@ -24,6 +26,8 @@ import java.io.Serializable;
 @TableName(value = "SYS_ROLE_MENU")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_ROLE_MENU")
 @Schema(description = "角色-菜单关联表 映射")
 public class SysRoleMenuPo extends RelationPo {
