@@ -83,13 +83,16 @@
         </template>
         <template v-slot:toolbar>
           <lay-button size="sm" type="primary" @click="changeVisible11('新增')">
-            <lay-icon class="layui-icon-addition"></lay-icon>新增
+            <lay-icon class="layui-icon-addition"></lay-icon>
+            新增
           </lay-button>
           <lay-button size="sm" @click="toRemove">
-            <lay-icon class="layui-icon-delete"></lay-icon>删除
+            <lay-icon class="layui-icon-delete"></lay-icon>
+            删除
           </lay-button>
           <lay-button size="sm" @click="toImport">
-            <lay-icon class="layui-icon-upload-drag"></lay-icon>导入
+            <lay-icon class="layui-icon-upload-drag"></lay-icon>
+            导入
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">

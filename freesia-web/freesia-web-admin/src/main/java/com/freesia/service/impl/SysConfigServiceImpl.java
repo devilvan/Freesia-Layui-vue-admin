@@ -23,6 +23,7 @@ import com.freesia.repository.SysConfigRepository;
 import com.freesia.service.SysConfigService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     private final SysConfigRepository sysConfigRepository;
 
     @Override
+    @CachePut(cacheNames = CacheConstant.SYS_CONFIG, key = "#sysConfigDto.configKey")
     public SysConfigPo saveUpdate(SysConfigDto sysConfigDto) {
         SysConfigPo sysConfigPo = new SysConfigPo();
         UCopy.fullCopy(sysConfigDto, sysConfigPo);
@@ -102,6 +104,18 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         return TableResult.build(UCopy.convertPagePo2Dto(page, SysConfigDto.class));
     }
 
+    @Override
+    public void saveConfig(SysConfigDto sysConfigDto) {
+        USpring.getAopProxy(this).saveUpdate(sysConfigDto);
+    }
+
+    /**
+     * 校验验证码
+     *
+     * @param username   用户名
+     * @param code       用户输入的验证码（被校验）
+     * @param captchaKey 校验验证码
+     */
     public void checkCaptcha(String username, String code, String captchaKey) {
         String verifyKey = CacheConstant.CAPTCHA_CODE_KEY + StrUtil.emptyToDefault(captchaKey, "");
         String captcha = URedis.get(verifyKey);

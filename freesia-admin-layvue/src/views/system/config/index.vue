@@ -75,7 +75,7 @@
           <lay-button
               size="sm"
               type="primary"
-              @click="changeVisible11('新增', null)"
+              @click="changeConfigModalFlag('新增', null)"
           >
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
@@ -91,7 +91,7 @@
               size="xs"
               border="green"
               border-style="dashed"
-              @click="changeVisible11('编辑', row)"
+              @click="changeConfigModalFlag('编辑', row)"
           >编辑
           </lay-button
           >
@@ -109,20 +109,20 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="visible11" :title="title" :area="['500px', '370px']">
+    <lay-layer v-model="configModalShowFlag" :title="title" :area="['500px']">
       <div style="padding: 20px">
-        <lay-form :model="model11" ref="layFormRef11" required>
-          <lay-form-item label="角色名称" prop="name">
-            <lay-input v-model="model11.name"></lay-input>
+        <lay-form :model="configVo" ref="configFormRef">
+          <lay-form-item label="参数名称" prop="configName" required>
+            <lay-input v-model="configVo.configName"></lay-input>
           </lay-form-item>
-          <lay-form-item label="角色标识" prop="flage">
-            <lay-input v-model="model11.flage"></lay-input>
+          <lay-form-item label="参数键" prop="configKey" required>
+            <lay-input v-model="configVo.configKey"></lay-input>
           </lay-form-item>
-          <lay-form-item label="描述" prop="remark">
-            <lay-textarea
-                placeholder="请输入描述"
-                v-model="model11.remark"
-            ></lay-textarea>
+          <lay-form-item label="参数值" prop="configValue" required>
+            <lay-input v-model="configVo.configValue"></lay-input>
+          </lay-form-item>
+          <lay-form-item label="是否系统内置" prop="configType">
+            <lay-switch v-model="configVo.configType"></lay-switch>
           </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: center">
@@ -134,57 +134,46 @@
         </div>
       </div>
     </lay-layer>
-
-    <lay-layer v-model="menuTreeVisible" title="分配权限" :area="['500px', '450px']">
-      <div style="height: 320px; overflow: auto">
-        <lay-tree
-            style="margin-left: 40px"
-            :tail-node-icon="false"
-            :data="menuTree"
-            :showCheckbox="menuTreeShowCheckbox2"
-            v-model:checkedKeys="menuTreeCheckedKeys"
-        >
-          <template #title="{ data }">
-            <lay-icon :class="data.icon"></lay-icon>
-            {{ data.menuName }}
-          </template>
-        </lay-tree>
-      </div>
-      <lay-line></lay-line>
-      <div style="width: 90%; text-align: right">
-        <lay-button size="sm" type="primary" @click="toPrivilegesSubmit">保存</lay-button>
-        <lay-button size="sm" @click="toPrivilegesCancel">取消</lay-button>
-      </div>
-    </lay-layer>
   </lay-container>
 </template>
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
-import {FindAllMenuTreeEntity} from "../../../types/system/Menu";
-import {findPageSysConfig} from "../../../api/system/Config";
+import {findPageSysConfig, saveConfig} from "../../../api/system/Config";
 import {SysConfigEntity, SysConfigVo} from "../../../types/system/Config";
 
-
+/* INIT*/
 onMounted(() => {
   loadDataSource()
 })
+const loadDataSource = () => {
+  findPageSysConfig(searchQuery.value, pageQuery).then((res: any) => {
+    if (res.code == 200) {
+      pageQuery.total = res.total;
+      dataSource.value = res.rows
+    } else {
+      layer.msg(res.msg)
+      return;
+    }
+  }).catch(e => {
+    layer.msg(e.msg)
+  });
+}
+/* INIT*/
 
+/* VAR*/
 const searchQuery = ref<SysConfigVo>({})
-
-function toReset() {
-  searchQuery.value = {}
-}
-
-function toSearch() {
-  pageQuery.current = 1
-  dataSource.value = []
-  change()
-}
-
 const loading = ref(false)
 const selectedKeys = ref()
+const configVo = ref<SysConfigVo>({})
+const configVoTemplate = ref<SysConfigVo>({
+  configType: false
+})
+const configFormRef = ref()
+const configModalShowFlag = ref(false)
+
+const title = ref('新增')
 const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
@@ -205,6 +194,19 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+/* VAR*/
+
+/* FUNCTION*/
+function toReset() {
+  searchQuery.value = {}
+}
+
+function toSearch() {
+  pageQuery.current = 1
+  dataSource.value = []
+  change()
+}
+
 const change = () => {
   loading.value = true
   setTimeout(() => {
@@ -228,45 +230,18 @@ const changeConfigType = (isChecked: boolean, row: any) => {
 const remove = () => {
   layer.msg(selectedKeys.value, {area: '50%'})
 }
-
-const loadDataSource = () => {
-  findPageSysConfig(searchQuery.value, pageQuery).then((res: any) => {
-    if (res.code == 200) {
-      pageQuery.total = res.total;
-      dataSource.value = res.rows
-    } else {
-      layer.msg(res.msg)
-      return;
-    }
-  }).catch(e => {
-    layer.msg(e.msg)
-  });
-}
-const model11 = ref({
-  name: '',
-  flage: '',
-  remark: ''
-})
-const layFormRef11 = ref()
-const visible11 = ref(false)
-
-const title = ref('新增')
-const changeVisible11 = (text: any, row: any) => {
+const changeConfigModalFlag = (text: any, row: any) => {
   title.value = text
   if (row != null) {
     let info = JSON.parse(JSON.stringify(row))
-    model11.value = info
+    configVo.value = info
   } else {
-    model11.value = {
-      name: '',
-      flage: '',
-      remark: ''
-    }
+    configVo.value = {...row}
   }
-  visible11.value = !visible11.value
+  configModalShowFlag.value = !configModalShowFlag.value
 }
 const submit11 = function () {
-  layFormRef11.value.validate((isValidate: any, model: any, errors: any) => {
+  configFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     layer.open({
       type: 1,
       title: '表单提交结果',
@@ -289,11 +264,11 @@ const submit11 = function () {
 }
 // 清除校验
 const clearValidate11 = function () {
-  layFormRef11.value.clearValidate()
+  configFormRef.value.clearValidate()
 }
 // 重置表单
 const reset11 = function () {
-  layFormRef11.value.reset()
+  configFormRef.value.reset()
 }
 
 function toRemove() {
@@ -323,13 +298,19 @@ function toRemove() {
 }
 
 function toSubmit() {
-  layer.msg('保存成功！', {icon: 1, time: 1000})
-  visible11.value = false
+  saveConfig(configVo.value).then((res: any) => {
+    if (res.code === 200) {
+      loadDataSource();
+      layer.msg('保存成功！', {icon: 1, time: 1000})
+      configModalShowFlag.value = false
+    } else {
+      layer.confirm(res.msg, {icon: 2})
+    }
+  })
 }
 
 function toCancel() {
-  visible11.value = false
-  menuTreeVisible.value = false
+  configModalShowFlag.value = false
 }
 
 function confirm() {
@@ -340,11 +321,7 @@ function cancel() {
   layer.msg('您已取消操作')
 }
 
-/* 分配权限按钮 START */
-const menuTreeVisible = ref(false)
-const menuTreeCheckedKeys = ref<string[]>([])
-const menuTreeShowCheckbox2 = ref(true)
-const menuTree = ref<Array<FindAllMenuTreeEntity>>()
+/* FUNCTION*/
 </script>
 
 <style scoped>

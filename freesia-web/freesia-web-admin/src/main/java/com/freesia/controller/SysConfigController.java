@@ -1,6 +1,7 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import com.freesia.constant.FlagConstant;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -11,14 +12,16 @@ import com.freesia.vo.SysConfigVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * @author Evad.Wu
  * @Description 全局配置信息表 控制器
  * @date 2023-09-23
  */
+@Valid
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysConfigController")
@@ -28,17 +31,29 @@ public class SysConfigController {
 
     @SaIgnore
     @Operation(summary = "查询验证码启用状态")
-    @RequestMapping(value = "findCaptchaEnabled")
+    @GetMapping(value = "findCaptchaEnabled")
     public R<Boolean> findCaptchaEnabled() {
         boolean captchaEnabled = sysConfigService.findCaptchaEnabled();
         return R.ok(captchaEnabled);
     }
 
     @Operation(summary = "获取参数配置分页")
-    @RequestMapping(value = "findPageSysConfig")
+    @GetMapping(value = "findPageSysConfig")
     public TableResult<SysConfigDto> findPageSysConfig(SysConfigVo sysConfigVo, PageQuery pageQuery) {
-        SysConfigDto sysConfigDto = new SysConfigDto();
-        UCopy.fullCopy(sysConfigVo, sysConfigDto);
+        SysConfigDto sysConfigDto = UCopy.copyVo2Dto(sysConfigVo, SysConfigDto.class);
         return sysConfigService.findPageSysConfig(sysConfigDto, pageQuery);
+    }
+
+    @Operation(summary = "保存系统配置信息")
+    @PostMapping(value = "saveConfig")
+    public R<Void> saveConfig(@RequestBody SysConfigVo sysConfigVo) {
+        SysConfigDto sysConfigDto = UCopy.copyVo2Dto(sysConfigVo, SysConfigDto.class);
+        if (Boolean.TRUE.equals(sysConfigVo.getConfigType())) {
+            sysConfigDto.setConfigType(FlagConstant.Y);
+        } else {
+            sysConfigDto.setConfigKey(FlagConstant.N);
+        }
+        sysConfigService.saveConfig(sysConfigDto);
+        return R.ok();
     }
 }

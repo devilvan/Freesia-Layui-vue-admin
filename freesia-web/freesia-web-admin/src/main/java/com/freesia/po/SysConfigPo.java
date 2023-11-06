@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Column;
@@ -30,6 +31,7 @@ import java.io.Serializable;
 @TableName(value = "SYS_CONFIG")
 
 @Entity
+@DynamicInsert
 @Table(name = "SYS_CONFIG")
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "全局配置信息表 映射")

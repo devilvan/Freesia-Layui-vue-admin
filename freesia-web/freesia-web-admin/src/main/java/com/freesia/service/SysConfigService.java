@@ -51,9 +51,9 @@ public interface SysConfigService {
      * 1. 判断验证码功能是否开启
      * 2. 若开启则验证用户输入的验证码
      *
-     * @param username 用户名
-     * @param code     用户输入的验证码
-     * @param captchaKey     唯一ID
+     * @param username   用户名
+     * @param code       用户输入的验证码
+     * @param captchaKey 唯一ID
      */
     void validateCaptcha(String username, String code, String captchaKey);
 
@@ -70,4 +70,11 @@ public interface SysConfigService {
      * @return 参数配置分页对象
      */
     TableResult<SysConfigDto> findPageSysConfig(SysConfigDto sysConfigDto, PageQuery pageQuery);
+
+    /**
+     * 保存系统配置信息
+     *
+     * @param sysConfigDto 系统配置信息
+     */
+    void saveConfig(SysConfigDto sysConfigDto);
 }

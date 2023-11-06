@@ -24,8 +24,8 @@
         :class="appStore.sideTheme == 'dark' ? 'dark changeBgc' : 'light'"
       >
         <lay-logo v-if="appStore.logo">
-          <lay-avatar :src="$SRC_ASSETS + 'RideOn.jpg'"></lay-avatar>
-          Devilvan's Bliss
+          <lay-avatar :src="$SRC_ASSETS + '不要停下来啊.png'"></lay-avatar>
+          Devilvan's Freesia
         </lay-logo>
         <div class="side-menu-wrapper">
           <div

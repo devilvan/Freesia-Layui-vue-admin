@@ -45,7 +45,7 @@
                     <lay-form-item :hidden="true" prop="captchaKey">
                       <lay-input v-model="loginForm.captchaKey"></lay-input>
                     </lay-form-item>
-                    <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>
+<!--                    <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>-->
                     <lay-form-item :label-width="0">
                       <lay-button style="margin-top: 20px" type="primary" :loading="loging" :fluid="true"
                                   loadingIcon="layui-icon-loading" @click="loginSubmit">登录
