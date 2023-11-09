@@ -5,6 +5,8 @@
         SELECT ID,
                CREATE_TIME,
                REC_VER,
+               LOGIC_DEL,
+               REC_VER,
                CONFIG_NAME,
                CONFIG_KEY,
                CONFIG_VALUE,

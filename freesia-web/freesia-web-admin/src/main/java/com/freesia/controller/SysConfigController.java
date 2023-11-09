@@ -1,12 +1,14 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.hutool.core.util.ObjectUtil;
 import com.freesia.constant.FlagConstant;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysConfigService;
 import com.freesia.util.UCopy;
+import com.freesia.util.UMessage;
 import com.freesia.vo.R;
 import com.freesia.vo.SysConfigVo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,12 +50,22 @@ public class SysConfigController {
     @PostMapping(value = "saveConfig")
     public R<Void> saveConfig(@RequestBody SysConfigVo sysConfigVo) {
         SysConfigDto sysConfigDto = UCopy.copyVo2Dto(sysConfigVo, SysConfigDto.class);
-        if (Boolean.TRUE.equals(sysConfigVo.getConfigType())) {
-            sysConfigDto.setConfigType(FlagConstant.Y);
-        } else {
-            sysConfigDto.setConfigKey(FlagConstant.N);
-        }
         sysConfigService.saveConfig(sysConfigDto);
+        return R.ok();
+    }
+
+    @Operation(summary = "删除系统配置信息")
+    @DeleteMapping(value = "deleteConfig")
+    public R<Void> deleteConfig(@RequestParam String configKey) {
+        SysConfigDto sysConfigDto = sysConfigService.findSysConfigByConfigKey(configKey);
+        if (ObjectUtil.isNotNull(sysConfigDto)) {
+            if (sysConfigDto.getConfigType()) {
+                R<Void> r = R.failed();
+                r.setMsg(UMessage.message("sys.build-in.config.delete.failed"));
+                return r;
+            }
+        }
+        sysConfigService.deleteConfig(configKey);
         return R.ok();
     }
 }

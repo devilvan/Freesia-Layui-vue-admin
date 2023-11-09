@@ -2,7 +2,6 @@ package com.freesia.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Column;
@@ -36,7 +36,6 @@ import java.util.Date;
 @DynamicInsert
 @DynamicUpdate
 @Table(name = "SYS_SENSITIVE_LOG")
-@DynamicInsert
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "敏感操作信息表 映射")
 public class SysSensitiveLogPo extends BasePo implements Serializable {

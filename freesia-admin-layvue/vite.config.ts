@@ -8,6 +8,10 @@ import { resolve } from "path";
 const excludeComponents = ['LightIcon','DarkIcon']
 
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 8700
+  },
   resolve: {
     alias: [
       {

@@ -81,6 +81,12 @@
         <template #gender="{ row }">
           <dict-tag :options="sysGenderList" :value="row.gender"/>
         </template>
+        <template #remark="{ row }">
+          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
+            <div class="oneRow">{{ row.remark }}</div>
+          </lay-tooltip>
+        </template>
+
         <template v-slot:toolbar>
           <lay-button size="sm" type="primary" @click="changeVisible11('新增')">
             <lay-icon class="layui-icon-addition"></lay-icon>
@@ -212,7 +218,7 @@ const columns = ref([
   {title: '邮箱', width: '150px', key: 'email'},
   {title: '性别', width: '80px', key: 'gender', customSlot: 'gender'},
   {title: '时间', width: '130px', key: 'createTime'},
-  {title: '签名', width: '120px', key: 'remark'},
+  {title: '备注', width: '120px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
     width: '120px',
@@ -403,5 +409,13 @@ function preview(path: any) {
   display: inline-block;
   background-color: #e8f1ff;
   color: red;
+}
+
+.oneRow {
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 </style>

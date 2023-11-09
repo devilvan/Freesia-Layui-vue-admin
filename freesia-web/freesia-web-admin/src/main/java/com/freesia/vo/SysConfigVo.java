@@ -32,7 +32,7 @@ public class SysConfigVo extends BaseVo {
     @JSONField(alternateNames = {"configValue"})
     @NotEmpty(message = "{not.null}")
     private String configValue;
-    @Schema(description = "系统内置（Y是 N否）")
+    @Schema(description = "系统内置（1-是 0-否）")
     @JSONField(alternateNames = {"configType"})
     private Boolean configType;
 }

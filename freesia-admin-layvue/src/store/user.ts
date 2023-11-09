@@ -52,7 +52,7 @@ export const useUserStore = defineStore({
     },
     persist: {
         storage: localStorage,
-        paths: ['token', 'userInfo','permissions', 'roles'],
+        paths: ['token','permissions', 'roles'],
     }
 })
 

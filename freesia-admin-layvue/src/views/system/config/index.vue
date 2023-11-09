@@ -63,24 +63,21 @@
           :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
           @change="change"
-          @sortChange="sortChange"
-      >
+          @sortChange="sortChange">
         <template #configType="{ row }">
+<!--                        @change="changeConfigType($event, row)"-->
           <lay-switch
-              :model-value="row.configType === 'Y'"
-              @change="changeConfigType($event, row)"
+              :model-value="row.configType"
           ></lay-switch>
         </template>
         <template v-slot:toolbar>
           <lay-button
               size="sm"
               type="primary"
-              @click="changeConfigModalFlag('新增', null)"
-          >
+              @click="changeConfigModalFlag('新增', null)">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
-          </lay-button
-          >
+          </lay-button>
           <lay-button size="sm" @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
@@ -91,19 +88,13 @@
               size="xs"
               border="green"
               border-style="dashed"
-              @click="changeConfigModalFlag('编辑', row)"
-          >编辑
-          </lay-button
-          >
+              @click="changeConfigModalFlag('编辑', row)">编辑
+          </lay-button>
           <lay-popconfirm
               content="确定要删除此配置吗?"
-              @confirm="confirm"
-              @cancel="cancel"
-          >
-            <lay-button size="xs" border="red" border-style="dashed"
-            >删除
-            </lay-button
-            >
+              @confirm="confirm(row)"
+              @cancel="cancel">
+            <lay-button size="xs" border="red" border-style="dashed">删除</lay-button>
           </lay-popconfirm>
         </template>
       </lay-table>
@@ -112,11 +103,14 @@
     <lay-layer v-model="configModalShowFlag" :title="title" :area="['500px']">
       <div style="padding: 20px">
         <lay-form :model="configVo" ref="configFormRef">
+          <lay-form-item label="ID" prop="id" :hidden="true" required>
+            <lay-input v-model="configVo.id" disabled></lay-input>
+          </lay-form-item>
           <lay-form-item label="参数名称" prop="configName" required>
             <lay-input v-model="configVo.configName"></lay-input>
           </lay-form-item>
           <lay-form-item label="参数键" prop="configKey" required>
-            <lay-input v-model="configVo.configKey"></lay-input>
+            <lay-input v-model="configVo.configKey" :disabled="configVo.id"></lay-input>
           </lay-form-item>
           <lay-form-item label="参数值" prop="configValue" required>
             <lay-input v-model="configVo.configValue"></lay-input>
@@ -126,10 +120,7 @@
           </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: center">
-          <lay-button size="sm" type="primary" @click="toSubmit"
-          >保存
-          </lay-button
-          >
+          <lay-button size="sm" type="primary" @click="toSubmit">保存</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -140,7 +131,7 @@
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
-import {findPageSysConfig, saveConfig} from "../../../api/system/Config";
+import {deleteConfig, findPageSysConfig, saveConfig} from "../../../api/system/Config";
 import {SysConfigEntity, SysConfigVo} from "../../../types/system/Config";
 
 /* INIT*/
@@ -231,12 +222,12 @@ const remove = () => {
   layer.msg(selectedKeys.value, {area: '50%'})
 }
 const changeConfigModalFlag = (text: any, row: any) => {
+  configVo.value = {}
   title.value = text
   if (row != null) {
-    let info = JSON.parse(JSON.stringify(row))
-    configVo.value = info
-  } else {
     configVo.value = {...row}
+  } else {
+    configVo.value.configType = false
   }
   configModalShowFlag.value = !configModalShowFlag.value
 }
@@ -313,8 +304,20 @@ function toCancel() {
   configModalShowFlag.value = false
 }
 
-function confirm() {
-  layer.msg('您已成功删除')
+function confirm(row: any) {
+  if (row && row.configType) {
+    layer.msg('系统内置参数无法删除！')
+    return;
+  } else {
+    deleteConfig(row.configKey).then((res: any) => {
+      if (res.code === 200) {
+        layer.msg('删除成功')
+      }
+      loadDataSource();
+    }).catch(e => {
+      layer.confirm(e.msg, {icon: 2})
+    })
+  }
 }
 
 function cancel() {

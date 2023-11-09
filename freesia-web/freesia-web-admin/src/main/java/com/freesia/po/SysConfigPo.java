@@ -52,8 +52,8 @@ public class SysConfigPo extends BasePo implements Serializable {
     @TableField(value = "CONFIG_VALUE")
     @Column(name = "CONFIG_VALUE", columnDefinition = "VARCHAR(500) COMMENT '参数键值'")
     private String configValue;
-    @Schema(description = "系统内置（Y是 N否）")
+    @Schema(description = "系统内置（0-是 1-否）")
     @TableField(value = "CONFIG_TYPE")
-    @Column(name = "CONFIG_TYPE", columnDefinition = "CHAR(1) COMMENT '系统内置（Y是 N否）'")
-    private String configType;
+    @Column(name = "CONFIG_TYPE", columnDefinition = "TINYINT(1) DEFAULT 1 COMMENT '系统内置（1-是 0-否）'")
+    private Boolean configType;
 }

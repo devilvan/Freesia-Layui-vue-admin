@@ -77,4 +77,19 @@ public interface SysConfigService {
      * @param sysConfigDto 系统配置信息
      */
     void saveConfig(SysConfigDto sysConfigDto);
+
+    /**
+     * 根据键查询系统配置参数
+     *
+     * @param configKey 系统配置键
+     * @return 系统配置参数对象
+     */
+    SysConfigDto findSysConfigByConfigKey(String configKey);
+
+    /**
+     * 删除系统配置参数
+     *
+     * @param configKey 系统配置键
+     */
+    void deleteConfig(String configKey);
 }

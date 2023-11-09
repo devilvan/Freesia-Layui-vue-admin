@@ -16,3 +16,8 @@ export function findPageSysConfig(searchQuery: SysDictVo, pageQuery: PageQuery):
 export function saveConfig(sysConfigVo: SysConfigVo) {
     return Http.post("/api/sysConfigController/saveConfig", sysConfigVo);
 }
+
+export function deleteConfig(configKey: string) {
+    let params = {configKey: configKey}
+    return Http.delete("/api/sysConfigController/deleteConfig", params);
+}

@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
@@ -23,6 +25,7 @@ import com.freesia.repository.SysConfigRepository;
 import com.freesia.service.SysConfigService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -107,6 +110,23 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     @Override
     public void saveConfig(SysConfigDto sysConfigDto) {
         USpring.getAopProxy(this).saveUpdate(sysConfigDto);
+    }
+
+    @Override
+    public SysConfigDto findSysConfigByConfigKey(String configKey) {
+        Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
+                .eq(SysConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysConfigPo::getConfigKey, configKey);
+        SysConfigPo sysConfigPo = this.getOne(queryWrapper);
+        return UCopy.copyPo2Dto(sysConfigPo, SysConfigDto.class);
+    }
+
+    @Override
+    @CacheEvict(cacheNames = CacheConstant.SYS_CONFIG, key = "#configKey")
+    public void deleteConfig(String configKey) {
+        Wrapper<SysConfigPo> updateWrapper = new LambdaUpdateWrapper<SysConfigPo>()
+                .eq(SysConfigPo::getConfigKey, configKey);
+        sysConfigMapper.delete(updateWrapper);
     }
 
     /**
