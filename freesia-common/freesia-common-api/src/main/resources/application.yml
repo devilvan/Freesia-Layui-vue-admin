@@ -28,12 +28,11 @@ spring:
       pool-prepared-statements: true
       # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
       max-pool-prepared-statement-per-connection-size: 20
-      filters:
+      filter:
         stat:
           enabled: true
-          # 慢SQL记录
           log-slow-sql: true
-          slow-sql-millis: 1000
+          slow-sql-millis: 2000
           merge-sql: true
         wall:
           config:
