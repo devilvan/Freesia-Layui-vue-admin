@@ -1,9 +1,8 @@
 <template>
   <div class="global-content" :class="{ 'has-tab': appStore.tab }">
     <router-view v-slot="{ Component, route }" v-if="appStore.routerAlive">
-<!--      <keep-alive :include="appStore.keepAliveList">-->
-      <keep-alive v-if="route.meta.cache">
-        <component :is="Component" :key="route.path" />
+      <keep-alive v-if="appStore.keepAliveList">
+        <component v-if="!route.meta.link" :is="Component" :key="route.path" />
       </keep-alive>
     </router-view>
   </div>

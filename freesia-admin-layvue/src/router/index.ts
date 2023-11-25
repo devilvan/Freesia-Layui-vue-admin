@@ -35,14 +35,13 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             userStore.token = ''
             next()
         } else {
-            next()
+            next({path: '/'})
         }
     }
     if (token) {
         if (!isGetRouter) {
             isGetRouter = true;
             await userStore.getRouters()
-            addRoutes(userStore.sidebarRoutes, router);
             next(to.fullPath)
         } else {
             next()
@@ -56,10 +55,10 @@ router.afterEach(() => {
     NProgress.done();
 })
 
-export const addRoutes = (sidebarRoutes: any, router: any) => {
-    if (sidebarRoutes && sidebarRoutes.length > 0) {
-        sidebarRoutes.forEach((sidebarRoute: any) => {
-            router.addRoute(sidebarRoute.name || 'Layout', sidebarRoute);
+export const addRoutes = (routes: any, router: any) => {
+    if (routes && routes.length > 0) {
+        routes.forEach((route: any) => {
+            router.addRoute(route.name || 'BaseLayout', route);
         })
     }
 }
