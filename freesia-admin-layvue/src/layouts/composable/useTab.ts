@@ -28,14 +28,6 @@ export function useTab() {
         })
         tabsCache.push(route.path)
       }
-      // else {
-      //   tabs.value.push({
-      //     meta: {...route.meta},
-      //     id: route.path,
-      //     name: route?.name
-      //   })
-      //   // tabsCache.push(route.path)
-      // }
     })
   }
 
@@ -74,9 +66,14 @@ export function useTab() {
 
   watch(route, () => {
     let bool = false;
+    // $patch需要放前面，否则keepAliveList不能及时更新导致缓存标签失效
+    appStore.$patch((state) => {
+      state.keepAliveList = tabs.value.map((item: any) => item?.name).filter((item: any) => item)
+    })
     tabs.value.forEach((tab: any) => {
       if (tab.id === route.path) {
         bool = true;
+        return ;
       }
     });
     if (!bool) {
@@ -87,9 +84,6 @@ export function useTab() {
         meta: {...route.meta}
       });
     }
-    appStore.$patch((state) => {
-      state.keepAliveList = tabs.value.map((item: any) => item?.name).filter((item: any) => item)
-    })
   });
 
   return {
