@@ -18,6 +18,11 @@ public class MenuPermission {
     public static final String SYSTEM_LOGIN_INDEX = "system:login:index";
     public static final String SYSTEM_OPTION_INDEX = "system:option:index";
     public static final String SYSTEM_CONFIG_INDEX = "system:config:index";
-    public static final String SYSTEM_ROLE_MENU_EDIT = "system:role:menu:edit";
     public static final String PAGE_DOC_INDEX = "page:doc:index";
+    public static final String SYSTEM_ROLE_MENU_EDIT = "system:role:menu:edit";
+    /**
+     * 给用户分配角色
+     */
+    public static final String ASSIGN_ROLE = "system:user:role:edit";
+
 }

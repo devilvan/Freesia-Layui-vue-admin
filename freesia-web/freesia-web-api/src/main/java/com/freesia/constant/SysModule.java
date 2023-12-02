@@ -57,6 +57,10 @@ public final class SysModule {
      * 子模块 分配菜单权限
      */
     public static final String ASSIGN_MENU_PERMISSIONS = "assign_menu_permissions";
+    /**
+     * 子模块 分配角色
+     */
+    public static final String ASSIGN_ROLE = "assign_role";
     /* 角色管理模块*/
 
     /* 字典管理*/

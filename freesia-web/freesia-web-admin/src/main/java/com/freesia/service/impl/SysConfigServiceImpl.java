@@ -6,7 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
@@ -54,7 +53,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public List<SysConfigPo> saveUpdateBatch(List<SysConfigDto> list) {
-        List<SysConfigPo> sysConfigPoList = UCopy.fullCopyCollections(list, SysConfigPo.class);
+        List<SysConfigPo> sysConfigPoList = UCopy.fullCopyList(list, SysConfigPo.class);
         return sysConfigRepository.saveAllAndFlush(sysConfigPoList);
     }
 

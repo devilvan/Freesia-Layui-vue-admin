@@ -52,8 +52,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
 
     @Override
     public List<SysMenuDto> saveUpdateBatch(List<SysMenuDto> list) {
-        List<SysMenuPo> sysMenuPoList = UCopy.fullCopyCollections(list, SysMenuPo.class);
-        return UCopy.fullCopyCollections(sysMenuRepository.saveAllAndFlush(sysMenuPoList), SysMenuDto.class);
+        List<SysMenuPo> sysMenuPoList = UCopy.fullCopyList(list, SysMenuPo.class);
+        return UCopy.fullCopyList(sysMenuRepository.saveAllAndFlush(sysMenuPoList), SysMenuDto.class);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
             // 非管理员则查询可用的菜单权限
             sysMenuPoList = sysMenuMapper.findDirAndMenuByUserId(userId);
         }
-        List<SysMenuDto> sysMenuDtoList = UCopy.fullCopyCollections(sysMenuPoList, SysMenuDto.class);
+        List<SysMenuDto> sysMenuDtoList = UCopy.fullCopyList(sysMenuPoList, SysMenuDto.class);
         return UTree.buildTree(sysMenuDtoList);
     }
 
@@ -184,7 +184,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 .orderByAsc("M.ORDER_NUM");
         sysMenuPoList = AdminConstant.ADMIN_ID == userId ? sysMenuMapper.findAllMenuTree(wrapper) :
                 sysMenuMapper.findAllMenuTree(wrapper.eq(ObjectUtil.isNotNull(userId), "SUR.USER_ID", userId));
-        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyCollections(sysMenuPoList, FindAllMenuTreeEntity.class);
+        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyList(sysMenuPoList, FindAllMenuTreeEntity.class);
         return UTree.buildTree(findAllMenuTreeEntityList);
     }
 

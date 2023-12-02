@@ -4,11 +4,13 @@ package com.freesia.service;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
+import com.freesia.entity.FindUserRolesByUserIdEntity;
 import com.freesia.po.SysUserPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -105,4 +107,20 @@ public interface SysUserService {
      * @param sysUserDto 用户信息
      */
     void saveUserInfo(SysUserDto sysUserDto);
+
+    /**
+     * 根据用户ID查询【分配用户】加载数据
+     *
+     * @param userId 用户ID
+     * @return 用户与已分配角色的信息
+     */
+    FindUserRolesByUserIdEntity findUserRolesByUserId(Long userId);
+
+    /**
+     * 给用户分配角色
+     *
+     * @param userId         被分配角色的用户ID
+     * @param afterRoleIdSet 分配后该用户对应的角色ID
+     */
+    void assignRole(Long userId, Set<Long> afterRoleIdSet);
 }

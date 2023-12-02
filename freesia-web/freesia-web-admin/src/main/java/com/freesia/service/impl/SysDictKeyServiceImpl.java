@@ -45,8 +45,8 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
 
     @Override
     public List<SysDictKeyDto> saveUpdateBatch(List<SysDictKeyDto> list) {
-        List<SysDictKeyPo> sysDictKeyPoList = UCopy.fullCopyCollections(list, SysDictKeyPo.class);
-        return UCopy.fullCopyCollections(sysDictKeyRepository.saveAllAndFlush(sysDictKeyPoList), SysDictKeyDto.class);
+        List<SysDictKeyPo> sysDictKeyPoList = UCopy.fullCopyList(list, SysDictKeyPo.class);
+        return UCopy.fullCopyList(sysDictKeyRepository.saveAllAndFlush(sysDictKeyPoList), SysDictKeyDto.class);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
                 .like(UEmpty.isNotEmpty(sysDictKeyDto.getKeyName()), "DK.KEY_NAME", sysDictKeyDto.getKeyName())
                 .eq(UEmpty.isNotEmpty(sysDictKeyDto.getStatus()), "DK.STATUS", sysDictKeyDto.getStatus())
                 .orderByDesc("DK.ID"));
-        return UCopy.fullCopyCollections(sysDictList, SysDictKeyDto.class);
+        return UCopy.fullCopyList(sysDictList, SysDictKeyDto.class);
     }
 
     @Override

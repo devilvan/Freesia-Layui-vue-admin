@@ -35,7 +35,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             userStore.token = ''
             next()
         } else {
-            next({path: '/'})
+            next()
         }
     }
     if (token) {

@@ -3,11 +3,13 @@ package com.freesia.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysRoleDto;
+import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.UCopy;
+import com.freesia.vo.AssignRoleVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SaveRoleMenuPrivilegeVo;
 import com.freesia.vo.SysRoleVo;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -48,5 +51,12 @@ public class SysRoleController {
         List<Long> treeSelectedIdList = saveRoleMenuPrivilegeVo.getTreeSelectedIdList();
         sysRoleService.saveRoleMenuPrivilege(treeSelectedIdList, roleId, dataScope);
         return R.ok();
+    }
+
+    @Operation(summary = "查询所有角色")
+    @GetMapping("findAllRoles")
+    public R<List<FindAllRolesEntity>> findAllRoles() {
+        List<FindAllRolesEntity> findAllRolesEntityList = sysRoleService.findAllRoles();
+        return R.ok(findAllRolesEntityList);
     }
 }

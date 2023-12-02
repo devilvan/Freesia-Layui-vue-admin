@@ -110,4 +110,10 @@ public class SysRolePo extends BasePo implements Serializable {
     @TableField(exist = false)
     @OneToMany(targetEntity = SysRoleMenuPo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysRoleMenuPo> sysRoleMenuPoSet = new HashSet<>(0);
+    @Schema(description = "菜单在用户-角色关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
 }

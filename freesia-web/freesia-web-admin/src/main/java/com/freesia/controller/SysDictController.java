@@ -82,7 +82,7 @@ public class SysDictController {
     @PostMapping(value = "saveSysDictKeyList")
     public R<Void> saveSysDictKeyList(@RequestBody String request) {
         List<SysDictKeyVo> sysDictKeyVoList = JSONObject.parseArray(request, SysDictKeyVo.class);
-        List<SysDictKeyDto> sysDictKeyDtoList = UCopy.fullCopyCollections(sysDictKeyVoList, SysDictKeyDto.class);
+        List<SysDictKeyDto> sysDictKeyDtoList = UCopy.fullCopyList(sysDictKeyVoList, SysDictKeyDto.class);
         sysDictKeyService.saveUpdateBatch(sysDictKeyDtoList);
         return R.ok();
     }
@@ -92,7 +92,7 @@ public class SysDictController {
     @SaCheckRole(value = AdminConstant.ADMIN)
     public R<Void> saveSysDictValueList(@RequestBody String request) {
         List<SysDictValueVo> sysDictValueVoList = JSONObject.parseArray(request, SysDictValueVo.class);
-        List<SysDictValueDto> sysDictValueDtoList = UCopy.fullCopyCollections(sysDictValueVoList, SysDictValueDto.class);
+        List<SysDictValueDto> sysDictValueDtoList = UCopy.fullCopyList(sysDictValueVoList, SysDictValueDto.class);
         sysDictValueService.saveUpdateBatch(sysDictValueDtoList);
         return R.ok();
     }

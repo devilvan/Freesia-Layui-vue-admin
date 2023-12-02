@@ -41,7 +41,7 @@ public class SysSensitiveLogServiceImpl extends ServiceImpl<SysSensitiveLogMappe
 
     @Override
     public List<SysSensitiveLogPo> saveUpdateBatch(List<SysSensitiveLogDto> list) {
-        List<SysSensitiveLogPo> sysSensitiveLogPoList = UCopy.fullCopyCollections(list, SysSensitiveLogPo.class);
+        List<SysSensitiveLogPo> sysSensitiveLogPoList = UCopy.fullCopyList(list, SysSensitiveLogPo.class);
         return sysSensitiveLogRepository.saveAllAndFlush(sysSensitiveLogPoList);
     }
 

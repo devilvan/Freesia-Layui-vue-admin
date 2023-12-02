@@ -3,6 +3,7 @@ package com.freesia.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,21 +12,27 @@ import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.SysModule;
 import com.freesia.dto.SysRoleDto;
+import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
+import com.freesia.exception.UserException;
 import com.freesia.mapper.SysRoleMapper;
-import com.freesia.model.LoginUserModel;
 import com.freesia.po.SysMenuPo;
 import com.freesia.po.SysRolePo;
+import com.freesia.po.SysUserPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysMenuRepository;
 import com.freesia.repository.SysRoleRepository;
+import com.freesia.repository.SysUserRepository;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -38,6 +45,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     private final SysRoleRepository sysRoleRepository;
     private final SysMenuRepository sysMenuRepository;
     private final SysRoleMapper sysRoleMapper;
+    private final SysUserRepository sysUserRepository;
 
     @Override
     public SysRolePo saveUpdate(SysRoleDto sysRoleDto) {
@@ -48,7 +56,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
 
     @Override
     public List<SysRolePo> saveUpdateBatch(List<SysRoleDto> list) {
-        List<SysRolePo> sysRolePoList = UCopy.fullCopyCollections(list, SysRolePo.class);
+        List<SysRolePo> sysRolePoList = UCopy.fullCopyList(list, SysRolePo.class);
         return sysRoleRepository.saveAllAndFlush(sysRolePoList);
     }
 
@@ -64,7 +72,18 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
 
     @Override
     public TableResult<FindPageSysRoleListEntity> findPageSysRoleList(SysRoleDto sysRoleDto, PageQuery pageQuery) {
-        Wrapper<SysRolePo> wrapper = buildQueryWrapper(sysRoleDto);
+        Wrapper<SysRolePo> wrapper = USql.buildQueryWrapper(() -> {
+            SysRolePo sysRolePo = new SysRolePo();
+            UCopy.fullCopy(sysRoleDto, sysRolePo);
+            return Wrappers.<SysRolePo>query()
+                    .eq("R.LOGIC_DEL", FlagConstant.ENABLED)
+                    .eq(UEmpty.isNotEmpty(sysRolePo.getStatus()), "R.STATUS", FlagConstant.ENABLED)
+                    .like(ObjectUtil.isNotNull(sysRolePo.getRoleName()), "R.ROLE_NAME", sysRolePo.getRoleName())
+                    .like(ObjectUtil.isNotNull(sysRolePo.getRoleKey()), "R.ROLE_KEY", sysRolePo.getRoleKey())
+                    .between(ObjectUtil.isNotNull(sysRoleDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysRoleDto.getCreateTimeTo()),
+                            "R.CREATE_TIME", sysRoleDto.getCreateTimeFrom(), sysRoleDto.getCreateTimeTo())
+                    .orderByAsc("R.ORDER_NUM");
+        });
         Page<FindPageSysRoleListEntity> page = sysRoleMapper.findPageSysRoleList(pageQuery.build(), wrapper);
         return TableResult.build(page);
     }
@@ -86,50 +105,27 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
         List<Long> newMenuIdList = UStream.toList(newSysMenuPoSet, SysMenuPo::getId);
         SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
             SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-            String ip = UServlet.getInitiatedRequestIp();
-            LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
-            sensitiveLog.setOperatorId(loginUser.getUserId());
-            sensitiveLog.setOperatorName(loginUser.getUsername());
-            sensitiveLog.setDeptId(loginUser.getDeptId());
-            sensitiveLog.setDeptName(loginUser.getDeptName());
-            sensitiveLog.setMethodType(UServlet.getMethod());
-            sensitiveLog.setUrl(UServlet.getRequestUri());
-            sensitiveLog.setBeOperatedId(loginUser.getUserId());
-            sensitiveLog.setBeOperatedName(loginUser.getUsername());
-            sensitiveLog.setIpAddress(ip);
-            sensitiveLog.setLocation(URegion.getRealAddressByIp(ip));
-            sensitiveLog.setOperateTime(new Date());
-            sensitiveLog.setBrowser(UServlet.getBrowser());
-            sensitiveLog.setOs(UServlet.getOs());
             sensitiveLog.setModule(SysModule.ROLE_MANAGEMENT);
             sensitiveLog.setSubModule(SysModule.ASSIGN_MENU_PERMISSIONS);
             sensitiveLog.setType(SysModule.ASSIGN_MENU_PERMISSIONS);
             sensitiveLog.setResult(FlagConstant.SUCCESS);
             sensitiveLog.setContextOld(JSONObject.toJSONString(oldMenuIdList));
             sensitiveLog.setContext(JSONObject.toJSONString(newMenuIdList));
-            sensitiveLog.setSign(loginUser.getUsername());
             sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_success"));
             return sensitiveLog;
         });
         USpring.context().publishEvent(sysSensitiveLogBean);
     }
 
-    /**
-     * 构建SQL
-     *
-     * @param sysRoleDto 查询参数
-     * @return 构建出的SQL对象
-     */
-    private Wrapper<SysRolePo> buildQueryWrapper(SysRoleDto sysRoleDto) {
-        SysRolePo sysRolePo = new SysRolePo();
-        UCopy.fullCopy(sysRoleDto, sysRolePo);
-        return Wrappers.<SysRolePo>query()
-                .eq("R.LOGIC_DEL", FlagConstant.ENABLED)
-                .eq(UEmpty.isNotEmpty(sysRolePo.getStatus()), "R.STATUS", FlagConstant.ENABLED)
-                .like(ObjectUtil.isNotNull(sysRolePo.getRoleName()), "R.ROLE_NAME", sysRolePo.getRoleName())
-                .like(ObjectUtil.isNotNull(sysRolePo.getRoleKey()), "R.ROLE_KEY", sysRolePo.getRoleKey())
-                .between(ObjectUtil.isNotNull(sysRoleDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysRoleDto.getCreateTimeTo()),
-                        "R.CREATE_TIME", sysRoleDto.getCreateTimeFrom(), sysRoleDto.getCreateTimeTo())
-                .orderByAsc("R.ORDER_NUM");
+    @Override
+    public List<FindAllRolesEntity> findAllRoles() {
+        LambdaQueryWrapper<SysRolePo> queryWrapper = new LambdaQueryWrapper<SysRolePo>()
+                .select(
+                        SysRolePo::getId, SysRolePo::getRoleKey, SysRolePo::getRoleName,
+                        SysRolePo::getDataScope, SysRolePo::getStatus, SysRolePo::getRemark
+                )
+                .eq(SysRolePo::getLogicDel, FlagConstant.ENABLED);
+        List<SysRolePo> sysRolePoList = this.list(queryWrapper);
+        return UCopy.fullCopyList(sysRolePoList, FindAllRolesEntity.class);
     }
 }

@@ -33,3 +33,14 @@ export interface FindPageSysUserListEntity {
     deptName?: string;
     leader?: string;
 }
+
+export interface FindUserRolesByUserIdEntity {
+    userId?: string,
+    userName?: string,
+    selectedRoles?: string[]
+}
+
+export interface AssignRoleVo {
+    userId: string,
+    afterRoleIdSet: string[]
+}

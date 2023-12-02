@@ -45,8 +45,8 @@ public class SysMenuController {
     @PostMapping(value = "saveMenuList")
     public R<List<SysMenuVo>> saveMenuList(@RequestBody String request) {
         List<SysMenuVo> sysMenuVoList = JSONObject.parseArray(request, SysMenuVo.class);
-        List<SysMenuDto> sysMenuDtoList = sysMenuService.saveUpdateBatch(UCopy.fullCopyCollections(sysMenuVoList, SysMenuDto.class));
-        return R.ok(UCopy.fullCopyCollections(sysMenuDtoList, SysMenuVo.class));
+        List<SysMenuDto> sysMenuDtoList = sysMenuService.saveUpdateBatch(UCopy.fullCopyList(sysMenuVoList, SysMenuDto.class));
+        return R.ok(UCopy.fullCopyList(sysMenuDtoList, SysMenuVo.class));
     }
 
     @Operation(summary = "查询所有菜单下拉树")

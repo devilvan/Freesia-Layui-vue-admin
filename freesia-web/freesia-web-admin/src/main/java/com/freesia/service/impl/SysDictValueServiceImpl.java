@@ -45,8 +45,8 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
 
     @Override
     public List<SysDictValueDto> saveUpdateBatch(List<SysDictValueDto> list) {
-        List<SysDictValuePo> sysDictValuePoList = UCopy.fullCopyCollections(list, SysDictValuePo.class);
-        return UCopy.fullCopyCollections(sysDictValueRepository.saveAllAndFlush(sysDictValuePoList), SysDictValueDto.class);
+        List<SysDictValuePo> sysDictValuePoList = UCopy.fullCopyList(list, SysDictValuePo.class);
+        return UCopy.fullCopyList(sysDictValueRepository.saveAllAndFlush(sysDictValuePoList), SysDictValueDto.class);
     }
 
     @Override
@@ -74,13 +74,13 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
                 .eq(UEmpty.isNotEmpty(sysDictValueDto.getStatus()), "DV.STATUS", sysDictValueDto.getStatus())
                 .orderByAsc("DV.IS_DEFAULT")
                 .orderByAsc("DV.ORDER_NUM"));
-        return UCopy.fullCopyCollections(sysDictValuePoList, SysDictValueDto.class);
+        return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
     }
 
     @Override
     public List<SysDictValueDto> findCacheSysDictValueList(String dictKey) {
         List<SysDictValuePo> sysDictValuePoList = USpring.getAopProxy(this).findSysDictValuePoList(dictKey);
-        return UCopy.fullCopyCollections(sysDictValuePoList, SysDictValueDto.class);
+        return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
     }
 
     @Cacheable(cacheNames = CacheConstant.SYS_DICT, key = "#dictKey")

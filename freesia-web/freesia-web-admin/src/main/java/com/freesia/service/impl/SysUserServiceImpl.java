@@ -2,31 +2,41 @@ package com.freesia.service.impl;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
+import com.freesia.constant.SysModule;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
+import com.freesia.entity.FindUserRolesByUserIdEntity;
+import com.freesia.exception.UserException;
 import com.freesia.helper.DataBaseHelper;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.mapper.SysUserMapper;
 import com.freesia.po.SysDeptPo;
+import com.freesia.po.SysRolePo;
 import com.freesia.po.SysUserPo;
+import com.freesia.po.SysUserRolePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysUserRepository;
+import com.freesia.repository.SysUserRoleRepository;
 import com.freesia.service.SysUserService;
-import com.freesia.util.UCopy;
-import com.freesia.util.USql;
-import com.freesia.util.UStream;
+import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -37,8 +47,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> implements SysUserService {
     private final SysUserRepository sysUserRepository;
+    private final SysUserRoleRepository sysUserRoleRepository;
     private final SysUserMapper sysUserMapper;
     private final SysDeptMapper sysDeptMapper;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
     public SysUserPo saveUpdate(SysUserDto sysUserDto) {
@@ -49,7 +61,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public List<SysUserPo> saveUpdateBatch(List<SysUserDto> list) {
-        List<SysUserPo> sysUserPoList = UCopy.fullCopyCollections(list, SysUserPo.class);
+        List<SysUserPo> sysUserPoList = UCopy.fullCopyList(list, SysUserPo.class);
         return sysUserRepository.saveAllAndFlush(sysUserPoList);
     }
 
@@ -147,5 +159,60 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         SysUserPo sysUserPo = sysUserRepository.getById(id);
         UCopy.halfCopy(sysUserDto, sysUserPo);
         sysUserRepository.save(sysUserPo);
+    }
+
+    @Override
+    public FindUserRolesByUserIdEntity findUserRolesByUserId(Long userId) {
+        // 获取用户对象
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.query.failed", userId));
+        // 获取角色
+        Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
+        return buildFindUserRolesByUserIdEntity(sysUserPo, sysRolePoSet);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignRole(Long userId, Set<Long> afterRoleIdSet) {
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.info.null"));
+        // 获取并修改分配后的角色
+        Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
+        List<Long> roleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toList());
+        Set<SysUserRolePo> afterSysUserRolePoSet = UCollection.optimizeInitialCapacitySet(afterRoleIdSet.size());
+        for (Long roleId : afterRoleIdSet) {
+            SysUserRolePo sysUserRolePo = new SysUserRolePo();
+            sysUserRolePo.setSysRoleMenuPk(new SysUserRolePo.SysUserRolePk(userId, roleId));
+            afterSysUserRolePoSet.add(sysUserRolePo);
+        }
+        sysUserRoleRepository.removeRelationByUserId(userId);
+        sysUserPo.setSysUserRolePoSet(afterSysUserRolePoSet);
+        sysUserRepository.save(sysUserPo);
+        SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+            SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+            sensitiveLog.setModule(SysModule.USER_MANAGEMENT);
+            sensitiveLog.setSubModule(SysModule.ASSIGN_ROLE);
+            sensitiveLog.setType(SysModule.ASSIGN_ROLE);
+            sensitiveLog.setResult(FlagConstant.SUCCESS);
+            sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(roleIdList));
+            sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
+            sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_success"));
+            return sensitiveLog;
+        });
+        USpring.context().publishEvent(sysSensitiveLogBean);
+    }
+
+    /**
+     * 构建 {@link FindUserRolesByUserIdEntity} 对象
+     *
+     * @param sysUserPo    用户信息
+     * @param sysRolePoSet 角色信息
+     * @return 构建后的对象
+     */
+    private FindUserRolesByUserIdEntity buildFindUserRolesByUserIdEntity(SysUserPo sysUserPo, Set<SysRolePo> sysRolePoSet) {
+        FindUserRolesByUserIdEntity findUserRolesByUserIdEntity = new FindUserRolesByUserIdEntity();
+        findUserRolesByUserIdEntity.setUserId(sysUserPo.getId());
+        findUserRolesByUserIdEntity.setUserName(sysUserPo.getUserName());
+        Set<Long> sysRoleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toSet());
+        findUserRolesByUserIdEntity.setSelectedRoles(sysRoleIdList);
+        return findUserRolesByUserIdEntity;
     }
 }

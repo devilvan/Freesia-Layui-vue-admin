@@ -41,7 +41,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
 
     @Override
     public List<SysDeptPo> saveUpdateBatch(List<SysDeptDto> list) {
-        List<SysDeptPo> sysDeptPoList = UCopy.fullCopyCollections(list, SysDeptPo.class);
+        List<SysDeptPo> sysDeptPoList = UCopy.fullCopyList(list, SysDeptPo.class);
         return sysDeptRepository.saveAllAndFlush(sysDeptPoList);
     }
 

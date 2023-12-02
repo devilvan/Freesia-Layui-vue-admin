@@ -100,6 +100,10 @@
             <lay-icon class="layui-icon-upload-drag"></lay-icon>
             导入
           </lay-button>
+          <lay-button size="sm" type="primary" @click="assignRole(selectedKeys)">
+            <lay-icon class="layui-icon-addition"></lay-icon>
+            分配角色
+          </lay-button>
         </template>
         <template v-slot:operator="{ row }">
           <lay-button size="xs" type="primary" @click="changeVisible11('编辑', row)">编辑</lay-button>
@@ -176,6 +180,7 @@ import {FindPageSysUserListEntity, SysUserVo} from "../../../types/system/User";
 import {findPageSysUserList} from "../../../api/system/User";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
+import router from "../../../router";
 
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
@@ -202,7 +207,7 @@ function toSearch() {
 }
 
 const loading = ref(false)
-const selectedKeys = ref<string[]>([])
+const selectedKeys = ref()
 const pageQuery: PageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
@@ -217,7 +222,6 @@ const columns = ref([
   {title: '部门', width: '120px', key: 'deptName'},
   {title: '邮箱', width: '150px', key: 'email'},
   {title: '性别', width: '80px', key: 'gender', customSlot: 'gender'},
-  {title: '时间', width: '130px', key: 'createTime'},
   {title: '备注', width: '120px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -229,10 +233,10 @@ const columns = ref([
 ])
 const change = () => {
   loading.value = true
-  setTimeout(() => {
+  // setTimeout(() => {
     loadDataSource()
     loading.value = false
-  }, 1000)
+  // }, 1000)
 }
 const sortChange = (key: any, sort: number) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
@@ -366,6 +370,14 @@ function preview(path: any) {
     imgList: [{src: path, alt: 'Do you like what you see?'}]
   };
   layer.photos(option)
+}
+
+function assignRole(selectRows: any[]) {
+  if (!selectRows || selectRows.length === 0 || selectRows.length > 1) {
+    layer.msg("请选择1条数据", {icon: 3})
+    return ;
+  }
+  router.push("/system/user/assignRole/" + selectRows[0])
 }
 </script>
 

@@ -5,17 +5,21 @@ import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
+import com.freesia.entity.FindUserRolesByUserIdEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysUserService;
 import com.freesia.util.UCopy;
 import com.freesia.util.USecurity;
+import com.freesia.vo.AssignRoleVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -54,12 +58,28 @@ public class SysUserController {
         return R.ok(sysUserDto);
     }
 
-
     @Operation(summary = "修改用户信息")
     @PutMapping("saveUserInfo")
     public R<Void> saveUserInfo(@RequestBody SysUserVo sysUserVo) {
         SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
         sysUserService.saveUserInfo(sysUserDto);
+        return R.ok();
+    }
+
+    @Operation(summary = "根据用户ID查询【分配用户】加载数据")
+    @GetMapping("findUserRolesByUserId")
+    public R<FindUserRolesByUserIdEntity> findUserRolesByUserId(@RequestParam Long userId) {
+        FindUserRolesByUserIdEntity findUserRolesByUserIdEntity = sysUserService.findUserRolesByUserId(userId);
+        return R.ok(findUserRolesByUserIdEntity);
+    }
+
+    @Operation(summary = "给用户分配角色")
+    @PostMapping("assignRole")
+    @SaCheckPermission(value = {MenuPermission.ASSIGN_ROLE})
+    public R<Void> assignRole(@RequestBody AssignRoleVo assignRoleVo) {
+        Long userId = assignRoleVo.getUserId();
+        Set<Long> afterRoleIdSet = assignRoleVo.getAfterRoleIdSet();
+        sysUserService.assignRole(userId, afterRoleIdSet);
         return R.ok();
     }
 }

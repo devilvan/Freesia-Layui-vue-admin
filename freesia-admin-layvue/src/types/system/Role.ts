@@ -1,4 +1,4 @@
-import {BaseVo} from "../Common";
+import {BaseEntity, BaseVo} from "../Common";
 
 /**
  * 查询参数
@@ -35,4 +35,13 @@ export interface SaveRoleMenuPrivilegeVo extends BaseVo {
     roleId?: string,
     dataScope?: string;
     treeSelectedIdList?: Array<string>;
+}
+
+export interface SysRoleEntity {
+    id?: string,
+    roleKey? : string,
+    roleName? : string,
+    dataScope? : string,
+    status? : string,
+    remark? : string,
 }

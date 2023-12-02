@@ -25,7 +25,7 @@
       >
         <lay-logo v-if="appStore.logo">
           <lay-avatar :src="$SRC_ASSETS + '不要停下来啊.png'"></lay-avatar>
-          Devilvan's Freesia
+          Freesia
         </lay-logo>
         <div class="side-menu-wrapper">
           <div

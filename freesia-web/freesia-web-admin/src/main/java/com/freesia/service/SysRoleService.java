@@ -1,6 +1,7 @@
 package com.freesia.service;
 
 import com.freesia.dto.SysRoleDto;
+import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.po.SysRolePo;
 import com.freesia.pojo.PageQuery;
@@ -58,4 +59,12 @@ public interface SysRoleService {
      * @param dataScope  数据范围
      */
     void saveRoleMenuPrivilege(List<Long> menuIdList, Long roleId, String dataScope);
+
+    /**
+     * 查询所有角色
+     *
+     * @return 所有角色集合
+     */
+    List<FindAllRolesEntity> findAllRoles();
+
 }

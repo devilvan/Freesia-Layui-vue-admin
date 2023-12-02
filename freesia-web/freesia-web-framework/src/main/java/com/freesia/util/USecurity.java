@@ -15,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +38,24 @@ public class USecurity {
      * @return 敏感信息bean
      */
     public static <T extends SysSensitiveLogBean> T recordSensitiveLog(Supplier<T> supplier) {
-        return supplier.get();
+        T sysSensitiveLogBean = supplier.get();
+        String ip = UServlet.getInitiatedRequestIp();
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
+        sysSensitiveLogBean.setOperatorId(loginUser.getUserId());
+        sysSensitiveLogBean.setOperatorName(loginUser.getUsername());
+        sysSensitiveLogBean.setDeptId(loginUser.getDeptId());
+        sysSensitiveLogBean.setDeptName(loginUser.getDeptName());
+        sysSensitiveLogBean.setMethodType(UServlet.getMethod());
+        sysSensitiveLogBean.setUrl(UServlet.getRequestUri());
+        sysSensitiveLogBean.setBeOperatedId(loginUser.getUserId());
+        sysSensitiveLogBean.setBeOperatedName(loginUser.getUsername());
+        sysSensitiveLogBean.setIpAddress(ip);
+        sysSensitiveLogBean.setLocation(URegion.getRealAddressByIp(ip));
+        sysSensitiveLogBean.setOperateTime(new Date());
+        sysSensitiveLogBean.setBrowser(UServlet.getBrowser());
+        sysSensitiveLogBean.setOs(UServlet.getOs());
+        sysSensitiveLogBean.setSign(loginUser.getUsername());
+        return sysSensitiveLogBean;
     }
 
     /**

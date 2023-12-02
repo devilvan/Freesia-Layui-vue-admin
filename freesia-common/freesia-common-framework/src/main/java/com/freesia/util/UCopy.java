@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  * @Description 值复制工具类
  * @date 2022-07-13
  */
-@SuppressWarnings(value = "unused")
+@SuppressWarnings(value = {"unused", "DuplicatedCode"})
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UCopy {
     /**
@@ -99,7 +99,7 @@ public class UCopy {
      */
     public static <ENTITY extends BaseEntity, DTO extends BaseDto> Page<DTO> convertPageEntity2Dto(Page<ENTITY> page, Class<DTO> dtoClass) {
         Page<DTO> pageDto = new Page<>();
-        List<DTO> sysUserDtoList = UCopy.fullCopyCollections(page.getRecords(), dtoClass);
+        List<DTO> sysUserDtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
         pageDto.setRecords(sysUserDtoList);
         pageDto.setSize(page.getSize());
         pageDto.setCurrent(page.getCurrent());
@@ -119,7 +119,7 @@ public class UCopy {
      */
     public static <PO extends BasePo, DTO extends BaseDto> Page<DTO> convertPagePo2Dto(Page<PO> page, Class<DTO> dtoClass) {
         Page<DTO> pageDto = new Page<>();
-        List<DTO> sysUserDtoList = UCopy.fullCopyCollections(page.getRecords(), dtoClass);
+        List<DTO> sysUserDtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
         pageDto.setRecords(sysUserDtoList);
         pageDto.setSize(page.getSize());
         pageDto.setCurrent(page.getCurrent());
@@ -204,15 +204,40 @@ public class UCopy {
     }
 
     /**
-     * 批量覆盖复制，source将完全覆盖target
+     * （Set类型）批量覆盖复制，source将完全覆盖target
      *
-     * @param source     源集合
-     * @param targetType 目标类型
      * @param <E>        源类型
      * @param <T>        目标类型
+     * @param source     源集合
+     * @param targetType 目标类型
      * @param excludes   排除的属性
      */
-    public static <E, T> List<T> fullCopyCollections(Collection<E> source, Class<T> targetType, String... excludes) {
+    public static <E, T> Set<T> fullCopySet(Set<E> source, Class<T> targetType, String... excludes) {
+        Iterator<E> sourceIter = source.iterator();
+        Set<T> set = UCollection.optimizeInitialCapacitySet(source.size());
+        try {
+            while (sourceIter.hasNext()) {
+                E s = sourceIter.next();
+                T t = targetType.getConstructor().newInstance();
+                fullCopy(s, t);
+                set.add(t);
+            }
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return set;
+    }
+
+    /**
+     * （List类型）批量覆盖复制，source将完全覆盖target
+     *
+     * @param <E>        源类型
+     * @param <T>        目标类型
+     * @param source     源集合
+     * @param targetType 目标类型
+     * @param excludes   排除的属性
+     */
+    public static <E, T> List<T> fullCopyList(List<E> source, Class<T> targetType, String... excludes) {
         Iterator<E> sourceIter = source.iterator();
         List<T> list = UCollection.optimizeInitialCapacityArrayList(source.size());
         try {

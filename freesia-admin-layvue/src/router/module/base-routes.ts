@@ -54,4 +54,33 @@ export const constantRoutes = [
 
 ]
 
-export const dynamicRoutes = []
+export const dynamicRoutes = [
+    {
+        path: '/system/user',
+        component: BaseLayout,
+        hidden: true,
+        permissions: ['system:user:assignRole'],
+        children: [
+            {
+                path: 'assignRole/:userId(\\d+)',
+                component: () => import('@/views/system/user/assignRole.vue'),
+                name: 'AssignRole',
+                meta: { title: '分配角色', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
+    // {
+    //     path: '/system/assignUser',
+    //     component: BaseLayout,
+    //     hidden: true,
+    //     permissions: ['system:role:assignUser'],
+    //     children: [
+    //         {
+    //             path: 'user/:roleId(\\d+)',
+    //             component: () => import('@/views/system/role/authUser'),
+    //             name: 'AuthUser',
+    //             meta: { title: '分配用户', activeMenu: '/system/role' }
+    //         }
+    //     ]
+    // },
+]

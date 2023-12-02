@@ -3,8 +3,9 @@ import {getInfo, getMenu, getRouters, logout} from "../api/Login";
 import BaseLayout from "../layouts/BaseLayout.vue";
 import BlankLayout from "../layouts/BlankLayout.vue";
 import InnerLink from "../layouts/InnerLink.vue"
-// import {constantRoutes, dynamicRoutes} from "../router/module/base-routes";
 import auth from "../directives/auth";
+import {dynamicRoutes} from "../router/module/base-routes";
+import router, {addRoutes} from "../router";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
@@ -18,7 +19,7 @@ export const useUserStore = defineStore({
             permissions: [],
             menus: [],
             roles: [],
-            sidebarRoutes: [{}]
+            sidebarRoutes: [{}],
         }
     },
     actions: {
@@ -34,6 +35,11 @@ export const useUserStore = defineStore({
             const {data, code} = await getRouters()
             if (code === 200) {
                 this.sidebarRoutes = filterAsyncRouter(data)
+                let dynamic = filterDynamicRoutes(dynamicRoutes)
+                dynamic.forEach((f: any) => {
+                    this.sidebarRoutes.push(f);
+                })
+                addRoutes(this.sidebarRoutes, router);
             }
         },
         async getMenu() {
@@ -52,7 +58,7 @@ export const useUserStore = defineStore({
     },
     persist: {
         storage: localStorage,
-        paths: ['token','permissions', 'roles'],
+        paths: ['token', 'permissions', 'roles'],
     }
 })
 
@@ -62,7 +68,7 @@ function filterAsyncRouter(asyncRouterMap: any, lastRouter = false, type = false
             route.children = filterChildren(route.children)
         }
         if (route.component) {
-            // Layout ParentView 组件特殊处理
+            // BaseLayout 组件特殊处理
             if (route.component === 'BaseLayout') {
                 route.component = BaseLayout
             } else if (route.component === 'BlankLayout') {

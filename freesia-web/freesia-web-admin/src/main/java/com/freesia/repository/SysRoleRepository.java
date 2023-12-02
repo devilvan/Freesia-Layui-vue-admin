@@ -18,15 +18,4 @@ import java.util.List;
  */
 @Repository
 public interface SysRoleRepository extends JpaRepository<SysRolePo, Long> {
-    /**
-     * 根据角色ID删除 角色-菜单中间表
-     *
-     * @param idList 角色ID
-     */
-    @Modifying
-    @Query(value = """
-                DELETE FROM SysRoleMenuPo WHERE sysRoleMenuPk.roleId in (:idList)
-            """)
-    @Transactional(rollbackFor = Exception.class)
-    void deleteRoleMenu(@Param("idList") List<Long> idList);
 }
