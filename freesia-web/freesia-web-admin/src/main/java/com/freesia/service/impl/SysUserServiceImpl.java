@@ -26,13 +26,11 @@ import com.freesia.po.SysUserRolePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysUserRepository;
-import com.freesia.repository.SysUserRoleRepository;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.Set;
@@ -47,10 +45,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> implements SysUserService {
     private final SysUserRepository sysUserRepository;
-    private final SysUserRoleRepository sysUserRoleRepository;
     private final SysUserMapper sysUserMapper;
     private final SysDeptMapper sysDeptMapper;
-    private final TransactionTemplate transactionTemplate;
 
     @Override
     public SysUserPo saveUpdate(SysUserDto sysUserDto) {
@@ -173,7 +169,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void assignRole(Long userId, Set<Long> afterRoleIdSet) {
-        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.info.null"));
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.not.exists"));
         // 获取并修改分配后的角色
         Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
         List<Long> roleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toList());
@@ -183,20 +179,35 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
             sysUserRolePo.setSysRoleMenuPk(new SysUserRolePo.SysUserRolePk(userId, roleId));
             afterSysUserRolePoSet.add(sysUserRolePo);
         }
-        sysUserRoleRepository.removeRelationByUserId(userId);
-        sysUserPo.setSysUserRolePoSet(afterSysUserRolePoSet);
-        sysUserRepository.save(sysUserPo);
-        SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-            SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-            sensitiveLog.setModule(SysModule.USER_MANAGEMENT);
-            sensitiveLog.setSubModule(SysModule.ASSIGN_ROLE);
-            sensitiveLog.setType(SysModule.ASSIGN_ROLE);
-            sensitiveLog.setResult(FlagConstant.SUCCESS);
-            sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(roleIdList));
-            sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
-            sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_success"));
-            return sensitiveLog;
-        });
+        SysSensitiveLogBean sysSensitiveLogBean;
+        try {
+            sysUserRepository.removeRelationByUserId(userId);
+            // 设置分配后的用户-角色关联对象要在删除之后，否则会触发级联操作，导致SQL执行顺序变为insert->update->delete影响操作结果
+            sysUserPo.setSysUserRolePoSet(afterSysUserRolePoSet);
+            sysUserRepository.save(sysUserPo);
+            sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                sensitiveLog.setModule(SysModule.USER_MANAGEMENT);
+                sensitiveLog.setSubModule(SysModule.ASSIGN_ROLE);
+                sensitiveLog.setType(SysModule.ASSIGN_ROLE);
+                sensitiveLog.setResult(FlagConstant.SUCCESS);
+                sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(roleIdList));
+                sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
+                sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_success"));
+                return sensitiveLog;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                sensitiveLog.setModule(SysModule.USER_MANAGEMENT);
+                sensitiveLog.setSubModule(SysModule.ASSIGN_ROLE);
+                sensitiveLog.setType(SysModule.ASSIGN_ROLE);
+                sensitiveLog.setResult(FlagConstant.FAILED);
+                sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_failed"));
+                return sensitiveLog;
+            });
+        }
         USpring.context().publishEvent(sysSensitiveLogBean);
     }
 
