@@ -1,5 +1,6 @@
 package com.freesia.entity;
 
+import com.freesia.controller.SysLoginController;
 import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.util.Set;
 @Data
 public class SysUserInfoEntity {
     @Schema(description = "用户信息")
-    private SysUserVo user;
+    private SysUserEntity user;
     @Schema(description = "角色信息")
     private Set<String> roles;
     @Schema(description = "权限信息")

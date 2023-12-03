@@ -8,6 +8,7 @@ import com.freesia.dto.RouterDto;
 import com.freesia.dto.SysMenuDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.RouterEntity;
+import com.freesia.entity.SysUserEntity;
 import com.freesia.entity.SysUserInfoEntity;
 import com.freesia.model.LoginUserModel;
 import com.freesia.service.SysLoginService;
@@ -103,9 +104,9 @@ public class SysLoginController {
      */
     private SysUserInfoEntity sysUserDto2Entity(SysUserDto sysUserDto, LoginUserModel loginUserModel) {
         SysUserInfoEntity sysUserInfoEntity = new SysUserInfoEntity();
-        SysUserVo sysUserVo = new SysUserVo();
-        UCopy.fullCopy(sysUserDto, sysUserVo);
-        sysUserInfoEntity.setUser(sysUserVo);
+        SysUserEntity sysUserEntity = new SysUserEntity();
+        UCopy.fullCopy(sysUserDto, sysUserEntity);
+        sysUserInfoEntity.setUser(sysUserEntity);
         sysUserInfoEntity.setRoles(loginUserModel.getRolePermission());
         sysUserInfoEntity.setPermissions(loginUserModel.getMenuPermission());
         return sysUserInfoEntity;

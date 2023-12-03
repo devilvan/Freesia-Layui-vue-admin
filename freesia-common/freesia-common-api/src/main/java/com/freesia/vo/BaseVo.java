@@ -30,5 +30,5 @@ public class BaseVo {
     @Schema(description = "逻辑删除")
     private Boolean logicDel;
     @Schema(description = "版本号")
-    private Long recVer = 1L;
+    private Long recVer;
 }
