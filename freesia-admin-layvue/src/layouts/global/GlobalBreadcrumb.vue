@@ -22,6 +22,6 @@ import {useUserStore} from "../../store/user";
 const userStore = useUserStore();
 const route = useRoute();
 const breadcrumbs = computed(() => {
-  getParents(userStore.menus, route.path)?.reverse()
+  return getParents(userStore.menus, route.path)?.reverse()
 })
 </script>
