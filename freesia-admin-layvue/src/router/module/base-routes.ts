@@ -1,7 +1,7 @@
 import Login from '../../views/login/index.vue'
 import BaseLayout from "../../layouts/BaseLayout.vue";
 
-const modules = import.meta.glob('./../../views/**/*.vue')
+// const modules = import.meta.glob('./../../views/**/*.vue')
 
 export const constantRoutes = [
     {
@@ -69,18 +69,18 @@ export const dynamicRoutes = [
             }
         ]
     },
-    // {
-    //     path: '/system/assignUser',
-    //     component: BaseLayout,
-    //     hidden: true,
-    //     permissions: ['system:role:assignUser'],
-    //     children: [
-    //         {
-    //             path: 'user/:roleId(\\d+)',
-    //             component: () => import('@/views/system/role/authUser'),
-    //             name: 'AuthUser',
-    //             meta: { title: '分配用户', activeMenu: '/system/role' }
-    //         }
-    //     ]
-    // },
+    {
+        path: '/system/role',
+        component: BaseLayout,
+        hidden: true,
+        permissions: ['system:role:assignUser'],
+        children: [
+            {
+                path: 'assignUser/:roleId(\\d+)',
+                component: () => import('@/views/system/role/assignUser.vue'),
+                name: 'AuthUser',
+                meta: { title: '分配用户', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
 ]

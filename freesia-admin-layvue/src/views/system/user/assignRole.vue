@@ -1,68 +1,79 @@
 <template>
-  <lay-container fluid="true" class="user-box">
-    <lay-card>
-      <lay-form style="margin-top: 10px">
-        <lay-card title="用户信息">
-          <lay-row>
-            <lay-col :md="8">
-              <lay-form-item label="用户ID" label-width="80">
-                <lay-input
-                    v-model="findUserRolesByUserIdEntity.userId"
-                    size="sm"
-                    style="width: 98%"
-                    :disabled="true"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="8">
-              <lay-form-item label="用户名" label-width="80">
-                <lay-input
-                    v-model="findUserRolesByUserIdEntity.userName"
-                    size="sm"
-                    style="width: 98%"
-                    :disabled="true"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
+  <div style="height: 100%; width: 100%">
+    <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
+      <lay-container fluid="true" class="user-box">
+        <lay-card>
+          <lay-form style="margin-top: 10px">
+            <lay-card title="用户信息">
+              <lay-row>
+                <lay-col :md="8">
+                  <lay-form-item label="用户ID" label-width="80">
+                    <lay-input
+                        v-model="findUserRolesByUserIdEntity.userId"
+                        size="sm"
+                        style="width: 98%"
+                        :disabled="true"
+                    ></lay-input>
+                  </lay-form-item>
+                </lay-col>
+                <lay-col :md="8">
+                  <lay-form-item label="用户名" label-width="80">
+                    <lay-input
+                        v-model="findUserRolesByUserIdEntity.userName"
+                        size="sm"
+                        style="width: 98%"
+                        :disabled="true"
+                    ></lay-input>
+                  </lay-form-item>
+                </lay-col>
+              </lay-row>
+            </lay-card>
+          </lay-form>
         </lay-card>
-      </lay-form>
-    </lay-card>
-    <!-- table -->
-    <div class="table-box">
-      <lay-table
-          class="table-style"
-          :page="pageQuery"
-          :columns="columns"
-          :loading="loading"
-          :data-source="dataSource"
-          v-model:selected-keys="selectedKeys"
-      >
-        <template #dataScope="{ row }">
-          <dict-scan :options="sysDataScopeList" :value="row.dataScope"/>
-        </template>
-        <template #status="{ row }">
-          <div v-show="row.status === '0'">
-            <lay-tag color="#2dc570" variant="light">启用</lay-tag>
+        <lay-card title="角色信息">
+          <!-- table -->
+          <div class="table-box">
+            <lay-table
+                class="table-style"
+                :page="pageQuery"
+                :columns="columns"
+                :loading="loading"
+                :data-source="dataSource"
+                v-model:selected-keys="selectedKeys"
+            >
+              <template #dataScope="{ row }">
+                <dict-scan :options="sysDataScopeList" :value="row.dataScope"/>
+              </template>
+              <template #status="{ row }">
+                <div v-show="row.status === '0'">
+                  <lay-tag color="#2dc570" variant="light">启用</lay-tag>
+                </div>
+                <div v-show="row.status === '1'">
+                  <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
+                </div>
+              </template>
+              <template #remark="{ row }">
+                <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
+                  <div class="oneRow">{{ row.remark }}</div>
+                </lay-tooltip>
+              </template>
+              <template v-slot:toolbar>
+                <lay-button size="sm" type="primary" @click="assign()">
+                  <lay-icon class="layui-icon-addition"></lay-icon>
+                  分配
+                </lay-button>
+              </template>
+            </lay-table>
           </div>
-          <div v-show="row.status === '1'">
-            <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
-          </div>
-        </template>
-        <template #remark="{ row }">
-          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
-            <div class="oneRow">{{ row.remark }}</div>
-          </lay-tooltip>
-        </template>
-        <template v-slot:toolbar>
-          <lay-button size="sm" type="primary" @click="assign()">
-            <lay-icon class="layui-icon-addition"></lay-icon>
-            分配
-          </lay-button>
-        </template>
-      </lay-table>
+        </lay-card>
+      </lay-container>
     </div>
-  </lay-container>
+    <div class="footer">
+      <div class="footer-button">
+        <lay-button type="primary" @click="turnBack">返回</lay-button>
+      </div>
+    </div>
+  </div>
 </template>
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
@@ -71,12 +82,15 @@ import {PageQuery} from "../../../types/Common";
 import {FindUserRolesByUserIdEntity, SysUserVo} from "../../../types/system/User";
 import {assignRole, findAllRoles, findUserRolesByUserId} from "../../../api/system/User";
 import {SysDictValueEntity} from "../../../types/system/Dict";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysRoleEntity} from "../../../types/system/Role";
+import {useTab} from "../../../layouts/composable/useTab";
 
 /* INIT*/
 const $route = useRoute();
+const $router = useRouter();
+const {closeOpen} = useTab();
 onMounted(async () => {
   sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   userId.value = $route.params && $route.params.userId as string;
@@ -103,7 +117,7 @@ const pageQuery: PageQuery = reactive<PageQuery>({
 })
 const columns = ref([
   {title: '选项', type: 'checkbox', fixed: 'left'},
-  {title: '编号', key: 'id', fixed: 'left'},
+  // {title: '编号', key: 'id', fixed: 'left'},
   {title: '角色名称', key: 'roleName'},
   {title: '角色键名', key: 'roleKey'},
   {title: '状态', key: 'status', customSlot: 'status'},
@@ -128,23 +142,6 @@ function toReset() {
   assignRoleVo.value = {}
 }
 
-function toSearch() {
-  pageQuery.current = 1
-  change()
-}
-
-
-const change = () => {
-  loading.value = true
-  setTimeout(() => {
-    loadDataSource(userId)
-    loading.value = false
-  }, 1000)
-}
-const sortChange = (key: any, sort: number) => {
-  layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
-}
-
 const loadDataSource = (userId: any) => {
   findUserRolesByUserId(userId).then((res: any) => {
     if (res.code == 200) {
@@ -159,90 +156,6 @@ const loadDataSource = (userId: any) => {
   })
 }
 
-const changeVisible11 = (text: any, row?: any) => {
-  title.value = text
-  if (row) {
-    let info = JSON.parse(JSON.stringify(row))
-    model11.value = info
-  } else {
-    model11.value = {}
-  }
-  visible11.value = !visible11.value
-}
-const submit11 = function () {
-  layFormRef11.value.validate((isValidate: any, model: any, errors: any) => {
-    layer.open({
-      type: 1,
-      title: '表单提交结果',
-      content: `<div style="padding: 10px"><p>是否通过 : ${isValidate}</p> <p>表单数据 : ${JSON.stringify(
-          model
-      )} </p> <p>错误信息 : ${JSON.stringify(errors)}</p></div>`,
-      shade: false,
-      isHtmlFragment: true,
-      btn: [
-        {
-          text: '确认',
-          callback(index: number) {
-            layer.close(index)
-          }
-        }
-      ],
-      area: '500px'
-    })
-  })
-}
-// 清除校验
-const clearValidate11 = function () {
-  layFormRef11.value.clearValidate()
-}
-// 重置表单
-const reset11 = function () {
-  layFormRef11.value.reset()
-}
-
-function toRemove() {
-  if (selectedKeys.value.length == 0) {
-    layer.msg('您未选择数据，请先选择要删除的数据', {icon: 3, time: 2000})
-    return
-  }
-  layer.confirm('您将删除所有选中的数据？', {
-    title: '提示',
-    btn: [
-      {
-        text: '确定',
-        callback: (id: any) => {
-          layer.msg('您已成功删除')
-          layer.close(id)
-        }
-      },
-      {
-        text: '取消',
-        callback: (id: any) => {
-          layer.msg('您已取消操作')
-          layer.close(id)
-        }
-      }
-    ]
-  })
-}
-
-function toSubmit() {
-  layer.msg('保存成功！', {icon: 1, time: 1000})
-  visible11.value = false
-}
-
-function toCancel() {
-  visible11.value = false
-}
-
-function confirm() {
-  layer.msg('您已成功删除')
-}
-
-function cancel() {
-  layer.msg('您已取消操作')
-}
-
 function assign() {
   assignRole({
     userId: userId.value,
@@ -254,9 +167,11 @@ function assign() {
     } else {
       layer.confirm(res.msg, {icon: 2})
     }
-  }).catch((e: any) => {
-    layer.confirm(e.msg, {icon: 3})
   })
+}
+
+function turnBack() {
+  closeOpen('/system/user');
 }
 </script>
 
@@ -308,5 +223,22 @@ function assign() {
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border-top: 1px solid whitesmoke;
+  line-height: 60px;
+  height: 60px;
+}
+
+.footer-button {
+  right: 50px;
+  position: absolute;
 }
 </style>

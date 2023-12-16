@@ -3,6 +3,7 @@
     <lay-tab
         :modelValue="currentPath"
         :allowClose="true"
+        :activeBarTransition="true"
         @change="to"
         @close="close"
     >
@@ -34,23 +35,13 @@
 </template>
 
 <script lang="ts" setup>
-import {defineComponent} from 'vue'
-import {useRoute} from 'vue-router'
 import {useAppStore} from '../../store/app'
 import {useTab} from '../composable/useTab'
 
-defineComponent({
-  component: 'GlobalTab'
-})
 const appStore = useAppStore()
-const route = useRoute()
 
 const {tabs, to, close, closeAll, closeOther, closeCurrent, currentPath} =
     useTab()
-
-function toChangPage(id: any) {
-  to(id)
-}
 </script>
 
 <style lang="less">

@@ -100,8 +100,7 @@
             <lay-icon class="layui-icon-upload-drag"></lay-icon>
             导入
           </lay-button>
-          <lay-button size="sm" type="primary" @click="assignRole(selectedKeys)">
-            <lay-icon class="layui-icon-addition"></lay-icon>
+          <lay-button size="sm" type="normal" @click="assignRole">
             分配角色
           </lay-button>
         </template>
@@ -110,6 +109,9 @@
           <lay-popconfirm content="确定要删除此用户吗?" @confirm="confirm" @cancel="cancel">
             <lay-button size="xs" border="red" border-style="dashed">删除</lay-button>
           </lay-popconfirm>
+          <lay-button size="xs" type="normal" border-style="dashed" @click="assignRoleById(row.id)">
+            分配角色
+          </lay-button>
         </template>
       </lay-table>
     </div>
@@ -180,8 +182,9 @@ import {FindPageSysUserListEntity, SysUserVo} from "../../../types/system/User";
 import {findPageSysUserList} from "../../../api/system/User";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
-import router from "../../../router";
+import {useRouter} from "vue-router";
 
+const $router = useRouter();
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   change()
@@ -372,12 +375,16 @@ function preview(path: any) {
   layer.photos(option)
 }
 
-function assignRole(selectRows: any[]) {
-  if (!selectRows || selectRows.length === 0 || selectRows.length > 1) {
+function assignRole() {
+  if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {
     layer.msg("请选择1条数据", {icon: 3})
     return ;
   }
-  router.push("/system/user/assignRole/" + selectRows[0])
+  $router.push("/system/user/assignRole/" + selectedKeys.value[0])
+}
+
+function assignRoleById(id: any) {
+  $router.push("/system/user/assignRole/" + id)
 }
 </script>
 

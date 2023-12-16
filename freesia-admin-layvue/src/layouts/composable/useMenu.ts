@@ -5,11 +5,12 @@ import {getNode, getParents} from "../../library/treeUtil";
 import {useAppStore} from "../../store/app";
 import {useUserStore} from "../../store/user";
 import {layer} from "@layui/layui-vue";
+import router from "../../router";
 
 export function useMenu() {
 
     const route = useRoute();
-    const router = useRouter();
+    const $router = router;
     const userStore = useUserStore();
     const appStore = useAppStore();
     const selectedKey = ref(route.path);
@@ -57,7 +58,7 @@ export function useMenu() {
     );
 
     const to = (id: string) => {
-        router.push(id);
+        $router.push(id);
     };
 
     function changeSelectedKey(key: string) {
@@ -93,7 +94,7 @@ export function useMenu() {
     }
 
     function changeMainSelectedKey(key: string) {
-        var node = getNode(userStore.sidebarRoutes, key);
+        var node = getNode(userStore.menus, key);
         if (node && node.component == "modal") {
             layer.open({
                 type: "iframe",

@@ -1,8 +1,8 @@
 <template>
   <div class="global-content" :class="{ 'has-tab': appStore.tab }">
     <router-view v-slot="{ Component, route }" v-if="appStore.routerAlive">
-      <keep-alive v-if="appStore.keepAliveList">
-        <component v-if="!route.meta.link" :is="Component" :key="route.path" />
+      <keep-alive :include="useTab.tabsCache">
+        <component v-if="!route.meta.link" :is="Component" :key="route.name"/>
       </keep-alive>
     </router-view>
   </div>
@@ -15,7 +15,8 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import { useAppStore } from '../../store/app'
+import {useAppStore} from '../../store/app'
+import {useTab} from "../composable/useTab";
 
 const appStore = useAppStore()
 </script>
@@ -32,12 +33,12 @@ const appStore = useAppStore()
 }
 
 .global-content::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  width: 8px;
+  height: 8px;
 }
 
 .global-content::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #e2e2e2;
+  border-radius: 10px;
+  background-color: #e2e2e2;
 }
 </style>

@@ -8,7 +8,7 @@ NProgress.configure({showSpinner: false})
 
 
 /* 构建路由*/
-const router = createRouter({
+export const router = createRouter({
     history: createWebHistory('/'),
     routes: constantRoutes,
 });

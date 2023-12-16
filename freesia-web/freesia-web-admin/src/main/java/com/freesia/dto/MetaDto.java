@@ -17,7 +17,7 @@ public class MetaDto {
     private String title;
     @Schema(description = "设置该路由的图标")
     private String icon;
-    @Schema(description = "设置为true，则不会被 keep-alive缓存")
+    @Schema(description = "设置为false，则不会被 keep-alive缓存")
     private boolean cache;
     @Schema(description = "内链地址")
     private String link;
