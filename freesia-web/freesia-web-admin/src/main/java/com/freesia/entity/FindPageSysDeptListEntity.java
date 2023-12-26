@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 /**
  * @author Evad.Wu
  * @Description 获取部门下拉树 持久层传输对象
- * {@link SysDeptMapper#findPageSysDeptList}
+ * {@link com.freesia.controller.SysDeptController#findPageSysDeptList}
  * @date 2023-09-02
  */
 @Data

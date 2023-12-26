@@ -10,7 +10,8 @@ import java.util.Date;
 
 /**
  * @author Evad.Wu
- * @Description {@link SysUserMapper#findPageSysUserList} 持久层传输对象
+ * @Description 获取用户列表分页 持久层传输对象
+ * {@link com.freesia.controller.SysUserController#findPageSysUserList}
  * @date 2023-08-31
  */
 @Data

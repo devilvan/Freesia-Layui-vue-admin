@@ -35,4 +35,41 @@
                  LEFT JOIN sys_dept D ON U.DEPT_ID = D.ID
             ${ew.getCustomSqlSegment}
     </select>
+    <select id="findPageUserByRoleId" resultMap="findPageUserByRoleIdResultMap">
+        SELECT U.ID     AS USER_ID,
+               U.USER_NAME,
+               U.NICK_NAME,
+               U.ACCOUNT_STATUS,
+               U.USER_TYPE,
+               U.REMARK as USER_REMARK
+        FROM sys_role R
+                 LEFT JOIN sys_user_role sur on R.ID = sur.ROLE_ID
+                 LEFT JOIN sys_user U on U.ID = sur.USER_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findPageAllowAssignUserByRoleId" resultType="com.freesia.po.SysUserPo">
+        SELECT DISTINCT U.ID,
+                        U.USER_NAME,
+                        U.NICK_NAME,
+                        U.USER_TYPE,
+                        U.REMARK
+        FROM sys_user U
+        WHERE 1 = 1
+          AND U.LOGIC_DEL = 0
+          AND U.ACCOUNT_STATUS = 0
+          AND U.ID NOT IN (
+            SELECT SU.ID
+            FROM SYS_USER SU
+                     LEFT JOIN SYS_USER_ROLE SUR ON SU.ID = SUR.USER_ID
+            WHERE 1 = 1
+              AND SUR.ROLE_ID IN (#{sysRolePo.id}))
+    </select>
+    <resultMap id="findPageUserByRoleIdResultMap" type="com.freesia.po.SysUserPo">
+        <result property="id" column="USER_ID"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="nickName" column="NICK_NAME"/>
+        <result property="userType" column="USER_TYPE"/>
+        <result property="accountStatus" column="ACCOUNT_STATUS"/>
+        <result property="remark" column="USER_REMARK"/>
+    </resultMap>
 </mapper>

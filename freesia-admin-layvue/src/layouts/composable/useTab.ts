@@ -36,8 +36,7 @@ export function useTab() {
     })
   }
 
-  //  && !tabsCache.value.includes(route.name as string)
-  if (route.path) {
+  if (route.path && !tabsCache.value.includes(route.name as string)) {
     // const path = routes.find(item => item.path === route.path)
     tabs.value.push({
       meta: {...route.meta},

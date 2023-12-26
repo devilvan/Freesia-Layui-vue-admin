@@ -2,6 +2,7 @@ package com.freesia.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.constant.Constants;
+import com.freesia.mapper.SysRoleMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

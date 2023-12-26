@@ -7,7 +7,8 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @author Evad.Wu
- * @Description {@link SysMenuMapper#findAllMenuTree} 持久层传输对象
+ * @Description 查询所有菜单下拉树 持久层传输对象
+ * {@link com.freesia.controller.SysMenuController#findAllMenuTree}
  * @date 2023-09-05
  */
 @Data

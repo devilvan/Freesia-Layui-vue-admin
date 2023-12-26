@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 /**
  * @author Evad.Wu
  * @Description 查询菜单树下拉框 持久层传输类
+ * {@link com.freesia.controller.SysMenuController#findTreeMenuSelect}
  * @date 2023-10-06
  */
 @Data

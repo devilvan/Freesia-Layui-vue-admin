@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 /**
  * @author Evad.Wu
  * @Description 根据用户ID查询菜单列表 持久层传输对象
- * {@link SysMenuMapper#findMenuListByUser}
+ * {@link com.freesia.controller.SysMenuController#findMenuListByUserId}
  * @date 2023-09-08
  */
 @Data

@@ -11,6 +11,7 @@ import java.util.Set;
  * @date 2023-11-29
  */
 @Data
+@Schema(description = "给用户分配角色 值对象")
 public class AssignRoleVo {
     @Schema(description = "用户ID")
     private Long userId;

@@ -75,18 +75,16 @@
           <dict-scan :options="sysDataScope" :value="row.dataScope"/>
         </template>
         <template v-slot:toolbar>
-          <lay-button
-              size="sm"
-              type="primary"
-              @click="changeVisible11('新增', null)"
-          >
+          <lay-button size="sm" type="primary" @click="changeVisible11('新增', null)">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
-          </lay-button
-          >
+          </lay-button>
           <lay-button size="sm" @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
+          </lay-button>
+          <lay-button size="sm" type="normal" @click="assignUser" v-permission="[MenuPermission.SYS_ROLE_USER_EDIT]">
+            分配用户
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
@@ -103,9 +101,17 @@
               border="blue"
               border-style="dashed"
               @click="toPrivileges(row)"
-          >分配权限
-            <!--            v-permission="[MenuPermission.SYS_ROLE_MENU_EDIT]"-->
-
+              v-permission="[MenuPermission.SYS_ROLE_MENU_EDIT]"
+          >菜单权限
+          </lay-button
+          >
+          <lay-button
+              size="xs"
+              border="blue"
+              border-style="dashed"
+              @click="assignUserById(row.id)"
+              v-permission="[MenuPermission.SYS_ROLE_USER_EDIT]"
+          >分配用户
           </lay-button
           >
           <lay-popconfirm
@@ -169,8 +175,8 @@
                 :allow-clear="true"
                 placeholder="请选择"
             ></lay-select>
-<!--            <lay-input v-model="saveRoleMenuPrivilegeModel.dataScope" :disabled="true">-->
-<!--            </lay-input>-->
+            <!--            <lay-input v-model="saveRoleMenuPrivilegeModel.dataScope" :disabled="true">-->
+            <!--            </lay-input>-->
           </lay-form-item>
           <lay-form-item label="菜单树" prop="treeSelectedIdList">
             <lay-container>
@@ -214,6 +220,7 @@ import {MenuPermission} from '../../../types/Permission';
 import {useAppStore} from "../../../store/app";
 import {useUserStore} from "../../../store/user";
 import app from "../../../main";
+import router from "../../../router";
 /* INIT*/
 defineComponent({
   components: {MenuPermission}
@@ -243,6 +250,7 @@ async function loadAllMenuTree() {
 /* INIT*/
 
 /* VAR*/
+const $router = router;
 const appStore = useAppStore();
 const userStore = useUserStore();
 const searchQuery = ref<SysRoleVo>({})
@@ -460,6 +468,18 @@ function isAdmin() {
     return f === app.config.globalProperties.$ADMIN_PERMISSION;
   });
   return flag === app.config.globalProperties.$ADMIN_PERMISSION;
+}
+
+function assignUser() {
+  if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {
+    layer.msg("请选择1条数据", {icon: 3})
+    return;
+  }
+  $router.push("/system/role/assignUser/" + selectedKeys.value[0])
+}
+
+function assignUserById(id: any) {
+  $router.push("/system/role/assignUser/" + id)
 }
 
 /* FUNCTION*/

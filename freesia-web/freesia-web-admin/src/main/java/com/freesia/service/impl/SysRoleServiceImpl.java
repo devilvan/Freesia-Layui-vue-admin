@@ -12,13 +12,14 @@ import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.SysModule;
 import com.freesia.dto.SysRoleDto;
+import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
-import com.freesia.exception.UserException;
 import com.freesia.mapper.SysRoleMapper;
 import com.freesia.po.SysMenuPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.po.SysUserPo;
+import com.freesia.po.SysUserRolePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysMenuRepository;
@@ -32,7 +33,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -44,8 +44,8 @@ import java.util.stream.Collectors;
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> implements SysRoleService {
     private final SysRoleRepository sysRoleRepository;
     private final SysMenuRepository sysMenuRepository;
-    private final SysRoleMapper sysRoleMapper;
     private final SysUserRepository sysUserRepository;
+    private final SysRoleMapper sysRoleMapper;
 
     @Override
     public SysRolePo saveUpdate(SysRoleDto sysRoleDto) {
@@ -127,5 +127,59 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
                 .eq(SysRolePo::getLogicDel, FlagConstant.ENABLED);
         List<SysRolePo> sysRolePoList = this.list(queryWrapper);
         return UCopy.fullCopyList(sysRolePoList, FindAllRolesEntity.class);
+    }
+
+    @Override
+    public SysRoleDto findRoleById(Long roleId) {
+        Wrapper<SysRolePo> queryWrapper = new LambdaQueryWrapper<SysRolePo>()
+                .select(
+                        SysRolePo::getId, SysRolePo::getRoleName,
+                        SysRolePo::getRoleKey, SysRolePo::getStatus,
+                        SysRolePo::getDataScope, SysRolePo::getRemark
+                )
+                .eq(SysRolePo::getId, roleId)
+                .eq(SysRolePo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysRolePo::getStatus, FlagConstant.ENABLED);
+        SysRolePo sysRolePo = this.getOne(queryWrapper);
+        return UCopy.copyPo2Dto(sysRolePo, SysRoleDto.class);
+    }
+
+    @Override
+    public TableResult<SysUserDto> findPageUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery) {
+        Wrapper<SysRolePo> queryWrapper = Wrappers.<SysRolePo>query()
+                .eq("R.ID", sysRoleDto.getId())
+                .eq("R.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("R.STATUS", FlagConstant.ENABLED)
+                .eq("U.LOGIC_DEL", FlagConstant.ENABLED);
+        Page<SysRolePo> pageUserByRoleId = sysRoleMapper.findPageUserByRoleId(queryWrapper, pageQuery.build());
+        return TableResult.build(UCopy.convertPagePo2Dto(pageUserByRoleId, SysUserDto.class));
+    }
+
+    @Override
+    public TableResult<SysUserDto> findPageAllowAssignUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery) {
+        SysRolePo sysRolePo = UCopy.copyDto2Po(sysRoleDto, SysRolePo.class);
+        Page<SysUserPo> userPoPage = sysRoleMapper.findPageAllowAssignUserByRoleId(sysRolePo, pageQuery.build());
+        return TableResult.build(UCopy.convertPagePo2Dto(userPoPage, SysUserDto.class));
+    }
+
+    @Override
+    public void assignUser(Long roleId, List<Long> userIdList) {
+        SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseGet(SysRolePo::new);
+        Set<SysUserRolePo> sysUserRolePoSet = sysRolePo.getSysUserRolePoSet();
+        for (Long userId : userIdList) {
+            SysUserRolePo sysUserRolePo = new SysUserRolePo();
+            SysUserRolePo.SysUserRolePk sysUserRolePk = new SysUserRolePo.SysUserRolePk();
+            sysUserRolePk.setRoleId(roleId);
+            sysUserRolePk.setUserId(userId);
+            sysUserRolePo.setSysRoleMenuPk(sysUserRolePk);
+            sysUserRolePoSet.add(sysUserRolePo);
+        }
+        sysRolePo.setSysUserRolePoSet(sysUserRolePoSet);
+        sysRoleRepository.save(sysRolePo);
+    }
+
+    @Override
+    public void cancelAssignUser(Long roleId, List<Long> userIdList) {
+        sysRoleRepository.cancelAssignUser(roleId, userIdList);
     }
 }

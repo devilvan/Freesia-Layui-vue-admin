@@ -1,6 +1,7 @@
 package com.freesia.service;
 
 import com.freesia.dto.SysRoleDto;
+import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.po.SysRolePo;
@@ -66,5 +67,47 @@ public interface SysRoleService {
      * @return 所有角色集合
      */
     List<FindAllRolesEntity> findAllRoles();
+
+    /**
+     * 查询用户信息和已分配该角色的用户列表
+     *
+     * @param sysRoleDto 查询信息
+     * @param pageQuery  分页信息
+     * @return 分页数据
+     */
+    TableResult<SysUserDto> findPageUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery);
+
+    /**
+     * 根据ID查询角色
+     *
+     * @param roleId 角色ID
+     * @return 角色
+     */
+    SysRoleDto findRoleById(Long roleId);
+
+    /**
+     * 查询未分配该角色的用户列表
+     *
+     * @param sysRoleDto 查询信息
+     * @param pageQuery  分页信息
+     * @return 分页数据
+     */
+    TableResult<SysUserDto> findPageAllowAssignUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery);
+
+    /**
+     * 分配角色
+     *
+     * @param roleId     角色ID
+     * @param userIdList 用户列表
+     */
+    void assignUser(Long roleId, List<Long> userIdList);
+
+    /**
+     * 取消分配角色
+     *
+     * @param roleId     角色ID
+     * @param userIdList 用户列表
+     */
+    void cancelAssignUser(Long roleId, List<Long> userIdList);
 
 }

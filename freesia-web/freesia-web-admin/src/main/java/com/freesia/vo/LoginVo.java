@@ -11,10 +11,12 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * @author Evad.Wu
- * @Description 登录功能 值对象传递 {@link SysLoginController#sysLogin}
+ * @Description 登录功能 值对象
+ * {@link SysLoginController#sysLogin}
  * @date 2023-08-11
  */
 @Data
+@Schema(description = "登录功能 值对象")
 public class LoginVo {
     @Schema(description = "用户名")
     @NotBlank(message = "{user.username.not.null}")
