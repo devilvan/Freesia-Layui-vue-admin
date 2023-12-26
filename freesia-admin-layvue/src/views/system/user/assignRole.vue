@@ -32,39 +32,37 @@
         </lay-card>
         <lay-card title="角色信息">
           <!-- table -->
-          <div class="table-box">
-            <lay-table
-                class="table-style"
-                :page="pageQuery"
-                :columns="columns"
-                :loading="loading"
-                :data-source="dataSource"
-                v-model:selected-keys="selectedKeys"
-            >
-              <template #dataScope="{ row }">
-                <dict-scan :options="sysDataScopeList" :value="row.dataScope"/>
-              </template>
-              <template #status="{ row }">
-                <div v-show="row.status === '0'">
-                  <lay-tag color="#2dc570" variant="light">启用</lay-tag>
-                </div>
-                <div v-show="row.status === '1'">
-                  <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
-                </div>
-              </template>
-              <template #remark="{ row }">
-                <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
-                  <div class="oneRow">{{ row.remark }}</div>
-                </lay-tooltip>
-              </template>
-              <template v-slot:toolbar>
-                <lay-button size="sm" type="primary" @click="assign()">
-                  <lay-icon class="layui-icon-addition"></lay-icon>
-                  分配
-                </lay-button>
-              </template>
-            </lay-table>
-          </div>
+          <lay-table
+              class="table-style"
+              :page="pageQuery"
+              :columns="columns"
+              :loading="loading"
+              :data-source="dataSource"
+              v-model:selected-keys="selectedKeys"
+          >
+            <template #dataScope="{ row }">
+              <dict-scan :options="sysDataScopeList" :value="row.dataScope"/>
+            </template>
+            <template #status="{ row }">
+              <div v-show="row.status === '0'">
+                <lay-tag color="#2dc570" variant="light">启用</lay-tag>
+              </div>
+              <div v-show="row.status === '1'">
+                <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
+              </div>
+            </template>
+            <template #remark="{ row }">
+              <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
+                <div class="oneRow">{{ row.remark }}</div>
+              </lay-tooltip>
+            </template>
+            <template v-slot:toolbar>
+              <lay-button size="sm" type="primary" @click="assign()">
+                <lay-icon class="layui-icon-addition"></lay-icon>
+                分配
+              </lay-button>
+            </template>
+          </lay-table>
         </lay-card>
       </lay-container>
     </div>
@@ -93,12 +91,12 @@ const $router = useRouter();
 const {closeOpen} = useTab();
 onMounted(async () => {
   sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
-  userId.value = $route.params && $route.params.userId as string;
-  loadDataSource(userId.value)
+  roleId.value = $route.params && $route.params.roleId as string;
+  loadDataSource(roleId.value)
 })
 /* INIT*/
 /* VAR*/
-const userId = ref<string>('');
+const roleId = ref<string>('');
 const assignRoleVo = ref<SysUserVo>({})
 const visibleImport = ref(false)
 const file1 = ref<any>([])
@@ -142,8 +140,8 @@ function toReset() {
   assignRoleVo.value = {}
 }
 
-const loadDataSource = (userId: any) => {
-  findUserRolesByUserId(userId).then((res: any) => {
+const loadDataSource = (roleId: any) => {
+  findUserRolesByUserId(roleId).then((res: any) => {
     if (res.code == 200) {
       selectedKeys.value = res.data.selectedRoles
       findUserRolesByUserIdEntity.value = res.data;
@@ -157,13 +155,13 @@ const loadDataSource = (userId: any) => {
 }
 
 function assign() {
-  assignRole({
-    userId: userId.value,
+  assignUser({
+    roleId: roleId.value,
     afterRoleIdSet: selectedKeys.value
   }).then((res: any) => {
     if (res.code === 200) {
       layer.msg(res.msg);
-      loadDataSource(userId.value)
+      loadDataSource(roleId.value)
     } else {
       layer.confirm(res.msg, {icon: 2})
     }

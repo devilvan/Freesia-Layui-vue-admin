@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 查询字典键数据 持久层传输类
- * {@link SysDictKeyMapper#findPageSysDictList}
+ * {@link com.freesia.controller.SysDictController#findPageSysDictList}
  * @date 2023-09-08
  */
 @Data

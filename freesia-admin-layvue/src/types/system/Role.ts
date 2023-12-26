@@ -1,10 +1,11 @@
-import {BaseEntity, BaseVo} from "../Common";
+import {BaseVo} from "../Common";
+import {SysUserEntity} from "./User";
 
 /**
  * 查询参数
  */
 
-export interface SysRoleVo {
+export interface SysRoleVo extends BaseVo {
     roleName?: string;
     roleKey?: string;
     status?: string;
@@ -39,9 +40,14 @@ export interface SaveRoleMenuPrivilegeVo extends BaseVo {
 
 export interface SysRoleEntity {
     id?: string,
-    roleKey? : string,
-    roleName? : string,
-    dataScope? : string,
-    status? : string,
-    remark? : string,
+    roleKey?: string,
+    roleName?: string,
+    dataScope?: string,
+    status?: string,
+    remark?: string,
+}
+
+export interface AssignUserVo {
+    roleId: string;
+    userIdList: string[]
 }

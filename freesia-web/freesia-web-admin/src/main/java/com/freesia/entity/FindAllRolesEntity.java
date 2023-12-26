@@ -1,5 +1,6 @@
 package com.freesia.entity;
 
+import com.freesia.controller.SysRoleController;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -7,6 +8,7 @@ import lombok.EqualsAndHashCode;
 /**
  * @author Evad.Wu
  * @Description 查询所有角色 持久层传输类
+ * {@link SysRoleController#findAllRoles()}
  * @date 2023-11-26
  */
 @Data

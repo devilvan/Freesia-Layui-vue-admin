@@ -1,6 +1,5 @@
 package com.freesia.entity;
 
-import com.freesia.dto.SysRoleDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +11,7 @@ import java.util.Set;
 /**
  * @author Evad.Wu
  * @Description 根据用户ID查询【分配用户】加载数据 持久层传输类
+ * {@link com.freesia.controller.SysUserController#findUserRolesByUserId}
  * @date 2023-11-25
  */
 @Data

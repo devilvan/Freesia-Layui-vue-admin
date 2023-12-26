@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.annotation.DataColumn;
 import com.freesia.annotation.DataPermission;
+import com.freesia.entity.FindPageAllowAssignUserByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.po.SysRolePo;
+import com.freesia.po.SysUserPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -48,4 +50,22 @@ public interface SysRoleMapper extends BaseMapper<SysRolePo> {
      * @param idList 菜单ID集合
      */
     void deleteRoleMenu(@Param("idList") List<Long> idList);
+
+    /**
+     * 已分配该角色的用户列表
+     *
+     * @param wrapper   查询条件SQL
+     * @param pageQuery 分页信息
+     * @return 分页数据
+     */
+    Page<SysRolePo> findPageUserByRoleId(@Param(Constants.WRAPPER) Wrapper<SysRolePo> wrapper, @Param("page") Page<SysRolePo> pageQuery);
+
+    /**
+     * 查询未分配该角色的用户列表
+     *
+     * @param sysRolePo 查询条件
+     * @param pageQuery 分页信息
+     * @return 分页数据
+     */
+    Page<SysUserPo> findPageAllowAssignUserByRoleId(@Param("sysRolePo") SysRolePo sysRolePo, @Param("page") Page<SysRolePo> pageQuery);
 }

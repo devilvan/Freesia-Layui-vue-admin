@@ -18,4 +18,10 @@ import java.util.List;
  */
 @Repository
 public interface SysRoleRepository extends JpaRepository<SysRolePo, Long> {
+    @Modifying
+    @Query(value = """
+                DELETE FROM SysUserRolePo WHERE sysRoleMenuPk.roleId = :roleId and sysRoleMenuPk.userId in (:userIdList)
+            """)
+    @Transactional(rollbackFor = Exception.class)
+    void cancelAssignUser(@Param("roleId") Long roleId, @Param("userIdList") List<Long> userIdList);
 }

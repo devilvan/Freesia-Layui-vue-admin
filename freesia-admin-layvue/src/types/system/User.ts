@@ -1,7 +1,7 @@
 /**
  * system/user 查询参数
  */
-import {BaseVo} from "../Common";
+import {BaseEntity, BaseVo} from "../Common";
 
 export interface SysUserVo extends BaseVo {
     deptId?: string;
@@ -13,6 +13,20 @@ export interface SysUserVo extends BaseVo {
     remark?: string;
     createTimeFrom?: Date
     createTimeTo?: Date
+}
+
+export interface SysUserEntity extends BaseEntity {
+    deptId? : string;
+    userName? : string;
+    nickName? : string;
+    userType? : string;
+    email? : string;
+    telNo? : string;
+    gender? : string;
+    avatar? : string;
+    password? : string;
+    accountStatus? : string;
+    remark? : string;
 }
 
 

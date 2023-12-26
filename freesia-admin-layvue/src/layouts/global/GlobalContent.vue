@@ -8,12 +8,6 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: 'GlobalContent'
-}
-</script>
-
 <script lang="ts" setup>
 import {useAppStore} from '../../store/app'
 import {useTab} from "../composable/useTab";

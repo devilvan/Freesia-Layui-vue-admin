@@ -109,9 +109,7 @@
           <lay-popconfirm content="确定要删除此用户吗?" @confirm="confirm" @cancel="cancel">
             <lay-button size="xs" border="red" border-style="dashed">删除</lay-button>
           </lay-popconfirm>
-          <lay-button size="xs" type="normal" border-style="dashed" @click="assignRoleById(row.id)">
-            分配角色
-          </lay-button>
+          <lay-button size="xs" border="blue" border-style="dashed" @click="assignRoleById(row.id)">分配角色</lay-button>
         </template>
       </lay-table>
     </div>
@@ -184,33 +182,24 @@ import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import {useRouter} from "vue-router";
 
+/* INIT*/
 const $router = useRouter();
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   change()
 })
-
+/* INIT*/
+/* VAR*/
 const searchQuery = ref<SysUserVo>({})
-
 const visibleImport = ref(false)
 const file1 = ref<any>([])
 const sysGenderList = ref<Array<SysDictValueEntity>>()
-
-function toImport() {
-  visibleImport.value = true
-}
-
-function toReset() {
-  searchQuery.value = {}
-}
-
-function toSearch() {
-  pageQuery.current = 1
-  change()
-}
-
 const loading = ref(false)
 const selectedKeys = ref()
+const model11 = ref<any>({})
+const layFormRef11 = ref()
+const visible11 = ref(false)
+const title = ref('新增')
 const pageQuery: PageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
@@ -234,11 +223,25 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+/* VAR*/
+/*FUNCTION*/
+function toImport() {
+  visibleImport.value = true
+}
+
+function toReset() {
+  searchQuery.value = {}
+}
+
+function toSearch() {
+  pageQuery.current = 1
+  change()
+}
 const change = () => {
   loading.value = true
   // setTimeout(() => {
-    loadDataSource()
-    loading.value = false
+  loadDataSource()
+  loading.value = false
   // }, 1000)
 }
 const sortChange = (key: any, sort: number) => {
@@ -255,11 +258,9 @@ const changeStatus = (isChecked: boolean, row: any) => {
     }
   })
 }
-
 const remove = () => {
   layer.msg(JSON.stringify(selectedKeys.value), {area: '50%'})
 }
-
 const loadDataSource = () => {
   findPageSysUserList(searchQuery.value, pageQuery).then((res: any) => {
     if (res.code == 200) {
@@ -268,10 +269,6 @@ const loadDataSource = () => {
     }
   })
 }
-const model11 = ref<any>({})
-const layFormRef11 = ref()
-const visible11 = ref(false)
-const title = ref('新增')
 const changeVisible11 = (text: any, row?: any) => {
   title.value = text
   if (row) {
@@ -386,6 +383,9 @@ function assignRole() {
 function assignRoleById(id: any) {
   $router.push("/system/user/assignRole/" + id)
 }
+/*FUNCTION*/
+
+
 </script>
 
 <style scoped>

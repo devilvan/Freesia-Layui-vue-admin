@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -16,8 +17,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "角色信息表 值对象")
-public class SysRoleVo {
+public class SysRoleVo extends BaseVo {
     @Schema(description = "角色名称")
     @JSONField(alternateNames = {"roleName"})
     private String roleName;

@@ -9,7 +9,8 @@ import java.util.Set;
 
 /**
  * @author Evad.Wu
- * @Description 用户信息 结果集 {@link SysLoginController#getInfo()}
+ * @Description 用户信息 结果集
+ * {@link SysLoginController#getInfo()}
  * @date 2023-08-24
  */
 @Data
