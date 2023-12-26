@@ -6,6 +6,7 @@ import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.freesia.constant.Constants;
+import com.freesia.handler.DesensitizeValueFilter;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -71,6 +72,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Bean
     public HttpMessageConverters fastjsonHttpMessageConverter(List<HttpMessageConverter<?>> converters) {
+        FastJsonHttpMessageConverter fastConverter = buildFastJsonHttpMessageConverter();
+        converters.add(fastConverter);
+        return new HttpMessageConverters(converters);
+    }
+
+    private FastJsonHttpMessageConverter buildFastJsonHttpMessageConverter() {
         FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         fastJsonConfig.setDateFormat(Constants.YMD_HMS);
@@ -81,13 +88,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
         serializeConfig.put(BigInteger.class, ToStringSerializer.instance);
         serializeConfig.put(Long.class, ToStringSerializer.instance);
         serializeConfig.put(Long.TYPE, ToStringSerializer.instance);
+        // 添加脱敏拦截器
+        fastJsonConfig.setSerializeFilters(new DesensitizeValueFilter());
         fastJsonConfig.setSerializeConfig(serializeConfig);
         //处理中文乱码问题
         List<MediaType> fastMediaTypes = new ArrayList<>();
         fastMediaTypes.add(MediaType.APPLICATION_JSON);
         fastConverter.setSupportedMediaTypes(fastMediaTypes);
         fastConverter.setFastJsonConfig(fastJsonConfig);
-        converters.add(fastConverter);
-        return new HttpMessageConverters(converters);
+        return fastConverter;
+    }
+
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(buildFastJsonHttpMessageConverter());
     }
 }
