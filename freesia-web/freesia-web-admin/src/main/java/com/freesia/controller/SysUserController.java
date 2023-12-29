@@ -39,8 +39,7 @@ public class SysUserController {
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserVo sysUserVo, PageQuery pageQuery) {
         SysUserDto sysUserDto = new SysUserDto();
         UCopy.fullCopy(sysUserVo, sysUserDto);
-        TableResult<FindPageSysUserListEntity> tableResult = sysUserService.findPageSysUserList(sysUserDto, pageQuery);
-        return tableResult;
+        return sysUserService.findPageSysUserList(sysUserDto, pageQuery);
     }
 
     @Operation(summary = "获取部门下的用户")

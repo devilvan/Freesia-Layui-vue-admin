@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.annotation.DataColumn;
 import com.freesia.annotation.DataPermission;
-import com.freesia.entity.FindPageAllowAssignUserByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.po.SysRolePo;
 import com.freesia.po.SysUserPo;

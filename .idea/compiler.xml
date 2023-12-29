@@ -10,6 +10,7 @@
         <module name="freesia-common-service" />
         <module name="freesia-web-api" />
         <module name="freesia-common-framework" />
+        <module name="freesia-web-dashboard" />
         <module name="freesia-web-framework" />
         <module name="freesia-common-api" />
         <module name="freesia-web-app" />
@@ -28,7 +29,9 @@
       <module name="freesia-web-admin" target="16" />
       <module name="freesia-web-api" target="16" />
       <module name="freesia-web-app" target="16" />
+      <module name="freesia-web-dashboard" target="16" />
       <module name="freesia-web-framework" target="16" />
+      <module name="freesia-web-monitor" target="16" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -40,7 +43,9 @@
       <module name="freesia-web-admin" options="-parameters" />
       <module name="freesia-web-api" options="-parameters" />
       <module name="freesia-web-app" options="-parameters" />
+      <module name="freesia-web-dashboard" options="-parameters" />
       <module name="freesia-web-framework" options="-parameters" />
+      <module name="freesia-web-monitor" options="-parameters" />
     </option>
   </component>
 </project>

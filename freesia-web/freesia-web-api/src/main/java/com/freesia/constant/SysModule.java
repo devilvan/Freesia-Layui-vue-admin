@@ -69,4 +69,12 @@ public final class SysModule {
      */
     public static final String DICT_MANAGEMENT = "dict_management";
     /* 字典管理*/
+
+    /* 面板管理*/
+    /**
+     * 主模块 面板管理
+     */
+    public static final String DASHBOARD_MANAGEMENT = "dashboard_management";
+    /* 面板管理*/
+
 }
