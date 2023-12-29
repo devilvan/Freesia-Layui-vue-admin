@@ -160,11 +160,11 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {SysSensitiveEntity, SysSensitiveLogVo} from "../../../types/system/SensitiveLog";
-import {Constants, loadSysDictValue} from "../../../util/UDict";
-import {findPageLoginLog} from "../../../api/system/SensitiveLog";
-import {PageQuery} from "../../../types/Common";
-import {SysDictValueEntity} from "../../../types/system/Dict";
+import {SysSensitiveEntity, SysSensitiveLogVo} from "../../../../types/system/SensitiveLog";
+import {Constants, loadSysDictValue} from "../../../../util/UDict";
+import {findPageLoginLog} from "../../../../api/system/SensitiveLog";
+import {PageQuery} from "../../../../types/Common";
+import {SysDictValueEntity} from "../../../../types/system/Dict";
 
 onMounted(async () => {
   sysOperateResultList.value = await loadSysDictValue(Constants.SYS_OPERATE_RESULT);

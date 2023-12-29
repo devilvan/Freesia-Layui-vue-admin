@@ -202,9 +202,9 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "../../../types/Common";
-import {findPageOptionLog} from "../../../api/system/SensitiveLog";
-import {SysSensitiveLogVo} from "../../../types/system/SensitiveLog";
+import {PageQuery} from "../../../../types/Common";
+import {findPageOptionLog} from "../../../../api/system/SensitiveLog";
+import {SysSensitiveLogVo} from "../../../../types/system/SensitiveLog";
 
 onMounted(async () => {
   await loadDataSource();
