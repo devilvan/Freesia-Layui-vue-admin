@@ -6,6 +6,7 @@ import InnerLink from "../layouts/InnerLink.vue"
 import auth from "../directives/auth";
 import {dynamicRoutes} from "../router/module/base-routes";
 import router, {addRoutes} from "../router";
+import {RouterComponent} from "../types/Menu";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
@@ -69,11 +70,11 @@ function filterAsyncRouter(asyncRouterMap: any, lastRouter = false, type = false
         }
         if (route.component) {
             // BaseLayout 组件特殊处理
-            if (route.component === 'BaseLayout') {
+            if (route.component === RouterComponent.BASE_LAYOUT) {
                 route.component = BaseLayout
-            } else if (route.component === 'BlankLayout') {
+            } else if (route.component === RouterComponent.BLANK_LAYOUT) {
                 route.component = BlankLayout
-            } else if (route.component === 'InnerLink') {
+            } else if (route.component === RouterComponent.INNER_LINK) {
                 route.component = InnerLink
             } else {
                 route.component = loadView(route.component)
@@ -110,7 +111,7 @@ function filterChildren(childrenMap: any, lastRouter = false) {
     var children: any[] = []
     childrenMap.forEach((el: { children: any[]; component: string; path: string; }, index: any) => {
         if (el.children && el.children.length) {
-            if (el.component === 'BlankLayout' && !lastRouter) {
+            if (el.component === RouterComponent.BLANK_LAYOUT && !lastRouter) {
                 el.children.forEach(c => {
                     c.path = el.path + '/' + c.path
                     // c.path = '/' + c.path

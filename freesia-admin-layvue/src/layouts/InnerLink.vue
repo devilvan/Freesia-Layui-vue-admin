@@ -10,7 +10,11 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import {defineComponent, ref} from "vue";
+
+defineComponent({
+  name: "InnerLink"
+})
 
 const props = defineProps({
   src: {

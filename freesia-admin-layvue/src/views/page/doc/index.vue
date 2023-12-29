@@ -1,17 +1,22 @@
 <template>
   <div>
-    <inner-link v-model:src="url"></inner-link>
+    <InnerLink v-model:src="url"></InnerLink>
   </div>
 </template>
 
-<script setup>
-import {onMounted, ref} from 'vue';
+<script setup lang="ts">
+import {defineComponent, onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
+import InnerLink from "../../../layouts/InnerLink.vue";
+
+defineComponent({
+  components: {InnerLink}
+})
 
 const route = useRoute();
 const url = ref('/');
 onMounted(() => {
-  url.value = route.meta.link
+  url.value = route.meta.link as string
 })
 
 

@@ -419,7 +419,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
      * @return 结果
      */
     private boolean isInnerLink(SysMenuDto menu) {
-        return FlagConstant.DISABLED.equals(menu.getIsFrame()) && UString.isHttp(menu.getPath());
+        return FlagConstant.ENABLED.equals(menu.getIsFrame()) && UString.isHttp(menu.getPath());
     }
 
     /**
@@ -451,7 +451,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         // 菜单信息：是顶级菜单的子菜单--是
         return AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId())
                && MenuType.MENU.getType().equals(menu.getMenuType())
-               && menu.getIsFrame().equals(FlagConstant.DISABLED);
+               && menu.getIsFrame().equals(FlagConstant.ENABLED);
     }
 
     /**
