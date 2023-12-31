@@ -247,22 +247,22 @@
   resolved "https://registry.npmmirror.com/@layui/icons-vue/-/icons-vue-1.1.0.tgz"
   integrity sha512-ndc53qyUZSslUkO8ZHeBMh6i4gSTtAUqsPpKQZWML0JH6E/X3LIySe6LATeqEMmD7wWSnHJ+WBVGO4ij85Dk1g==
 
-"@layui/layer-vue@1.9.3":
-  version "1.9.3"
-  resolved "https://registry.npmmirror.com/@layui/layer-vue/-/layer-vue-1.9.3.tgz#7b1f001b76d5d7f8728cb832a909592fe054c5df"
-  integrity sha512-3YGVFrNAOpbhNECs1vyV7H93CJrOjJlkhN2W/RfwLQ/cvJEcb1ApxIpAYnSJrSZo2BF7IJwDvCISl+RG+rjb9Q==
+"@layui/layer-vue@2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmmirror.com/@layui/layer-vue/-/layer-vue-2.2.0.tgz#eceaef47d293c565fb4f0aca7019c6364e22f8b9"
+  integrity sha512-vz398aLPmm7mqxP6hf9YMIPtI1TYfacZLXcyVhSHVabhHN//WHYv4sJuKwaYR4Wd+SZfPR8HUBkSGljMeEuKZg==
   dependencies:
     "@layui/icons-vue" "1.1.0"
 
-"@layui/layui-vue@2.3.20":
-  version "2.3.20"
-  resolved "https://registry.npmmirror.com/@layui/layui-vue/-/layui-vue-2.3.20.tgz#022b5ce554e31d37e3229779c75210b495c2afc2"
-  integrity sha512-2G+a8D/Gu0MJdzy6K6E8/dJ8Lh32PvAqnyTP5lWmOnvCuSpw7aPzmXeBnU1bgrVz2+gf6LuzZr1HA0zv5EdXDg==
+"@layui/layui-vue@^2.13.0":
+  version "2.13.0"
+  resolved "https://registry.npmmirror.com/@layui/layui-vue/-/layui-vue-2.13.0.tgz#7b0b7d43b124254db069c8bd76305dc3c9241b95"
+  integrity sha512-wcaJ38dl/VJU1Fo6zGJhDCMNtsB7AauoZj4WwFlylkNy4tLJM+Nh/827hCeVJHxksYGA/a+hIG5juSeddl8uEw==
   dependencies:
     "@babel/types" "7.21.0"
     "@ctrl/tinycolor" "^3.4.1"
     "@layui/icons-vue" "1.1.0"
-    "@layui/layer-vue" "1.9.3"
+    "@layui/layer-vue" "2.2.0"
     "@rollup/plugin-terser" "0.4.3"
     "@types/qrcode" "1.5.0"
     "@umijs/ssr-darkreader" "^4.9.45"

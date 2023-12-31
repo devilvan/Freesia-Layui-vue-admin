@@ -156,17 +156,21 @@
         <lay-form :model="sysDirVo" ref="saveDirFormRef">
           <lay-row>
             <lay-col md="12">
-              <lay-form-item label="目录名称" prop="menuName" required>
-                <lay-input v-model="sysDirVo.menuName"></lay-input>
+              <lay-form-item label="父目录" prop="parentId" required>
+                <lay-tree-select v-model="sysDirVo.parentId" :data="treeMenuSelectList"
+                                 :allow-clear="true" @change="selectParentById(MenuType.MENU)"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="路由路径" prop="path" required>
                 <lay-input v-model="sysDirVo.path" placeholder="例如：workspace"></lay-input>
               </lay-form-item>
               <lay-form-item label="图标" prop="icon">
-                <lay-input v-model="sysDirVo.icon"></lay-input>
+                <lay-icon-picker v-model="sysDirVo.icon" allow-clear></lay-icon-picker>
               </lay-form-item>
             </lay-col>
             <lay-col md="12">
+              <lay-form-item label="目录名称" prop="menuName" required>
+                <lay-input v-model="sysDirVo.menuName"></lay-input>
+              </lay-form-item>
               <lay-form-item label="排序" prop="orderNum" required>
                 <lay-input-number
                     style="width: 100%"
@@ -212,7 +216,7 @@
                 </lay-input>
               </lay-form-item>
               <lay-form-item label="图标" prop="icon">
-                <lay-input v-model="sysMenuVo.icon"></lay-input>
+                <lay-icon-picker v-model="sysMenuVo.icon" allow-clear></lay-icon-picker>
               </lay-form-item>
             </lay-col>
             <lay-col md="12">
@@ -283,7 +287,8 @@
                 </lay-select>
               </lay-form-item>
               <lay-form-item label="图标" prop="icon">
-                <lay-input v-model="sysButtonVo.icon"></lay-input>
+                <lay-icon-picker v-model="sysButtonVo.icon" allow-clear></lay-icon-picker>
+                <!--                <lay-icon-picker v-model="sysLinkVo.icon" type="layui-icon-face-smile" page></lay-icon-picker>-->
               </lay-form-item>
             </lay-col>
             <lay-form-item label="备注" prop="remark" required>
@@ -345,7 +350,6 @@
               </lay-form-item>
               <lay-form-item label="图标" prop="icon">
                 <lay-icon-picker v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
-                <!--                <lay-icon-picker v-model="sysLinkVo.icon" type="layui-icon-face-smile" page></lay-icon-picker>-->
               </lay-form-item>
             </lay-col>
             <lay-form-item label="备注" prop="remark" required>
@@ -832,7 +836,7 @@ function findChildList(item: any): any[] {
 .table-box {
   margin-top: 10px;
   padding: 10px;
-  height: 700px;
+  height: 1000px;
   width: 100%;
   border-radius: 4px;
   box-sizing: border-box;
