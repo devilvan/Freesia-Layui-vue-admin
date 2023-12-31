@@ -1,18 +1,20 @@
 <template>
   <div class="global-content" :class="{ 'has-tab': appStore.tab }">
     <router-view v-slot="{ Component, route }" v-if="appStore.routerAlive">
-      <keep-alive :include="useTab.tabsCache">
-        <component v-if="!route.meta.link" :is="Component" :key="route.name"/>
+      <keep-alive :include="tab.tabsCache">
+        <component :is="Component" :key="route.name"/>
       </keep-alive>
     </router-view>
   </div>
 </template>
+<!--        v-if="!route.meta.link" -->
 
 <script lang="ts" setup>
 import {useAppStore} from '../../store/app'
 import {useTab} from "../composable/useTab";
 
 const appStore = useAppStore()
+const tab = useTab()
 </script>
 
 <style scoped>

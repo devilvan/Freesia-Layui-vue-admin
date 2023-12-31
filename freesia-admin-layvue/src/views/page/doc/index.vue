@@ -1,17 +1,12 @@
 <template>
   <div>
-    <InnerLink v-model:src="url"></InnerLink>
+    <InnerLink :src="url" :iframeId="url"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import {defineComponent, onMounted, ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
-import InnerLink from "../../../layouts/InnerLink.vue";
-
-defineComponent({
-  components: {InnerLink}
-})
 
 const route = useRoute();
 const url = ref('/');
