@@ -1,26 +1,38 @@
 <template>
   <div :style="'height:' + height">
     <iframe
-        :id="iframeId"
+        :id="props.iframeId"
         style="width: 100%; height: 100%"
-        :src="src"
-        frameborder="yes"
+        :src="props.src + '?' + new Date().getTime()"
+        :frameborder="'yes'"
     ></iframe>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import {defineComponent, ref} from "vue";
 
-const props = defineProps({
-  src: {
-    type: String,
-    default: "/"
-  },
-  iframeId: {
-    type: String
-  }
+defineComponent({
+  name: "InnerLink"
+})
+
+interface InnerLinkProps {
+  src: string,
+  iframeId?: string
+}
+
+const props = withDefaults(defineProps<InnerLinkProps>(), {
+  src: "/"
 });
+//
+// onMounted(() => {
+//   // 获取div标签
+//   var activity = document.querySelector('#activity');
+//   // 创建日期
+//   var ts = new Date().getTime()
+//   // 使用es6模板语法 将变量拼接到地址栏
+//   document.write(`<iframe  src="` + `${props.src}?+${ts} "` + `style="width: 100%; height: 100%" :frameborder="'yes'" ></iframe>`)
+// })
 
 // const height = ref(document.documentElement.clientHeight + "px");
 const height = ref(820 + "px");
