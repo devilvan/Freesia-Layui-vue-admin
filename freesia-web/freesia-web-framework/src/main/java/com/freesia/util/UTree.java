@@ -11,7 +11,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * @author Evad.Wu
@@ -35,6 +37,30 @@ public class UTree extends TreeUtil {
         K k = UReflect.invokeGetter(list.get(0), PARENT_ID);
         return TreeUtil.build(list, k, DEFAULT_CONFIG, nodeParser);
     }
+
+//    /**
+//     * 广度优先算法
+//     * 获取该节点在列表中对应的子节点，并通过队列循环对子节点进行同样操作
+//     *
+//     * @param list   需要遍历的集合
+//     * @param target 选取的节点
+//     * @return 选取的节点及其所有子节点
+//     */
+//    private <T> List<T> bfs(List<T> list, T target) {
+//        List<T> nodeAndChildren = new ArrayList<>();
+//        Queue<T> queue = new LinkedList<>();
+//        queue.offer(target);
+//        while (!queue.isEmpty()) {
+//            T current = queue.poll();
+//            for (T menuPo : list) {
+//                if (current.getId().equals(menuPo.getParentId())) {
+//                    queue.offer(menuPo);
+//                }
+//            }
+//            nodeAndChildren.add(current);
+//        }
+//        return nodeAndChildren;
+//    }
 
     /**
      * 构建树结构

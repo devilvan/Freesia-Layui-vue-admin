@@ -114,12 +114,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 routerDto.setChildren(childrenList);
             } else if (AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId()) && isInnerLink(menu)) {
                 routerDto.setMeta(new MetaDto(menu.getMenuName(), menu.getIcon()));
-                routerDto.setPath("/");
+                routerDto.setPath("/iframe-" + menu.getMenuName());
+                routerDto.setComponent(AdminConstant.BASE_LAYOUT);
                 List<RouterDto> childrenList = new ArrayList<>();
                 RouterDto childrenRouterDto = new RouterDto();
                 String routerPath = innerLinkReplaceEach(menu.getPath());
-                childrenRouterDto.setPath(routerPath);
-                childrenRouterDto.setComponent(AdminConstant.INNER_LINK);
+                String path = "/" + menu.getComponent().replace("/index", "");
+                childrenRouterDto.setPath(path);
+                childrenRouterDto.setComponent(menu.getComponent());
+//                childrenRouterDto.setComponent(AdminConstant.INNER_LINK);
                 childrenRouterDto.setName(StringUtils.capitalize(routerPath));
                 childrenRouterDto.setMeta(new MetaDto(menu.getMenuName(), menu.getIcon(), menu.getPath()));
                 childrenList.add(childrenRouterDto);
@@ -159,15 +162,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
             } else if (AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId()) && isInnerLink(menu)) {
                 routerEntity.setIcon(menu.getIcon());
                 routerEntity.setTitle(menu.getMenuName());
-                routerEntity.setId("/");
-                List<RouterEntity> childrenList = new ArrayList<>();
-                RouterEntity childrenRouterEntity = new RouterEntity();
-                String routerPath = innerLinkReplaceEach(menu.getPath());
-                childrenRouterEntity.setId(routerPath);
-                childrenRouterEntity.setIcon(menu.getIcon());
-                childrenRouterEntity.setTitle(menu.getMenuName());
-                childrenList.add(childrenRouterEntity);
-                routerEntity.setChildren(childrenList);
+                String component = menu.getComponent();
+                if (UEmpty.isEmpty(component)) {
+                    throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.parent.link.component.required", menu.getMenuName());
+                }
+                routerEntity.setId("/" + component.replace("/index", ""));
             }
             routerEntityList.add(routerEntity);
         }
@@ -256,6 +255,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         }
         if (MenuType.LINK.getType().equals(sysMenuDto.getMenuType())) {
             checkAddLink(sysMenuDto);
+            boolean flag = Optional.ofNullable(sysMenuDto.getComponentType()).map(AdminConstant.INNER::equals).isPresent();
+            if (flag && UEmpty.isEmpty(sysMenuDto.getComponent())) {
+                sysMenuDto.setComponent(AdminConstant.INNER_COMPONENT);
+            }
         }
         return saveUpdate(sysMenuDto);
     }
@@ -370,6 +373,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         if (UEmpty.isEmpty(componentType) && UString.isHttp(sysMenuDto.getPath())) {
             throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.add.link.failed");
         }
+        SysMenuPo sysMenuPo = UCopy.copyDto2Po(sysMenuDto, SysMenuPo.class);
+        boolean flag = sysMenuMapper.findMenuPathExist(sysMenuPo);
+        if (flag) {
+            throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.path.existed", sysMenuPo.getPath());
+        }
     }
 
     /**
@@ -379,7 +387,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
      * @return 路由地址
      */
     private String getRouterPath(SysMenuDto menu) {
-//        List<String> linkType = Arrays.asList(AdminConstant.MODAL, AdminConstant.BLANK);
         String routerPath = menu.getPath();
         if (!AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId())) {
             // 如果是子菜单
@@ -420,6 +427,18 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
      */
     private boolean isInnerLink(SysMenuDto menu) {
         return FlagConstant.ENABLED.equals(menu.getIsFrame()) && UString.isHttp(menu.getPath());
+    }
+
+    /**
+     * 是否为顶级目录的内链组件
+     *
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    private boolean isDirInnerLink(SysMenuDto menu) {
+        return FlagConstant.ENABLED.equals(menu.getIsFrame())
+               && MenuType.DIR.getType().equals(menu.getMenuName())
+               && UString.isHttp(menu.getPath());
     }
 
     /**

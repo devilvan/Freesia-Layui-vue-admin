@@ -42,6 +42,26 @@ export const getParents = function(list:any[], id: string) : any{
    }
 }
 
+/**
+ * 获取所有父节点 ( 包含当前节点 )
+ *
+ * @param list 集合
+ * @param id 节点编号
+ */
+export const getParentPath = function(list:any[], id: string) : any{
+    for (let i in list) {
+        if (list[i].id === id) {
+            return [list[i].path]
+        }
+        if (list[i].children) {
+            let node = getParentPath(list[i].children, id)
+            if (node !== undefined) {
+                return node.concat(list[i].path)
+            }
+        }
+    }
+}
+
 export const treeToList = function (arr: any[]){
   let res: any[] = []
   let fn = (source: any[])=>{

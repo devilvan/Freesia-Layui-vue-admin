@@ -1,7 +1,9 @@
 package com.freesia.constant;
 
+import com.freesia.util.UString;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Evad.Wu
@@ -94,6 +96,16 @@ public final class AdminConstant {
      * 新建标签页
      */
     public static final String BLANK = "blank";
+    /**
+     * 内容页打开
+     */
+    public static final String INNER = "innerLink";
+    /**
+     * 内容页打开，默认component
+     */
+    public static final String INNER_COMPONENT = "iframe/inner/index";
+
+
     /**
      * 基本组件标识
      */

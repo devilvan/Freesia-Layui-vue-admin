@@ -1,7 +1,8 @@
 <template>
   <div :style="'height:' + height">
     <iframe
-        :id="props.iframeId"
+        :id="'id-' + props.iframeId"
+        :iframeId="'iframe-' + iframeId"
         style="width: 100%; height: 100%"
         :src="props.src + '?' + new Date().getTime()"
         :frameborder="'yes'"
@@ -17,6 +18,7 @@ defineComponent({
 })
 
 interface InnerLinkProps {
+  name: string
   src: string,
   iframeId?: string
 }

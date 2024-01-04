@@ -74,6 +74,8 @@
     </select>
     <select id="findMenuListByUserId" resultType="com.freesia.entity.FindMenuListByUserIdEntity">
         SELECT DISTINCT M.ID,
+                        M.REC_VER,
+                        M.LOGIC_DEL,
                         M.PARENT_ID,
                         M.MENU_NAME,
                         M.MENU_TYPE,
@@ -85,6 +87,7 @@
                         M.VISIBLE,
                         M.STATUS,
                         M.IS_FRAME,
+                        M.IS_CACHE,
                         M.REMARK
         FROM sys_menu M
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
@@ -101,5 +104,15 @@
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
                  LEFT JOIN sys_user_role SUR ON RM.ROLE_ID = SUR.ROLE_ID
             ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findMenuPathExist" resultType="java.lang.Boolean">
+        SELECT count(1)
+        FROM sys_menu M
+        WHERE 1 = 1
+        AND M.LOGIC_DEL = 0
+        AND M.PATH = #{sysMenuPo.path}
+        <if test="sysMenuPo.id != null and sysMenuPo.id != 0">
+            AND M.ID != #{sysMenuPo.id}
+        </if>
     </select>
 </mapper>
