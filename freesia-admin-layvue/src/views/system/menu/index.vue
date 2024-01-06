@@ -306,7 +306,7 @@
 
     <lay-layer v-model="saveLinkModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysLinkVo" ref="saveLinkFormRef">
+        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules">
           <lay-row>
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -322,7 +322,7 @@
               <lay-form-item label="组件路径" prop="component"
                              :required="sysLinkVo.componentType === LinkComponentType.INNER_LINK && proceedCode === PROCEED_CODE.UPDATE"
                              :hidden="sysLinkVo.componentType !== LinkComponentType.INNER_LINK">
-                <lay-input v-model="sysLinkVo.component" placeholder="默认值：iframe/inner/index"></lay-input>
+                <lay-input v-model="sysLinkVo.component" placeholder="例如：iframe/inner/index"></lay-input>
               </lay-form-item>
               <lay-form-item label="图标" prop="icon">
                 <lay-icon-picker v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
@@ -556,6 +556,27 @@ const initLinkTreeSelect = {
   title: "顶级目录",
   id: '-1'
 }
+const componentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)+/index$"
+const sysLinkVoRules = ref({
+  component: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (!value.match(componentRegex)) {
+        callback(new Error("组件路径要以`index`结尾，允许'$'、'-'、'_'，例如：/iframe/inner/index"));
+      } else {
+        return true;
+      }
+      // if (captchaEnabled.value === true) {
+      //   if (!value) {
+      //     callback(new Error('验证码不能为空！'));
+      //   } else {
+      //     return true;
+      //   }
+      // } else {
+      //   return true;
+      // }
+    }
+  }
+})
 /* VAR */
 
 /* TOGGLE*/

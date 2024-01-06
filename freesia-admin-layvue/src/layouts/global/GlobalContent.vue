@@ -7,7 +7,6 @@
     </router-view>
   </div>
 </template>
-<!--        v-if="!route.meta.link" -->
 
 <script lang="ts" setup>
 import {useAppStore} from '../../store/app'

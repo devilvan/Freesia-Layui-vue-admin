@@ -1,4 +1,4 @@
-package com.freesia.dao;
+package com.freesia.handler;
 
 import cn.dev33.satoken.dao.SaTokenDao;
 import cn.dev33.satoken.util.SaFoxUtil;
@@ -16,7 +16,7 @@ import java.util.List;
  * @date 2023-08-29
  */
 @Slf4j
-public class RedisSaTokenDao implements SaTokenDao {
+public class RedisSaTokenHandler implements SaTokenDao {
     /**
      * 获取value
      *

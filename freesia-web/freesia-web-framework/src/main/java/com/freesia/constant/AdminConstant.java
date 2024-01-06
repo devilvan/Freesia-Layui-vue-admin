@@ -1,9 +1,7 @@
 package com.freesia.constant;
 
-import com.freesia.util.UString;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Evad.Wu

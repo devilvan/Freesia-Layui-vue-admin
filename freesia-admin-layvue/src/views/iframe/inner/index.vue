@@ -1,6 +1,6 @@
 <template>
   <div>
-    <InnerLink :key="url + '-' + title" :src="url" :iframeId="title"/>
+    <InnerLink :src="link" :iframeId="title"/>
   </div>
 </template>
 
@@ -10,9 +10,9 @@ import {useRoute} from "vue-router";
 
 const route = useRoute();
 const title = route.meta.title;
-const url = ref('/');
+const link = ref('/');
 onMounted(() => {
-  url.value = route.meta.link as string
+  link.value = route.meta.link as string
 })
 
 
