@@ -206,7 +206,7 @@ const loadDataSource = () => {
   })
 }
 
-function formatNumber(num, decimalPlaces) {
+function formatNumber(num: number, decimalPlaces: number) {
   const pattern = `^-?\\d+(?:\.\\d{0,${decimalPlaces}})?`;
   const regex = new RegExp(pattern);
   const formatted = num.toString().match(regex);
