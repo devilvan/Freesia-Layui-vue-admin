@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized} from 'vue-router'
+import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw} from 'vue-router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import {constantRoutes} from "./module/base-routes";
@@ -11,7 +11,7 @@ NProgress.configure({showSpinner: false})
 /* 构建路由*/
 export const router = createRouter({
     history: createWebHistory('/'),
-    routes: constantRoutes,
+    routes: constantRoutes as RouteRecordRaw[],
 });
 
 /* 构建路由*/
