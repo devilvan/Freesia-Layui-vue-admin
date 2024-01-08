@@ -346,7 +346,7 @@ function assignUserModalChange() {
 }
 
 function turnBack() {
-  closeOpen('/system/role');
+  closeOpen('/system/role/index');
 }
 </script>
 

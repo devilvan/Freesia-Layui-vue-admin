@@ -1,5 +1,6 @@
 package com.freesia.util;
 
+import cn.hutool.core.util.ObjectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,7 @@ import java.util.Map;
  */
 @SuppressWarnings(value = "unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UEmpty {
+public class UEmpty extends ObjectUtil {
 
     public static boolean isNotEmpty(String value) {
         return !isEmpty(value);

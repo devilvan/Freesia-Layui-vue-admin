@@ -56,7 +56,7 @@
     <div class="table-box" style="width: 1457px">
       <lay-table
           ref="tableRef"
-          :height="`570px`"
+          :height="`600px`"
           :loading="loading"
           :columns="columns"
           children-column-name="children"
@@ -67,10 +67,10 @@
           :resize="true"
       >
         <template #toolbar>
-          <lay-button size="sm" type="primary" @click="changeSaveMenuVoModalFlag(MenuType.DIR,null)">新建目录</lay-button>
-          <lay-button size="sm" type="normal" @click="changeSaveMenuVoModalFlag(MenuType.MENU, null)">新建菜单</lay-button>
-          <lay-button size="sm" type="warm" @click="changeSaveMenuVoModalFlag(MenuType.BUTTON, null)">新建按钮</lay-button>
-          <lay-button size="sm" type="danger" @click="changeSaveMenuVoModalFlag(MenuType.LINK, null)">新建链接</lay-button>
+          <lay-button size="sm" type="primary" @click="changeSaveMenuVoModalFlag(MenuType.DIR)">新建目录</lay-button>
+          <lay-button size="sm" type="normal" @click="changeSaveMenuVoModalFlag(MenuType.MENU)">新建菜单</lay-button>
+          <lay-button size="sm" type="warm" @click="changeSaveMenuVoModalFlag(MenuType.BUTTON)">新建按钮</lay-button>
+          <lay-button size="sm" type="danger" @click="changeSaveMenuVoModalFlag(MenuType.LINK)">新建链接</lay-button>
           <lay-button size="sm" @click="expandMenu(true)">展开全部</lay-button>
           <lay-button size="sm" @click="expandMenu(false)">折叠全部</lay-button>
         </template>
@@ -107,7 +107,7 @@
         </template>
         <template #option="{ row }">
           <lay-button
-              @click="changeVisible11(row.menuType, row)"
+              @click="openModifyModal(row)"
               size="xs"
               border="green"
               border-style="dashed"
@@ -156,12 +156,13 @@
         <lay-form :model="sysDirVo" ref="saveDirFormRef">
           <lay-row>
             <lay-col md="12">
-              <lay-form-item label="父目录" prop="parentId" required>
+              <lay-form-item label="父目录" prop="parentId">
                 <lay-tree-select v-model="sysDirVo.parentId" :data="treeMenuSelectList"
-                                 :allow-clear="true" @change="selectParentById(MenuType.MENU)"></lay-tree-select>
+                                 :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="路由路径" prop="path" required>
-                <lay-input v-model="sysDirVo.path" placeholder="例如：workspace"></lay-input>
+                <lay-input v-model="sysDirVo.path" placeholder="例如：workspace"
+                           :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-input>
               </lay-form-item>
               <lay-form-item label="图标" prop="icon">
                 <lay-icon-picker v-model="sysDirVo.icon" allow-clear></lay-icon-picker>
@@ -181,7 +182,7 @@
                 ></lay-input-number>
               </lay-form-item>
               <lay-form-item label="是否显示" prop="status" required>
-                <lay-select v-model="sysDirVo.status" :options="isShowOptions" :items="isShowOptions"
+                <lay-select v-model="sysDirVo.status" :options="isShowOptions" :items="sysDirVo.status"
                             style="width: 100%">
                 </lay-select>
               </lay-form-item>
@@ -193,7 +194,9 @@
         </lay-form>
         <div style="width: 97%; text-align: right">
           <lay-button size="sm" type="primary" @click="saveMenuSubmit(MenuType.DIR)">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="resetModal(MenuType.DIR)">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="resetModal(MenuType.DIR)"
+                      :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
+          </lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -206,7 +209,7 @@
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select v-model="sysMenuVo.parentId" :data="treeMenuSelectList"
-                                 :allow-clear="true" @change="selectParentById(MenuType.MENU)"></lay-tree-select>
+                                 :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="菜单名称" prop="menuName" required>
                 <lay-input v-model="sysMenuVo.menuName"></lay-input>
@@ -234,11 +237,8 @@
                             style="width: 100%">
                 </lay-select>
               </lay-form-item>
-              <lay-form-item label="组件路径" prop="component" required>
+              <lay-form-item label="组件路径" prop="component" :required="proceedCode === PROCEED_CODE.UPDATE">
                 <lay-input v-model="sysMenuVo.component" placeholder="例如：system/menu/index">
-                  <template #prepend="{disabled}">
-                    {{ prepend }}
-                  </template>
                 </lay-input>
               </lay-form-item>
             </lay-col>
@@ -249,7 +249,9 @@
         </lay-form>
         <div style="width: 97%; text-align: right">
           <lay-button size="sm" type="primary" @click="saveMenuSubmit(MenuType.MENU)">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="resetModal(MenuType.MENU)">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="resetModal(MenuType.MENU)"
+                      :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
+          </lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -262,13 +264,13 @@
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select v-model="sysButtonVo.parentId" :data="saveButtonTreeMenuSelectList"
-                                 :allow-clear="true" @change="selectParentById(MenuType.BUTTON)"></lay-tree-select>
+                                 :allow-clear="true"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="菜单名称" prop="menuName" required>
                 <lay-input v-model="sysButtonVo.menuName" placeholder="例如：新增"></lay-input>
               </lay-form-item>
-              <lay-form-item label="路由路径" prop="path" required>
-                <lay-input v-model="sysButtonVo.path" placeholder="例如：workspace"></lay-input>
+              <lay-form-item label="权限标识" prop="perms" required>
+                <lay-input v-model="sysButtonVo.perms" placeholder="例如：sys:menu:index"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col md="12">
@@ -286,10 +288,6 @@
                             style="width: 100%">
                 </lay-select>
               </lay-form-item>
-              <lay-form-item label="图标" prop="icon">
-                <lay-icon-picker v-model="sysButtonVo.icon" allow-clear></lay-icon-picker>
-                <!--                <lay-icon-picker v-model="sysLinkVo.icon" type="layui-icon-face-smile" page></lay-icon-picker>-->
-              </lay-form-item>
             </lay-col>
             <lay-form-item label="备注" prop="remark" required>
               <lay-textarea v-model="sysButtonVo.remark" :allow-clear="true" show-count :maxlength="127"></lay-textarea>
@@ -298,7 +296,9 @@
         </lay-form>
         <div style="width: 97%; text-align: right">
           <lay-button size="sm" type="primary" @click="saveMenuSubmit(MenuType.BUTTON)">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="resetModal(MenuType.BUTTON)">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="resetModal(MenuType.BUTTON)"
+                      :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
+          </lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -306,12 +306,12 @@
 
     <lay-layer v-model="saveLinkModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysLinkVo" ref="saveLinkFormRef">
+        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules">
           <lay-row>
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select v-model="sysLinkVo.parentId" :data="saveLinkTreeMenuSelectList"
-                                 :allow-clear="true" @change="selectParentById(MenuType.LINK)"></lay-tree-select>
+                                 :allow-clear="true"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="菜单名称" prop="menuName" required>
                 <lay-input v-model="sysLinkVo.menuName" placeholder="例如：新增"></lay-input>
@@ -319,8 +319,13 @@
               <lay-form-item label="链接地址" prop="path" required>
                 <lay-input v-model="sysLinkVo.path" placeholder="例如：https://www.baidu.com"></lay-input>
               </lay-form-item>
-              <lay-form-item label="权限标识" prop="perms" required>
-                <lay-input v-model="sysLinkVo.perms" placeholder="例如：sys:menu:index"></lay-input>
+              <lay-form-item label="组件路径" prop="component"
+                             :required="sysLinkVo.componentType === LinkComponentType.INNER_LINK && proceedCode === PROCEED_CODE.UPDATE"
+                             :hidden="sysLinkVo.componentType !== LinkComponentType.INNER_LINK">
+                <lay-input v-model="sysLinkVo.component" placeholder="例如：iframe/inner/index"></lay-input>
+              </lay-form-item>
+              <lay-form-item label="图标" prop="icon">
+                <lay-icon-picker v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
               </lay-form-item>
             </lay-col>
             <lay-col md="12">
@@ -348,9 +353,10 @@
                 <lay-input v-model="sysLinkVo.component" placeholder="内部链接必填">
                 </lay-input>
               </lay-form-item>
-              <lay-form-item label="图标" prop="icon">
-                <lay-icon-picker v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
+              <lay-form-item label="权限标识" prop="perms" required>
+                <lay-input v-model="sysLinkVo.perms" placeholder="例如：sys:menu:index"></lay-input>
               </lay-form-item>
+
             </lay-col>
             <lay-form-item label="备注" prop="remark" required>
               <lay-textarea v-model="sysLinkVo.remark" :allow-clear="true" show-count :maxlength="127"></lay-textarea>
@@ -359,7 +365,9 @@
         </lay-form>
         <div style="width: 97%; text-align: right">
           <lay-button size="sm" type="primary" @click="saveMenuSubmit(MenuType.LINK)">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="resetModal(MenuType.LINK)">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="resetModal(MenuType.LINK)"
+                      :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
+          </lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -367,13 +375,15 @@
   </lay-container>
 </template>
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {deleteMenu, findMenuListByUserId, findTreeMenuSelect, saveMenu} from "../../../api/system/Menu";
 import {FindMenuListByUserIdEntity, SysMenuVo} from "../../../types/system/Menu";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
 import {FindTreeMenuSelectEntity, MenuType, SysDictValueEntity} from "../../../types/system/Dict";
-import {RouterComponent} from "../../../types/Menu";
+import {LinkComponentType, RouterComponent} from "../../../types/Menu";
+import {Flag, PROCEED_CODE} from "../../../types/Constants";
+import {getParentPath} from "../../../library/treeUtil";
 /* INIT*/
 onMounted(async () => {
   sysMenuTypeList.value = await loadSysDictValue(Constants.SYS_MENU_TYPE);
@@ -409,9 +419,10 @@ async function loadTreeMenuSelectList() {
 
 /* VAR */
 const title = ref('新增')
+const proceedCode = ref(PROCEED_CODE.ADD)
 const loading = ref(false)
 const tableRef = ref()
-const prepend = ref()
+const parentPath = ref()
 const saveDirFormRef = ref()
 const saveMenuFormRef = ref()
 const saveButtonFormRef = ref()
@@ -433,11 +444,14 @@ const findTreeChildrenList = ref<any[]>([]);
 const menuTreeCheckedKeys = ref<string[]>([])
 const menuTreeShowCheckbox = ref(true)
 const sysDirVo = ref<SysMenuVo>({
-  status: '0'
+  status: '1'
 })
 const sysMenuVo = ref<SysMenuVo>({
   status: '0'
 })
+sysMenuVo.value.component = computed(() => {
+  return sysMenuVo.value.parentId + "/" + sysMenuVo.value.path + "/index"
+}).value
 const sysButtonVo = ref<SysMenuVo>({
   status: '0'
 })
@@ -542,6 +556,28 @@ const initLinkTreeSelect = {
   title: "顶级目录",
   id: '-1'
 }
+const componentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
+const permsRegex = "([A-Za-z0-9$_])+(:[A-Za-z0-9$_]*)$"
+const sysLinkVoRules = ref({
+  component: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (!value.match(componentRegex)) {
+        callback(new Error("组件路径格式错误，允许'$'、'-'、'_'，例如：/iframe/inner/index"));
+      } else {
+        return true;
+      }
+    }
+  },
+  perms: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (!value.match(permsRegex)) {
+        callback(new Error("权限标识格式错误，允许'$'、'-'、'_'，例如：iframe:inner:index"));
+      } else {
+        return true;
+      }
+    }
+  }
+})
 /* VAR */
 
 /* TOGGLE*/
@@ -579,6 +615,7 @@ function toRemove(row: any) {
             const {code} = await deleteMenu(row.id);
             if (code === 200) {
               layer.msg('您已成功删除链接【' + row.menuName + '】')
+              loadDataSource()
             }
             layer.close(id)
           }
@@ -686,21 +723,23 @@ function resetModal(menuType: any) {
 /* TOGGLE*/
 
 /* FUNCTION*/
-const changeSaveMenuVoModalFlag = (menuType: any, row: any) => {
-  if (row && row.value) {
-    sysMenuVo.value = {...row.value}
-  }
+const changeSaveMenuVoModalFlag = (menuType: any) => {
+  proceedCode.value = PROCEED_CODE.ADD
   if (MenuType.DIR === menuType) {
     title.value = '新建目录'
+    sysDirVo.value = {status: '0'}
     saveDirModalFlag.value = !saveDirModalFlag.value
   } else if (MenuType.MENU === menuType) {
     title.value = '新建菜单'
+    sysMenuVo.value = {status: '0'}
     saveMenuModalFlag.value = !saveMenuModalFlag.value
   } else if (MenuType.BUTTON === menuType) {
     title.value = '新建按钮'
+    sysButtonVo.value = {status: '0'}
     saveButtonModalFlag.value = !saveButtonModalFlag.value
   } else if (MenuType.LINK === menuType) {
     title.value = '新建链接'
+    sysLinkVo.value = {status: '0'}
     saveLinkModalFlag.value = !saveLinkModalFlag.value
   } else {
     return;
@@ -723,37 +762,20 @@ function saveMenuSubmit(menuType: any) {
   saveFormRef.value.validate(async (isValidate: any, model: any, errors: any) => {
     if (isValidate) {
       model.menuType = menuType;
-      let {code, msg} = await saveMenu(model);
-      if (code === 200) {
-        layer.msg(msg, {icon: 1})
-        resetModal(menuType)
-        loadDataSource()
-        toCancel()
-      }
+      saveMenu(model).then((res: any) => {
+        if (res.code === 200) {
+          layer.msg(res.msg, {icon: 1})
+          toCancel()
+          resetModal(menuType)
+          loadDataSource()
+        }
+      });
     }
   })
 }
 
-function selectParentById(menuType: any) {
-  let tmpVo = ref();
-  if (MenuType.MENU === menuType) {
-    tmpVo = sysMenuVo;
-  } else if (MenuType.BUTTON === menuType) {
-    tmpVo = sysButtonVo;
-  } else if (MenuType.LINK === menuType) {
-    tmpVo = sysLinkVo;
-  }
-  dataSource.value.find(f => {
-    if (tmpVo.value.parentId === f.id) {
-      prepend.value = f.path;
-      return;
-    }
-  })
-}
-
-function pathInputEvent(val: any) {
-  sysMenuVo.value.component = prepend.value + "/" + val;
-  sysMenuVo.value.perms = prepend.value + ":" + val;
+function pathInputEvent(val: any, row: any) {
+  sysMenuVo.value.component = parentPath.value + "/" + sysMenuVo.value.path + "/index"
 }
 
 function componentTypeEqInnerLink(componentType: any) {
@@ -810,6 +832,34 @@ function findChildList(item: any): any[] {
     result.push(f);
   })
   return result;
+}
+
+function openModifyModal(row: any) {
+  proceedCode.value = PROCEED_CODE.UPDATE
+  // 判断是否链接
+  if (Flag.ENABLED === row.isFrame) {
+    sysLinkVo.value = {...row}
+    if (row.component && (row.component === LinkComponentType.MODAL || row.component === LinkComponentType.BLANK)) {
+      sysLinkVo.value.componentType = row.component
+    } else if (row.component) {
+      sysLinkVo.value.componentType = LinkComponentType.INNER_LINK
+    }
+    saveLinkModalFlag.value = true;
+    return;
+  }
+  if (MenuType.DIR === row.menuType) {
+    sysDirVo.value = {...row}
+    saveDirModalFlag.value = true;
+  } else if (MenuType.MENU === row.menuType) {
+    sysMenuVo.value = {...row}
+    let recursionPath = getParentPath(dataSource.value, row.id)?.reverse()
+    recursionPath = recursionPath.filter((f: any) => f !== row.path)
+    parentPath.value = recursionPath.join("/");
+    saveMenuModalFlag.value = true;
+  } else if (MenuType.BUTTON === row.menuType) {
+    sysButtonVo.value = {...row}
+    saveButtonModalFlag.value = true;
+  }
 }
 
 /* FUNCTION*/

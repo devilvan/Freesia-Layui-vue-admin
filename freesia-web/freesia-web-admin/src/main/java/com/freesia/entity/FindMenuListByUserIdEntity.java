@@ -34,6 +34,8 @@ public class FindMenuListByUserIdEntity extends TreeDto<FindMenuListByUserIdEnti
     private String status;
     @Schema(description = "是否外链")
     private String isFrame;
+    @Schema(description = "是否缓存")
+    private String isCache;
     @Schema(description = "备注")
     private String remark;
 }

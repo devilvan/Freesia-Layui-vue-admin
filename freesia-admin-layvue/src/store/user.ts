@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import {getInfo, getMenu, getRouters, logout} from "../api/Login";
 import BaseLayout from "../layouts/BaseLayout.vue";
 import BlankLayout from "../layouts/BlankLayout.vue";
-import InnerLink from "../layouts/InnerLink.vue"
+import Inner from "../views/iframe/inner/index.vue"
 import auth from "../directives/auth";
 import {dynamicRoutes} from "../router/module/base-routes";
 import router, {addRoutes} from "../router";
@@ -75,7 +75,7 @@ function filterAsyncRouter(asyncRouterMap: any, lastRouter = false, type = false
             } else if (route.component === RouterComponent.BLANK_LAYOUT) {
                 route.component = BlankLayout
             } else if (route.component === RouterComponent.INNER_LINK) {
-                route.component = InnerLink
+                route.component = Inner
             } else {
                 route.component = loadView(route.component)
             }

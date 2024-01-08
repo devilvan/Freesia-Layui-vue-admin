@@ -8,7 +8,7 @@ import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import com.freesia.component.UrlsComponent;
-import com.freesia.dao.RedisSaTokenDao;
+import com.freesia.handler.RedisSaTokenHandler;
 import com.freesia.properties.SecurityProperties;
 import com.freesia.service.impl.SaPermissionImpl;
 import com.freesia.util.USpring;
@@ -65,7 +65,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
      */
     @Bean
     public SaTokenDao saTokenDao() {
-        return new RedisSaTokenDao();
+        return new RedisSaTokenHandler();
     }
 
 }

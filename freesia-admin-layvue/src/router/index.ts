@@ -1,8 +1,9 @@
-import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized} from 'vue-router'
+import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw} from 'vue-router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import {constantRoutes} from "./module/base-routes";
 import {useUserStore} from "../store/user";
+import {RouterComponent} from "../types/Menu";
 
 NProgress.configure({showSpinner: false})
 
@@ -10,7 +11,7 @@ NProgress.configure({showSpinner: false})
 /* 构建路由*/
 export const router = createRouter({
     history: createWebHistory('/'),
-    routes: constantRoutes,
+    routes: constantRoutes as RouteRecordRaw[],
 });
 
 /* 构建路由*/
@@ -58,7 +59,7 @@ router.afterEach(() => {
 export const addRoutes = (routes: any, router: any) => {
     if (routes && routes.length > 0) {
         routes.forEach((route: any) => {
-            router.addRoute(route.name || 'BaseLayout', route);
+            router.addRoute(route.name || RouterComponent.BASE_LAYOUT, route);
         })
     }
 }

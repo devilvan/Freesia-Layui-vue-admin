@@ -95,6 +95,16 @@ public final class AdminConstant {
      */
     public static final String BLANK = "blank";
     /**
+     * 内容页打开
+     */
+    public static final String INNER = "innerLink";
+    /**
+     * 内容页打开，默认component
+     */
+    public static final String INNER_COMPONENT = "iframe/inner/index";
+
+
+    /**
      * 基本组件标识
      */
     public static final String BASE_LAYOUT = "BaseLayout";

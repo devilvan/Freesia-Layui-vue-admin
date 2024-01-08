@@ -91,4 +91,21 @@ public interface SysMenuMapper extends BaseMapper<SysMenuPo> {
      * @return 菜单树下拉框集合
      */
     List<FindTreeMenuSelectEntity> findTreeMenuSelect(@Param(Constants.WRAPPER) Wrapper<SysMenuPo> wrapper);
+
+    /**
+     * 查询菜单中对应path是否已经被使用
+     *
+     * @param sysMenuPo 菜单信息
+     * @return 菜单中对应path是否已经被使用
+     */
+    boolean findMenuPathExist(@Param("sysMenuPo") SysMenuPo sysMenuPo);
+
+    /**
+     * 根据组件路径、菜单名称查询是否使用
+     *
+     * @param component 组件路径
+     * @param menuName  菜单名称
+     * @return true-已使用 false-未使用
+     */
+    boolean findByComponentMenuNameExists(@Param("component") String component, @Param("menuName") String menuName);
 }

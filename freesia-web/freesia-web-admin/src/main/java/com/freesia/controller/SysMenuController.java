@@ -87,6 +87,7 @@ public class SysMenuController {
     @PostMapping(value = "saveMenu")
     public R<SysMenuDto> saveMenu(@RequestBody @Valid SysMenuVo sysMenuVo) {
         SysMenuDto sysMenuDto = UCopy.copyVo2Dto(sysMenuVo, SysMenuDto.class);
+        sysMenuDto.setPath(sysMenuDto.getPath().trim());
         sysMenuDto = sysMenuService.saveMenu(sysMenuDto);
         return R.ok(sysMenuDto);
     }
