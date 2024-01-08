@@ -91,12 +91,12 @@ const $router = useRouter();
 const {closeOpen} = useTab();
 onMounted(async () => {
   sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
-  roleId.value = $route.params && $route.params.roleId as string;
-  loadDataSource(roleId.value)
+  userId.value = $route.params && $route.params.userId as string;
+  loadDataSource(userId.value)
 })
 /* INIT*/
 /* VAR*/
-const roleId = ref<string>('');
+const userId = ref<string>('');
 const assignRoleVo = ref<SysUserVo>({})
 const visibleImport = ref(false)
 const file1 = ref<any>([])
@@ -155,13 +155,13 @@ const loadDataSource = (roleId: any) => {
 }
 
 function assign() {
-  assignUser({
-    roleId: roleId.value,
+  assignRole({
+    userId: userId.value,
     afterRoleIdSet: selectedKeys.value
   }).then((res: any) => {
     if (res.code === 200) {
       layer.msg(res.msg);
-      loadDataSource(roleId.value)
+      loadDataSource(userId.value)
     } else {
       layer.confirm(res.msg, {icon: 2})
     }
@@ -169,7 +169,7 @@ function assign() {
 }
 
 function turnBack() {
-  closeOpen('/system/user');
+  closeOpen('/system/user/index');
 }
 </script>
 

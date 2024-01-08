@@ -3,6 +3,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import {constantRoutes} from "./module/base-routes";
 import {useUserStore} from "../store/user";
+import {RouterComponent} from "../types/Menu";
 
 NProgress.configure({showSpinner: false})
 
@@ -58,7 +59,7 @@ router.afterEach(() => {
 export const addRoutes = (routes: any, router: any) => {
     if (routes && routes.length > 0) {
         routes.forEach((route: any) => {
-            router.addRoute(route.name || 'BaseLayout', route);
+            router.addRoute(route.name || RouterComponent.BASE_LAYOUT, route);
         })
     }
 }

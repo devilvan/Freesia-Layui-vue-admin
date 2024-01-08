@@ -38,7 +38,9 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> implements SysMenuService {
+    private static final String PREFIX = "/";
     private static final String NO_REDIRECT = "noRedirect";
+    private static final String COMPONENT_REGEX = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$";
 
     private final SysMenuMapper sysMenuMapper;
     private final SysRoleMapper sysRoleMapper;
@@ -96,6 +98,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                     UString.equals(FlagConstant.ENABLED, menu.getIsCache()), menu.getPath());
             routerDto.setMeta(meta);
             List<SysMenuDto> children = menu.getChildren();
+            String component = checkComponent(menu.getComponent());
             if (UEmpty.isNotEmpty(children) && MenuType.DIR.getType().equals(menu.getMenuType())) {
                 routerDto.setAlwaysShow(true);
                 routerDto.setRedirect(NO_REDIRECT);
@@ -106,7 +109,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 List<RouterDto> childrenList = new ArrayList<>();
                 RouterDto childrenRouterDto = new RouterDto();
                 childrenRouterDto.setPath(menu.getPath());
-                childrenRouterDto.setComponent(menu.getComponent());
+                childrenRouterDto.setComponent(component);
                 childrenRouterDto.setName(StringUtils.capitalize(menu.getPath()));
                 childrenRouterDto.setMeta(meta);
                 childrenRouterDto.setQuery(menu.getQueryParam());
@@ -114,13 +117,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 routerDto.setChildren(childrenList);
             } else if (AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId()) && isDirInnerLink(menu)) {
                 routerDto.setMeta(new MetaDto(menu.getMenuName(), menu.getIcon(), menu.getPath()));
-                routerDto.setPath("/" + menu.getComponent().replace("/index", ""));
-//                routerDto.setComponent(menu.getComponent());
+                routerDto.setPath(addForwardSlash(component));
                 routerDto.setComponent(AdminConstant.BASE_LAYOUT);
                 List<RouterDto> childrenList = new ArrayList<>();
                 RouterDto childrenRouterDto = new RouterDto();
-                childrenRouterDto.setPath("/" + menu.getComponent().replace("/index", ""));
-                childrenRouterDto.setComponent(menu.getComponent());
+                childrenRouterDto.setPath(addForwardSlash(component));
+                childrenRouterDto.setComponent(component);
                 childrenRouterDto.setName(StringUtils.capitalize(innerLinkReplaceEach(menu.getPath())));
                 childrenRouterDto.setMeta(new MetaDto(menu.getMenuName(), menu.getIcon(), menu.getPath()));
                 childrenList.add(childrenRouterDto);
@@ -150,9 +152,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         List<String> linkType = Arrays.asList(AdminConstant.MODAL, AdminConstant.BLANK);
         for (SysMenuDto menu : sysMenuDtoList) {
             RouterEntity routerEntity = new RouterEntity();
-            if (FlagConstant.ENABLED.equals(menu.getIsFrame()) && linkType.contains(menu.getComponent())) {
+            String component = checkComponent(menu.getComponent());
+            if (FlagConstant.ENABLED.equals(menu.getIsFrame()) && linkType.contains(component)) {
                 routerEntity.setId(menu.getPath());
-                routerEntity.setComponent(menu.getComponent());
+                routerEntity.setComponent(component);
             } else {
                 routerEntity.setId(getRouterPath(menu));
             }
@@ -173,7 +176,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
             } else if (AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId()) && isDirInnerLink(menu)) {
                 routerEntity.setIcon(menu.getIcon());
                 routerEntity.setTitle(menu.getMenuName());
-                routerEntity.setId("/" + menu.getComponent().replace("/index", ""));
+                routerEntity.setId(addForwardSlash(component));
             } else if (AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId()) && isInnerLink(menu)) {
                 routerEntity.setIcon(menu.getIcon());
                 routerEntity.setTitle(menu.getMenuName());
@@ -267,6 +270,16 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
 
     @Override
     public SysMenuDto saveMenu(SysMenuDto sysMenuDto) {
+        //前端解析menu列表ID的逻辑不要处理后半部分
+        String component = checkComponent(sysMenuDto.getComponent());
+        String menuName = sysMenuDto.getMenuName();
+        if (UEmpty.isNotEmpty(component) && UEmpty.isNotEmpty(menuName)) {
+            boolean componentExistsFlag = sysMenuMapper.findByComponentMenuNameExists(component, menuName);
+            if (componentExistsFlag) {
+                // 如果组件路径存在
+                throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.component.menuName.exists", component, menuName);
+            }
+        }
         if (MenuType.MENU.getType().equals(sysMenuDto.getMenuType())) {
             checkAddMenu(sysMenuDto);
         } else if (MenuType.BUTTON.getType().equals(sysMenuDto.getMenuType())) {
@@ -411,7 +424,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
             // 如果是子菜单
             String component = menu.getComponent();
             if (UEmpty.isNotEmpty(component)) {
-                routerPath = "/" + component.replace("/index", "");
+                routerPath = addForwardSlash(component);
             }
             // 内链打开外网方式
             if (isInnerLink(menu)) {
@@ -522,5 +535,42 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     private boolean isBlankView(SysMenuDto menu) {
         return menu.getParentId().intValue() != AdminConstant.MENU_TOP_PARENT_ID
                && MenuType.MENU.getType().equals(menu.getMenuType());
+    }
+
+    /**
+     * 判断是否为'/'开头，是则去掉
+     *
+     * @param component 组件路径
+     * @return 检查后的组件路径
+     */
+    private String checkComponent(String component) {
+        if (UEmpty.isNotEmpty(component)) {
+            if (component.startsWith(PREFIX)) {
+                return component.substring(1);
+            }
+        }
+        return component;
+    }
+
+    /**
+     * 处理返回的path
+     *
+     * @param component 组件路径
+     * @return 除去组件路径的最后一个单元后的值
+     */
+    private String getComponentPath(String component) {
+        int index = component.lastIndexOf("/");
+        if (index != -1) {
+            component = component.substring(0, index);
+            return addForwardSlash(component);
+        }
+        return component;
+    }
+
+    private String addForwardSlash(String str) {
+        if (!str.startsWith("/")) {
+            return "/" + str;
+        }
+        return str;
     }
 }

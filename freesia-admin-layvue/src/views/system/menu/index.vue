@@ -556,24 +556,25 @@ const initLinkTreeSelect = {
   title: "顶级目录",
   id: '-1'
 }
-const componentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)+/index$"
+const componentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
+const permsRegex = "([A-Za-z0-9$_])+(:[A-Za-z0-9$_]*)$"
 const sysLinkVoRules = ref({
   component: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
       if (!value.match(componentRegex)) {
-        callback(new Error("组件路径要以`index`结尾，允许'$'、'-'、'_'，例如：/iframe/inner/index"));
+        callback(new Error("组件路径格式错误，允许'$'、'-'、'_'，例如：/iframe/inner/index"));
       } else {
         return true;
       }
-      // if (captchaEnabled.value === true) {
-      //   if (!value) {
-      //     callback(new Error('验证码不能为空！'));
-      //   } else {
-      //     return true;
-      //   }
-      // } else {
-      //   return true;
-      // }
+    }
+  },
+  perms: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (!value.match(permsRegex)) {
+        callback(new Error("权限标识格式错误，允许'$'、'-'、'_'，例如：iframe:inner:index"));
+      } else {
+        return true;
+      }
     }
   }
 })
@@ -614,6 +615,7 @@ function toRemove(row: any) {
             const {code} = await deleteMenu(row.id);
             if (code === 200) {
               layer.msg('您已成功删除链接【' + row.menuName + '】')
+              loadDataSource()
             }
             layer.close(id)
           }
