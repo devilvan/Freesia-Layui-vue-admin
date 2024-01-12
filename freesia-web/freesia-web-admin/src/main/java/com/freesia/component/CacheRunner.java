@@ -1,6 +1,7 @@
 package com.freesia.component;
 
 import com.freesia.constant.CacheConstant;
+import com.freesia.properties.WebCommonProperties;
 import com.freesia.service.SysConfigService;
 import com.freesia.service.SysDictValueService;
 import com.freesia.util.UMessage;
@@ -19,14 +20,19 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CacheRunner implements ApplicationRunner {
+    private final WebCommonProperties webCommonProperties;
     private final SysConfigService sysConfigService;
     private final SysDictValueService sysDictValueService;
 
     @Override
     public void run(ApplicationArguments args) {
-        sysConfigService.loadSysConfig();
-        log.info(UMessage.message("dict.load.success", CacheConstant.SYS_CONFIG));
-        sysDictValueService.loadSysDictValue();
-        log.info(UMessage.message("dict.load.success", CacheConstant.SYS_DICT));
+        if (webCommonProperties.isInitSysConfig()) {
+            sysConfigService.loadSysConfig();
+            log.info(UMessage.message("config.load.success", CacheConstant.SYS_CONFIG));
+        }
+        if (webCommonProperties.isInitSysDict()) {
+            sysDictValueService.loadSysDictValue();
+            log.info(UMessage.message("dict.load.success", CacheConstant.SYS_DICT));
+        }
     }
 }

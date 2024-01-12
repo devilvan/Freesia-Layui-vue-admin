@@ -16,7 +16,17 @@ export const useUserStore = defineStore({
     state: () => {
         return {
             token: '',
-            userInfo: {},
+            userInfo: {
+                id: '',
+                deptId: '',
+                userName: '',
+                nickName: '',
+                userType: '',
+                email: '',
+                telNo: '',
+                gender: '',
+                avatar: '',
+            },
             permissions: [],
             menus: [],
             roles: [],
