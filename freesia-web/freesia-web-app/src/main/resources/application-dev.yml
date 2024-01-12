@@ -1,6 +1,12 @@
 server:
   port: 8570
 ---
+freesia:
+  web:
+   common:
+     isInitSysConfig: false
+     isInitSysDict: false
+---
 spring:
   application:
     name: freesia-admin
