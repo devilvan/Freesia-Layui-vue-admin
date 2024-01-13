@@ -277,7 +277,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
             boolean componentExistsFlag = sysMenuMapper.findByComponentMenuNameExists(component, menuName);
             if (componentExistsFlag) {
                 // 如果组件路径存在
-                throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.component.menuName.exists", component, menuName);
+                throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.component.menuName.exists", component, menuName);
             }
         }
         if (MenuType.MENU.getType().equals(sysMenuDto.getMenuType())) {
@@ -299,7 +299,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     public void deleteMenu(Long id) {
         LoginUserModel loginUser = USecurity.getLoginUser();
         if (ObjectUtil.isNull(loginUser)) {
-            throw new ServiceException(SysModule.MENU_MANAGEMENT, "user.info.null");
+            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "user.info.null");
         }
         Long userId = loginUser.getUserId();
         QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
@@ -371,7 +371,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         String componentType = sysMenuDto.getComponentType();
         if (UEmpty.isNotEmpty(componentType)) {
             if (AdminConstant.INNER_LINK.equalsIgnoreCase(componentType) && !UString.isHttp(sysMenuDto.getPath())) {
-                throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.innerLink.path.require.http");
+                throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.innerLink.path.require.http");
             }
         }
     }
@@ -384,7 +384,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     private void checkAddButton(SysMenuDto sysMenuDto) {
         SysMenuDto findMenuByParentIdDto = findMenuByParentId(sysMenuDto.getParentId());
         if (ObjectUtil.isNull(findMenuByParentIdDto.getId())) {
-            throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.button.find.parent.failed", sysMenuDto.getMenuName(), sysMenuDto.getParentId());
+            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.button.find.parent.failed", sysMenuDto.getMenuName(), sysMenuDto.getParentId());
         } else {
             String component = findMenuByParentIdDto.getComponent();
             String path = sysMenuDto.getPath();
@@ -403,12 +403,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         // 防止在【新建目录】按钮中新建不合法的链接
         String componentType = sysMenuDto.getComponentType();
         if (UEmpty.isEmpty(componentType) && UString.isHttp(sysMenuDto.getPath())) {
-            throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.add.link.failed");
+            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.add.link.failed");
         }
         SysMenuPo sysMenuPo = UCopy.copyDto2Po(sysMenuDto, SysMenuPo.class);
         boolean flag = sysMenuMapper.findMenuPathExist(sysMenuPo);
         if (flag) {
-            throw new ServiceException(SysModule.MENU_MANAGEMENT, "menu.path.existed", sysMenuPo.getPath());
+            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.path.existed", sysMenuPo.getPath());
         }
     }
 
