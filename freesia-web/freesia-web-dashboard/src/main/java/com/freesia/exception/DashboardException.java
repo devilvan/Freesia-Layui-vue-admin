@@ -1,5 +1,6 @@
 package com.freesia.exception;
 
+import com.freesia.constant.DashboardModule;
 import com.freesia.constant.SysModule;
 
 import java.io.Serial;
@@ -14,6 +15,6 @@ public class DashboardException extends BaseException {
     private static final long serialVersionUID = 9168523946223394482L;
 
     public DashboardException(String code, Object... args) {
-        super(SysModule.DASHBOARD_MANAGEMENT, code, args, null);
+        super(DashboardModule.DASHBOARD_MANAGEMENT, code, args, null);
     }
 }

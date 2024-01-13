@@ -10,7 +10,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
-import com.freesia.constant.SysModule;
+import com.freesia.constant.MenuModule;
+import com.freesia.constant.UserModule;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
@@ -187,9 +188,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
             sysUserRepository.save(sysUserPo);
             sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
                 SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                sensitiveLog.setModule(SysModule.USER_MANAGEMENT);
-                sensitiveLog.setSubModule(SysModule.ASSIGN_ROLE);
-                sensitiveLog.setType(SysModule.ASSIGN_ROLE);
+                sensitiveLog.setModule(UserModule.USER_MANAGEMENT);
+                sensitiveLog.setSubModule(MenuModule.SubModule.ASSIGN_ROLE);
+                sensitiveLog.setType(MenuModule.SubModule.ASSIGN_ROLE);
                 sensitiveLog.setResult(FlagConstant.SUCCESS);
                 sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(roleIdList));
                 sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
@@ -200,9 +201,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
             e.printStackTrace();
             sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
                 SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                sensitiveLog.setModule(SysModule.USER_MANAGEMENT);
-                sensitiveLog.setSubModule(SysModule.ASSIGN_ROLE);
-                sensitiveLog.setType(SysModule.ASSIGN_ROLE);
+                sensitiveLog.setModule(UserModule.USER_MANAGEMENT);
+                sensitiveLog.setSubModule(MenuModule.SubModule.ASSIGN_ROLE);
+                sensitiveLog.setType(MenuModule.SubModule.ASSIGN_ROLE);
                 sensitiveLog.setResult(FlagConstant.FAILED);
                 sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_failed"));
                 return sensitiveLog;

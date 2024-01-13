@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
-import com.freesia.constant.AdminConstant;
-import com.freesia.constant.FlagConstant;
-import com.freesia.constant.SysModule;
+import com.freesia.constant.*;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
@@ -105,9 +103,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
         List<Long> newMenuIdList = UStream.toList(newSysMenuPoSet, SysMenuPo::getId);
         SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
             SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-            sensitiveLog.setModule(SysModule.ROLE_MANAGEMENT);
-            sensitiveLog.setSubModule(SysModule.ASSIGN_MENU_PERMISSIONS);
-            sensitiveLog.setType(SysModule.ASSIGN_MENU_PERMISSIONS);
+            sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
+            sensitiveLog.setSubModule(MenuModule.SubModule.ASSIGN_MENU_PERMISSIONS);
+            sensitiveLog.setType(MenuModule.SubModule.ASSIGN_MENU_PERMISSIONS);
             sensitiveLog.setResult(FlagConstant.SUCCESS);
             sensitiveLog.setContextOld(JSONObject.toJSONString(oldMenuIdList));
             sensitiveLog.setContext(JSONObject.toJSONString(newMenuIdList));
