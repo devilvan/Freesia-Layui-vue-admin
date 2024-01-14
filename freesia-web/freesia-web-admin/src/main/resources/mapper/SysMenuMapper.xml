@@ -115,12 +115,12 @@
             AND M.ID != #{sysMenuPo.id}
         </if>
     </select>
-    <select id="findByComponentMenuNameExists" resultType="java.lang.Boolean">
+    <select id="findByComponentExists" resultType="java.lang.Boolean">
         SELECT EXISTS(
                        SELECT 1
                        FROM SYS_MENU
                        WHERE 1 = 1
-                         AND (COMPONENT = #{component} OR MENU_NAME = #{menuName})
+                         AND COMPONENT = #{component}
                          AND COMPONENT NOT IN ('modal', 'blank')
                    )
     </select>
