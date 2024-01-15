@@ -64,6 +64,7 @@
     <orderEntry type="library" name="Maven: cn.hutool:hutool-core:5.8.20" level="project" />
     <orderEntry type="library" name="Maven: cn.hutool:hutool-crypto:5.8.20" level="project" />
     <orderEntry type="module" module-name="freesia-common-api" />
+    <orderEntry type="library" name="Maven: com.google.code.javaparser:javaparser:1.0.9" level="project" />
     <orderEntry type="library" name="Maven: p6spy:p6spy:3.9.1" level="project" />
     <orderEntry type="library" name="Maven: org.lionsoul:ip2region:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aspects:5.3.20" level="project" />
