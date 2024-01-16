@@ -104,8 +104,7 @@ public interface SysMenuMapper extends BaseMapper<SysMenuPo> {
      * 根据组件路径、菜单名称查询是否使用
      *
      * @param component 组件路径
-     * @param menuName  菜单名称
      * @return true-已使用 false-未使用
      */
-    boolean findByComponentMenuNameExists(@Param("component") String component, @Param("menuName") String menuName);
+    boolean findByComponentExists(@Param("component") String component);
 }

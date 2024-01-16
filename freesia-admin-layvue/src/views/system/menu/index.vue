@@ -204,7 +204,7 @@
 
     <lay-layer v-model="saveMenuModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysMenuVo" ref="saveMenuFormRef">
+        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules">
           <lay-row>
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -218,8 +218,9 @@
                 <lay-input v-model="sysMenuVo.path" placeholder="例如：workspace" @input="pathInputEvent($event)">
                 </lay-input>
               </lay-form-item>
-              <lay-form-item label="图标" prop="icon">
-                <lay-icon-picker v-model="sysMenuVo.icon" allow-clear></lay-icon-picker>
+              <lay-form-item label="权限标识" prop="perms" required>
+                <lay-input v-model="sysMenuVo.perms"  placeholder="例如：sys:menu:index">
+                </lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col md="12">
@@ -240,6 +241,9 @@
               <lay-form-item label="组件路径" prop="component" :required="proceedCode === PROCEED_CODE.UPDATE">
                 <lay-input v-model="sysMenuVo.component" placeholder="例如：system/menu/index">
                 </lay-input>
+              </lay-form-item>
+              <lay-form-item label="图标" prop="icon">
+                <lay-icon-picker v-model="sysMenuVo.icon" allow-clear></lay-icon-picker>
               </lay-form-item>
             </lay-col>
             <lay-form-item label="备注" prop="remark" required>
@@ -375,7 +379,7 @@
   </lay-container>
 </template>
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {deleteMenu, findMenuListByUserId, findTreeMenuSelect, saveMenu} from "../../../api/system/Menu";
 import {FindMenuListByUserIdEntity, SysMenuVo} from "../../../types/system/Menu";
@@ -452,6 +456,15 @@ const sysMenuVo = ref<SysMenuVo>({
 sysMenuVo.value.component = computed(() => {
   return sysMenuVo.value.parentId + "/" + sysMenuVo.value.path + "/index"
 }).value
+watch(() => sysMenuVo.value.parentId, () => {
+  if (!sysMenuVo.value.parentId) {
+    return;
+  }
+  let recursionPath = getParentPath(dataSource.value, sysMenuVo.value.parentId as unknown as string)?.reverse()
+  recursionPath = recursionPath.filter((f: any) => f !== sysMenuVo.value.path)
+  parentPath.value = recursionPath.join("/");
+  return sysMenuVo.value.parentId + "/" + sysMenuVo.value.path + "/index"
+})
 const sysButtonVo = ref<SysMenuVo>({
   status: '0'
 })
@@ -558,6 +571,26 @@ const initLinkTreeSelect = {
 }
 const componentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
 const permsRegex = "([A-Za-z0-9$_])+(:[A-Za-z0-9$_]*)$"
+const sysMenuVoRules = ref({
+  component: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (!value.match(componentRegex)) {
+        callback(new Error("组件路径格式错误，允许'$'、'-'、'_'，例如：/iframe/inner/index"));
+      } else {
+        return true;
+      }
+    }
+  },
+  perms: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (!value.match(permsRegex)) {
+        callback(new Error("权限标识格式错误，允许'$'、'-'、'_'，例如：iframe:inner:index"));
+      } else {
+        return true;
+      }
+    }
+  }
+})
 const sysLinkVoRules = ref({
   component: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
@@ -776,6 +809,7 @@ function saveMenuSubmit(menuType: any) {
 
 function pathInputEvent(val: any, row: any) {
   sysMenuVo.value.component = parentPath.value + "/" + sysMenuVo.value.path + "/index"
+  sysMenuVo.value.perms = parentPath.value + ":" + sysMenuVo.value.path + ":index"
 }
 
 function componentTypeEqInnerLink(componentType: any) {

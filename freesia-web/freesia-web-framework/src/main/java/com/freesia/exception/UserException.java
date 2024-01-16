@@ -1,6 +1,6 @@
 package com.freesia.exception;
 
-import com.freesia.constant.SysModule;
+import com.freesia.constant.UserModule;
 
 import java.io.Serial;
 
@@ -15,6 +15,6 @@ public class UserException extends BaseException {
     private static final long serialVersionUID = 8756197040766756051L;
 
     public UserException(String code, Object... args) {
-        super(SysModule.USER_MANAGEMENT, code, args, null);
+        super(UserModule.USER_MANAGEMENT, code, args, null);
     }
 }
