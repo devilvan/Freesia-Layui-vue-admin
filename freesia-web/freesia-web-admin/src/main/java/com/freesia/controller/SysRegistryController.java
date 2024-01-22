@@ -2,8 +2,8 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.http.HttpStatus;
-import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
+import com.freesia.constant.SysConfigConstant;
 import com.freesia.dto.RegisterDto;
 import com.freesia.service.SysConfigService;
 import com.freesia.service.SysRegisterService;
@@ -39,7 +39,7 @@ public class SysRegistryController {
     @PostMapping("register")
     @Operation(summary = "用户注册功能")
     public R<Void> register(@Validated @RequestBody RegisterVo registerVo) {
-        if (!FlagConstant.TRUE.equals(sysConfigService.findConfigByKey(AdminConstant.SYS_ACCOUNT_REGISTER_USER))) {
+        if (!FlagConstant.TRUE.equals(sysConfigService.findConfigByKey(SysConfigConstant.SYS_ACCOUNT_REGISTER_USER))) {
             return R.ok(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("sys.register.disabled"));
         }
         RegisterDto registerDto = new RegisterDto();

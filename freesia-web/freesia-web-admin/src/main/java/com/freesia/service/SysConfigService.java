@@ -1,7 +1,6 @@
 package com.freesia.service;
 
 
-import com.freesia.constant.AdminConstant;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.po.SysConfigPo;
 import com.freesia.pojo.PageQuery;
@@ -33,7 +32,7 @@ public interface SysConfigService {
 
     /**
      * 查询验证码开关，并保存到缓存中
-     * 编码：{@link AdminConstant#SYS_ACCOUNT_CAPTCHA_ENABLED}
+     * 编码：{@link com.freesia.constant.SysConfigConstant#SYS_ACCOUNT_CAPTCHA_ENABLED}
      *
      * @return 开启/关闭
      */
@@ -42,7 +41,7 @@ public interface SysConfigService {
     /**
      * 查询全局配置表中是否启用注册功能
      *
-     * @param configKey config键，{@link AdminConstant#SYS_ACCOUNT_REGISTER_USER}
+     * @param configKey config键，{@link com.freesia.constant.SysConfigConstant#SYS_ACCOUNT_REGISTER_USER}
      * @return flag
      */
     String findConfigByKey(String configKey);

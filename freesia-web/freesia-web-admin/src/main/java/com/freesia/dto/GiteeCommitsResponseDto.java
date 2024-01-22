@@ -1,7 +1,9 @@
 package com.freesia.dto;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.freesia.annotation.Desensitize;
 import com.freesia.constant.Constants;
+import com.freesia.constant.DesensitizedType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -9,12 +11,12 @@ import java.util.Date;
 
 /**
  * @author Evad.Wu
- * @Description 请求Gitee提交更新记录 数据传输对象
+ * @Description 请求Gitee提交更新记录-响应参数 数据传输对象
  * @date 2024-01-15
  */
 @Data
-@Schema(description = "请求Gitee提交更新记录 数据传输对象")
-public class RequestGiteeCommitsDto {
+@Schema(description = "请求Gitee提交更新记录-响应参数 数据传输对象")
+public class GiteeCommitsResponseDto {
     @Schema(description = "提交地址")
     private String url;
     @Schema(description = "唯一标识")
@@ -37,8 +39,8 @@ public class RequestGiteeCommitsDto {
         @Schema(description = "昵称")
         private String name;
         @Schema(description = "提交时间")
-        @JSONField(format = Constants.YMD_HMS)
-        private Date date;
+        @JSONField(format = Constants.YMD)
+        private String date;
         @Schema(description = "头像地址")
         @JSONField(alternateNames = "avatar_url")
         private String avatarUrl;
@@ -60,5 +62,20 @@ public class RequestGiteeCommitsDto {
         private Author author;
         @Schema(description = "提交描述")
         private String message;
+
+        @Data
+        @Schema(description = "提交人信息")
+        public static class CommitAuthor {
+            @Schema(description = "提交人")
+            private String name;
+            @Schema(description = "提交时间")
+            @JSONField(format = Constants.YMD_HMS)
+            private Date date;
+            @Schema(description = "邮箱地址")
+            @Desensitize(strategy = DesensitizedType.EMAIL)
+            private String email;
+        }
     }
+
 }
+

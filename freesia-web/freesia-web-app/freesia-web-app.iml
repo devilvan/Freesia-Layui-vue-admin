@@ -36,7 +36,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="freesia-web-dashboard" />
     <orderEntry type="module" module-name="freesia-web-admin" />
     <orderEntry type="module" module-name="freesia-web-framework" />
     <orderEntry type="module" module-name="freesia-web-api" />
