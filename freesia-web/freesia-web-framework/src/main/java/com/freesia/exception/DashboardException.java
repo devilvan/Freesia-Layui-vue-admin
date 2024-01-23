@@ -1,7 +1,6 @@
 package com.freesia.exception;
 
 import com.freesia.constant.DashboardModule;
-import com.freesia.constant.SysModule;
 
 import java.io.Serial;
 

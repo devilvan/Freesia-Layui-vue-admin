@@ -1,5 +1,6 @@
 package com.freesia.po;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -56,4 +57,8 @@ public class SysConfigPo extends BasePo implements Serializable {
     @TableField(value = "CONFIG_TYPE")
     @Column(name = "CONFIG_TYPE", columnDefinition = "TINYINT(1) DEFAULT 1 COMMENT '系统内置（1-是 0-否）'")
     private Boolean configType;
+    @Schema(description = "额外参数（JSON形式）")
+    @TableField(value = "JSON_PARAM")
+    @Column(name = "JSON_PARAM", columnDefinition = "TEXT COMMENT '额外参数（JSON形式）'")
+    private String jsonParam;
 }

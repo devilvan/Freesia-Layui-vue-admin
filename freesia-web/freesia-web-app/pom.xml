@@ -19,11 +19,6 @@
     <dependencies>
         <dependency>
             <groupId>com.freesia</groupId>
-            <artifactId>freesia-web-dashboard</artifactId>
-            <version>${freesia.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.freesia</groupId>
             <artifactId>freesia-web-admin</artifactId>
             <version>${freesia.version}</version>
         </dependency>

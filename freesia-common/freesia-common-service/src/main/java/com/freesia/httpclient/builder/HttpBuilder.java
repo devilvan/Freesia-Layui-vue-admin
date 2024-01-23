@@ -1,10 +1,12 @@
 package com.freesia.httpclient.builder;
 
-import com.freesia.exception.BaseException;
 import com.freesia.httpclient.constant.HttpContentType;
+import com.freesia.httpclient.dto.HttpClientDto;
+import com.freesia.httpclient.exception.HttpClientException;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UServlet;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
@@ -25,6 +27,8 @@ import java.util.function.Consumer;
 @Slf4j
 public class HttpBuilder {
     private HttpRequestBase httpRequest;
+    private Map<String, String> headers;
+    private CredentialsProvider credentialsProvider;
 
     protected HttpBuilder() {
         super();
@@ -51,6 +55,15 @@ public class HttpBuilder {
     }
 
     /**
+     * 步骤二：根据建造器收集的成员对象参数，构造一个 {@link HttpBuilder} 对象
+     *
+     * @return HttpClient对象
+     */
+    public HttpClientDto build() {
+        return new HttpClientDto(this.httpRequest, this.headers, this.credentialsProvider);
+    }
+
+    /**
      * 给建造器添加请求对象（无参数/无请求体）
      *
      * @param requestMethod 请求类型
@@ -59,7 +72,7 @@ public class HttpBuilder {
      */
     public final HttpBuilder setHttpRequest(RequestMethod requestMethod, String url) {
         this.httpRequest = Optional.ofNullable(requestMethod2HttpRequestBase(requestMethod, url))
-                .orElseThrow(() -> new BaseException("请求类型格式有误！"));
+                .orElseThrow(() -> new HttpClientException("http.request.type.invalid", requestMethod.name()));
         return this;
     }
 
@@ -74,7 +87,7 @@ public class HttpBuilder {
      */
     public final <T> HttpBuilder setHttpRequest(RequestMethod requestMethod, String url, T param) {
         this.httpRequest = Optional.ofNullable(requestMethod2HttpRequestBase(requestMethod, url))
-                .orElseThrow(() -> new BaseException("请求类型格式有误！"));
+                .orElseThrow(() -> new HttpClientException("请求类型格式有误！"));
         this.checkSetHttpParam(requestMethod).accept(param);
         return this;
     }
@@ -99,7 +112,7 @@ public class HttpBuilder {
             } else if (t instanceof String) {
                 // 判断请求类型是否支持请求体
                 if (!isSupportRequestBody(requestMethod)) {
-                    throw new BaseException(requestMethod.name() + "该请求类型不支持请求体！");
+                    throw new HttpClientException("http.request.type.body.not.support", requestMethod.name());
                 }
                 String requestBody = t.toString();
                 if (UEmpty.isNotEmpty(requestBody)) {
@@ -132,6 +145,7 @@ public class HttpBuilder {
      */
     public final HttpBuilder setHeaders(Map<String, String> headers) {
         if (UEmpty.isNotEmpty(headers)) {
+            this.headers = headers;
             Set<Map.Entry<String, String>> entrySet = headers.entrySet();
             for (Map.Entry<String, String> entry : entrySet) {
                 this.httpRequest.setHeader(entry.getKey(), entry.getValue());
@@ -139,5 +153,4 @@ public class HttpBuilder {
         }
         return this;
     }
-
 }

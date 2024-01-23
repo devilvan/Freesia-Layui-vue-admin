@@ -46,6 +46,7 @@ declare module '@vue/runtime-core' {
     LayMenuItem: typeof import('@layui/layui-vue')['LayMenuItem']
     LayNoticeBar: typeof import('@layui/layui-vue')['LayNoticeBar']
     LayPage: typeof import('@layui/layui-vue')['LayPage']
+    LayPanel: typeof import('@layui/layui-vue')['LayPanel']
     LayPopconfirm: typeof import('@layui/layui-vue')['LayPopconfirm']
     LayProgress: typeof import('@layui/layui-vue')['LayProgress']
     LayQrcode: typeof import('@layui/layui-vue')['LayQrcode']

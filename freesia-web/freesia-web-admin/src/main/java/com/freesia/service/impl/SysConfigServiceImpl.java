@@ -9,10 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
-import com.freesia.constant.AdminConstant;
-import com.freesia.constant.CacheConstant;
-import com.freesia.constant.FlagConstant;
-import com.freesia.constant.UserModule;
+import com.freesia.constant.*;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.exception.CaptchaException;
 import com.freesia.exception.CaptchaExpireException;
@@ -59,7 +56,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public boolean findCaptchaEnabled() {
-        String captchaEnabled = USpring.getAopProxy(this).findConfigByKey(AdminConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        String captchaEnabled = USpring.getAopProxy(this).findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
         if (UEmpty.isEmpty(captchaEnabled)) {
             return true;
         }

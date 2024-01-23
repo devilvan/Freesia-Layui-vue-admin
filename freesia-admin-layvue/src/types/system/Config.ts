@@ -4,7 +4,8 @@ export interface SysConfigVo extends BaseVo {
     configName?: string;
     configKey?: string;
     configValue?: string;
-    configType?: boolean | false;
+    configType?: boolean | true;
+    jsonParam?: string
 }
 
 export interface SysConfigEntity extends BaseEntity {

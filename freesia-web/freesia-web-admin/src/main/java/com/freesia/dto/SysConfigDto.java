@@ -26,4 +26,6 @@ public class SysConfigDto extends BaseDto {
     private String configValue;
     @Schema(description = "系统内置（1-是 0-否）")
     private Boolean configType;
+    @Schema(description = "额外参数（JSON形式）")
+    private String jsonParam;
 }

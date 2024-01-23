@@ -118,6 +118,9 @@
           <lay-form-item label="是否系统内置" prop="configType">
             <lay-switch v-model="configVo.configType"></lay-switch>
           </lay-form-item>
+          <lay-form-item label="额外参数（JSON形式）" prop="jsonParam">
+            <lay-textarea v-model="configVo.jsonParam" :allow-clear="true" show-count></lay-textarea>
+          </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: center">
           <lay-button size="sm" type="primary" @click="toSubmit">保存</lay-button>

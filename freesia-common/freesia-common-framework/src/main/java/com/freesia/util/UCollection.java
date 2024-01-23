@@ -1,5 +1,6 @@
 package com.freesia.util;
 
+import cn.hutool.core.collection.CollUtil;
 import com.freesia.exception.BaseException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.*;
  */
 @SuppressWarnings(value = "unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UCollection {
+public class UCollection extends CollUtil {
     public static final int MAXIMUM_CAPACITY = 1 << 30;
     public static final float LOAD_FACTOR = 0.75f;
     public static final int LIST_INIT_CAPACITY = 10;

@@ -12,7 +12,6 @@
       <module fileurl="file://$PROJECT_DIR$/freesia-web/freesia-web-admin/freesia-web-admin.iml" filepath="$PROJECT_DIR$/freesia-web/freesia-web-admin/freesia-web-admin.iml" />
       <module fileurl="file://$PROJECT_DIR$/freesia-web/freesia-web-api/freesia-web-api.iml" filepath="$PROJECT_DIR$/freesia-web/freesia-web-api/freesia-web-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/freesia-web/freesia-web-app/freesia-web-app.iml" filepath="$PROJECT_DIR$/freesia-web/freesia-web-app/freesia-web-app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/freesia-web/freesia-web-dashboard/freesia-web-dashboard.iml" filepath="$PROJECT_DIR$/freesia-web/freesia-web-dashboard/freesia-web-dashboard.iml" />
       <module fileurl="file://$PROJECT_DIR$/freesia-web/freesia-web-framework/freesia-web-framework.iml" filepath="$PROJECT_DIR$/freesia-web/freesia-web-framework/freesia-web-framework.iml" />
     </modules>
   </component>
