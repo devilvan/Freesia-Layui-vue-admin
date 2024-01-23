@@ -126,3 +126,9 @@ springdoc:
 #  enable: true
 #  setting:
 #    language: zh_cn
+gitee:
+  commits:
+    url: https://gitee.com/api/v5/repos/devilvan/freesia/commits
+  oauth:
+    url: https://gitee.com/oauth/token
+    per-page: 20

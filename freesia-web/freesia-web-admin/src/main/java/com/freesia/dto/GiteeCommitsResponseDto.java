@@ -38,9 +38,6 @@ public class GiteeCommitsResponseDto {
         private String login;
         @Schema(description = "昵称")
         private String name;
-        @Schema(description = "提交时间")
-        @JSONField(format = Constants.YMD)
-        private String date;
         @Schema(description = "头像地址")
         @JSONField(alternateNames = "avatar_url")
         private String avatarUrl;
@@ -59,7 +56,7 @@ public class GiteeCommitsResponseDto {
     @Schema(description = "提交信息")
     public static class Commit {
         @Schema(description = "提交人信息")
-        private Author author;
+        private CommitAuthor author;
         @Schema(description = "提交描述")
         private String message;
 

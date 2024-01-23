@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "Gitee提交更新记录-请求参数 数据传输对象")
 public class GiteeCommitsRequestParamDto {
+
     @Schema(description = "令牌")
     private String accessToken;
     @Schema(description = "当前页")

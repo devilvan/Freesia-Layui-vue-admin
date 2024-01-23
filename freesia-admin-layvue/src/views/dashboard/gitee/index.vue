@@ -1,15 +1,28 @@
 <template>
   <div style="height: 100%; width: 100%">
     <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
-      <lay-container>
-        <lay-timeline v-for="(dto, index) in giteeCommitsResponseDtoList" :key="index">
-          <lay-timeline-item :title="dto.commit.author.date">
-            <p>
-              {{ dto.commit.author.name }}
-              <br>{{ dto.commit.message }}
-            </p>
-          </lay-timeline-item>
-        </lay-timeline>
+      <lay-container style="margin-top: 20px">
+        <lay-panel>
+          <div style="margin-top: 10px; margin-bottom: 30px">
+            <lay-line contentPosition="left" style="font-size: 16pt; font-weight: lighter" borderWidth="2px" theme="cyan">Gitee 提交更新记录
+            </lay-line>
+          </div>
+          <lay-timeline v-for="(list, key) in giteeCommitsResponseDtoMapList" :key="key">
+            <lay-timeline-item :title="key">
+              <div v-for="(dto, listIndex) in list" :key="listIndex"
+                   :style="{paddingBottom: listIndex !== list.length - 1 ? '20px' : '0px'} ">
+                <p>
+                  <lay-avatar :src="dto.avatarUrl" :radius="true" @click="preview(dto.avatarUrl)"></lay-avatar>&nbsp;&nbsp;
+                  <scan style="font-size: 16pt">{{ dto.name }}</scan>&nbsp;&nbsp;
+                  <scan>{{ dto.date }}</scan>
+                </p>
+                <p style="font-size: 12pt">{{ dto.message }}</p>
+                <lay-line theme="blue" borderWidth="1px"></lay-line>
+                <scan></scan>
+              </div>
+            </lay-timeline-item>
+          </lay-timeline>
+        </lay-panel>
       </lay-container>
     </div>
   </div>
@@ -17,9 +30,9 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import {useTab} from "../../../layouts/composable/useTab";
-import {requestGiteeCommits} from "../../../api/dashboard/Gitee";
-import {GiteeCommitsResponseDto} from "../../../types/dashboard/Gitee";
+import {findGiteeCommits} from "../../../api/dashboard/Gitee";
 import {layer} from "@layui/layui-vue";
+import {FindGiteeCommitsEntity} from "../../../types/dashboard/Gitee";
 /* INIT*/
 const {closeOpen} = useTab();
 
@@ -29,12 +42,13 @@ onMounted(() => {
 })
 /* INIT*/
 /* VAR*/
-const giteeCommitsResponseDtoList = ref<Array<GiteeCommitsResponseDto>>([])
+const giteeCommitsResponseDtoMapList = ref<Map<String, Array<FindGiteeCommitsEntity>>>(new Map<String, Array<FindGiteeCommitsEntity>>())
 /* VAR*/
 const loadDataSource = () => {
-  requestGiteeCommits().then((res: any) => {
+  findGiteeCommits().then((res: any) => {
     if (res.code === 200) {
-      giteeCommitsResponseDtoList.value = res.data;
+      giteeCommitsResponseDtoMapList.value = res.data;
+
     } else {
       layer.msg(res.msg, {icon: 2})
     }
@@ -48,6 +62,15 @@ function formatNumber(num: number, decimalPlaces: number) {
   return formatted ? formatted[0] : "";
 }
 
+/**
+ * 预览图片
+ */
+function preview(path: any) {
+  let option = {
+    imgList: [{src: path, alt: 'Do you like what you see?'}]
+  };
+  layer.photos(option)
+}
 </script>
 
 <style scoped>
