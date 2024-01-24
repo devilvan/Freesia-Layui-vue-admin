@@ -9,6 +9,8 @@ export interface BaseVo {
     modifyTime?: Date;
     logicDel?: 0;
     recVer?: number;
+    buildIn?: boolean | true;
+    tenantId?: string;
 }
 
 /**
@@ -22,6 +24,8 @@ export interface BaseEntity {
     modifyTime?: Date;
     logicDel?: 0;
     recVer?: number;
+    buildIn?: boolean | true;
+    tenantId?: string;
 }
 
 /**

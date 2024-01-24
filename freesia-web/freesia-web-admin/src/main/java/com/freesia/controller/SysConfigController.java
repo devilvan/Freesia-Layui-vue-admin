@@ -59,9 +59,9 @@ public class SysConfigController {
     public R<Void> deleteConfig(@RequestParam String configKey) {
         SysConfigDto sysConfigDto = sysConfigService.findSysConfigByConfigKey(configKey);
         if (ObjectUtil.isNotNull(sysConfigDto)) {
-            if (sysConfigDto.getConfigType()) {
+            if (sysConfigDto.getBuildIn()) {
                 R<Void> r = R.failed();
-                r.setMsg(UMessage.message("sys.build-in.config.delete.failed"));
+                r.setMsg(UMessage.message("buildIn.config.delete.failed"));
                 return r;
             }
         }
