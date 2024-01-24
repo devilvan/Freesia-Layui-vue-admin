@@ -35,11 +35,8 @@ public class SysRoleDeptPo extends RelationPo {
     @Serial
     private static final long serialVersionUID = 3381942492949819568L;
     @Id
-    @Schema(description = "菜单ID")
-    private Long menuId;
-    @Id
-    @Schema(description = "部门ID")
-    private Long deptId;
+    @Schema(description = "角色-部门 联合主键")
+    private SysRoleDeptPk sysRoleDeptPk;
 }
 
 @Data

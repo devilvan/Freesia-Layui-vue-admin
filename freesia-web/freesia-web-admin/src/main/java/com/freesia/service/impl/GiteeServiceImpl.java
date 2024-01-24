@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +31,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class GiteeServiceImpl implements GiteeService {
-    SimpleDateFormat ymd = new SimpleDateFormat(Constants.YMD);
-    SimpleDateFormat ymdhms = new SimpleDateFormat(Constants.YMD_HMS);
     private final GiteeProperties giteeProperties;
     private final HttpClientComponent httpClientComponent;
 
@@ -95,8 +92,8 @@ public class GiteeServiceImpl implements GiteeService {
                 return findGiteeCommitsEntity;
             }).orElseThrow(() -> new GiteeCommitException("gitee.commit.message.required"));
             Optional.ofNullable(giteeCommitsResponseDto.getCommit().getAuthor()).map(commitAuthor -> {
-                findGiteeCommitsEntity.setDate(ymdhms.format(commitAuthor.getDate()));
-                findGiteeCommitsEntity.setDateKey(ymd.format(commitAuthor.getDate()));
+                findGiteeCommitsEntity.setDate(Constants.SDF_YMDHMS.format(commitAuthor.getDate()));
+                findGiteeCommitsEntity.setDateKey(Constants.SDF_YMD.format(commitAuthor.getDate()));
                 findGiteeCommitsEntity.setEmail(commitAuthor.getEmail());
                 return findGiteeCommitsEntity;
             }).orElseThrow(() -> new GiteeCommitException("gitee.commit.date.required"));

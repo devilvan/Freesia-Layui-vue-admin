@@ -64,10 +64,10 @@
           v-model:selected-keys="selectedKeys"
           @change="change"
           @sortChange="sortChange">
-        <template #configType="{ row }">
-<!--                        @change="changeConfigType($event, row)"-->
+        <template #buildIn="{ row }">
+<!--          @change="changeBuildIn($event, row)"-->
           <lay-switch
-              :model-value="row.configType"
+              :model-value="row.buildIn"
           ></lay-switch>
         </template>
         <template v-slot:toolbar>
@@ -115,11 +115,8 @@
           <lay-form-item label="参数值" prop="configValue" required>
             <lay-input v-model="configVo.configValue"></lay-input>
           </lay-form-item>
-          <lay-form-item label="是否系统内置" prop="configType">
-            <lay-switch v-model="configVo.configType"></lay-switch>
-          </lay-form-item>
-          <lay-form-item label="额外参数（JSON形式）" prop="jsonParam">
-            <lay-textarea v-model="configVo.jsonParam" :allow-clear="true" show-count></lay-textarea>
+          <lay-form-item label="是否系统内置" prop="buildIn">
+            <lay-switch v-model="configVo.buildIn"></lay-switch>
           </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: center">
@@ -160,9 +157,11 @@ const loadDataSource = () => {
 const searchQuery = ref<SysConfigVo>({})
 const loading = ref(false)
 const selectedKeys = ref()
-const configVo = ref<SysConfigVo>({})
+const configVo = ref<SysConfigVo>({
+  buildIn: false
+})
 const configVoTemplate = ref<SysConfigVo>({
-  configType: false
+  buildIn: false
 })
 const configFormRef = ref()
 const configModalShowFlag = ref(false)
@@ -178,7 +177,7 @@ const columns = ref([
   {title: '参数名称', width: '150px', key: 'configName', sort: 'desc'},
   {title: '参数键', width: '150px', key: 'configKey', sort: 'asc'},
   {title: '参数值', width: '100px', key: 'configValue', sort: 'desc'},
-  {title: '系统内置', width: '40px', key: 'configType', customSlot: 'configType'},
+  {title: '系统内置', width: '40px', key: 'buildIn', customSlot: 'buildIn'},
   {title: '创建时间', width: '160px', key: 'createTime'},
   {
     title: '操作',
@@ -212,7 +211,7 @@ const sortChange = (key: any, sort: number) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
 }
 const dataSource = ref<Array<SysConfigEntity>>()
-const changeConfigType = (isChecked: boolean, row: any) => {
+const changeBuildIn = (isChecked: boolean, row: any) => {
   dataSource.value?.forEach((item: any) => {
     if (item.id === row.id) {
       layer.msg('Success', {icon: 1}, () => {
@@ -230,7 +229,7 @@ const changeConfigModalFlag = (text: any, row: any) => {
   if (row != null) {
     configVo.value = {...row}
   } else {
-    configVo.value.configType = false
+    configVo.value.buildIn = false
   }
   configModalShowFlag.value = !configModalShowFlag.value
 }
@@ -308,7 +307,7 @@ function toCancel() {
 }
 
 function confirm(row: any) {
-  if (row && row.configType) {
+  if (row && row.buildIn) {
     layer.msg('系统内置参数无法删除！')
     return;
   } else {

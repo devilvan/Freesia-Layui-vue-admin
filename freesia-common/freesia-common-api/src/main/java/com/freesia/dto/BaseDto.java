@@ -30,5 +30,9 @@ public class BaseDto {
     @Schema(description = "逻辑删除")
     private Boolean logicDel;
     @Schema(description = "版本号")
-    private Long recVer = 0L;
+    private Long recVer;
+    @Schema(description = "系统内置（0-是 1-否）")
+    private Boolean buildIn;
+    @Schema(description = "租户ID")
+    private Long tenantId;
 }
