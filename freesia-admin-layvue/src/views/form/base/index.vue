@@ -70,6 +70,14 @@
 </template>
 
 <script lang="ts">
+/**
+ * 创建组件时要添加name，否则在使用keep-alive时就会失效
+ */
+export default {
+  name: "Form-base",
+};
+</script>
+<script lang="ts">
 import { reactive } from 'vue'
 import { layer } from '@layui/layer-vue'
 import { useRouter, useRoute } from 'vue-router'

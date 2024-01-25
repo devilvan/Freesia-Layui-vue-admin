@@ -378,6 +378,14 @@
     </lay-layer>
   </lay-container>
 </template>
+<script lang="ts">
+/**
+ * 创建组件时要添加name，否则在使用keep-alive时就会失效
+ */
+export default {
+  name: "Menu",
+};
+</script>
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from 'vue'
 import {layer} from '@layui/layui-vue'
