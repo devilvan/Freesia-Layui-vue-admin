@@ -77,7 +77,7 @@ public class UCopy {
      * @param <DTO>    DTO类型
      * @return VO赋值DTO后的对象
      */
-    public static <VO extends BaseVo, DTO extends BaseDto> DTO copyVo2Dto(VO vo, Class<DTO> dtoClz, String... excludes) {
+    public static <VO, DTO extends BaseDto> DTO copyVo2Dto(VO vo, Class<DTO> dtoClz, String... excludes) {
         DTO dto = null;
         try {
             dto = dtoClz.getConstructor().newInstance();
@@ -97,7 +97,7 @@ public class UCopy {
      * @param <DTO>    DTO类型
      * @return DTO分页对象
      */
-    public static <ENTITY extends BaseEntity, DTO extends BaseDto> Page<DTO> convertPageEntity2Dto(Page<ENTITY> page, Class<DTO> dtoClass) {
+    public static <ENTITY, DTO extends BaseDto> Page<DTO> convertPageEntity2Dto(Page<ENTITY> page, Class<DTO> dtoClass) {
         Page<DTO> pageDto = new Page<>();
         List<DTO> sysUserDtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
         pageDto.setRecords(sysUserDtoList);

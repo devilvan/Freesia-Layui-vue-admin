@@ -83,7 +83,7 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
         return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
     }
 
-    @Cacheable(cacheNames = CacheConstant.SYS_DICT, key = "#dictKey")
+    @Cacheable(cacheNames = CacheConstant.SYS_DICT, key = "#dictKey", unless = "#id==null")
     public List<SysDictValuePo> findSysDictValuePoList(String dictKey) {
         Wrapper<SysDictValuePo> queryWrapper = Wrappers.<SysDictValuePo>query()
                 .eq("DV.LOGIC_DEL", FlagConstant.ENABLED)
