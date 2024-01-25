@@ -21,6 +21,7 @@ import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -82,7 +83,7 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
         SysDictKeyDto dto = saveUpdate(sysDictKeyDto);
         if (ObjectUtil.isNull(id)) {
             // 新增字典键则，加入到缓存中
-            UCache.put(CacheConstant.SYS_DICT, sysDictKeyDto.getDictKey(), null);
+            UCache.put(CacheConstant.SYS_DICT, sysDictKeyDto.getDictKey(), Collections.emptyList());
         }
         return dto;
     }

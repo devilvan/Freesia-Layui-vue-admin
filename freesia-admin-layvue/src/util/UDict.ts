@@ -20,10 +20,14 @@ export enum Constants {
     /**
      * 数据范围
      */
-    SYS_DATA_SCOPE = "SYS_DATA_SCOPE"
+    SYS_DATA_SCOPE = "SYS_DATA_SCOPE",
+    /**
+     * 请求类型
+     */
+    REQUEST_TYPE = "REQUEST_TYPE"
 }
 
-export const loadSysDictValue = async (dictKey: string): Promise<SysDictValueEntity[]> => {
+export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {
     let {data} = await findCacheSysDictValueList({dictKey: dictKey});
     let sysMenuTypeArr: Array<SysDictValueEntity> = []
     if (data && data.length > 0) {
