@@ -19,9 +19,11 @@ import com.freesia.vo.SysDictVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -131,15 +133,11 @@ public class SysDictController {
         return R.ok(null, idList.size());
     }
 
+    @Validated
     @Operation(summary = "刷新字典缓存值")
     @DeleteMapping(value = "flushCacheSysDictValue")
-    public R<Void> flushCacheSysDictValue(@RequestParam String dictKey) {
-        try {
-            sysDictValueService.flushCacheSysDictValue(dictKey);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return R.failed();
-        }
-        return R.failed();
+    public R<Void> flushCacheSysDictValue(@NotEmpty @RequestParam String dictKey) {
+        sysDictValueService.flushCacheSysDictValue(dictKey);
+        return R.ok();
     }
 }
