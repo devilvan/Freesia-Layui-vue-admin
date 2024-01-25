@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface ${dataBaseDto.className}Service {
     /**
-     * 保存
+     * 保存${dataBaseDto.comment}信息
      *
      * @param ${dataBaseDto.className?uncap_first}Dto 控制层处理后的数据传输对象
      * @return 保存回调对象
@@ -21,7 +21,7 @@ public interface ${dataBaseDto.className}Service {
     ${dataBaseDto.className}Dto saveUpdate(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
 
     /**
-     * 批量保存
+     * 批量保存${dataBaseDto.comment}信息
      *
      * @param list 控制层处理后的数据传输对象集合
      * @return 保存回调对象
@@ -29,7 +29,7 @@ public interface ${dataBaseDto.className}Service {
     List<${dataBaseDto.className}Dto> saveUpdateBatch(List<${dataBaseDto.className}Dto> list);
 
     /**
-     * 查询URL配置分页信息
+     * 查询${dataBaseDto.comment}信息
      *
      * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
      * @param pageQuery    分页条件
@@ -38,17 +38,17 @@ public interface ${dataBaseDto.className}Service {
     TableResult<${dataBaseDto.className}Dto> findPage${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto, PageQuery pageQuery);
 
     /**
-     * 条件查询URL配置信息
+     * 条件查询${dataBaseDto.comment}信息
      *
      * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
-     * @return URL配置信息
+     * @return ${dataBaseDto.comment}信息
      */
     ${dataBaseDto.className}Dto find${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
 
     /**
-    * 删除URL配置信息
-    *
-    * @param id 主键
-    */
+     * 删除${dataBaseDto.comment}信息
+     *
+     * @param id 主键
+     */
     void delete${dataBaseDto.className}(Long id);
 }

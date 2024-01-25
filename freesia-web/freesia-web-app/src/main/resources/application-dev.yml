@@ -121,6 +121,8 @@ springdoc:
       paths-to-match: /api/sysSensitiveLogController/**
     - group: 8. 数据面板模块
       paths-to-match: /dashboard/**
+    - group: 9. 基础服务模块
+      paths-to-match: /common/**
 # knife4j的增强配置，不需要增强可以不配
 #knife4j:
 #  enable: true

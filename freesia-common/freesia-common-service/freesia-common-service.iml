@@ -15,7 +15,7 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
-          <factory-entry name="freesia-common-service" />
+          <factory-entry name="freesia-common-service" value="e819dbc4-fc1e-4972-be76-26fed43ed567" />
         </datasource-mapping>
         <naming-strategy-map />
       </configuration>

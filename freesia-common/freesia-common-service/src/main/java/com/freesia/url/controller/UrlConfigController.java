@@ -3,14 +3,19 @@ package com.freesia.url.controller;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.url.dto.UrlConfigDto;
-import com.freesia.url.vo.UrlConfigVo;
 import com.freesia.url.service.UrlConfigService;
+import com.freesia.url.vo.UrlConfigVo;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -25,26 +30,51 @@ public class UrlConfigController {
     private final UrlConfigService urlConfigService;
 
     /**
-    * 查询URL配置信息表分页信息
-    *
-    * @param urlConfigVo 查询条件
-    * @param pageQuery   分页条件
-    * @return 形式返回
-    */
-    @Operation(summary = "查询URL配置信息表分页信息")
-    @GetMapping(value = "findPageUrlConfig")
-    public R<TableResult<UrlConfigDto>> findPageUrlConfig(UrlConfigVo urlConfigVo, PageQuery pageQuery) {
+     * 保存URL配置信息表信息
+     *
+     * @return 形式返回
+     */
+    @Operation(summary = "保存URL配置信息表信息")
+    @PostMapping(value = "saveUpdate")
+    public R<Void> saveUpdate(@RequestBody UrlConfigVo urlConfigVo) {
         UrlConfigDto urlConfigDto = UCopy.copyVo2Dto(urlConfigVo, UrlConfigDto.class);
-        TableResult<UrlConfigDto> tableResult = urlConfigService.findPageUrlConfig(urlConfigDto, pageQuery);
-        return R.ok(tableResult);
+        urlConfigService.saveUpdate(urlConfigDto);
+        return R.ok();
     }
 
     /**
-    * 条件查询URL配置信息表
-    *
-    * @param urlConfigVo 查询条件
-    * @return 形式返回
-    */
+     * 批量保存URL配置信息表信息
+     *
+     * @return 形式返回
+     */
+    @Operation(summary = "保存URL配置信息表信息")
+    @PostMapping(value = "saveUpdateBatch")
+    public R<Void> saveUpdateBatch(@RequestBody List<UrlConfigVo> urlConfigVoList) {
+        List<UrlConfigDto> urlConfigDtoList = UCopy.fullCopyList(urlConfigVoList, UrlConfigDto.class);
+        urlConfigService.saveUpdateBatch(urlConfigDtoList);
+        return R.ok();
+    }
+
+    /**
+     * 查询URL配置信息表分页信息
+     *
+     * @param urlConfigVo 查询条件
+     * @param pageQuery   分页条件
+     * @return 形式返回
+     */
+    @Operation(summary = "查询URL配置信息表分页信息")
+    @GetMapping(value = "findPageUrlConfig")
+    public TableResult<UrlConfigDto> findPageUrlConfig(UrlConfigVo urlConfigVo, PageQuery pageQuery) {
+        UrlConfigDto urlConfigDto = UCopy.copyVo2Dto(urlConfigVo, UrlConfigDto.class);
+        return urlConfigService.findPageUrlConfig(urlConfigDto, pageQuery);
+    }
+
+    /**
+     * 条件查询URL配置信息表
+     *
+     * @param urlConfigVo 查询条件
+     * @return 形式返回
+     */
     @Operation(summary = "条件查询URL配置信息表")
     @GetMapping(value = "findUrlConfig")
     public R<UrlConfigDto> findUrlConfig(UrlConfigVo urlConfigVo) {
@@ -54,28 +84,29 @@ public class UrlConfigController {
     }
 
     /**
-    * 根据ID查询URL配置信息表
-    *
-    * @param id 主键
-    * @return 形式返回
-    */
-    @Operation(summary = "（缓存）根据ID查询URL配置信息表")
+     * 根据ID查询URL配置信息表
+     *
+     * @param code 配置标识
+     * @return 形式返回
+     */
+    @Operation(summary = "（缓存）根据配置标识查询URL配置信息表")
     @GetMapping(value = "findCacheUrlConfigById")
-    public R<UrlConfigDto> findCacheUrlConfigById(Long id) {
-        UrlConfigDto tableResult = urlConfigService.findCacheUrlConfigById(id);
+    public R<UrlConfigDto> findCacheUrlConfigById(String code) {
+        UrlConfigDto tableResult = urlConfigService.findCacheUrlConfigByCode(code);
         return R.ok(tableResult);
     }
 
     /**
-    * 删除URL配置信息表
-    *
-    * @param id 主键
-    * @return 形式返回
-    */
+     * 删除URL配置信息表
+     *
+     * @param code 配置标识
+     * @return 形式返回
+     */
+    @Validated
     @Operation(summary = "删除URL配置信息表")
-    @PostMapping(value = "deleteUrlConfig")
-    public R<Void> deleteUrlConfig(Long id) {
-        urlConfigService.deleteUrlConfig(id);
+    @DeleteMapping(value = "deleteUrlConfig")
+    public R<Void> deleteUrlConfig(@NotNull @RequestParam Long id, @NotEmpty @RequestParam String code) {
+        urlConfigService.deleteUrlConfig(id, code);
         return R.ok();
     }
 }

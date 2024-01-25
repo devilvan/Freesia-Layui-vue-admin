@@ -39,6 +39,10 @@ import java.io.Serializable;
 public class UrlConfigPo extends BasePo implements Serializable {
     @Serial
     private static final long serialVersionUID = -3913462131718220503L;
+    @Schema(description = "配置标识")
+    @TableField(value = "CODE")
+    @Column(name = "CODE", columnDefinition = "VARCHAR(64) COMMENT '配置标识'", unique = true)
+    private String code;
     @Schema(description = "网址")
     @TableField(value = "URL")
     @Column(name = "URL", columnDefinition = "TEXT(65,535) COMMENT '网址'")

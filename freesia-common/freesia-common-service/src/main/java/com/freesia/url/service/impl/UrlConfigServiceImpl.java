@@ -12,6 +12,7 @@ import com.freesia.url.po.UrlConfigPo;
 import com.freesia.url.repository.UrlConfigRepository;
 import com.freesia.url.service.UrlConfigService;
 import com.freesia.util.UCopy;
+import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -32,7 +33,7 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
     private final UrlConfigRepository urlConfigRepository;
 
     @Override
-    @CachePut(cacheNames = URL_CONFIG, key = "#urlConfigDto.id")
+    @CachePut(cacheNames = URL_CONFIG, key = "#urlConfigDto.code", unless = "#urlConfigDto.code==null")
     public UrlConfigDto saveUpdate(UrlConfigDto urlConfigDto) {
         UrlConfigPo urlConfigPo = new UrlConfigPo();
         UCopy.fullCopy(urlConfigDto, urlConfigPo);
@@ -51,7 +52,7 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
     public TableResult<UrlConfigDto> findPageUrlConfig(UrlConfigDto urlConfigDto, PageQuery pageQuery) {
         LambdaQueryWrapper<UrlConfigPo> wrapper = new LambdaQueryWrapper<UrlConfigPo>()
                 .eq(UrlConfigPo::getLogicDel, FlagConstant.ENABLED)
-                .eq(UrlConfigPo::getId, urlConfigDto.getId());
+                .eq(UEmpty.isNotEmpty(urlConfigDto.getId()), UrlConfigPo::getId, urlConfigDto.getId());
         Page<UrlConfigPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, UrlConfigDto.class));
     }
@@ -66,18 +67,18 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
     }
 
     @Override
-    @Cacheable(cacheNames = URL_CONFIG, key = "#id")
-    public UrlConfigDto findCacheUrlConfigById(Long id) {
+    @Cacheable(cacheNames = URL_CONFIG, key = "#code")
+    public UrlConfigDto findCacheUrlConfigByCode(String code) {
         LambdaQueryWrapper<UrlConfigPo> wrapper = new LambdaQueryWrapper<UrlConfigPo>()
                 .eq(UrlConfigPo::getLogicDel, FlagConstant.ENABLED)
-                .eq(UrlConfigPo::getId, id);
+                .eq(UrlConfigPo::getCode, code);
         UrlConfigPo urlConfigPo = getOne(wrapper);
         return UCopy.copyPo2Dto(urlConfigPo, UrlConfigDto.class);
     }
 
     @Override
-    @CacheEvict(cacheNames = URL_CONFIG, key = "#id")
-    public void deleteUrlConfig(Long id) {
-        removeById(id);
+    @CacheEvict(cacheNames = URL_CONFIG, key = "#code")
+    public void deleteUrlConfig(Long id, String code) {
+        urlConfigRepository.deleteById(id);
     }
 }

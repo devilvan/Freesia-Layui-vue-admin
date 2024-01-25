@@ -46,17 +46,18 @@ public interface UrlConfigService {
     UrlConfigDto findUrlConfig(UrlConfigDto urlConfigDto);
 
     /**
-     * （缓存）根据ID查询URL配置分页信息
+     * （缓存）根据配置标识查询URL配置分页信息
      *
-     * @param id ID
+     * @param code 配置标识
      * @return URL配置信息
      */
-    UrlConfigDto findCacheUrlConfigById(Long id);
+    UrlConfigDto findCacheUrlConfigByCode(String code);
 
     /**
-    * 删除URL配置信息
-    *
-    * @param id 主键
-    */
-    void deleteUrlConfig(Long id);
+     * 删除URL配置信息
+     *
+     * @param id   主键
+     * @param code 配置标识
+     */
+    void deleteUrlConfig(Long id, String code);
 }

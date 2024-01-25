@@ -1,12 +1,12 @@
 package com.freesia.url.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * @author Evad.Wu
@@ -16,8 +16,12 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "URL配置信息表 值对象")
-public class UrlConfigVo {
+public class UrlConfigVo extends BaseVo {
+    @Schema(description = "配置标识")
+    @JSONField(alternateNames = {"code"})
+    private String code;
     @Schema(description = "网址")
     @JSONField(alternateNames = {"url"})
     private String url;
@@ -33,4 +37,7 @@ public class UrlConfigVo {
     @Schema(description = "内容类型")
     @JSONField(alternateNames = {"contentType"})
     private String contentType;
+    @Schema(description = "备注")
+    @JSONField(alternateNames = {"remark"})
+    private String remark;
 }
