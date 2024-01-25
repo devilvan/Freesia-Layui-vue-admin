@@ -83,7 +83,7 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
         return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
     }
 
-    @Cacheable(cacheNames = CacheConstant.SYS_DICT, key = "#dictKey", unless = "#id==null")
+    @Cacheable(cacheNames = CacheConstant.SYS_DICT, key = "#dictKey", unless = "#dictKey==null")
     public List<SysDictValuePo> findSysDictValuePoList(String dictKey) {
         Wrapper<SysDictValuePo> queryWrapper = Wrappers.<SysDictValuePo>query()
                 .eq("DV.LOGIC_DEL", FlagConstant.ENABLED)
@@ -107,9 +107,14 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
 
     @Override
     public SysDictValueDto saveSysDictValue(SysDictValueDto sysDictValueDto) {
-        SysDictValuePo findById = sysDictValueRepository.findById(sysDictValueDto.getId()).orElseGet(SysDictValuePo::new);
-        UCopy.halfCopy(sysDictValueDto, findById);
-        SysDictValuePo sysDictValuePo = sysDictValueRepository.save(findById);
+        SysDictValuePo sysDictValuePo = new SysDictValuePo();
+        if (UEmpty.isNotEmpty(sysDictValueDto.getId())) {
+            sysDictValuePo = sysDictValueRepository.findById(sysDictValueDto.getId()).orElseGet(SysDictValuePo::new);
+            UCopy.halfCopy(sysDictValueDto, sysDictValuePo);
+        } else {
+            UCopy.fullCopy(sysDictValueDto, sysDictValuePo);
+        }
+        sysDictValueRepository.save(sysDictValuePo);
         return UCopy.copyPo2Dto(sysDictValuePo, SysDictValueDto.class);
     }
 

@@ -50,21 +50,18 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
 
     @Override
     public TableResult<UrlConfigDto> findPageUrlConfig(UrlConfigDto urlConfigDto, PageQuery pageQuery) {
-        LambdaQueryWrapper<UrlConfigPo> wrapper = new LambdaQueryWrapper<UrlConfigPo>()
-                .eq(UrlConfigPo::getLogicDel, FlagConstant.ENABLED)
-                .eq(UEmpty.isNotEmpty(urlConfigDto.getId()), UrlConfigPo::getId, urlConfigDto.getId());
+        LambdaQueryWrapper<UrlConfigPo> wrapper = buildUrlConfigWrapper(urlConfigDto);
         Page<UrlConfigPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, UrlConfigDto.class));
     }
 
     @Override
     public UrlConfigDto findUrlConfig(UrlConfigDto urlConfigDto) {
-        LambdaQueryWrapper<UrlConfigPo> wrapper = new LambdaQueryWrapper<UrlConfigPo>()
-                .eq(UrlConfigPo::getLogicDel, FlagConstant.ENABLED)
-                .eq(UrlConfigPo::getId, urlConfigDto.getId());
+        LambdaQueryWrapper<UrlConfigPo> wrapper = buildUrlConfigWrapper(urlConfigDto);
         UrlConfigPo urlConfigPo = getOne(wrapper);
         return UCopy.copyPo2Dto(urlConfigPo, UrlConfigDto.class);
     }
+
 
     @Override
     @Cacheable(cacheNames = URL_CONFIG, key = "#code")
@@ -80,5 +77,18 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
     @CacheEvict(cacheNames = URL_CONFIG, key = "#code")
     public void deleteUrlConfig(Long id, String code) {
         urlConfigRepository.deleteById(id);
+    }
+
+    /**
+     * 构建查询Wrapper
+     *
+     * @param urlConfigDto 查询入参
+     * @return Wrapper
+     */
+    private LambdaQueryWrapper<UrlConfigPo> buildUrlConfigWrapper(UrlConfigDto urlConfigDto) {
+        return new LambdaQueryWrapper<UrlConfigPo>()
+                .eq(UrlConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(UEmpty.isNotEmpty(urlConfigDto.getId()), UrlConfigPo::getId, urlConfigDto.getId())
+                .likeRight(UEmpty.isNotEmpty(urlConfigDto.getCode()), UrlConfigPo::getCode, urlConfigDto.getCode());
     }
 }

@@ -1,10 +1,10 @@
 <template>
   <lay-container fluid="true" class="role-box">
     <lay-card>
-      <lay-form style="margin-top: 10px">
+      <lay-form style="margin-top: 10px" @keyup.enter="toSearch">
         <lay-row>
-          <lay-col :md="5">
-            <lay-form-item label="ID" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="主键ID" label-width="80">
               <lay-input
                   v-model="searchQuery.id"
                   placeholder="请输入"
@@ -14,7 +14,18 @@
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
+          <lay-col :md="6">
+            <lay-form-item label="配置标识" label-width="80">
+              <lay-input
+                  v-model="searchQuery.code"
+                  placeholder="请输入"
+                  size="sm"
+                  :allow-clear="true"
+                  style="width: 98%"
+              ></lay-input>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="6">
             <lay-form-item label-width="20">
               <lay-button
                   style="margin-left: 20px"
@@ -43,10 +54,12 @@
           @change="change"
           @sortChange="sortChange">
         <template #buildIn="{ row }">
-          <!--          @change="changeBuildIn($event, row)"-->
           <lay-switch
               :model-value="row.buildIn"
           ></lay-switch>
+        </template>
+        <template #requestType="{ row }">
+          <dict-tag :options="requestTypeList" :value="row.requestType" :showValue="true"/>
         </template>
         <template v-slot:toolbar>
           <lay-button
@@ -90,8 +103,17 @@
           <lay-form-item label="网址" prop="url" required>
             <lay-input v-model="urlConfigVo.url" :allow-clear="true"></lay-input>
           </lay-form-item>
-          <lay-form-item label="请求方式" prop="requestType">
-            <lay-input v-model="urlConfigVo.requestType"></lay-input>
+          <lay-form-item label="请求方式" prop="requestType" required>
+            <lay-select
+                class="search-input"
+                size="sm"
+                v-model="urlConfigVo.requestType"
+                placeholder="请选择"
+            >
+              <template v-for="(requestType, index) in requestTypeSelectList" :key="index">
+                <lay-select-option :value="requestType.value" :label="requestType.label"></lay-select-option>
+              </template>
+            </lay-select>
           </lay-form-item>
           <lay-form-item label="请求头信息" prop="header">
             <lay-input v-model="urlConfigVo.header"></lay-input>
@@ -129,9 +151,13 @@ import {PageQuery} from "../../../types/Common";
 import {deleteUrlConfig, findPageUrlConfig, saveUpdate} from "../../../api/common/Url";
 import {UrlConfigEntity, UrlConfigVo} from "../../../types/common/Url";
 import {TableResult} from "../../../types/Result";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
+import {SysDictValueEntity} from "../../../types/system/Dict";
 
 /* INIT*/
-onMounted(() => {
+onMounted(async () => {
+  requestTypeList.value = await loadSysDictValue(Constants.REQUEST_TYPE)
+  requestTypeSelectList.value = await sysDictValueSelect(requestTypeList.value);
   loadDataSource()
 })
 const loadDataSource = () => {
@@ -150,6 +176,8 @@ const loadDataSource = () => {
 /* INIT*/
 
 /* VAR*/
+const requestTypeList = ref<Array<SysDictValueEntity>>([])
+const requestTypeSelectList = ref<Array>([])
 const searchQuery = ref<UrlConfigVo>({})
 const loading = ref(false)
 const selectedKeys = ref()
@@ -170,14 +198,13 @@ const pageQuery = reactive<PageQuery>({
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '编号', width: '160px', key: 'id', fixed: 'left', sort: 'desc'},
-  {title: '配置标识', width: '130px', key: 'id', fixed: 'left', sort: 'desc'},
+  {title: '配置标识', width: '130px', key: 'code', fixed: 'left', sort: 'desc'},
   {title: '网址', width: '150px', key: 'url', sort: 'desc'},
-  {title: '请求方式', width: '150px', key: 'requestType', sort: 'asc'},
+  {title: '请求方式', width: '150px', key: 'requestType', sort: 'asc', customSlot: 'requestType'},
   {title: '请求头信息', width: '100px', key: 'header', sort: 'desc'},
   {title: '请求参数', width: '100px', key: 'param', sort: 'desc'},
   {title: '系统内置', width: '40px', key: 'buildIn', customSlot: 'buildIn'},
   {title: '内容形式', width: '160px', key: 'contentType'},
-  {title: '创建时间', width: '160px', key: 'createTime'},
   {
     title: '操作',
     width: '150px',

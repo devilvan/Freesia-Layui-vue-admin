@@ -10,7 +10,6 @@
         <module name="freesia-common-service" />
         <module name="freesia-web-api" />
         <module name="freesia-common-framework" />
-        <module name="freesia-web-dashboard" />
         <module name="freesia-web-framework" />
         <module name="freesia-common-api" />
         <module name="freesia-web-app" />
