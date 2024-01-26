@@ -205,7 +205,7 @@ import jinan from './moudel/citys/370100.json'
 import minx from './moudel/minx'
 
 export default defineComponent({
-  name: 'Analysis',
+  name: 'Monitor',
   mixins: [minx],
   setup() {
     const province = minx.province

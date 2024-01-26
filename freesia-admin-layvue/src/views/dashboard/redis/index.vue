@@ -78,6 +78,14 @@
     <!--    </lay-layer>-->
   </div>
 </template>
+<script lang="ts">
+/**
+ * 创建组件时要添加name，否则在使用keep-alive时就会失效
+ */
+export default {
+  name: "Redis",
+};
+</script>
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";

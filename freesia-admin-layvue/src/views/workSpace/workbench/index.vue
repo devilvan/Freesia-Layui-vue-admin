@@ -246,6 +246,7 @@ import * as echarts from 'echarts'
 import { useI18n } from '@layui/layui-vue'
 
 export default defineComponent({
+  name: 'Workbench',
   setup() {
     const { t } = useI18n()
 

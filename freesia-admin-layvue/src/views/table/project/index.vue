@@ -92,6 +92,7 @@ import { ref } from 'vue'
 import { layer } from '@layui/layer-vue'
 
 export default {
+  name: 'Project',
   setup() {
     const page = ref({ total: 100, limit: 10, current: 2 })
 

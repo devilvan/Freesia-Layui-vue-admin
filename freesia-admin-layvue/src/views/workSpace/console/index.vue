@@ -195,6 +195,7 @@ import { useRouter } from 'vue-router'
 import * as echarts from 'echarts'
 
 export default defineComponent({
+  name: 'Console',
   setup() {
     const mainRef = ref()
     const currentIndex = ref('1')

@@ -1,15 +1,15 @@
 <template>
   <div class="global-content" :class="{ 'has-tab': appStore.tab }">
     <router-view v-slot="{ Component, route }" v-if="appStore.routerAlive">
-      <keep-alive :include="tab.tabsCache">
-        <div style="position: relative" class="layui-scroll-test">
-          <lay-watermark :content="getContent()" :fontSize="`12pt`" font="20px Microsoft Yahei"
-                         element-box=".layui-scroll-test" :rotate="-36" :maxTotal="10"></lay-watermark>
-          <lay-scroll height="100%"  style="background-color: #ffffff; position: relative" thumbColor="#000000">
+      <div style="position: relative" class="layui-scroll-test">
+        <lay-watermark :content="getContent()" :fontSize="`12pt`" font="20px Microsoft Yahei"
+                       element-box=".layui-scroll-test" :rotate="-36" :maxTotal="10"></lay-watermark>
+        <lay-scroll height="100%" style="background-color: #ffffff; position: relative" thumbColor="#000000">
+          <keep-alive :include="$tab.tabsCache.value">
             <component :is="Component" :key="route.name"/>
-          </lay-scroll>
-        </div>
-      </keep-alive>
+          </keep-alive>
+        </lay-scroll>
+      </div>
     </router-view>
   </div>
 </template>
@@ -21,8 +21,9 @@ import {useUserStore} from "../../store/user";
 import {formatDateTime} from '../../util/UDate'
 
 const appStore = useAppStore()
-const tab = useTab()
+const $tab = useTab()
 const $userInfo = useUserStore().userInfo;
+
 function getContent() {
   return $userInfo.userName + ' ' + formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss')
 }

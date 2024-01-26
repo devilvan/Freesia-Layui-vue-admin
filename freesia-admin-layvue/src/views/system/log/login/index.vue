@@ -157,6 +157,14 @@
     </div>
   </lay-container>
 </template>
+<script lang="ts">
+/**
+ * 创建组件时要添加name，否则在使用keep-alive时就会失效
+ */
+export default {
+  name: "Login",
+};
+</script>
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'

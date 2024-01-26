@@ -26,11 +26,11 @@ export function useTab() {
             closable: false,
           },
           id: route.path,
-          name: route.name
+          name: name
         })
         tabsCache.value.push(name)
       }
-      else if (route.meta.cache) {
+      else if (!route.meta.link && route.meta.cache) {
         tabsCache.value.push(name)
       }
     })

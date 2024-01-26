@@ -71,6 +71,7 @@ import { ref, watch } from 'vue'
 import { layer } from '@layui/layer-vue'
 
 export default {
+  name: 'Base',
   setup() {
     const selectedKeys = ref(['1'])
     const checkbox = ref(true)
