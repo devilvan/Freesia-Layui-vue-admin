@@ -90,7 +90,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         for (SysMenuDto menu : sysMenuDtoList) {
             RouterDto routerDto = new RouterDto();
             routerDto.setHidden(FlagConstant.DISABLED.equals(menu.getVisible()));
-            routerDto.setComponent(getComponent(menu));
+            if (AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId()) || !MenuType.DIR.getType().equals(menu.getMenuType())) {
+                routerDto.setComponent(getComponent(menu));
+            }
             routerDto.setName(getRouteName(menu));
             routerDto.setPath(getRouterPath(menu));
             routerDto.setQuery(menu.getQueryParam());
@@ -137,6 +139,17 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 childrenRouterDto.setPath(routerPath);
                 childrenRouterDto.setComponent(AdminConstant.INNER_LINK);
                 childrenRouterDto.setName(StringUtils.capitalize(routerPath));
+                childrenRouterDto.setMeta(new MetaDto(menu.getMenuName(), menu.getIcon(), menu.getPath()));
+                childrenList.add(childrenRouterDto);
+                routerDto.setChildren(childrenList);
+            } else if (!AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId()) && MenuType.DIR.getType().equals(menu.getMenuType())) {
+                routerDto.setMeta(new MetaDto(menu.getMenuName(), menu.getIcon(), menu.getPath()));
+                routerDto.setPath(addForwardSlash(component));
+                List<RouterDto> childrenList = new ArrayList<>();
+                RouterDto childrenRouterDto = new RouterDto();
+                childrenRouterDto.setPath(addForwardSlash(component));
+                childrenRouterDto.setComponent(component);
+                childrenRouterDto.setName(StringUtils.capitalize(innerLinkReplaceEach(menu.getPath())));
                 childrenRouterDto.setMeta(new MetaDto(menu.getMenuName(), menu.getIcon(), menu.getPath()));
                 childrenList.add(childrenRouterDto);
                 routerDto.setChildren(childrenList);
@@ -554,7 +567,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     }
 
     private String addForwardSlash(String str) {
-        if (!str.startsWith(PREFIX)) {
+        if (UEmpty.isNotEmpty(str) && !str.startsWith(PREFIX)) {
             return PREFIX + str;
         }
         return str;
