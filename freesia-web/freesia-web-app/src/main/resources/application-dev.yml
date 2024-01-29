@@ -3,9 +3,15 @@ server:
 ---
 freesia:
   web:
-   common:
-     isInitSysConfig: false
-     isInitSysDict: false
+    common:
+      # 是否初始化系统配置
+      isInitSysConfig: false
+      # 是否初始化数据字典
+      isInitSysDict: false
+    tenant:
+      enabled: false
+      default-id: 1
+      ignore-table: URL_CONFIG
 ---
 spring:
   application:

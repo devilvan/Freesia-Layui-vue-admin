@@ -112,6 +112,13 @@
           </lay-dropdown>
           <lay-menu class="layui-layout-right">
             <lay-menu-item>
+              <lay-select placeholder="请选择租户" style="width: 400px; height: 20px">
+                <lay-select-option :value="1" label="学习"></lay-select-option>
+                <lay-select-option :value="2" label="编码"></lay-select-option>
+                <lay-select-option :value="3" label="运动"></lay-select-option>
+              </lay-select>
+            </lay-menu-item>
+            <lay-menu-item>
               <lay-fullscreen v-slot="{ toggle, isFullscreen }">
                 <lay-icon
                     @click="toggle()"
@@ -281,11 +288,11 @@ export default {
     ]
 
     function toUserInfo() {
-      router.push('/enrollee/profile')
+      router.push('/enrollee/profile/index')
     }
 
     function toSystemSet() {
-      router.push('/system/menu')
+      router.push('/system/menu/index')
     }
 
     const flag = ref(false)

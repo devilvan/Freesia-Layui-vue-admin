@@ -114,6 +114,11 @@ public class USecurity {
         return userId;
     }
 
+    /**
+     * 判断当前用户是否为超级管理员 {@link AdminConstant#ADMIN_ID}
+     *
+     * @return flag
+     */
     public static boolean isAdmin() {
         LoginUserModel loginUser = getLoginUser();
         if (ObjectUtil.isNotNull(loginUser)) {
@@ -130,5 +135,15 @@ public class USecurity {
      */
     public static boolean isAdmin(Long userId) {
         return AdminConstant.ADMIN_ID == Convert.toLong(userId, 0L);
+    }
+
+    /**
+     * 获取当前用户的租户ID
+     *
+     * @return 当前用户的租户ID
+     */
+    public static Long getTenantId() {
+        LoginUserModel loginUser = getLoginUser();
+        return Optional.ofNullable(loginUser).map(LoginUserModel::getTenantId).orElse(null);
     }
 }
