@@ -1,0 +1,54 @@
+package com.freesia.service;
+
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
+import com.freesia.dto.SysTenantDto;
+
+import java.util.List;
+
+/**
+ * @author Evad.Wu
+ * @Description 租户信息表 业务逻辑接口
+ * @date 2024-01-31
+ */
+public interface SysTenantService {
+    /**
+     * 保存租户信息表信息
+     *
+     * @param sysTenantDto 控制层处理后的数据传输对象
+     * @return 保存回调对象
+     */
+    SysTenantDto saveUpdate(SysTenantDto sysTenantDto);
+
+    /**
+     * 批量保存租户信息表信息
+     *
+     * @param list 控制层处理后的数据传输对象集合
+     * @return 保存回调对象
+     */
+    List<SysTenantDto> saveUpdateBatch(List<SysTenantDto> list);
+
+    /**
+     * 查询租户信息表信息
+     *
+     * @param sysTenantDto 查询条件
+     * @param pageQuery    分页条件
+     * @return 分页信息
+     */
+    TableResult<SysTenantDto> findPageSysTenant(SysTenantDto sysTenantDto, PageQuery pageQuery);
+
+    /**
+     * 条件查询租户信息表信息
+     *
+     * @param sysTenantDto 查询条件
+     * @return 租户信息表信息
+     */
+    SysTenantDto findSysTenant(SysTenantDto sysTenantDto);
+
+    /**
+     * 删除租户信息表信息
+     *
+     * @param id 主键
+     */
+    void deleteSysTenant(Long id);
+}
