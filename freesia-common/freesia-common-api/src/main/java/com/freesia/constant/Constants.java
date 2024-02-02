@@ -16,6 +16,10 @@ public final class Constants {
     public static final String HTTP = "http://";
     public static final String HTTPS = "https://";
     public static final String WWW = "www.";
+    /**
+     * 反序列化时才有用
+     */
+    public static final String YM = "yyyy-MM";
     public static final String YMD = "yyyy-MM-dd";
     public static final String YMD_HM = "yyyy-MM-dd HH:mm";
     public static final String YMD_HMS = "yyyy-MM-dd HH:mm:ss";

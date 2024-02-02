@@ -101,6 +101,8 @@ spring:
           batch_versioned_data: true
         order_inserts: true
         order_updates: true
+        session_factory:
+          statement_inspector: com.freesia.interceptor.JpaDataPermissionInterceptor
 mybatis-plus:
   mapper-locations: classpath*:/mapper/*.xml
   configuration:

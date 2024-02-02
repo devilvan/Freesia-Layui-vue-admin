@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * @author Evad.Wu
  * @Description 租户信息表 数据传输对象
- * @date 2024-01-31
+ * @date 2024-02-03
  */
 @Data
 @NoArgsConstructor
@@ -17,12 +17,14 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "租户信息表 数据传输对象")
 public class SysTenantDto extends BaseDto {
+    @Schema(description = "租户编码")
+    private String code;
     @Schema(description = "租户名称")
     private String name;
-    @Schema(description = "租户备注")
+    @Schema(description = "租户类型")
     private String type;
-    @Schema(description = "租户状态")
-    private String status;
+    @Schema(description = "租户状态（0-禁用 1-开启）")
+    private Boolean status;
     @Schema(description = "租户备注")
     private String remark;
     @Schema(description = "联系人姓名")

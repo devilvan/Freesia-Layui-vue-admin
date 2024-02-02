@@ -13,6 +13,7 @@ import com.freesia.mapper.SysTenantMapper;
 import com.freesia.repository.SysTenantRepository;
 import org.springframework.stereotype.Service;
 import com.freesia.util.UCopy;
+import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Resource;
@@ -21,7 +22,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 租户信息表 业务逻辑类
- * @date 2024-01-31
+ * @date 2024-02-03
  */
 @Service
 @RequiredArgsConstructor
@@ -44,21 +45,20 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     }
 
     @Override
-    public TableResult<SysTenantDto> findPageSysTenant(SysTenantDto urlConfigDto, PageQuery pageQuery) {
+    public TableResult<SysTenantDto> findPageSysTenant(SysTenantDto sysTenant, PageQuery pageQuery) {
         LambdaQueryWrapper<SysTenantPo> wrapper = new LambdaQueryWrapper<SysTenantPo>()
                 .eq(SysTenantPo::getLogicDel, FlagConstant.ENABLED)
-                .eq(SysTenantPo::getId, urlConfigDto.getId());
+                .eq(UEmpty.isNotEmpty(sysTenant.getId()), SysTenantPo::getId, sysTenant.getId());
         Page<SysTenantPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysTenantDto.class));
     }
 
     @Override
-    public SysTenantDto findSysTenant(SysTenantDto urlConfigDto) {
+    public SysTenantDto findSysTenant(SysTenantDto sysTenant) {
         LambdaQueryWrapper<SysTenantPo> wrapper = new LambdaQueryWrapper<SysTenantPo>()
             .eq(SysTenantPo::getLogicDel, FlagConstant.ENABLED)
-            .eq(SysTenantPo::getId, urlConfigDto.getId());
-        SysTenantPo sysTenant = getOne(wrapper);
-        return UCopy.copyPo2Dto(sysTenant, SysTenantDto.class);
+            .eq(UEmpty.isNotEmpty(sysTenant.getId()), SysTenantPo::getId, sysTenant.getId());
+        return UCopy.copyPo2Dto(getOne(wrapper), SysTenantDto.class);
     }
 
     @Override

@@ -20,7 +20,7 @@ import java.util.Date;
 /**
  * @author Evad.Wu
  * @Description 租户信息表 映射
- * @date 2024-01-31
+ * @date 2024-02-03
  */
 @Setter
 @Getter
@@ -35,18 +35,22 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "租户信息表 映射")
 public class SysTenantPo extends BasePo implements Serializable {
+    @Schema(description = "租户编码")
+    @TableField(value = "CODE")
+    @Column(name = "CODE", columnDefinition = "VARCHAR(128) NOT NULL COMMENT '租户编码'")
+    private String code;
     @Schema(description = "租户名称")
     @TableField(value = "NAME")
     @Column(name = "NAME", columnDefinition = "VARCHAR(128) NOT NULL COMMENT '租户名称'")
     private String name;
-    @Schema(description = "租户备注")
+    @Schema(description = "租户类型")
     @TableField(value = "TYPE")
-    @Column(name = "TYPE", columnDefinition = "VARCHAR(64) COMMENT '租户备注'")
+    @Column(name = "TYPE", columnDefinition = "VARCHAR(64) COMMENT '租户类型'")
     private String type;
-    @Schema(description = "租户状态")
+    @Schema(description = "租户状态（0-禁用 1-开启）")
     @TableField(value = "STATUS")
-    @Column(name = "STATUS", columnDefinition = "VARCHAR(16) COMMENT '租户状态'")
-    private String status;
+    @Column(name = "STATUS", columnDefinition = "BIT(1) COMMENT '租户状态（0-禁用 1-开启）'")
+    private Boolean status;
     @Schema(description = "租户备注")
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(256) COMMENT '租户备注'")

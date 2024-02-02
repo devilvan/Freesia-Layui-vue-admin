@@ -5,9 +5,9 @@ freesia:
   web:
     common:
       # 是否初始化系统配置
-      isInitSysConfig: false
+      init-sys-config: true
       # 是否初始化数据字典
-      isInitSysDict: false
+      init-sys-dict: true
     tenant:
       enabled: false
       default-id: 1

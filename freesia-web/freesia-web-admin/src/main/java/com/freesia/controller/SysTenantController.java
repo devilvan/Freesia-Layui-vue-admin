@@ -21,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "sysTenantController")
+@RequestMapping(value = "/api/sysTenantController")
 @Tag(name = "SysTenantController", description = "租户信息表 控制器")
 public class SysTenantController {
     private final SysTenantService sysTenantService;

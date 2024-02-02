@@ -16,6 +16,7 @@ import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -103,5 +104,19 @@ public class FreesiaTest {
         SecureRandom random = new SecureRandom();
         keyGen.init(random);
         return keyGen.generateKey().getEncoded();
+    }
+
+    @Test
+    public void testCryptBase64() {
+        // 原始字符串
+        String originalText = "cU3bR6sY"; // 要加密的原始文本
+
+        // 加密
+        String encodedString = Base64.getEncoder().encodeToString(originalText.getBytes());
+        System.out.println("加密后的字符串: " + encodedString);
+
+        // 解密
+        String decodedString = new String(Base64.getDecoder().decode(encodedString));
+        System.out.println("解密后的字符串: " + decodedString);
     }
 }

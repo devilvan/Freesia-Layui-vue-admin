@@ -24,7 +24,11 @@ export enum Constants {
     /**
      * 请求类型
      */
-    REQUEST_TYPE = "REQUEST_TYPE"
+    REQUEST_TYPE = "REQUEST_TYPE",
+    /**
+     * 租户类型
+     */
+    SYS_TENANT_TYPE = "SYS_TENANT_TYPE"
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {

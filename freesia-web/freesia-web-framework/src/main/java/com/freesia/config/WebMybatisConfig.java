@@ -26,7 +26,7 @@ public class WebMybatisConfig {
     @PostConstruct
     public void init() {
         mybatisPlusInterceptor.addInnerInterceptor(plusDataPermissionInterceptor());
-        mybatisPlusInterceptor.addInnerInterceptor(tenantLineInnerInterceptor());
+//        mybatisPlusInterceptor.addInnerInterceptor(tenantLineInnerInterceptor());
     }
 
     public PlusDataPermissionInterceptor plusDataPermissionInterceptor() {
