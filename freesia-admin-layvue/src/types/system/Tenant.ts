@@ -25,3 +25,8 @@ export interface SysTenantEntity extends BaseEntity {
     address?: string;
     businessHoursFrom?: Date;
 }
+
+export interface AssignTenantVo {
+    tenantId: string,
+    userIdList: Array<string>,
+}

@@ -4,9 +4,9 @@
       <lay-form style="margin-top: 10px" @keyup.enter="toSearch">
         <lay-row>
           <lay-col :md="6">
-            <lay-form-item label="主键ID" label-width="80">
+            <lay-form-item label="租户编码" label-width="80">
               <lay-input
-                  v-model="searchQuery.id"
+                  v-model="searchQuery.code"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
@@ -15,9 +15,9 @@
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
-            <lay-form-item label="配置标识" label-width="80">
+            <lay-form-item label="租户名称" label-width="80">
               <lay-input
-                  v-model="searchQuery.code"
+                  v-model="searchQuery.name"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
@@ -58,8 +58,8 @@
               :model-value="row.status"
           ></lay-switch>
         </template>
-        <template #requestType="{ row }">
-          <dict-tag :options="sysTenantTypeList" :value="row.requestType" :showValue="true"/>
+        <template #tenantType="{ row }">
+          <dict-tag :options="sysTenantTypeList" :value="row.type" :showValue="true"/>
         </template>
         <template v-slot:toolbar>
           <lay-button
@@ -72,6 +72,10 @@
           <lay-button size="sm" @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
+          </lay-button>
+          <lay-button size="sm" @click="assignTenantUser()">
+            <lay-icon class="layui-icon-addition"></lay-icon>
+            分配用户
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
@@ -174,6 +178,7 @@ import {SysDictValueEntity} from "../../../types/system/Dict";
 import {SysTenantEntity, SysTenantVo} from "../../../types/system/Tenant";
 import {deleteSysTenant, findPageSysTenant, saveUpdate} from "../../../api/system/Tenant";
 import {formatDateTime} from "../../../util/UDate";
+import router from "../../../router";
 
 /* INIT*/
 onMounted(async () => {
@@ -197,6 +202,7 @@ const loadDataSource = () => {
 /* INIT*/
 
 /* VAR*/
+const $router = router;
 const sysTenantTypeList = ref<Array<SysDictValueEntity>>([])
 const sysTenantTypeSelectList = ref<Array>([])
 const searchQuery = ref<SysTenantEntity>({})
@@ -210,7 +216,7 @@ const sysTenantVoTemplate = ref<SysTenantVo>({
 })
 const sysTenantFormRef = ref()
 const sysTenantModalShowFlag = ref(false)
-
+const dataSource = ref<Array<SysTenantEntity>>()
 const title = ref('新增')
 const pageQuery = reactive<PageQuery>({
   current: 1,
@@ -218,16 +224,15 @@ const pageQuery = reactive<PageQuery>({
 })
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '编号', width: '160px', key: 'id', fixed: 'left', sort: 'desc'},
   {title: '租户编码', width: '130px', key: 'code', fixed: 'left'},
-  {title: '租户名称', width: '130px', key: 'name', fixed: 'left'},
-  {title: '租户类型', width: '150px', key: 'type', sort: 'desc'},
-  {title: '租户备注', width: '150px', key: 'remark', sort: 'desc'},
+  {title: '租户名称', width: '130px', key: 'name'},
+  {title: '租户类型', width: '150px', key: 'type', sort: 'desc', customSlot: 'tenantType'},
   {title: '租户状态', width: '100px', key: 'status', customSlot: 'status'},
-  {title: '联系人姓名', width: '100px', key: 'contactName', sort: 'desc'},
-  {title: '联系人电话', width: '40px', key: 'contactTel'},
+  {title: '联系人姓名', width: '150px', key: 'contactName', sort: 'desc'},
+  {title: '联系人电话', width: '140px', key: 'contactTel'},
   {title: '联系人邮箱', width: '160px', key: 'contactEmail'},
   {title: '租户地址', width: '160px', key: 'address'},
+  {title: '租户备注', width: '150px', key: 'remark', sort: 'desc'},
   {title: '营业时间', width: '160px', key: 'businessHoursFrom'},
   {
     title: '操作',
@@ -260,7 +265,6 @@ const change = () => {
 const sortChange = (key: any, sort: number) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
 }
-const dataSource = ref<Array<SysTenantEntity>>()
 const remove = () => {
   layer.msg(selectedKeys.value, {area: '50%'})
 }
@@ -273,36 +277,6 @@ const changeTenantModalFlag = (text: any, row: any) => {
     sysTenantVo.value.buildIn = false
   }
   sysTenantModalShowFlag.value = !sysTenantModalShowFlag.value
-}
-const submit11 = function () {
-  sysTenantFormRef.value.validate((isValidate: any, model: any, errors: any) => {
-    layer.open({
-      type: 1,
-      title: '表单提交结果',
-      content: `<div style="padding: 10px"><p>是否通过 : ${isValidate}</p> <p>表单数据 : ${JSON.stringify(
-          model
-      )} </p> <p>错误信息 : ${JSON.stringify(errors)}</p></div>`,
-      shade: false,
-      isHtmlFragment: true,
-      btn: [
-        {
-          text: '确认',
-          callback(index: number) {
-            layer.close(index)
-          }
-        }
-      ],
-      area: '500px'
-    })
-  })
-}
-// 清除校验
-const clearValidate11 = function () {
-  sysTenantFormRef.value.clearValidate()
-}
-// 重置表单
-const reset11 = function () {
-  sysTenantFormRef.value.reset()
 }
 
 function toRemove() {
@@ -365,6 +339,22 @@ function confirm(row: any) {
 
 function cancel() {
   layer.msg('您已取消操作')
+}
+
+function assignTenantUser() {
+  if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {
+    layer.msg("请选择1条数据", {icon: 3})
+    return;
+  }
+  $router.push("/system/tenant/assignUser/" + selectedKeys.value[0])
+}
+
+function assignTenantRole() {
+  if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {
+    layer.msg("请选择1条数据", {icon: 3})
+    return;
+  }
+  $router.push("/system/tenant/assignRole/" + selectedKeys.value[0])
 }
 
 /* FUNCTION*/

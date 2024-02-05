@@ -12,6 +12,7 @@ import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.UserModule;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
@@ -19,11 +20,9 @@ import com.freesia.entity.FindUserRolesByUserIdEntity;
 import com.freesia.exception.UserException;
 import com.freesia.helper.DataBaseHelper;
 import com.freesia.mapper.SysDeptMapper;
+import com.freesia.mapper.SysTenantMapper;
 import com.freesia.mapper.SysUserMapper;
-import com.freesia.po.SysDeptPo;
-import com.freesia.po.SysRolePo;
-import com.freesia.po.SysUserPo;
-import com.freesia.po.SysUserRolePo;
+import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysUserRepository;
@@ -48,6 +47,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     private final SysUserRepository sysUserRepository;
     private final SysUserMapper sysUserMapper;
     private final SysDeptMapper sysDeptMapper;
+    private final SysTenantMapper sysTenantMapper;
 
     @Override
     public SysUserPo saveUpdate(SysUserDto sysUserDto) {
@@ -210,6 +210,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
             });
         }
         USpring.context().publishEvent(sysSensitiveLogBean);
+    }
+
+    @Override
+    public TableResult<SysUserDto> findPageUserByTenantId(Long tenantId, PageQuery pageQuery) {
+        Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageUserByTenantId(tenantId, pageQuery.build());
+        return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
+    }
+
+    @Override
+    public TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantDto sysTenantDto, PageQuery pageQuery) {
+        SysTenantPo sysTenantPo = UCopy.copyDto2Po(sysTenantDto, SysTenantPo.class);
+        Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageAllowAssignUserByTenantId(sysTenantPo, pageQuery.build());
+        return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
     }
 
     /**

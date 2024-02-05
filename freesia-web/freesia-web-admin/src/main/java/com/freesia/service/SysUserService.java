@@ -1,6 +1,7 @@
 package com.freesia.service;
 
 
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
@@ -123,4 +124,22 @@ public interface SysUserService {
      * @param afterRoleIdSet 分配后该用户对应的角色ID
      */
     void assignRole(Long userId, Set<Long> afterRoleIdSet);
+
+    /**
+     * 根据租户ID查询已分配该租户的用户
+     *
+     * @param tenantId  租户ID
+     * @param pageQuery 分页信息
+     * @return 已分配该租户的用户
+     */
+    TableResult<SysUserDto> findPageUserByTenantId(Long tenantId, PageQuery pageQuery);
+
+    /**
+     * 根据租户ID查询可分配该租户的用户
+     *
+     * @param sysTenantDto 租户信息
+     * @param pageQuery    分页信息
+     * @return 可分配该租户的用户
+     */
+    TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantDto sysTenantDto, PageQuery pageQuery);
 }

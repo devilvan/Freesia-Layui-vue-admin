@@ -1,5 +1,9 @@
 package com.freesia.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.freesia.annotation.Desensitize;
+import com.freesia.constant.Constants;
+import com.freesia.constant.DesensitizedType;
 import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -28,13 +32,17 @@ public class SysTenantDto extends BaseDto {
     @Schema(description = "租户备注")
     private String remark;
     @Schema(description = "联系人姓名")
+    @Desensitize(strategy = DesensitizedType.EURO_AMERICAN_NAME)
     private String contactName;
+    @Desensitize(strategy = DesensitizedType.MOBILE_PHONE)
     @Schema(description = "联系人电话")
     private String contactTel;
+    @Desensitize(strategy = DesensitizedType.EMAIL)
     @Schema(description = "联系人邮箱")
     private String contactEmail;
     @Schema(description = "租户地址")
     private String address;
     @Schema(description = "营业时间（从）")
+    @JSONField(format = Constants.YMD)
     private Date businessHoursFrom;
 }

@@ -1,6 +1,10 @@
 server:
   port: 8570
 ---
+spring:
+  application:
+    name: freesia-admin
+---
 freesia:
   web:
     common:
@@ -12,10 +16,6 @@ freesia:
       enabled: false
       default-id: 1
       ignore-table: URL_CONFIG
----
-spring:
-  application:
-    name: freesia-admin
 ---
 login.password:
   # 密码最大错误次数

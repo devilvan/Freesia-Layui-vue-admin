@@ -4,20 +4,25 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
+import com.freesia.constant.TenantModule;
+import com.freesia.dto.SysTenantDto;
+import com.freesia.exception.ServiceException;
+import com.freesia.mapper.SysTenantMapper;
+import com.freesia.po.SysTenantPo;
+import com.freesia.po.SysTenantUserPk;
+import com.freesia.po.SysTenantUserPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.dto.SysTenantDto;
-import com.freesia.po.SysTenantPo;
-import com.freesia.service.SysTenantService;
-import com.freesia.mapper.SysTenantMapper;
 import com.freesia.repository.SysTenantRepository;
-import org.springframework.stereotype.Service;
+import com.freesia.service.SysTenantService;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -28,6 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenantPo> implements SysTenantService {
     private final SysTenantRepository sysTenantRepository;
+    private final SysTenantMapper sysTenantMapper;
 
     @Override
     public SysTenantDto saveUpdate(SysTenantDto sysTenantDto) {
@@ -56,13 +62,32 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     public SysTenantDto findSysTenant(SysTenantDto sysTenant) {
         LambdaQueryWrapper<SysTenantPo> wrapper = new LambdaQueryWrapper<SysTenantPo>()
-            .eq(SysTenantPo::getLogicDel, FlagConstant.ENABLED)
-            .eq(UEmpty.isNotEmpty(sysTenant.getId()), SysTenantPo::getId, sysTenant.getId());
+                .eq(SysTenantPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(UEmpty.isNotEmpty(sysTenant.getId()), SysTenantPo::getId, sysTenant.getId())
+                .likeRight(UEmpty.isNotEmpty(sysTenant.getName()), SysTenantPo::getName, sysTenant.getName());
         return UCopy.copyPo2Dto(getOne(wrapper), SysTenantDto.class);
     }
 
     @Override
     public void deleteSysTenant(Long id) {
         removeById(id);
+    }
+
+    @Override
+    public void assignTenant2User(Long tenantId, List<Long> userIdList) {
+        SysTenantPo sysTenantPo = sysTenantRepository.findById(tenantId)
+                .orElseThrow(() -> new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.query.failed", tenantId));
+        Set<SysTenantUserPo> sysTenantUserPoSet = new HashSet<>();
+        for (Long userId : userIdList) {
+            SysTenantUserPo sysTenantUserPo = new SysTenantUserPo(new SysTenantUserPk(tenantId, userId));
+            sysTenantUserPoSet.add(sysTenantUserPo);
+        }
+        sysTenantPo.setSysTenantUserPoSet(sysTenantUserPoSet);
+        sysTenantRepository.save(sysTenantPo);
+    }
+
+    @Override
+    public void cancelAssignUser(Long tenantId, List<Long> userIdList) {
+        sysTenantRepository.cancelAssignUser(tenantId, userIdList);
     }
 }

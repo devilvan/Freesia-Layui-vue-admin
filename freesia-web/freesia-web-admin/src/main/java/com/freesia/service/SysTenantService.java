@@ -1,8 +1,8 @@
 package com.freesia.service;
 
+import com.freesia.dto.SysTenantDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.dto.SysTenantDto;
 
 import java.util.List;
 
@@ -51,4 +51,20 @@ public interface SysTenantService {
      * @param id 主键
      */
     void deleteSysTenant(Long id);
+
+    /**
+     * 为用户分配租户
+     *
+     * @param tenantId   租户ID
+     * @param userIdList 用户ID
+     */
+    void assignTenant2User(Long tenantId, List<Long> userIdList);
+
+    /**
+     * 取消将租户分配给用户
+     *
+     * @param tenantId   租户ID
+     * @param userIdList 待取消分配的用户ID
+     */
+    void cancelAssignUser(Long tenantId, List<Long> userIdList);
 }

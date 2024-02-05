@@ -1,8 +1,8 @@
 import Http from "../Http";
 import {PageQuery} from "../../types/Common";
-import {R, TableResult} from "../../types/Result";
+import {TableResult} from "../../types/Result";
 import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
-import {SysTenantEntity, SysTenantVo} from "../../types/system/Tenant";
+import {AssignTenantVo, SysTenantEntity, SysTenantVo} from "../../types/system/Tenant";
 
 export function saveUpdate(sysTenantVo: SysTenantVo) {
     return Http.post("/api/sysTenantController/saveUpdate", sysTenantVo);
@@ -17,7 +17,7 @@ export function findPageSysTenant(sysTenantVo: SysTenantVo, pageQuery: PageQuery
     return Http.get("/api/sysTenantController/findPageSysTenant", params);
 }
 
-export function findSysTenant(sysTenantVo: SysTenantVo): Promise<R<SysTenantEntity>> {
+export function findSysTenant(sysTenantVo: SysTenantVo): Promise<SysTenantEntity> {
     let params = buildUrlParam(sysTenantVo);
     return Http.get("/api/sysTenantController/findSysTenant", params);
 }
@@ -25,4 +25,12 @@ export function findSysTenant(sysTenantVo: SysTenantVo): Promise<R<SysTenantEnti
 export function deleteSysTenant(id: string) {
     let params = {id: id};
     return Http.delete("/api/sysTenantController/deleteSysTenant", params);
+}
+
+export function assignTenant(assignTenantVo: AssignTenantVo) {
+    return Http.post("/api/sysTenantController/assignTenant", assignTenantVo);
+}
+
+export function cancelTenantAssignUser(assignTenantVo: AssignTenantVo) {
+    return Http.post("/api/sysTenantController/cancelTenantAssignUser", assignTenantVo);
 }

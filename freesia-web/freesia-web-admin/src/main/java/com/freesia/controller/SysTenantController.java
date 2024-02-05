@@ -1,16 +1,22 @@
 package com.freesia.controller;
 
+import com.freesia.dto.AssignTenantDto;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.util.UCopy;
-import com.freesia.vo.SysTenantVo;
+import com.freesia.service.SysRoleService;
 import com.freesia.service.SysTenantService;
+import com.freesia.util.UCollection;
+import com.freesia.util.UCopy;
+import com.freesia.util.UEmpty;
+import com.freesia.vo.AssignTenantVo;
 import com.freesia.vo.R;
+import com.freesia.vo.SysTenantVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +31,7 @@ import java.util.List;
 @Tag(name = "SysTenantController", description = "租户信息表 控制器")
 public class SysTenantController {
     private final SysTenantService sysTenantService;
+    private final SysRoleService sysRoleService;
 
     /**
      * 保存租户信息表信息
@@ -91,5 +98,52 @@ public class SysTenantController {
     public R<Void> deleteSysTenant(Long id) {
         sysTenantService.deleteSysTenant(id);
         return R.ok();
+    }
+
+    /**
+     * 分配租户
+     *
+     * @param assignTenantVo 入参
+     * @return 形式返回
+     */
+    @Operation(summary = "分配租户")
+    @PostMapping(value = "assignTenant")
+    public R<Void> assignTenant(@Validated @RequestBody AssignTenantVo assignTenantVo) {
+        AssignTenantDto assignTenantDto = convertAssignTenantVo2Dto(assignTenantVo);
+        Long tenantId = assignTenantDto.getTenantId();
+        List<Long> userIdList = assignTenantDto.getUserIdList();
+        if (UEmpty.isNotEmpty(userIdList)) {
+            sysTenantService.assignTenant2User(tenantId, userIdList);
+        }
+        return R.ok();
+    }
+
+    @Operation(summary = "取消将租户分配给用户")
+    @PostMapping(value = "cancelTenantAssignUser")
+    public R<Void> cancelTenantAssignUser(@Validated @RequestBody AssignTenantVo assignTenantVo) {
+        Long tenantId = Long.parseLong(assignTenantVo.getTenantId());
+        List<String> userIdList = assignTenantVo.getUserIdList();
+        List<Long> userIdLongList = UCollection.optimizeInitialCapacityArrayList(userIdList.size());
+        userIdList.forEach(userId -> userIdLongList.add(Long.parseLong(userId)));
+        sysTenantService.cancelAssignUser(tenantId, userIdLongList);
+        return R.ok();
+    }
+
+    /**
+     * 数据复制
+     *
+     * @param assignTenantVo VO
+     * @return DTO
+     */
+    private AssignTenantDto convertAssignTenantVo2Dto(AssignTenantVo assignTenantVo) {
+        AssignTenantDto assignTenantDto = new AssignTenantDto();
+        assignTenantDto.setTenantId(Long.parseLong(assignTenantVo.getTenantId()));
+        List<String> userIdList = assignTenantVo.getUserIdList();
+        List<Long> userIdLongList = UCollection.optimizeInitialCapacityArrayList(userIdList.size());
+        for (String userId : userIdList) {
+            userIdLongList.add(Long.parseLong(userId));
+        }
+        assignTenantDto.setUserIdList(userIdLongList);
+        return assignTenantDto;
     }
 }

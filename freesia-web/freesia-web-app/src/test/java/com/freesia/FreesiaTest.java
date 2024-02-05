@@ -1,21 +1,25 @@
 package com.freesia;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
+import com.freesia.util.UEmpty;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.Comment;
 import japa.parser.ast.CompilationUnit;
 import org.junit.Test;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.ServletOutputStream;
 import javax.xml.bind.DatatypeConverter;
-import java.io.*;
-import java.security.InvalidKeyException;
+import java.io.File;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -118,5 +122,32 @@ public class FreesiaTest {
         // 解密
         String decodedString = new String(Base64.getDecoder().decode(encodedString));
         System.out.println("解密后的字符串: " + decodedString);
+    }
+
+    @Test
+    public void testSplit() {
+        String name = "Van Darkholme";
+        name = StrUtil.trim(name);
+        // 第一个空格之后都脱敏处理
+        String[] nameSplit = name.split(" ");
+        if (nameSplit.length > 1) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0, len = nameSplit.length - 1; i < len; i++) {
+                sb.append("*".repeat(nameSplit[i].length()));
+                if (i != len - 1) {
+                    sb.append("*");
+                }
+            }
+            sb.append(" ").append(nameSplit[nameSplit.length - 1]);
+            System.out.println(sb);
+        } else if (nameSplit.length == 1){
+            System.out.println(nameSplit[0]);
+        }
+    }
+
+    @Test
+    public void testMobilePhoneDesensitize() {
+        String num = "010 88789963";
+        System.out.println(StrUtil.hide(num, 3, num.length() - 4));
     }
 }

@@ -86,12 +86,13 @@ import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
 import {FindUserRolesByUserIdEntity, SysUserVo} from "../../../types/system/User";
-import {assignRole, findAllRoles, findUserRolesByUserId} from "../../../api/system/User";
+import {assignRole, findUserRolesByUserId} from "../../../api/system/User";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import {useRoute, useRouter} from "vue-router";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysRoleEntity} from "../../../types/system/Role";
 import {useTab} from "../../../layouts/composable/useTab";
+import {findAllRoles} from "../../../api/system/Role";
 
 /* INIT*/
 const $route = useRoute();

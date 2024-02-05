@@ -5,6 +5,7 @@ import com.freesia.constant.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -17,8 +18,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "租户信息表 值对象")
-public class SysTenantVo {
+public class SysTenantVo extends BaseVo {
     @Schema(description = "租户编码")
     @JSONField(alternateNames = {"code"})
     private String code;

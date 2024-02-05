@@ -2,12 +2,8 @@ package com.freesia.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,6 +12,8 @@ import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -35,6 +33,8 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "租户信息表 映射")
 public class SysTenantPo extends BasePo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -7474069541598172743L;
     @Schema(description = "租户编码")
     @TableField(value = "CODE")
     @Column(name = "CODE", columnDefinition = "VARCHAR(128) NOT NULL COMMENT '租户编码'")
@@ -75,4 +75,11 @@ public class SysTenantPo extends BasePo implements Serializable {
     @TableField(value = "BUSINESS_HOURS_FROM")
     @Column(name = "BUSINESS_HOURS_FROM", columnDefinition = "DATETIME COMMENT '营业时间（从）'")
     private Date businessHoursFrom;
+
+    @Schema(description = "租户在租户-用户关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysTenantUserPo.class, mappedBy = "sysTenantPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysTenantUserPo> sysTenantUserPoSet = new HashSet<>(0);
 }

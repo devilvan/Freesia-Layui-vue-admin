@@ -8,7 +8,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
-import com.freesia.constant.*;
+import com.freesia.constant.AdminConstant;
+import com.freesia.constant.FlagConstant;
+import com.freesia.constant.MenuModule;
+import com.freesia.constant.RoleModule;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
@@ -22,7 +25,6 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysMenuRepository;
 import com.freesia.repository.SysRoleRepository;
-import com.freesia.repository.SysUserRepository;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,6 @@ import java.util.Set;
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> implements SysRoleService {
     private final SysRoleRepository sysRoleRepository;
     private final SysMenuRepository sysMenuRepository;
-    private final SysUserRepository sysUserRepository;
     private final SysRoleMapper sysRoleMapper;
 
     @Override
