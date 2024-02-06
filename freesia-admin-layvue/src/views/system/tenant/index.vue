@@ -65,7 +65,7 @@
           <lay-button
               size="sm"
               type="primary"
-              @click="changeTenantModalFlag('新增', null)">
+              @click="changeTenantModalFlag(Operate.ADD, null)">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
@@ -83,10 +83,10 @@
               size="xs"
               border="green"
               border-style="dashed"
-              @click="changeTenantModalFlag('编辑', row)">编辑
+              @click="changeTenantModalFlag(Operate.EDIT, row)">编辑
           </lay-button>
           <lay-popconfirm
-              content="确定要删除此配置吗?"
+              content="确定要删除此租户吗?"
               @confirm="confirm(row)"
               @cancel="cancel">
             <lay-button size="xs" border="red" border-style="dashed">删除</lay-button>
@@ -96,7 +96,7 @@
     </div>
 
     <lay-layer v-model="sysTenantModalShowFlag" :title="title" :area="['1200px']">
-      <div style="padding: 20px">
+      <div style="padding: 20px" @keydown.enter="toSubmit" @keydown.esc="toCancel">
         <lay-form :model="sysTenantVo" ref="sysTenantFormRef" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
@@ -106,15 +106,16 @@
               <lay-form-item label="联系人姓名" prop="contactName" required>
                 <lay-input v-model="sysTenantVo.contactName"></lay-input>
               </lay-form-item>
-              <lay-form-item label="营业时间" prop="businessHoursFrom" required>
-                <lay-date-picker type="yearmonth" v-model="sysTenantVo.businessHoursFrom"></lay-date-picker>
+              <lay-form-item label="营业时间" prop="businessHoursFrom">
+                <lay-date-picker type="yearmonth" v-model="sysTenantVo.businessHoursFrom"
+                                 format="YYYY-MM"></lay-date-picker>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="租户名称" prop="name" required>
+              <lay-form-item label="租户名称" prop="name">
                 <lay-input v-model="sysTenantVo.name" :allow-clear="true"></lay-input>
               </lay-form-item>
-              <lay-form-item label="联系人电话" prop="contactTel" required>
+              <lay-form-item label="联系人电话" prop="contactTel">
                 <lay-input v-model="sysTenantVo.contactTel"></lay-input>
               </lay-form-item>
               <lay-form-item label="租户备注" prop="remark">
@@ -154,6 +155,7 @@
         </lay-form>
         <div style="width: 100%; text-align: right">
           <lay-button size="sm" type="primary" @click="toSubmit">保存</lay-button>
+          <lay-button size="sm" type="primary" @click="toReset()">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -177,8 +179,8 @@ import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDi
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import {SysTenantEntity, SysTenantVo} from "../../../types/system/Tenant";
 import {deleteSysTenant, findPageSysTenant, saveUpdate} from "../../../api/system/Tenant";
-import {formatDateTime} from "../../../util/UDate";
 import router from "../../../router";
+import {Operate} from "../../../types/Constants";
 
 /* INIT*/
 onMounted(async () => {
@@ -207,7 +209,7 @@ const sysTenantTypeList = ref<Array<SysDictValueEntity>>([])
 const sysTenantTypeSelectList = ref<Array>([])
 const searchQuery = ref<SysTenantEntity>({})
 const loading = ref(false)
-const selectedKeys = ref()
+const selectedKeys = ref<Array<string>>([])
 const sysTenantVo = ref<SysTenantVo>({
   status: true
 })
@@ -246,7 +248,9 @@ const columns = ref([
 
 /* FUNCTION*/
 function toReset() {
-  searchQuery.value = {}
+  sysTenantVo.value = {
+    status: false
+  }
 }
 
 function toSearch() {
@@ -269,12 +273,9 @@ const remove = () => {
   layer.msg(selectedKeys.value, {area: '50%'})
 }
 const changeTenantModalFlag = (text: any, row: any) => {
-  sysTenantVo.value = {}
-  title.value = text
+  title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
   if (row != null) {
     sysTenantVo.value = {...row}
-  } else {
-    sysTenantVo.value.buildIn = false
   }
   sysTenantModalShowFlag.value = !sysTenantModalShowFlag.value
 }
@@ -290,14 +291,20 @@ function toRemove() {
       {
         text: '确定',
         callback: (id: any) => {
-          layer.msg('您已成功删除')
+          deleteSysTenant(selectedKeys.value).then((res: any) => {
+            if (res.code === 200) {
+              layer.msg('删除成功')
+            }
+            loadDataSource();
+          }).catch(e => {
+            layer.confirm(e.msg, {icon: 2})
+          })
           layer.close(id)
         }
       },
       {
         text: '取消',
         callback: (id: any) => {
-          layer.msg('您已取消操作')
           layer.close(id)
         }
       }
@@ -306,13 +313,15 @@ function toRemove() {
 }
 
 function toSubmit() {
-  saveUpdate(sysTenantVo.value).then((res: any) => {
-    if (res.code === 200) {
-      loadDataSource();
-      layer.msg('保存成功！', {icon: 1, time: 1000})
-      sysTenantModalShowFlag.value = false
-    } else {
-      layer.confirm(res.msg, {icon: 2})
+  sysTenantFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      saveUpdate(sysTenantVo.value).then((res: any) => {
+        if (res.code === 200) {
+          loadDataSource();
+          layer.msg('保存成功！', {icon: 1, time: 1000})
+          sysTenantModalShowFlag.value = false
+        }
+      })
     }
   })
 }
@@ -326,7 +335,7 @@ function confirm(row: any) {
     layer.msg('系统内置参数无法删除！')
     return;
   } else {
-    deleteSysTenant(row.id).then((res: any) => {
+    deleteSysTenant([row.id]).then((res: any) => {
       if (res.code === 200) {
         layer.msg('删除成功')
       }

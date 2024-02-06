@@ -62,7 +62,7 @@ public class ${dataBaseDto.className}ServiceImpl extends ServiceImpl<${dataBaseD
     }
 
     @Override
-    public void delete${dataBaseDto.className}(Long id) {
-        removeById(id);
+    public void delete${dataBaseDto.className}(List<Long> idList) {
+        removeBatchByIds(idList);
     }
 }

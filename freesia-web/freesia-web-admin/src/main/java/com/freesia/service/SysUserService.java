@@ -142,4 +142,12 @@ public interface SysUserService {
      * @return 可分配该租户的用户
      */
     TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantDto sysTenantDto, PageQuery pageQuery);
+
+    /**
+     * 根据用户ID查询是否为管理员
+     *
+     * @param id 用户ID
+     * @return 是否为管理员
+     */
+    Boolean isAdmin(Long id);
 }

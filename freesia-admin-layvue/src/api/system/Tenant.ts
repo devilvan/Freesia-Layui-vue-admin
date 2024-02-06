@@ -22,9 +22,8 @@ export function findSysTenant(sysTenantVo: SysTenantVo): Promise<SysTenantEntity
     return Http.get("/api/sysTenantController/findSysTenant", params);
 }
 
-export function deleteSysTenant(id: string) {
-    let params = {id: id};
-    return Http.delete("/api/sysTenantController/deleteSysTenant", params);
+export function deleteSysTenant(idList: Array<string>) {
+    return Http.post("/api/sysTenantController/deleteSysTenant", idList);
 }
 
 export function assignTenant(assignTenantVo: AssignTenantVo) {

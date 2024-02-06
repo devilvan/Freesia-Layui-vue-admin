@@ -79,13 +79,13 @@ public class ${dataBaseDto.className}Controller {
     /**
      * 删除${dataBaseDto.comment}
      *
-     * @param id 主键
+     * @param idList 主键
      * @return 形式返回
      */
     @Operation(summary = "删除${dataBaseDto.comment}")
-    @DeleteMapping(value = "delete${dataBaseDto.className}")
-    public R<Void> delete${dataBaseDto.className}(Long id) {
-        ${dataBaseDto.className?uncap_first}Service.delete${dataBaseDto.className}(id);
+    @PostMapping(value = "delete${dataBaseDto.className}")
+    public R<Void> delete${dataBaseDto.className}(@RequestBody List<Long> idList) {
+        ${dataBaseDto.className?uncap_first}Service.delete${dataBaseDto.className}(idList);
         return R.ok();
     }
 }

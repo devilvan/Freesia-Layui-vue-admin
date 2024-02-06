@@ -49,4 +49,33 @@ public interface SysTenantRepository extends JpaRepository<SysTenantPo, Long> {
             """)
     @Transactional(rollbackFor = Exception.class)
     void cancelAssignUser(@Param("tenantId") Long tenantId, @Param("userIdList") List<Long> userIdList);
+
+    /**
+     * 取消将租户分配给用户
+     *
+     * @param idList 租户ID
+     */
+    @Modifying
+    @Query(value = """
+            UPDATE SysTenantPo
+                SET logicDel = 1
+            WHERE 1=1
+                AND id IN (:idList)
+            """)
+    @Transactional(rollbackFor = Exception.class)
+    void updateLogicDel(@Param("idList") List<Long> idList);
+
+    /**
+     * 查询租户编码是否存在
+     *
+     * @param code 租户编码
+     * @return 租户编码是否存在
+     */
+    @Query(value = """
+            SELECT 1
+            FROM SysTenantPo
+            WHERE 1=1
+                AND code = :code
+            """)
+    Integer findExistCode(@Param("code") String code);
 }

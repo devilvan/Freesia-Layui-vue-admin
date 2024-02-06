@@ -4,7 +4,6 @@ import com.freesia.dto.AssignTenantDto;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.service.SysRoleService;
 import com.freesia.service.SysTenantService;
 import com.freesia.util.UCollection;
 import com.freesia.util.UCopy;
@@ -31,7 +30,6 @@ import java.util.List;
 @Tag(name = "SysTenantController", description = "租户信息表 控制器")
 public class SysTenantController {
     private final SysTenantService sysTenantService;
-    private final SysRoleService sysRoleService;
 
     /**
      * 保存租户信息表信息
@@ -90,13 +88,13 @@ public class SysTenantController {
     /**
      * 删除租户信息表
      *
-     * @param id 主键
+     * @param idList 主键
      * @return 形式返回
      */
     @Operation(summary = "删除租户信息表")
-    @DeleteMapping(value = "deleteSysTenant")
-    public R<Void> deleteSysTenant(Long id) {
-        sysTenantService.deleteSysTenant(id);
+    @PostMapping(value = "deleteSysTenant")
+    public R<Void> deleteSysTenant(@RequestBody List<Long> idList) {
+        sysTenantService.deleteSysTenant(idList);
         return R.ok();
     }
 

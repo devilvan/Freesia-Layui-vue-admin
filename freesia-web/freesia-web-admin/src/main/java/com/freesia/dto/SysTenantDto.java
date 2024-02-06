@@ -43,6 +43,6 @@ public class SysTenantDto extends BaseDto {
     @Schema(description = "租户地址")
     private String address;
     @Schema(description = "营业时间（从）")
-    @JSONField(format = Constants.YMD)
+    @JSONField(format = Constants.YM)
     private Date businessHoursFrom;
 }

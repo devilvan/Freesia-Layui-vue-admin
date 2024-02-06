@@ -10,7 +10,7 @@ export interface SysTenantVo extends BaseVo {
     contactTel?: string;
     contactEmail?: string;
     address?: string;
-    businessHoursFrom?: string;
+    businessHoursFrom?: Date;
 }
 
 export interface SysTenantEntity extends BaseEntity {

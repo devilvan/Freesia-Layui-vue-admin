@@ -1,5 +1,6 @@
 package com.freesia.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -33,10 +34,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenantPo> implements SysTenantService {
     private final SysTenantRepository sysTenantRepository;
-    private final SysTenantMapper sysTenantMapper;
 
     @Override
     public SysTenantDto saveUpdate(SysTenantDto sysTenantDto) {
+        int flag = Convert.toInt(sysTenantRepository.findExistCode(sysTenantDto.getCode()), 0);
+        if (flag != 0) {
+            throw new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.code.exists", sysTenantDto.getCode());
+        }
         SysTenantPo sysTenantPo = new SysTenantPo();
         UCopy.fullCopy(sysTenantDto, sysTenantPo);
         SysTenantDto resultDto = new SysTenantDto();
@@ -69,8 +73,8 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     }
 
     @Override
-    public void deleteSysTenant(Long id) {
-        removeById(id);
+    public void deleteSysTenant(List<Long> idList) {
+        sysTenantRepository.updateLogicDel(idList);
     }
 
     @Override

@@ -203,7 +203,7 @@ const change = () => {
   }, 1000)
 }
 const loadFindSysTenant = (tenantId: any) => {
-  findSysTenant({tenantId: tenantId}).then((res: any) => {
+  findSysTenant({id: tenantId}).then((res: any) => {
     if (res.code == 200) {
       sysTenantEntity.value = res.data
     }

@@ -8,7 +8,6 @@ import cn.hutool.core.util.ObjectUtil;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
 import com.freesia.exception.UserException;
-import com.freesia.mapper.SysUserMapper;
 import com.freesia.model.LoginUserModel;
 import com.freesia.model.SysRoleModel;
 import com.freesia.po.SysDeptPo;
@@ -38,7 +37,6 @@ public class SysLoginServiceImpl implements SysLoginService {
     private final SysUserService sysUserService;
     private final SysRoleService sysRoleService;
     private final SysMenuService sysMenuService;
-    private final SysUserMapper sysUserMapper;
 
 
     @Override
@@ -173,7 +171,7 @@ public class SysLoginServiceImpl implements SysLoginService {
      */
     @Override
     public boolean isAdmin(SysUserPo sysUserPo) {
-        return Convert.toBool(sysUserMapper.isAdmin(sysUserPo.getId()), false);
+        return Convert.toBool(sysUserService.isAdmin(sysUserPo.getId()), false);
     }
 
     /**

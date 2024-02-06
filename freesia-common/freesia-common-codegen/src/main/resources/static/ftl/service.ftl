@@ -48,7 +48,7 @@ public interface ${dataBaseDto.className}Service {
     /**
      * 删除${dataBaseDto.comment}信息
      *
-     * @param id 主键
+     * @param idList 主键
      */
-    void delete${dataBaseDto.className}(Long id);
+    void delete${dataBaseDto.className}(List<Long> idList);
 }

@@ -4,6 +4,7 @@ import 'nprogress/nprogress.css'
 import {constantRoutes} from "./module/base-routes";
 import {useUserStore} from "../store/user";
 import {RouterComponent} from "../types/Menu";
+import {getRouters} from "../api/Login";
 
 NProgress.configure({showSpinner: false})
 

@@ -48,9 +48,9 @@ public interface SysTenantService {
     /**
      * 删除租户信息表信息
      *
-     * @param id 主键
+     * @param idList 主键
      */
-    void deleteSysTenant(Long id);
+    void deleteSysTenant(List<Long> idList);
 
     /**
      * 为用户分配租户

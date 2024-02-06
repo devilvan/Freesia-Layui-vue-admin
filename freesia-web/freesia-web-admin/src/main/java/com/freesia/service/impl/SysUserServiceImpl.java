@@ -20,7 +20,6 @@ import com.freesia.entity.FindUserRolesByUserIdEntity;
 import com.freesia.exception.UserException;
 import com.freesia.helper.DataBaseHelper;
 import com.freesia.mapper.SysDeptMapper;
-import com.freesia.mapper.SysTenantMapper;
 import com.freesia.mapper.SysUserMapper;
 import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
@@ -47,7 +46,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     private final SysUserRepository sysUserRepository;
     private final SysUserMapper sysUserMapper;
     private final SysDeptMapper sysDeptMapper;
-    private final SysTenantMapper sysTenantMapper;
 
     @Override
     public SysUserPo saveUpdate(SysUserDto sysUserDto) {
@@ -223,6 +221,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         SysTenantPo sysTenantPo = UCopy.copyDto2Po(sysTenantDto, SysTenantPo.class);
         Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageAllowAssignUserByTenantId(sysTenantPo, pageQuery.build());
         return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
+    }
+
+    @Override
+    public Boolean isAdmin(Long id) {
+        return sysUserMapper.isAdmin(id);
     }
 
     /**
