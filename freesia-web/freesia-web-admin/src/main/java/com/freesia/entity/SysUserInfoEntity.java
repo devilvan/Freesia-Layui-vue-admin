@@ -1,10 +1,11 @@
 package com.freesia.entity;
 
 import com.freesia.controller.SysLoginController;
-import com.freesia.vo.SysUserVo;
+import com.freesia.dto.SysTenantDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,4 +22,7 @@ public class SysUserInfoEntity {
     private Set<String> roles;
     @Schema(description = "权限信息")
     private Set<String> permissions;
+    @Schema(description = "租户信息")
+    private List<SysTenantDto> sysTenantDtoList;
+
 }

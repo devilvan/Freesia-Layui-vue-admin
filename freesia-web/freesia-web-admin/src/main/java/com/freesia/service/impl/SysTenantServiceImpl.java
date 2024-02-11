@@ -34,10 +34,11 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenantPo> implements SysTenantService {
     private final SysTenantRepository sysTenantRepository;
+    private final SysTenantMapper sysTenantMapper;
 
     @Override
     public SysTenantDto saveUpdate(SysTenantDto sysTenantDto) {
-        int flag = Convert.toInt(sysTenantRepository.findExistCode(sysTenantDto.getCode()), 0);
+        int flag = Convert.toInt(sysTenantMapper.findExistCode(sysTenantDto.getCode()), 0);
         if (flag != 0) {
             throw new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.code.exists", sysTenantDto.getCode());
         }
@@ -93,5 +94,16 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     public void cancelAssignUser(Long tenantId, List<Long> userIdList) {
         sysTenantRepository.cancelAssignUser(tenantId, userIdList);
+    }
+
+    @Override
+    public List<Long> findSysTenantUser(Long id) {
+        return sysTenantMapper.findSysTenantUser(id);
+    }
+
+    @Override
+    public List<SysTenantDto> findListSysTenantById(List<Long> tenantIdList) {
+        List<SysTenantPo> sysTenantPoList = sysTenantMapper.findListSysTenantById(tenantIdList);
+        return UCopy.fullCopyList(sysTenantPoList, SysTenantDto.class);
     }
 }

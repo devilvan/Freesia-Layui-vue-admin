@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.mapper.SysTenantMapper">
+    <select id="findExistCode" resultType="java.lang.Integer">
+        SELECT 1
+        FROM sys_tenant
+        WHERE 1 = 1
+          AND code = :code
+    </select>
+    <select id="findSysTenantUser" resultType="Long">
+        SELECT T.ID
+        FROM sys_tenant T
+                 LEFT JOIN sys_tenant_user stu on T.ID = stu.TENANT_ID
+        WHERE 1 = 1
+          AND stu.USER_ID = #{userId}
+    </select>
+    <select id="findListSysTenantById" resultType="com.freesia.po.SysTenantPo">
+        SELECT DISTINCT ID,
+        REC_VER,
+        CODE,
+        NAME,
+        TYPE,
+        STATUS,
+        REMARK
+        FROM sys_tenant T
+        WHERE 1 = 1
+        AND T.LOGIC_DEL = 0
+        <foreach collection="tenantIdList" item="tenantId" open="AND T.ID IN (" close=")" separator=",">
+            #{tenantId}
+        </foreach>
+    </select>
 </mapper>

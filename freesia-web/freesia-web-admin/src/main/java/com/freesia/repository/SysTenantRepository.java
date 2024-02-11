@@ -19,22 +19,6 @@ import java.util.List;
 @Repository
 public interface SysTenantRepository extends JpaRepository<SysTenantPo, Long> {
     /**
-     * 为用户分配租户
-     *
-     * @param tenantId   租户ID
-     * @param userIdList 用户ID
-     */
-    @Modifying
-    @Query(value = """
-            UPDATE SysUserPo
-                SET tenantId = :tenantId
-            WHERE 1=1
-                AND id IN (:userIdList)
-            """)
-    @Transactional(rollbackFor = Exception.class)
-    void assignTenant2User(@Param("tenantId") Long tenantId, @Param("userIdList") List<Long> userIdList);
-
-    /**
      * 取消将租户分配给用户
      *
      * @param tenantId   租户ID
@@ -64,18 +48,4 @@ public interface SysTenantRepository extends JpaRepository<SysTenantPo, Long> {
             """)
     @Transactional(rollbackFor = Exception.class)
     void updateLogicDel(@Param("idList") List<Long> idList);
-
-    /**
-     * 查询租户编码是否存在
-     *
-     * @param code 租户编码
-     * @return 租户编码是否存在
-     */
-    @Query(value = """
-            SELECT 1
-            FROM SysTenantPo
-            WHERE 1=1
-                AND code = :code
-            """)
-    Integer findExistCode(@Param("code") String code);
 }

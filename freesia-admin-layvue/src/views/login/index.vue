@@ -101,7 +101,6 @@
 
 <script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
-import {useRouter} from 'vue-router'
 import {useUserStore} from '../../store/user'
 import {layer} from '@layui/layer-vue'
 import {LoginVo} from "../../types/login/LoginForm";
@@ -109,6 +108,7 @@ import {login} from "../../api/Login";
 import {findCaptchaEnabled} from "../../api/system/Config";
 import {getCaptchaCode} from "../../api/captcha/Captcha";
 import {loginQrcode} from "../../api/module/commone";
+import router from "../../router";
 
 /* INIT*/
 onMounted(async () => {
@@ -124,7 +124,7 @@ onMounted(async () => {
 /* INIT*/
 
 /* VAR*/
-const router = useRouter()
+const $router = router;
 const userStore = useUserStore()
 const method = ref('1')
 const captchaImg = ref('')
@@ -165,8 +165,7 @@ const loginSubmit = async () => {
           layer.msg(msg, {icon: 1}, async () => {
             userStore.token = data.token
             await userStore.getInfo()
-            await userStore.getRouters()
-            router.push('/')
+            $router.push('/')
           })
         } else {
           toRefreshImg()

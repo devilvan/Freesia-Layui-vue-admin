@@ -6,6 +6,7 @@ import cn.hutool.http.HttpStatus;
 import com.freesia.constant.Constants;
 import com.freesia.dto.RouterDto;
 import com.freesia.dto.SysMenuDto;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.RouterEntity;
 import com.freesia.entity.SysUserEntity;
@@ -13,14 +14,11 @@ import com.freesia.entity.SysUserInfoEntity;
 import com.freesia.model.LoginUserModel;
 import com.freesia.service.SysLoginService;
 import com.freesia.service.SysMenuService;
+import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
-import com.freesia.util.UCollection;
-import com.freesia.util.UCopy;
-import com.freesia.util.UMessage;
-import com.freesia.util.USecurity;
+import com.freesia.util.*;
 import com.freesia.vo.LoginVo;
 import com.freesia.vo.R;
-import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +43,7 @@ public class SysLoginController {
     private final SysLoginService sysLoginService;
     private final SysUserService sysUserService;
     private final SysMenuService sysMenuService;
+    private final SysTenantService sysTenantService;
 
     @SaIgnore
     @Operation(summary = "客户端登录")
@@ -74,6 +73,11 @@ public class SysLoginController {
         }
         SysUserDto sysUserDto = sysUserService.findUserById(loginUserModel.getUserId());
         SysUserInfoEntity sysUserInfoEntity = sysUserDto2Entity(sysUserDto, loginUserModel);
+        List<Long> tenantIdList = loginUserModel.getTenantIdList();
+        if (UEmpty.isNotEmpty(tenantIdList)) {
+            List<SysTenantDto> sysTenantPoList = sysTenantService.findListSysTenantById(tenantIdList);
+            sysUserInfoEntity.setSysTenantDtoList(sysTenantPoList);
+        }
         return R.ok(sysUserInfoEntity);
     }
 

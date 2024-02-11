@@ -112,10 +112,14 @@
           </lay-dropdown>
           <lay-menu class="layui-layout-right">
             <lay-menu-item>
-              <lay-select placeholder="请选择租户" style="width: 400px; height: 20px">
-                <lay-select-option :value="1" label="学习"></lay-select-option>
-                <lay-select-option :value="2" label="编码"></lay-select-option>
-                <lay-select-option :value="3" label="运动"></lay-select-option>
+              <lay-select
+                  v-model="appStore.currentTenant"
+                  placeholder="请选择租户"
+                  @change="changeTenantSelect"
+              >
+                <template v-for="(sysTenant, index) in userInfoStore.sysTenantDtoList" :key="index">
+                  <lay-select-option :value="sysTenant.id" :label="sysTenant.name"></lay-select-option>
+                </template>
               </lay-select>
             </lay-menu-item>
             <lay-menu-item>
@@ -212,10 +216,11 @@ import GlobalTab from './global/GlobalTab.vue'
 import GlobalMenu from './global/GlobalMenu.vue'
 import GlobalMainMenu from './global/GlobalMainMenu.vue'
 import GlobalMessageTab from './global/GlobalMessageTab.vue'
-import {useRouter} from 'vue-router'
 import {useMenu} from './composable/useMenu'
 import zh_CN from '../lang/zh_CN'
 import en_US from '../lang/en_US'
+import router from "../router";
+import {useTab} from "./composable/useTab";
 
 export default {
   components: {
@@ -230,6 +235,7 @@ export default {
   setup() {
     const appStore = useAppStore()
     const userInfoStore = useUserStore()
+    const $tab = useTab();
     const fullscreenRef = ref()
     const visible = ref(false)
     const sideWidth = computed(() =>
@@ -239,8 +245,6 @@ export default {
             ? '280px'
             : '220px'
     )
-    const router = useRouter()
-
     const {
       selectedKey,
       openKeys,
@@ -301,6 +305,12 @@ export default {
       flag.value = !flag.value
     }
 
+    function changeTenantSelect(value: any) {
+      appStore.currentTenant = value;
+      window.location.reload()
+      router.push($tab.currentPath.value)
+    }
+
     return {
       sideWidth,
       mainSelectedKey,
@@ -324,7 +334,8 @@ export default {
       toUserInfo,
       toSystemSet,
       changeDropdown,
-      flag
+      flag,
+      changeTenantSelect
     }
   }
 }

@@ -1,5 +1,5 @@
 import {computed, ComputedRef, ref, watch} from "vue";
-import {useRoute, useRouter} from "vue-router";
+import {useRoute} from "vue-router";
 import {diff} from "../../library/arrayUtil";
 import {getNode, getParents} from "../../library/treeUtil";
 import {useAppStore} from "../../store/app";

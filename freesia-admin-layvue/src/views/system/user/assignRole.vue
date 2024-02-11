@@ -88,15 +88,16 @@ import {PageQuery} from "../../../types/Common";
 import {FindUserRolesByUserIdEntity, SysUserVo} from "../../../types/system/User";
 import {assignRole, findUserRolesByUserId} from "../../../api/system/User";
 import {SysDictValueEntity} from "../../../types/system/Dict";
-import {useRoute, useRouter} from "vue-router";
+import {useRoute} from "vue-router";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysRoleEntity} from "../../../types/system/Role";
 import {useTab} from "../../../layouts/composable/useTab";
 import {findAllRoles} from "../../../api/system/Role";
+import router from "../../../router";
 
 /* INIT*/
 const $route = useRoute();
-const $router = useRouter();
+const $router = router;
 const {closeOpen} = useTab();
 onMounted(async () => {
   sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)

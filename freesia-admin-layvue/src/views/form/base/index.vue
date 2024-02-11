@@ -80,7 +80,7 @@ export default {
 <script lang="ts">
 import { reactive } from 'vue'
 import { layer } from '@layui/layer-vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 export default {
   setup() {

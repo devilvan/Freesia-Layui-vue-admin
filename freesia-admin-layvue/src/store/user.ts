@@ -31,6 +31,7 @@ export const useUserStore = defineStore({
             menus: [],
             roles: [],
             sidebarRoutes: [{}],
+            sysTenantDtoList: [{}]
         }
     },
     actions: {
@@ -40,6 +41,7 @@ export const useUserStore = defineStore({
                 this.userInfo = data.user;
                 this.permissions = data.permissions;
                 this.roles = data.roles;
+                this.sysTenantDtoList = data.sysTenantDtoList
             }
         },
         async getRouters() {
@@ -69,7 +71,7 @@ export const useUserStore = defineStore({
     },
     persist: {
         storage: localStorage,
-        paths: ['token', 'userInfo', 'permissions', 'roles'],
+        paths: ['token', 'userInfo', 'permissions', 'roles', 'sysTenantDtoList'],
     }
 })
 
