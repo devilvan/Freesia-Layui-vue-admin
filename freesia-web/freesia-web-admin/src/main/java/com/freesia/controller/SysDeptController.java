@@ -44,6 +44,7 @@ public class SysDeptController {
     public R<List<FindPageSysDeptListEntity>> findDeptTreeList(SysDeptVo sysDeptVo) {
         SysDeptDto sysDeptDto = new SysDeptDto();
         UCopy.fullCopy(sysDeptVo, sysDeptDto);
+        sysDeptDto.setTenantId(USecurity.getTenantId());
         List<FindPageSysDeptListEntity> deptTreeList = sysDeptService.findDeptTreeList(sysDeptDto);
         return R.ok(deptTreeList);
     }

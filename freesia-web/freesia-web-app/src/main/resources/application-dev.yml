@@ -13,9 +13,10 @@ freesia:
       # 是否初始化数据字典
       init-sys-dict: true
     tenant:
-      enabled: false
+      enabled: true
+      tenant-column: TENANT_ID
       default-id: 1
-      ignore-table: URL_CONFIG
+      ignore-table: SYS_TENANT,SYS_USER,SYS_MENU,SYS_DEPT,SYS_ROLE,SYS_ROLE_MENU,SYS_ROLE_DEPT,SYS_TENANT_USER,SYS_USER_ROLE,SYS_DICT_KEY,SYS_DICT_VALUE
 ---
 login.password:
   # 密码最大错误次数

@@ -101,6 +101,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         Wrapper<SysUserPo> sysUserPoWrapper = USql.buildQueryWrapper(() -> Wrappers.<SysUserPo>query()
                 .eq("U.LOGIC_DEL", FlagConstant.ENABLED)
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
+                .eq("STU.TENANT_ID", USecurity.getTenantId())
                 .like(ObjectUtil.isNotNull(sysUserDto.getNickName()), "U.NICK_NAME", sysUserDto.getNickName())
                 .likeRight(ObjectUtil.isNotNull(sysUserDto.getUserName()), "U.USER_NAME", sysUserDto.getUserName())
                 .likeRight(ObjectUtil.isNotNull(sysUserDto.getEmail()), "U.EMAIL", sysUserDto.getEmail())
@@ -127,6 +128,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
                 .eq("D.LOGIC_DEL", FlagConstant.ENABLED)
                 .eq("D.DEPT_STATUS", FlagConstant.ENABLED)
+                .eq(UEmpty.isNotEmpty(sysUserDto.getTenantId()), "STU.TENANT_ID", sysUserDto.getTenantId())
                 .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
                     List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
                             .select(SysDeptPo::getId)

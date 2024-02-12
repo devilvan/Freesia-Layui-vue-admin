@@ -1,6 +1,7 @@
 package com.freesia.handler;
 
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
+import com.freesia.exception.TenantException;
 import com.freesia.properties.TenantProperties;
 import com.freesia.util.UEmpty;
 import com.freesia.util.USecurity;
@@ -24,8 +25,14 @@ public class TenantHandler implements TenantLineHandler {
 
     @Override
     public Expression getTenantId() {
-        Long tenantId = USecurity.getTenantId();
-        return new LongValue(tenantId);
+        if (tenantProperties.getEnabled()) {
+            Long tenantId = USecurity.getTenantId();
+            if (UEmpty.isNull(tenantId)) {
+                throw new TenantException("tenant.required");
+            }
+            return new LongValue(tenantId);
+        }
+        return new LongValue(-1);
     }
 
     /**
@@ -44,7 +51,7 @@ public class TenantHandler implements TenantLineHandler {
         boolean flag;
         String[] sp = ignoreTable.split(",");
         for (String s : sp) {
-            flag = s.equals(tableName);
+            flag = tableName.equalsIgnoreCase(s.trim());
             if (flag) {
                 return true;
             }

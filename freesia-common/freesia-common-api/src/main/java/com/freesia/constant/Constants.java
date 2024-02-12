@@ -35,6 +35,10 @@ public final class Constants {
      */
     public static final String USER_AGENT = "User-Agent";
     /**
+     * User-Agent
+     */
+    public static final String X_TENANT_ID = "X-Tenant-Id";
+    /**
      * 字符集 UTF_8
      */
     public static final String UTF_8 = "UTF-8";

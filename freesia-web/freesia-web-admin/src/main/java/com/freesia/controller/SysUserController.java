@@ -1,7 +1,6 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
@@ -13,15 +12,15 @@ import com.freesia.pojo.TableResult;
 import com.freesia.service.SysUserService;
 import com.freesia.util.UCopy;
 import com.freesia.util.USecurity;
-import com.freesia.vo.*;
+import com.freesia.vo.AssignRoleVo;
+import com.freesia.vo.R;
+import com.freesia.vo.SysTenantVo;
+import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotEmpty;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,6 +49,7 @@ public class SysUserController {
     public TableResult<FindPageSysUserByDeptEntity> findPageSysUserByDept(SysUserVo sysUserVo, PageQuery pageQuery) {
         SysUserDto sysUserDto = new SysUserDto();
         UCopy.fullCopy(sysUserVo, sysUserDto);
+        sysUserDto.setTenantId(USecurity.getTenantId());
         return sysUserService.findPageSysUserByDept(sysUserDto, pageQuery);
     }
 
