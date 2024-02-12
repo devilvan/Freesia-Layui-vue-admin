@@ -9,6 +9,7 @@ import com.freesia.annotation.DataColumn;
 import com.freesia.annotation.DataPermission;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
+import com.freesia.po.SysTenantPo;
 import com.freesia.po.SysUserPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -72,4 +73,28 @@ public interface SysUserMapper extends BaseMapper<SysUserPo> {
             @DataColumn(key = "userName", value = "U.ID")
     })
     SysUserPo findCurrentUserProfile(@Param(Constants.WRAPPER) Wrapper<SysUserPo> wrapper);
+
+    /**
+     * 根据租户ID查询已分配该租户的用户
+     *
+     * @param tenantId 租户ID
+     * @param page     分页信息
+     * @return 已分配该租户的用户
+     */
+    @DataPermission({
+            @DataColumn(key = "userName", value = "U.ID")
+    })
+    Page<SysUserPo> findPageUserByTenantId(@Param("tenantId") Long tenantId, @Param("page") Page<SysUserPo> page);
+
+    /**
+     * 根据租户ID查询可分配该租户的用户
+     *
+     * @param sysTenantPo 租户信息
+     * @param page        分页信息
+     * @return 可分配该租户的用户
+     */
+    @DataPermission({
+            @DataColumn(key = "userName", value = "U.ID")
+    })
+    Page<SysUserPo> findPageAllowAssignUserByTenantId(@Param("sysTenantPo") SysTenantPo sysTenantPo, @Param("page") Page<SysUserPo> page);
 }

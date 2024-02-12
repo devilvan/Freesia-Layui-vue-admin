@@ -10,6 +10,7 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.UCopy;
+import com.freesia.util.USecurity;
 import com.freesia.vo.AssignUserVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SaveRoleMenuPrivilegeVo;
@@ -72,6 +73,7 @@ public class SysRoleController {
     @GetMapping(value = "findPageUserByRoleId")
     public TableResult<SysUserDto> findPageUserByRoleId(SysRoleVo sysRoleVo, PageQuery pageQuery) {
         SysRoleDto sysRoleDto = UCopy.copyVo2Dto(sysRoleVo, SysRoleDto.class);
+        sysRoleDto.setTenantId(USecurity.getTenantId());
         return sysRoleService.findPageUserByRoleId(sysRoleDto, pageQuery);
     }
 
@@ -79,6 +81,7 @@ public class SysRoleController {
     @GetMapping(value = "findPageAllowAssignUserByRoleId")
     public TableResult<SysUserDto> findPageAllowAssignUserByRoleId(SysRoleVo sysRoleVo, PageQuery pageQuery) {
         SysRoleDto sysRoleDto = UCopy.copyVo2Dto(sysRoleVo, SysRoleDto.class);
+        sysRoleDto.setTenantId(USecurity.getTenantId());
         return sysRoleService.findPageAllowAssignUserByRoleId(sysRoleDto, pageQuery);
     }
 

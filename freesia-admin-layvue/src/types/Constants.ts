@@ -7,3 +7,8 @@ export enum Flag {
     ENABLED = '0',
     DISABLED = '1'
 }
+
+export enum Operate {
+    ADD= "ADD",
+    EDIT = "EDIT"
+}

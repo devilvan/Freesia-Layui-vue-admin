@@ -19,6 +19,10 @@ public enum DesensitizedType {
      */
     CHINESE_NAME,
     /**
+     * 外国人名
+     */
+    EURO_AMERICAN_NAME,
+    /**
      * 身份证号
      */
     ID_CARD,

@@ -49,6 +49,10 @@ public class LoginUserModel implements Serializable {
     private List<SysRoleModel> roles;
     @Schema(description = "数据权限 当前角色ID")
     private Long roleId;
+    @Schema(description = "租户ID")
+    private Long tenantId;
+    @Schema(description = "租户ID")
+    private List<Long> tenantIdList;
 
     /**
      * 获取登录ID

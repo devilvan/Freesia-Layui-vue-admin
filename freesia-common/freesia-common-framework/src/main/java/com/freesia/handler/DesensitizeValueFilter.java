@@ -31,6 +31,8 @@ public class DesensitizeValueFilter implements ValueFilter {
             switch (strategy) {
                 case CHINESE_NAME:
                     return UDesensitized.chineseName(valueStr);
+                case EURO_AMERICAN_NAME:
+                    return UDesensitized.euroAmericanName(valueStr);
                 case ID_CARD:
                     return UDesensitized.idCardNum(valueStr, 1, 2);
                 case FIXED_PHONE:

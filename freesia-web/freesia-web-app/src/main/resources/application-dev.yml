@@ -1,15 +1,22 @@
 server:
   port: 8570
 ---
-freesia:
-  web:
-   common:
-     isInitSysConfig: false
-     isInitSysDict: false
----
 spring:
   application:
     name: freesia-admin
+---
+freesia:
+  web:
+    common:
+      # 是否初始化系统配置
+      init-sys-config: true
+      # 是否初始化数据字典
+      init-sys-dict: true
+    tenant:
+      enabled: true
+      tenant-column: TENANT_ID
+      default-id: 1
+      ignore-table: SYS_TENANT,SYS_USER,SYS_MENU,SYS_DEPT,SYS_ROLE,SYS_ROLE_MENU,SYS_ROLE_DEPT,SYS_TENANT_USER,SYS_USER_ROLE,SYS_DICT_KEY,SYS_DICT_VALUE
 ---
 login.password:
   # 密码最大错误次数

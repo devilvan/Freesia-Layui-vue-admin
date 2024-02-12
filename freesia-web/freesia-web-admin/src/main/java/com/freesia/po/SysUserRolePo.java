@@ -53,10 +53,6 @@ public class SysUserRolePo extends RelationPo {
     @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private SysRolePo sysRolePo;
 
-    public SysUserRolePo(Long userId, Long roleId) {
-        this.sysRoleMenuPk = new SysUserRolePk(userId, roleId);
-    }
-
     @Data
     @Embeddable
     @NoArgsConstructor

@@ -1,5 +1,5 @@
 import { computed, Ref, ref, watch, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useAppStore } from "../../store/app";
 import router from "../../router";
 

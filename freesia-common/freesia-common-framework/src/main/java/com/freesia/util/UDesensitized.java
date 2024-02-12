@@ -117,14 +117,14 @@ public class UDesensitized {
      * @return 脱敏后的移动电话；
      */
     public static String mobilePhone(String num) {
-//        if (StrUtil.isBlank(num)) {
-//            return StrUtil.EMPTY;
-//        }
-//        return StrUtil.hide(num, 3, num.length() - 4);
         if (StrUtil.isBlank(num)) {
-            return "";
+            return StrUtil.EMPTY;
         }
-        return num.replaceAll("(\\d{3})\\d{5}(\\d{3})", "$1**#**$2");
+        return StrUtil.hide(num, 3, num.length() - 4);
+//        if (StrUtil.isBlank(num)) {
+//            return "";
+//        }
+//        return num.replaceAll("(\\d{3})\\d{5}(\\d{3})", "$1**#**$2");
     }
 
     /**
@@ -227,5 +227,32 @@ public class UDesensitized {
         }
         buf.append(CharUtil.SPACE).append(bankCardNo, length - 4, length);
         return buf.toString();
+    }
+
+    /**
+     * 欧美人名保留第一个名
+     *
+     * @param name 名字
+     * @return 脱敏后的名字
+     */
+    public static String euroAmericanName(String name) {
+        if (StrUtil.isBlank(name)) {
+            return name;
+        }
+        name = StrUtil.trim(name);
+        // 第一个空格之后都脱敏处理
+        String[] nameSplit = name.split(" ");
+        if (nameSplit.length > 1) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0, len = nameSplit.length - 1; i < len; i++) {
+                sb.append("*".repeat(nameSplit[i].length()));
+                if (i != len - 1) {
+                    sb.append("*");
+                }
+            }
+            sb.append(" ").append(nameSplit[nameSplit.length - 1]);
+            return sb.toString();
+        }
+        return name;
     }
 }

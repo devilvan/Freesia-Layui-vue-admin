@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "freesia.web.common")
 public class WebCommonProperties {
     @Schema(description = "是否初始化系统配置信息（sysConfig）")
-    private boolean isInitSysConfig = false;
+    private Boolean initSysConfig;
     @Schema(description = "是否初始化数据字典（sysDict）")
-    private boolean isInitSysDict = false;
+    private Boolean initSysDict;
 }

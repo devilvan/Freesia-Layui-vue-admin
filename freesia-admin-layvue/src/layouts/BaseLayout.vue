@@ -112,6 +112,17 @@
           </lay-dropdown>
           <lay-menu class="layui-layout-right">
             <lay-menu-item>
+              <lay-select
+                  v-model="appStore.currentTenant"
+                  placeholder="请选择租户"
+                  @change="changeTenantSelect"
+              >
+                <template v-for="(sysTenant, index) in userInfoStore.sysTenantDtoList" :key="index">
+                  <lay-select-option :value="sysTenant.id" :label="sysTenant.name"></lay-select-option>
+                </template>
+              </lay-select>
+            </lay-menu-item>
+            <lay-menu-item>
               <lay-fullscreen v-slot="{ toggle, isFullscreen }">
                 <lay-icon
                     @click="toggle()"
@@ -205,10 +216,11 @@ import GlobalTab from './global/GlobalTab.vue'
 import GlobalMenu from './global/GlobalMenu.vue'
 import GlobalMainMenu from './global/GlobalMainMenu.vue'
 import GlobalMessageTab from './global/GlobalMessageTab.vue'
-import {useRouter} from 'vue-router'
 import {useMenu} from './composable/useMenu'
 import zh_CN from '../lang/zh_CN'
 import en_US from '../lang/en_US'
+import router from "../router";
+import {useTab} from "./composable/useTab";
 
 export default {
   components: {
@@ -223,6 +235,7 @@ export default {
   setup() {
     const appStore = useAppStore()
     const userInfoStore = useUserStore()
+    const $tab = useTab();
     const fullscreenRef = ref()
     const visible = ref(false)
     const sideWidth = computed(() =>
@@ -232,8 +245,6 @@ export default {
             ? '280px'
             : '220px'
     )
-    const router = useRouter()
-
     const {
       selectedKey,
       openKeys,
@@ -281,17 +292,23 @@ export default {
     ]
 
     function toUserInfo() {
-      router.push('/enrollee/profile')
+      router.push('/enrollee/profile/index')
     }
 
     function toSystemSet() {
-      router.push('/system/menu')
+      router.push('/system/menu/index')
     }
 
     const flag = ref(false)
 
     function changeDropdown() {
       flag.value = !flag.value
+    }
+
+    function changeTenantSelect(value: any) {
+      appStore.currentTenant = value;
+      window.location.reload()
+      router.push($tab.currentPath.value)
     }
 
     return {
@@ -317,7 +334,8 @@ export default {
       toUserInfo,
       toSystemSet,
       changeDropdown,
-      flag
+      flag,
+      changeTenantSelect
     }
   }
 }

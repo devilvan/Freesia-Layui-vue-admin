@@ -55,15 +55,15 @@ public class CodeGenerator {
      */
     private static void generate(List<DataBaseDto> dataBaseDtoList) {
         for (DataBaseDto dataBaseDto : dataBaseDtoList) {
-            generateVo(dataBaseDto);
+//            generateVo(dataBaseDto);
             generatePo(dataBaseDto);
-            generateDto(dataBaseDto);
-            generateController(dataBaseDto);
-            generateService(dataBaseDto);
-            generateServiceImpl(dataBaseDto);
-            generateRepository(dataBaseDto);
-            generateMapper(dataBaseDto);
-            generateMapperXml(dataBaseDto);
+//            generateDto(dataBaseDto);
+//            generateController(dataBaseDto);
+//            generateService(dataBaseDto);
+//            generateServiceImpl(dataBaseDto);
+//            generateRepository(dataBaseDto);
+//            generateMapper(dataBaseDto);
+//            generateMapperXml(dataBaseDto);
         }
     }
 

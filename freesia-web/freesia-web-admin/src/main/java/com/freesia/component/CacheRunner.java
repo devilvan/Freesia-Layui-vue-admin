@@ -26,11 +26,11 @@ public class CacheRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (webCommonProperties.isInitSysConfig()) {
+        if (webCommonProperties.getInitSysConfig()) {
             sysConfigService.loadSysConfig();
             log.info(UMessage.message("config.load.success", CacheConstant.SYS_CONFIG));
         }
-        if (webCommonProperties.isInitSysDict()) {
+        if (webCommonProperties.getInitSysDict()) {
             sysDictValueService.loadSysDictValue();
             log.info(UMessage.message("dict.load.success", CacheConstant.SYS_DICT));
         }

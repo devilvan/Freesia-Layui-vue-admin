@@ -7,8 +7,8 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.exception.UserException;
-import com.freesia.mapper.SysUserMapper;
 import com.freesia.model.LoginUserModel;
 import com.freesia.model.SysRoleModel;
 import com.freesia.po.SysDeptPo;
@@ -38,7 +38,7 @@ public class SysLoginServiceImpl implements SysLoginService {
     private final SysUserService sysUserService;
     private final SysRoleService sysRoleService;
     private final SysMenuService sysMenuService;
-    private final SysUserMapper sysUserMapper;
+    private final SysTenantService sysTenantService;
 
 
     @Override
@@ -99,6 +99,8 @@ public class SysLoginServiceImpl implements SysLoginService {
         Set<String> sysRoleStrSet = loadRolePermission(isAdmin, sysUserPo);
         // 获取用户对应的菜单
         Set<String> sysMenuStrSet = loadMenuPermission(isAdmin, sysUserPo);
+        // 获取用户对应的租户
+        List<Long> tenantIdList = loadSysTenant(sysUserPo);
         // 获取角色信息
         Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
         List<SysRoleModel> sysRoleModelList = sysRolePoSet2ModelList(sysRolePoSet);
@@ -116,6 +118,7 @@ public class SysLoginServiceImpl implements SysLoginService {
         loginUserModel.setRolePermission(sysRoleStrSet);
         loginUserModel.setUsername(sysUserPo.getUserName());
         loginUserModel.setRoles(sysRoleModelList);
+        loginUserModel.setTenantIdList(tenantIdList);
         return loginUserModel;
     }
 
@@ -127,6 +130,10 @@ public class SysLoginServiceImpl implements SysLoginService {
             sysRoleModelList.add(sysRoleModel);
         }
         return sysRoleModelList;
+    }
+
+    private List<Long> loadSysTenant(SysUserPo sysUserPo) {
+        return sysTenantService.findSysTenantUser(sysUserPo.getId());
     }
 
     /**
@@ -173,7 +180,7 @@ public class SysLoginServiceImpl implements SysLoginService {
      */
     @Override
     public boolean isAdmin(SysUserPo sysUserPo) {
-        return Convert.toBool(sysUserMapper.isAdmin(sysUserPo.getId()), false);
+        return Convert.toBool(sysUserService.isAdmin(sysUserPo.getId()), false);
     }
 
     /**

@@ -54,9 +54,11 @@
                         U.USER_TYPE,
                         U.REMARK
         FROM sys_user U
+        LEFT JOIN sys_tenant_user stu on U.ID = stu.USER_ID
         WHERE 1 = 1
           AND U.LOGIC_DEL = 0
           AND U.ACCOUNT_STATUS = 0
+          AND stu.TENANT_ID = #{sysRolePo.tenantId}
           AND U.ID NOT IN (
             SELECT SU.ID
             FROM SYS_USER SU

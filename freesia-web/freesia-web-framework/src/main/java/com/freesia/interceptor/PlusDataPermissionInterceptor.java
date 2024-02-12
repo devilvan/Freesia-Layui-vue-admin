@@ -29,7 +29,6 @@ import java.util.List;
  * @Description Mybatis Plus数据权限 拦截器
  * @date 2023-09-04
  */
-@Component
 public class PlusDataPermissionInterceptor extends JsqlParserSupport implements InnerInterceptor {
     private final PlusDataPermissionHandler dataPermissionHandler = new PlusDataPermissionHandler();
 
@@ -76,17 +75,13 @@ public class PlusDataPermissionInterceptor extends JsqlParserSupport implements 
     @Override
     protected void processUpdate(Update update, int index, String sql, Object obj) {
         Expression sqlSegment = dataPermissionHandler.getSqlSegment(update.getWhere(), (String) obj, false);
-        if (null != sqlSegment) {
-            update.setWhere(sqlSegment);
-        }
+        update.setWhere(sqlSegment);
     }
 
     @Override
     protected void processDelete(Delete delete, int index, String sql, Object obj) {
         Expression sqlSegment = dataPermissionHandler.getSqlSegment(delete.getWhere(), (String) obj, false);
-        if (null != sqlSegment) {
-            delete.setWhere(sqlSegment);
-        }
+        delete.setWhere(sqlSegment);
     }
 
     /**
@@ -97,8 +92,6 @@ public class PlusDataPermissionInterceptor extends JsqlParserSupport implements 
      */
     protected void setWhere(PlainSelect plainSelect, String mappedStatementId) {
         Expression sqlSegment = dataPermissionHandler.getSqlSegment(plainSelect.getWhere(), mappedStatementId, true);
-        if (null != sqlSegment) {
-            plainSelect.setWhere(sqlSegment);
-        }
+        plainSelect.setWhere(sqlSegment);
     }
 }

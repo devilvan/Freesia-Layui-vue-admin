@@ -188,10 +188,10 @@ import {FindPageSysUserListEntity, SysUserVo} from "../../../types/system/User";
 import {findPageSysUserList} from "../../../api/system/User";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
-import {useRouter} from "vue-router";
+import router from "../../../router";
 
 /* INIT*/
-const $router = useRouter();
+const $router = router;
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   change()
@@ -245,6 +245,7 @@ function toSearch() {
   pageQuery.current = 1
   change()
 }
+
 const change = () => {
   loading.value = true
   // setTimeout(() => {
@@ -383,7 +384,7 @@ function preview(path: any) {
 function assignRole() {
   if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {
     layer.msg("请选择1条数据", {icon: 3})
-    return ;
+    return;
   }
   $router.push("/system/user/assignRole/" + selectedKeys.value[0])
 }
@@ -391,6 +392,7 @@ function assignRole() {
 function assignRoleById(id: any) {
   $router.push("/system/user/assignRole/" + id)
 }
+
 /*FUNCTION*/
 
 

@@ -2,6 +2,7 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.constant.MenuPermission;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
@@ -13,6 +14,7 @@ import com.freesia.util.UCopy;
 import com.freesia.util.USecurity;
 import com.freesia.vo.AssignRoleVo;
 import com.freesia.vo.R;
+import com.freesia.vo.SysTenantVo;
 import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,6 +49,7 @@ public class SysUserController {
     public TableResult<FindPageSysUserByDeptEntity> findPageSysUserByDept(SysUserVo sysUserVo, PageQuery pageQuery) {
         SysUserDto sysUserDto = new SysUserDto();
         UCopy.fullCopy(sysUserVo, sysUserDto);
+        sysUserDto.setTenantId(USecurity.getTenantId());
         return sysUserService.findPageSysUserByDept(sysUserDto, pageQuery);
     }
 
@@ -80,5 +83,18 @@ public class SysUserController {
         Set<Long> afterRoleIdSet = assignRoleVo.getAfterRoleIdSet();
         sysUserService.assignRole(userId, afterRoleIdSet);
         return R.ok();
+    }
+
+    @Operation(summary = "根据租户ID查询已分配该租户的用户")
+    @GetMapping("findPageUserByTenantId")
+    public TableResult<SysUserDto> findPageUserByTenantId(SysTenantVo sysTenantVo, PageQuery pageQuery) {
+        return sysUserService.findPageUserByTenantId(sysTenantVo.getId(), pageQuery);
+    }
+
+    @Operation(summary = "根据租户ID查询可分配该租户的用户")
+    @GetMapping("findPageAllowAssignUserByTenantId")
+    public TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantVo sysTenantVo, PageQuery pageQuery) {
+        SysTenantDto sysTenantDto = UCopy.copyVo2Dto(sysTenantVo, SysTenantDto.class);
+        return sysUserService.findPageAllowAssignUserByTenantId(sysTenantDto, pageQuery);
     }
 }

@@ -3,6 +3,7 @@ package com.freesia.util;
 import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.db.sql.SqlUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.freesia.po.BasePo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -28,10 +28,11 @@ export const useAppStore = defineStore({
         "--global-danger-color": "#ff5722",
         "--global-warm-color": "#ffb800",
       },
+      currentTenant: '',
     }
   },
   persist: {
     storage: localStorage,
-    paths: ['tab', 'locale', 'theme', 'logo', 'level', 'inverted', 'breadcrumb', 'sideTheme', 'greyMode', 'accordion', 'keepAliveList', 'themeVariable', 'subfield', 'tagsTheme'],
+    paths: ['tab', 'locale', 'theme', 'logo', 'level', 'inverted', 'breadcrumb', 'sideTheme', 'greyMode', 'accordion', 'keepAliveList', 'themeVariable', 'subfield', 'tagsTheme', 'currentTenant'],
   }
 })

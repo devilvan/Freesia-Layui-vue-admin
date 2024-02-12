@@ -9,12 +9,15 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.AdminConstant;
+import com.freesia.constant.Constants;
 import com.freesia.constant.DeviceType;
 import com.freesia.model.LoginUserModel;
+import com.freesia.properties.TenantProperties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -29,6 +32,7 @@ import java.util.function.Supplier;
 public class USecurity {
     public static final String LOGIN_USER_KEY = "loginUser";
     public static final String USER_KEY = "userId";
+    private static final TenantProperties TENANT_PROPERTIES = USpring.getBean(TenantProperties.class);
 
     /**
      * 构建敏感信息bean的函数接口，方便到行级别的自定义敏感数据
@@ -55,6 +59,7 @@ public class USecurity {
         sysSensitiveLogBean.setBrowser(UServlet.getBrowser());
         sysSensitiveLogBean.setOs(UServlet.getOs());
         sysSensitiveLogBean.setSign(loginUser.getUsername());
+        sysSensitiveLogBean.setTenantId(USecurity.getTenantId());
         return sysSensitiveLogBean;
     }
 
@@ -114,6 +119,11 @@ public class USecurity {
         return userId;
     }
 
+    /**
+     * 判断当前用户是否为超级管理员 {@link AdminConstant#ADMIN_ID}
+     *
+     * @return flag
+     */
     public static boolean isAdmin() {
         LoginUserModel loginUser = getLoginUser();
         if (ObjectUtil.isNotNull(loginUser)) {
@@ -130,5 +140,21 @@ public class USecurity {
      */
     public static boolean isAdmin(Long userId) {
         return AdminConstant.ADMIN_ID == Convert.toLong(userId, 0L);
+    }
+
+    /**
+     * 获取当前用户的租户ID
+     *
+     * @return 当前用户的租户ID
+     */
+    public static Long getTenantId() {
+        if (TENANT_PROPERTIES.getEnabled()) {
+            HttpServletRequest request = UServlet.getRequest();
+            if (request != null) {
+                String header = request.getHeader(Constants.X_TENANT_ID);
+                return Long.parseLong(header);
+            }
+        }
+        return null;
     }
 }

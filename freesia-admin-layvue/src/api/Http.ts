@@ -2,6 +2,8 @@ import axios, {AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig} f
 import {useUserStore} from "../store/user";
 import {layer} from '@layui/layui-vue';
 import router from '../router'
+import * as process from "process";
+import {useAppStore} from "../store/app";
 
 // 是否显示重新登录
 export let isReLogin = {show: false};
@@ -32,7 +34,7 @@ class Http {
                     router.push('/login');
                 }
             }
-
+            config.headers['X-Tenant-Id'] = useAppStore().currentTenant
             // GET请求
             if (config.method === 'get' && config.params) {
                 // 对查询参数进行 URL 编码

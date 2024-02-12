@@ -12,6 +12,7 @@ import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.UserModule;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
@@ -20,10 +21,7 @@ import com.freesia.exception.UserException;
 import com.freesia.helper.DataBaseHelper;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.mapper.SysUserMapper;
-import com.freesia.po.SysDeptPo;
-import com.freesia.po.SysRolePo;
-import com.freesia.po.SysUserPo;
-import com.freesia.po.SysUserRolePo;
+import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysUserRepository;
@@ -103,6 +101,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         Wrapper<SysUserPo> sysUserPoWrapper = USql.buildQueryWrapper(() -> Wrappers.<SysUserPo>query()
                 .eq("U.LOGIC_DEL", FlagConstant.ENABLED)
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
+                .eq("STU.TENANT_ID", USecurity.getTenantId())
                 .like(ObjectUtil.isNotNull(sysUserDto.getNickName()), "U.NICK_NAME", sysUserDto.getNickName())
                 .likeRight(ObjectUtil.isNotNull(sysUserDto.getUserName()), "U.USER_NAME", sysUserDto.getUserName())
                 .likeRight(ObjectUtil.isNotNull(sysUserDto.getEmail()), "U.EMAIL", sysUserDto.getEmail())
@@ -129,6 +128,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
                 .eq("D.LOGIC_DEL", FlagConstant.ENABLED)
                 .eq("D.DEPT_STATUS", FlagConstant.ENABLED)
+                .eq(UEmpty.isNotEmpty(sysUserDto.getTenantId()), "STU.TENANT_ID", sysUserDto.getTenantId())
                 .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
                     List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
                             .select(SysDeptPo::getId)
@@ -210,6 +210,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
             });
         }
         USpring.context().publishEvent(sysSensitiveLogBean);
+    }
+
+    @Override
+    public TableResult<SysUserDto> findPageUserByTenantId(Long tenantId, PageQuery pageQuery) {
+        Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageUserByTenantId(tenantId, pageQuery.build());
+        return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
+    }
+
+    @Override
+    public TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantDto sysTenantDto, PageQuery pageQuery) {
+        SysTenantPo sysTenantPo = UCopy.copyDto2Po(sysTenantDto, SysTenantPo.class);
+        Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageAllowAssignUserByTenantId(sysTenantPo, pageQuery.build());
+        return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
+    }
+
+    @Override
+    public Boolean isAdmin(Long id) {
+        return sysUserMapper.isAdmin(id);
     }
 
     /**

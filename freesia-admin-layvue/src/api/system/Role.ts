@@ -20,6 +20,9 @@ export const findRoleById = function (roleId: any) {
     return Http.get('/api/sysRoleController/findRoleById', params)
 }
 
+export const findAllRoles = function () {
+    return Http.get('/api/sysRoleController/findAllRoles');
+}
 
 export const findPageUserByRoleId = function (searchQuery: SysRoleVo, pageQuery: PageQuery) {
     const params = buildPageUrlParam(searchQuery, pageQuery)
