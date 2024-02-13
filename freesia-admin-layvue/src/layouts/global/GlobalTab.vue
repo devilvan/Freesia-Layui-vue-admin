@@ -7,8 +7,8 @@
         @change="to"
         @close="close"
     >
-      <template :key="tab" v-for="tab in tabs">
-        <lay-tab-item :id="tab.id" :title="tab.meta.title" :closable="tab.meta.closable">
+      <template :key="tab" v-for="tab in $tab.tabs">
+        <lay-tab-item :id="tab.id" :title="tab?.meta?.title" :closable="tab?.meta?.closable">
           <template #title>
             <span class="dot"></span>
             {{ tab.meta.title }}
@@ -36,12 +36,99 @@
 
 <script lang="ts" setup>
 import {useAppStore} from '../../store/app'
-import {useTab} from '../composable/useTab'
+import {useTabStore} from '../composable/useTabStore'
+import {computed, onMounted, watch} from "vue";
+import router from "../../router";
+import {useRoute} from "vue-router";
 
 const appStore = useAppStore()
 
-const {tabs, to, close, closeAll, closeOther, closeCurrent, currentPath} =
-    useTab()
+const $tab = useTabStore()
+const route = useRoute();
+const routes = router.getRoutes()
+const defaultTabsName = ['Workbench']
+const currentPath = computed(() => route.path);
+
+onMounted(() => {
+  if (routes) {
+    routes.forEach(r => {
+      let name = r.name as string;
+      if (defaultTabsName.includes(name)) {
+        $tab.tabs.push({
+          meta: {
+            ...r.meta,
+            affix: true,
+            closable: false,
+          },
+          id: r.path,
+          name: name
+        })
+        $tab.tabsCache.push(name)
+      } else if (!r.meta.link && r.meta.cache) {
+        $tab.tabsCache.push(name)
+      }
+    })
+  }
+
+  if (route.path && !$tab.tabsCache.includes(route.name as string)) {
+    // const path = routes.find(item => item.path === route.path)
+    $tab.tabs.push({
+      meta: {...route.meta},
+      id: route.path,
+      name: route.name,
+    })
+  }
+})
+
+watch(route, () => {
+  let bool = false;
+  $tab.tabs.forEach((tab: any) => {
+    if (tab.id === route.path) {
+      bool = true;
+      return;
+    }
+  });
+  if (!bool) {
+    $tab.tabs.push({
+      id: route.path,
+      title: route.meta.title,
+      name: route?.name,
+      meta: {...route.meta}
+    });
+  }
+  // appStore.$patch((state) => {
+  //   state.keepAliveList = $tab.tabs.map((item: any) => {
+  //     if (item.meta.cache) {
+  //       return item.name
+  //     }
+  //   }).filter((item: any) => item)
+  // })
+});
+
+function close(id: string) {
+  $tab.close(id);
+}
+
+function to(id: string) {
+  $tab.to(id);
+}
+
+function closeOpen(id: string) {
+  $tab.closeOpen(id);
+}
+
+function closeAll() {
+  $tab.closeAll()
+}
+
+function closeCurrent() {
+  $tab.closeCurrent()
+}
+
+function closeOther() {
+  $tab.closeOther()
+}
+
 </script>
 
 <style lang="less">

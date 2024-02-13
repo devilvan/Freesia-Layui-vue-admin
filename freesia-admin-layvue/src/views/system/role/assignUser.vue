@@ -143,7 +143,7 @@
 
     <div class="footer">
       <div class="footer-button">
-        <lay-button type="primary" @click="turnBack">返回</lay-button>
+        <lay-button type="primary" @click="$tab.closeOpen('/system/role/index')">返回</lay-button>
       </div>
     </div>
   </div>
@@ -163,7 +163,7 @@ import {SysUserEntity, SysUserVo} from "../../../types/system/User";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import {useRoute} from "vue-router";
 import {AssignUserVo, SysRoleEntity} from "../../../types/system/Role";
-import {useTab} from "../../../layouts/composable/useTab";
+import {useTabStore} from "../../../layouts/composable/useTabStore";
 import {
   assignUser,
   cancelAssignUser,
@@ -177,7 +177,7 @@ import router from "../../../router";
 /* INIT*/
 const $route = useRoute();
 const $router = router;
-const {closeOpen} = useTab();
+const $tab = useTabStore();
 onMounted(async () => {
   // sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   roleId.value = $route.params && $route.params.roleId as string;
@@ -191,11 +191,6 @@ let roleStatus = computed(() => {
 /* VAR*/
 const roleId = ref<string>('');
 const assignRoleVo = ref<SysUserVo>({})
-const visibleImport = ref(false)
-const file1 = ref<any>([])
-const model11 = ref<any>({})
-const layFormRef11 = ref()
-const visible11 = ref(false)
 const title = ref('新增')
 const sysDataScopeList = ref<Array<SysDictValueEntity>>([])
 const dataSource = ref<Array<SysRoleEntity>>([]);
@@ -207,8 +202,6 @@ const assignUserModalLoading = ref(false)
 const selectedKeys = ref([])
 const assignUserModalSelectedKeys = ref([])
 const openAssignUserModalFlag = ref<boolean>(false)
-const assignUserVo = ref<AssignUserVo>()
-const assignUserVoForm = ref()
 const pageQuery: PageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
@@ -244,10 +237,6 @@ const assignUserModalColumns = ref([
 ])
 
 /* VAR*/
-
-function toImport() {
-  visibleImport.value = true
-}
 
 function toReset() {
   assignRoleVo.value = {}
@@ -353,10 +342,6 @@ function assignUserModalChange() {
     loadAssignUserModalDataSource();
     assignUserModalLoading.value = false
   }, 1000)
-}
-
-function turnBack() {
-  closeOpen('/system/role/index');
 }
 </script>
 

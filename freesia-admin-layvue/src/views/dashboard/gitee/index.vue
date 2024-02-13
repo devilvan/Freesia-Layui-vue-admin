@@ -37,12 +37,12 @@ export default {
 </script>
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
-import {useTab} from "../../../layouts/composable/useTab";
+import {useTabStore} from "../../../layouts/composable/useTabStore";
 import {findGiteeCommits} from "../../../api/dashboard/Gitee";
 import {layer} from "@layui/layui-vue";
 import {FindGiteeCommitsEntity} from "../../../types/dashboard/Gitee";
 /* INIT*/
-const {closeOpen} = useTab();
+const {closeOpen} = useTabStore();
 
 onMounted(() => {
   loadDataSource();
