@@ -265,15 +265,15 @@
   </div>
 </template>
 
-<script lang="ts">
-/**
- * 创建组件时要添加name，否则在使用keep-alive时就会失效
- */
-export default {
-  name: "Intricate",
-};
-</script>
-<script lang="ts">
+<!--<script lang="ts">-->
+<!--/**-->
+<!-- * 创建组件时要添加name，否则在使用keep-alive时就会失效-->
+<!-- */-->
+<!--export default {-->
+<!--  name: "Intricate",-->
+<!--};-->
+<!--</script>-->
+<script lang="ts" name="Intricate">
 import { ref, watch, reactive } from 'vue'
 import { layer } from '@layui/layer-vue'
 

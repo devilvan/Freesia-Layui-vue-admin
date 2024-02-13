@@ -809,6 +809,7 @@ function saveMenuSubmit(menuType: any) {
           toCancel()
           resetModal(menuType)
           loadDataSource()
+          window.location.reload()
         }
       });
     }

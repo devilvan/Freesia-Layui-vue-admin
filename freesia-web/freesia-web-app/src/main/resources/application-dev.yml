@@ -15,8 +15,7 @@ freesia:
     tenant:
       enabled: true
       tenant-column: TENANT_ID
-      default-id: 1
-      ignore-table: SYS_TENANT,SYS_USER,SYS_MENU,SYS_DEPT,SYS_ROLE,SYS_ROLE_MENU,SYS_ROLE_DEPT,SYS_TENANT_USER,SYS_USER_ROLE,SYS_DICT_KEY,SYS_DICT_VALUE
+      ignore-table: SYS_TENANT,SYS_USER,SYS_MENU,SYS_DEPT,SYS_ROLE,SYS_ROLE_MENU,SYS_ROLE_DEPT,SYS_TENANT_USER,SYS_USER_ROLE,SYS_DICT_KEY,SYS_DICT_VALUE,URL_CONFIG
 ---
 login.password:
   # 密码最大错误次数
