@@ -261,6 +261,7 @@ export default {
         appStore.collapse = true
       }
       userInfoStore.getMenu()
+      userInfoStore.reloadSysTenant();
     })
 
     const changeVisible = () => {

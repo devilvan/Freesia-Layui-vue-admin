@@ -7,6 +7,7 @@ import auth from "../directives/auth";
 import {dynamicRoutes} from "../router/module/base-routes";
 import router, {addRoutes} from "../router";
 import {RouterComponent} from "../types/Menu";
+import {reloadSysTenant} from "../api/system/Tenant";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
@@ -67,6 +68,12 @@ export const useUserStore = defineStore({
             this.roles = []
             this.permissions = []
             this.menus = []
+        },
+        async reloadSysTenant() {
+            const {data, code} = await reloadSysTenant()
+            if (code === 200) {
+                this.sysTenantDtoList = data
+            }
         }
     },
     persist: {

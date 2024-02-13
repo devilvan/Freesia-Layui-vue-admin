@@ -135,7 +135,8 @@ import {layer} from "@layui/layui-vue";
 import router from "../../../router";
 import {findPageAllowAssignUserByTenantId, findPageUserByTenantId} from "../../../api/system/User";
 import {SysTenantEntity} from "../../../types/system/Tenant";
-import {assignTenant, cancelTenantAssignUser, findSysTenant} from "../../../api/system/Tenant";
+import {assignTenant, cancelTenantAssignUser, findSysTenant, reloadSysTenant} from "../../../api/system/Tenant";
+import {useUserStore} from "../../../store/user";
 
 /* INIT*/
 const $route = useRoute();

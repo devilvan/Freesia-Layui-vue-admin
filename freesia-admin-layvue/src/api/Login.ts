@@ -27,5 +27,4 @@ export const getMenu = function () {
 
 export const logout = function () {
     return Http.post('/api/sysLoginController/sysLogOut')
-
 }

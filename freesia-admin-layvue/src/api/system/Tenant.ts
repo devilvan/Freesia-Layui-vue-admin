@@ -33,3 +33,7 @@ export function assignTenant(assignTenantVo: AssignTenantVo) {
 export function cancelTenantAssignUser(assignTenantVo: AssignTenantVo) {
     return Http.post("/api/sysTenantController/cancelTenantAssignUser", assignTenantVo);
 }
+
+export function reloadSysTenant() {
+    return Http.put('/api/sysTenantController/reloadSysTenant')
+}
