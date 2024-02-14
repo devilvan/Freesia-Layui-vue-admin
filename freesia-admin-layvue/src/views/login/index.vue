@@ -165,7 +165,7 @@ const loginSubmit = async () => {
           layer.msg(msg, {icon: 1}, async () => {
             userStore.token = data.token
             await userStore.getInfo()
-            $router.push('/')
+            await $router.push('/')
           })
         } else {
           toRefreshImg()

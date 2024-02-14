@@ -1,5 +1,6 @@
 import Login from '../../views/login/index.vue'
 import BaseLayout from "../../layouts/BaseLayout.vue";
+import ErrorCode from "../../views/error/ErrorCode.vue";
 
 // const modules = import.meta.glob('./../../views/**/*.vue')
 
@@ -12,11 +13,6 @@ export const constantRoutes = [
         path: '/login',
         component: Login,
         meta: {title: '登录页面'},
-    },
-    {
-        path: "/:pathMatch(.*)*",
-        component: () => import('@/views/error/404.vue'),
-        hidden: true
     },
     {
         path: '/workSpace',
@@ -50,7 +46,17 @@ export const constantRoutes = [
                 meta: {title: '500'},
             }
         ]
-    }
+    },
+    {
+        path: '/error/:code',
+        component: ErrorCode,
+        meta: {title: '错误页面'},
+    },
+    {
+        path: "/:pathMatch(.*)*",
+        component: () => import('@/views/error/404.vue'),
+        hidden: true
+    },
 
 ]
 

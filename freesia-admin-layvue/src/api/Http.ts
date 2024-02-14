@@ -2,7 +2,6 @@ import axios, {AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig} f
 import {useUserStore} from "../store/user";
 import {layer} from '@layui/layui-vue';
 import router from '../router'
-import * as process from "process";
 import {useAppStore} from "../store/app";
 
 // 是否显示重新登录
@@ -51,18 +50,41 @@ class Http {
             switch (response.data.code) {
                 case 200:
                     return response.data;
-                case 500:
-                    layer.confirm(response.data.msg, {icon: 2})
-                    return response.data;
                 case 401:
+                    router.push('/error/401')
                     layer.confirm(
-                        '会话超时, 请重新登录',
+                        '会话认证失败, 请重新登录',
                         {
                             icon: 2, yes: function () {
                                 router.push('/login');
                                 layer.closeAll()
                             }
                         });
+                    return response.data;
+                case 403:
+                    router.push('/error/403')
+                    layer.confirm(
+                        '没有权限访问网站',
+                        {
+                            icon: 2, yes: function () {
+                                router.push('/');
+                                layer.closeAll()
+                            }
+                        });
+                    return response.data;
+                case 404:
+                    router.push('/error/404')
+                    layer.confirm(
+                        '找不到该页面',
+                        {
+                            icon: 2, yes: function () {
+                                router.push('/');
+                                layer.closeAll()
+                            }
+                        });
+                    return response.data;
+                case 500:
+                    layer.confirm(response.data.msg, {icon: 2})
                     return response.data;
                 default:
                     break;
