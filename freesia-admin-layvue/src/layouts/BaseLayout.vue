@@ -220,7 +220,7 @@ import {useMenu} from './composable/useMenu'
 import zh_CN from '../lang/zh_CN'
 import en_US from '../lang/en_US'
 import router from "../router";
-import {useTab} from "./composable/useTab";
+import {useTabStore} from "./composable/useTabStore";
 
 export default {
   components: {
@@ -235,7 +235,7 @@ export default {
   setup() {
     const appStore = useAppStore()
     const userInfoStore = useUserStore()
-    const $tab = useTab();
+    const $tab = useTabStore();
     const fullscreenRef = ref()
     const visible = ref(false)
     const sideWidth = computed(() =>
@@ -261,6 +261,7 @@ export default {
         appStore.collapse = true
       }
       userInfoStore.getMenu()
+      userInfoStore.reloadSysTenant();
     })
 
     const changeVisible = () => {

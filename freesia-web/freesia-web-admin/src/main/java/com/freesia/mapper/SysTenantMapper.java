@@ -2,6 +2,7 @@ package com.freesia.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.po.SysTenantPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -32,10 +33,10 @@ public interface SysTenantMapper extends BaseMapper<SysTenantPo> {
     List<Long> findSysTenantUser(@Param("userId") Long id);
 
     /**
-     * 根据租户ID查询
+     * 根据用户ID查询对应租户
      *
-     * @param tenantIdList 租户ID
+     * @param userId 用户ID
      * @return 租户信息
      */
-    List<SysTenantPo> findListSysTenantById(@Param("tenantIdList") List<Long> tenantIdList);
+    List<SysTenantPo> findListSysTenantByUserId(@Param("userId") Long userId);
 }

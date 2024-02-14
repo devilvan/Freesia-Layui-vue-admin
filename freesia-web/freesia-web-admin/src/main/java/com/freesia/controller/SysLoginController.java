@@ -73,11 +73,8 @@ public class SysLoginController {
         }
         SysUserDto sysUserDto = sysUserService.findUserById(loginUserModel.getUserId());
         SysUserInfoEntity sysUserInfoEntity = sysUserDto2Entity(sysUserDto, loginUserModel);
-        List<Long> tenantIdList = loginUserModel.getTenantIdList();
-        if (UEmpty.isNotEmpty(tenantIdList)) {
-            List<SysTenantDto> sysTenantPoList = sysTenantService.findListSysTenantById(tenantIdList);
-            sysUserInfoEntity.setSysTenantDtoList(sysTenantPoList);
-        }
+        List<SysTenantDto> sysTenantPoList = sysTenantService.findListSysTenantByUserId(loginUserModel.getUserId());
+        sysUserInfoEntity.setSysTenantDtoList(sysTenantPoList);
         return R.ok(sysUserInfoEntity);
     }
 

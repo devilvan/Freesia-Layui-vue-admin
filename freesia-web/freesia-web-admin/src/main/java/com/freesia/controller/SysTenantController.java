@@ -8,6 +8,7 @@ import com.freesia.service.SysTenantService;
 import com.freesia.util.UCollection;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.util.USecurity;
 import com.freesia.vo.AssignTenantVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SysTenantVo;
@@ -116,6 +117,12 @@ public class SysTenantController {
         return R.ok();
     }
 
+    /**
+     * 取消将租户分配给用户
+     *
+     * @param assignTenantVo 入参
+     * @return 形式返回
+     */
     @Operation(summary = "取消将租户分配给用户")
     @PostMapping(value = "cancelTenantAssignUser")
     public R<Void> cancelTenantAssignUser(@Validated @RequestBody AssignTenantVo assignTenantVo) {
@@ -125,6 +132,19 @@ public class SysTenantController {
         userIdList.forEach(userId -> userIdLongList.add(Long.parseLong(userId)));
         sysTenantService.cancelAssignUser(tenantId, userIdLongList);
         return R.ok();
+    }
+
+    /**
+     * 租户分配给其他实体（如；用户）后，刷新前端全局变量中的租户信息
+     *
+     * @return 形式返回
+     */
+    @Operation(summary = "租户分配给其他实体（如；用户）后，刷新前端全局变量中的租户信息")
+    @PutMapping(value = "reloadSysTenant")
+    public R<List<SysTenantDto>> reloadSysTenant() {
+        Long userId = USecurity.getUserId();
+        List<SysTenantDto> sysTenantDtoList = sysTenantService.findListSysTenantByUserId(userId);
+        return R.ok(sysTenantDtoList);
     }
 
     /**

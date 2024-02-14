@@ -68,7 +68,7 @@
     </div>
     <div class="footer">
       <div class="footer-button">
-        <lay-button type="primary" @click="turnBack">返回</lay-button>
+        <lay-button type="primary" @click="$tab.closeOpen('/system/user/index')">返回</lay-button>
       </div>
     </div>
   </div>
@@ -91,14 +91,14 @@ import {SysDictValueEntity} from "../../../types/system/Dict";
 import {useRoute} from "vue-router";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysRoleEntity} from "../../../types/system/Role";
-import {useTab} from "../../../layouts/composable/useTab";
+import {useTabStore} from "../../../layouts/composable/useTabStore";
 import {findAllRoles} from "../../../api/system/Role";
 import router from "../../../router";
 
 /* INIT*/
 const $route = useRoute();
 const $router = router;
-const {closeOpen} = useTab();
+const $tab = useTabStore();
 onMounted(async () => {
   sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   userId.value = $route.params && $route.params.userId as string;
@@ -176,10 +176,6 @@ function assign() {
       layer.confirm(res.msg, {icon: 2})
     }
   })
-}
-
-function turnBack() {
-  closeOpen('/system/user/index');
 }
 </script>
 

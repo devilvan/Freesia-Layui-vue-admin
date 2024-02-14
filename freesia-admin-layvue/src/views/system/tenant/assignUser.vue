@@ -130,17 +130,18 @@ import {PageQuery} from "../../../types/Common";
 import {SysUserEntity} from "../../../types/system/User";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import {useRoute} from "vue-router";
-import {useTab} from "../../../layouts/composable/useTab";
+import {useTabStore} from "../../../layouts/composable/useTabStore";
 import {layer} from "@layui/layui-vue";
 import router from "../../../router";
 import {findPageAllowAssignUserByTenantId, findPageUserByTenantId} from "../../../api/system/User";
 import {SysTenantEntity} from "../../../types/system/Tenant";
-import {assignTenant, cancelTenantAssignUser, findSysTenant} from "../../../api/system/Tenant";
+import {assignTenant, cancelTenantAssignUser, findSysTenant, reloadSysTenant} from "../../../api/system/Tenant";
+import {useUserStore} from "../../../store/user";
 
 /* INIT*/
 const $route = useRoute();
 const $router = router;
-const {closeOpen} = useTab();
+const {closeOpen} = useTabStore();
 onMounted(async () => {
   // sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   tenantId.value = $route.params && $route.params.tenantId as string;

@@ -89,14 +89,14 @@ export default {
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import {useRoute} from "vue-router";
-import {useTab} from "../../../layouts/composable/useTab";
+import {useTabStore} from "../../../layouts/composable/useTabStore";
 import {findRedisDashboardInfo} from "../../../api/dashboard/Redis";
 import * as echarts from "echarts";
 import router from "../../../router";
 /* INIT*/
 const $route = useRoute();
 const $router = router;
-const {closeOpen} = useTab();
+const {closeOpen} = useTabStore();
 
 onMounted(() => {
   loadDataSource();

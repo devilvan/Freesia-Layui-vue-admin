@@ -5,7 +5,7 @@
         <lay-watermark :content="getContent()" :fontSize="`12pt`" font="20px Microsoft Yahei"
                        element-box=".layui-scroll-test" :rotate="-36" :maxTotal="10"></lay-watermark>
         <lay-scroll height="100%" style="background-color: #ffffff; position: relative" thumbColor="#000000">
-          <keep-alive :include="$tab.tabsCache.value">
+          <keep-alive :include="$tab.tabsCache">
             <component :is="Component" :key="route.name"/>
           </keep-alive>
         </lay-scroll>
@@ -16,12 +16,12 @@
 
 <script lang="ts" setup>
 import {useAppStore} from '../../store/app'
-import {useTab} from "../composable/useTab";
+import {useTabStore} from "../composable/useTabStore";
 import {useUserStore} from "../../store/user";
 import {formatDateTime} from '../../util/UDate'
 
 const appStore = useAppStore()
-const $tab = useTab()
+const $tab = useTabStore()
 const $userInfo = useUserStore().userInfo;
 
 function getContent() {

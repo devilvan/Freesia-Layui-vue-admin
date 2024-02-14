@@ -99,8 +99,6 @@ public class SysLoginServiceImpl implements SysLoginService {
         Set<String> sysRoleStrSet = loadRolePermission(isAdmin, sysUserPo);
         // 获取用户对应的菜单
         Set<String> sysMenuStrSet = loadMenuPermission(isAdmin, sysUserPo);
-        // 获取用户对应的租户
-        List<Long> tenantIdList = loadSysTenant(sysUserPo);
         // 获取角色信息
         Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
         List<SysRoleModel> sysRoleModelList = sysRolePoSet2ModelList(sysRolePoSet);
@@ -118,7 +116,6 @@ public class SysLoginServiceImpl implements SysLoginService {
         loginUserModel.setRolePermission(sysRoleStrSet);
         loginUserModel.setUsername(sysUserPo.getUserName());
         loginUserModel.setRoles(sysRoleModelList);
-        loginUserModel.setTenantIdList(tenantIdList);
         return loginUserModel;
     }
 
