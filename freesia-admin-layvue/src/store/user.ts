@@ -54,8 +54,6 @@ export const useUserStore = defineStore({
                     this.sidebarRoutes.push(f);
                 })
                 addRoutes(this.sidebarRoutes, router);
-            } else {
-                await router.push('/error/401')
             }
         },
         async getMenu() {

@@ -6,17 +6,18 @@
         :activeBarTransition="true"
         @change="to"
         @close="close"
+        @contextmenu.prevent="rightClickShowMenu()"
     >
       <template :key="tab" v-for="tab in $tab.tabs">
-        <lay-tab-item :id="tab.id" :title="tab?.meta?.title" :closable="tab?.meta?.closable">
+        <lay-tab-item :id="tab.id" :title="tab?.meta?.title" :closable="tab?.meta?.closable" :icon="tab.meta?.icon">
           <template #title>
-            <span class="dot"></span>
+            <span v-if="!tab.meta || !tab.meta?.icon || tab.meta?.icon === ''" class="dot"></span>
             {{ tab.meta.title }}
           </template>
         </lay-tab-item>
       </template>
     </lay-tab>
-    <lay-dropdown>
+    <lay-dropdown @show="stat='开启'" @hide="stat='关闭'" :alignPoint="true" trigger="click">
       <lay-icon type="layui-icon-down"
                 :class=" appStore.tagsTheme == 'designer' ? 'designer-last-icon' : ''"></lay-icon>
       <template #content>
@@ -37,7 +38,7 @@
 <script lang="ts" setup>
 import {useAppStore} from '../../store/app'
 import {useTabStore} from '../composable/useTabStore'
-import {computed, onMounted, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import router from "../../router";
 import {useRoute} from "vue-router";
 
@@ -48,6 +49,7 @@ const route = useRoute();
 const routes = router.getRoutes()
 const defaultTabsName = ['Workbench']
 const currentPath = computed(() => route.path);
+const stat = ref('关闭')
 
 onMounted(() => {
   if (routes) {
@@ -81,6 +83,7 @@ onMounted(() => {
 })
 
 watch(route, () => {
+  $tab.currentPath = route.path
   let bool = false;
   $tab.tabs.forEach((tab: any) => {
     if (tab.id === route.path) {
@@ -96,13 +99,6 @@ watch(route, () => {
       meta: {...route.meta}
     });
   }
-  // appStore.$patch((state) => {
-  //   state.keepAliveList = $tab.tabs.map((item: any) => {
-  //     if (item.meta.cache) {
-  //       return item.name
-  //     }
-  //   }).filter((item: any) => item)
-  // })
 });
 
 function close(id: string) {
@@ -129,6 +125,14 @@ function closeOther() {
   $tab.closeOther()
 }
 
+function rightClickShowMenu() {
+  if (stat.value === '开启') {
+    stat.value = '关闭'
+  } else if (stat.value === '关闭') {
+    stat.value = '开启'
+  }
+  console.log("右键点击", stat.value)
+}
 </script>
 
 <style lang="less">

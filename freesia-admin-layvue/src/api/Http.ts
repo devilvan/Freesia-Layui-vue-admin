@@ -6,7 +6,7 @@ import {useAppStore} from "../store/app";
 
 // 是否显示重新登录
 export let isReLogin = {show: false};
-
+export let loginPath: string = '/login'
 type TAxiosOption = {
     timeout: number;
     baseURL: string;
@@ -29,8 +29,8 @@ class Http {
             if (userInfoStore.token) {
                 (config.headers as AxiosRequestHeaders).Authorization = "Bearer " + userInfoStore.token as string
             } else {
-                if (router.currentRoute.value.path !== '/login') {
-                    router.push('/login');
+                if (router.currentRoute.value.path !== loginPath) {
+                    router.push(loginPath).then(r => r);
                 }
             }
             config.headers['X-Tenant-Id'] = useAppStore().currentTenant
@@ -56,7 +56,7 @@ class Http {
                         '会话认证失败, 请重新登录',
                         {
                             icon: 2, yes: function () {
-                                router.push('/login');
+                                router.push(loginPath);
                                 layer.closeAll()
                             }
                         });

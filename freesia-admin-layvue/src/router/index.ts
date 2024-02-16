@@ -4,7 +4,7 @@ import 'nprogress/nprogress.css'
 import {constantRoutes} from "./module/base-routes";
 import {useUserStore} from "../store/user";
 import {RouterComponent} from "../types/Menu";
-import {getRouters} from "../api/Login";
+import {loginPath} from "../api/Http";
 
 NProgress.configure({showSpinner: false})
 
@@ -32,15 +32,17 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     const userStore = useUserStore();
     NProgress.start();
     let token = userStore.token;
-    if (to.path === '/login') {
-        if (!token) {
+    if (to.path === loginPath) {
+        if (!token || token === '') {
+            // 如果token不存在，直接跳转到登录页
             userStore.token = ''
             next()
-        } else {
-            next()
+        } else if ((token || token !== '') && to.path === loginPath) {
+            // 如果token存在（已登录），则跳转到默认页
+            next({path: '/'})
         }
     }
-    if (token) {
+    if (token && to.path !== loginPath) {
         if (!isGetRouter) {
             isGetRouter = true;
             await userStore.getRouters()
@@ -49,7 +51,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             next()
         }
     } else {
-        next({path: '/login'})
+        next({path: loginPath})
     }
 })
 

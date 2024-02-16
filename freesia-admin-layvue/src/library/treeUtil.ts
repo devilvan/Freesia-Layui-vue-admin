@@ -35,7 +35,7 @@ export const getParents = function(list:any[], id: string) : any{
       }
       if (list[i].children) {
         let node = getParents(list[i].children, id)
-        if (node !== undefined) {
+        if (typeof(node) !== "undefined") {
           return node.concat(list[i])
         }
       }
