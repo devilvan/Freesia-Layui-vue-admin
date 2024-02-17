@@ -1,0 +1,38 @@
+package com.freesia.bean;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.freesia.constant.Constants;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.util.Date;
+
+/**
+ * @author Evad.Wu
+ * @Description 通用bean父类 bean
+ * @date 2023-08-17
+ */
+@Data
+@Schema(description = "通用bean父类")
+public abstract class BaseBean {
+    @Schema(description = "主键ID")
+    private Long id;
+    @Schema(description = "创建人")
+    private String creator;
+    @Schema(description = "创建时间")
+    @JSONField(format = Constants.YMD_HMS)
+    private Date createTime;
+    @Schema(description = "修改人")
+    private String modifier;
+    @Schema(description = "修改时间")
+    @JSONField(format = Constants.YMD_HMS)
+    private Date modifyTime;
+    @Schema(description = "逻辑删除")
+    private Boolean logicDel;
+    @Schema(description = "版本号")
+    private Long recVer;
+    @Schema(description = "系统内置（0-是 1-否）")
+    private Boolean buildIn;
+    @Schema(description = "租户ID")
+    private Long tenantId;
+}

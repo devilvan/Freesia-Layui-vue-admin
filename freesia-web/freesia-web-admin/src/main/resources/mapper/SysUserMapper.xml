@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysUserMapper">
+    <select id="isAdmin" resultType="java.lang.Boolean">
+        SELECT 1
+        FROM sys_user SU
+                 LEFT JOIN sys_user_role SUR ON SU.ID = SUR.USER_ID
+                 LEFT JOIN sys_role SR ON SUR.ROLE_ID = SR.ID
+        WHERE 1 = 1
+          AND SU.ID = #{id}
+          AND SR.ROLE_KEY = 'admin'
+    </select>
+    <select id="checkUserNameUnique" resultType="java.lang.Boolean">
+        SELECT NOT EXISTS
+            (SELECT 1
+             FROM sys_user
+             WHERE USER_NAME = #{sysUserPo.userName}
+               AND NOT EXISTS(SELECT ID FROM SYS_USER WHERE ID = #{sysUserPo.id}))
+    </select>
+    <select id="findPageSysUserList" resultType="com.freesia.entity.FindPageSysUserListEntity">
+        SELECT U.ID,
+               U.DEPT_ID,
+               U.NICK_NAME,
+               U.USER_NAME,
+               U.EMAIL,
+               U.AVATAR,
+               U.TEL_NO,
+               U.GENDER,
+               U.ACCOUNT_STATUS,
+               U.LOGIC_DEL,
+               U.CREATE_TIME,
+               U.CREATOR,
+               U.REMARK,
+               D.DEPT_NAME,
+               D.LEADER
+        FROM sys_user U
+                 LEFT JOIN sys_dept D on U.DEPT_ID = D.ID
+                 LEFT JOIN sys_tenant_user stu on U.ID = stu.USER_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findPageSysUserByDept" resultType="com.freesia.entity.FindPageSysUserByDeptEntity">
+        SELECT U.ID,
+               U.DEPT_ID,
+               U.NICK_NAME,
+               U.USER_NAME,
+               U.EMAIL,
+               U.AVATAR,
+               U.TEL_NO,
+               U.GENDER,
+               U.ACCOUNT_STATUS,
+               U.LOGIC_DEL,
+               U.CREATE_TIME,
+               U.CREATOR,
+               U.REMARK,
+               D.DEPT_NAME,
+               D.LEADER
+        FROM sys_user U
+                 LEFT JOIN sys_dept D ON U.DEPT_ID = D.ID
+                 LEFT JOIN sys_tenant_user stu on U.ID = stu.USER_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findCurrentUserProfile" resultType="com.freesia.po.SysUserPo">
+        SELECT ID,
+               NICK_NAME,
+               EMAIL,
+               TEL_NO,
+               GENDER,
+               AVATAR,
+               REMARK
+        FROM sys_user U
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findPageAllowAssignUserByTenantId" resultType="com.freesia.po.SysUserPo">
+        SELECT DISTINCT U.ID,
+                        U.REC_VER,
+                        U.USER_NAME,
+                        U.NICK_NAME,
+                        U.USER_TYPE,
+                        U.REMARK,
+                        U.ACCOUNT_STATUS
+        FROM sys_user U
+        WHERE 1 = 1
+          AND U.LOGIC_DEL = 0
+          AND U.ID NOT IN (
+            SELECT STU.USER_ID
+            FROM SYS_TENANT_USER STU
+            WHERE 1 = 1
+              AND U.ID = STU.USER_ID
+              AND STU.TENANT_ID IN (#{sysTenantPo.id})
+        )
+    </select>
+    <select id="findPageUserByTenantId" resultType="com.freesia.po.SysUserPo">
+        SELECT DISTINCT U.ID,
+                        U.REC_VER,
+                        U.USER_NAME,
+                        U.NICK_NAME,
+                        U.USER_TYPE,
+                        U.REMARK,
+                        U.ACCOUNT_STATUS
+        FROM sys_user U
+        WHERE 1 = 1
+          AND U.LOGIC_DEL = 0
+          AND U.ID IN (
+            SELECT STU.USER_ID
+            FROM SYS_TENANT_USER STU
+            WHERE 1 = 1
+              AND U.ID = STU.USER_ID
+              AND STU.TENANT_ID IN (#{tenantId})
+        )
+    </select>
+
+</mapper>

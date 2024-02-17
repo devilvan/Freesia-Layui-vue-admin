@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysDictValueMapper">
+    <sql id="findSysDictValueRef">
+        SELECT DV.ID,
+               DV.CREATE_TIME,
+               DV.DICT_KEY,
+               DV.VALUE_NAME,
+               DV.VALUE,
+               DV.ORDER_NUM,
+               DV.IS_DEFAULT,
+               DV.I18N,
+               DV.CSS_STYLE,
+               DV.STATUS,
+               DV.REMARK
+        FROM sys_dict_key DK
+                 LEFT JOIN sys_dict_value DV ON DK.ID = DV.KEY_ID
+    </sql>
+    <select id="findPageSysDictValue" resultType="com.freesia.po.SysDictValuePo">
+        <include refid="findSysDictValueRef"/>
+        ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findSysDictValueList" resultType="com.freesia.po.SysDictValuePo">
+        <include refid="findSysDictValueRef"/>
+        ${ew.getCustomSqlSegment}
+    </select>
+</mapper>

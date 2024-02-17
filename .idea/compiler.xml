@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="freesia-common-service" />
+        <module name="freesia-web-api" />
+        <module name="freesia-common-framework" />
+        <module name="freesia-web-framework" />
+        <module name="freesia-common-api" />
+        <module name="freesia-web-app" />
+        <module name="freesia-common-codegen" />
+        <module name="freesia-web-admin" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="16">
+      <module name="freesia" target="16" />
+      <module name="freesia-common" target="16" />
+      <module name="freesia-common-api" target="16" />
+      <module name="freesia-common-codegen" target="16" />
+      <module name="freesia-common-framework" target="16" />
+      <module name="freesia-common-service" target="16" />
+      <module name="freesia-web" target="16" />
+      <module name="freesia-web-admin" target="16" />
+      <module name="freesia-web-api" target="16" />
+      <module name="freesia-web-app" target="16" />
+      <module name="freesia-web-dashboard" target="16" />
+      <module name="freesia-web-framework" target="16" />
+      <module name="freesia-web-monitor" target="16" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="freesia-common-api" options="-parameters" />
+      <module name="freesia-common-codegen" options="-parameters" />
+      <module name="freesia-common-framework" options="-parameters" />
+      <module name="freesia-common-service" options="-parameters" />
+      <module name="freesia-web-admin" options="-parameters" />
+      <module name="freesia-web-api" options="-parameters" />
+      <module name="freesia-web-app" options="-parameters" />
+      <module name="freesia-web-dashboard" options="-parameters" />
+      <module name="freesia-web-framework" options="-parameters" />
+      <module name="freesia-web-monitor" options="-parameters" />
+    </option>
+  </component>
+</project>

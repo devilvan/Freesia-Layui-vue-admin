@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysSensitiveLogMapper">
+    <sql id="findPageLogRef">
+        SELECT SL.ID,
+               SL.CREATOR,
+               SL.CREATE_TIME,
+               SL.MODIFIER,
+               SL.MODIFY_TIME,
+               SL.LOGIC_DEL,
+               SL.REC_VER,
+               SL.OPERATOR_ID,
+               SL.OPERATOR_NAME,
+               SL.DEPT_ID,
+               SL.DEPT_NAME,
+               SL.URL,
+               SL.BE_OPERATED_ID,
+               SL.BE_OPERATED_NAME,
+               SL.IP_ADDRESS,
+               SL.LOCATION,
+               SL.OPERATE_TIME,
+               SL.BROWSER,
+               SL.OS,
+               SL.MODULE,
+               SL.SUB_MODULE,
+               SL.TYPE,
+               SL.RESULT,
+               SL.SIGN,
+               SL.CONTEXT_OLD,
+               SL.CONTEXT,
+               SL.REMARK
+        FROM sys_sensitive_log SL
+                 LEFT JOIN sys_dept D ON D.ID = SL.DEPT_ID
+    </sql>
+    <select id="findPageLoginLog" resultType="com.freesia.po.SysSensitiveLogPo">
+        <include refid="findPageLogRef"/>
+        ${ew.getCustomSqlSegment}
+
+    </select>
+    <select id="findPageOptionLog" resultType="com.freesia.po.SysSensitiveLogPo">
+        <include refid="findPageLogRef"/>
+        ${ew.getCustomSqlSegment}
+    </select>
+</mapper>

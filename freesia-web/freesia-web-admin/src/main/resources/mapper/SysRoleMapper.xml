@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysRoleMapper">
+    <delete id="deleteRoleMenu">
+        DELETE FROM sys_role_menu
+        WHERE 1=1
+        <foreach collection="idList" item="menuId" open="AND MENU_ID IN (" close=")" separator=",">
+            #{menuId}
+        </foreach>
+    </delete>
+    <select id="findRolePermissionStrByUserId" resultType="com.freesia.po.SysRolePo">
+        SELECT DISTINCT SR.ROLE_KEY
+        FROM sys_role SR
+                 LEFT JOIN sys_user_role sur on SR.ID = sur.ROLE_ID
+                 LEFT JOIN sys_user su on sur.USER_ID = su.ID
+        WHERE 1 = 1
+          AND SUR.USER_ID = #{id}
+          AND SR.LOGIC_DEL = false
+    </select>
+    <select id="findPageSysRoleList" resultType="com.freesia.entity.FindPageSysRoleListEntity">
+        SELECT DISTINCT R.ID,
+                        R.ROLE_NAME,
+                        R.ROLE_KEY,
+                        R.ORDER_NUM,
+                        R.DATA_SCOPE,
+                        R.MENU_CHECK_STRICTLY,
+                        R.DEPT_CHECK_STRICTLY,
+                        R.STATUS,
+                        R.LOGIC_DEL,
+                        R.CREATE_TIME,
+                        R.REMARK
+        FROM sys_role R
+                 LEFT JOIN sys_user_role SUR ON R.ID = SUR.ROLE_ID
+                 LEFT JOIN SYS_USER U ON SUR.USER_ID = U.ID
+                 LEFT JOIN sys_dept D ON U.DEPT_ID = D.ID
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findPageUserByRoleId" resultMap="findPageUserByRoleIdResultMap">
+        SELECT U.ID     AS USER_ID,
+               U.USER_NAME,
+               U.NICK_NAME,
+               U.ACCOUNT_STATUS,
+               U.USER_TYPE,
+               U.REMARK as USER_REMARK
+        FROM sys_role R
+                 LEFT JOIN sys_user_role sur on R.ID = sur.ROLE_ID
+                 LEFT JOIN sys_user U on U.ID = sur.USER_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findPageAllowAssignUserByRoleId" resultType="com.freesia.po.SysUserPo">
+        SELECT DISTINCT U.ID,
+                        U.USER_NAME,
+                        U.NICK_NAME,
+                        U.USER_TYPE,
+                        U.REMARK
+        FROM sys_user U
+        LEFT JOIN sys_tenant_user stu on U.ID = stu.USER_ID
+        WHERE 1 = 1
+          AND U.LOGIC_DEL = 0
+          AND U.ACCOUNT_STATUS = 0
+          AND stu.TENANT_ID = #{sysRolePo.tenantId}
+          AND U.ID NOT IN (
+            SELECT SU.ID
+            FROM SYS_USER SU
+                     LEFT JOIN SYS_USER_ROLE SUR ON SU.ID = SUR.USER_ID
+            WHERE 1 = 1
+              AND SUR.ROLE_ID IN (#{sysRolePo.id}))
+    </select>
+    <resultMap id="findPageUserByRoleIdResultMap" type="com.freesia.po.SysUserPo">
+        <result property="id" column="USER_ID"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="nickName" column="NICK_NAME"/>
+        <result property="userType" column="USER_TYPE"/>
+        <result property="accountStatus" column="ACCOUNT_STATUS"/>
+        <result property="remark" column="USER_REMARK"/>
+    </resultMap>
+</mapper>

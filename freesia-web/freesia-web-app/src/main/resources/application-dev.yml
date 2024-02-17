@@ -1,0 +1,142 @@
+server:
+  port: 8570
+---
+spring:
+  application:
+    name: freesia-admin
+---
+freesia:
+  web:
+    common:
+      # 是否初始化系统配置
+      init-sys-config: true
+      # 是否初始化数据字典
+      init-sys-dict: true
+    tenant:
+      enabled: true
+      tenant-column: TENANT_ID
+      ignore-table: SYS_TENANT,SYS_USER,SYS_MENU,SYS_DEPT,SYS_ROLE,SYS_ROLE_MENU,SYS_ROLE_DEPT,SYS_TENANT_USER,SYS_USER_ROLE,SYS_DICT_KEY,SYS_DICT_VALUE,URL_CONFIG
+---
+login.password:
+  # 密码最大错误次数
+  maxRetryCount: 5
+  # 密码锁定时间（默认10分钟 Duration）
+  lockTime: 10M
+---
+captcha:
+  type: CALCULATE
+  strategy: CIRCLE
+  numberLength: 1
+  charLength: 4
+---
+spring:
+  messages:
+    basename: i18n/messages_common_service,i18n/messages_common,i18n/messages
+    encoding: UTF-8
+---
+# Sa-Token配置
+sa-token:
+  # 打印日志
+  is-log: false
+  # 打印彩色日志
+  is-color-log: false
+  # 启动不打印banner
+  is-print: false
+  # token名称 (同时也是cookie名称)
+  token-name: Authorization
+  # token有效期 设为一天 (必定过期) 单位: 秒
+  timeout: 86400
+  # 多端不同 token 有效期 可查看 USecurity.loginByDevice 方法自定义
+  # token最低活跃时间 (指定时间无操作就过期) 单位: 秒
+  active-timeout: 43200
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: true
+  # 是否尝试从header里读取token
+  is-read-header: true
+  # 是否尝试从cookie里读取token
+  is-read-cookie: false
+  # token前缀
+  token-prefix: "Bearer"
+  # jwt秘钥
+  jwt-secret-key: DoYouLikeWhatYouSee?
+---
+# security配置
+security:
+  # 排除路径
+  excludes:
+    # 静态资源
+    - /*.html
+    - /**/*.html
+    - /**/*.css
+    - /**/*.js
+    # 公共路径
+    - /favicon.ico
+    - /error
+    # swagger 文档配置
+    - /*/api-docs
+    - /*/api-docs/**
+    # actuator 监控配置
+    - /actuator
+    - /actuator/**
+---
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+  info:
+    title: Devilvan's Freesia Admin Document
+    decription: Freesia后台管理系统_接口文档
+    license:
+      name: APACHE LICENSE VERSION 2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0.html
+    version: '版本号: ${project.version}'
+    termsOfService: 'http://localhost:${server.port}}'
+    contact:
+      name: Evad Devilvan
+      email: evaddevilvan@outlook.com
+      url: https://gitee.com/devilvan/freesia
+  externalDocs:
+    description: Git仓库地址
+    url: https://gitee.com/devilvan/freesia
+  components:
+    # 鉴权方式配置
+    security-schemes:
+      apiKey:
+        type: APIKEY
+        in: HEADER
+        name: ${sa-token.token-name}
+  group-configs:
+    - group: 1. 登录、注册模块
+      paths-to-match:
+        - /api/sysLoginController/**
+        - /api/sysRegistryController/**
+    - group: 2. 用户模块
+      paths-to-match: /api/sysUserController/**
+    - group: 3. 角色模块
+      paths-to-match: /api/sysRoleController/**
+    - group: 4. 菜单模块
+      paths-to-match: /api/sysMenuController/**
+    - group: 5. 部门模块
+      paths-to-match: /api/sysDeptController/**
+    - group: 6. 字典模块
+      paths-to-match: /api/sysDictController/**
+    - group: 7. 操作日志模块
+      paths-to-match: /api/sysSensitiveLogController/**
+    - group: 8. 数据面板模块
+      paths-to-match: /dashboard/**
+    - group: 9. 基础服务模块
+      paths-to-match: /common/**
+# knife4j的增强配置，不需要增强可以不配
+#knife4j:
+#  enable: true
+#  setting:
+#    language: zh_cn
+gitee:
+  commits:
+    url: https://gitee.com/api/v5/repos/devilvan/freesia/commits
+  oauth:
+    url: https://gitee.com/oauth/token
+    per-page: 20

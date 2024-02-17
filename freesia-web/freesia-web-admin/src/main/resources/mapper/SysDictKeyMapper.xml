@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysDictKeyMapper">
+    <select id="findPageSysDictList" resultMap="findPageSysDictListResultMap">
+        SELECT DK.ID         AS KEY_ID,
+               DK.KEY_NAME,
+               DK.DICT_KEY,
+               DK.STATUS     AS KEY_STATUS,
+               DV.ID         AS VALUE_ID,
+               DV.VALUE_NAME AS VALUE_NAME,
+               DV.ORDER_NUM,
+               DV.IS_DEFAULT,
+               DV.STATUS     AS VALUE_STATUS
+        FROM sys_dict_key DK
+                 LEFT JOIN sys_dict_value DV ON DK.ID = DV.KEY_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+    <resultMap id="findPageSysDictListResultMap" type="com.freesia.entity.FindPageSysDictKeyEntity">
+        <result column="KEY_ID" property="keyId"/>
+        <result column="KEY_NAME" property="keyName"/>
+        <result column="DICT_KEY" property="dictKey"/>
+        <result column="KEY_STATUS" property="keyStatus"/>
+        <collection property="children" javaType="java.util.List" resultMap="findPageSysDictListChildrenResultMap"/>
+    </resultMap>
+    <resultMap id="findPageSysDictListChildrenResultMap" type="com.freesia.entity.FindPageSysDictValueEntity">
+        <result column="VALUE_ID" property="valueId"/>
+        <result column="VALUE_NAME" property="valueName"/>
+        <result column="ORDER_NUM" property="orderNum"/>
+        <result column="IS_DEFAULT" property="isDefault"/>
+        <result column="VALUE_STATUS" property="valueStatus"/>
+    </resultMap>
+    <select id="findSysDictKeyList" resultType="com.freesia.po.SysDictKeyPo">
+        SELECT DISTINCT DK.ID,
+                        DK.REC_VER,
+                        DK.LOGIC_DEL,
+                        DK.KEY_NAME,
+                        DK.DICT_KEY,
+                        DK.STATUS,
+                        DK.REMARK
+        FROM sys_dict_key DK
+            ${ew.getCustomSqlSegment}
+    </select>
+</mapper>
