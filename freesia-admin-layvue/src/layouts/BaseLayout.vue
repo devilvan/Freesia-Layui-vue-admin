@@ -309,7 +309,7 @@ export default {
     function changeTenantSelect(value: any) {
       appStore.currentTenant = value;
       window.location.reload()
-      router.push($tab.currentPath.value)
+      router.push($tab.currentPath)
     }
 
     return {
