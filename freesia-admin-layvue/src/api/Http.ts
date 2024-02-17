@@ -22,7 +22,6 @@ class Http {
 
     constructor(config: TAxiosOption) {
         this.service = axios.create(config)
-
         /* 请求拦截 */
         this.service.interceptors.request.use((config: InternalAxiosRequestConfig) => {
             const userInfoStore = useUserStore();
@@ -30,7 +29,7 @@ class Http {
                 (config.headers as AxiosRequestHeaders).Authorization = "Bearer " + userInfoStore.token as string
             } else {
                 if (router.currentRoute.value.path !== loginPath) {
-                    router.push(loginPath).then(r => r);
+                    router.push(loginPath)
                 }
             }
             config.headers['X-Tenant-Id'] = useAppStore().currentTenant
@@ -47,6 +46,7 @@ class Http {
 
         /* 响应拦截 */
         this.service.interceptors.response.use((response: AxiosResponse<any>) => {
+            const userInfoStore = useUserStore();
             switch (response.data.code) {
                 case 200:
                     return response.data;
@@ -56,6 +56,7 @@ class Http {
                         '会话认证失败, 请重新登录',
                         {
                             icon: 2, yes: function () {
+                                userInfoStore.token = ''
                                 router.push(loginPath);
                                 layer.closeAll()
                             }
@@ -78,6 +79,7 @@ class Http {
                         '找不到该页面',
                         {
                             icon: 2, yes: function () {
+                                userInfoStore.token = ''
                                 router.push('/');
                                 layer.closeAll()
                             }

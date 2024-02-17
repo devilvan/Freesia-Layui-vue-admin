@@ -108,7 +108,7 @@ import {login} from "../../api/Login";
 import {findCaptchaEnabled} from "../../api/system/Config";
 import {getCaptchaCode} from "../../api/captcha/Captcha";
 import {loginQrcode} from "../../api/module/commone";
-import router from "../../router";
+import router, {isGetRouter} from "../../router";
 
 /* INIT*/
 onMounted(async () => {
@@ -165,6 +165,7 @@ const loginSubmit = async () => {
           layer.msg(msg, {icon: 1}, async () => {
             userStore.token = data.token
             await userStore.getInfo()
+            await userStore.getRouters();
             await $router.push('/')
           })
         } else {

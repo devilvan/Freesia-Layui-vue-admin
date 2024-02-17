@@ -40,9 +40,11 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         } else if ((token || token !== '') && to.path === loginPath) {
             // 如果token存在（已登录），则跳转到默认页
             next({path: '/'})
+        } else {
+            next()
         }
     }
-    if (token && to.path !== loginPath) {
+    if (token) {
         if (!isGetRouter) {
             isGetRouter = true;
             await userStore.getRouters()
