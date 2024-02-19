@@ -67,4 +67,12 @@ public interface SysRoleMapper extends BaseMapper<SysRolePo> {
      * @return 分页数据
      */
     Page<SysUserPo> findPageAllowAssignUserByRoleId(@Param("sysRolePo") SysRolePo sysRolePo, @Param("page") Page<SysRolePo> pageQuery);
+
+    /**
+     * 根据角色ID，查询【分配按钮权限】功能，在角色-菜单表中需要清空的按钮ID
+     *
+     * @param roleId 角色ID
+     * @return 查询【分配按钮权限】功能，在角色-菜单表中需要清空的按钮ID
+     */
+    List<Long> findListButtonIdByRoleId(@Param("roleId") Long roleId);
 }

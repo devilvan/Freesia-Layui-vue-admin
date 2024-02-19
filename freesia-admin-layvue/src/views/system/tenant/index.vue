@@ -1,7 +1,7 @@
 <template>
   <lay-container fluid="true" class="role-box">
     <lay-card>
-      <lay-form style="margin-top: 10px" @keyup.enter="toSearch">
+      <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
         <lay-row>
           <lay-col :md="6">
             <lay-form-item label="租户编码" label-width="80">
@@ -96,7 +96,7 @@
     </div>
 
     <lay-layer v-model="sysTenantModalShowFlag" :title="title" :area="['1200px']">
-      <div style="padding: 20px" @keydown.enter="toSubmit" @keydown.esc="toCancel">
+      <div style="padding: 20px" @keydown.enter.prevent="toSubmit" @keydown.esc.prevent="toCancel">
         <lay-form :model="sysTenantVo" ref="sysTenantFormRef" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">

@@ -1,7 +1,7 @@
 <template>
   <lay-container fluid="true" class="role-box">
     <lay-card>
-      <lay-form style="margin-top: 10px" @keyup.enter="toSearch">
+      <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
         <lay-row>
           <lay-col :md="6">
             <lay-form-item label="主键ID" label-width="80">

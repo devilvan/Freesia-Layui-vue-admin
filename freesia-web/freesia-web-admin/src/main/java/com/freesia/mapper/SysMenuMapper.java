@@ -107,4 +107,20 @@ public interface SysMenuMapper extends BaseMapper<SysMenuPo> {
      * @return true-已使用 false-未使用
      */
     boolean findByComponentExists(@Param("component") String component);
+
+    /**
+     * 查询菜单下所有的按钮
+     *
+     * @param wrapper 查询条件
+     * @return 菜单下所有的按钮
+     */
+    List<SysMenuPo> findAllSysButton(@Param(Constants.WRAPPER) Wrapper<SysMenuPo> wrapper);
+
+    /**
+     * 根据角色ID查询菜单下已分配的按钮ID
+     *
+     * @param wrapper 查询条件
+     * @return 菜单下已分配的按钮ID
+     */
+    List<Long> findAssignedSysButtonByRoleId(@Param(Constants.WRAPPER) Wrapper<SysMenuPo> wrapper);
 }

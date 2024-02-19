@@ -61,8 +61,8 @@
         WHERE 1 = 1
           AND M.LOGIC_DEL = '0'
           AND M.STATUS = '0'
+          AND M.MENU_TYPE IN ('D', 'M')
           AND RM.ROLE_ID = #{roleId}
-
     </select>
     <select id="findAdminMenuList" resultType="java.lang.Long">
         SELECT M.ID
@@ -71,6 +71,7 @@
         WHERE 1 = 1
           AND M.LOGIC_DEL = '0'
           AND M.STATUS = '0'
+          AND M.MENU_TYPE IN ('D', 'M')
     </select>
     <select id="findMenuListByUserId" resultType="com.freesia.entity.FindMenuListByUserIdEntity">
         SELECT DISTINCT M.ID,
@@ -123,5 +124,31 @@
                          AND COMPONENT = #{component}
                          AND COMPONENT NOT IN ('modal', 'blank')
                    )
+    </select>
+    <select id="findAllSysButton" resultType="com.freesia.po.SysMenuPo">
+        SELECT DISTINCT M.ID,
+                        M.REC_VER,
+                        M.BUILD_IN,
+                        M.MENU_NAME,
+                        M.PARENT_ID,
+                        M.ORDER_NUM,
+                        M.PATH,
+                        M.COMPONENT,
+                        M.IS_CACHE,
+                        M.MENU_TYPE,
+                        M.VISIBLE,
+                        M.STATUS,
+                        M.PERMS,
+                        M.ICON,
+                        M.REMARK
+        FROM sys_menu M
+            ${ew.getCustomSqlSegment}
+
+    </select>
+    <select id="findAssignedSysButtonByRoleId" resultType="java.lang.Long">
+        SELECT DISTINCT ID
+        FROM sys_menu M
+                 LEFT JOIN sys_role_menu srm on M.ID = srm.MENU_ID
+            ${ew.getCustomSqlSegment}
     </select>
 </mapper>

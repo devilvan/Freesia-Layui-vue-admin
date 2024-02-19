@@ -63,6 +63,20 @@ export const dynamicRoutes = [
         ]
     },
     {
+        path: '/system/role',
+        component: BaseLayout,
+        hidden: true,
+        permissions: ['system:role:assignButton'],
+        children: [
+            {
+                path: 'assignButton/:roleId(\\d+)',
+                component: () => import('@/views/system/role/assignButton.vue'),
+                name: 'AssignUser',
+                meta: {title: '分配按钮权限', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
+    {
         path: '/system/tenant',
         component: BaseLayout,
         hidden: true,

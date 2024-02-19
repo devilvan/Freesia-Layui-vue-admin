@@ -56,6 +56,7 @@
     <div class="table-box">
       <lay-table
           class="table-style"
+          ref="dataSourceTableRef"
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
@@ -83,8 +84,16 @@
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
-          <lay-button size="sm" type="normal" @click="assignUser" v-permission="[MenuPermission.SYS_ROLE_USER_EDIT]">
+          <lay-button size="sm" type="primary" @click="assignUser" v-permission="[MenuPermission.SYS_ROLE_USER_EDIT]">
             分配用户
+          </lay-button>
+          <lay-button size="sm" type="normal" @click="toPrivilegesSelectKeys"
+                      v-permission="[MenuPermission.SYS_ROLE_MENU_EDIT]">
+            菜单权限
+          </lay-button>
+          <lay-button size="sm" type="warm" @click="toAssignButton()"
+                      v-permission="[MenuPermission.SYS_ROLE_MENU_EDIT]">
+            按钮权限
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
@@ -100,7 +109,7 @@
               size="xs"
               border="blue"
               border-style="dashed"
-              @click="toPrivileges(row)"
+              @click="toPrivilegesRow(row)"
               v-permission="[MenuPermission.SYS_ROLE_MENU_EDIT]"
           >菜单权限
           </lay-button
@@ -263,10 +272,11 @@ const appStore = useAppStore();
 const userStore = useUserStore();
 const searchQuery = ref<SysRoleVo>({})
 const loading = ref(false)
-const selectedKeys = ref()
+const selectedKeys = ref([])
 const pageQuery = reactive<PageQuery>({current: 1, limit: 10})
 const sysDataScope = ref<Array<SysDictValueEntity>>([]);
 const sysDataScopeSelect = ref<Array<SysDictValueEntity>>([]);
+
 const model11 = ref({
   name: '',
   flage: '',
@@ -275,6 +285,7 @@ const model11 = ref({
 const saveRoleMenuPrivilegeModel = ref<SaveRoleMenuPrivilegeVo>({});
 const queryParamsFormRef = ref()
 const saveRoleMenuPrivilegeFormRef = ref()
+const dataSourceTableRef = ref()
 const visible11 = ref(false)
 const saveRoleMenuPrivilegeVisible = ref(false)
 const menuTreeShowCheckbox2 = ref(true)
@@ -426,8 +437,8 @@ function cancel() {
 }
 
 /* 分配权限按钮 START */
-// 点击【分配权限】
-async function toPrivileges(row: any) {
+// 行操作【分配权限】
+async function toPrivilegesRow(row: any) {
   selectRowRoleId.value = row.id;
   const {data, code, msg} = await findSelectedMenuListByRoleId(row.id)
   if (code === 200) {
@@ -439,7 +450,27 @@ async function toPrivileges(row: any) {
     layer.msg(msg);
   }
   saveRoleMenuPrivilegeVisible.value = true
+}
 
+// 按钮操作【分配权限】
+async function toPrivilegesSelectKeys() {
+  let selectKeys = selectedKeys.value
+  if (selectKeys.length !== 1) {
+    layer.msg("请选择1条数据", {icon: 3})
+    return ;
+  }
+  let row = dataSourceTableRef.value.getCheckData()[0];
+  selectRowRoleId.value = selectKeys[0];
+  const {data, code, msg} = await findSelectedMenuListByRoleId(row.id)
+  if (code === 200) {
+    saveRoleMenuPrivilegeModel.value.treeSelectedIdList = data;
+    saveRoleMenuPrivilegeModel.value.roleId = row.id
+    saveRoleMenuPrivilegeModel.value.roleName = row.roleName
+    saveRoleMenuPrivilegeModel.value.dataScope = row.dataScope
+  } else {
+    layer.msg(msg);
+  }
+  saveRoleMenuPrivilegeVisible.value = true
 }
 
 // 【分配权限】 -> 【保存】
@@ -490,6 +521,16 @@ function assignUserById(id: any) {
   $router.push("/system/role/assignUser/" + id)
 }
 
+function toAssignButton() {
+  let selectKeys = selectedKeys.value
+  if (selectKeys.length !== 1) {
+    layer.msg("请选择1条数据", {icon: 3})
+    return ;
+  }
+  let row = dataSourceTableRef.value.getCheckData()[0];
+  selectRowRoleId.value = selectKeys[0];
+  $router.push('/system/role/assignButton/' + row.id);
+}
 /* FUNCTION*/
 
 </script>

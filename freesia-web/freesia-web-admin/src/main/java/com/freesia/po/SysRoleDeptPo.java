@@ -8,9 +8,11 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * @author Evad.Wu
@@ -39,15 +41,3 @@ public class SysRoleDeptPo extends RelationPo {
     private SysRoleDeptPk sysRoleDeptPk;
 }
 
-@Data
-@Embeddable
-class SysRoleDeptPk implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 5069682381557493963L;
-    @Schema(description = "部门ID")
-    @Column(name = "DEPT_ID")
-    private Long deptId;
-    @Schema(description = "角色ID")
-    @Column(name = "ROLE_ID")
-    private Long roleId;
-}

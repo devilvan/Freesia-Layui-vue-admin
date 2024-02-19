@@ -10,7 +10,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * @author Evad.Wu
@@ -52,17 +51,10 @@ public class SysRoleMenuPo extends RelationPo {
     @ManyToOne(targetEntity = SysRolePo.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private SysRolePo sysRolePo;
+
+    public SysRoleMenuPo(SysRoleMenuPk sysRoleMenuPk) {
+        this.sysRoleMenuPk = sysRoleMenuPk;
+    }
 }
 
-@Data
-@Embeddable
-class SysRoleMenuPk implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 5069682381557493963L;
-    @Schema(description = "菜单ID")
-    @Column(name = "MENU_ID")
-    private Long menuId;
-    @Schema(description = "角色ID")
-    @Column(name = "ROLE_ID")
-    private Long roleId;
-}
+
