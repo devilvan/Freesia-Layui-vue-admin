@@ -1,7 +1,8 @@
 import {PageQuery} from "../../types/Common";
 import Http from "../Http";
-import {AssignUserVo, SaveRoleMenuPrivilegeVo, SysRoleVo} from "../../types/system/Role";
+import {AssignUserVo, SaveRoleMenuPrivilegeVo, SysRoleEntity, SysRoleVo} from "../../types/system/Role";
 import {buildPageUrlParam} from "../../util/URequest";
+import {R} from "../../types/Result";
 
 export const findPageSysRoleList = function (searchQuery: SysRoleVo, pageQuery: PageQuery) {
     const params = buildPageUrlParam(searchQuery, pageQuery)
@@ -15,7 +16,7 @@ export function saveRoleMenuPrivilege(vo: SaveRoleMenuPrivilegeVo) {
     return Http.post("/api/sysRoleController/saveRoleMenuPrivilege", params)
 }
 
-export const findRoleById = function (roleId: any) {
+export const findRoleById = function (roleId: any) : Promise<R<SysRoleEntity>> {
     const params = {roleId: roleId}
     return Http.get('/api/sysRoleController/findRoleById', params)
 }

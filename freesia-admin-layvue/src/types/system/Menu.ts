@@ -1,7 +1,7 @@
 /**
  * 按钮【分配权限】 通过userId查询可分配权限菜单
  */
-import {BaseVo} from "../Common";
+import {BaseEntity, BaseVo} from "../Common";
 import {Tree} from "../Result";
 
 export interface FindAllMenuTreeEntity extends Tree<FindAllMenuTreeEntity> {
@@ -30,7 +30,7 @@ export interface SysMenuVo extends BaseVo {
     orderNum?: number;
     path?: string;
     component?: string;
-    componentType? :string;
+    componentType?: string;
     queryParam?: string;
     isFrame?: string;
     isCache?: string;
@@ -39,4 +39,26 @@ export interface SysMenuVo extends BaseVo {
     status?: string;
     perms?: string;
     icon?: string;
+}
+
+export interface SysMenuEntity extends BaseEntity {
+    menuName?: string;
+    parentId?: number;
+    orderNum?: number;
+    path?: string;
+    component?: string;
+    componentType?: string;
+    queryParam?: string;
+    isFrame?: string;
+    isCache?: string;
+    menuType?: string;
+    visible?: string;
+    status?: string;
+    perms?: string;
+    icon?: string;
+}
+
+export interface AssignButtonVo {
+    roleId?: string,
+    assignButtonIdList?: Array<string>;
 }

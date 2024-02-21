@@ -1,5 +1,7 @@
 import Http from "../Http";
-import {FindMenuListByUserIdEntity, SysMenuVo} from "../../types/system/Menu";
+import {AssignButtonVo, SysMenuEntity, SysMenuVo} from "../../types/system/Menu";
+import {R} from "../../types/Result";
+import {buildUrlParam} from "../../util/URequest";
 
 export function findSelectedMenuListByRoleId(roleId: string) {
     let params = {
@@ -32,4 +34,19 @@ export function deleteMenu(id: any) {
         id: id
     }
     return Http.delete("/api/sysMenuController/deleteMenu", params)
+}
+
+export function findAllSysButton(searchQuery: SysMenuVo): Promise<R<SysMenuEntity>> {
+    let params = buildUrlParam(searchQuery);
+    return Http.get("/api/sysMenuController/findAllSysButton", params);
+}
+
+export function findAssignedSysButtonByRoleId(searchQuery: SysMenuVo, roleId: string): Promise<R<Number>> {
+    let params = buildUrlParam(searchQuery);
+    params['roleId'] = roleId;
+    return Http.get("/api/sysMenuController/findAssignedSysButtonByRoleId", params);
+}
+
+export function assignButton(assignButtonVo: AssignButtonVo) {
+    return Http.post("/api/sysMenuController/assignButton", assignButtonVo)
 }

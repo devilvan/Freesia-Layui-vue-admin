@@ -1,11 +1,13 @@
 package com.freesia.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.*;
+import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.MetaDto;
 import com.freesia.dto.RouterDto;
 import com.freesia.dto.SysMenuDto;
@@ -16,18 +18,22 @@ import com.freesia.entity.RouterEntity;
 import com.freesia.exception.ServiceException;
 import com.freesia.mapper.SysMenuMapper;
 import com.freesia.mapper.SysRoleMapper;
-import com.freesia.model.LoginUserModel;
 import com.freesia.po.SysMenuPo;
+import com.freesia.po.SysRoleMenuPk;
+import com.freesia.po.SysRoleMenuPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.repository.SysMenuRepository;
+import com.freesia.repository.SysRoleRepository;
 import com.freesia.service.SysMenuService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -43,8 +49,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     private static final String COMPONENT_REGEX = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$";
 
     private final SysMenuMapper sysMenuMapper;
-    private final SysRoleMapper sysRoleMapper;
     private final SysMenuRepository sysMenuRepository;
+    private final SysRoleMapper sysRoleMapper;
+    private final SysRoleRepository sysRoleRepository;
 
     @Override
     public SysMenuDto saveUpdate(SysMenuDto sysMenuDto) {
@@ -214,6 +221,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
                 .eq("M.LOGIC_DEL", FlagConstant.ENABLED)
                 .eq("M.STATUS", FlagConstant.ENABLED)
+                .in("M.MENU_TYPE", MenuType.DIR.getType(), MenuType.MENU.getType())
                 .orderByAsc("M.PARENT_ID")
                 .orderByAsc("M.ORDER_NUM");
         sysMenuPoList = AdminConstant.ADMIN_ID == userId ? sysMenuMapper.findAllMenuTree(wrapper) :
@@ -310,12 +318,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     }
 
     @Override
-    public void deleteMenu(Long id) {
-        LoginUserModel loginUser = USecurity.getLoginUser();
-        if (ObjectUtil.isNull(loginUser)) {
-            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "user.info.null");
-        }
-        Long userId = loginUser.getUserId();
+    public void deleteMenu(Long id, Long userId) {
         QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
                 .orderByAsc("M.ID");
         List<SysMenuPo> sysMenuPoList = AdminConstant.ADMIN_ID == userId ? sysMenuMapper.findAllMenuTree(wrapper) :
@@ -325,6 +328,49 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         List<Long> idList = UStream.toList(nodeAndChildren, SysMenuPo::getId);
         sysMenuRepository.deleteRoleMenu(idList);
         sysMenuRepository.deleteAllById(idList);
+    }
+
+    @Override
+    public List<SysMenuDto> findAllSysButton(SysMenuDto sysMenuDto) {
+        LambdaQueryWrapper<SysMenuPo> queryWrapper = new LambdaQueryWrapper<SysMenuPo>()
+                .eq(SysMenuPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysMenuPo::getMenuType, MenuType.BUTTON.getType())
+                .eq(SysMenuPo::getParentId, sysMenuDto.getId())
+                .likeRight(UEmpty.isNotEmpty(sysMenuDto.getMenuName()), SysMenuPo::getMenuName, sysMenuDto.getMenuName())
+                .orderByAsc(SysMenuPo::getOrderNum);
+        List<SysMenuPo> sysMenuPoList = sysMenuMapper.findAllSysButton(queryWrapper);
+        return UCopy.fullCopyList(sysMenuPoList, SysMenuDto.class);
+    }
+
+    @Override
+    public List<Long> findAssignedSysButtonByRoleId(SysMenuDto sysMenuDto, Long roleId) {
+        Wrapper<SysMenuPo> queryWrapper = Wrappers.<SysMenuPo>query()
+                .eq("M.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("M.MENU_TYPE", MenuType.BUTTON.getType())
+                .eq("M.PARENT_ID", sysMenuDto.getId())
+                .eq("SRM.ROLE_ID", roleId)
+                .like(UEmpty.isNotEmpty(sysMenuDto.getMenuName()), "M.MENU_NAME", sysMenuDto.getMenuName())
+                .orderByAsc("M.ORDER_NUM");
+        return sysMenuMapper.findAssignedSysButtonByRoleId(queryWrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignButton(AssignButtonDto assignButtonDto) {
+        Long roleId = Long.parseLong(assignButtonDto.getRoleId());
+        List<Long> assignButtonIdList = assignButtonDto.getAssignButtonIdList().stream().map(Long::parseLong).collect(Collectors.toList());
+        SysRolePo sysRolePo = sysRoleRepository.findById(roleId)
+                .orElseThrow(() -> new ServiceException(RoleModule.ROLE_MANAGEMENT, "role.query.failed", roleId));
+        Set<SysRoleMenuPo> afterSysRoleMenuPoSet = UCollection.optimizeInitialCapacitySet(assignButtonIdList.size());
+        for (Long assignButtonId : assignButtonIdList) {
+            SysRoleMenuPo sysRoleMenuPo = new SysRoleMenuPo(new SysRoleMenuPk(assignButtonId, roleId));
+            afterSysRoleMenuPoSet.add(sysRoleMenuPo);
+        }
+        List<Long> removeButtonIdList = sysRoleMapper.findListButtonIdByRoleId(roleId);
+        sysRoleRepository.removeRelationByRoleId(roleId, removeButtonIdList);
+        // 设置分配后的角色-菜单关联对象要在删除之后，否则会触发级联操作，导致SQL执行顺序变为insert->update->delete影响操作结果
+        sysRolePo.setSysRoleMenuPoSet(afterSysRoleMenuPoSet);
+        sysRoleRepository.save(sysRolePo);
     }
 
     /**

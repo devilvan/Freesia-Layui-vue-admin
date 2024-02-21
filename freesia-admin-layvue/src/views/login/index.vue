@@ -23,7 +23,7 @@
             <lay-tab type="brief" v-model="method">
               <lay-tab-item title="用户名" id="1">
                 <div style="height: 400px">
-                  <lay-form :model="loginForm" label-position="top" ref="loginFormRef" :rules="loginFormRules" @keyup.enter="loginSubmit">
+                  <lay-form :model="loginForm" label-position="top" ref="loginFormRef" :rules="loginFormRules" @keyup.enter.prevent="loginSubmit">
                     <lay-form-item label="用户名" :label-width="0" prop="username">
                       <lay-input :allow-clear="true" prefix-icon="layui-icon-username" placeholder="用户名"
                                  v-model="loginForm.username"></lay-input>
