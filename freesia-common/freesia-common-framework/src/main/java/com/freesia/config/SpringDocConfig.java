@@ -1,8 +1,6 @@
 package com.freesia.config;
 
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.freesia.handler.OpenApiHandler;
 import com.freesia.properties.SpringDocProperties;
 import com.freesia.util.UString;
@@ -13,7 +11,6 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.*;
 import org.springdoc.core.customizers.OpenApiBuilderCustomizer;
@@ -28,7 +25,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -48,39 +48,46 @@ public class SpringDocConfig {
     public OpenAPI apiInfo(SpringDocProperties springDocProperties) {
         OpenAPI openApi = new OpenAPI();
         // 基本信息
-        SpringDocProperties.InfoProperties infoProperties = springDocProperties.getInfo();
-        if (ObjectUtil.isNotNull(infoProperties)) {
-            License license = infoProperties.getLicense();
-            Info info = new Info()
-                    .title(infoProperties.getTitle())
-                    .description(infoProperties.getDescription())
-                    .license(new License().name(license.getName()).url(license.getUrl()))
-                    .termsOfService(infoProperties.getTermsOfService())
-                    .version(infoProperties.getVersion())
-                    .contact(infoProperties.getContact());
-            openApi.info(info);
-        }
+        Optional.of(springDocProperties)
+                .map(SpringDocProperties::getInfo)
+                .map(infoProperties -> {
+                    License license = infoProperties.getLicense();
+                    Info info = new Info()
+                            .title(infoProperties.getTitle())
+                            .description(infoProperties.getDescription())
+                            .license(new License().name(license.getName()).url(license.getUrl()))
+                            .termsOfService(infoProperties.getTermsOfService())
+                            .version(infoProperties.getVersion())
+                            .contact(infoProperties.getContact());
+                    openApi.info(info);
+                    return info;
+                });
         // 拓展文档信息
-        ExternalDocumentation externalDocs = springDocProperties.getExternalDocs();
-        if (ObjectUtil.isNotNull(externalDocs)) {
-            ExternalDocumentation externalDocumentation = new ExternalDocumentation();
-            externalDocumentation.description(externalDocs.getDescription()).url(externalDocs.getUrl());
-            openApi.externalDocs(externalDocumentation);
-        }
+        Optional.of(springDocProperties)
+                .map(SpringDocProperties::getExternalDocs)
+                .map(externalDocs -> {
+                    ExternalDocumentation externalDocumentation = new ExternalDocumentation();
+                    externalDocumentation.description(externalDocs.getDescription()).url(externalDocs.getUrl());
+                    openApi.externalDocs(externalDocumentation);
+                    return externalDocumentation;
+                });
         // 组件，用于适配SaToken的校验
-        Components components = springDocProperties.getComponents();
-        if (ObjectUtil.isNotNull(components)) {
-            openApi.components(components);
-            Map<String, SecurityScheme> securitySchemes = components.getSecuritySchemes();
-            if (CollUtil.isNotEmpty(securitySchemes)) {
-                List<SecurityRequirement> list = new ArrayList<>();
-                SecurityRequirement securityRequirement = new SecurityRequirement();
-                Set<String> keySet = securitySchemes.keySet();
-                keySet.forEach(securityRequirement::addList);
-                list.add(securityRequirement);
-                openApi.security(list);
-            }
-        }
+        Optional.ofNullable(springDocProperties)
+                .map(SpringDocProperties::getComponents)
+                .map(components -> {
+                    openApi.components(components);
+                    return components;
+                })
+                .map(Components::getSecuritySchemes)
+                .map(securitySchemes -> {
+                    List<SecurityRequirement> list = new ArrayList<>();
+                    SecurityRequirement securityRequirement = new SecurityRequirement();
+                    Set<String> keySet = securitySchemes.keySet();
+                    keySet.forEach(securityRequirement::addList);
+                    list.add(securityRequirement);
+                    openApi.security(list);
+                    return list;
+                });
         return openApi;
     }
 
