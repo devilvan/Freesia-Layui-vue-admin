@@ -135,6 +135,9 @@
               </lay-fullscreen>
             </lay-menu-item>
             <lay-menu-item>
+              <lay-icon type="layui-icon-gitee" title="项目地址" @click="toGitee"></lay-icon>
+            </lay-menu-item>
+            <lay-menu-item>
               <global-message-tab :flag="flag">
                 <lay-icon
                     type="layui-icon-notice"
@@ -160,6 +163,9 @@
                   </lay-dropdown-menu>
                 </template>
               </lay-dropdown>
+            </lay-menu-item>
+            <lay-menu-item>
+              <lay-icon type="layui-icon-read" title="接口文档" @click="toDoc"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
@@ -262,6 +268,9 @@ export default {
       }
       userInfoStore.getMenu()
       userInfoStore.reloadSysTenant();
+      if (userInfoStore.sysTenantDtoList && userInfoStore.sysTenantDtoList.length > 0) {
+        appStore.currentTenant = userInfoStore.sysTenantDtoList[0]?.id;
+      }
     })
 
     const changeVisible = () => {
@@ -312,6 +321,14 @@ export default {
       router.push($tab.currentPath)
     }
 
+    function toDoc() {
+      window.open(import.meta.env.VITE_APP_SPRING_DOC_PATH, "_blank");
+    }
+
+    function toGitee() {
+      window.open(import.meta.env.VITE_APP_GITEE_PATH, "_blank");
+    }
+
     return {
       sideWidth,
       mainSelectedKey,
@@ -336,7 +353,9 @@ export default {
       toSystemSet,
       changeDropdown,
       flag,
-      changeTenantSelect
+      changeTenantSelect,
+      toDoc,
+      toGitee
     }
   }
 }

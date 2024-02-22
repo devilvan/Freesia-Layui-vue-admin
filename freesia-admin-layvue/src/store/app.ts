@@ -4,6 +4,7 @@ export const useAppStore = defineStore({
   id: 'app',
   state: () => {
     return {
+      title: import.meta.env.VITE_APP_TITLE,
       tab: true,
       logo: true,
       level: true,
@@ -20,7 +21,6 @@ export const useAppStore = defineStore({
       greyMode: false,
       accordion: true,
       tagsTheme: 'concise',
-      keepAliveList: [],
       themeVariable: {
         "--global-checked-color": "#5fb878",
         "--global-primary-color": "#009688",
@@ -31,8 +31,13 @@ export const useAppStore = defineStore({
       currentTenant: '',
     }
   },
+  actions: {
+    async setTitle(title: string) {
+      this.title = title;
+    }
+  },
   persist: {
     storage: localStorage,
-    paths: ['tab', 'locale', 'theme', 'logo', 'level', 'inverted', 'breadcrumb', 'sideTheme', 'greyMode', 'accordion', 'keepAliveList', 'themeVariable', 'subfield', 'tagsTheme', 'currentTenant'],
+    paths: ['title', 'tab', 'locale', 'theme', 'logo', 'level', 'inverted', 'breadcrumb', 'sideTheme', 'greyMode', 'accordion', 'themeVariable', 'subfield', 'tagsTheme', 'currentTenant'],
   }
 })

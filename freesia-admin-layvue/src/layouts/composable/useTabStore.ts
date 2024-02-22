@@ -1,9 +1,5 @@
-import {computed} from "vue";
-import {useRoute} from "vue-router";
 import {defineStore} from "pinia";
 import router from "../../router";
-
-const route = useRoute();
 
 export const useTabStore = defineStore({
     id: 'tabStore',
@@ -55,5 +51,9 @@ export const useTabStore = defineStore({
                 (ele: any) => ele.meta.closable == false || ele.id == this.currentPath
             );
         },
+    },
+    persist: {
+        storage: localStorage,
+        paths: ['tabs', 'tabsCache', 'currentPath'],
     }
 })

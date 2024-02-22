@@ -150,9 +150,11 @@ public class USecurity {
     public static Long getTenantId() {
         if (TENANT_PROPERTIES.getEnabled()) {
             HttpServletRequest request = UServlet.getRequest();
-            if (request != null) {
-                String header = request.getHeader(Constants.X_TENANT_ID);
-                return Long.parseLong(header);
+            if (UEmpty.isNotNull(request)) {
+                String xTenantId = request.getHeader(Constants.X_TENANT_ID);
+                if (UEmpty.isNotEmpty(xTenantId)) {
+                    return Long.parseLong(xTenantId);
+                }
             }
         }
         return null;

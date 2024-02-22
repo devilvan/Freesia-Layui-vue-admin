@@ -4,8 +4,6 @@ import {layer} from '@layui/layui-vue';
 import router from '../router'
 import {useAppStore} from "../store/app";
 
-// 是否显示重新登录
-export let isReLogin = {show: false};
 export let loginPath: string = '/login'
 type TAxiosOption = {
     timeout: number;
@@ -14,7 +12,8 @@ type TAxiosOption = {
 
 const config: TAxiosOption = {
     timeout: 5000,
-    baseURL: "http://localhost:8570"
+    // import.meta.env 是在运行时获取环境变量的值，适用于应用程序代码中需要动态获取环境变量的场合。（配置文件中获取不到，因为配置文件是在构建时被读取！！！）
+    baseURL: import.meta.env.VITE_APP_BASE_URL as string
 }
 
 class Http {
@@ -29,7 +28,7 @@ class Http {
                 (config.headers as AxiosRequestHeaders).Authorization = "Bearer " + userInfoStore.token as string
             } else {
                 if (router.currentRoute.value.path !== loginPath) {
-                    router.push(loginPath)
+                    router.push(loginPath).then(r => r)
                 }
             }
             config.headers['X-Tenant-Id'] = useAppStore().currentTenant
@@ -51,7 +50,7 @@ class Http {
                 case 200:
                     return response.data;
                 case 401:
-                    router.push('/error/401')
+                    router.replace('/error/401').then(r => r)
                     layer.confirm(
                         '会话认证失败, 请重新登录',
                         {
@@ -63,24 +62,23 @@ class Http {
                         });
                     return response.data;
                 case 403:
-                    router.push('/error/403')
+                    router.replace('/error/403').then(r => r)
                     layer.confirm(
                         '没有权限访问网站',
                         {
                             icon: 2, yes: function () {
-                                router.push('/');
+                                router.push('/').then(r => r);
                                 layer.closeAll()
                             }
                         });
                     return response.data;
                 case 404:
-                    router.push('/error/404')
+                    router.replace('/error/404').then(r => r)
                     layer.confirm(
                         '找不到该页面',
                         {
                             icon: 2, yes: function () {
                                 userInfoStore.token = ''
-                                router.push('/');
                                 layer.closeAll()
                             }
                         });
@@ -115,32 +113,6 @@ class Http {
     delete<T>(url: string, params?: any, _object = {}): Promise<any> {
         return this.service.delete(url, {params, ..._object})
     }
-}
-
-/**
- * 参数处理
- * @param {*} params  参数
- */
-export function tansParams(params: any) {
-    let result = ''
-    for (const propName of Object.keys(params)) {
-        const value = params[propName];
-        const part = encodeURIComponent(propName) + "=";
-        if (value !== null && value !== "" && typeof (value) !== "undefined") {
-            if (typeof value === 'object') {
-                for (const key of Object.keys(value)) {
-                    if (value[key] !== null && value[key] !== "" && typeof (value[key]) !== 'undefined') {
-                        let params = propName + '[' + key + ']';
-                        var subPart = encodeURIComponent(params) + "=";
-                        result += subPart + encodeURIComponent(value[key]) + "&";
-                    }
-                }
-            } else {
-                result += part + encodeURIComponent(value) + "&";
-            }
-        }
-    }
-    return result
 }
 
 export default new Http(config)
