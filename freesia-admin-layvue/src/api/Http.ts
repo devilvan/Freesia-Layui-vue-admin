@@ -12,7 +12,8 @@ type TAxiosOption = {
 
 const config: TAxiosOption = {
     timeout: 5000,
-    baseURL: "http://localhost:8570"
+    // import.meta.env 是在运行时获取环境变量的值，适用于应用程序代码中需要动态获取环境变量的场合。（配置文件中获取不到，因为配置文件是在构建时被读取！！！）
+    baseURL: import.meta.env.VITE_APP_BASE_URL as string
 }
 
 class Http {
