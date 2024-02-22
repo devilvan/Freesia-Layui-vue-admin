@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -148,8 +149,13 @@ public class USecurity {
      */
     public static Long getTenantId() {
         if (TENANT_PROPERTIES.getEnabled()) {
-            return Optional.ofNullable(UServlet.getRequest()).map(req -> req.getHeader(Constants.X_TENANT_ID))
-                    .map(Long::parseLong).orElse((long) Integer.MIN_VALUE);
+            HttpServletRequest request = UServlet.getRequest();
+            if (UEmpty.isNotNull(request)) {
+                String xTenantId = request.getHeader(Constants.X_TENANT_ID);
+                if (UEmpty.isNotEmpty(xTenantId)) {
+                    return Long.parseLong(xTenantId);
+                }
+            }
         }
         return null;
     }

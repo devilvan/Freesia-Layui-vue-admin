@@ -53,6 +53,8 @@ const stat = ref('关闭')
 
 onMounted(() => {
   if (routes) {
+    $tab.tabs = []
+    $tab.tabsCache = []
     routes.forEach(r => {
       let name = r.name as string;
       if (defaultTabsName.includes(name)) {

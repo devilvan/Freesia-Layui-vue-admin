@@ -20,7 +20,6 @@ export const useAppStore = defineStore({
       greyMode: false,
       accordion: true,
       tagsTheme: 'concise',
-      keepAliveList: [],
       themeVariable: {
         "--global-checked-color": "#5fb878",
         "--global-primary-color": "#009688",
@@ -33,6 +32,6 @@ export const useAppStore = defineStore({
   },
   persist: {
     storage: localStorage,
-    paths: ['tab', 'locale', 'theme', 'logo', 'level', 'inverted', 'breadcrumb', 'sideTheme', 'greyMode', 'accordion', 'keepAliveList', 'themeVariable', 'subfield', 'tagsTheme', 'currentTenant'],
+    paths: ['tab', 'locale', 'theme', 'logo', 'level', 'inverted', 'breadcrumb', 'sideTheme', 'greyMode', 'accordion', 'themeVariable', 'subfield', 'tagsTheme', 'currentTenant'],
   }
 })

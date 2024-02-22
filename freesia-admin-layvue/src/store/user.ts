@@ -8,10 +8,11 @@ import {dynamicRoutes} from "../router/module/base-routes";
 import router, {addRoutes} from "../router";
 import {RouterComponent} from "../types/Menu";
 import {reloadSysTenant} from "../api/system/Tenant";
+import {useTabStore} from "../layouts/composable/useTabStore";
+import {loginPath} from "../api/Http";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
-
 export const useUserStore = defineStore({
     id: 'user',
     state: () => {
@@ -68,6 +69,9 @@ export const useUserStore = defineStore({
             this.roles = []
             this.permissions = []
             this.menus = []
+            useTabStore().tabs = []
+            useTabStore().tabsCache = []
+            await router.replace(loginPath)
         },
         async reloadSysTenant() {
             const {data, code} = await reloadSysTenant()

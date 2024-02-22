@@ -262,6 +262,9 @@ export default {
       }
       userInfoStore.getMenu()
       userInfoStore.reloadSysTenant();
+      if (userInfoStore.sysTenantDtoList && userInfoStore.sysTenantDtoList.length > 0) {
+        appStore.currentTenant = userInfoStore.sysTenantDtoList[0]?.id;
+      }
     })
 
     const changeVisible = () => {

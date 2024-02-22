@@ -6,6 +6,7 @@ import {useAppStore} from "../../store/app";
 import {useUserStore} from "../../store/user";
 import {layer} from "@layui/layui-vue";
 import router from "../../router";
+import {useTabStore} from "./useTabStore";
 
 export function useMenu() {
 
@@ -13,6 +14,7 @@ export function useMenu() {
     const $router = router;
     const userStore = useUserStore();
     const appStore = useAppStore();
+    const $tab = useTabStore();
     const selectedKey = ref(route.path);
     const openKeys = ref<string[]>([]);
     const isAccordion = computed(() => appStore.accordion);
@@ -57,10 +59,6 @@ export function useMenu() {
         {immediate: true}
     );
 
-    const to = (id: string) => {
-        $router.push(id);
-    };
-
     function changeSelectedKey(key: string) {
         var node = getNode(userStore.menus, key);
         if (node && node.component == "modal") {
@@ -78,7 +76,7 @@ export function useMenu() {
             return;
         }
 
-        to(key);
+        $tab.to(key);
     }
 
     function changeOpenKeys(keys: string[]) {

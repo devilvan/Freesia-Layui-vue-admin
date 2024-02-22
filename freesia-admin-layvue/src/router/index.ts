@@ -49,10 +49,12 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             isGetRouter = true;
             await userStore.getRouters()
             next(to.fullPath)
-        } else {
+        }
+        else {
             next()
         }
-    } else {
+    }
+    else {
         next({path: loginPath})
     }
 })

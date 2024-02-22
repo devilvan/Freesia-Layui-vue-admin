@@ -23,7 +23,8 @@
             <lay-tab type="brief" v-model="method">
               <lay-tab-item title="用户名" id="1">
                 <div style="height: 400px">
-                  <lay-form :model="loginForm" label-position="top" ref="loginFormRef" :rules="loginFormRules" @keyup.enter.prevent="loginSubmit">
+                  <lay-form :model="loginForm" label-position="top" ref="loginFormRef" :rules="loginFormRules"
+                            @keyup.enter.prevent="loginSubmit">
                     <lay-form-item label="用户名" :label-width="0" prop="username">
                       <lay-input :allow-clear="true" prefix-icon="layui-icon-username" placeholder="用户名"
                                  v-model="loginForm.username"></lay-input>
@@ -45,7 +46,7 @@
                     <lay-form-item :hidden="true" prop="captchaKey">
                       <lay-input v-model="loginForm.captchaKey"></lay-input>
                     </lay-form-item>
-<!--                    <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>-->
+                    <!--                    <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>-->
                     <lay-form-item :label-width="0">
                       <lay-button style="margin-top: 20px" type="primary" :loading="loging" :fluid="true"
                                   loadingIcon="layui-icon-loading" @click="loginSubmit">登录
@@ -108,7 +109,7 @@ import {login} from "../../api/Login";
 import {findCaptchaEnabled} from "../../api/system/Config";
 import {getCaptchaCode} from "../../api/captcha/Captcha";
 import {loginQrcode} from "../../api/module/commone";
-import router, {isGetRouter} from "../../router";
+import router from "../../router";
 
 /* INIT*/
 onMounted(async () => {
@@ -166,7 +167,7 @@ const loginSubmit = async () => {
             userStore.token = data.token
             await userStore.getInfo()
             await userStore.getRouters();
-            await $router.push('/')
+            await router.push('/')
           })
         } else {
           toRefreshImg()
