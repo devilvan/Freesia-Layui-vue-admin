@@ -2,7 +2,8 @@
   "name": "layui-vue-admin",
   "version": "2.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode development",
+    "prod": "vite --mode production",
     "build": "vue-tsc --noEmit && vite build",
     "build:prod": "vue-tsc --noEmit && vite build --mode production",
     "serve": "vite preview"
