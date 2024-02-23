@@ -34,7 +34,7 @@
         <hutool.version>5.8.18</hutool.version>
         <jsoup.verison>1.11.3</jsoup.verison>
         <redission.version>3.16.8</redission.version>
-        <easyexcel.version>3.1.0</easyexcel.version>
+        <easyexcel.version>3.2.1</easyexcel.version>
         <spring-cloud.version>3.1.3</spring-cloud.version>
         <ip2region.version>2.7.0</ip2region.version>
         <querydsl-jpa.version>5.0.0</querydsl-jpa.version>

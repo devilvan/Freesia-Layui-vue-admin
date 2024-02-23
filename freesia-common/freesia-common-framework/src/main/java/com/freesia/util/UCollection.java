@@ -38,8 +38,9 @@ public class UCollection extends CollUtil {
      */
     public static int arrayListRightSize(int num) {
         if (num > 0) {
-            //向上取整
-            return (int) Math.ceil(1.5 * num);
+            // 扩容示例：10、15、22、33、49、77、109
+            // 当达到以上的数值时就会触发扩容，所以初始的容量在之上+1即可
+            return 5 + num + (num / 10);
         } else {
             return LIST_INIT_CAPACITY;
         }
