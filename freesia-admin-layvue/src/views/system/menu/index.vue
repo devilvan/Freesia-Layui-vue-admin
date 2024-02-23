@@ -219,7 +219,7 @@
                 </lay-input>
               </lay-form-item>
               <lay-form-item label="权限标识" prop="perms" required>
-                <lay-input v-model="sysMenuVo.perms"  placeholder="例如：sys:menu:index">
+                <lay-input v-model="sysMenuVo.perms"  placeholder="例如：system:menu:index">
                 </lay-input>
               </lay-form-item>
             </lay-col>
@@ -263,7 +263,7 @@
 
     <lay-layer v-model="saveButtonModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysButtonVo" ref="saveButtonFormRef">
+        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysMenuVoRules">
           <lay-row>
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -274,7 +274,7 @@
                 <lay-input v-model="sysButtonVo.menuName" placeholder="例如：新增"></lay-input>
               </lay-form-item>
               <lay-form-item label="权限标识" prop="perms" required>
-                <lay-input v-model="sysButtonVo.perms" placeholder="例如：sys:menu:index"></lay-input>
+                <lay-input v-model="sysButtonVo.perms" placeholder="例如：system:menu:index"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col md="12">
@@ -358,7 +358,7 @@
                 </lay-input>
               </lay-form-item>
               <lay-form-item label="权限标识" prop="perms" required>
-                <lay-input v-model="sysLinkVo.perms" placeholder="例如：sys:menu:index"></lay-input>
+                <lay-input v-model="sysLinkVo.perms" placeholder="例如：system:menu:index"></lay-input>
               </lay-form-item>
 
             </lay-col>
@@ -578,7 +578,19 @@ const initLinkTreeSelect = {
   id: '-1'
 }
 const componentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
-const permsRegex = "([A-Za-z0-9$_])+(:[A-Za-z0-9$_]*)$"
+// const permsRegex = "([A-Za-z0-9$_])+(:[A-Za-z0-9$_]*)$"
+const permsRegex = "([A-Za-z0-9])+(:[A-Za-z0-9]*)$"
+const sysButtonVoRules = ref({
+  perms: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (!value.match(permsRegex)) {
+        callback(new Error("权限标识格式错误，允许'$'、'-'、'_'，例如：iframe:inner:index"));
+      } else {
+        return true;
+      }
+    }
+  }
+})
 const sysMenuVoRules = ref({
   component: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
@@ -809,7 +821,7 @@ function saveMenuSubmit(menuType: any) {
           toCancel()
           resetModal(menuType)
           loadDataSource()
-          window.location.reload()
+          // window.location.reload()
         }
       });
     }

@@ -1,11 +1,13 @@
 package com.freesia.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
 import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.MetaDto;
@@ -306,6 +308,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
             checkAddMenu(sysMenuDto);
         } else if (MenuType.BUTTON.getType().equals(sysMenuDto.getMenuType())) {
             checkAddButton(sysMenuDto);
+            sysMenuDto.setPerms(sysMenuDto.getPerms());
         }
         if (MenuType.LINK.getType().equals(sysMenuDto.getMenuType())) {
             checkAddLink(sysMenuDto);
@@ -358,6 +361,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     @Transactional(rollbackFor = Exception.class)
     public void assignButton(AssignButtonDto assignButtonDto) {
         Long roleId = Long.parseLong(assignButtonDto.getRoleId());
+        List<String> beforeAssignButtonIdList = assignButtonDto.getBeforeAssignButtonIdList();
         List<Long> assignButtonIdList = assignButtonDto.getAssignButtonIdList().stream().map(Long::parseLong).collect(Collectors.toList());
         SysRolePo sysRolePo = sysRoleRepository.findById(roleId)
                 .orElseThrow(() -> new ServiceException(RoleModule.ROLE_MANAGEMENT, "role.query.failed", roleId));
@@ -371,6 +375,18 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         // 设置分配后的角色-菜单关联对象要在删除之后，否则会触发级联操作，导致SQL执行顺序变为insert->update->delete影响操作结果
         sysRolePo.setSysRoleMenuPoSet(afterSysRoleMenuPoSet);
         sysRoleRepository.save(sysRolePo);
+        SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+            SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
+            assignButtonLogBean.setModule(UserModule.USER_MANAGEMENT);
+            assignButtonLogBean.setSubModule(MenuModule.SubModule.ASSIGN_BUTTON);
+            assignButtonLogBean.setType(MenuModule.SubModule.ASSIGN_BUTTON);
+            assignButtonLogBean.setResult(FlagConstant.SUCCESS);
+            assignButtonLogBean.setContextOld("分配前菜单ID：" + JSONObject.toJSONString(beforeAssignButtonIdList));
+            assignButtonLogBean.setContext("分配后菜单ID：" + JSONObject.toJSONString(assignButtonIdList));
+            assignButtonLogBean.setRemark(UMessage.message("assigned_menu_permissions_success"));
+            return assignButtonLogBean;
+        });
+        USpring.context().publishEvent(sysSensitiveLogBean);
     }
 
     /**
@@ -445,12 +461,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         SysMenuDto findMenuByParentIdDto = findMenuByParentId(sysMenuDto.getParentId());
         if (ObjectUtil.isNull(findMenuByParentIdDto.getId())) {
             throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.button.find.parent.failed", sysMenuDto.getMenuName(), sysMenuDto.getParentId());
-        } else {
-            String component = findMenuByParentIdDto.getComponent();
-            String path = sysMenuDto.getPath();
-            String buttonPath = component.substring(0, component.lastIndexOf(PREFIX) + 1) + path;
-            String buttonPerms = buttonPath.replaceAll(PREFIX, ":");
-            sysMenuDto.setPerms(buttonPerms);
         }
     }
 

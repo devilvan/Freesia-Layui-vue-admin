@@ -208,6 +208,7 @@ const isFold = ref(false)
 const searchQuery = ref<SysMenuVo>({})
 const loading = ref(false)
 const selectedKeys = ref()
+const beforeAssignButtonIdList = ref()
 const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
@@ -298,6 +299,7 @@ const loadDataSource = () => {
   })
   findAssignedSysButtonByRoleId(searchQuery.value, roleId.value).then((res: any) => {
     if (res.code === 200) {
+      beforeAssignButtonIdList.value = res.data;
       selectedKeys.value = res.data
     }
   })
@@ -310,6 +312,7 @@ function expand() {
 function assignButtonHandler() {
   let assignButtonVo: AssignButtonVo = {
     roleId: roleId.value,
+    beforeAssignButtonIdList: beforeAssignButtonIdList.value,
     assignButtonIdList: selectedKeys.value
   }
   assignButton(assignButtonVo).then((res: any) => {
