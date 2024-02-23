@@ -2,6 +2,7 @@ package com.freesia.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.MenuModule;
+import com.freesia.constant.MenuType;
 import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.SysMenuDto;
 import com.freesia.entity.FindAllMenuTreeEntity;
@@ -11,6 +12,7 @@ import com.freesia.exception.ServiceException;
 import com.freesia.model.LoginUserModel;
 import com.freesia.service.SysMenuService;
 import com.freesia.util.UCopy;
+import com.freesia.util.UEmpty;
 import com.freesia.util.USecurity;
 import com.freesia.vo.AssignButtonVo;
 import com.freesia.vo.R;
@@ -93,7 +95,13 @@ public class SysMenuController {
     @PostMapping(value = "saveMenu")
     public R<SysMenuDto> saveMenu(@RequestBody @Valid SysMenuVo sysMenuVo) {
         SysMenuDto sysMenuDto = UCopy.copyVo2Dto(sysMenuVo, SysMenuDto.class);
-        sysMenuDto.setPath(sysMenuDto.getPath().trim());
+        String path = sysMenuDto.getPath();
+        if (!MenuType.BUTTON.getType().equals(sysMenuDto.getMenuType())) {
+            sysMenuDto.setPath(path.trim());
+        }
+        if (UEmpty.isEmpty(path)) {
+            sysMenuDto.setPath(null);
+        }
         sysMenuDto = sysMenuService.saveMenu(sysMenuDto);
         return R.ok(sysMenuDto);
     }

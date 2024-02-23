@@ -69,14 +69,6 @@ public interface SysTenantService {
     void cancelAssignUser(Long tenantId, List<Long> userIdList);
 
     /**
-     * 根据用户ID查询对应的租户ID
-     *
-     * @param id 用户ID
-     * @return 租户ID
-     */
-    List<Long> findSysTenantUser(Long id);
-
-    /**
      * 根据用户ID查询对应租户
      *
      * @param userId 用户ID

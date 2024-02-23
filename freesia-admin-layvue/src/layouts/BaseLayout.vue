@@ -135,7 +135,7 @@
               </lay-fullscreen>
             </lay-menu-item>
             <lay-menu-item>
-              <lay-icon type="layui-icon-gitee" title="项目地址" @click="toGitee"></lay-icon>
+              <lay-icon type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
               <global-message-tab :flag="flag">

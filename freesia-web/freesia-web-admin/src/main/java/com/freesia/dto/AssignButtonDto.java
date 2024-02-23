@@ -19,6 +19,8 @@ import java.util.List;
 public class AssignButtonDto {
     @Schema(description = "角色ID")
     private String roleId;
+    @Schema(description = "分配前的按钮ID")
+    private List<String> beforeAssignButtonIdList;
     @Schema(description = "分配后的按钮ID")
     private List<String> assignButtonIdList;
 }

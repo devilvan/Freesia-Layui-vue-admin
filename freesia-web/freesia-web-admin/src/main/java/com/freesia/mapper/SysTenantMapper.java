@@ -25,14 +25,6 @@ public interface SysTenantMapper extends BaseMapper<SysTenantPo> {
     Integer findExistCode(@Param("code") String code);
 
     /**
-     * 根据用户ID查询对应的租户
-     *
-     * @param id 用户ID
-     * @return 租户ID
-     */
-    List<Long> findSysTenantUser(@Param("userId") Long id);
-
-    /**
      * 根据用户ID查询对应租户
      *
      * @param userId 用户ID

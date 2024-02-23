@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class SysLoginController {
     @SaIgnore
     @Operation(summary = "客户端登录")
     @PostMapping("sysLogin")
-    public R<Map<String, Object>> sysLogin(@Validated @RequestBody LoginVo loginVo) {
+    public R<Map<String, Object>> sysLogin(@Valid @RequestBody LoginVo loginVo) {
         Map<String, Object> ajax = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
         // 生成令牌
         String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getCaptchaKey());

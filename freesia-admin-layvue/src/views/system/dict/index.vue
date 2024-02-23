@@ -118,7 +118,7 @@
             </lay-button
             >
             <lay-popconfirm
-                :content="'确定要禁用 【' + row.value + '】 字典值吗?'"
+                :content="'确定要禁用 【' + row.valueName + '】 字典值吗?'"
                 @confirm="enableConfirm(row)"
                 @cancel="cancel"
             >
@@ -128,7 +128,7 @@
               >
             </lay-popconfirm>
             <lay-popconfirm
-                :content="'确定要删除 【' + row.value + '】 字典值吗?'"
+                :content="'确定要删除 【' + row.valueName + '】 字典值吗?'"
                 @confirm="confirm(row)"
                 @cancel="cancel"
             >

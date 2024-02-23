@@ -25,5 +25,9 @@ public class MenuModule extends SysModule{
          * 子模块 分配角色
          */
         public static final String ASSIGN_ROLE = "assign_role";
+        /**
+         * 子模块 分配按钮
+         */
+        public static final String ASSIGN_BUTTON = "assign_button";
     }
 }

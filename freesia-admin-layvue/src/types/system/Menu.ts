@@ -60,5 +60,6 @@ export interface SysMenuEntity extends BaseEntity {
 
 export interface AssignButtonVo {
     roleId?: string,
+    beforeAssignButtonIdList?: Array<string>
     assignButtonIdList?: Array<string>;
 }

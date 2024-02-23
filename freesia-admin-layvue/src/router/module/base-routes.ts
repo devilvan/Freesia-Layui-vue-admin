@@ -71,7 +71,7 @@ export const dynamicRoutes = [
             {
                 path: 'assignButton/:roleId(\\d+)',
                 component: () => import('@/views/system/role/assignButton.vue'),
-                name: 'AssignUser',
+                name: 'AssignButton',
                 meta: {title: '分配按钮权限', affix: false, cache: false, closable: true}
             }
         ]

@@ -20,10 +20,12 @@ public class AssignButtonVo {
     @Schema(description = "角色ID")
     @NotEmpty(message = "{not.null}")
     private String roleId;
+    @Schema(description = "分配前的按钮ID")
+    private List<String> beforeAssignButtonIdList;
     @Schema(description = "分配后的按钮ID")
     private List<String> assignButtonIdList;
 
     public static AssignButtonDto convertVo2Dto(AssignButtonVo assignButtonVo) {
-        return new AssignButtonDto(assignButtonVo.getRoleId(), assignButtonVo.getAssignButtonIdList());
+        return new AssignButtonDto(assignButtonVo.getRoleId(), assignButtonVo.getBeforeAssignButtonIdList(), assignButtonVo.getAssignButtonIdList());
     }
 }
