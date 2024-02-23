@@ -97,11 +97,6 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     }
 
     @Override
-    public List<Long> findSysTenantUser(Long id) {
-        return sysTenantMapper.findSysTenantUser(id);
-    }
-
-    @Override
     public List<SysTenantDto> findListSysTenantByUserId(Long userId) {
         List<SysTenantPo> sysTenantPoList = sysTenantMapper.findListSysTenantByUserId(userId);
         return UCopy.fullCopyList(sysTenantPoList, SysTenantDto.class);

@@ -22,5 +22,5 @@ public class LoginPasswordProperties {
     /**
      * 密码锁定时间（默认10分钟）
      */
-    private Duration lockTime;
+    private Duration lockTime = Duration.ofMinutes(10);
 }

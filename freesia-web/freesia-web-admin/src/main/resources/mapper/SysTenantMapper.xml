@@ -7,13 +7,6 @@
         WHERE 1 = 1
           AND code = :code
     </select>
-    <select id="findSysTenantUser" resultType="Long">
-        SELECT T.ID
-        FROM sys_tenant T
-                 LEFT JOIN sys_tenant_user stu on T.ID = stu.TENANT_ID
-        WHERE 1 = 1
-          AND stu.USER_ID = #{userId}
-    </select>
     <select id="findListSysTenantByUserId" resultType="com.freesia.po.SysTenantPo">
         SELECT DISTINCT T.ID,
                         T.REC_VER,
