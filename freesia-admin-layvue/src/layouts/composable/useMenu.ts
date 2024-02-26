@@ -5,13 +5,11 @@ import {getNode, getParents} from "../../library/treeUtil";
 import {useAppStore} from "../../store/app";
 import {useUserStore} from "../../store/user";
 import {layer} from "@layui/layui-vue";
-import router from "../../router";
 import {useTabStore} from "./useTabStore";
 
 export function useMenu() {
 
     const route = useRoute();
-    const $router = router;
     const userStore = useUserStore();
     const appStore = useAppStore();
     const $tab = useTabStore();

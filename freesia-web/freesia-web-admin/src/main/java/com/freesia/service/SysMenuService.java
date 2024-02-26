@@ -149,4 +149,12 @@ public interface SysMenuService {
      * @param assignButtonDto 入参
      */
     void assignButton(AssignButtonDto assignButtonDto);
+
+    /**
+     * 查询自增排序号
+     *
+     * @param sysMenuDto 入参
+     * @return 自增排序号
+     */
+    Long findIncrementOrderNum(SysMenuDto sysMenuDto);
 }

@@ -151,4 +151,9 @@
                  LEFT JOIN sys_role_menu srm on M.ID = srm.MENU_ID
             ${ew.getCustomSqlSegment}
     </select>
+    <select id="findMaxOrderNum" resultType="java.lang.Long">
+        SELECT MAX(M.ORDER_NUM)
+        FROM SYS_MENU M
+        WHERE M.PARENT_ID = #{id}
+    </select>
 </mapper>
