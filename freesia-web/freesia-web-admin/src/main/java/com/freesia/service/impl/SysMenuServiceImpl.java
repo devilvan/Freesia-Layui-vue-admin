@@ -389,6 +389,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         USpring.context().publishEvent(sysSensitiveLogBean);
     }
 
+    @Override
+    public Long findIncrementOrderNum(SysMenuDto sysMenuDto) {
+        Long id = sysMenuDto.getId();
+        Long maxOrderNum = sysMenuMapper.findMaxOrderNum(id);
+        return maxOrderNum == null ? 10L : ((int) (maxOrderNum / 10)) * 10L + 10L;
+    }
+
     /**
      * 广度优先算法
      * 获取该节点在列表中对应的子节点，并通过队列循环对子节点进行同样操作

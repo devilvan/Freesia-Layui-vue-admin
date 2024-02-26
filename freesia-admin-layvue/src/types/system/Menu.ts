@@ -63,3 +63,7 @@ export interface AssignButtonVo {
     beforeAssignButtonIdList?: Array<string>
     assignButtonIdList?: Array<string>;
 }
+
+export interface FindIncrementOrderNumVo extends BaseVo {
+    menuId?: string;
+}

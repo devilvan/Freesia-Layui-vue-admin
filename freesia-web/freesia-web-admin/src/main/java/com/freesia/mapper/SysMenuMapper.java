@@ -123,4 +123,12 @@ public interface SysMenuMapper extends BaseMapper<SysMenuPo> {
      * @return 菜单下已分配的按钮ID
      */
     List<Long> findAssignedSysButtonByRoleId(@Param(Constants.WRAPPER) Wrapper<SysMenuPo> wrapper);
+
+    /**
+     * 目录-查询最大排序号
+     *
+     * @param id 菜单ID（目录）
+     * @return 自增排序号
+     */
+    Long findMaxOrderNum(@Param("id") Long id);
 }

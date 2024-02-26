@@ -1,5 +1,5 @@
 import Http from "../Http";
-import {AssignButtonVo, SysMenuEntity, SysMenuVo} from "../../types/system/Menu";
+import {AssignButtonVo, FindIncrementOrderNumVo, SysMenuEntity, SysMenuVo} from "../../types/system/Menu";
 import {R} from "../../types/Result";
 import {buildUrlParam} from "../../util/URequest";
 
@@ -49,4 +49,10 @@ export function findAssignedSysButtonByRoleId(searchQuery: SysMenuVo, roleId: st
 
 export function assignButton(assignButtonVo: AssignButtonVo) {
     return Http.post("/api/sysMenuController/assignButton", assignButtonVo)
+}
+
+export function findIncrementOrderNum(menuId: string): Promise<R<String>> {
+    let params = {menuId: menuId}
+    return Http.get("/api/sysMenuController/findIncrementOrderNum", params);
+
 }

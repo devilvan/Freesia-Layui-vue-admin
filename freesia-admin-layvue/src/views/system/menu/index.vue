@@ -158,6 +158,7 @@
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId">
                 <lay-tree-select v-model="sysDirVo.parentId" :data="treeMenuSelectList"
+                                 @change="changeDirModalParentIdSelect"
                                  :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="路由路径" prop="path" required>
@@ -209,6 +210,7 @@
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select v-model="sysMenuVo.parentId" :data="treeMenuSelectList"
+                                 @change="changeMenuModalParentIdSelect"
                                  :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="菜单名称" prop="menuName" required>
@@ -219,7 +221,7 @@
                 </lay-input>
               </lay-form-item>
               <lay-form-item label="权限标识" prop="perms" required>
-                <lay-input v-model="sysMenuVo.perms"  placeholder="例如：system:menu:index">
+                <lay-input v-model="sysMenuVo.perms" placeholder="例如：system:menu:index">
                 </lay-input>
               </lay-form-item>
             </lay-col>
@@ -268,6 +270,7 @@
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select v-model="sysButtonVo.parentId" :data="saveButtonTreeMenuSelectList"
+                                 @change="changeButtonModalParentIdSelect"
                                  :allow-clear="true"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="菜单名称" prop="menuName" required>
@@ -315,6 +318,7 @@
             <lay-col md="12">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select v-model="sysLinkVo.parentId" :data="saveLinkTreeMenuSelectList"
+                                 @change="changeLinkModalParentIdSelect"
                                  :allow-clear="true"></lay-tree-select>
               </lay-form-item>
               <lay-form-item label="菜单名称" prop="menuName" required>
@@ -389,7 +393,13 @@ export default {
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {deleteMenu, findMenuListByUserId, findTreeMenuSelect, saveMenu} from "../../../api/system/Menu";
+import {
+  deleteMenu,
+  findIncrementOrderNum,
+  findMenuListByUserId,
+  findTreeMenuSelect,
+  saveMenu
+} from "../../../api/system/Menu";
 import {FindMenuListByUserIdEntity, SysMenuVo} from "../../../types/system/Menu";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
 import {FindTreeMenuSelectEntity, MenuType, SysDictValueEntity} from "../../../types/system/Dict";
@@ -781,6 +791,7 @@ const changeSaveMenuVoModalFlag = (menuType: any) => {
   if (MenuType.DIR === menuType) {
     title.value = '新建目录'
     sysDirVo.value = {status: '0'}
+    changeDirModalParentIdSelect(null)
     saveDirModalFlag.value = !saveDirModalFlag.value
   } else if (MenuType.MENU === menuType) {
     title.value = '新建菜单'
@@ -915,6 +926,41 @@ function openModifyModal(row: any) {
     sysButtonVo.value = {...row}
     saveButtonModalFlag.value = true;
   }
+}
+
+function changeDirModalParentIdSelect(value: any) {
+  if (!value || value === "") {
+    value = -1;
+  }
+  findIncrementOrderNum(value).then((res: any) => {
+    if (res.code === 200) {
+      sysDirVo.value.orderNum = res.data
+    }
+  })
+}
+
+function changeMenuModalParentIdSelect(value: any) {
+  findIncrementOrderNum(value).then((res: any) => {
+    if (res.code === 200) {
+      sysMenuVo.value.orderNum = res.data
+    }
+  })
+}
+
+function changeButtonModalParentIdSelect(value: any) {
+  findIncrementOrderNum(value).then((res: any) => {
+    if (res.code === 200) {
+      sysButtonVo.value.orderNum = res.data
+    }
+  })
+}
+
+function changeLinkModalParentIdSelect(value: any) {
+  findIncrementOrderNum(value).then((res: any) => {
+    if (res.code === 200) {
+      sysLinkVo.value.orderNum = res.data
+    }
+  })
 }
 
 /* FUNCTION*/
