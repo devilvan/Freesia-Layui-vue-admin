@@ -1,5 +1,6 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.MenuType;
@@ -137,5 +138,15 @@ public class SysMenuController {
         AssignButtonDto assignButtonDto = AssignButtonVo.convertVo2Dto(assignButtonVo);
         sysMenuService.assignButton(assignButtonDto);
         return R.ok();
+    }
+
+    @SaIgnore
+    @Operation(summary = "查询自增排序号")
+    @GetMapping(value = "findIncrementOrderNum")
+    public R<Long> findIncrementOrderNum(@RequestParam("menuId") String menuId) {
+        SysMenuDto sysMenuDto = new SysMenuDto();
+        sysMenuDto.setId(Long.valueOf(menuId));
+        Long incrementOrderNum = sysMenuService.findIncrementOrderNum(sysMenuDto);
+        return R.ok(incrementOrderNum);
     }
 }
