@@ -188,6 +188,11 @@
                 <artifactId>springdoc-openapi-ui</artifactId>
                 <version>${springdoc-openapi.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-javadoc</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
             <!-- querydsl -->
             <dependency>
                 <groupId>com.querydsl</groupId>

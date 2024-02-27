@@ -115,26 +115,28 @@ springdoc:
         in: HEADER
         name: X-Tenent-Id
   group-configs:
-    - group: 1. 登录、注册模块
+    - group: 01. 登录、注册模块
       paths-to-match:
         - /api/sysLoginController/**
         - /api/sysRegistryController/**
-    - group: 2. 用户模块
+    - group: 02. 用户模块
       paths-to-match: /api/sysUserController/**
-    - group: 3. 角色模块
+    - group: 03. 角色模块
       paths-to-match: /api/sysRoleController/**
-    - group: 4. 菜单模块
+    - group: 04. 菜单模块
       paths-to-match: /api/sysMenuController/**
-    - group: 5. 部门模块
+    - group: 05. 部门模块
       paths-to-match: /api/sysDeptController/**
-    - group: 6. 字典模块
+    - group: 06. 字典模块
       paths-to-match: /api/sysDictController/**
-    - group: 7. 操作日志模块
+    - group: 07. 操作日志模块
       paths-to-match: /api/sysSensitiveLogController/**
-    - group: 8. 数据面板模块
+    - group: 08. 数据面板模块
       paths-to-match: /dashboard/**
-    - group: 9. 基础服务模块
+    - group: 09. 基础服务模块
       paths-to-match: /common/**
+    - group: 10. 租户模块
+      paths-to-match: /api/sysTenantController/**
 # knife4j的增强配置，不需要增强可以不配
 #knife4j:
 #  enable: true

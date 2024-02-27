@@ -72,7 +72,7 @@ public class SpringDocConfig {
                     return externalDocumentation;
                 });
         // 组件，用于适配SaToken的校验
-        Optional.ofNullable(springDocProperties)
+        Optional.of(springDocProperties)
                 .map(SpringDocProperties::getComponents)
                 .map(components -> {
                     openApi.components(components);
