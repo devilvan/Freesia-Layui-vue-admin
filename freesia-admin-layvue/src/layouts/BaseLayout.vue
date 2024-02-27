@@ -369,6 +369,10 @@ export default {
   }
 }
 
+.layui-nav .layui-nav-item > a * {
+  color: darkgray;
+}
+
 /*鼠标经过背景色，增加了improtant，否则设置无效*/
 .layui-header .layui-nav-item .layui-icon:hover {
   background: whitesmoke !important;
@@ -450,6 +454,20 @@ export default {
 .side-menu-wrapper {
   .layui-this {
     width: calc(100% - 3px) !important;
+  }
+}
+
+.designer {
+  .layui-tab-title {
+    .layui-this {
+      color: var(--global-primary-color) !important;
+      border-bottom: 2px solid var(--global-primary-color) !important;
+      background-color: #009b8e0d !important;
+
+      .layui-icon {
+        color: var(--global-primary-color) !important;
+      }
+    }
   }
 }
 

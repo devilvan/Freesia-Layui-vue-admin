@@ -38,13 +38,19 @@ export const useTabStore = defineStore({
             this.to(this.tabs[0].id);
         },
         async closeCurrent() {
-            let index = this.tabs.indexOf((ele: any) => ele.id == this.currentPath);
-            this.tabs.splice(index, 1);
-            this.tabs = this.tabs.filter((ele: any) => ele.id != this.currentPath);
+            this.tabs = this.tabs.filter((ele: any) => {
+                return ele.meta.closable == false || ele.id != this.currentPath;
+            });
             const latestView = this.tabs.slice(-1)[0]
             if (latestView) {
                 this.to(latestView.id);
             }
+        },
+        async closeRight() {
+            let index = this.tabs.findIndex((ele: any) => ele.id == this.currentPath);
+            this.tabs = this.tabs.filter((ele: any, idx: any) => {
+                return ele.meta.closable == false || idx <= index
+            });
         },
         async closeOther() {
             this.tabs = this.tabs.filter(

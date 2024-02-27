@@ -17,18 +17,21 @@
         </lay-tab-item>
       </template>
     </lay-tab>
-    <lay-dropdown @show="stat='开启'" @hide="stat='关闭'" :alignPoint="true" trigger="click">
+    <lay-dropdown>
       <lay-icon type="layui-icon-down"
                 :class=" appStore.tagsTheme == 'designer' ? 'designer-last-icon' : ''"></lay-icon>
       <template #content>
         <lay-dropdown-menu>
-          <lay-dropdown-menu-item @click="closeAll">关闭全部</lay-dropdown-menu-item>
+          <lay-dropdown-menu-item @click="closeCurrent">关闭当前</lay-dropdown-menu-item>
+        </lay-dropdown-menu>
+        <lay-dropdown-menu>
+          <lay-dropdown-menu-item @click="closeRight">关闭右侧标签</lay-dropdown-menu-item>
         </lay-dropdown-menu>
         <lay-dropdown-menu>
           <lay-dropdown-menu-item @click="closeOther">关闭其他</lay-dropdown-menu-item>
         </lay-dropdown-menu>
         <lay-dropdown-menu>
-          <lay-dropdown-menu-item @click="closeCurrent">关闭当前</lay-dropdown-menu-item>
+          <lay-dropdown-menu-item @click="closeAll">关闭全部</lay-dropdown-menu-item>
         </lay-dropdown-menu>
       </template>
     </lay-dropdown>
@@ -122,6 +125,10 @@ function closeAll() {
 
 function closeCurrent() {
   $tab.closeCurrent()
+}
+
+function closeRight() {
+  $tab.closeRight();
 }
 
 function closeOther() {
