@@ -1,6 +1,7 @@
 package com.freesia.httpclient.exception;
 
 import com.freesia.exception.BaseException;
+import com.freesia.exception.ServiceException;
 import com.freesia.httpclient.constant.HttpClientModule;
 
 import java.io.Serial;
@@ -10,7 +11,7 @@ import java.io.Serial;
  * @Description Http调用 异常类
  * @date 2024-01-18
  */
-public class HttpClientException extends BaseException {
+public class HttpClientException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 711360139646536614L;
 

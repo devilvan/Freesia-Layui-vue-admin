@@ -9,7 +9,7 @@ import java.io.Serial;
  * @Description 用户模块 异常类
  * @date 2023-08-13
  */
-public class UserException extends BaseException {
+public class UserException extends ServiceException {
 
     @Serial
     private static final long serialVersionUID = 8756197040766756051L;

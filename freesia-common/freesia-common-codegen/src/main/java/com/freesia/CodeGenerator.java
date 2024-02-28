@@ -5,7 +5,7 @@ import com.freesia.dto.DataBaseDto;
 import com.freesia.dto.TableDto;
 import com.freesia.dto.ColumnFieldDto;
 import com.freesia.exception.BaseException;
-import com.freesia.util.FreemarkerTemplateUtil;
+import com.freesia.handler.FreemarkerTemplateHandler;
 import com.freesia.util.UEmpty;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -55,9 +55,9 @@ public class CodeGenerator {
      */
     private static void generate(List<DataBaseDto> dataBaseDtoList) {
         for (DataBaseDto dataBaseDto : dataBaseDtoList) {
-//            generateVo(dataBaseDto);
+            generateVo(dataBaseDto);
             generatePo(dataBaseDto);
-//            generateDto(dataBaseDto);
+            generateDto(dataBaseDto);
 //            generateController(dataBaseDto);
 //            generateService(dataBaseDto);
 //            generateServiceImpl(dataBaseDto);
@@ -258,11 +258,11 @@ public class CodeGenerator {
      */
     private static void generateFileByTemplate(String templateName, File file, Map<String, Object> basicMap) {
         try {
-            Template template = FreemarkerTemplateUtil.getTemplate(templateName);
+            Template template = FreemarkerTemplateHandler.getTemplate(templateName);
             FileOutputStream fos = new FileOutputStream(file);
             Writer out = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8), 10240);
             template.process(basicMap, out);
-            FreemarkerTemplateUtil.clearCache();
+            FreemarkerTemplateHandler.clearCache();
         } catch (IOException | TemplateException e) {
             e.printStackTrace();
         }

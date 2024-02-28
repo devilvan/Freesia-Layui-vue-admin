@@ -25,6 +25,7 @@ public class ${dataBaseDto.className}Controller {
     /**
      * 保存${dataBaseDto.comment}信息
      *
+     * @param ${dataBaseDto.className?uncap_first}Vo    待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存${dataBaseDto.comment}信息")
@@ -38,6 +39,7 @@ public class ${dataBaseDto.className}Controller {
     /**
      * 批量保存${dataBaseDto.comment}信息
      *
+     * ${dataBaseDto.className?uncap_first}VoList    待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存${dataBaseDto.comment}信息")

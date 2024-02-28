@@ -21,10 +21,12 @@ public final class Constants {
      */
     public static final String YM = "yyyy-MM";
     public static final String YMD = "yyyy-MM-dd";
+    public static final String YMD_PATH = "yyyy/MM/dd";
     public static final String YMD_HM = "yyyy-MM-dd HH:mm";
     public static final String YMD_HMS = "yyyy-MM-dd HH:mm:ss";
     public static final String YMD_HMS_SSS = "yyyy-MM-dd HH:mm:ss:SSS";
     public static final SimpleDateFormat SDF_YMD = new SimpleDateFormat(Constants.YMD);
+    public static final SimpleDateFormat SDF_YMD_PATH = new SimpleDateFormat(Constants.YMD_PATH);
     public static final SimpleDateFormat SDF_YMDHMS = new SimpleDateFormat(Constants.YMD_HMS);
     /**
      * 令牌

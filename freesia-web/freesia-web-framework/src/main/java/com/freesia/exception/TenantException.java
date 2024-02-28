@@ -9,7 +9,7 @@ import java.io.Serial;
  * @Description 租户模块 异常类
  * @date 2024-02-11
  */
-public class TenantException extends BaseException {
+public class TenantException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 9168523946223394482L;
 

@@ -16,6 +16,7 @@
         <module>freesia-common-api</module>
         <module>freesia-common-codegen</module>
         <module>freesia-common-service</module>
+        <module>freesia-common-oss</module>
     </modules>
 
     <properties>

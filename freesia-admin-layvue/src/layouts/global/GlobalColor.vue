@@ -1,6 +1,8 @@
 <template>
     <ul class="color-list">
-      <li :style="{'background':option}" v-for="(option, index) in options" :key="index" @click="handlerChange(option)"><lay-icon v-if="option == modelValue" type="layui-icon-ok"></lay-icon></li>
+      <li :style="{'background':option}" v-for="(option, index) in options" :key="index" @click="handlerChange(option)">
+        <lay-icon v-if="option == modelValue" type="layui-icon-ok"></lay-icon>
+      </li>
     </ul>
 </template>
 
@@ -11,7 +13,7 @@ export default {
 </script>
 
 <script lang="ts" setup>
-  
+
 interface ColorProps {
   modelValue: string;
   options?: string[];
@@ -19,7 +21,7 @@ interface ColorProps {
 
 const props = withDefaults(defineProps<ColorProps>(), {
   modelValue: "#009688",
-  options: () => ['#009688','#36b368','#2d8cf0','#f6ad55','#f56c6c','#3963bc']
+  options: () => ['#009688','#36b368','#2d8cf0','#f6ad55','#f56c6c','#3963bc', '#998adb']
 });
 
 const emits = defineEmits(['update:modelValue'])
@@ -40,7 +42,7 @@ const handlerChange = function(color: string) {
     width: 24px;
     height: 24px;
     line-height: 24px;
-    margin-left: 14px;
+    margin-left: 10px;
     border-radius: 2px;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 15%);
     color: white;
