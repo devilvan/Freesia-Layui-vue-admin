@@ -1,4 +1,5 @@
 package com.freesia;
+import java.util.Date;
 
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.GiteeCommitsRequestParamDto;
@@ -7,6 +8,9 @@ import com.freesia.dto.GiteeOauthTokenRequestDto;
 import com.freesia.httpclient.builder.HttpBuilder;
 import com.freesia.httpclient.component.HttpClientComponent;
 import com.freesia.httpclient.dto.HttpClientDto;
+import com.freesia.oss.constant.AccessPolicy;
+import com.freesia.oss.po.SysOssConfigPo;
+import com.freesia.oss.repository.SysOssConfigRepository;
 import com.freesia.properties.GiteeProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -27,6 +31,27 @@ public class FreesiaTestApplication {
     private HttpClientComponent httpClientComponent;
     @Resource
     private GiteeProperties giteeProperties;
+    @Resource
+    private SysOssConfigRepository sysOssConfigRepository;
+
+    @Test
+    public void saveOssConfig() {
+        SysOssConfigPo sysOssConfigPo = new SysOssConfigPo();
+        sysOssConfigPo.setConfigKey("minio");
+        sysOssConfigPo.setAccessKey("6mtdaVRK98P182FgYMwX");
+        sysOssConfigPo.setSecretKey("WaxdWUtf5quEs7JgMUSqcnL3Xd143FATeBpG7fmn");
+        sysOssConfigPo.setBucketName("freesia.test");
+        sysOssConfigPo.setFilePrefix("");
+        sysOssConfigPo.setEndpoint("127.0.0.1:9001");
+        sysOssConfigPo.setDomain("");
+        sysOssConfigPo.setIsHttps(false);
+        sysOssConfigPo.setRegion("");
+        sysOssConfigPo.setAccessPolicy(AccessPolicy.PUBLIC.name());
+        sysOssConfigPo.setStatus(true);
+        sysOssConfigPo.setExt1("");
+        sysOssConfigPo.setRemark("MinIO对象存储");
+        sysOssConfigRepository.save(sysOssConfigPo);
+    }
 
     @Test
     public void testGiteeCommits() {

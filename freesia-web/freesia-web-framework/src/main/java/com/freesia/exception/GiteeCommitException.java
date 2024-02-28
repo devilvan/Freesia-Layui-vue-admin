@@ -10,7 +10,7 @@ import java.io.Serial;
  * @date 2024-01-12
  */
 
-public class GiteeCommitException extends BaseException {
+public class GiteeCommitException extends ServiceException {
     @Serial
     private static final long serialVersionUID = -5609316263727929931L;
 

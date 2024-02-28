@@ -1,4 +1,4 @@
-package com.freesia.util;
+package com.freesia.handler;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.NullCacheStorage;
@@ -12,16 +12,16 @@ import java.io.IOException;
 
 /**
  * @author Evad.Wu
- * @Description Freemarker生成模板 工具类
+ * @Description Freemarker生成模板 处理类
  * @date 2022-09-12
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FreemarkerTemplateUtil {
+public class FreemarkerTemplateHandler {
     private static final Configuration CONFIGURATION = new Configuration(Configuration.VERSION_2_3_31);
 
     static {
         //这里比较重要，用来指定加载模板所在的路径
-        CONFIGURATION.setTemplateLoader(new ClassTemplateLoader(FreemarkerTemplateUtil.class,
+        CONFIGURATION.setTemplateLoader(new ClassTemplateLoader(FreemarkerTemplateHandler.class,
                 "/static/ftl"));
         CONFIGURATION.setDefaultEncoding("UTF-8");
         CONFIGURATION.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);

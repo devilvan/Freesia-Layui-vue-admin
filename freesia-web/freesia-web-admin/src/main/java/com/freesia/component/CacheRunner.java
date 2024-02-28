@@ -1,6 +1,8 @@
 package com.freesia.component;
 
 import com.freesia.constant.CacheConstant;
+import com.freesia.oss.constant.OssConstant;
+import com.freesia.oss.service.SysOssConfigService;
 import com.freesia.properties.WebCommonProperties;
 import com.freesia.service.SysConfigService;
 import com.freesia.service.SysDictValueService;
@@ -23,9 +25,13 @@ public class CacheRunner implements ApplicationRunner {
     private final WebCommonProperties webCommonProperties;
     private final SysConfigService sysConfigService;
     private final SysDictValueService sysDictValueService;
+    private final SysOssConfigService sysOssConfigService;
 
     @Override
     public void run(ApplicationArguments args) {
+        sysOssConfigService.loadSysOssConfig();
+        log.info(UMessage.message("oss.load.success", OssConstant.SYS_OSS_DEFAULT_CONFIG));
+        log.info(UMessage.message("oss.load.success", OssConstant.SYS_OSS_CONFIG));
         if (webCommonProperties.getInitSysConfig()) {
             sysConfigService.loadSysConfig();
             log.info(UMessage.message("config.load.success", CacheConstant.SYS_CONFIG));

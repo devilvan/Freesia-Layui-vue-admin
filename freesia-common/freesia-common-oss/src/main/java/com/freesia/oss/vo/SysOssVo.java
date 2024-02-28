@@ -1,0 +1,36 @@
+package com.freesia.oss.vo;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
+/**
+ * @author Evad.Wu
+ * @Description OSS对象存储表 值对象
+ * @date 2024-02-28
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(description = "OSS对象存储表 值对象")
+public class SysOssVo {
+    @Schema(description = "文件名")
+    @JSONField(alternateNames = {"fileName"})
+    private String fileName;
+    @Schema(description = "原名")
+    @JSONField(alternateNames = {"originalName"})
+    private String originalName;
+    @Schema(description = "文件后缀名")
+    @JSONField(alternateNames = {"fileSuffix"})
+    private String fileSuffix;
+    @Schema(description = "URL地址")
+    @JSONField(alternateNames = {"url"})
+    private String url;
+    @Schema(description = "服务商")
+    @JSONField(alternateNames = {"service"})
+    private String service;
+}

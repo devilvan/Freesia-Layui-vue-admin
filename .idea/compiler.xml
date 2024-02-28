@@ -10,6 +10,7 @@
         <module name="freesia-common-service" />
         <module name="freesia-web-api" />
         <module name="freesia-common-framework" />
+        <module name="freesia-common-oss" />
         <module name="freesia-web-framework" />
         <module name="freesia-common-api" />
         <module name="freesia-web-app" />
@@ -23,7 +24,9 @@
       <module name="freesia-common-api" target="16" />
       <module name="freesia-common-codegen" target="16" />
       <module name="freesia-common-framework" target="16" />
+      <module name="freesia-common-oss" target="16" />
       <module name="freesia-common-service" target="16" />
+      <module name="freesia-oss" target="16" />
       <module name="freesia-web" target="16" />
       <module name="freesia-web-admin" target="16" />
       <module name="freesia-web-api" target="16" />
@@ -38,7 +41,9 @@
       <module name="freesia-common-api" options="-parameters" />
       <module name="freesia-common-codegen" options="-parameters" />
       <module name="freesia-common-framework" options="-parameters" />
+      <module name="freesia-common-oss" options="-parameters" />
       <module name="freesia-common-service" options="-parameters" />
+      <module name="freesia-oss" options="-parameters" />
       <module name="freesia-web-admin" options="-parameters" />
       <module name="freesia-web-api" options="-parameters" />
       <module name="freesia-web-app" options="-parameters" />

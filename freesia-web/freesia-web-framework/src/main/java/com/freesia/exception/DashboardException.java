@@ -9,7 +9,7 @@ import java.io.Serial;
  * @Description 面板模块 异常类
  * @date 2023-12-26
  */
-public class DashboardException extends BaseException {
+public class DashboardException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 9168523946223394482L;
 

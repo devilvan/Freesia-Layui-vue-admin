@@ -10,6 +10,7 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/freesia-common-framework/pom.xml" />
+        <option value="$PROJECT_DIR$/freesia-oss/pom.xml" />
       </set>
     </option>
   </component>

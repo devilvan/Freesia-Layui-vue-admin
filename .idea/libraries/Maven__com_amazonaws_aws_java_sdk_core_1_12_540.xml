@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.amazonaws:aws-java-sdk-core:1.12.540">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-core/1.12.540/aws-java-sdk-core-1.12.540.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-core/1.12.540/aws-java-sdk-core-1.12.540-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-core/1.12.540/aws-java-sdk-core-1.12.540-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
