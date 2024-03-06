@@ -1,10 +1,12 @@
 package com.freesia.oss.service;
 
+import com.freesia.oss.dto.SysOssDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.oss.dto.SysOssDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ public interface SysOssService {
      * 查询OSS对象存储表信息
      *
      * @param sysOssDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery 分页条件
      * @return 分页信息
      */
     TableResult<SysOssDto> findPageSysOss(SysOssDto sysOssDto, PageQuery pageQuery);
@@ -60,4 +62,20 @@ public interface SysOssService {
      * @return OSS对象存储实体
      */
     SysOssDto upload(MultipartFile file);
+
+    /**
+     * 下载文件
+     *
+     * @param id       文件ID
+     * @param response 响应体
+     */
+    void download(Long id, HttpServletResponse response) throws IOException;
+
+    /**
+     * 根据主键查询缓存
+     *
+     * @param id 主键
+     * @return OSS对象存储实体
+     */
+    SysOssDto findCacheById(Long id);
 }

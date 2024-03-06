@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -101,6 +103,9 @@ public class SysOssController {
 
     /**
      * 上传文件
+     *
+     * @param file 上传的文件
+     * @return 形式返回
      */
     @SaIgnore
     @Operation(summary = "上传文件")
@@ -108,5 +113,17 @@ public class SysOssController {
     public R<SysOssDto> upload(@RequestPart("file") MultipartFile file) {
         SysOssDto sysOssDto = sysOssService.upload(file);
         return R.ok(sysOssDto);
+    }
+
+    /**
+     * 下载文件
+     *
+     * @param id 文件ID
+     */
+    @SaIgnore
+    @Operation(summary = "下载文件")
+    @GetMapping(value = "download/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void download(@PathVariable String id, HttpServletResponse response) throws IOException {
+        sysOssService.download(Long.parseLong(id), response);
     }
 }

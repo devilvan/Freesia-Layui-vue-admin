@@ -6,7 +6,6 @@ import {permission, role} from "./directives/permission";
 import DictTag from './views/component/DictTag.vue'
 import DictScan from './views/component/DictScan.vue'
 import InnerLink from './layouts/InnerLink.vue'
-import './mockjs'
 
 /**
  * 大坑，如果缺失src前的/，则会造成加载图片失败

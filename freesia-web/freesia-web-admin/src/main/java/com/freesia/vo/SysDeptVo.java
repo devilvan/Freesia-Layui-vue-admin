@@ -39,7 +39,7 @@ public class SysDeptVo {
     @Schema(description = "邮箱")
     @JSONField(alternateNames = {"email"})
     private String email;
-    @Schema(description = "部门状态（见DEPT_STATUS）")
+    @Schema(description = "部门状态（1-是，0-否）")
     @JSONField(alternateNames = {"deptStatus"})
     private String deptStatus;
     @Schema(description = "备注")

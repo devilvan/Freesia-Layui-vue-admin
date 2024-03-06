@@ -5,6 +5,8 @@ import router from '../router'
 import {useAppStore} from "../store/app";
 
 export let loginPath: string = '/login'
+const octetStreamCharsetUTF8 = 'application/octet-stream;charset=UTF-8';
+const downloadPath = import.meta.env.VITE_APP_DOWNLOAD_PATH;
 type TAxiosOption = {
     timeout: number;
     baseURL: string;
@@ -38,6 +40,17 @@ class Http {
                 // 将编码后的查询参数赋值给原先的params
                 config.params = new URLSearchParams(config.params);
             }
+            // let downloadFilename = config.headers['download-filename'];
+            // if (downloadFilename) {
+            //     const blob = new Blob([data])
+            //     const fileLink = document.createElement('a') //创建一个a标签通过a标签的点击事件区下载文件
+            //     fileLink.download = data.headers['download-filename']
+            //     fileLink.href = URL.createObjectURL(blob) //使用blob创建一个指向类型数组的URL
+            //     document.body.appendChild(fileLink)
+            //     fileLink.click()
+            //     URL.revokeObjectURL(fileLink.href) // 释放URL 对象
+            //     document.body.removeChild(fileLink)
+            // }
             return config
         }, error => {
             return Promise.reject(error);
@@ -46,9 +59,10 @@ class Http {
         /* 响应拦截 */
         this.service.interceptors.response.use((response: AxiosResponse<any>) => {
             const userInfoStore = useUserStore();
-            switch (response.data.code) {
+            let responseData = response.data;
+            switch (responseData.code) {
                 case 200:
-                    return response.data;
+                    return responseData;
                 case 401:
                     router.replace('/error/401').then(r => r)
                     layer.confirm(
@@ -60,7 +74,7 @@ class Http {
                                 layer.closeAll()
                             }
                         });
-                    return response.data;
+                    return responseData;
                 case 403:
                     router.replace('/error/403').then(r => r)
                     layer.confirm(
@@ -71,7 +85,7 @@ class Http {
                                 layer.closeAll()
                             }
                         });
-                    return response.data;
+                    return responseData;
                 case 404:
                     router.replace('/error/404').then(r => r)
                     layer.confirm(
@@ -82,12 +96,25 @@ class Http {
                                 layer.closeAll()
                             }
                         });
-                    return response.data;
+                    return responseData;
                 case 500:
-                    layer.confirm(response.data.msg, {icon: 2})
-                    return response.data;
+                    layer.confirm(responseData.msg, {icon: 2})
+                    return responseData;
                 default:
                     break;
+            }
+            if ('blob' === response.config.responseType) {
+                let downloadFilename = response.headers['download-filename'];
+                let contentType = response.headers["content-type"] as string;
+                const blob = new Blob([responseData], {type: 'application/octet-stream'})
+                const fileLink = document.createElement('a') //创建一个a标签通过a标签的点击事件区下载文件
+                fileLink.download = decodeURIComponent(downloadFilename)
+                fileLink.href = window.URL.createObjectURL(blob) //使用blob创建一个指向类型数组的URL
+                document.body.appendChild(fileLink)
+                fileLink.style.display = "none"
+                fileLink.click()
+                URL.revokeObjectURL(fileLink.href) // 释放URL 对象
+                document.body.removeChild(fileLink)
             }
         }, error => {
             return Promise.reject(error)
@@ -112,6 +139,14 @@ class Http {
     /* DELETE 方法 */
     delete<T>(url: string, params?: any, _object = {}): Promise<any> {
         return this.service.delete(url, {params, ..._object})
+    }
+
+    getDownload(id: any): Promise<any> {
+        return this.service.request({
+            url: downloadPath + id,
+            method: 'get',
+            responseType: 'blob'
+        })
     }
 }
 

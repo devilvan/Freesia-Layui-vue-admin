@@ -1,7 +1,7 @@
 package com.freesia.oss.exception;
 
-import com.freesia.constant.DashboardModule;
 import com.freesia.exception.ServiceException;
+import com.freesia.oss.constant.OssModule;
 
 import java.io.Serial;
 
@@ -14,7 +14,11 @@ public class OssException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 8261360291365883992L;
 
+    public OssException(String defaultMessage) {
+        super(defaultMessage);
+    }
+
     public OssException(String code, Object... args) {
-        super(DashboardModule.DASHBOARD_MANAGEMENT, code, args, null);
+        super(OssModule.OSS_MANAGEMENT, code, args, null);
     }
 }

@@ -64,9 +64,9 @@ public class SysDeptPo extends BasePo implements Serializable {
     @TableField(value = "EMAIL")
     @Column(name = "EMAIL", columnDefinition = "VARCHAR(50) COMMENT '邮箱'")
     private String email;
-    @Schema(description = "部门状态（见DEPT_STATUS）")
+    @Schema(description = "部门状态（1-是，0-否）")
     @TableField(value = "DEPT_STATUS")
-    @Column(name = "DEPT_STATUS", columnDefinition = "CHAR(1) COMMENT '部门状态（见DEPT_STATUS）'")
+    @Column(name = "DEPT_STATUS", columnDefinition = "CHAR(1) COMMENT '部门状态（1-是，0-否）'")
     private String deptStatus;
     @Schema(description = "备注")
     @TableField(value = "REMARK")

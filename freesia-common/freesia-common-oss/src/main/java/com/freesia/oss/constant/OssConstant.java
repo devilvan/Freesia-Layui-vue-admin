@@ -22,4 +22,8 @@ public final class OssConstant {
      * 云服务商
      */
     public static final String[] CLOUD_SERVICE = new String[]{"aliyun", "qcloud", "qiniu", "obs"};
+    /**
+     * OSS对象存储-缓存键
+     */
+    public static final String SYS_OSS = "sys_oss#30d";
 }
