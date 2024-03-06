@@ -186,7 +186,7 @@
     <orderEntry type="library" name="Maven: org.jodd:jodd-core:5.1.6" level="project" />
     <orderEntry type="library" name="Maven: org.redisson:redisson-spring-data-25:3.16.8" level="project" />
     <orderEntry type="module" module-name="freesia-common-service" />
-    <orderEntry type="module" module-name="freesia-common-oss" />
+    <orderEntry type="module" module-name="freesia-web-oss" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-s3:1.12.540" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-kms:1.12.540" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-core:1.12.540" level="project" />

@@ -59,6 +59,7 @@
         <div class="table-box">
           <lay-table
               class="table-style"
+              :height="`700px`"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"

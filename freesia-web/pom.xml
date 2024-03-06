@@ -16,6 +16,7 @@
         <module>freesia-web-api</module>
         <module>freesia-web-framework</module>
         <module>freesia-web-admin</module>
+        <module>freesia-web-oss</module>
     </modules>
 
     <dependencyManagement>
@@ -54,7 +55,7 @@
             </dependency>
             <dependency>
                 <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-oss</artifactId>
+                <artifactId>freesia-web-oss</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>
