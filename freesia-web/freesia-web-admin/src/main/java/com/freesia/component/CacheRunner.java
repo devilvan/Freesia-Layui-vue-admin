@@ -1,11 +1,11 @@
 package com.freesia.component;
 
 import com.freesia.constant.CacheConstant;
-import com.freesia.oss.constant.OssConstant;
-import com.freesia.oss.service.SysOssConfigService;
+import com.freesia.constant.OssConstant;
 import com.freesia.properties.WebCommonProperties;
 import com.freesia.service.SysConfigService;
 import com.freesia.service.SysDictValueService;
+import com.freesia.service.SysOssConfigService;
 import com.freesia.util.UMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

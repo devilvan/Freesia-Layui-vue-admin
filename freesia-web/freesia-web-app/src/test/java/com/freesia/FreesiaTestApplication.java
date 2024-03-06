@@ -1,17 +1,16 @@
 package com.freesia;
-import java.util.Date;
 
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.constant.AccessPolicy;
 import com.freesia.dto.GiteeCommitsRequestParamDto;
 import com.freesia.dto.GiteeCommitsResponseDto;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
 import com.freesia.httpclient.builder.HttpBuilder;
 import com.freesia.httpclient.component.HttpClientComponent;
 import com.freesia.httpclient.dto.HttpClientDto;
-import com.freesia.oss.constant.AccessPolicy;
-import com.freesia.oss.po.SysOssConfigPo;
-import com.freesia.oss.repository.SysOssConfigRepository;
+import com.freesia.po.SysOssConfigPo;
 import com.freesia.properties.GiteeProperties;
+import com.freesia.repository.SysOssConfigRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
