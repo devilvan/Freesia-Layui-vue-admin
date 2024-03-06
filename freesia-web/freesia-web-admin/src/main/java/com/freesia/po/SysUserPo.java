@@ -73,9 +73,9 @@ public class SysUserPo extends BasePo implements Serializable {
     @TableField(value = "PASSWORD")
     @Column(name = "PASSWORD", columnDefinition = "VARCHAR(100) COMMENT '密码'")
     private String password;
-    @Schema(description = "帐号状态（见ACCOUNT_STATUS）")
+    @Schema(description = "帐号状态（1-是，0-否）")
     @TableField(value = "ACCOUNT_STATUS")
-    @Column(name = "ACCOUNT_STATUS", columnDefinition = "CHAR(1) COMMENT '帐号状态（见ACCOUNT_STATUS）'")
+    @Column(name = "ACCOUNT_STATUS", columnDefinition = "CHAR(1) COMMENT '帐号状态（1-是，0-否）'")
     private String accountStatus;
     @Schema(description = "备注")
     @TableField(value = "REMARK")

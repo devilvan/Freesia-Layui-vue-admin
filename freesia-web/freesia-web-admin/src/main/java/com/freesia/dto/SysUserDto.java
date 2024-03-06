@@ -40,7 +40,7 @@ public class SysUserDto extends BaseDto {
     private String avatar;
     @Schema(description = "密码")
     private String password;
-    @Schema(description = "帐号状态（见ACCOUNT_STATUS）")
+    @Schema(description = "帐号状态（1-是，0-否）")
     private String accountStatus;
     @Schema(description = "备注")
     private String remark;

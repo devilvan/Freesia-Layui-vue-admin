@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FlagConstant {
-    /* AccountStatus、 DeptStatus*/
     /**
      * 启用
      */
@@ -19,7 +18,6 @@ public final class FlagConstant {
      * 禁用
      */
     public static final String DISABLED = "1";
-    /* AccountStatus、 DeptStatus*/
     /**
      * 是
      */

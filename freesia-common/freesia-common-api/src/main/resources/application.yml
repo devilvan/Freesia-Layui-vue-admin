@@ -67,6 +67,14 @@ spring:
       matching-strategy: PATH_PATTERN_PARSER
 ---
 spring:
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size: 10MB
+      # 所有文件上传总大小
+      max-request-size: 100MB
+---
+spring:
   redis:
     host: 127.0.0.1
     port: 6379

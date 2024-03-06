@@ -33,7 +33,7 @@ public class SysDeptDto extends BaseDto {
     private String telNo;
     @Schema(description = "邮箱")
     private String email;
-    @Schema(description = "部门状态（见DEPT_STATUS）")
+    @Schema(description = "部门状态（1-是，0-否）")
     private String deptStatus;
     @Schema(description = "备注")
     private String remark;

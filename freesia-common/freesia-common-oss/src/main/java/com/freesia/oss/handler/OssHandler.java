@@ -16,7 +16,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import com.freesia.constant.Constants;
-import com.freesia.constant.FlagConstant;
 import com.freesia.oss.constant.AccessPolicy;
 import com.freesia.oss.constant.OssConstant;
 import com.freesia.oss.constant.PolicyType;
@@ -56,7 +55,7 @@ public class OssHandler {
             AWSCredentials credentials = new BasicAWSCredentials(properties.getAccessKey(), properties.getSecretKey());
             AWSCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(credentials);
             ClientConfiguration clientConfig = new ClientConfiguration();
-            if (FlagConstant.DISABLED.equals(properties.getIsHttps())) {
+            if (properties.getIsHttps()) {
                 clientConfig.setProtocol(Protocol.HTTPS);
             } else {
                 clientConfig.setProtocol(Protocol.HTTP);
@@ -171,7 +170,7 @@ public class OssHandler {
     public String getUrl() {
         String domain = properties.getDomain();
         String endpoint = properties.getEndpoint();
-        String header = Convert.toBool(properties.getIsHttps(), false) ? "https://" : "http://";
+        String header = Convert.toBool(properties.getIsHttps(), false) ? Constants.HTTPS : Constants.HTTP;
         // 云服务商直接返回
         if (StringUtils.containsAny(endpoint, OssConstant.CLOUD_SERVICE)) {
             if (StringUtils.isNotBlank(domain)) {

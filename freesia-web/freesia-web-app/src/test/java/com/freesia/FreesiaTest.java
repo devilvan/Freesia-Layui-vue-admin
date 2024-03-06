@@ -4,27 +4,22 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
-import com.freesia.excel.util.UExcel;
 import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.pojo.DemoData;
-import japa.parser.JavaParser;
-import japa.parser.ParseException;
-import japa.parser.ast.Comment;
-import japa.parser.ast.CompilationUnit;
+import com.freesia.excel.util.UExcel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +32,112 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class FreesiaTest {
+    private static final String ENCRYPT_KEY = "Y29tLnNpbm9zZXJ2aWNlcy5vcmc=";
+
+    @Test
+    public void testAesEncrypt() {
+        String value = "123456";
+        System.out.println(aesDecrypt("0U3VLpiniSZ3t8tWTNlI4A==", ENCRYPT_KEY));
+//        System.out.println(aesEncrypt(value, ENCRYPT_KEY));
+    }
+
+    private String aesEncrypt(String value, String encryptKey)
+    {
+        try
+        {
+            String key = getEncryptKey(encryptKey);
+            if (key == null) {
+                return null;
+            }
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+
+            SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+            secureRandom.setSeed(key.getBytes());
+            kgen.init(128, secureRandom);
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(1, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
+            byte[] bytes = value.getBytes("utf-8");
+            byte[] resultBytes = cipher.doFinal(bytes);
+            return base64Encode(resultBytes);
+        }
+        catch (NoSuchAlgorithmException localNoSuchAlgorithmException)
+        {
+        }
+        catch (NoSuchPaddingException localNoSuchPaddingException) {
+        }
+        catch (InvalidKeyException localInvalidKeyException) {
+        }
+        catch (UnsupportedEncodingException localUnsupportedEncodingException) {
+        }
+        catch (IllegalBlockSizeException localIllegalBlockSizeException) {
+        }
+        catch (BadPaddingException localBadPaddingException) {
+        }
+        return null;
+    }
+
+    private String aesDecrypt(String value, String encryptKey)
+    {
+        try
+        {
+            String key = getEncryptKey(encryptKey);
+            if (key == null) {
+                return null;
+            }
+            byte[] bytes = base64Decode(value);
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+
+            SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+            secureRandom.setSeed(key.getBytes());
+            kgen.init(128, secureRandom);
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(2, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
+            byte[] result = cipher.doFinal(bytes);
+            return new String(result, "utf-8");
+        }
+        catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
+        }
+        catch (NoSuchPaddingException localNoSuchPaddingException) {
+        }
+        catch (InvalidKeyException localInvalidKeyException) {
+        }
+        catch (IOException localIOException) {
+        }
+        catch (IllegalBlockSizeException localIllegalBlockSizeException) {
+        }
+        catch (BadPaddingException localBadPaddingException) {
+        }
+        return null;
+    }
+
+    private String base64Encode(byte[] bytes)
+    {
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(bytes);
+    }
+
+    private String getEncryptKey(String key)
+    {
+        try
+        {
+            byte[] resultByte = base64Decode(key);
+            return new String(resultByte, "utf-8");
+        }
+        catch (IOException localIOException)
+        {
+        }
+        return null;
+    }
+
+    private byte[] base64Decode(String base64Value)
+            throws IOException
+    {
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] decodeByte = decoder.decode(base64Value);
+        return decodeByte;
+    }
+
+
     @Test
     public void testExcelRead() {
         String fileName = "D:\\Mine\\文本文件\\测试导入.xls";
@@ -139,19 +240,6 @@ public class FreesiaTest {
         Matcher matcher = pattern.matcher("iframe$/inner$/index%");
         while (matcher.find()) {
             System.out.println(matcher.group());
-        }
-    }
-
-    @Test
-    public void testComment() {
-        try {
-            CompilationUnit compilationUnit = JavaParser.parse(new File("D:\\Mine\\Maven\\freesia\\freesia-web\\freesia-web-dashboard\\src\\main\\java\\com\\freesia\\controller\\GiteeController.java"));
-            List<Comment> comments = compilationUnit.getComments();
-            for (Comment comment : comments) {
-                System.out.println(comment.getContent());
-            }
-        } catch (ParseException | IOException e) {
-            e.printStackTrace();
         }
     }
 

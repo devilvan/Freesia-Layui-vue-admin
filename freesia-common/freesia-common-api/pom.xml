@@ -17,12 +17,6 @@
     </properties>
 
     <dependencies>
-        <!-- JavaParse 获取注释信息 -->
-        <dependency>
-            <groupId>com.google.code.javaparser</groupId>
-            <artifactId>javaparser</artifactId>
-            <version>1.0.9</version>
-        </dependency>
         <!--p6spy 监控sql日志-->
         <dependency>
             <groupId>p6spy</groupId>
