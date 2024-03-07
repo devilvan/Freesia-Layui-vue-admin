@@ -21,7 +21,7 @@ public class SysDictKeyDto extends BaseDto {
     private String keyName;
     @Schema(description = "字典键")
     private String dictKey;
-    @Schema(description = "状态 0-启用 1-禁用")
+    @Schema(description = "状态（0-禁用，1-启用）")
     private String status;
     @Schema(description = "备注")
     private String remark;

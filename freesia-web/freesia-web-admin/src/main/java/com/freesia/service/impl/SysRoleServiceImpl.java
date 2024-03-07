@@ -75,7 +75,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
             SysRolePo sysRolePo = new SysRolePo();
             UCopy.fullCopy(sysRoleDto, sysRolePo);
             return Wrappers.<SysRolePo>query()
-                    .eq("R.LOGIC_DEL", FlagConstant.ENABLED)
+                    .eq("R.LOGIC_DEL", FlagConstant.DISABLED)
                     .eq(UEmpty.isNotEmpty(sysRolePo.getStatus()), "R.STATUS", FlagConstant.ENABLED)
                     .like(ObjectUtil.isNotNull(sysRolePo.getRoleName()), "R.ROLE_NAME", sysRolePo.getRoleName())
                     .like(ObjectUtil.isNotNull(sysRolePo.getRoleKey()), "R.ROLE_KEY", sysRolePo.getRoleKey())
@@ -123,7 +123,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
                         SysRolePo::getId, SysRolePo::getRoleKey, SysRolePo::getRoleName,
                         SysRolePo::getDataScope, SysRolePo::getStatus, SysRolePo::getRemark
                 )
-                .eq(SysRolePo::getLogicDel, FlagConstant.ENABLED);
+                .eq(SysRolePo::getLogicDel, FlagConstant.DISABLED);
         List<SysRolePo> sysRolePoList = this.list(queryWrapper);
         return UCopy.fullCopyList(sysRolePoList, FindAllRolesEntity.class);
     }
@@ -137,7 +137,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
                         SysRolePo::getDataScope, SysRolePo::getRemark
                 )
                 .eq(SysRolePo::getId, roleId)
-                .eq(SysRolePo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysRolePo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysRolePo::getStatus, FlagConstant.ENABLED);
         SysRolePo sysRolePo = this.getOne(queryWrapper);
         return UCopy.copyPo2Dto(sysRolePo, SysRoleDto.class);
@@ -147,9 +147,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     public TableResult<SysUserDto> findPageUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery) {
         Wrapper<SysRolePo> queryWrapper = Wrappers.<SysRolePo>query()
                 .eq("R.ID", sysRoleDto.getId())
-                .eq("R.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("R.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("R.STATUS", FlagConstant.ENABLED)
-                .eq("U.LOGIC_DEL", FlagConstant.ENABLED);
+                .eq("U.LOGIC_DEL", FlagConstant.DISABLED);
         Page<SysRolePo> pageUserByRoleId = sysRoleMapper.findPageUserByRoleId(queryWrapper, pageQuery.build());
         return TableResult.build(UCopy.convertPagePo2Dto(pageUserByRoleId, SysUserDto.class));
     }

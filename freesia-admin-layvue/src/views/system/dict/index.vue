@@ -62,18 +62,18 @@
             @sortChange="sortChange"
         >
           <template #status="{ row }">
-            <div v-show="row.status === '0'">
+            <div v-show="row.status === '1'">
               <lay-tag color="#31BDEC" variant="light">启用</lay-tag>
             </div>
-            <div v-show="row.status === '1'">
+            <div v-show="row.status === '0'">
               <lay-tag color="#FF5722" variant="light">禁用</lay-tag>
             </div>
           </template>
           <template #isDefault="{ row }">
-            <div v-show="row.isDefault === '0'">
+            <div v-show="row.isDefault === '1'">
               <lay-tag color="#2dc570" variant="light">是</lay-tag>
             </div>
-            <div v-show="row.isDefault === '1'">
+            <div v-show="row.isDefault === '0'">
               <lay-tag color="#F5319D" variant="light">否</lay-tag>
             </div>
           </template>
@@ -233,7 +233,7 @@
             <lay-input v-model="modifySysDictKey.keyName"></lay-input>
           </lay-form-item>
           <lay-form-item label="状态" prop="status">
-            <lay-switch :model-value="modifySysDictKey.status === '0'"
+            <lay-switch :model-value="modifySysDictKey.status === '1'"
                         @change="editModalChangeStatus($event, modifySysDictKey)"></lay-switch>
           </lay-form-item>
           <lay-form-item label="备注" prop="remark">
@@ -489,7 +489,7 @@ const editModalChangeStatus = (isChecked: boolean, row: any) => {
   sysDictKeyList.value.forEach((item) => {
     if (item.id === row.id) {
       layer.msg('Success', {icon: 1}, () => {
-        item.status = isChecked ? '0' : '1';
+        item.status = isChecked ? '1' : '0';
       })
     }
   })

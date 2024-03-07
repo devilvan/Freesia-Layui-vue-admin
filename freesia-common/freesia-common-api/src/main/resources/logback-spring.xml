@@ -1,6 +1,4 @@
 <configuration debug="false" scan="true" scanPeriod="10 seconds">
-    <!--<include resource="org/springframework/boot/logging/logback/base.xml"/>-->
-    <!--<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>-->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <contextName>logback</contextName>
 
@@ -9,7 +7,6 @@
     <property name="log.path" value="./logs/"/>
     <property name="maxHistory" value="7"/>
     <property name="maxFileSize" value="50MB"/>
-<!--    <property name="consolePattern" value="%date %level [%thread] %logger{36} [%file : %line] %msg%n"/>-->
     <property name="consolePattern"
               value="%red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) %yellow([%file : %line]%n) * %msg%n"/>
     <property name="logPattern" value="%date %level [%thread] %logger{36} [%file : %line] %msg%n"/>

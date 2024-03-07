@@ -68,7 +68,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     public String findConfigByKey(String configKey) {
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
                 .select(SysConfigPo::getConfigKey)
-                .eq(SysConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysConfigPo::getConfigKey, configKey);
         SysConfigPo sysConfigPo = this.getOne(queryWrapper);
         if (ObjectUtil.isNotNull(sysConfigPo)) {
@@ -87,7 +87,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     @Override
     public void loadSysConfig() {
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
-                .eq(SysConfigPo::getLogicDel, FlagConstant.ENABLED);
+                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED);
         List<SysConfigPo> sysConfigPoList = this.list(queryWrapper);
         sysConfigPoList.forEach(sysConfigPo -> UCache.put(CacheConstant.SYS_CONFIG, sysConfigPo.getConfigKey(), sysConfigPo.getConfigValue()));
     }
@@ -95,7 +95,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     @Override
     public TableResult<SysConfigDto> findPageSysConfig(SysConfigDto sysConfigDto, PageQuery pageQuery) {
         Page<SysConfigPo> page = sysConfigMapper.findPageSysConfig(pageQuery.build(), new LambdaQueryWrapper<SysConfigPo>()
-                .eq(SysConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .like(UEmpty.isNotEmpty(sysConfigDto.getConfigKey()), SysConfigPo::getConfigKey, sysConfigDto.getConfigKey())
                 .like(UEmpty.isNotEmpty(sysConfigDto.getConfigName()), SysConfigPo::getConfigName, sysConfigDto.getConfigName())
                 .orderByAsc(SysConfigPo::getConfigKey)
@@ -111,7 +111,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     @Override
     public SysConfigDto findSysConfigByConfigKey(String configKey) {
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
-                .eq(SysConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysConfigPo::getConfigKey, configKey);
         SysConfigPo sysConfigPo = this.getOne(queryWrapper);
         return UCopy.copyPo2Dto(sysConfigPo, SysConfigDto.class);

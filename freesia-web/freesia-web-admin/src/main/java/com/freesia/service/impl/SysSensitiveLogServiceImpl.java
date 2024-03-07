@@ -48,7 +48,7 @@ public class SysSensitiveLogServiceImpl extends ServiceImpl<SysSensitiveLogMappe
     @Override
     public TableResult<SysSensitiveLogDto> findPageLoginLog(SysSensitiveLogDto sysSensitiveLogDto, PageQuery pageQuery) {
         Wrapper<SysSensitiveLogPo> queryWrapper = Wrappers.<SysSensitiveLogPo>query()
-                .eq("SL.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("SL.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("SL.MODULE", UserModule.USER_MANAGEMENT)
                 .eq(UEmpty.isNotEmpty(sysSensitiveLogDto.getOperatorName()), "SL.OPERATOR_NAME", sysSensitiveLogDto.getOperatorName())
                 .eq(UEmpty.isNotEmpty(sysSensitiveLogDto.getDeptName()), "SL.DEPT_NAME", sysSensitiveLogDto.getDeptName())
@@ -71,7 +71,7 @@ public class SysSensitiveLogServiceImpl extends ServiceImpl<SysSensitiveLogMappe
     @Override
     public TableResult<SysSensitiveLogDto> findPageOptionLog(SysSensitiveLogDto sysSensitiveLogDto, PageQuery pageQuery) {
         Wrapper<SysSensitiveLogPo> queryWrapper = Wrappers.<SysSensitiveLogPo>query()
-                .eq("SL.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("SL.LOGIC_DEL", FlagConstant.DISABLED)
                 .ne("SL.MODULE", UserModule.USER_MANAGEMENT)
                 .eq(UEmpty.isNotEmpty(sysSensitiveLogDto.getOperatorName()), "SL.OPERATOR_NAME", sysSensitiveLogDto.getOperatorName())
                 .eq(UEmpty.isNotEmpty(sysSensitiveLogDto.getDeptName()), "SL.DEPT_NAME", sysSensitiveLogDto.getDeptName())

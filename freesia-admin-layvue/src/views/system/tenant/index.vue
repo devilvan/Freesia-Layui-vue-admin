@@ -100,6 +100,12 @@
         <lay-form :model="sysTenantVo" ref="sysTenantFormRef" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
+              <lay-form-item label="主键" prop="id" required :hidden="true">
+                <lay-input v-model="sysTenantVo.id"></lay-input>
+              </lay-form-item>
+              <lay-form-item label="版本号" prop="recVer" required :hidden="true">
+                <lay-input v-model="sysTenantVo.recVer"></lay-input>
+              </lay-form-item>
               <lay-form-item label="租户编码" prop="code" required>
                 <lay-input v-model="sysTenantVo.code" :allow-clear="true"></lay-input>
               </lay-form-item>
@@ -178,7 +184,7 @@ import {TableResult} from "../../../types/Result";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import {SysTenantEntity, SysTenantVo} from "../../../types/system/Tenant";
-import {deleteSysTenant, findPageSysTenant, saveUpdate} from "../../../api/system/Tenant";
+import {deleteSysTenant, findPageSysTenant, findSysTenant, saveUpdate} from "../../../api/system/Tenant";
 import router from "../../../router";
 import {Operate} from "../../../types/Constants";
 
@@ -277,6 +283,16 @@ const changeTenantModalFlag = (text: any, row: any) => {
   if (row != null) {
     sysTenantVo.value = {...row}
   }
+  // 编辑下查询包含敏感数据字段
+  if (Operate.EDIT === text) {
+    findSysTenant({
+      id: row.id
+    }).then((res: any) => {
+      if (res.code === 200) {
+        sysTenantVo.value = res.data;
+      }
+    })
+  }
   sysTenantModalShowFlag.value = !sysTenantModalShowFlag.value
 }
 
@@ -319,6 +335,7 @@ function toSubmit() {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
+          sysTenantVo.value = {};
           sysTenantModalShowFlag.value = false
         }
       })
@@ -327,6 +344,7 @@ function toSubmit() {
 }
 
 function toCancel() {
+  sysTenantVo.value = {}
   sysTenantModalShowFlag.value = false
 }
 

@@ -32,15 +32,15 @@ public class SysMenuDto extends TreeDto<SysMenuDto> {
     private String componentType;
     @Schema(description = "路由参数")
     private String queryParam;
-    @Schema(description = "是否为外链（0-是 1-否）")
+    @Schema(description = "是否为外链（0-否 1-是）")
     private String isFrame;
-    @Schema(description = "是否缓存（0-缓存 1-不缓存）")
+    @Schema(description = "是否缓存（0-不缓存 1-缓存）")
     private String isCache;
     @Schema(description = "菜单类型（见MENU_TYPE）")
     private String menuType;
-    @Schema(description = "显示状态（0显示 1隐藏）")
+    @Schema(description = "显示状态（0-隐藏 1-显示）")
     private String visible;
-    @Schema(description = "菜单状态（0正常 1停用）")
+    @Schema(description = "菜单状态（0-停用 1-正常）")
     private String status;
     @Schema(description = "权限标识")
     private String perms;

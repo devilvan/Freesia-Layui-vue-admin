@@ -23,6 +23,7 @@ login.password:
   # 密码锁定时间（默认10分钟 Duration）
   lockTime: 10M
 ---
+# 生成验证码
 captcha:
   type: CALCULATE
   strategy: CIRCLE
@@ -31,6 +32,7 @@ captcha:
 ---
 spring:
   messages:
+    # 引入不同模块的i18n messages文件，逗号分隔
     basename: i18n/messages_common_service,i18n/messages_common,i18n/messages
     encoding: UTF-8
 ---
@@ -81,6 +83,7 @@ security:
     - /actuator
     - /actuator/**
 ---
+# 接口文档
 springdoc:
   api-docs:
     enabled: true

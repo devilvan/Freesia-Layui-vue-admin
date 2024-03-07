@@ -28,7 +28,7 @@ public class FindMenuListByUserIdEntity extends TreeDto<FindMenuListByUserIdEnti
     private String component;
     @Schema(description = "权限标识")
     private String perms;
-    @Schema(description = "显示状态（0显示 1隐藏）")
+    @Schema(description = "显示状态（0-隐藏 1-显示）")
     private String visible;
     @Schema(description = "状态（0-启用 1-禁用）")
     private String status;

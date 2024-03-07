@@ -55,9 +55,9 @@ public class SysDictValuePo extends BasePo implements Serializable {
     @TableField(value = "ORDER_NUM")
     @Column(name = "ORDER_NUM", columnDefinition = "INT(10) NOT NULL COMMENT '内部排序值'")
     private Integer orderNum;
-    @Schema(description = "是否默认 0-是 1-否")
+    @Schema(description = "是否默认（0-否，1-是）")
     @TableField(value = "IS_DEFAULT")
-    @Column(name = "IS_DEFAULT", columnDefinition = "BIT(1) NOT NULL COMMENT '是否默认 0-是 1-否'")
+    @Column(name = "IS_DEFAULT", columnDefinition = "BIT(1) NOT NULL COMMENT '是否默认（0-否，1-是）'")
     private String isDefault;
     @Schema(description = "国际化展示编码")
     @TableField(value = "I18N")
@@ -67,9 +67,9 @@ public class SysDictValuePo extends BasePo implements Serializable {
     @TableField(value = "CSS_STYLE")
     @Column(name = "CSS_STYLE", columnDefinition = "VARCHAR(128) COMMENT '前端展示样式（CSS）'")
     private String cssStyle;
-    @Schema(description = "状态 0-启用 1-禁用")
+    @Schema(description = "状态（0-禁用，1-启用）")
     @TableField(value = "STATUS")
-    @Column(name = "STATUS", columnDefinition = "CHAR(1) NOT NULL COMMENT '状态 0-启用 1-禁用'")
+    @Column(name = "STATUS", columnDefinition = "CHAR(1) NOT NULL COMMENT '状态（0-禁用，1-启用）'")
     private String status;
     @Schema(description = "备注")
     @TableField(value = "REMARK")

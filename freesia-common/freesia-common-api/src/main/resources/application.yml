@@ -3,6 +3,7 @@ project:
 ---
 spring:
   profiles:
+    # 根据当前活跃环境指定对应的 application文件
     active: @profiles.active@
 ---
 spring:
@@ -104,13 +105,15 @@ spring:
     properties:
       hibernate:
         jdbc:
-          #每批1000条提交
+          # 批量保存时重写SQL语句，每批1000条提交
           batch_size: 1000
           batch_versioned_data: true
         order_inserts: true
         order_updates: true
-        session_factory:
-          statement_inspector: com.freesia.interceptor.JpaDataPermissionInterceptor
+        # 定义JPA的SQL拦截，没有需要可以不创建
+#        session_factory:
+#          statement_inspector: com.freesia.interceptor.JpaDataPermissionInterceptor
+# Mybatis
 mybatis-plus:
   mapper-locations: classpath*:/mapper/*.xml
   configuration:
@@ -124,13 +127,12 @@ mybatis-plus:
     datacenter-id: ${random.int(1,31)}
     db-config:
       id-type: ASSIGN_ID
-decorator:
-  datasource:
-    enabled: true
+# 日志相关
 logging:
   config: classpath:logback-spring.xml
   level:
     root: INFO
+# spring安全信息
 management:
   endpoints:
     enabled-by-default: true

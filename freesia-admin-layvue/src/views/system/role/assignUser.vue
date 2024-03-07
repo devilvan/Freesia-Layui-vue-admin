@@ -82,10 +82,10 @@
               @change="change"
           >
             <template #accountStatus="{ row }">
-              <div v-show="row.accountStatus === '0'">
+              <div v-show="row.accountStatus === '1'">
                 <lay-tag color="#2dc570" variant="light">启用</lay-tag>
               </div>
-              <div v-show="row.accountStatus === '1'">
+              <div v-show="row.accountStatus === '0'">
                 <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
               </div>
             </template>
@@ -120,10 +120,10 @@
           @change="assignUserModalChange"
       >
         <template #accountStatus="{ row }">
-          <div v-show="row.accountStatus === '0'">
+          <div v-show="row.accountStatus === '1'">
             <lay-tag color="#2dc570" variant="light">启用</lay-tag>
           </div>
-          <div v-show="row.accountStatus === '1'">
+          <div v-show="row.accountStatus === '0'">
             <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
           </div>
         </template>
@@ -185,7 +185,7 @@ onMounted(async () => {
   change()
 })
 let roleStatus = computed(() => {
-  return sysRoleEntity.value.status === '0' ? '启用' : '禁用'
+  return sysRoleEntity.value.status === '1' ? '启用' : '禁用'
 })
 /* INIT*/
 /* VAR*/
@@ -212,7 +212,6 @@ const assignUserModalPageQuery: PageQuery = reactive<PageQuery>({
 })
 const columns = ref([
   {title: '选项', type: 'checkbox', fixed: 'left'},
-  {title: 'ID', key: 'id'},
   {title: '用户名称', key: 'userName'},
   {title: '用户昵称', key: 'nickName'},
   {title: '用户类型', key: 'userType'},
@@ -228,7 +227,6 @@ const columns = ref([
 ])
 const assignUserModalColumns = ref([
   {title: '选项', type: 'checkbox', fixed: 'left'},
-  {title: 'ID', key: 'id'},
   {title: '用户名称', key: 'userName'},
   {title: '用户昵称', key: 'nickName'},
   {title: '用户类型', key: 'userType'},

@@ -132,10 +132,10 @@
           </div>
         </template>
         <template #status="{ row }">
-          <div v-show="row.status === '0'">
+          <div v-show="row.status === '1'">
             <lay-tag color="#2dc570" variant="light">是</lay-tag>
           </div>
-          <div v-show="row.status === '1'">
+          <div v-show="row.status === '0'">
             <lay-tag color="#F5319D" variant="light">否</lay-tag>
           </div>
         </template>
@@ -466,10 +466,10 @@ const findTreeChildrenList = ref<any[]>([]);
 const menuTreeCheckedKeys = ref<string[]>([])
 const menuTreeShowCheckbox = ref(true)
 const sysDirVo = ref<SysMenuVo>({
-  status: '1'
+  status: '0'
 })
 const sysMenuVo = ref<SysMenuVo>({
-  status: '0'
+  status: '1'
 })
 sysMenuVo.value.component = computed(() => {
   return sysMenuVo.value.parentId + "/" + sysMenuVo.value.path + "/index"
@@ -484,10 +484,10 @@ watch(() => sysMenuVo.value.parentId, () => {
   return sysMenuVo.value.parentId + "/" + sysMenuVo.value.path + "/index"
 })
 const sysButtonVo = ref<SysMenuVo>({
-  status: '0'
+  status: '1'
 })
 const sysLinkVo = ref<SysMenuVo>({
-  status: '0'
+  status: '1'
 })
 const expandMenu = function (flag: any) {
   expandMenuFlag.value = flag
@@ -557,11 +557,11 @@ const columns = [
 const isShowOptions = ref([
   {
     label: '是',
-    value: '0',
+    value: '1',
   },
   {
     label: '否',
-    value: '1'
+    value: '0'
   }
 ])
 
@@ -668,7 +668,7 @@ function toCancel() {
 }
 
 function toRemove(row: any) {
-  if (row.isFrame === '0') {
+  if (row.isFrame === '1') {
     layer.confirm('您确定删除【' + row.menuName + '】' + '链接吗？', {
       title: '提示',
       btn: [
@@ -790,20 +790,20 @@ const changeSaveMenuVoModalFlag = (menuType: any) => {
   proceedCode.value = PROCEED_CODE.ADD
   if (MenuType.DIR === menuType) {
     title.value = '新建目录'
-    sysDirVo.value = {status: '0'}
+    sysDirVo.value = {status: '1'}
     changeDirModalParentIdSelect(null)
     saveDirModalFlag.value = !saveDirModalFlag.value
   } else if (MenuType.MENU === menuType) {
     title.value = '新建菜单'
-    sysMenuVo.value = {status: '0'}
+    sysMenuVo.value = {status: '1'}
     saveMenuModalFlag.value = !saveMenuModalFlag.value
   } else if (MenuType.BUTTON === menuType) {
     title.value = '新建按钮'
-    sysButtonVo.value = {status: '0'}
+    sysButtonVo.value = {status: '1'}
     saveButtonModalFlag.value = !saveButtonModalFlag.value
   } else if (MenuType.LINK === menuType) {
     title.value = '新建链接'
-    sysLinkVo.value = {status: '0'}
+    sysLinkVo.value = {status: '1'}
     saveLinkModalFlag.value = !saveLinkModalFlag.value
   } else {
     return;

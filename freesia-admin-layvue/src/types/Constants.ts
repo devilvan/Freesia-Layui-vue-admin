@@ -4,8 +4,8 @@ export enum PROCEED_CODE {
 }
 
 export enum Flag {
-    ENABLED = '0',
-    DISABLED = '1'
+    ENABLED = '1',
+    DISABLED = '0'
 }
 
 export enum Operate {

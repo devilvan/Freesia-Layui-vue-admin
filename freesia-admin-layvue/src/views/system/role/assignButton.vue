@@ -122,10 +122,10 @@
                 </div>
               </template>
               <template #status="{ row }">
-                <div v-show="row.status === '0'">
+                <div v-show="row.status === '1'">
                   <lay-tag color="#2dc570" variant="light">是</lay-tag>
                 </div>
-                <div v-show="row.status === '1'">
+                <div v-show="row.status === '0'">
                   <lay-tag color="#F5319D" variant="light">否</lay-tag>
                 </div>
               </template>
@@ -286,7 +286,7 @@ const changeStatus = (isChecked: boolean, row: any) => {
   dataSource.value?.forEach((item) => {
     if (item.id === row.id) {
       layer.msg('Success', {icon: 1}, () => {
-        item.accountStatus = isChecked ? '0' : '1'
+        item.accountStatus = isChecked ? '1' : '0'
       })
     }
   })

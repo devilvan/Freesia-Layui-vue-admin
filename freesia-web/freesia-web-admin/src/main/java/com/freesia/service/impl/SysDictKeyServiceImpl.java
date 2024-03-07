@@ -53,8 +53,8 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
     @Override
     public TableResult<FindPageSysDictKeyEntity> findPageSysDictList(SysDictDto sysDictDto, PageQuery pageQuery) {
         Page<FindPageSysDictKeyEntity> page = sysDictKeyMapper.findPageSysDictList(pageQuery.build(), Wrappers.<SysDictKeyPo>query()
-                .eq("DK.LOGIC_DEL", FlagConstant.ENABLED)
-                .eq("DV.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("DK.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq("DV.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DK.STATUS", sysDictDto.getStatus())
                 .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DV.STATUS", sysDictDto.getStatus())
                 .like(UEmpty.isNotEmpty(sysDictDto.getKeyName()), "DK.KEY_NAME", sysDictDto.getKeyName())
@@ -69,7 +69,7 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
     @Override
     public List<SysDictKeyDto> findSysDictKeyList(SysDictKeyDto sysDictKeyDto) {
         List<SysDictKeyPo> sysDictList = sysDictKeyMapper.findSysDictKeyList(Wrappers.<SysDictKeyPo>query()
-                .eq("DK.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("DK.LOGIC_DEL", FlagConstant.DISABLED)
                 .like(UEmpty.isNotEmpty(sysDictKeyDto.getDictKey()), "DK.DICT_KEY", sysDictKeyDto.getDictKey())
                 .like(UEmpty.isNotEmpty(sysDictKeyDto.getKeyName()), "DK.KEY_NAME", sysDictKeyDto.getKeyName())
                 .eq(UEmpty.isNotEmpty(sysDictKeyDto.getStatus()), "DK.STATUS", sysDictKeyDto.getStatus())

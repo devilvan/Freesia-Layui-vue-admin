@@ -62,8 +62,9 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     @Override
     public TableResult<SysOssDto> findPageSysOss(SysOssDto sysOss, PageQuery pageQuery) {
         LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
-                .eq(SysOssPo::getLogicDel, FlagConstant.ENABLED)
-                .eq(UEmpty.isNotEmpty(sysOss.getId()), SysOssPo::getId, sysOss.getId());
+                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(sysOss.getId()), SysOssPo::getId, sysOss.getId())
+                .orderByDesc(SysOssPo::getCreateTime);
         Page<SysOssPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysOssDto.class));
     }
@@ -71,7 +72,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     @Override
     public SysOssDto findSysOss(SysOssDto sysOss) {
         LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
-                .eq(SysOssPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysOss.getId()), SysOssPo::getId, sysOss.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), SysOssDto.class);
     }
@@ -80,7 +81,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     @Transactional(rollbackFor = Exception.class)
     public void deleteSysOss(List<Long> idList) {
         Wrapper<SysOssPo> queryWrapper = new LambdaQueryWrapper<SysOssPo>()
-                .eq(SysOssPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
                 .in(SysOssPo::getId, idList);
         List<SysOssPo> sysOssPoList = this.list(queryWrapper);
         for (SysOssPo sysOssPo : sysOssPoList) {

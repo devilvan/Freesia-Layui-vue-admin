@@ -1,12 +1,14 @@
 package com.freesia.service.impl;
 
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.TenantModule;
 import com.freesia.dto.SysTenantDto;
+import com.freesia.entity.FindSysTenantEntity;
 import com.freesia.exception.ServiceException;
 import com.freesia.mapper.SysTenantMapper;
 import com.freesia.po.SysTenantPo;
@@ -38,15 +40,21 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
 
     @Override
     public SysTenantDto saveUpdate(SysTenantDto sysTenantDto) {
-        int flag = Convert.toInt(sysTenantMapper.findExistCode(sysTenantDto.getCode()), 0);
-        if (flag != 0) {
-            throw new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.code.exists", sysTenantDto.getCode());
-        }
         SysTenantPo sysTenantPo = new SysTenantPo();
-        UCopy.fullCopy(sysTenantDto, sysTenantPo);
-        SysTenantDto resultDto = new SysTenantDto();
-        UCopy.fullCopy(sysTenantRepository.saveAndFlush(sysTenantPo), resultDto);
-        return resultDto;
+        if (UEmpty.isEmpty(sysTenantDto.getId())) {
+            int flag = Convert.toInt(sysTenantMapper.findExistCode(sysTenantDto.getCode()), 0);
+            if (flag != 0) {
+                throw new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.code.exists", sysTenantDto.getCode());
+            }
+            UCopy.fullCopy(sysTenantDto, sysTenantPo);
+            return UCopy.copyPo2Dto(sysTenantRepository.saveAndFlush(sysTenantPo), SysTenantDto.class);
+        }
+        Wrapper<SysTenantPo> queryWrapper = new LambdaQueryWrapper<SysTenantPo>()
+                .eq(SysTenantPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(SysTenantPo::getId, sysTenantDto.getId());
+        sysTenantPo = getOne(queryWrapper);
+        UCopy.halfCopy(sysTenantDto, sysTenantPo);
+        return UCopy.copyPo2Dto(sysTenantRepository.saveAndFlush(sysTenantPo), SysTenantDto.class);
     }
 
     @Override
@@ -58,19 +66,22 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     public TableResult<SysTenantDto> findPageSysTenant(SysTenantDto sysTenant, PageQuery pageQuery) {
         LambdaQueryWrapper<SysTenantPo> wrapper = new LambdaQueryWrapper<SysTenantPo>()
-                .eq(SysTenantPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysTenantPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysTenant.getId()), SysTenantPo::getId, sysTenant.getId());
         Page<SysTenantPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysTenantDto.class));
     }
 
     @Override
-    public SysTenantDto findSysTenant(SysTenantDto sysTenant) {
+    public FindSysTenantEntity findSysTenant(SysTenantDto sysTenant) {
         LambdaQueryWrapper<SysTenantPo> wrapper = new LambdaQueryWrapper<SysTenantPo>()
-                .eq(SysTenantPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysTenantPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysTenant.getId()), SysTenantPo::getId, sysTenant.getId())
                 .likeRight(UEmpty.isNotEmpty(sysTenant.getName()), SysTenantPo::getName, sysTenant.getName());
-        return UCopy.copyPo2Dto(getOne(wrapper), SysTenantDto.class);
+        SysTenantPo sysTenantPo = getOne(wrapper);
+        FindSysTenantEntity findSysTenantEntity = new FindSysTenantEntity();
+        UCopy.fullCopy(sysTenantPo, findSysTenantEntity);
+        return findSysTenantEntity;
     }
 
     @Override

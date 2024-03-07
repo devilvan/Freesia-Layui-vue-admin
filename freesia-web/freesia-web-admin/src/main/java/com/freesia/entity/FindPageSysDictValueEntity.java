@@ -18,7 +18,7 @@ public class FindPageSysDictValueEntity extends BaseEntity {
     private String valueName;
     @Schema(description = "内部排序")
     private Integer orderNum;
-    @Schema(description = "是否默认 0-是 1-否")
+    @Schema(description = "是否默认（0-否，1-是）")
     private String isDefault;
     @Schema(description = "状态")
     private String valueStatus;

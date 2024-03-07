@@ -51,7 +51,7 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
     @Override
     public TableResult<SysOssConfigDto> findPageSysOssConfig(SysOssConfigDto sysOssConfig, PageQuery pageQuery) {
         LambdaQueryWrapper<SysOssConfigPo> wrapper = new LambdaQueryWrapper<SysOssConfigPo>()
-                .eq(SysOssConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysOssConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysOssConfig.getId()), SysOssConfigPo::getId, sysOssConfig.getId());
         Page<SysOssConfigPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysOssConfigDto.class));
@@ -60,7 +60,7 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
     @Override
     public SysOssConfigDto findSysOssConfig(SysOssConfigDto sysOssConfig) {
         LambdaQueryWrapper<SysOssConfigPo> wrapper = new LambdaQueryWrapper<SysOssConfigPo>()
-                .eq(SysOssConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysOssConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysOssConfig.getId()), SysOssConfigPo::getId, sysOssConfig.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), SysOssConfigDto.class);
     }
@@ -76,7 +76,7 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
     @Override
     public void loadSysOssConfig() {
         Wrapper<SysOssConfigPo> queryWrapper = new LambdaQueryWrapper<SysOssConfigPo>()
-                .eq(SysOssConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysOssConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysOssConfigPo::getStatus, FlagConstant.DISABLED);
         List<SysOssConfigPo> sysOssConfigPoList = sysOssConfigMapper.selectList(queryWrapper);
         for (SysOssConfigPo sysOssConfigPo : sysOssConfigPoList) {
