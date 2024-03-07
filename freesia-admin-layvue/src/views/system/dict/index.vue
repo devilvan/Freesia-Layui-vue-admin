@@ -4,15 +4,15 @@
       <div :style="{ width: isFold ? `0px` : `300px` }" class="left-tree">
         <!-- tree -->
         <div v-show="!isFold">
-          <lay-button type="normal" size="sm" @click="toAdd">
+          <lay-button type="normal" size="sm" @click="toAdd" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_KEY_ADD]">
             <lay-icon type="layui-icon-addition"></lay-icon>
             新建
           </lay-button>
-          <lay-button type="warm" size="sm" @click="toEdit">
+          <lay-button type="warm" size="sm" @click="toEdit" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_KEY_EDIT]">
             <lay-icon type="layui-icon-edit"></lay-icon>
             修改
           </lay-button>
-          <lay-button type="danger" size="sm" @click="toDelete">
+          <lay-button type="danger" size="sm" @click="toDelete" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_KEY_DELETE]">
             <lay-icon type="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
@@ -26,7 +26,7 @@
                 :allow-clear="true"
                 style="width: 200px; margin-right: 10px; background: #fff"
             ></lay-input>
-            <lay-button type="normal" size="sm" @click="searchSysDictKey">
+            <lay-button type="normal" size="sm" @click="searchSysDictKey" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_KEY_QUERY]">
               查询
             </lay-button>
           </lay-form>
@@ -85,25 +85,26 @@
                 :allow-clear="true"
                 style="width: 200px; margin-right: 10px; background: #fff"
             ></lay-input>
-            <lay-button type="normal" size="sm" @click="toSearch">
+            <lay-button type="normal" size="sm" @click="toSearch" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_QUERY]">
               查询
             </lay-button>
             <lay-button
                 size="sm"
                 type="primary"
                 @click="showSysDictValueSaveModal('新增', null)"
+                v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_ADD]"
             >新增
             </lay-button
             >
-            <lay-button size="sm" type="danger" @click="toRemove"
+            <lay-button size="sm" type="danger" @click="toRemove" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_DELETE]"
             >删除
             </lay-button
             >
-            <lay-button size="sm" style="background-color: #FFB800;color:whitesmoke" @click="toEnable"
+            <lay-button size="sm" style="background-color: #FFB800;color:whitesmoke" @click="toEnable" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_ENABLED]"
             >启用/禁用
             </lay-button
             >
-            <lay-button type="normal" size="sm" @click="flushCache"
+            <lay-button type="normal" size="sm" @click="flushCache" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_FLUSH_CACHE]"
             >刷新缓存
             </lay-button
             >
@@ -114,6 +115,7 @@
                 border="green"
                 border-style="dashed"
                 @click="showSysDictValueSaveModal('编辑', row)"
+                v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_EDIT]"
             >编辑
             </lay-button
             >
@@ -123,6 +125,7 @@
                 @cancel="cancel"
             >
               <lay-button border="blue" border-style="dashed" size="xs"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_ENABLED]"
               >启/禁用
               </lay-button
               >
@@ -133,6 +136,7 @@
                 @cancel="cancel"
             >
               <lay-button border="red" border-style="dashed" size="xs"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_DELETE]"
               >删除
               </lay-button
               >

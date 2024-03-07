@@ -11,4 +11,8 @@ import lombok.Data;
 @Data
 @Schema(description = "Entity通用父类")
 public class BaseEntity {
+    @Schema(description = "主键ID")
+    private Long id;
+    @Schema(description = "版本号")
+    private Long recVer;
 }

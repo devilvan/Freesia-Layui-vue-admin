@@ -46,6 +46,7 @@
                       type="normal"
                       size="sm"
                       @click="toSearch"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_OSS_QUERY]"
                   >
                     查询
                   </lay-button>
@@ -92,11 +93,11 @@
             </template>
 
             <template v-slot:toolbar>
-              <lay-button size="sm" type="primary" @click="toImport">
+              <lay-button size="sm" type="primary" @click="toImport" v-permission="[$MENU_PERMISSION.SYSTEM_OSS_UPLOAD]">
                 <lay-icon class="layui-icon-upload-drag"></lay-icon>
                 上传
               </lay-button>
-              <lay-button size="sm" @click="toRemove">
+              <lay-button size="sm" @click="toRemove" v-permission="[$MENU_PERMISSION.SYSTEM_OSS_DELETE]">
                 <lay-icon class="layui-icon-delete"></lay-icon>
                 删除
               </lay-button>
@@ -107,6 +108,7 @@
                   border="green"
                   border-style="dashed"
                   @click="toDownload(row)"
+                  v-permission="[$MENU_PERMISSION.SYSTEM_OSS_DOWNLOAD]"
               >下载
               </lay-button
               >
@@ -114,6 +116,7 @@
                   content="确定要删除此文件吗?"
                   @confirm="confirm(row)"
                   @cancel="cancel"
+                  v-permission="[$MENU_PERMISSION.SYSTEM_OSS_DELETE]"
               >
                 <lay-button size="xs" border="red" border-style="dashed"
                 >删除

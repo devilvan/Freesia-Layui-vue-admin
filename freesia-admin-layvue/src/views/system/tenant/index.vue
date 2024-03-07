@@ -65,15 +65,17 @@
           <lay-button
               size="sm"
               type="primary"
-              @click="changeTenantModalFlag(Operate.ADD, null)">
+              @click="changeTenantModalFlag(Operate.ADD, null)"
+              v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_ADD]"
+          >
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
-          <lay-button size="sm" @click="toRemove">
+          <lay-button size="sm" @click="toRemove" v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
-          <lay-button size="sm" @click="assignTenantUser()">
+          <lay-button size="sm" @click="assignTenantUser()" v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_ASSIGN_USER]">
             <lay-icon class="layui-icon-addition"></lay-icon>
             分配用户
           </lay-button>
@@ -83,13 +85,15 @@
               size="xs"
               border="green"
               border-style="dashed"
-              @click="changeTenantModalFlag(Operate.EDIT, row)">编辑
+              @click="changeTenantModalFlag(Operate.EDIT, row)"
+              v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]">编辑
           </lay-button>
           <lay-popconfirm
               content="确定要删除此租户吗?"
               @confirm="confirm(row)"
               @cancel="cancel">
-            <lay-button size="xs" border="red" border-style="dashed">删除</lay-button>
+            <lay-button size="xs" border="red" border-style="dashed"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_DELETE]">删除</lay-button>
           </lay-popconfirm>
         </template>
       </lay-table>

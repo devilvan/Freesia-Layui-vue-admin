@@ -1,5 +1,8 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.constant.MenuPermission;
 import com.freesia.dto.AssignTenantDto;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.entity.FindSysTenantEntity;
@@ -38,6 +41,10 @@ public class SysTenantController {
      *
      * @return 形式返回
      */
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_EDIT),
+    })
     @Operation(summary = "保存租户信息表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysTenantVo sysTenantVo) {
@@ -51,6 +58,10 @@ public class SysTenantController {
      *
      * @return 形式返回
      */
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_EDIT),
+    })
     @Operation(summary = "保存租户信息表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<SysTenantVo> sysTenantVoList) {
@@ -66,6 +77,7 @@ public class SysTenantController {
      * @param pageQuery   分页条件
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_INDEX)
     @Operation(summary = "查询租户信息表分页信息")
     @GetMapping(value = "findPageSysTenant")
     public TableResult<SysTenantDto> findPageSysTenant(SysTenantVo sysTenantVo, PageQuery pageQuery) {
@@ -79,6 +91,7 @@ public class SysTenantController {
      * @param sysTenantVo 查询条件
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_INDEX)
     @Operation(summary = "条件查询租户信息表")
     @GetMapping(value = "findSysTenant")
     public R<FindSysTenantEntity> findSysTenant(SysTenantVo sysTenantVo) {
@@ -92,6 +105,7 @@ public class SysTenantController {
      * @param idList 主键
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_DELETE)
     @Operation(summary = "删除租户信息表")
     @PostMapping(value = "deleteSysTenant")
     public R<Void> deleteSysTenant(@RequestBody List<Long> idList) {
@@ -105,6 +119,7 @@ public class SysTenantController {
      * @param assignTenantVo 入参
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_ASSIGN_USER)
     @Operation(summary = "分配租户")
     @PostMapping(value = "assignTenant")
     public R<Void> assignTenant(@Validated @RequestBody AssignTenantVo assignTenantVo) {

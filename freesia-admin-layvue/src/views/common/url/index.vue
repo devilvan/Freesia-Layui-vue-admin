@@ -32,6 +32,7 @@
                   type="normal"
                   size="sm"
                   @click="toSearch"
+                  v-permission="[$MENU_PERMISSION.COMMON_URL_QUERY]"
               >
                 查询
               </lay-button>
@@ -65,11 +66,13 @@
           <lay-button
               size="sm"
               type="primary"
-              @click="changeConfigModalFlag('新增', null)">
+              @click="changeConfigModalFlag('新增', null)"
+              v-permission="[$MENU_PERMISSION.COMMON_URL_ADD]"
+          >
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
-          <lay-button size="sm" @click="toRemove">
+          <lay-button size="sm" @click="toRemove" v-permission="[$MENU_PERMISSION.COMMON_URL_DELETE]">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
@@ -79,13 +82,13 @@
               size="xs"
               border="green"
               border-style="dashed"
-              @click="changeConfigModalFlag('编辑', row)">编辑
+              @click="changeConfigModalFlag('编辑', row)" v-permission="[$MENU_PERMISSION.COMMON_URL_EDIT]">编辑
           </lay-button>
           <lay-popconfirm
               content="确定要删除此配置吗?"
               @confirm="confirm(row)"
               @cancel="cancel">
-            <lay-button size="xs" border="red" border-style="dashed">删除</lay-button>
+            <lay-button size="xs" border="red" border-style="dashed" v-permission="[$MENU_PERMISSION.COMMON_URL_DELETE]">删除</lay-button>
           </lay-popconfirm>
         </template>
       </lay-table>

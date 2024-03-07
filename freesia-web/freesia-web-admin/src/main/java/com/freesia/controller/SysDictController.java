@@ -1,8 +1,9 @@
 package com.freesia.controller;
 
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.constant.AdminConstant;
+import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysDictDto;
 import com.freesia.dto.SysDictKeyDto;
 import com.freesia.dto.SysDictValueDto;
@@ -91,7 +92,11 @@ public class SysDictController {
 
     @Operation(summary = "保存字典值数据")
     @PostMapping(value = "saveSysDictValueList")
-    @SaCheckRole(value = AdminConstant.ADMIN)
+
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_EDIT),
+    })
     public R<Void> saveSysDictValueList(@RequestBody String request) {
         List<SysDictValueVo> sysDictValueVoList = JSONObject.parseArray(request, SysDictValueVo.class);
         List<SysDictValueDto> sysDictValueDtoList = UCopy.fullCopyList(sysDictValueVoList, SysDictValueDto.class);
@@ -99,6 +104,10 @@ public class SysDictController {
         return R.ok();
     }
 
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_KEY_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_KEY_EDIT),
+    })
     @Operation(summary = "保存字典键数据")
     @PostMapping(value = "saveSysDictKey")
     public R<SysDictKeyDto> saveSysDictKey(@RequestBody String request) {
@@ -108,6 +117,10 @@ public class SysDictController {
         return R.ok(sysDictKeyDto);
     }
 
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_EDIT),
+    })
     @Operation(summary = "保存字典值数据")
     @PostMapping(value = "saveSysDictValue")
     public R<SysDictValueDto> saveSysDictValue(@RequestBody String request) {
@@ -117,7 +130,8 @@ public class SysDictController {
         return R.ok(sysDictValueDto);
     }
 
-    @Operation(summary = "删除字典键")
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_DELETE)
+    @Operation(summary = "删除字典值")
     @PutMapping(value = "deleteSysDictValueList")
     public R<Void> deleteSysDictValueList(@RequestBody String request) {
         List<Long> idList = JSONObject.parseArray(request, Long.class);
@@ -125,6 +139,7 @@ public class SysDictController {
         return R.ok();
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ENABLED)
     @Operation(summary = "启用/禁用字典键")
     @PutMapping(value = "enableSysDictValueList")
     public R<Void> enableSysDictValueList(@RequestBody String request) {
@@ -134,6 +149,7 @@ public class SysDictController {
     }
 
     @Validated
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_FLUSH_CACHE)
     @Operation(summary = "刷新字典缓存值")
     @DeleteMapping(value = "flushCacheSysDictValue")
     public R<Void> flushCacheSysDictValue(@NotEmpty @RequestParam String dictKey) {

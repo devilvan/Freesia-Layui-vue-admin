@@ -85,6 +85,7 @@ public class SysRoleController {
         return sysRoleService.findPageAllowAssignUserByRoleId(sysRoleDto, pageQuery);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_ASSIGN_USER_EDIT)
     @Operation(summary = "分配用户")
     @PostMapping(value = "assignUser")
     public R<Void> assignUser(@RequestBody @Validated AssignUserVo assignUserVo) {

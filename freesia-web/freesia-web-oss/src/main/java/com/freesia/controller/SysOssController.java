@@ -1,6 +1,7 @@
 package com.freesia.controller;
 
-import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysOssDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -67,6 +68,7 @@ public class SysOssController {
      * @param pageQuery 分页条件
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_INDEX)
     @Operation(summary = "查询OSS对象存储表分页信息")
     @GetMapping(value = "findPageSysOss")
     public TableResult<SysOssDto> findPageSysOss(SysOssVo sysOssVo, PageQuery pageQuery) {
@@ -80,6 +82,7 @@ public class SysOssController {
      * @param sysOssVo 查询条件
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_INDEX)
     @Operation(summary = "条件查询OSS对象存储表")
     @GetMapping(value = "findSysOss")
     public R<SysOssDto> findSysOss(SysOssVo sysOssVo) {
@@ -94,6 +97,7 @@ public class SysOssController {
      * @param idList 主键
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_DELETE)
     @Operation(summary = "删除OSS对象存储表")
     @PostMapping(value = "deleteSysOss")
     public R<Void> deleteSysOss(@RequestBody List<Long> idList) {
@@ -107,7 +111,7 @@ public class SysOssController {
      * @param file 上传的文件
      * @return 形式返回
      */
-    @SaIgnore
+    @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_UPLOAD)
     @Operation(summary = "上传文件")
     @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public R<SysOssDto> upload(@RequestPart("file") MultipartFile file) {
@@ -120,7 +124,7 @@ public class SysOssController {
      *
      * @param id 文件ID
      */
-    @SaIgnore
+    @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_DOWNLOAD)
     @Operation(summary = "下载文件")
     @GetMapping(value = "download/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void download(@PathVariable String id, HttpServletResponse response) throws IOException {

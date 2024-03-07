@@ -1,8 +1,11 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.MenuModule;
+import com.freesia.constant.MenuPermission;
 import com.freesia.constant.MenuType;
 import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.SysMenuDto;
@@ -66,6 +69,7 @@ public class SysMenuController {
         return R.ok(findAllMenuTreeEntityList);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_MENU_EDIT)
     @Operation(summary = "根据角色ID查询菜单列表")
     @GetMapping(value = "findSelectedMenuListByRoleId")
     public R<List<String>> findSelectedMenuListByRoleId(@NotNull String roleId) {
@@ -92,6 +96,13 @@ public class SysMenuController {
         return R.ok(menuList);
     }
 
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_EDIT),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_DIR),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_MENU),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_BUTTON),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_LINK)
+    })
     @Operation(summary = "保存目录-菜单-按钮、链接")
     @PostMapping(value = "saveMenu")
     public R<SysMenuDto> saveMenu(@RequestBody @Valid SysMenuVo sysMenuVo) {
@@ -132,6 +143,7 @@ public class SysMenuController {
         return R.ok(buttonIdList);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_ASSIGN_BUTTON_EDIT)
     @Operation(summary = "分配按钮")
     @PostMapping(value = "assignButton")
     public R<Void> assignButton(@RequestBody @Valid AssignButtonVo assignButtonVo) {
@@ -140,7 +152,6 @@ public class SysMenuController {
         return R.ok();
     }
 
-    @SaIgnore
     @Operation(summary = "查询自增排序号")
     @GetMapping(value = "findIncrementOrderNum")
     public R<Long> findIncrementOrderNum(@RequestParam("menuId") String menuId) {
