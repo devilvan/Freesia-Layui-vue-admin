@@ -47,9 +47,9 @@ public class SysRolePo extends BasePo implements Serializable {
     @TableField(value = "ROLE_KEY")
     @Column(name = "ROLE_KEY", columnDefinition = "VARCHAR(100) NOT NULL COMMENT '角色权限字符串'")
     private String roleKey;
-    @Schema(description = "角色状态（0正常 1停用）")
+    @Schema(description = "角色状态（0-停用，1-正常）")
     @TableField(value = "STATUS")
-    @Column(name = "STATUS", columnDefinition = "CHAR(1) NOT NULL COMMENT '角色状态（0正常 1停用）'")
+    @Column(name = "STATUS", columnDefinition = "CHAR(1) NOT NULL COMMENT '角色状态（0-停用，1-正常）'")
     private String status;
     @Schema(description = "显示顺序")
     @TableField(value = "ORDER_NUM")

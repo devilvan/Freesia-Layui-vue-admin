@@ -181,10 +181,9 @@ const pageQuery = reactive<PageQuery>({
 })
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '编号', width: '130px', key: 'id', fixed: 'left', sort: 'desc'},
-  {title: '参数名称', width: '150px', key: 'configName', sort: 'desc'},
-  {title: '参数键', width: '150px', key: 'configKey', sort: 'asc'},
-  {title: '参数值', width: '100px', key: 'configValue', sort: 'desc'},
+  {title: '参数名称', width: '150px', key: 'configName'},
+  {title: '参数键', width: '150px', key: 'configKey'},
+  {title: '参数值', width: '100px', key: 'configValue'},
   {title: '系统内置', width: '40px', key: 'buildIn', customSlot: 'buildIn'},
   {title: '创建时间', width: '160px', key: 'createTime'},
   {

@@ -5,7 +5,7 @@
         SELECT 1
         FROM sys_tenant
         WHERE 1 = 1
-          AND code = :code
+          AND code = #{code}
     </select>
     <select id="findListSysTenantByUserId" resultType="com.freesia.po.SysTenantPo">
         SELECT DISTINCT T.ID,

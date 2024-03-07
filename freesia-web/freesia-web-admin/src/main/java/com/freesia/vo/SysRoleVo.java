@@ -26,7 +26,7 @@ public class SysRoleVo extends BaseVo {
     @Schema(description = "角色权限字符串")
     @JSONField(alternateNames = {"roleKey"})
     private String roleKey;
-    @Schema(description = "角色状态（0正常 1停用）")
+    @Schema(description = "角色状态（0-停用，1-正常）")
     @JSONField(alternateNames = {"status"})
     private String status;
     @Schema(description = "备注")

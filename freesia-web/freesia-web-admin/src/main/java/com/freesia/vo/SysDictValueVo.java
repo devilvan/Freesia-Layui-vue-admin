@@ -33,7 +33,7 @@ public class SysDictValueVo extends BaseVo {
     @Schema(description = "内部排序值")
     @JSONField(alternateNames = {"orderNum"})
     private Integer orderNum;
-    @Schema(description = "是否默认 0-是 1-否")
+    @Schema(description = "是否默认（0-否，1-是）")
     @JSONField(alternateNames = {"isDefault"})
     private String isDefault;
     @Schema(description = "国际化展示编码")
@@ -42,7 +42,7 @@ public class SysDictValueVo extends BaseVo {
     @Schema(description = "前端展示样式（CSS）")
     @JSONField(alternateNames = {"cssStyle"})
     private String cssStyle;
-    @Schema(description = "状态 0-启用 1-禁用")
+    @Schema(description = "状态（0-禁用，1-启用）")
     @JSONField(alternateNames = {"status"})
     private String status;
     @Schema(description = "备注")

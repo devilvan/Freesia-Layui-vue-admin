@@ -65,7 +65,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     public SysDeptDto findDeptById(Long deptId) {
         LambdaQueryWrapper<SysDeptPo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.select(SysDeptPo::getDeptName)
-                .eq(SysDeptPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysDeptPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysDeptPo::getId, deptId);
         SysDeptPo sysDeptPo = this.getOne(queryWrapper);
         return UCopy.copyPo2Dto(sysDeptPo, SysDeptDto.class);
@@ -81,7 +81,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         SysDeptPo sysDeptPo = new SysDeptPo();
         UCopy.fullCopy(sysDeptDto, sysDeptPo);
         return Wrappers.<SysDeptPo>query()
-                .eq("D.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq(ObjectUtil.isNotNull(sysDeptPo.getDeptStatus()), "D.DEPT_STATUS", sysDeptPo.getDeptStatus())
                 .eq(ObjectUtil.isNotNull(sysDeptPo.getParentId()), "D.PARENT_ID", sysDeptPo.getParentId())
                 .like(ObjectUtil.isNotNull(sysDeptPo.getDeptName()), "D.DEPT_NAME", sysDeptPo.getDeptName())

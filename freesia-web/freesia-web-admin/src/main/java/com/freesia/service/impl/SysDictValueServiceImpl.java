@@ -52,12 +52,12 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
     @Override
     public TableResult<SysDictValueDto> findPageSysDictValue(SysDictValueDto sysDictValueDto, PageQuery pageQuery) {
         Page<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.findPageSysDictValue(pageQuery.build(), Wrappers.<SysDictValuePo>query()
-                .eq("DV.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("DV.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq(ObjectUtil.isNotNull(sysDictValueDto.getKeyId()), "DV.KEY_ID", sysDictValueDto.getKeyId())
                 .like(UEmpty.isNotEmpty(sysDictValueDto.getValueName()), "DV.VALUE_NAME", sysDictValueDto.getValueName())
                 .like(UEmpty.isNotEmpty(sysDictValueDto.getValue()), "DV.VALUE", sysDictValueDto.getValue())
                 .eq(UEmpty.isNotEmpty(sysDictValueDto.getStatus()), "DV.STATUS", sysDictValueDto.getStatus())
-                .orderByAsc("DV.IS_DEFAULT")
+                .orderByDesc("DV.IS_DEFAULT")
                 .orderByAsc("DV.ORDER_NUM"));
         Page<SysDictValueDto> sysDictValueDtoPage = UCopy.convertPagePo2Dto(sysDictValuePoList, SysDictValueDto.class);
         return TableResult.build(sysDictValueDtoPage);
@@ -66,13 +66,13 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
     @Override
     public List<SysDictValueDto> findSysDictValueList(SysDictValueDto sysDictValueDto) {
         List<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.findSysDictValueList(Wrappers.<SysDictValuePo>query()
-                .eq("DV.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("DV.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq(ObjectUtil.isNotNull(sysDictValueDto.getKeyId()), "DV.KEY_ID", sysDictValueDto.getKeyId())
                 .eq(UEmpty.isNotEmpty(sysDictValueDto.getDictKey()), "DV.DICT_KEY", sysDictValueDto.getDictKey())
                 .like(UEmpty.isNotEmpty(sysDictValueDto.getValueName()), "DV.VALUE_NAME", sysDictValueDto.getValueName())
                 .like(UEmpty.isNotEmpty(sysDictValueDto.getValue()), "DV.VALUE", sysDictValueDto.getValue())
                 .eq(UEmpty.isNotEmpty(sysDictValueDto.getStatus()), "DV.STATUS", sysDictValueDto.getStatus())
-                .orderByAsc("DV.IS_DEFAULT")
+                .orderByDesc("DV.IS_DEFAULT")
                 .orderByAsc("DV.ORDER_NUM"));
         return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
     }
@@ -86,8 +86,8 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
     @Cacheable(cacheNames = CacheConstant.SYS_DICT, key = "#dictKey", unless = "#dictKey==null")
     public List<SysDictValuePo> findSysDictValuePoList(String dictKey) {
         Wrapper<SysDictValuePo> queryWrapper = Wrappers.<SysDictValuePo>query()
-                .eq("DV.LOGIC_DEL", FlagConstant.ENABLED)
-                .eq("DK.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("DV.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq("DK.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("DK.DICT_KEY", dictKey)
                 .orderByAsc("DV.ID")
                 .orderByAsc("DV.ORDER_NUM");
@@ -97,7 +97,7 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
     @Override
     public void loadSysDictValue() {
         Wrapper<SysDictValuePo> queryWrapper = new LambdaQueryWrapper<SysDictValuePo>()
-                .eq(SysDictValuePo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysDictValuePo::getLogicDel, FlagConstant.DISABLED)
                 .orderByAsc(SysDictValuePo::getId)
                 .orderByAsc(SysDictValuePo::getOrderNum);
         List<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.selectList(queryWrapper);

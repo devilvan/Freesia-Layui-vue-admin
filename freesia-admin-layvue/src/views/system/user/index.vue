@@ -71,7 +71,7 @@
       >
         <template #status="{ row }">
           <lay-switch
-              :model-value="row.accountStatus === '0'"
+              :model-value="row.accountStatus === '1'"
               @change="changeStatus($event, row)"
           ></lay-switch>
         </template>
@@ -214,10 +214,9 @@ const pageQuery: PageQuery = reactive<PageQuery>({
 })
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
-  {title: '编号', width: '130px', key: 'id', fixed: 'left', sort: 'desc'},
+  {title: '用户名', width: '80px', key: 'userName'},
+  {title: '昵称', width: '80px', key: 'nickName'},
   {title: '头像', width: '50px', key: 'avatar', customSlot: 'avatar'},
-  {title: '用户名', width: '80px', key: 'userName', sort: 'desc'},
-  {title: '昵称', width: '80px', key: 'nickName', sort: 'desc'},
   {title: '状态', width: '80px', key: 'accountStatus', customSlot: 'status'},
   {title: '部门', width: '120px', key: 'deptName'},
   {title: '邮箱', width: '150px', key: 'email'},
@@ -262,7 +261,7 @@ const changeStatus = (isChecked: boolean, row: any) => {
   dataSource.value?.forEach((item) => {
     if (item.id === row.id) {
       layer.msg('Success', {icon: 1}, () => {
-        item.accountStatus = isChecked ? '0' : '1'
+        item.accountStatus = isChecked ? '1' : '0'
       })
     }
   })

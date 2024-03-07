@@ -44,10 +44,10 @@
               <dict-scan :options="sysDataScopeList" :value="row.dataScope"/>
             </template>
             <template #status="{ row }">
-              <div v-show="row.status === '0'">
+              <div v-show="row.status === '1'">
                 <lay-tag color="#2dc570" variant="light">启用</lay-tag>
               </div>
-              <div v-show="row.status === '1'">
+              <div v-show="row.status === '0'">
                 <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
               </div>
             </template>

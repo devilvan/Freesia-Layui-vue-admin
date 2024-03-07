@@ -2,6 +2,7 @@ package com.freesia.controller;
 
 import com.freesia.dto.AssignTenantDto;
 import com.freesia.dto.SysTenantDto;
+import com.freesia.entity.FindSysTenantEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysTenantService;
@@ -80,10 +81,9 @@ public class SysTenantController {
      */
     @Operation(summary = "条件查询租户信息表")
     @GetMapping(value = "findSysTenant")
-    public R<SysTenantDto> findSysTenant(SysTenantVo sysTenantVo) {
+    public R<FindSysTenantEntity> findSysTenant(SysTenantVo sysTenantVo) {
         SysTenantDto sysTenantDto = UCopy.copyVo2Dto(sysTenantVo, SysTenantDto.class);
-        SysTenantDto tableResult = sysTenantService.findSysTenant(sysTenantDto);
-        return R.ok(tableResult);
+        return R.ok(sysTenantService.findSysTenant(sysTenantDto));
     }
 
     /**

@@ -117,7 +117,7 @@
         >
           <template #accountStatus="{ row }">
             <lay-switch
-                :model-value="row.accountStatus === '0'"
+                :model-value="row.accountStatus === '1'"
                 @change="changeStatus($event, row)"
             ></lay-switch>
           </template>
@@ -389,7 +389,6 @@ const expandKeys = ref<string[]>([])
 
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '编号', width: '130px', key: 'id', fixed: 'left', sort: 'id'},
   {title: '用户名', width: '80px', key: 'userName', sort: 'userName'},
   {title: '用户昵称', width: '80px', key: 'nickName', sort: 'nickName'},
   {title: '性别', width: '80px', key: 'gender', sort: 'gender', customSlot: 'gender'},
@@ -419,7 +418,7 @@ const changeStatus = (isChecked: boolean, row: any) => {
   dataSource.value?.forEach((item) => {
     if (item.id === row.id) {
       layer.msg('Success', {icon: 1}, () => {
-        item.accountStatus = isChecked ? '0' : '1'
+        item.accountStatus = isChecked ? '1' : '0'
       })
     }
   })

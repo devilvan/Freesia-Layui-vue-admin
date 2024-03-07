@@ -67,7 +67,7 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
     @Cacheable(cacheNames = URL_CONFIG, key = "#code")
     public UrlConfigDto findCacheUrlConfigByCode(String code) {
         LambdaQueryWrapper<UrlConfigPo> wrapper = new LambdaQueryWrapper<UrlConfigPo>()
-                .eq(UrlConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(UrlConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UrlConfigPo::getCode, code);
         UrlConfigPo urlConfigPo = getOne(wrapper);
         return UCopy.copyPo2Dto(urlConfigPo, UrlConfigDto.class);
@@ -87,7 +87,7 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
      */
     private LambdaQueryWrapper<UrlConfigPo> buildUrlConfigWrapper(UrlConfigDto urlConfigDto) {
         return new LambdaQueryWrapper<UrlConfigPo>()
-                .eq(UrlConfigPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(UrlConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(urlConfigDto.getId()), UrlConfigPo::getId, urlConfigDto.getId())
                 .likeRight(UEmpty.isNotEmpty(urlConfigDto.getCode()), UrlConfigPo::getCode, urlConfigDto.getCode());
     }

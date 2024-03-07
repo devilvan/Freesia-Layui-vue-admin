@@ -68,7 +68,7 @@
       >
         <template #status="{ row }">
           <lay-switch
-              :model-value="row.status === '0'"
+              :model-value="row.status === '1'"
               @change="changeStatus($event, row)"
           ></lay-switch>
         </template>
@@ -295,7 +295,6 @@ const title = ref('新增')
 const dataSource = ref<Array<FindPageSysRoleListEntity>>()
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '编号', width: '160px', key: 'id', fixed: 'left', sort: 'desc'},
   {title: '角色名称', width: '150px', key: 'roleName', sort: 'desc'},
   {title: '角色权限编码', width: '120px', key: 'roleKey', sort: 'asc'},
   {title: '数据范围', width: '200px', key: 'dataScope', sort: 'desc', customSlot: 'dataScope'},

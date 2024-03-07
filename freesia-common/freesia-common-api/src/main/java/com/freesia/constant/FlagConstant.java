@@ -13,11 +13,11 @@ public final class FlagConstant {
     /**
      * 启用
      */
-    public static final String ENABLED = "0";
+    public static final String ENABLED = "1";
     /**
      * 禁用
      */
-    public static final String DISABLED = "1";
+    public static final String DISABLED = "0";
     /**
      * 是
      */

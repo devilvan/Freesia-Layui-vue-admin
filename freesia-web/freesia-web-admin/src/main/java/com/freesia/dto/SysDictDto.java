@@ -20,6 +20,6 @@ public class SysDictDto extends BaseDto {
     private String valueName;
     @Schema(description = "字典值")
     private String value;
-    @Schema(description = "状态 0-启用 1-禁用")
+    @Schema(description = "状态（0-禁用，1-启用）")
     private String status;
 }

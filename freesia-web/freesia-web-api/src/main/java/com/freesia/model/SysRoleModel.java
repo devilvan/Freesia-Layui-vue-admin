@@ -25,7 +25,7 @@ public class SysRoleModel extends BaseModel {
     private String roleName;
     @Schema(description = "角色权限字符串")
     private String roleKey;
-    @Schema(description = "角色状态（0正常 1停用）")
+    @Schema(description = "角色状态（0-停用，1-正常）")
     private String status;
     @Schema(description = "显示顺序")
     private Integer orderNum;

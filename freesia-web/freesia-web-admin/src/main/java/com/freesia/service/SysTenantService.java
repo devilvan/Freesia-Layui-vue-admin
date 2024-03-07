@@ -1,6 +1,7 @@
 package com.freesia.service;
 
 import com.freesia.dto.SysTenantDto;
+import com.freesia.entity.FindSysTenantEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -43,7 +44,7 @@ public interface SysTenantService {
      * @param sysTenantDto 查询条件
      * @return 租户信息表信息
      */
-    SysTenantDto findSysTenant(SysTenantDto sysTenantDto);
+    FindSysTenantEntity findSysTenant(SysTenantDto sysTenantDto);
 
     /**
      * 删除租户信息表信息

@@ -221,7 +221,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     public List<FindAllMenuTreeEntity> findAllMenuTree(Long userId) {
         List<SysMenuPo> sysMenuPoList;
         QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
-                .eq("M.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("M.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("M.STATUS", FlagConstant.ENABLED)
                 .in("M.MENU_TYPE", MenuType.DIR.getType(), MenuType.MENU.getType())
                 .orderByAsc("M.PARENT_ID")
@@ -266,7 +266,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     @Override
     public List<FindTreeMenuSelectEntity> findTreeMenuSelect(Long userId, String menuType) {
         QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
-                .eq("M.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("M.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("M.STATUS", FlagConstant.ENABLED)
                 .eq("M.IS_FRAME", FlagConstant.DISABLED)
                 .orderByAsc("M.PARENT_ID")
@@ -284,7 +284,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     @Override
     public SysMenuDto findMenuByParentId(Long parentId) {
         LambdaQueryWrapper<SysMenuPo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysMenuPo::getLogicDel, FlagConstant.ENABLED)
+        wrapper.eq(SysMenuPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysMenuPo::getId, parentId)
                 .eq(SysMenuPo::getMenuType, MenuType.MENU.getType());
         SysMenuPo sysMenuPo = Optional.ofNullable(this.getOne(wrapper)).orElseGet(SysMenuPo::new);
@@ -336,7 +336,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     @Override
     public List<SysMenuDto> findAllSysButton(SysMenuDto sysMenuDto) {
         LambdaQueryWrapper<SysMenuPo> queryWrapper = new LambdaQueryWrapper<SysMenuPo>()
-                .eq(SysMenuPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysMenuPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysMenuPo::getMenuType, MenuType.BUTTON.getType())
                 .eq(SysMenuPo::getParentId, sysMenuDto.getId())
                 .likeRight(UEmpty.isNotEmpty(sysMenuDto.getMenuName()), SysMenuPo::getMenuName, sysMenuDto.getMenuName())
@@ -348,7 +348,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     @Override
     public List<Long> findAssignedSysButtonByRoleId(SysMenuDto sysMenuDto, Long roleId) {
         Wrapper<SysMenuPo> queryWrapper = Wrappers.<SysMenuPo>query()
-                .eq("M.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("M.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("M.MENU_TYPE", MenuType.BUTTON.getType())
                 .eq("M.PARENT_ID", sysMenuDto.getId())
                 .eq("SRM.ROLE_ID", roleId)

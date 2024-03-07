@@ -27,13 +27,13 @@ public class SysDictValueDto extends BaseDto {
     private String value;
     @Schema(description = "内部排序值")
     private Integer orderNum;
-    @Schema(description = "是否默认 0-是 1-否")
+    @Schema(description = "是否默认（0-否，1-是）")
     private String isDefault;
     @Schema(description = "国际化展示编码")
     private String i18n;
     @Schema(description = "前端展示样式（CSS）")
     private String cssStyle;
-    @Schema(description = "状态 0-启用 1-禁用")
+    @Schema(description = "状态（0-禁用，1-启用）")
     private String status;
     @Schema(description = "备注")
     private String remark;

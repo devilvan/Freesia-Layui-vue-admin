@@ -57,7 +57,7 @@
                  LEFT JOIN sys_tenant_user stu on U.ID = stu.USER_ID
         WHERE 1 = 1
           AND U.LOGIC_DEL = 0
-          AND U.ACCOUNT_STATUS = 0
+          AND U.ACCOUNT_STATUS = 1
           AND stu.TENANT_ID = #{sysRolePo.tenantId}
           AND U.ID NOT IN (
             SELECT SU.ID
@@ -71,7 +71,7 @@
         FROM SYS_MENU M
                  LEFT JOIN SYS_ROLE_MENU SRM ON M.ID = SRM.MENU_ID
         WHERE 1 = 1
-          AND M.LOGIC_DEL = FALSE
+          AND M.LOGIC_DEL = 0
           AND M.MENU_TYPE = 'B'
           AND SRM.ROLE_ID = #{roleId}
     </select>

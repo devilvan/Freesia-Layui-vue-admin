@@ -61,25 +61,25 @@ public class SysMenuPo extends BasePo implements Serializable, Comparable<SysMen
     @TableField(value = "QUERY_PARAM")
     @Column(name = "QUERY_PARAM", columnDefinition = "VARCHAR(255) COMMENT '路由参数'")
     private String queryParam;
-    @Schema(description = "是否为外链（0-是 1-否）")
+    @Schema(description = "是否为外链（0-否 1-是）")
     @TableField(value = "IS_FRAME")
-    @Column(name = "IS_FRAME", columnDefinition = "CHAR(1) COMMENT '是否为外链（0-是 1-否）'")
+    @Column(name = "IS_FRAME", columnDefinition = "CHAR(1) COMMENT '是否为外链（0-否 1-是）'")
     private String isFrame;
-    @Schema(description = "是否缓存（0-缓存 1-不缓存）")
+    @Schema(description = "是否缓存（0-不缓存 1-缓存）")
     @TableField(value = "IS_CACHE")
-    @Column(name = "IS_CACHE", columnDefinition = "CHAR(1) COMMENT '是否缓存（0-缓存 1-不缓存）'")
+    @Column(name = "IS_CACHE", columnDefinition = "CHAR(1) COMMENT '是否缓存（0-不缓存 1-缓存）'")
     private String isCache;
     @Schema(description = "菜单类型（见MENU_TYPE）")
     @TableField(value = "MENU_TYPE")
     @Column(name = "MENU_TYPE", columnDefinition = "CHAR(1) COMMENT '菜单类型（见MENU_TYPE）'")
     private String menuType;
-    @Schema(description = "显示状态（0显示 1隐藏）")
+    @Schema(description = "显示状态（0-隐藏 1-显示）")
     @TableField(value = "VISIBLE")
-    @Column(name = "VISIBLE", columnDefinition = "CHAR(1) COMMENT '显示状态（0显示 1隐藏）'")
+    @Column(name = "VISIBLE", columnDefinition = "CHAR(1) COMMENT '显示状态（0-隐藏 1-显示）'")
     private String visible;
-    @Schema(description = "菜单状态（0正常 1停用）")
+    @Schema(description = "菜单状态（0-停用 1-正常）")
     @TableField(value = "STATUS")
-    @Column(name = "STATUS", columnDefinition = "CHAR(1) COMMENT '菜单状态（0正常 1停用）'")
+    @Column(name = "STATUS", columnDefinition = "CHAR(1) COMMENT '菜单状态（0-停用 1-正常）'")
     private String status;
     @Schema(description = "权限标识")
     @TableField(value = "PERMS")

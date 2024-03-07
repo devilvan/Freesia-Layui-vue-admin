@@ -8,8 +8,8 @@
                  LEFT JOIN sys_user_role SUR ON SUR.ROLE_ID = SRM.ROLE_ID
                  LEFT JOIN sys_role sr on sr.ID = SUR.ROLE_ID
         WHERE 1 = 1
-          AND SM.STATUS = '0'
-          AND SR.STATUS = '0'
+          AND SM.STATUS = '1'
+          AND SR.STATUS = '1'
           AND SUR.USER_ID = #{id}
     </select>
 
@@ -37,8 +37,8 @@
         WHERE 1 = 1
           AND U.ID = #{userId}
           AND M.MENU_TYPE IN ('D', 'M')
-          AND M.STATUS = '0'
-          AND R.STATUS = '0'
+          AND M.STATUS = '1'
+          AND R.STATUS = '1'
         ORDER BY M.PARENT_ID, M.ORDER_NUM
 
     </select>
@@ -60,7 +60,7 @@
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
           AND M.LOGIC_DEL = '0'
-          AND M.STATUS = '0'
+          AND M.STATUS = '1'
           AND M.MENU_TYPE IN ('D', 'M')
           AND RM.ROLE_ID = #{roleId}
     </select>
@@ -70,7 +70,7 @@
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
           AND M.LOGIC_DEL = '0'
-          AND M.STATUS = '0'
+          AND M.STATUS = '1'
           AND M.MENU_TYPE IN ('D', 'M')
     </select>
     <select id="findMenuListByUserId" resultType="com.freesia.entity.FindMenuListByUserIdEntity">

@@ -43,9 +43,9 @@ public class SysDictKeyPo extends BasePo implements Serializable {
     @TableField(value = "DICT_KEY")
     @Column(name = "DICT_KEY", columnDefinition = "VARCHAR(32) NOT NULL COMMENT '字典键'")
     private String dictKey;
-    @Schema(description = "状态 0-启用 1-禁用")
+    @Schema(description = "状态（0-禁用，1-启用）")
     @TableField(value = "STATUS")
-    @Column(name = "STATUS", columnDefinition = "CHAR(1) NOT NULL COMMENT '状态 0-启用 1-禁用'")
+    @Column(name = "STATUS", columnDefinition = "CHAR(1) NOT NULL COMMENT '状态（0-禁用，1-启用）'")
     private String status;
     @Schema(description = "备注")
     @TableField(value = "REMARK")

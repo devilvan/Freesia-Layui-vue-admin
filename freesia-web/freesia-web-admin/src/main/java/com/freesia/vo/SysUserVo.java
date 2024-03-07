@@ -45,7 +45,7 @@ public class SysUserVo extends BaseVo {
     @Schema(description = "头像地址")
     @JSONField(alternateNames = {"avatar"})
     private String avatar;
-    @Schema(description = "帐号状态（1-是，0-否）")
+    @Schema(description = "帐号状态（0-否，1-是）")
     @JSONField(alternateNames = {"accountStatus"})
     private String accountStatus;
     @Schema(description = "备注")

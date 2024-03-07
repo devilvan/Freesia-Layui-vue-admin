@@ -99,7 +99,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserDto sysUserDto, PageQuery pageQuery) {
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
         Wrapper<SysUserPo> sysUserPoWrapper = USql.buildQueryWrapper(() -> Wrappers.<SysUserPo>query()
-                .eq("U.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("U.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
                 .eq("STU.TENANT_ID", USecurity.getTenantId())
                 .like(ObjectUtil.isNotNull(sysUserDto.getNickName()), "U.NICK_NAME", sysUserDto.getNickName())
@@ -124,9 +124,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public TableResult<FindPageSysUserByDeptEntity> findPageSysUserByDept(SysUserDto sysUserDto, PageQuery pageQuery) {
         Page<FindPageSysUserByDeptEntity> page = sysUserMapper.findPageSysUserByDept(pageQuery.build(), Wrappers.<SysUserPo>query()
-                .eq("U.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("U.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
-                .eq("D.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("D.DEPT_STATUS", FlagConstant.ENABLED)
                 .eq(UEmpty.isNotEmpty(sysUserDto.getTenantId()), "STU.TENANT_ID", sysUserDto.getTenantId())
                 .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
@@ -144,7 +144,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public SysUserDto findCurrentUserProfile(Long userId) {
         LambdaQueryWrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<SysUserPo>()
-                .eq(SysUserPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysUserPo::getId, userId);
         SysUserPo sysUserPo = sysUserMapper.findCurrentUserProfile(queryWrapper);
         return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
