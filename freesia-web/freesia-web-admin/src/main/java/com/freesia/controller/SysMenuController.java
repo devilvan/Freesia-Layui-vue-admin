@@ -2,7 +2,6 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.MenuPermission;
@@ -53,6 +52,13 @@ public class SysMenuController {
      * @param request {@link List<SysMenuVo>}
      * @return 形式返回
      */
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_EDIT),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_DIR),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_MENU),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_BUTTON),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_LINK)
+    })
     @Operation(summary = "批量保存菜单信息")
     @PostMapping(value = "saveMenuList")
     public R<List<SysMenuVo>> saveMenuList(@RequestBody String request) {
@@ -61,6 +67,7 @@ public class SysMenuController {
         return R.ok(UCopy.fullCopyList(sysMenuDtoList, SysMenuVo.class));
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_INDEX)
     @Operation(summary = "查询所有菜单下拉树")
     @GetMapping(value = "findAllMenuTree")
     public R<List<FindAllMenuTreeEntity>> findAllMenuTree() {
@@ -78,6 +85,7 @@ public class SysMenuController {
         return R.ok(menuIdStrList);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_INDEX)
     @Operation(summary = "根据用户ID查询菜单列表")
     @GetMapping(value = "findMenuListByUserId")
     public R<List<FindMenuListByUserIdEntity>> findMenuListByUserId(SysMenuVo sysMenuVo) {
@@ -88,6 +96,7 @@ public class SysMenuController {
         return R.ok(menuList);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_INDEX)
     @Operation(summary = "查询菜单树下拉框集合")
     @GetMapping(value = "findTreeMenuSelect")
     public R<List<FindTreeMenuSelectEntity>> findTreeMenuSelect(@RequestParam String menuType) {
@@ -118,6 +127,7 @@ public class SysMenuController {
         return R.ok(sysMenuDto);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_DELETE)
     @Operation(summary = "删除目录、菜单、按钮、链接")
     @DeleteMapping(value = "deleteMenu")
     public R<SysMenuDto> deleteMenu(@RequestParam Long id) {

@@ -47,7 +47,7 @@
                   type="primary"
                   size="sm"
                   @click="toSearch"
-                  v-permission="[$MENU_PERMISSION.SYSTEM_USER_QUERY]"
+                  v-permission="[$MENU_PERMISSION.SYSTEM_USER_INDEX]"
               >
                 查询
               </lay-button>

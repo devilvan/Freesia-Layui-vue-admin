@@ -1,8 +1,10 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.ObjectUtil;
-import com.freesia.constant.FlagConstant;
+import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -39,6 +41,7 @@ public class SysConfigController {
         return R.ok(captchaEnabled);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_INDEX)
     @Operation(summary = "获取参数配置分页")
     @GetMapping(value = "findPageSysConfig")
     public TableResult<SysConfigDto> findPageSysConfig(SysConfigVo sysConfigVo, PageQuery pageQuery) {
@@ -46,6 +49,10 @@ public class SysConfigController {
         return sysConfigService.findPageSysConfig(sysConfigDto, pageQuery);
     }
 
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_EDIT),
+    })
     @Operation(summary = "保存系统配置信息")
     @PostMapping(value = "saveConfig")
     public R<Void> saveConfig(@RequestBody SysConfigVo sysConfigVo) {
@@ -54,6 +61,7 @@ public class SysConfigController {
         return R.ok();
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_DELETE)
     @Operation(summary = "删除系统配置信息")
     @DeleteMapping(value = "deleteConfig")
     public R<Void> deleteConfig(@RequestParam String configKey) {

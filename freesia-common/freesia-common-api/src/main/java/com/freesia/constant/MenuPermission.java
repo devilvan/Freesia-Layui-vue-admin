@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings("AlibabaCommentsMustBeJavadocFormat")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MenuPermission {
-    public static final String SYSTEM_LOGIN_INDEX = "system:login:index";
     public static final String SYSTEM_OPTION_INDEX = "system:option:index";
-    public static final String SYSTEM_CONFIG_INDEX = "system:config:index";
     public static final String PAGE_DOC_INDEX = "page:doc:index";
 
     /* 用户管理*/
@@ -21,17 +19,17 @@ public class MenuPermission {
     public static final String SYSTEM_USER_ADD = "system:user:add";
     public static final String SYSTEM_USER_EDIT = "system:user:edit";
     public static final String SYSTEM_USER_DELETE = "system:user:delete";
-    public static final String SYSTEM_USER_QUERY = "system:user:query";
     public static final String SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole";
     public static final String SYSTEM_USER_IMPORT_USER = "system:user:importUser";
 
     /* 菜单管理*/
     public static final String SYSTEM_MENU_INDEX = "system:menu:index";
-    public static final String SYSTEM_MENU_ADD_DIR = "system:menu_addDir";
-    public static final String SYSTEM_MENU_ADD_MENU = "system:menu_addMenu";
-    public static final String SYSTEM_MENU_ADD_BUTTON = "system:menu_addButton";
-    public static final String SYSTEM_MENU_ADD_LINK = "system:menu_addLink";
-    public static final String SYSTEM_MENU_EDIT = "system:menu_edit";
+    public static final String SYSTEM_MENU_ADD_DIR = "system:menu:addDir";
+    public static final String SYSTEM_MENU_ADD_MENU = "system:menu:addMenu";
+    public static final String SYSTEM_MENU_ADD_BUTTON = "system:menu:addButton";
+    public static final String SYSTEM_MENU_ADD_LINK = "system:menu:addLink";
+    public static final String SYSTEM_MENU_EDIT = "system:menu:edit";
+    public static final String SYSTEM_MENU_DELETE = "system:menu:delete";
 
     /* 角色管理*/
     public static final String SYSTEM_ROLE_INDEX = "system:role:index";
@@ -55,8 +53,6 @@ public class MenuPermission {
     public static final String SYSTEM_DICT_VALUE_DELETE = "system:dict:value:delete";
     public static final String SYSTEM_DICT_VALUE_ENABLED = "system:dict:value:enabled";
     public static final String SYSTEM_DICT_VALUE_FLUSH_CACHE = "system:dict:value:flushCache";
-    public static final String SYSTEM_DICT_KEY_QUERY = "system:dict:key:query";
-    public static final String SYSTEM_DICT_VALUE_QUERY = "system:dict:key:query";
 
     /* 租户管理*/
     public static final String SYSTEM_TENANT_INDEX = "system:tenant:index";
@@ -76,4 +72,10 @@ public class MenuPermission {
     public static final String COMMON_URL_ADD = "common:url:add";
     public static final String COMMON_URL_EDIT = "common:url:edit";
     public static final String COMMON_URL_DELETE = "common:url:delete";
+
+    /* 系统配置管理*/
+    public static final String SYSTEM_CONFIG_INDEX = "system:config:index";
+    public static final String SYSTEM_CONFIG_ADD = "system:config:add";
+    public static final String SYSTEM_CONFIG_EDIT = "system:config:edit";
+    public static final String SYSTEM_CONFIG_DELETE = "system:config:delete";
 }

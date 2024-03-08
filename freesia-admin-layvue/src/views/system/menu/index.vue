@@ -128,6 +128,7 @@
               size="xs"
               border="red"
               border-style="dashed"
+              v-permission="[$MENU_PERMISSION.SYSTEM_MENU_DELETE]"
           >
             删除
           </lay-button>

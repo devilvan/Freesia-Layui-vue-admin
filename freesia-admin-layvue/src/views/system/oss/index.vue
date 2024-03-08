@@ -46,7 +46,7 @@
                       type="normal"
                       size="sm"
                       @click="toSearch"
-                      v-permission="[$MENU_PERMISSION.SYSTEM_OSS_QUERY]"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_OSS_INDEX]"
                   >
                     查询
                   </lay-button>

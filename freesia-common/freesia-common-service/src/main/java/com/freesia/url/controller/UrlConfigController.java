@@ -1,5 +1,8 @@
 package com.freesia.url.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.constant.MenuPermission;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.url.dto.UrlConfigDto;
@@ -34,6 +37,10 @@ public class UrlConfigController {
      *
      * @return 形式返回
      */
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.COMMON_URL_ADD),
+            @SaCheckPermission(value = MenuPermission.COMMON_URL_EDIT),
+    })
     @Operation(summary = "保存URL配置信息表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody UrlConfigVo urlConfigVo) {
@@ -47,6 +54,10 @@ public class UrlConfigController {
      *
      * @return 形式返回
      */
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.COMMON_URL_ADD),
+            @SaCheckPermission(value = MenuPermission.COMMON_URL_EDIT),
+    })
     @Operation(summary = "保存URL配置信息表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<UrlConfigVo> urlConfigVoList) {
@@ -62,6 +73,7 @@ public class UrlConfigController {
      * @param pageQuery   分页条件
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.COMMON_URL_INDEX)
     @Operation(summary = "查询URL配置信息表分页信息")
     @GetMapping(value = "findPageUrlConfig")
     public TableResult<UrlConfigDto> findPageUrlConfig(UrlConfigVo urlConfigVo, PageQuery pageQuery) {
@@ -75,6 +87,7 @@ public class UrlConfigController {
      * @param urlConfigVo 查询条件
      * @return 形式返回
      */
+    @SaCheckPermission(value = MenuPermission.COMMON_URL_INDEX)
     @Operation(summary = "条件查询URL配置信息表")
     @GetMapping(value = "findUrlConfig")
     public R<UrlConfigDto> findUrlConfig(UrlConfigVo urlConfigVo) {
@@ -103,6 +116,7 @@ public class UrlConfigController {
      * @return 形式返回
      */
     @Validated
+    @SaCheckPermission(value = MenuPermission.COMMON_URL_DELETE)
     @Operation(summary = "删除URL配置信息表")
     @DeleteMapping(value = "deleteUrlConfig")
     public R<Void> deleteUrlConfig(@NotNull @RequestParam Long id, @NotEmpty @RequestParam String code) {

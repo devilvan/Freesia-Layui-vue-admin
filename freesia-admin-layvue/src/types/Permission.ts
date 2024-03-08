@@ -3,7 +3,7 @@ export enum MenuPermission {
     SYSTEM_USER_ADD = "system:user:add",
     SYSTEM_USER_EDIT = "system:user:edit",
     SYSTEM_USER_DELETE = "system:user:delete",
-    SYSTEM_USER_QUERY = "system:user:query",
+    SYSTEM_USER_INDEX = "system:user:index",
     SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole",
     SYSTEM_USER_IMPORT_USER = "system:user:importUser",
 
@@ -12,7 +12,8 @@ export enum MenuPermission {
     SYSTEM_MENU_ADD_MENU = "system:menu_addMenu",
     SYSTEM_MENU_ADD_BUTTON = "system:menu_addButton",
     SYSTEM_MENU_ADD_LINK = "system:menu_addLink",
-    SYSTEM_MENU_EDIT = "system:menu_edit",
+    SYSTEM_MENU_EDIT = "system:menu:edit",
+    SYSTEM_MENU_DELETE = "system:menu:delete",
 
     /* 角色管理*/
     SYSTEM_ROLE_MENU_EDIT = "system:role:menu:edit",
@@ -33,8 +34,6 @@ export enum MenuPermission {
     SYSTEM_DICT_VALUE_DELETE = "system:dict:value:delete",
     SYSTEM_DICT_VALUE_ENABLED = "system:dict:value:enabled",
     SYSTEM_DICT_VALUE_FLUSH_CACHE = "system:dict:value:flushCache",
-    SYSTEM_DICT_KEY_QUERY = "system:dict:key:query",
-    SYSTEM_DICT_VALUE_QUERY = "system:dict:key:query",
 
     /* 租户管理*/
     SYSTEM_TENANT_ADD = "system:tenant:add",
@@ -43,13 +42,13 @@ export enum MenuPermission {
     SYSTEM_TENANT_ASSIGN_USER = "system:tenant:assignUser",
 
     /* 文件管理*/
-    SYSTEM_OSS_QUERY = "system:oss:query",
+    SYSTEM_OSS_INDEX = "system:oss:index",
     SYSTEM_OSS_DELETE = "system:oss:delete",
     SYSTEM_OSS_UPLOAD = "system:oss:upload",
     SYSTEM_OSS_DOWNLOAD = "system:oss:download",
 
     /* URL配置*/
-    COMMON_URL_QUERY = "common:url:query",
+    COMMON_URL_INDEX = "common:url:index",
     COMMON_URL_ADD = "common:url:add",
     COMMON_URL_EDIT = "common:url:edit",
     COMMON_URL_DELETE = "common:url:delete",

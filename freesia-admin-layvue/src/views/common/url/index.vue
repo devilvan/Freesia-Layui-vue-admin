@@ -32,7 +32,7 @@
                   type="normal"
                   size="sm"
                   @click="toSearch"
-                  v-permission="[$MENU_PERMISSION.COMMON_URL_QUERY]"
+                  v-permission="[$MENU_PERMISSION.COMMON_URL_INDEX]"
               >
                 查询
               </lay-button>

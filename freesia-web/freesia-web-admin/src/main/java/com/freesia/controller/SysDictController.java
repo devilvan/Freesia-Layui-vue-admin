@@ -40,6 +40,7 @@ public class SysDictController {
     private final SysDictKeyService sysDictKeyService;
     private final SysDictValueService sysDictValueService;
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_INDEX)
     @Operation(summary = "查询字典键数据列表")
     @GetMapping(value = "findSysDictKeyList")
     public R<List<SysDictKeyDto>> findSysDictKeyList(SysDictKeyVo sysDictKeyVo) {
@@ -49,6 +50,7 @@ public class SysDictController {
         return R.ok(sysDictKeyEntityList);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_INDEX)
     @Operation(summary = "查询字典值分页数据")
     @GetMapping(value = "findPageSysDictValue")
     public TableResult<SysDictValueDto> findPageSysDictValue(SysDictVo sysDictValueVo, PageQuery pageQuery) {
@@ -57,6 +59,7 @@ public class SysDictController {
         return sysDictValueService.findPageSysDictValue(sysDictValueDto, pageQuery);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_INDEX)
     @Operation(summary = "查询字典值列表数据")
     @GetMapping(value = "findSysDictValueList")
     public R<List<SysDictValueDto>> findSysDictValueList(@Valid SysDictVo sysDictValueVo) {
@@ -66,6 +69,7 @@ public class SysDictController {
         return R.ok(sysDictValueDtoList);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_INDEX)
     @Operation(summary = "（缓存）查询字典值列表数据")
     @GetMapping(value = "findCacheSysDictValueList")
     public R<List<SysDictValueDto>> findCacheSysDictValueList(@RequestParam String dictKey) {
@@ -73,6 +77,7 @@ public class SysDictController {
         return R.ok(sysDictValueDtoList);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_INDEX)
     @Operation(summary = "查询字典数据的分页信息")
     @GetMapping(value = "findPageSysDictList")
     public TableResult<FindPageSysDictKeyEntity> findPageSysDictList(SysDictVo sysDictVo, PageQuery pageQuery) {
@@ -81,26 +86,16 @@ public class SysDictController {
         return sysDictKeyService.findPageSysDictList(sysDictDto, pageQuery);
     }
 
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_EDIT),
+    })
     @Operation(summary = "保存字典键数据")
     @PostMapping(value = "saveSysDictKeyList")
     public R<Void> saveSysDictKeyList(@RequestBody String request) {
         List<SysDictKeyVo> sysDictKeyVoList = JSONObject.parseArray(request, SysDictKeyVo.class);
         List<SysDictKeyDto> sysDictKeyDtoList = UCopy.fullCopyList(sysDictKeyVoList, SysDictKeyDto.class);
         sysDictKeyService.saveUpdateBatch(sysDictKeyDtoList);
-        return R.ok();
-    }
-
-    @Operation(summary = "保存字典值数据")
-    @PostMapping(value = "saveSysDictValueList")
-
-    @SaCheckOr(permission = {
-            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ADD),
-            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_EDIT),
-    })
-    public R<Void> saveSysDictValueList(@RequestBody String request) {
-        List<SysDictValueVo> sysDictValueVoList = JSONObject.parseArray(request, SysDictValueVo.class);
-        List<SysDictValueDto> sysDictValueDtoList = UCopy.fullCopyList(sysDictValueVoList, SysDictValueDto.class);
-        sysDictValueService.saveUpdateBatch(sysDictValueDtoList);
         return R.ok();
     }
 
@@ -128,6 +123,19 @@ public class SysDictController {
         SysDictValueDto sysDictValueDto = UCopy.copyVo2Dto(sysDictValueVo, SysDictValueDto.class);
         sysDictValueDto = sysDictValueService.saveSysDictValue(sysDictValueDto);
         return R.ok(sysDictValueDto);
+    }
+
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_EDIT),
+    })
+    @Operation(summary = "保存字典值数据")
+    @PostMapping(value = "saveSysDictValueList")
+    public R<Void> saveSysDictValueList(@RequestBody String request) {
+        List<SysDictValueVo> sysDictValueVoList = JSONObject.parseArray(request, SysDictValueVo.class);
+        List<SysDictValueDto> sysDictValueDtoList = UCopy.fullCopyList(sysDictValueVoList, SysDictValueDto.class);
+        sysDictValueService.saveUpdateBatch(sysDictValueDtoList);
+        return R.ok();
     }
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_DELETE)
