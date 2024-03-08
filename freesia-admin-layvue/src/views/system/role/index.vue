@@ -77,22 +77,22 @@
         </template>
         <template v-slot:toolbar>
           <lay-button size="sm" type="primary" @click="changeVisible11('新增', null)">
-            <lay-icon class="layui-icon-addition"></lay-icon>
+            <lay-icon class="layui-icon-addition" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ADD]"></lay-icon>
             新增
           </lay-button>
-          <lay-button size="sm" @click="toRemove">
+          <lay-button size="sm" @click="toRemove" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_DELETE]">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
-          <lay-button size="sm" type="primary" @click="assignUser" v-permission="[MenuPermission.SYS_ROLE_USER_EDIT]">
+          <lay-button size="sm" type="primary" @click="assignUser" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ASSIGN_USER_EDIT]">
             分配用户
           </lay-button>
           <lay-button size="sm" type="normal" @click="toPrivilegesSelectKeys"
-                      v-permission="[MenuPermission.SYS_ROLE_MENU_EDIT]">
+                      v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_MENU_EDIT]">
             菜单权限
           </lay-button>
           <lay-button size="sm" type="warm" @click="toAssignButton()"
-                      v-permission="[MenuPermission.SYS_ROLE_MENU_EDIT]">
+                      v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ASSIGN_BUTTON_EDIT]">
             按钮权限
           </lay-button>
         </template>
@@ -102,6 +102,7 @@
               border="green"
               border-style="dashed"
               @click="changeVisible11('编辑', row)"
+              v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_EDIT]"
           >编辑
           </lay-button
           >
@@ -110,7 +111,7 @@
               border="blue"
               border-style="dashed"
               @click="toPrivilegesRow(row)"
-              v-permission="[MenuPermission.SYS_ROLE_MENU_EDIT]"
+              v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_MENU_EDIT]"
           >菜单权限
           </lay-button
           >
@@ -119,16 +120,15 @@
               border="blue"
               border-style="dashed"
               @click="assignUserById(row.id)"
-              v-permission="[MenuPermission.SYS_ROLE_USER_EDIT]"
+              v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ASSIGN_USER_EDIT]"
           >分配用户
-          </lay-button
-          >
+          </lay-button>
           <lay-popconfirm
               content="确定要删除此角色吗?"
               @confirm="confirm"
               @cancel="cancel"
           >
-            <lay-button size="xs" border="red" border-style="dashed"
+            <lay-button size="xs" border="red" border-style="dashed" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_DELETE]"
             >删除
             </lay-button
             >
@@ -233,15 +233,11 @@ import {FindAllMenuTreeEntity} from "../../../types/system/Menu";
 import {findAllMenuTree, findSelectedMenuListByRoleId} from "../../../api/system/Menu";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
-import {MenuPermission} from '../../../types/Permission';
 import {useAppStore} from "../../../store/app";
 import {useUserStore} from "../../../store/user";
 import app from "../../../main";
 import router from "../../../router";
 /* INIT*/
-defineComponent({
-  components: {MenuPermission}
-})
 onMounted(async () => {
   sysDataScope.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   sysDataScopeSelect.value = await sysDictValueSelect(sysDataScope.value);

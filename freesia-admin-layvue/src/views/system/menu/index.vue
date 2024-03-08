@@ -67,10 +67,18 @@
           :resize="true"
       >
         <template #toolbar>
-          <lay-button size="sm" type="primary" @click="changeSaveMenuVoModalFlag(MenuType.DIR)">新建目录</lay-button>
-          <lay-button size="sm" type="normal" @click="changeSaveMenuVoModalFlag(MenuType.MENU)">新建菜单</lay-button>
-          <lay-button size="sm" type="warm" @click="changeSaveMenuVoModalFlag(MenuType.BUTTON)">新建按钮</lay-button>
-          <lay-button size="sm" type="danger" @click="changeSaveMenuVoModalFlag(MenuType.LINK)">新建链接</lay-button>
+          <lay-button size="sm" type="primary" @click="changeSaveMenuVoModalFlag(MenuType.DIR)"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_MENU_ADD_DIR]">新建目录
+          </lay-button>
+          <lay-button size="sm" type="normal" @click="changeSaveMenuVoModalFlag(MenuType.MENU)"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_MENU_ADD_MENU]">新建菜单
+          </lay-button>
+          <lay-button size="sm" type="warm" @click="changeSaveMenuVoModalFlag(MenuType.BUTTON)"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_MENU_ADD_BUTTON]">新建按钮
+          </lay-button>
+          <lay-button size="sm" type="danger" @click="changeSaveMenuVoModalFlag(MenuType.LINK)"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_MENU_ADD_LINK]">新建链接
+          </lay-button>
           <lay-button size="sm" @click="expandMenu(true)">展开全部</lay-button>
           <lay-button size="sm" @click="expandMenu(false)">折叠全部</lay-button>
         </template>
@@ -111,6 +119,7 @@
               size="xs"
               border="green"
               border-style="dashed"
+              v-permission="[$MENU_PERMISSION.SYSTEM_MENU_EDIT]"
           >
             修改
           </lay-button>
@@ -119,6 +128,7 @@
               size="xs"
               border="red"
               border-style="dashed"
+              v-permission="[$MENU_PERMISSION.SYSTEM_MENU_DELETE]"
           >
             删除
           </lay-button>
@@ -940,27 +950,33 @@ function changeDirModalParentIdSelect(value: any) {
 }
 
 function changeMenuModalParentIdSelect(value: any) {
-  findIncrementOrderNum(value).then((res: any) => {
-    if (res.code === 200) {
-      sysMenuVo.value.orderNum = res.data
-    }
-  })
+  if (proceedCode.value == PROCEED_CODE.ADD) {
+    findIncrementOrderNum(value).then((res: any) => {
+      if (res.code === 200) {
+        sysMenuVo.value.orderNum = res.data
+      }
+    })
+  }
 }
 
 function changeButtonModalParentIdSelect(value: any) {
-  findIncrementOrderNum(value).then((res: any) => {
-    if (res.code === 200) {
-      sysButtonVo.value.orderNum = res.data
-    }
-  })
+  if (proceedCode.value == PROCEED_CODE.ADD) {
+    findIncrementOrderNum(value).then((res: any) => {
+      if (res.code === 200) {
+        sysButtonVo.value.orderNum = res.data
+      }
+    })
+  }
 }
 
 function changeLinkModalParentIdSelect(value: any) {
-  findIncrementOrderNum(value).then((res: any) => {
-    if (res.code === 200) {
-      sysLinkVo.value.orderNum = res.data
-    }
-  })
+  if (proceedCode.value == PROCEED_CODE.ADD) {
+    findIncrementOrderNum(value).then((res: any) => {
+      if (res.code === 200) {
+        sysLinkVo.value.orderNum = res.data
+      }
+    })
+  }
 }
 
 /* FUNCTION*/

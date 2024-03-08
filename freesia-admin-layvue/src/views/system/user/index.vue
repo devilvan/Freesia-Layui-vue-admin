@@ -47,6 +47,7 @@
                   type="primary"
                   size="sm"
                   @click="toSearch"
+                  v-permission="[$MENU_PERMISSION.SYSTEM_USER_INDEX]"
               >
                 查询
               </lay-button>
@@ -88,28 +89,37 @@
         </template>
 
         <template v-slot:toolbar>
-          <lay-button size="sm" type="primary" @click="changeVisible11('新增')">
+          <lay-button size="sm" type="primary" @click="changeVisible11('新增')"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_USER_ADD]">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
-          <lay-button size="sm" @click="toRemove">
+          <lay-button size="sm" @click="toRemove" v-permission="[$MENU_PERMISSION.SYSTEM_USER_DELETE]">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
           <lay-button size="sm" @click="toImport">
-            <lay-icon class="layui-icon-upload-drag"></lay-icon>
+            <lay-icon class="layui-icon-upload-drag"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_USER_IMPORT_USER]"></lay-icon>
             导入
           </lay-button>
-          <lay-button size="sm" type="normal" @click="assignRole">
+          <lay-button size="sm" type="normal" @click="assignRole"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_USER_ASSIGN_ROLE]">
             分配角色
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
-          <lay-button size="xs" type="primary" @click="changeVisible11('编辑', row)">编辑</lay-button>
+          <lay-button size="xs" type="primary" @click="changeVisible11('编辑', row)"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_USER_EDIT]">编辑
+          </lay-button>
           <lay-popconfirm content="确定要删除此用户吗?" @confirm="confirm" @cancel="cancel">
-            <lay-button size="xs" border="red" border-style="dashed">删除</lay-button>
+            <lay-button size="xs" border="red" border-style="dashed"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_USER_DELETE]">删除
+            </lay-button>
           </lay-popconfirm>
-          <lay-button size="xs" border="blue" border-style="dashed" @click="assignRoleById(row.id)">分配角色</lay-button>
+          <lay-button size="xs" border="blue" border-style="dashed" @click="assignRoleById(row.id)"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_USER_ASSIGN_ROLE]">分配角色
+          </lay-button>
         </template>
       </lay-table>
     </div>

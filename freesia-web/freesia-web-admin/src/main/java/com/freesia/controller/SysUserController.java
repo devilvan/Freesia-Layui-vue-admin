@@ -77,7 +77,7 @@ public class SysUserController {
 
     @Operation(summary = "给用户分配角色")
     @PostMapping("assignRole")
-    @SaCheckPermission(value = {MenuPermission.ASSIGN_ROLE})
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ASSIGN_ROLE})
     public R<Void> assignRole(@RequestBody AssignRoleVo assignRoleVo) {
         Long userId = assignRoleVo.getUserId();
         Set<Long> afterRoleIdSet = assignRoleVo.getAfterRoleIdSet();

@@ -1,8 +1,8 @@
 <!--suppress ES6UnusedImports -->
 <template>
   <div style="height: 100%; width: 100%">
-    <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
-      <lay-container fluid="true" class="option-box">
+    <div style="height: calc(100% - 60px); width: 100%; overflow: visible">
+      <lay-container fluid="true" class="organization-box">
         <div style="display: flex">
           <div :style="{ width: isFold ? `0px` : `300px` }" class="left-tree">
             <!-- tree -->
@@ -38,7 +38,7 @@
               <lay-icon v-else class="layui-icon-right"></lay-icon>
             </div>
           </div>
-          <div style="flex: 1; padding: 10px; over-flow: auto">
+          <div style="flex: 1; padding: 10px; overflow: visible">
             <!-- table -->
             <lay-card>
               <lay-form @keyup.enter.prevent="toSearch">
@@ -317,6 +317,7 @@ function assignButtonHandler() {
   }
   assignButton(assignButtonVo).then((res: any) => {
     if (res.code === 200) {
+      layer.msg(res.msg, {icon: 1})
       change()
     }
   })
