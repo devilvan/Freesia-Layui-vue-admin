@@ -89,11 +89,13 @@
               </lay-tooltip>
             </template>
             <template #url="{ row }">
-              <lay-avatar v-if="pictureType.includes(row.fileSuffix)" :src="row.url" @click="preview(row)" size="lg"></lay-avatar>
+              <lay-avatar v-if="pictureType.includes(row.fileSuffix)" :src="row.url" @click="preview(row)"
+                          size="lg"></lay-avatar>
             </template>
 
             <template v-slot:toolbar>
-              <lay-button size="sm" type="primary" @click="toImport" v-permission="[$MENU_PERMISSION.SYSTEM_OSS_UPLOAD]">
+              <lay-button size="sm" type="primary" @click="toImport"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_OSS_UPLOAD]">
                 <lay-icon class="layui-icon-upload-drag"></lay-icon>
                 上传
               </lay-button>
@@ -130,16 +132,14 @@
         <lay-layer
             v-model="visibleImport"
             title="导入文件"
-            :area="['380px', '380px']"
+            :area="['380px', '450px']"
         >
           <lay-upload
-              :beforeUpload="beforeUploadHandler"
-              @done="doneHandler"
               style="margin: 60px"
               :url="ossPath"
               v-model="fileList"
               field="file"
-              :auto="true"
+              :auto="false"
               :drag="true"
           >
             <template #preview>
@@ -150,6 +150,9 @@
           </lay-upload>
           <div style="width: 100%; text-align: center">
             只能上传小于10M的文件
+          </div>
+          <div style="width: 100%;margin-top: 20px; text-align: center">
+            <lay-button size="sm" type="primary" @click="toUpload()">上传</lay-button>
           </div>
         </lay-layer>
       </lay-container>
@@ -169,7 +172,7 @@ import {ref, reactive, onMounted} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {TableResult} from "../../../types/Result";
 import {SysOssEntity} from "../../../types/system/Oss";
-import {deleteSysOss, findPageSysOss} from "../../../api/system/Oss";
+import {deleteSysOss, findPageSysOss, upload} from "../../../api/system/Oss";
 import {PageQuery} from "../../../types/Common";
 import Http from "../../../api/Http";
 
@@ -184,7 +187,7 @@ const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
 const searchQuery = ref<SysOssEntity>({})
 const pictureType = ['jpg', 'jpeg', 'png', 'gif'];
 const visibleImport = ref(false)
-const fileList = ref<any>([])
+  const fileList = ref([])
 const loading = ref(false)
 const selectedKeys = ref([])
 const columns = ref([
@@ -305,12 +308,6 @@ function cancel() {
   layer.msg('您已取消操作')
 }
 
-const beforeUploadHandler = (file: any) => {
-  if (file.size > uploadLimitSize) {
-    layer.msg(`file size over 10 MB`, {icon: 2})
-    return;
-  }
-}
 
 const doneHandler = (result) => {
   let resultData = JSON.parse(result?.data)
@@ -318,7 +315,7 @@ const doneHandler = (result) => {
     layer.msg(resultData.msg, {icon: 1})
   }
   visibleImport.value = false;
-  loadDataSource()
+  change()
 };
 
 /**
@@ -329,6 +326,16 @@ function preview(row) {
     imgList: [{src: row.url, alt: row.originalName}]
   };
   layer.photos(option)
+}
+
+function toUpload() {
+  upload(fileList.value).then((res: any) => {
+    if (res.code === 200) {
+      layer.msg(res.msg, {icon: 1})
+      visibleImport.value = !visibleImport.value
+      loadDataSource()
+    }
+  })
 }
 
 /* FUNCTION*/

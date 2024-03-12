@@ -26,7 +26,14 @@ export function deleteSysOss(idList: Array<string>) {
     return Http.post("/common/sysOssController/deleteSysOss", idList);
 }
 
-export function upload(fileList: any[]) {
-    return Http.post("/common/sysOssController/upload", fileList);
+export function upload(file: File[]) {
+    let params = {
+        file: file,
+    }
+    return Http.post('/common/sysOssController/upload', params, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
 }
 
