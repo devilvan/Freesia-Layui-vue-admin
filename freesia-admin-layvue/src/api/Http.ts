@@ -106,7 +106,7 @@ class Http {
             if ('blob' === response.config.responseType) {
                 let downloadFilename = response.headers['download-filename'];
                 let contentType = response.headers["content-type"] as string;
-                const blob = new Blob([responseData], {type: 'application/octet-stream'})
+                const blob = new Blob([responseData], {type: contentType})
                 const fileLink = document.createElement('a') //创建一个a标签通过a标签的点击事件区下载文件
                 fileLink.download = decodeURIComponent(downloadFilename)
                 fileLink.href = window.URL.createObjectURL(blob) //使用blob创建一个指向类型数组的URL

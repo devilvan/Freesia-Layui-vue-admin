@@ -41,3 +41,14 @@ export function findPageAllowAssignUserByTenantId(sysTenantVo: SysTenantVo, page
     return Http.get("/api/sysUserController/findPageAllowAssignUserByTenantId", params);
 }
 
+export const userImport = function (file: File, avatar: string) {
+    let params = {
+        file: file,
+        avatar: avatar
+    }
+    return Http.post('/api/sysUserController/userImport', params, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}

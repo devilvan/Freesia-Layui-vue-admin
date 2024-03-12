@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -40,10 +42,6 @@ public final class Constants {
      * User-Agent
      */
     public static final String X_TENANT_ID = "X-Tenant-Id";
-    /**
-     * 字符集 UTF_8
-     */
-    public static final String UTF_8 = "UTF-8";
     /**
      * 验证码过期时间（分钟）
      */

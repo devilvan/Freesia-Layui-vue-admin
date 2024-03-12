@@ -150,4 +150,12 @@ public interface SysUserService {
      * @return 是否为管理员
      */
     Boolean isAdmin(Long id);
+
+    /**
+     * 根据用户名集合查询是否与已存在的用户重合
+     *
+     * @param distinctUserNameList 用户名集合
+     * @return 已存在的用户
+     */
+    List<SysUserDto> findDistinctUserNameList(List<String> distinctUserNameList);
 }

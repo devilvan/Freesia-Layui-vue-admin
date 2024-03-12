@@ -230,6 +230,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         return sysUserMapper.isAdmin(id);
     }
 
+    @Override
+    public List<SysUserDto> findDistinctUserNameList(List<String> distinctUserNameList) {
+        Wrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<SysUserPo>()
+                .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
+                .in(SysUserPo::getUserName, distinctUserNameList);
+        List<SysUserPo> sysUserPoList = this.list(queryWrapper);
+        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+    }
+
     /**
      * 构建 {@link FindUserRolesByUserIdEntity} 对象
      *

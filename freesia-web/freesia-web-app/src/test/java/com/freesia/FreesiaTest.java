@@ -1,9 +1,16 @@
 package com.freesia;
 
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.constant.FlagConstant;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
+import com.freesia.dto.SysOssDto;
+import com.freesia.dto.SysUserDto;
+import com.freesia.entity.SysUserImportEntity;
 import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.pojo.DemoData;
 import com.freesia.excel.util.UExcel;
@@ -13,12 +20,11 @@ import org.junit.Test;
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -36,15 +42,13 @@ public class FreesiaTest {
 
     @Test
     public void testAesEncrypt() {
-        String value = "123456";
-        System.out.println(aesDecrypt("0U3VLpiniSZ3t8tWTNlI4A==", ENCRYPT_KEY));
-//        System.out.println(aesEncrypt(value, ENCRYPT_KEY));
+        String value = "cU3bR6sY";
+//        System.out.println(aesDecrypt("0U3VLpiniSZ3t8tWTNlI4A==", ENCRYPT_KEY));
+        System.out.println(aesEncrypt(value, ENCRYPT_KEY));
     }
 
-    private String aesEncrypt(String value, String encryptKey)
-    {
-        try
-        {
+    private String aesEncrypt(String value, String encryptKey) {
+        try {
             String key = getEncryptKey(encryptKey);
             if (key == null) {
                 return null;
@@ -59,27 +63,18 @@ public class FreesiaTest {
             byte[] bytes = value.getBytes("utf-8");
             byte[] resultBytes = cipher.doFinal(bytes);
             return base64Encode(resultBytes);
-        }
-        catch (NoSuchAlgorithmException localNoSuchAlgorithmException)
-        {
-        }
-        catch (NoSuchPaddingException localNoSuchPaddingException) {
-        }
-        catch (InvalidKeyException localInvalidKeyException) {
-        }
-        catch (UnsupportedEncodingException localUnsupportedEncodingException) {
-        }
-        catch (IllegalBlockSizeException localIllegalBlockSizeException) {
-        }
-        catch (BadPaddingException localBadPaddingException) {
+        } catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
+        } catch (NoSuchPaddingException localNoSuchPaddingException) {
+        } catch (InvalidKeyException localInvalidKeyException) {
+        } catch (UnsupportedEncodingException localUnsupportedEncodingException) {
+        } catch (IllegalBlockSizeException localIllegalBlockSizeException) {
+        } catch (BadPaddingException localBadPaddingException) {
         }
         return null;
     }
 
-    private String aesDecrypt(String value, String encryptKey)
-    {
-        try
-        {
+    private String aesDecrypt(String value, String encryptKey) {
+        try {
             String key = getEncryptKey(encryptKey);
             if (key == null) {
                 return null;
@@ -94,44 +89,32 @@ public class FreesiaTest {
             cipher.init(2, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
             byte[] result = cipher.doFinal(bytes);
             return new String(result, "utf-8");
-        }
-        catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
-        }
-        catch (NoSuchPaddingException localNoSuchPaddingException) {
-        }
-        catch (InvalidKeyException localInvalidKeyException) {
-        }
-        catch (IOException localIOException) {
-        }
-        catch (IllegalBlockSizeException localIllegalBlockSizeException) {
-        }
-        catch (BadPaddingException localBadPaddingException) {
+        } catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
+        } catch (NoSuchPaddingException localNoSuchPaddingException) {
+        } catch (InvalidKeyException localInvalidKeyException) {
+        } catch (IOException localIOException) {
+        } catch (IllegalBlockSizeException localIllegalBlockSizeException) {
+        } catch (BadPaddingException localBadPaddingException) {
         }
         return null;
     }
 
-    private String base64Encode(byte[] bytes)
-    {
+    private String base64Encode(byte[] bytes) {
         Base64.Encoder encoder = Base64.getEncoder();
         return encoder.encodeToString(bytes);
     }
 
-    private String getEncryptKey(String key)
-    {
-        try
-        {
+    private String getEncryptKey(String key) {
+        try {
             byte[] resultByte = base64Decode(key);
             return new String(resultByte, "utf-8");
-        }
-        catch (IOException localIOException)
-        {
+        } catch (IOException localIOException) {
         }
         return null;
     }
 
     private byte[] base64Decode(String base64Value)
-            throws IOException
-    {
+            throws IOException {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decodeByte = decoder.decode(base64Value);
         return decodeByte;

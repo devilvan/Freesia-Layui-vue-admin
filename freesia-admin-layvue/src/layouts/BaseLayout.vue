@@ -227,6 +227,7 @@ import zh_CN from '../lang/zh_CN'
 import en_US from '../lang/en_US'
 import router from "../router";
 import {useTabStore} from "./composable/useTabStore";
+import app from "../main";
 
 export default {
   components: {
@@ -267,10 +268,6 @@ export default {
         appStore.collapse = true
       }
       userInfoStore.getMenu()
-      userInfoStore.reloadSysTenant();
-      if (userInfoStore.sysTenantDtoList && userInfoStore.sysTenantDtoList.length > 0) {
-        appStore.currentTenant = userInfoStore.sysTenantDtoList[0]?.id;
-      }
     })
 
     const changeVisible = () => {

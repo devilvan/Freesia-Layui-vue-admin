@@ -161,23 +161,25 @@
     <lay-layer
         v-model="visibleImport"
         title="导入用户"
-        :area="['380px', '380px']"
+        :area="['380px', '500px']"
     >
       <lay-upload
-          :beforeUpload="beforeUpload10"
           style="margin: 60px"
-          url="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-          v-model="file1"
+          :url="userImportRoute"
+          v-model="uploadFile"
           field="file"
           :auto="false"
           :drag="true"
       >
         <template #preview>
-          {{ file1[0]?.name }}
+          {{ uploadFile[0]?.name }}
         </template>
       </lay-upload>
       <div style="width: 100%; text-align: center">
-        只能上传小于1000KB的文件
+        只能上传小于10MB的文件
+      </div>
+      <div style="width: 100%;margin-top: 20px; text-align: center">
+        <lay-button size="sm" type="primary" @click="toUpload()">上传</lay-button>
       </div>
     </lay-layer>
   </lay-container>
@@ -195,22 +197,30 @@ import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
 import {FindPageSysUserListEntity, SysUserVo} from "../../../types/system/User";
-import {findPageSysUserList} from "../../../api/system/User";
+import {findPageSysUserList, userImport} from "../../../api/system/User";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import router from "../../../router";
+import app from "../../../main";
 
 /* INIT*/
 const $router = router;
+const userImportRoute = import.meta.env.VITE_APP_BASE_URL + "/api/sysUserController/userImport"
+const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
+  for (const path in avatarPathGlob) {
+    avatarPath.push(path);
+  }
   change()
 })
 /* INIT*/
 /* VAR*/
+const avatarPath: any[] = [];
+const uploadAvatar = ref();
 const searchQuery = ref<SysUserVo>({})
 const visibleImport = ref(false)
-const file1 = ref<any>([])
+const uploadFile = ref([])
 const sysGenderList = ref<Array<SysDictValueEntity>>()
 const loading = ref(false)
 const selectedKeys = ref()
@@ -371,13 +381,18 @@ function cancel() {
   layer.msg('您已取消操作')
 }
 
-const beforeUpload10 = (file: File) => {
-  var isOver = false
-  if (file.size > 1000) {
-    isOver = true
-    layer.msg(`file size over 1000 KB`, {icon: 2})
-  }
-  return new Promise((resolver) => resolver(true))
+const beforeUpload20 = (file) => {
+  uploadFile.value.push(file);
+}
+
+function toUpload() {
+  uploadAvatar.value = randomUserAvatar();
+  userImport(uploadFile.value, uploadAvatar.value).then((res: any) => {
+    if (res.code === 200) {
+      layer.msg(res.msg, {icon: 1})
+      visibleImport.value = !visibleImport.value
+    }
+  })
 }
 
 /**
@@ -400,6 +415,11 @@ function assignRole() {
 
 function assignRoleById(id: any) {
   $router.push("/system/user/assignRole/" + id)
+}
+
+function randomUserAvatar() {
+  let index = Math.floor(Math.random() * avatarPath.length);
+  return avatarPath[index].replace(app.config.globalProperties.$SRC_ASSETS, '');
 }
 
 /*FUNCTION*/

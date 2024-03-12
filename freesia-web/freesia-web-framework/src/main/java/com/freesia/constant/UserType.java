@@ -32,7 +32,7 @@ public enum UserType {
     public static UserType getInstanceByKey(String key) {
         UserType[] values = UserType.values();
         for (UserType userType : values) {
-            if (userType.getUserType().equals(key)) {
+            if (userType.getUserType().equalsIgnoreCase(key)) {
                 return userType;
             }
         }
