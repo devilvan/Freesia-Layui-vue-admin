@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.AccessPolicy;
+import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
-import com.freesia.constant.OssConstant;
 import com.freesia.constant.OssModule;
 import com.freesia.dto.SysOssDto;
 import com.freesia.exception.OssException;
@@ -177,7 +177,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     }
 
     @Override
-    @Cacheable(value = OssConstant.SYS_OSS, key = "#id")
+    @Cacheable(value = CacheConstant.SYS_OSS, key = "#id")
     public SysOssDto findCacheById(Long id) {
         return UCopy.copyPo2Dto(getById(id), SysOssDto.class);
     }

@@ -1,13 +1,17 @@
 package com.freesia.util;
 
+import cn.hutool.core.util.ReflectUtil;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -41,5 +45,43 @@ public class USpringValidation {
      */
     public static <T> Set<ConstraintViolation<T>> validate(T data) {
         return Validation.buildDefaultValidatorFactory().getValidator().validate(data);
+    }
+
+    /**
+     * 校验数据并返回校验结果
+     *
+     * @param data 待校验的数据
+     * @param <T>  数据类型
+     * @return 校验结果
+     */
+    public static <T> List<String> errorMsg(T data) {
+        return validate(data).stream().map(constraintViolation -> {
+            // 获取校验失败的信息
+            final String message = constraintViolation.getMessage();
+            // 获取校验失败的字段
+            String field = getField(data.getClass(), constraintViolation);
+            // 获取校验失败的值
+            final Object invalidValue = constraintViolation.getInvalidValue();
+            return UMessage.message("validation.error.msg",
+                    UMessage.message(message), field, invalidValue);
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 根据校验失败的字段，获取@Schema注解中的描述
+     *
+     * @param <T>                 数据类型
+     * @param dataType            数据的Class
+     * @param constraintViolation 校验失败的结果
+     * @return 描述
+     */
+    private static <T> String getField(Class<?> dataType, ConstraintViolation<T> constraintViolation) {
+        final String property = constraintViolation.getPropertyPath().toString();
+        String field = ReflectUtil.getField(dataType, property)
+                .getAnnotation(Schema.class).description();
+        if (UEmpty.isEmpty(field)) {
+            field = property;
+        }
+        return field;
     }
 }

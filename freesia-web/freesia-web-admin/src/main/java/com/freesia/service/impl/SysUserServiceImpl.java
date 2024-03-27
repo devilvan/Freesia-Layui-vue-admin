@@ -153,7 +153,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public void saveUserInfo(SysUserDto sysUserDto) {
         Long id = sysUserDto.getId();
-        SysUserPo sysUserPo = sysUserRepository.getById(id);
+        SysUserPo sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed"));
         UCopy.halfCopy(sysUserDto, sysUserPo);
         sysUserRepository.save(sysUserPo);
     }

@@ -5,7 +5,6 @@ import router from '../router'
 import {useAppStore} from "../store/app";
 
 export let loginPath: string = '/login'
-const octetStreamCharsetUTF8 = 'application/octet-stream;charset=UTF-8';
 const downloadPath = import.meta.env.VITE_APP_DOWNLOAD_PATH;
 type TAxiosOption = {
     timeout: number;

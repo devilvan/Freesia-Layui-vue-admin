@@ -1,14 +1,16 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.hutool.core.util.ReflectUtil;
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.util.ListUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuPermission;
 import com.freesia.constant.UserModule;
 import com.freesia.constant.UserType;
+import com.freesia.crypt.uitl.UCrypt;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
@@ -30,13 +32,13 @@ import com.freesia.vo.R;
 import com.freesia.vo.SysTenantVo;
 import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +84,11 @@ public class SysUserController {
 
     @Operation(summary = "修改用户信息")
     @PutMapping("saveUserInfo")
-    public R<Void> saveUserInfo(@RequestBody SysUserVo sysUserVo) {
+    public R<Void> saveUserInfo(@RequestBody String request) {
+        SysUserVo sysUserVo = JSONObject.parseObject(
+                UCrypt.aesDesEncrypt(
+                        JSONObject.parseObject(request).getString("user")
+                ), SysUserVo.class);
         SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
         sysUserService.saveUserInfo(sysUserDto);
         return R.ok();
@@ -148,24 +154,12 @@ public class SysUserController {
                     List<SysUserDto> sysUserDtoList = UCollection.optimizeInitialCapacityArrayList(cachedDataList.size());
                     for (SysUserImportEntity sysUserImportEntity : cachedDataList) {
                         // 数据校验
-                        errorMsg.addAll(USpringValidation.validate(sysUserImportEntity)
-                                .stream().map(constraintViolationSet -> {
-                                    // 获取错误字段的字段描述
-                                    final String propertyPath = constraintViolationSet.getPropertyPath().toString();
-                                    String field = ReflectUtil.getField(SysUserImportEntity.class, propertyPath)
-                                            .getAnnotation(Schema.class).description();
-                                    if (UEmpty.isEmpty(field)) {
-                                        field = propertyPath;
-                                    }
-                                    return UMessage.message("validation.error.msg",
-                                            UMessage.message(constraintViolationSet.getMessage()), field,
-                                            constraintViolationSet.getInvalidValue());
-                                }).collect(Collectors.toList()));
+                        errorMsg.addAll(USpringValidation.errorMsg(sysUserImportEntity));
                         SysUserDto sysUserDto = buildSysUserDto(sysUserImportEntity);
                         sysUserDtoList.add(sysUserDto);
                     }
                     if (UEmpty.isNotEmpty(errorMsg)) {
-                        throw new ServiceException(StrUtil.join("\n", errorMsg));
+                        throw new ServiceException(UCollection.join(errorMsg, "\n"));
                     }
                     if (sysUserDtoList.size() > 0) {
                         // 过滤相同用户名的数据
@@ -218,5 +212,25 @@ public class SysUserController {
             return failed;
         }
         return R.ok();
+    }
+
+    //        @SaCheckPermission(value = MenuPermission.SYSTEM_USER_UPLOAD_AVATAR)
+    @SaIgnore
+    @Operation(summary = "用户头像上传")
+    @PostMapping(value = "uploadAvatar")
+    public R<Void> uploadAvatar(@RequestPart("file[]") MultipartFile file, @NotEmpty(message = "{not.null}") @RequestParam String id) {
+        return R.ok();
+    }
+
+    @Operation(summary = "根据用户ID查询该用户的修改信息")
+    @GetMapping(value = "findEditUserById")
+    public R<String> findEditUserById(@NotEmpty(message = "{not.null}") @RequestParam String id) {
+        final SysUserDto sysUserDto = sysUserService.findUserById(Long.valueOf(id));
+        try {
+            return R.ok(UCrypt.aesEncrypt(JSONObject.toJSONString(sysUserDto)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.failed();
     }
 }

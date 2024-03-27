@@ -12,6 +12,8 @@ freesia:
       init-sys-config: true
       # 是否初始化数据字典
       init-sys-dict: true
+      # 是否初始化后端公钥
+      init-secret-key: true
     tenant:
       enabled: true
       tenant-column: TENANT_ID

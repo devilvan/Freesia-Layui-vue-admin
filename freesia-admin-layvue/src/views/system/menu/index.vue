@@ -134,7 +134,7 @@
           </lay-button>
         </template>
         <template #menuType="{ row }">
-          <div v-if="row.isFrame === '1'">
+          <div v-if="row.isFrame === '0'">
             <dict-tag :options="sysMenuTypeList" :value="row.menuType"/>
           </div>
           <div v-else>

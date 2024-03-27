@@ -1,5 +1,5 @@
 {
-  "name": "layui-vue-admin",
+  "name": "freesia",
   "version": "2.0.0",
   "scripts": {
     "dev": "vite --mode development",
@@ -11,8 +11,11 @@
   "dependencies": {
     "@layui/layui-vue": "^2.13.2",
     "axios": "^1.3.4",
+    "crypto-js": "^4.2.0",
     "echarts": "^5.4.1",
+    "encryptlong": "^3.1.4",
     "js-base64": "^3.7.2",
+    "jsencrypt": "^3.3.2",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.32",
     "pinia-plugin-persistedstate": "^3.1.0",
@@ -21,7 +24,9 @@
     "vue-router": "^4.1.3"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^18.7.8",
+    "@types/node-rsa": "^1.1.4",
     "@types/nprogress": "^0.2.0",
     "@types/qs": "^6.9.8",
     "@vitejs/plugin-vue": "^4.2.0",

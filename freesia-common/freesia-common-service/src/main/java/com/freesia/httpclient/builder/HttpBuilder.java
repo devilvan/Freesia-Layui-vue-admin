@@ -41,7 +41,7 @@ public class HttpBuilder {
      * @param url           请求路径
      * @return 返回请求对象
      */
-    public static HttpRequestBase requestMethod2HttpRequestBase(RequestMethod requestMethod, String url) {
+    private static HttpRequestBase requestMethod2HttpRequestBase(RequestMethod requestMethod, String url) {
         return HttpContentType.methodApply(requestMethod, url);
     }
 

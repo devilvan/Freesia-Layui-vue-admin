@@ -1,16 +1,9 @@
 package com.freesia;
 
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.constant.FlagConstant;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
-import com.freesia.dto.SysOssDto;
-import com.freesia.dto.SysUserDto;
-import com.freesia.entity.SysUserImportEntity;
 import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.pojo.DemoData;
 import com.freesia.excel.util.UExcel;
@@ -18,9 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -53,20 +47,19 @@ public class FreesiaTest {
             if (key == null) {
                 return null;
             }
-            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            KeyGenerator kgen = KeyGenerator.getInstance("$AES");
 
             SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
             secureRandom.setSeed(key.getBytes());
             kgen.init(128, secureRandom);
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(1, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
-            byte[] bytes = value.getBytes("utf-8");
+            Cipher cipher = Cipher.getInstance("$AES");
+            cipher.init(1, new SecretKeySpec(kgen.generateKey().getEncoded(), "$AES"));
+            byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
             byte[] resultBytes = cipher.doFinal(bytes);
             return base64Encode(resultBytes);
         } catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
         } catch (NoSuchPaddingException localNoSuchPaddingException) {
         } catch (InvalidKeyException localInvalidKeyException) {
-        } catch (UnsupportedEncodingException localUnsupportedEncodingException) {
         } catch (IllegalBlockSizeException localIllegalBlockSizeException) {
         } catch (BadPaddingException localBadPaddingException) {
         }
@@ -80,13 +73,13 @@ public class FreesiaTest {
                 return null;
             }
             byte[] bytes = base64Decode(value);
-            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            KeyGenerator kgen = KeyGenerator.getInstance("$AES");
 
             SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
             secureRandom.setSeed(key.getBytes());
             kgen.init(128, secureRandom);
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(2, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
+            Cipher cipher = Cipher.getInstance("$AES");
+            cipher.init(2, new SecretKeySpec(kgen.generateKey().getEncoded(), "$AES"));
             byte[] result = cipher.doFinal(bytes);
             return new String(result, "utf-8");
         } catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
@@ -249,9 +242,9 @@ public class FreesiaTest {
         String originalText = "cU3bR6sY"; // 要加密的原始文本
 
         byte[] keyBytes = generateKey(); // 生成随机的16字节密钥
-        SecretKey secretKey = new SecretKeySpec(keyBytes, "AES"); // 创建SecretKey对象
+        SecretKey secretKey = new SecretKeySpec(keyBytes, "$AES"); // 创建SecretKey对象
 
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding"); // 选择加密模式和填充方式
+        Cipher cipher = Cipher.getInstance("$AES/ECB/PKCS5Padding"); // 选择加密模式和填充方式
         cipher.init(Cipher.ENCRYPT_MODE, secretKey); // 初始化加密器
 
         byte[] encryptedBytes = cipher.doFinal(originalText.getBytes()); // 执行加密操作
@@ -263,7 +256,7 @@ public class FreesiaTest {
     }
 
     private static byte[] generateKey() throws NoSuchAlgorithmException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        KeyGenerator keyGen = KeyGenerator.getInstance("$AES");
         SecureRandom random = new SecureRandom();
         keyGen.init(random);
         return keyGen.generateKey().getEncoded();

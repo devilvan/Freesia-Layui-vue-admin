@@ -18,7 +18,6 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 
@@ -92,7 +91,7 @@ public class ExcelExportBuilder {
     public ExcelExportBuilder setCompletePath(
             @Validated @NotNull(message = "导出路径不能为空！") String exportPath,
             @Validated @NotNull(message = "导出文件名不能为空！") String fileName,
-            @Valid @NotNull(message = "文件后缀不能为空！") ExcelSuffix suffix) {
+            @Validated @NotNull(message = "文件后缀不能为空！") ExcelSuffix suffix) {
         writerBuilder.file(UValidAssemble.validExportPath(exportPath, fileName, suffix.getSuffix()));
         return this;
     }

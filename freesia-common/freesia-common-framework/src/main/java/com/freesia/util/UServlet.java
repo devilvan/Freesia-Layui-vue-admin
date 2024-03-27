@@ -34,7 +34,7 @@ public class UServlet extends ServletUtil {
     /**
      * localhost IPv6
      */
-    public static final String LOCALHOST_IPv6 = "0:0:0:0:0:0:0:1";
+    public static final String LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
     public static final String LOCALHOST = "127.0.0.1";
 
     /**
@@ -136,11 +136,11 @@ public class UServlet extends ServletUtil {
     public static String getInitiatedRequestIp() {
         HttpServletRequest request = getRequest();
         if (request != null) {
-            String clientIP = getClientIP(request);
-            if (LOCALHOST_IPv6.equals(clientIP)) {
+            String clientIp = getClientIP(request);
+            if (LOCALHOST_IPV6.equals(clientIp)) {
                 return LOCALHOST;
             }
-            return clientIP;
+            return clientIp;
         }
         return null;
     }

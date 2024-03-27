@@ -89,7 +89,7 @@
         </template>
 
         <template v-slot:toolbar>
-          <lay-button size="sm" type="primary" @click="changeVisible11('新增')"
+          <lay-button size="sm" type="primary" @click="changeAddModalShowFlag(Operate.ADD)"
                       v-permission="[$MENU_PERMISSION.SYSTEM_USER_ADD]">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
@@ -109,7 +109,7 @@
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
-          <lay-button size="xs" type="primary" @click="changeVisible11('编辑', row)"
+          <lay-button size="xs" type="primary" @click="changeAddModalShowFlag(Operate.EDIT, row)"
                       v-permission="[$MENU_PERMISSION.SYSTEM_USER_EDIT]">编辑
           </lay-button>
           <lay-popconfirm content="确定要删除此用户吗?" @confirm="confirm" @cancel="cancel">
@@ -123,32 +123,35 @@
         </template>
       </lay-table>
     </div>
-
-    <lay-layer v-model="visible11" :title="title" :area="['500px', '550px']">
+    <lay-layer v-model="addModalShowFlag" :title="title" :area="['500px', '600px']">
       <div style="padding: 20px">
-        <lay-form :model="model11" ref="layFormRef11" required>
-          <lay-form-item label="姓名" prop="name">
-            <lay-input v-model="model11.name"></lay-input>
+        <lay-form :model="sysUserVo" ref="sysUserVoFormRef" required>
+          <lay-form-item label="昵称" prop="nickName">
+            <lay-input v-model="sysUserVo.nickName"></lay-input>
           </lay-form-item>
-          <lay-form-item label="年龄" prop="age">
-            <lay-input v-model="model11.age"></lay-input>
-          </lay-form-item>
-          <lay-form-item label="性别" prop="sex">
-            <lay-select v-model="model11.sex" style="width: 100%">
-              <lay-select-option value="男" label="男"></lay-select-option>
-              <lay-select-option value="女" label="女"></lay-select-option>
+
+          <lay-form-item label="性别" prop="gender">
+            <lay-select
+                v-model="sysUserVo.gender"
+                style="width: 100%"
+                placeholder="请选择性别"
+                :options="sysGenderListSelect"
+                :items="sysGenderListSelect"
+            >
             </lay-select>
           </lay-form-item>
-          <lay-form-item label="城市" prop="city">
-            <lay-input v-model="model11.city"></lay-input>
+          <lay-form-item label="邮箱" prop="email">
+            <lay-input v-model="sysUserVo.email"></lay-input>
           </lay-form-item>
-          <lay-form-item label="email" prop="email">
-            <lay-input v-model="model11.email"></lay-input>
+          <lay-form-item label="手机号" prop="telNo">
+            <lay-input v-model="sysUserVo.telNo"></lay-input>
           </lay-form-item>
           <lay-form-item label="描述" prop="remark">
             <lay-textarea
                 placeholder="请输入描述"
-                v-model="model11.remark"
+                v-model="sysUserVo.remark"
+                :show-count="true"
+                :maxlength="127"
             ></lay-textarea>
           </lay-form-item>
         </lay-form>
@@ -166,13 +169,19 @@
       <lay-upload
           style="margin: 60px"
           :url="userImportRoute"
-          v-model="uploadFile"
+          v-model="fileList"
           field="file"
+          acceptMime="application/vnd.ms-excel,
+          application/vnd.ms-excel.sheet.binary.macroenabled.12,
+          application/vnd.ms-excel.sheet.macroenabled.12,
+          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           :auto="false"
           :drag="true"
       >
         <template #preview>
-          {{ uploadFile[0]?.name }}
+          <div v-if="fileList.length > 0" v-for="(file, index) in fileList">
+            {{ index + ". " + file.name }}
+          </div>
         </template>
       </lay-upload>
       <div style="width: 100%; text-align: center">
@@ -197,18 +206,23 @@ import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
 import {FindPageSysUserListEntity, SysUserVo} from "../../../types/system/User";
-import {findPageSysUserList, userImport} from "../../../api/system/User";
-import {Constants, loadSysDictValue} from "../../../util/UDict";
+import {findEditUserById, findPageSysUserList, saveUserInfo, userImport} from "../../../api/system/User";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import router from "../../../router";
 import app from "../../../main";
+import {Operate} from "../../../types/Constants";
+import {useCryptStore} from "../../../store/crypt";
+import {decryptAes, encryptAes} from "../../../util/UCrypt";
 
 /* INIT*/
 const $router = router;
+const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_BASE_URL + "/api/sysUserController/userImport"
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
+  sysGenderListSelect.value = await sysDictValueSelect(sysGenderList.value)
   for (const path in avatarPathGlob) {
     avatarPath.push(path);
   }
@@ -220,13 +234,14 @@ const avatarPath: any[] = [];
 const uploadAvatar = ref();
 const searchQuery = ref<SysUserVo>({})
 const visibleImport = ref(false)
-const uploadFile = ref([])
+const fileList = ref([])
 const sysGenderList = ref<Array<SysDictValueEntity>>()
+const sysGenderListSelect = ref<Array<SysDictValueEntity>>()
 const loading = ref(false)
 const selectedKeys = ref()
-const model11 = ref<any>({})
-const layFormRef11 = ref()
-const visible11 = ref(false)
+const sysUserVo = ref<any>({})
+const sysUserVoFormRef = ref()
+const addModalShowFlag = ref(false)
 const title = ref('新增')
 const pageQuery: PageQuery = reactive<PageQuery>({
   current: 1,
@@ -297,18 +312,20 @@ const loadDataSource = () => {
     }
   })
 }
-const changeVisible11 = (text: any, row?: any) => {
-  title.value = text
-  if (row) {
-    let info = JSON.parse(JSON.stringify(row))
-    model11.value = info
-  } else {
-    model11.value = {}
+const changeAddModalShowFlag = (operate: any, row?: any) => {
+  title.value = Operate.ADD === operate ? '新增' : Operate.EDIT === operate ? '编辑' : '标题'
+  if (Operate.EDIT === operate) {
+    findEditUserById(row.id).then((res: any) => {
+      if (res.code === 200) {
+        let data = decryptAes(res.data)
+        sysUserVo.value = JSON.parse(data)
+      }
+    })
   }
-  visible11.value = !visible11.value
+  addModalShowFlag.value = !addModalShowFlag.value
 }
 const submit11 = function () {
-  layFormRef11.value.validate((isValidate: any, model: any, errors: any) => {
+  sysUserVoFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     layer.open({
       type: 1,
       title: '表单提交结果',
@@ -331,11 +348,11 @@ const submit11 = function () {
 }
 // 清除校验
 const clearValidate11 = function () {
-  layFormRef11.value.clearValidate()
+  sysUserVoFormRef.value.clearValidate()
 }
 // 重置表单
 const reset11 = function () {
-  layFormRef11.value.reset()
+  sysUserVoFormRef.value.reset()
 }
 
 function toRemove() {
@@ -365,12 +382,17 @@ function toRemove() {
 }
 
 function toSubmit() {
-  layer.msg('保存成功！', {icon: 1, time: 1000})
-  visible11.value = false
+  saveUserInfo(encryptAes(JSON.stringify(sysUserVo.value))).then((res: any) => {
+    if (res.code === 200) {
+      layer.msg(res.msg, {icon: 1})
+      change()
+      addModalShowFlag.value = !addModalShowFlag.value
+    }
+  })
 }
 
 function toCancel() {
-  visible11.value = false
+  addModalShowFlag.value = false
 }
 
 function confirm() {
@@ -381,13 +403,9 @@ function cancel() {
   layer.msg('您已取消操作')
 }
 
-const beforeUpload20 = (file) => {
-  uploadFile.value.push(file);
-}
-
 function toUpload() {
   uploadAvatar.value = randomUserAvatar();
-  userImport(uploadFile.value, uploadAvatar.value).then((res: any) => {
+  userImport(fileList.value, uploadAvatar.value).then((res: any) => {
     if (res.code === 200) {
       layer.msg(res.msg, {icon: 1})
       visibleImport.value = !visibleImport.value

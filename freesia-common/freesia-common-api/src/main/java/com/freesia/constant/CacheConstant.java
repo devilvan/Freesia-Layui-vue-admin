@@ -29,4 +29,24 @@ public final class CacheConstant {
      * 登录账户密码错误次数 redis key
      */
     public static final String  PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+    /**
+     * 获取默认对象存储配置信息-缓存键
+     */
+    public static final String SYS_OSS_DEFAULT_CONFIG = "sys_oss:default_config";
+    /**
+     * 获取对象存储配置信息-缓存键
+     */
+    public static final String SYS_OSS_CONFIG = "sys_oss:cache_key";
+    /**
+     * OSS对象存储-缓存键
+     */
+    public static final String SYS_OSS = "sys_oss#30d";
+    /**
+     * 后端RSA公钥 缓存建
+     */
+    public static final String CRYPT_PUB = "crypt_pub1";
+    /**
+     * 后端RSA私钥 缓存建
+     */
+    public static final String CRYPT_PRI = "crypt_pri1";
 }

@@ -175,19 +175,22 @@ import {SysOssEntity} from "../../../types/system/Oss";
 import {deleteSysOss, findPageSysOss, upload} from "../../../api/system/Oss";
 import {PageQuery} from "../../../types/Common";
 import Http from "../../../api/Http";
+import app from "../../../main";
 
 /* INIT*/
 onMounted(() => {
+  console.log(pubKey);
   loadDataSource()
 })
 /* INIT*/
 
 /* VAR*/
+const pubKey = app.config.globalProperties.$PUB_KEY;
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
 const searchQuery = ref<SysOssEntity>({})
 const pictureType = ['jpg', 'jpeg', 'png', 'gif'];
 const visibleImport = ref(false)
-  const fileList = ref([])
+const fileList = ref([])
 const loading = ref(false)
 const selectedKeys = ref([])
 const columns = ref([
