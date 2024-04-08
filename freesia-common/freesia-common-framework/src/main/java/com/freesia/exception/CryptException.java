@@ -1,7 +1,6 @@
-package com.freesia.crypt.exception;
+package com.freesia.exception;
 
-import com.freesia.crypt.constant.CryptModule;
-import com.freesia.exception.ServiceException;
+import com.freesia.constant.CryptModule;
 
 import java.io.Serial;
 

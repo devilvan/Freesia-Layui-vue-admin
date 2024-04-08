@@ -1,4 +1,4 @@
-package com.freesia.crypt.uitl;
+package com.freesia.util;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.crypto.Mode;

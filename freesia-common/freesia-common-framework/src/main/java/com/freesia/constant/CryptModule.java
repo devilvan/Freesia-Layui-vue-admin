@@ -1,7 +1,7 @@
-package com.freesia.crypt.constant;
+package com.freesia.constant;
 
-import com.freesia.constant.SysModule;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
@@ -15,4 +15,19 @@ public class CryptModule extends SysModule {
      * 主模块 加密/解密管理模块
      */
     public static final String CRYPT_MANAGEMENT = "crypt_management";
+
+    /**
+     * 子模块
+     */
+    @Data
+    public static class SubModule {
+        /**
+         * 子模块 加密
+         */
+        public static final String ENCRYPT = "encrypt";
+        /**
+         * 子模块 解密
+         */
+        public static final String DECRYPT = "decrypt";
+    }
 }

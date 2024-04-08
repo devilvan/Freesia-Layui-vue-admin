@@ -6,11 +6,11 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.annotation.Encrypt;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuPermission;
 import com.freesia.constant.UserModule;
 import com.freesia.constant.UserType;
-import com.freesia.crypt.uitl.UCrypt;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
@@ -222,15 +222,12 @@ public class SysUserController {
         return R.ok();
     }
 
+    @SaIgnore
+    @Encrypt
     @Operation(summary = "根据用户ID查询该用户的修改信息")
     @GetMapping(value = "findEditUserById")
-    public R<String> findEditUserById(@NotEmpty(message = "{not.null}") @RequestParam String id) {
+    public R<SysUserDto> findEditUserById(@NotEmpty(message = "{not.null}") @RequestParam String id) {
         final SysUserDto sysUserDto = sysUserService.findUserById(Long.valueOf(id));
-        try {
-            return R.ok(UCrypt.aesEncrypt(JSONObject.toJSONString(sysUserDto)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return R.failed();
+        return R.ok(sysUserDto);
     }
 }
