@@ -382,7 +382,7 @@ function toRemove() {
 }
 
 function toSubmit() {
-  saveUserInfo(encryptAes(JSON.stringify(sysUserVo.value))).then((res: any) => {
+  saveUserInfo(encryptAes(sysUserVo.value)).then((res: any) => {
     if (res.code === 200) {
       layer.msg(res.msg, {icon: 1})
       change()

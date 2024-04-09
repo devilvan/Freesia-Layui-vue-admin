@@ -20,7 +20,7 @@ export const findCurrentUserProfile = function () {
 }
 
 export const saveUserInfo = function (user: string) {
-    let params = {user}
+    let params = {"encrypt": user}
     return Http.put('/api/sysUserController/saveUserInfo', params)
 }
 

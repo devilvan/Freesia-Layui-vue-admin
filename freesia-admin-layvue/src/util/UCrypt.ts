@@ -17,7 +17,10 @@ export function decryptRsa(privateKey: string, data: string) {
     return decrypt.decryptLong(data)
 }
 
-export function encryptAes(data: string) {
+export function encryptAes(data: any) {
+    if (typeof(data) === 'object') {
+        data = JSON.stringify(data);
+    }
     return CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse($crypt.aes), {
         mode: CryptoJS.mode.ECB,
         padding: CryptoJS.pad.ZeroPadding,

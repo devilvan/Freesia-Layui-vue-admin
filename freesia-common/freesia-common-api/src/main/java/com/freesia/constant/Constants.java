@@ -46,4 +46,8 @@ public final class Constants {
      * 验证码过期时间（分钟）
      */
     public static final long CAPTCHA_EXPIRATION = 2;
+    /**
+     * 加密
+     */
+    public static final String ENCRYPT = "encrypt";
 }

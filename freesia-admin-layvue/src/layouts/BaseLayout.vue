@@ -271,8 +271,6 @@ export default {
       }
       userInfoStore.getMenu()
       app.config.globalProperties.$getPublicKey();
-      console.log("crypt.pri2：" + crypt.pri2);
-      console.log("crypt.aes：" + crypt.aes);
     })
 
     const changeVisible = () => {

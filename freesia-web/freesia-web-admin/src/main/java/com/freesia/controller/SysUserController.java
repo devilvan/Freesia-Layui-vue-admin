@@ -6,11 +6,9 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.annotation.Decrypt;
 import com.freesia.annotation.Encrypt;
-import com.freesia.constant.FlagConstant;
-import com.freesia.constant.MenuPermission;
-import com.freesia.constant.UserModule;
-import com.freesia.constant.UserType;
+import com.freesia.constant.*;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
@@ -32,6 +30,8 @@ import com.freesia.vo.R;
 import com.freesia.vo.SysTenantVo;
 import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -85,10 +85,7 @@ public class SysUserController {
     @Operation(summary = "修改用户信息")
     @PutMapping("saveUserInfo")
     public R<Void> saveUserInfo(@RequestBody String request) {
-        SysUserVo sysUserVo = JSONObject.parseObject(
-                UCrypt.aesDesEncrypt(
-                        JSONObject.parseObject(request).getString("user")
-                ), SysUserVo.class);
+        SysUserVo sysUserVo = UCrypt.aesDecryptJSON(request, SysUserVo.class);
         SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
         sysUserService.saveUserInfo(sysUserDto);
         return R.ok();
@@ -222,10 +219,10 @@ public class SysUserController {
         return R.ok();
     }
 
-    @SaIgnore
     @Encrypt
     @Operation(summary = "根据用户ID查询该用户的修改信息")
     @GetMapping(value = "findEditUserById")
+    @SaCheckPermission(value = MenuPermission.SYSTEM_USER_EDIT)
     public R<SysUserDto> findEditUserById(@NotEmpty(message = "{not.null}") @RequestParam String id) {
         final SysUserDto sysUserDto = sysUserService.findUserById(Long.valueOf(id));
         return R.ok(sysUserDto);
