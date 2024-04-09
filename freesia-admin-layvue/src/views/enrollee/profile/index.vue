@@ -4,7 +4,8 @@
       <lay-col style="max-width: 400px" :xs="24">
         <lay-card shadow="hover" class="info-user">
           <div style="text-align: center">
-            <lay-avatar :src="$SRC_ASSETS + currentUserProfileTemplate.avatar" class="user-avatar"></lay-avatar>
+            <lay-avatar :src="$SRC_ASSETS + currentUserProfileTemplate.avatar" class="user-avatar"
+                        @click="toImport()"></lay-avatar>
             <div class="user-name">{{ currentUserProfileTemplate.nickName }}</div>
             <div class="user-briefing">{{ currentUserProfileTemplate.remark }}</div>
           </div>
@@ -122,6 +123,33 @@
         </lay-tab>
       </lay-col>
     </lay-row>
+    <!--    <lay-layer-->
+    <!--        v-model="visibleImport"-->
+    <!--        title="上传图片"-->
+    <!--        :area="['380px', '500px']"-->
+    <!--    >-->
+    <!--      <lay-upload-->
+    <!--          style="margin: 60px"-->
+    <!--          :url="userImportRoute"-->
+    <!--          v-model="uploadFile"-->
+    <!--          field="file"-->
+    <!--          acceptMime="image/jpeg,image/png,image/gif"-->
+    <!--          size="10240"-->
+    <!--          number="1"-->
+    <!--          :auto="false"-->
+    <!--          :drag="true"-->
+    <!--      >-->
+    <!--        <template #preview>-->
+    <!--          {{ uploadFile[0]?.name }}-->
+    <!--        </template>-->
+    <!--      </lay-upload>-->
+    <!--      <div style="width: 100%; text-align: center">-->
+    <!--        只能上传小于10MB的文件-->
+    <!--      </div>-->
+    <!--      <div style="width: 100%;margin-top: 20px; text-align: center">-->
+    <!--        <lay-button size="sm" type="primary" @click="toUpload()">上传</lay-button>-->
+    <!--      </div>-->
+    <!--    </lay-layer>-->
   </lay-container>
 </template>
 
@@ -141,14 +169,26 @@ import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDi
 import {SysUserVo} from "../../../types/system/User";
 import {findDeptById} from "../../../api/system/Dept";
 import {SysDeptEntity} from "../../../types/system/Dept";
-import {findCurrentUserProfile, saveUserInfo} from "../../../api/system/User";
+import {findCurrentUserProfile, saveUserInfo, userImport} from "../../../api/system/User";
 import {refresh} from "../../../util/UCommon";
+import CryptoJS from "crypto-js";
 
 /* INIT*/
 onMounted(async () => {
   await loadDictValue()
   await loadSysDeptEntity();
   await loadCurrentUserInfo()
+
+  let AES_KEY = "+++++jjkkll;'123"
+  // let IV = "0123456789abcdef";
+  var key = CryptoJS.enc.Utf8.parse(AES_KEY);
+  var iv = CryptoJS.enc.Utf8.parse(IV);
+  var encrypted = CryptoJS.AES.encrypt("{\"accountStatus\":\"1\",\"avatar\":\"avatar/DDF.png\",\"buildIn\":false,\"createTime\":\"2023-08-15 08:52:26\",\"creator\":\"Evad\",\"deptId\":\"1697116611017363459\",\"email\":\"1814926857@qq.com\",\"gender\":\"M\",\"id\":\"1\",\"logicDel\":false,\"modifier\":\"admin\",\"modifyTime\":\"2024-02-19 17:56:42\",\"nickName\":\"Dungeon Master\",\"password\":\"$2a$10$/QC8MgeOJWaymIe61PWKCO6SvstpPVpihq6I1iaLAs/y2aNu6CiC2\",\"recVer\":\"7\",\"remark\":\"My name is Van, I'm an artist, a performance artist, I'm hired for people to fulfill their fantasies, the Deep Dark Fantasies.\",\"telNo\":\"18878269603\",\"userName\":\"admin\",\"userType\":\"sys_user\"}", key, {
+    // iv: iv,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  }).toString();
+  console.log(encrypted);
 })
 /* INIT*/
 
@@ -215,6 +255,9 @@ const bindingAccountList = ref([
     color: '#e6162d'
   }
 ])
+const userImportRoute = import.meta.env.VITE_APP_BASE_URL + "/api/sysUserController/userImport"
+const visibleImport = ref(false)
+const uploadFile = ref([])
 /* VAR */
 
 /* FUNCTION*/
@@ -288,6 +331,20 @@ function profileFormReset() {
   // profileFormRef.value.reset()
 }
 
+function toImport() {
+  visibleImport.value = true
+}
+
+function toUpload() {
+  uploadAvatar.value = randomUserAvatar();
+  userImport(fileList.value, uploadAvatar.value).then((res: any) => {
+    if (res.code === 200) {
+      layer.msg(res.msg, {icon: 1})
+      visibleImport.value = !visibleImport.value
+    }
+  })
+}
+
 /* FUNCTION*/
 
 
@@ -309,6 +366,7 @@ function profileFormReset() {
   width: 200px;
   height: 200px;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 .user-name {

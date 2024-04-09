@@ -1,6 +1,8 @@
 package com.freesia;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.annotation.Decrypt;
 import com.freesia.constant.AccessPolicy;
 import com.freesia.dto.GiteeCommitsRequestParamDto;
 import com.freesia.dto.GiteeCommitsResponseDto;
@@ -11,12 +13,19 @@ import com.freesia.httpclient.dto.HttpClientDto;
 import com.freesia.po.SysOssConfigPo;
 import com.freesia.properties.GiteeProperties;
 import com.freesia.repository.SysOssConfigRepository;
+import com.freesia.vo.AssignRoleVo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -32,6 +41,20 @@ public class FreesiaTestApplication {
     private GiteeProperties giteeProperties;
     @Resource
     private SysOssConfigRepository sysOssConfigRepository;
+
+    @SaIgnore
+    @Operation(summary = "testDecrypt",
+            parameters = {
+                    @Parameter(name = "id", in = ParameterIn.QUERY),
+                    @Parameter(name = "name", in = ParameterIn.QUERY)
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(ref = "request"))
+    @PostMapping(value = "testDecrypt")
+    public void testDecrypt(Long id, @Decrypt @RequestParam String name, @Decrypt @RequestBody AssignRoleVo assignRoleVo) {
+        System.out.println(id);
+        System.out.println(name);
+        System.out.println(assignRoleVo);
+    }
 
     @Test
     public void saveOssConfig() {

@@ -1,7 +1,7 @@
 package com.freesia.pojo;
 
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.constant.OssConstant;
+import com.freesia.constant.CacheConstant;
 import com.freesia.exception.OssException;
 import com.freesia.properties.OssProperties;
 import com.freesia.util.UEmpty;
@@ -27,7 +27,7 @@ public class OssFactory {
      */
     public static OssHandler getInstance() {
         // 获取redis 默认类型
-        String configKey = URedis.get(OssConstant.SYS_OSS_DEFAULT_CONFIG);
+        String configKey = URedis.get(CacheConstant.SYS_OSS_DEFAULT_CONFIG);
         if (UEmpty.isEmpty(configKey)) {
             throw new OssException("文件存储服务类型无法找到!");
         }
@@ -41,7 +41,7 @@ public class OssFactory {
      * @return 对象存储处理器实例
      */
     public static synchronized OssHandler getInstance(String configKey) {
-        String json = (String) URedis.hashGet(OssConstant.SYS_OSS_CONFIG, configKey);
+        String json = (String) URedis.hashGet(CacheConstant.SYS_OSS_CONFIG, configKey);
         if (json == null) {
             throw new OssException("系统异常, '" + configKey + "'配置信息不存在!");
         }

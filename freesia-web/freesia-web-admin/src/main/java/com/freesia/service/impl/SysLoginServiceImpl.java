@@ -7,6 +7,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
+import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
 import com.freesia.model.LoginUserModel;
 import com.freesia.model.SysRoleModel;
@@ -77,6 +78,9 @@ public class SysLoginServiceImpl implements SysLoginService {
     public LoginUserModel buildLoginUser(SysUserPo sysUserPo) {
         // 获取用户对应的部门
         SysDeptPo sysDeptPo = sysUserPo.getSysDeptPo();
+        if (UEmpty.isNull(sysDeptPo)) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "user.dept.non.assign", sysUserPo.getUserName());
+        }
         // 是否管理员
         boolean isAdmin = isAdmin(sysUserPo);
         // 获取用户对应的角色

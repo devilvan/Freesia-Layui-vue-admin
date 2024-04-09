@@ -21,6 +21,7 @@ public class MenuPermission {
     public static final String SYSTEM_USER_DELETE = "system:user:delete";
     public static final String SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole";
     public static final String SYSTEM_USER_IMPORT_USER = "system:user:importUser";
+    public static final String SYSTEM_USER_UPLOAD_AVATAR = "system:user:uploadAvatar";
 
     /* 菜单管理*/
     public static final String SYSTEM_MENU_INDEX = "system:menu:index";

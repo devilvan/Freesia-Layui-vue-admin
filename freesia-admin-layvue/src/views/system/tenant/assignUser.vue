@@ -141,6 +141,7 @@ import {useUserStore} from "../../../store/user";
 /* INIT*/
 const $route = useRoute();
 const $router = router;
+const userInfoStore = useUserStore()
 const {closeOpen} = useTabStore();
 onMounted(async () => {
   // sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
@@ -234,6 +235,8 @@ function assign() {
       change()
       assignUserModalPageQuery.current = 1;
       changeAssignUserModal()
+      userInfoStore.reloadSysTenant();
+      window.location.reload()
     } else {
       layer.confirm(res.msg, {icon: 2})
     }

@@ -1,7 +1,7 @@
 package com.freesia.component;
 
 import com.freesia.constant.CacheConstant;
-import com.freesia.constant.OssConstant;
+import com.freesia.crypt.service.CryptService;
 import com.freesia.properties.WebCommonProperties;
 import com.freesia.service.SysConfigService;
 import com.freesia.service.SysDictValueService;
@@ -15,23 +15,24 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Evad.Wu
- * @Description 管理模块-缓存 组件
+ * @Description 应用启动后初始化 初始化器
  * @date 2023-09-21
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CacheRunner implements ApplicationRunner {
+public class FreesiaApplicationRunner implements ApplicationRunner {
     private final WebCommonProperties webCommonProperties;
     private final SysConfigService sysConfigService;
     private final SysDictValueService sysDictValueService;
     private final SysOssConfigService sysOssConfigService;
+    private final CryptService cryptService;
 
     @Override
     public void run(ApplicationArguments args) {
         sysOssConfigService.loadSysOssConfig();
-        log.info(UMessage.message("oss.load.success", OssConstant.SYS_OSS_DEFAULT_CONFIG));
-        log.info(UMessage.message("oss.load.success", OssConstant.SYS_OSS_CONFIG));
+        log.info(UMessage.message("oss.load.success", CacheConstant.SYS_OSS_DEFAULT_CONFIG));
+        log.info(UMessage.message("oss.load.success", CacheConstant.SYS_OSS_CONFIG));
         if (webCommonProperties.getInitSysConfig()) {
             sysConfigService.loadSysConfig();
             log.info(UMessage.message("config.load.success", CacheConstant.SYS_CONFIG));
@@ -39,6 +40,10 @@ public class CacheRunner implements ApplicationRunner {
         if (webCommonProperties.getInitSysDict()) {
             sysDictValueService.loadSysDictValue();
             log.info(UMessage.message("dict.load.success", CacheConstant.SYS_DICT));
+        }
+        if (webCommonProperties.getInitSecretKey()) {
+            cryptService.initRsa();
+            log.info(UMessage.message("crypt.init.success"));
         }
     }
 }

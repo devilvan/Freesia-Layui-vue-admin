@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -41,11 +43,11 @@ public final class Constants {
      */
     public static final String X_TENANT_ID = "X-Tenant-Id";
     /**
-     * 字符集 UTF_8
-     */
-    public static final String UTF_8 = "UTF-8";
-    /**
      * 验证码过期时间（分钟）
      */
     public static final long CAPTCHA_EXPIRATION = 2;
+    /**
+     * 加密
+     */
+    public static final String ENCRYPT = "encrypt";
 }

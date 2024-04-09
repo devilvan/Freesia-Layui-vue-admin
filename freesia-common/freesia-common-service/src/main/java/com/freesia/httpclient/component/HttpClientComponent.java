@@ -37,29 +37,6 @@ public class HttpClientComponent {
     private final RequestConfig requestConfig;
     private final HttpClientRetryHandler httpClientRetryHandler;
 
-    public HttpRequestBase generateHttpRequest(RequestMethod requestMethod, String url) {
-        return generateHttpRequest(requestMethod, url, null);
-    }
-
-    /**
-     * 步骤一：生成一个 HttpRequest请求对象
-     *
-     * @param requestMethod 请求方式 {@link RequestMethod}
-     * @param url           请求路径
-     * @param header        输入的头信息
-     * @return 返回请求对象
-     */
-    public HttpRequestBase generateHttpRequest(RequestMethod requestMethod, String url, Map<String, String> header) {
-        HttpRequestBase httpRequestBase = HttpBuilder.requestMethod2HttpRequestBase(requestMethod, url);
-        if (UEmpty.isNotEmpty(header)) {
-            Set<Map.Entry<String, String>> entrySet = header.entrySet();
-            for (Map.Entry<String, String> entry : entrySet) {
-                httpRequestBase.setHeader(entry.getKey(), entry.getValue());
-            }
-        }
-        return httpRequestBase;
-    }
-
     /**
      * 重构步骤三：通过 {@link HttpBuilder} 构建的httpclient提供请求方法对象以及
      *

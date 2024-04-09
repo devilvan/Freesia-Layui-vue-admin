@@ -69,6 +69,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * Fastjson 处理前端或请求工具导致Long类型数据丢精度问题
      *
      * @param converters Http消息转换器
+     * @return 响应报文转换器
      */
     @Bean
     public HttpMessageConverters fastjsonHttpMessageConverter(List<HttpMessageConverter<?>> converters) {

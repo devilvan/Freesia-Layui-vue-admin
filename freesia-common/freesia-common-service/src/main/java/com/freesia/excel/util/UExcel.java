@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.InputStream;
 
 /**
  * @author Evad.Wu
@@ -105,6 +106,54 @@ public class UExcel {
     }
 
     /**
+     * 导入excel，使用默认导入监听器
+     *
+     * @param inputStream 文件名
+     * @param dataType    数据类型
+     * @param <T>         数据类型泛型
+     */
+    public static <T extends BaseImportEntity> void read(InputStream inputStream, Class<T> dataType) {
+        read(inputStream, dataType, new BaseImportEntityListener<>(), null, null);
+    }
+
+    /**
+     * 导入excel，使用默认导入监听器
+     *
+     * @param inputStream 输入流
+     * @param dataType    数据类型
+     * @param sheetNo     表单编号
+     * @param <T>         数据类型泛型
+     */
+    public static <T extends BaseImportEntity> void read(InputStream inputStream, Class<T> dataType, Integer sheetNo) {
+        read(inputStream, dataType, new BaseImportEntityListener<>(), sheetNo, null);
+    }
+
+    /**
+     * 导入excel，使用默认导入监听器
+     *
+     * @param inputStream 输入流
+     * @param dataType    数据类型
+     * @param sheetName   表单名称
+     * @param <T>         数据类型泛型
+     */
+    public static <T extends BaseImportEntity> void read(InputStream inputStream, Class<T> dataType, String sheetName) {
+        read(inputStream, dataType, new BaseImportEntityListener<>(), null, sheetName);
+    }
+
+    /**
+     * 导入excel，使用默认导入监听器
+     *
+     * @param inputStream 输入流
+     * @param dataType    数据类型
+     * @param sheetNo     表单编号
+     * @param sheetName   表单名称
+     * @param <T>         数据类型泛型
+     */
+    public static <T extends BaseImportEntity> void read(InputStream inputStream, Class<T> dataType, Integer sheetNo, String sheetName) {
+        read(inputStream, dataType, new BaseImportEntityListener<>(), sheetNo, sheetName);
+    }
+
+    /**
      * 导入excel
      *
      * @param fileName     文件名
@@ -121,5 +170,24 @@ public class UExcel {
             Integer sheetNo,
             String sheetName) {
         EasyExcel.read(fileName, dataType, readListener).sheet(sheetNo, sheetName).doRead();
+    }
+
+    /**
+     * 导入excel
+     *
+     * @param inputStream  输入流
+     * @param dataType     数据类型
+     * @param readListener 导入监听器
+     * @param sheetNo      表单编号
+     * @param sheetName    表单名称
+     * @param <T>          数据类型泛型
+     */
+    public static <T extends BaseImportEntity> void read(
+            @Validated @NotNull(message = "文件路径不能为空！") InputStream inputStream,
+            @Validated @NotNull(message = "数据类型！") Class<T> dataType,
+            ReadListener<T> readListener,
+            Integer sheetNo,
+            String sheetName) {
+        EasyExcel.read(inputStream, dataType, readListener).sheet(sheetNo, sheetName).doRead();
     }
 }

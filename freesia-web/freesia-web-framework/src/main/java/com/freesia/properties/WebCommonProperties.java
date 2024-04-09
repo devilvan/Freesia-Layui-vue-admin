@@ -18,4 +18,6 @@ public class WebCommonProperties {
     private Boolean initSysConfig;
     @Schema(description = "是否初始化数据字典（sysDict）")
     private Boolean initSysDict;
+    @Schema(description = "是否初始化后端秘钥")
+    private Boolean initSecretKey;
 }

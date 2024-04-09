@@ -25,7 +25,7 @@ public class LoginVo {
     private String username;
     @Schema(description = "用户密码")
     @NotBlank(message = "{user.password.not.null}")
-    @Length(min = AdminConstant.PASSWORD_MIN_LENGTH, max = AdminConstant.PASSWORD_MAX_LENGTH, message = "{user.password.length.valid}")
+    @Length(min = AdminConstant.PASSWORD_MIN_LENGTH, max = AdminConstant.PASSWORD_MAX_LENGTH, message = "{user.password.length.invalid}")
     private String password;
     @Schema(description = "验证码")
     private String code;

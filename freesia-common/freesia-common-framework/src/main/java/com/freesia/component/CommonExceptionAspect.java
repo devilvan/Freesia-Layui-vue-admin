@@ -42,7 +42,7 @@ public class CommonExceptionAspect {
     @ExceptionHandler(ServiceException.class)
     public R<Object> serviceException(HttpServletRequest request, ServiceException e) {
         String message = e.getMessage();
-        log.error("所属模块：【{}】请求地址：【{}】，错误信息：{}", e.getModule(), request.getRequestURL(), message);
+        log.error("所属模块：【{}】请求地址：【{}】，错误信息：【{}】", e.getModule(), request.getRequestURL(), message);
         return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, message);
     }
 

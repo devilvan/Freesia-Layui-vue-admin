@@ -70,7 +70,7 @@
             <ul class="other-ways">
               <li>
                 <div class="line-container">
-                  <img class="icon" src="src/assets/login/w.svg"/>
+                  <img class="icon" src="../../assets/login/w.svg"/>
                   <p class="text">微信</p>
                 </div>
               </li>

@@ -227,6 +227,8 @@ import zh_CN from '../lang/zh_CN'
 import en_US from '../lang/en_US'
 import router from "../router";
 import {useTabStore} from "./composable/useTabStore";
+import app from "../main";
+import {useCryptStore} from "../store/crypt";
 
 export default {
   components: {
@@ -241,6 +243,7 @@ export default {
   setup() {
     const appStore = useAppStore()
     const userInfoStore = useUserStore()
+    const crypt = useCryptStore();
     const $tab = useTabStore();
     const fullscreenRef = ref()
     const visible = ref(false)
@@ -267,10 +270,7 @@ export default {
         appStore.collapse = true
       }
       userInfoStore.getMenu()
-      userInfoStore.reloadSysTenant();
-      if (userInfoStore.sysTenantDtoList && userInfoStore.sysTenantDtoList.length > 0) {
-        appStore.currentTenant = userInfoStore.sysTenantDtoList[0]?.id;
-      }
+      app.config.globalProperties.$getPublicKey();
     })
 
     const changeVisible = () => {

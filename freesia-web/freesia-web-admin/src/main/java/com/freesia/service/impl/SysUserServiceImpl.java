@@ -153,7 +153,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public void saveUserInfo(SysUserDto sysUserDto) {
         Long id = sysUserDto.getId();
-        SysUserPo sysUserPo = sysUserRepository.getById(id);
+        SysUserPo sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed"));
         UCopy.halfCopy(sysUserDto, sysUserPo);
         sysUserRepository.save(sysUserPo);
     }
@@ -228,6 +228,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public Boolean isAdmin(Long id) {
         return sysUserMapper.isAdmin(id);
+    }
+
+    @Override
+    public List<SysUserDto> findDistinctUserNameList(List<String> distinctUserNameList) {
+        Wrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<SysUserPo>()
+                .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
+                .in(SysUserPo::getUserName, distinctUserNameList);
+        List<SysUserPo> sysUserPoList = this.list(queryWrapper);
+        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
     }
 
     /**

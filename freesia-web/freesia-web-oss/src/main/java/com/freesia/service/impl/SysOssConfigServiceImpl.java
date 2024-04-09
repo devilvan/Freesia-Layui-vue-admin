@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.OssConstant;
 import com.freesia.dto.SysOssConfigDto;
@@ -77,14 +78,12 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
     public void loadSysOssConfig() {
         Wrapper<SysOssConfigPo> queryWrapper = new LambdaQueryWrapper<SysOssConfigPo>()
                 .eq(SysOssConfigPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(SysOssConfigPo::getStatus, FlagConstant.DISABLED);
+                .eq(SysOssConfigPo::getStatus, FlagConstant.ENABLED);
         List<SysOssConfigPo> sysOssConfigPoList = sysOssConfigMapper.selectList(queryWrapper);
         for (SysOssConfigPo sysOssConfigPo : sysOssConfigPoList) {
             String configKey = sysOssConfigPo.getConfigKey();
-            if (sysOssConfigPo.getStatus()) {
-                URedis.set(OssConstant.SYS_OSS_DEFAULT_CONFIG, configKey);
-            }
-            URedis.put(OssConstant.SYS_OSS_CONFIG, configKey, JSONObject.toJSONString(sysOssConfigPo));
+            URedis.set(CacheConstant.SYS_OSS_DEFAULT_CONFIG, configKey);
+            URedis.put(CacheConstant.SYS_OSS_CONFIG, configKey, JSONObject.toJSONString(sysOssConfigPo));
         }
     }
 }

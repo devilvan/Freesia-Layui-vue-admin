@@ -19,8 +19,9 @@ export const findCurrentUserProfile = function () {
     return Http.get('/api/sysUserController/findCurrentUserProfile')
 }
 
-export const saveUserInfo = function (sysUserVo: SysUserVo) {
-    return Http.put('/api/sysUserController/saveUserInfo', sysUserVo)
+export const saveUserInfo = function (user: string) {
+    let params = {"encrypt": user}
+    return Http.put('/api/sysUserController/saveUserInfo', params)
 }
 
 export const findUserRolesByUserId = function (userId: string) {
@@ -41,3 +42,30 @@ export function findPageAllowAssignUserByTenantId(sysTenantVo: SysTenantVo, page
     return Http.get("/api/sysUserController/findPageAllowAssignUserByTenantId", params);
 }
 
+export const userImport = function (file: File, avatar: string) {
+    let params = {
+        file: file,
+        avatar: avatar
+    }
+    return Http.post('/api/sysUserController/userImport', params, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}
+export const uploadAvatar = function (file: File, id: string) {
+    let params = {
+        file: file,
+        id: id
+    }
+    return Http.post('/api/sysUserController/uploadAvatar', params, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}
+
+export function findEditUserById(id: string): Promise<String> {
+    let params = {id: id}
+    return Http.get("/api/sysUserController/findEditUserById", params);
+}

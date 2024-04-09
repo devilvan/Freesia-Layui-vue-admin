@@ -14,7 +14,6 @@ import java.util.Map;
  * @Description 由 {@link HttpBuilder}构建的HttpClient对象
  * @date 2022-11-21
  */
-@Slf4j
 @Data
 @AllArgsConstructor
 public class HttpClientDto {
