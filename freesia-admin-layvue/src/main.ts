@@ -20,8 +20,6 @@ app.config.globalProperties.$SRC_ASSETS = "/src/assets/";
 app.config.globalProperties.$ADMIN_PERMISSION = "*:*:*";
 app.config.globalProperties.$ADMIN_ROLE = "admin";
 app.config.globalProperties.$MENU_PERMISSION = MenuPermission
-app.config.globalProperties.$PRI2 = "";
-app.config.globalProperties.$AES = "";
 
 app.use(Store);
 app.use(Router);

@@ -172,27 +172,18 @@ import {SysDeptEntity} from "../../../types/system/Dept";
 import {findCurrentUserProfile, saveUserInfo, userImport} from "../../../api/system/User";
 import {refresh} from "../../../util/UCommon";
 import CryptoJS from "crypto-js";
+import {useCryptStore} from "../../../store/crypt";
 
 /* INIT*/
 onMounted(async () => {
   await loadDictValue()
   await loadSysDeptEntity();
   await loadCurrentUserInfo()
-
-  let AES_KEY = "+++++jjkkll;'123"
-  // let IV = "0123456789abcdef";
-  var key = CryptoJS.enc.Utf8.parse(AES_KEY);
-  var iv = CryptoJS.enc.Utf8.parse(IV);
-  var encrypted = CryptoJS.AES.encrypt("{\"accountStatus\":\"1\",\"avatar\":\"avatar/DDF.png\",\"buildIn\":false,\"createTime\":\"2023-08-15 08:52:26\",\"creator\":\"Evad\",\"deptId\":\"1697116611017363459\",\"email\":\"1814926857@qq.com\",\"gender\":\"M\",\"id\":\"1\",\"logicDel\":false,\"modifier\":\"admin\",\"modifyTime\":\"2024-02-19 17:56:42\",\"nickName\":\"Dungeon Master\",\"password\":\"$2a$10$/QC8MgeOJWaymIe61PWKCO6SvstpPVpihq6I1iaLAs/y2aNu6CiC2\",\"recVer\":\"7\",\"remark\":\"My name is Van, I'm an artist, a performance artist, I'm hired for people to fulfill their fantasies, the Deep Dark Fantasies.\",\"telNo\":\"18878269603\",\"userName\":\"admin\",\"userType\":\"sys_user\"}", key, {
-    // iv: iv,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7,
-  }).toString();
-  console.log(encrypted);
 })
 /* INIT*/
 
 /* VAR */
+const $crypt = useCryptStore();
 const sysGenderList = ref<Array<SysDictValueEntity>>();
 const sysGenderListSelect = ref<Array<SysDictValueEntity>>();
 const activeTab = ref('baseInfo')
@@ -261,12 +252,16 @@ const uploadFile = ref([])
 /* VAR */
 
 /* FUNCTION*/
-const loadCurrentUserInfo = async () => {
-  const {data, code} = await findCurrentUserProfile()
-  if (code === 200) {
-    currentUserProfileTemplate.value = {...data};
-    sysUserVo.value = {...data};
-  }
+const loadCurrentUserInfo = () => {
+  findCurrentUserProfile().then((res: any) => {
+    if (res.code === 200) {
+      let decryptAes = $crypt.decryptAes(res.data);
+      let decrypt = JSON.parse(decryptAes);
+      currentUserProfileTemplate.value = {...decrypt};
+      sysUserVo.value = {...decrypt};
+    }
+  })
+
 }
 
 const loadSysDeptEntity = async () => {

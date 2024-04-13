@@ -213,7 +213,6 @@ import router from "../../../router";
 import app from "../../../main";
 import {Operate} from "../../../types/Constants";
 import {useCryptStore} from "../../../store/crypt";
-import {decryptAes, encryptAes} from "../../../util/UCrypt";
 
 /* INIT*/
 const $router = router;
@@ -317,7 +316,7 @@ const changeAddModalShowFlag = (operate: any, row?: any) => {
   if (Operate.EDIT === operate) {
     findEditUserById(row.id).then((res: any) => {
       if (res.code === 200) {
-        let data = decryptAes(res.data)
+        let data = $crypt.decryptAes(res.data)
         sysUserVo.value = JSON.parse(data)
       }
     })
@@ -382,7 +381,7 @@ function toRemove() {
 }
 
 function toSubmit() {
-  saveUserInfo(encryptAes(sysUserVo.value)).then((res: any) => {
+  saveUserInfo($crypt.encryptAes(sysUserVo.value)).then((res: any) => {
     if (res.code === 200) {
       layer.msg(res.msg, {icon: 1})
       change()

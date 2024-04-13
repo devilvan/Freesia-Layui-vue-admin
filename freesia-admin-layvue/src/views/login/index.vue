@@ -110,6 +110,7 @@ import {findCaptchaEnabled} from "../../api/system/Config";
 import {getCaptchaCode} from "../../api/captcha/Captcha";
 import {loginQrcode} from "../../api/module/commone";
 import router from "../../router";
+import {useCryptStore} from "../../store/crypt";
 
 /* INIT*/
 onMounted(async () => {
@@ -126,6 +127,7 @@ onMounted(async () => {
 
 /* VAR*/
 const $router = router;
+const $crypt = useCryptStore();
 const userStore = useUserStore()
 const method = ref('1')
 const captchaImg = ref('')
@@ -159,20 +161,21 @@ const loginSubmit = async () => {
   loginFormRef.value.validate(async (isValidate: any, model: any, errors: any) => {
     if (isValidate) {
       loging.value = true;
-      const {data, code, msg} = await login(loginForm)
-      setTimeout(() => {
-        loging.value = false;
-        if (code == 200) {
-          layer.msg(msg, {icon: 1}, async () => {
-            userStore.token = data.token
-            await userStore.getInfo()
-            await userStore.getRouters();
-            await router.push('/')
-          })
-        } else {
-          toRefreshImg()
-        }
-      }, 1000)
+      login(await $crypt.encryptAes(loginForm)).then((res: any) => {
+        setTimeout(() => {
+          loging.value = false;
+          if (res.code == 200) {
+            layer.msg(res.msg, {icon: 1}, async () => {
+              userStore.token = res.data.token
+              await userStore.getInfo()
+              await userStore.getRouters();
+              await router.push('/')
+            })
+          } else {
+            toRefreshImg()
+          }
+        }, 1000)
+      })
     }
   })
 
