@@ -5,10 +5,11 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.util.ListUtils;
-import com.alibaba.fastjson.JSONObject;
-import com.freesia.annotation.Decrypt;
 import com.freesia.annotation.Encrypt;
-import com.freesia.constant.*;
+import com.freesia.constant.FlagConstant;
+import com.freesia.constant.MenuPermission;
+import com.freesia.constant.UserModule;
+import com.freesia.constant.UserType;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
@@ -30,8 +31,6 @@ import com.freesia.vo.R;
 import com.freesia.vo.SysTenantVo;
 import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -125,10 +124,7 @@ public class SysUserController {
     @Operation(summary = "用户导入")
     @PostMapping(value = "userImport")
     public R<Void> userImport(@RequestPart("file[]") MultipartFile file, @RequestParam String avatar) {
-        String suffix = Optional.of(file)
-                .map(MultipartFile::getOriginalFilename)
-                .map(m -> m.substring(m.lastIndexOf('.') + 1))
-                .orElseThrow(() -> new OssException("oss.file.required"));
+        String suffix = Optional.of(file).map(MultipartFile::getOriginalFilename).map(m -> m.substring(m.lastIndexOf('.') + 1)).orElseThrow(() -> new OssException("oss.file.required"));
         if (!ExcelSuffix.includeBySuffix(suffix)) {
             throw new UserException("user.import.suffix.invalid", suffix);
         }
@@ -158,11 +154,9 @@ public class SysUserController {
                     if (UEmpty.isNotEmpty(errorMsg)) {
                         throw new ServiceException(UCollection.join(errorMsg, "\n"));
                     }
-                    if (sysUserDtoList.size() > 0) {
+                    if (!sysUserDtoList.isEmpty()) {
                         // 过滤相同用户名的数据
-                        sysUserDtoList = sysUserDtoList.stream()
-                                .filter(UCopy.distinctByKey(SysUserDto::getUserName))
-                                .collect(Collectors.toList());
+                        sysUserDtoList = sysUserDtoList.stream().filter(UCopy.distinctByKey(SysUserDto::getUserName)).collect(Collectors.toList());
                         // 查询是否有重复用户名
                         final List<String> distinctUserNameList = sysUserDtoList.stream().map(SysUserDto::getUserName).collect(Collectors.toList());
                         List<SysUserDto> distinctSysUserDtoList = sysUserService.findDistinctUserNameList(distinctUserNameList);
