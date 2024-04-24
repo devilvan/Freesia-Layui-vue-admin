@@ -5,11 +5,17 @@
     <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-codegen/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-framework/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-app/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-framework/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-oss/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-web/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-web/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>
