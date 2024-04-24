@@ -23,7 +23,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -49,7 +48,8 @@ public class SysLoginController {
     @SaIgnore
     @Operation(summary = "客户端登录")
     @PostMapping("sysLogin")
-    public R<Map<String, Object>> sysLogin(@Valid @RequestBody LoginVo loginVo) {
+    public R<Map<String, Object>> sysLogin(@Valid @RequestBody String request) {
+        LoginVo loginVo = UCrypt.aesDecryptJSON(request, LoginVo.class);
         Map<String, Object> ajax = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
         // 生成令牌
         String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getCaptchaKey());

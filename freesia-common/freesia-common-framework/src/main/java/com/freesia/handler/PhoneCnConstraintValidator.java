@@ -2,10 +2,11 @@ package com.freesia.handler;
 
 import com.freesia.annotation.Phone_CN;
 import com.freesia.util.UEmpty;
-import com.freesia.util.USpringValidation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Evad.Wu
@@ -14,6 +15,7 @@ import javax.validation.ConstraintValidatorContext;
  * @date 2024-03-11
  */
 public class PhoneCnConstraintValidator implements ConstraintValidator<Phone_CN, String> {
+    public static final Pattern PHONE_CN_PATTERN = Pattern.compile("^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$");
     private boolean required = false;
 
     @Override
@@ -24,13 +26,27 @@ public class PhoneCnConstraintValidator implements ConstraintValidator<Phone_CN,
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (required) {
-            return USpringValidation.phoneCn(value);
+            return phoneCn(value);
         } else {
             if (UEmpty.isEmpty(value)) {
                 return true;
             } else {
-                return USpringValidation.phoneCn(value);
+                return phoneCn(value);
             }
         }
+    }
+
+    /**
+     * 校验中国大陆手机号码
+     *
+     * @param value 手机号码
+     * @return 校验结果
+     */
+    private static boolean phoneCn(String value) {
+        if (UEmpty.isEmpty(value)) {
+            return false;
+        }
+        Matcher matcher = PHONE_CN_PATTERN.matcher(value);
+        return matcher.matches();
     }
 }

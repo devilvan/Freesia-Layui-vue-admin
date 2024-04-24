@@ -11,72 +11,75 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings("AlibabaCommentsMustBeJavadocFormat")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MenuPermission {
-    public static final String SYSTEM_OPTION_INDEX = "system:option:index";
-    public static final String PAGE_DOC_INDEX = "page:doc:index";
+    public static final String SYSTEM_OPTION_INDEX = "system:option:index",
+            PAGE_DOC_INDEX = "page:doc:index";
 
     /* 用户管理*/
-    public static final String SYSTEM_USER_INDEX = "system:user:index";
-    public static final String SYSTEM_USER_ADD = "system:user:add";
-    public static final String SYSTEM_USER_EDIT = "system:user:edit";
-    public static final String SYSTEM_USER_DELETE = "system:user:delete";
-    public static final String SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole";
-    public static final String SYSTEM_USER_IMPORT_USER = "system:user:importUser";
-    public static final String SYSTEM_USER_UPLOAD_AVATAR = "system:user:uploadAvatar";
+    public static final String SYSTEM_USER_INDEX = "system:user:index",
+            SYSTEM_USER_ADD = "system:user:add",
+            SYSTEM_USER_EDIT = "system:user:edit",
+            SYSTEM_USER_DELETE = "system:user:delete",
+            SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole",
+            SYSTEM_USER_IMPORT_USER = "system:user:importUser",
+            SYSTEM_USER_UPLOAD_AVATAR = "system:user:uploadAvatar";
 
     /* 菜单管理*/
-    public static final String SYSTEM_MENU_INDEX = "system:menu:index";
-    public static final String SYSTEM_MENU_ADD_DIR = "system:menu:addDir";
-    public static final String SYSTEM_MENU_ADD_MENU = "system:menu:addMenu";
-    public static final String SYSTEM_MENU_ADD_BUTTON = "system:menu:addButton";
-    public static final String SYSTEM_MENU_ADD_LINK = "system:menu:addLink";
-    public static final String SYSTEM_MENU_EDIT = "system:menu:edit";
-    public static final String SYSTEM_MENU_DELETE = "system:menu:delete";
+    public static final String SYSTEM_MENU_INDEX = "system:menu:index",
+            SYSTEM_MENU_ADD_DIR = "system:menu:addDir",
+            SYSTEM_MENU_ADD_MENU = "system:menu:addMenu",
+            SYSTEM_MENU_ADD_BUTTON = "system:menu:addButton",
+            SYSTEM_MENU_ADD_LINK = "system:menu:addLink",
+            SYSTEM_MENU_EDIT = "system:menu:edit",
+            SYSTEM_MENU_DELETE = "system:menu:delete";
 
     /* 角色管理*/
-    public static final String SYSTEM_ROLE_INDEX = "system:role:index";
-    public static final String SYSTEM_ROLE_MENU_EDIT = "system:role:menu:edit";
-    public static final String SYSTEM_ROLE_ASSIGN_USER_EDIT = "system:role:assignUser:edit";
-    public static final String SYSTEM_ROLE_ASSIGN_BUTTON_EDIT = "system:role:assignButton:edit";
-    public static final String SYSTEM_ROLE_EDIT = "system:role:edit";
-    public static final String SYSTEM_ROLE_DELETE = "system:role:delete";
-    public static final String SYSTEM_ROLE_ADD = "system:role:add";
+    public static final String SYSTEM_ROLE_INDEX = "system:role:index",
+            SYSTEM_ROLE_MENU_EDIT = "system:role:menu:edit",
+            SYSTEM_ROLE_ASSIGN_USER_EDIT = "system:role:assignUser:edit",
+            SYSTEM_ROLE_ASSIGN_BUTTON_EDIT = "system:role:assignButton:edit",
+            SYSTEM_ROLE_ADD = "system:role:add",
+            SYSTEM_ROLE_EDIT = "system:role:edit",
+            SYSTEM_ROLE_DELETE = "system:role:delete";
 
     /* 部门管理*/
-    public static final String SYSTEM_DEPT_INDEX = "system:dept:index";
+    public static final String SYSTEM_DEPT_INDEX = "system:dept:index",
+            SYSTEM_DEPT_ADD = "system:dept:add",
+            SYSTEM_DEPT_EDIT = "system:dept:edit",
+            SYSTEM_DEPT_ENABLED = "system:dept:enabled";
 
     /* 字典管理*/
-    public static final String SYSTEM_DICT_INDEX = "system:dict:index";
-    public static final String SYSTEM_DICT_KEY_ADD = "system:dict:key:add";
-    public static final String SYSTEM_DICT_KEY_EDIT = "system:dict:key:edit";
-    public static final String SYSTEM_DICT_KEY_DELETE = "system:dict:key:delete";
-    public static final String SYSTEM_DICT_VALUE_ADD = "system:dict:value:add";
-    public static final String SYSTEM_DICT_VALUE_EDIT = "system:dict:value:edit";
-    public static final String SYSTEM_DICT_VALUE_DELETE = "system:dict:value:delete";
-    public static final String SYSTEM_DICT_VALUE_ENABLED = "system:dict:value:enabled";
-    public static final String SYSTEM_DICT_VALUE_FLUSH_CACHE = "system:dict:value:flushCache";
+    public static final String SYSTEM_DICT_INDEX = "system:dict:index",
+            SYSTEM_DICT_KEY_ADD = "system:dict:key:add",
+            SYSTEM_DICT_KEY_EDIT = "system:dict:key:edit",
+            SYSTEM_DICT_KEY_DELETE = "system:dict:key:delete",
+            SYSTEM_DICT_VALUE_ADD = "system:dict:value:add",
+            SYSTEM_DICT_VALUE_EDIT = "system:dict:value:edit",
+            SYSTEM_DICT_VALUE_DELETE = "system:dict:value:delete",
+            SYSTEM_DICT_VALUE_ENABLED = "system:dict:value:enabled",
+            SYSTEM_DICT_VALUE_FLUSH_CACHE = "system:dict:value:flushCache";
 
     /* 租户管理*/
-    public static final String SYSTEM_TENANT_INDEX = "system:tenant:index";
-    public static final String SYSTEM_TENANT_ADD = "system:tenant:add";
-    public static final String SYSTEM_TENANT_EDIT = "system:tenant:edit";
-    public static final String SYSTEM_TENANT_DELETE = "system:tenant:delete";
-    public static final String SYSTEM_TENANT_ASSIGN_USER = "system:tenant:assignUser";
+    public static final String SYSTEM_TENANT_INDEX = "system:tenant:index",
+            SYSTEM_TENANT_ADD = "system:tenant:add",
+            SYSTEM_TENANT_EDIT = "system:tenant:edit",
+            SYSTEM_TENANT_DELETE = "system:tenant:delete",
+            SYSTEM_TENANT_ASSIGN_USER = "system:tenant:assignUser";
 
     /* 文件管理*/
-    public static final String SYSTEM_OSS_INDEX = "system:oss:index";
-    public static final String SYSTEM_OSS_DELETE = "system:oss:delete";
-    public static final String SYSTEM_OSS_UPLOAD = "system:oss:upload";
-    public static final String SYSTEM_OSS_DOWNLOAD = "system:oss:download";
+    public static final String SYSTEM_OSS_INDEX = "system:oss:index",
+            SYSTEM_OSS_DELETE = "system:oss:delete",
+            SYSTEM_OSS_UPLOAD = "system:oss:upload",
+            SYSTEM_OSS_DOWNLOAD = "system:oss:download";
 
     /* URL配置*/
-    public static final String COMMON_URL_INDEX = "common:url:index";
-    public static final String COMMON_URL_ADD = "common:url:add";
-    public static final String COMMON_URL_EDIT = "common:url:edit";
-    public static final String COMMON_URL_DELETE = "common:url:delete";
+    public static final String COMMON_URL_INDEX = "common:url:index",
+            COMMON_URL_ADD = "common:url:add",
+            COMMON_URL_EDIT = "common:url:edit",
+            COMMON_URL_DELETE = "common:url:delete";
 
     /* 系统配置管理*/
-    public static final String SYSTEM_CONFIG_INDEX = "system:config:index";
-    public static final String SYSTEM_CONFIG_ADD = "system:config:add";
-    public static final String SYSTEM_CONFIG_EDIT = "system:config:edit";
-    public static final String SYSTEM_CONFIG_DELETE = "system:config:delete";
+    public static final String SYSTEM_CONFIG_INDEX = "system:config:index",
+            SYSTEM_CONFIG_ADD = "system:config:add",
+            SYSTEM_CONFIG_EDIT = "system:config:edit",
+            SYSTEM_CONFIG_DELETE = "system:config:delete";
 }
