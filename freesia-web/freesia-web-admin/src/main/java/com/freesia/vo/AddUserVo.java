@@ -7,10 +7,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Evad.Wu
@@ -51,4 +53,19 @@ public class AddUserVo extends BaseVo {
     @Schema(description = "备注")
     @JSONField(alternateNames = {"remark"})
     private String remark;
+    @Valid
+    @NotNull
+    @Schema(description = "子属性")
+    @JSONField(alternateNames = {"sub"})
+    private Sub sub;
+
+    @Data
+    @Validated
+    public static class Sub {
+        @Schema(description = "用户账号")
+        @JSONField(alternateNames = {"userName"})
+        @NotEmpty(message = "not.null")
+        @Length(min = AdminConstant.USERNAME_MIN_LENGTH, max = AdminConstant.USERNAME_MAX_LENGTH, message = "user.username.length.invalid.format")
+        private String theName;
+    }
 }

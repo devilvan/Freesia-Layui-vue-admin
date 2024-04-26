@@ -20,6 +20,30 @@ public class UCollection extends CollUtil {
     public static final int LIST_INIT_CAPACITY = 10;
     public static final int LIST_MAX_LENGTH = Integer.MAX_VALUE - 8;
 
+    /**
+     * 判断map中对应的属性是否全部存在
+     *
+     * @param map    键值
+     * @param fields 待判断的属性
+     * @param <T>    map类型
+     * @return 判断结果
+     */
+    public static <T> boolean checkFieldAllPresentInMap(Map<String, T> map, String... fields) {
+        for (String field : fields) {
+            if (!map.containsKey(field)) {
+                throw new BaseException("map.not.contain.field", field);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 根据期望的容量初始化集合
+     *
+     * @param expectSize 期望的容量
+     * @param <T>        集合元素的类型
+     * @return 初始化的集合
+     */
     public static <T> List<T> optimizeInitialCapacityArrayList(int expectSize) {
         if (expectSize < 0) {
             return new ArrayList<>(LIST_INIT_CAPACITY);
@@ -46,6 +70,13 @@ public class UCollection extends CollUtil {
         }
     }
 
+    /**
+     * 根据期望的容量初始化集合
+     *
+     * @param expectSize 期望的容量
+     * @param <T>        集合元素的类型
+     * @return 初始化的集合
+     */
     public static <T> Set<T> optimizeInitialCapacitySet(int expectSize) {
         return optimizeInitialCapacitySet(expectSize, LOAD_FACTOR);
     }
@@ -71,6 +102,13 @@ public class UCollection extends CollUtil {
         }
     }
 
+    /**
+     * 根据期望的容量初始化集合
+     *
+     * @param expectSize 期望的容量
+     * @param <T>        集合元素的类型
+     * @return 初始化的集合
+     */
     public static <T> Map<String, T> optimizeInitialCapacityMap(int expectSize) {
         return optimizeInitialCapacityMap(expectSize, LOAD_FACTOR);
     }
