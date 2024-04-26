@@ -95,7 +95,7 @@ springdoc:
     persist-authorization: true
   info:
     title: Devilvan's Freesia Admin Document
-    decription: Freesia后台管理系统_接口文档
+    description: Freesia后台管理系统_接口文档
     license:
       name: APACHE LICENSE VERSION 2.0
       url: https://www.apache.org/licenses/LICENSE-2.0.html

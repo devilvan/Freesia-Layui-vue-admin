@@ -15,11 +15,11 @@ import org.hibernate.validator.constraints.Length;
 public class LengthValidator implements ValidationStrategy<LengthValidPojo> {
     @Override
     public String valid(LengthValidPojo pojo) {
-        String field = pojo.getField();
-        Length fieldAnnotation = USpringValidation.getFieldAnnotation(pojo.getDataType(), field, Length.class);
+        String property = pojo.getProperty();
+        Length fieldAnnotation = USpringValidation.getFieldAnnotation(pojo.getDataType(), property, Length.class);
         int max = fieldAnnotation.max();
         int min = fieldAnnotation.min();
         return UMessage.message("validation.error.msg",
-                UMessage.message(pojo.getMessageCode(), min, max), field, pojo.getValue());
+                UMessage.message(pojo.getMessageCode(), min, max), property, pojo.getValue());
     }
 }

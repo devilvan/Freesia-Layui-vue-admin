@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -45,7 +46,7 @@ public class AddUserVo extends BaseVo {
     @Schema(description = "手机号码")
     @JSONField(alternateNames = {"telNo"})
     @NotEmpty(message = "not.null")
-    @Phone_CN(message = "{phone_CN_invalid}")
+    @Phone_CN(message = "phone_CN_invalid")
     private String telNo;
     @Schema(description = "用户性别（M-男 F-女 U-未知）")
     @JSONField(alternateNames = {"gender"})
@@ -53,6 +54,10 @@ public class AddUserVo extends BaseVo {
     @Schema(description = "备注")
     @JSONField(alternateNames = {"remark"})
     private String remark;
+    @Schema(description = "数字")
+    @JSONField(alternateNames = {"num"})
+    @Min(message = "min.exceeded", value = 3)
+    private Double num;
     @Valid
     @NotNull
     @Schema(description = "子属性")

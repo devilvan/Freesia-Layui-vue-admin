@@ -12,7 +12,7 @@ public class LengthValidPojo extends BaseValidPojo {
 
     }
 
-    public LengthValidPojo(String messageCode, Class<?> dataType, String field, Object value) {
-        super(messageCode, dataType, field, value);
+    public LengthValidPojo(String messageCode, Class<?> dataType, String desc, String property, Object value) {
+        super(messageCode, dataType, desc, property, value);
     }
 }

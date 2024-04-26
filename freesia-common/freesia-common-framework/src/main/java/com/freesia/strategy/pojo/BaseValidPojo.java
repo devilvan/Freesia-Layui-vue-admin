@@ -22,9 +22,13 @@ public class BaseValidPojo {
      */
     private Class<?> dataType;
     /**
-     * 待校验的字段名或字段描述
+     * 待校验的字段描述
      */
-    private String field;
+    private String desc;
+    /**
+     * 待校验的字段名
+     */
+    private String property;
     /**
      * 待校验的数据的值
      */
