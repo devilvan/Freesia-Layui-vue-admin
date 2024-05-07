@@ -1,23 +1,23 @@
 package com.freesia.strategy.validation;
 
 import com.freesia.strategy.ValidationStrategy;
-import com.freesia.strategy.pojo.MinValidPojo;
+import com.freesia.strategy.pojo.MaxValidPojo;
 import com.freesia.util.UMessage;
 import com.freesia.util.USpringValidation;
 
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
 
 
 /**
  * @author Evad.Wu
- * @Description 校验 {@link Min} 策略类
+ * @Description 校验 {@link javax.validation.constraints.Max} 策略类
  * @date 2024-04-26
  */
-public class MinValidator implements ValidationStrategy<MinValidPojo> {
+public class MaxValidator implements ValidationStrategy<MaxValidPojo> {
     @Override
-    public String valid(MinValidPojo pojo) {
+    public String valid(MaxValidPojo pojo) {
         String property = pojo.getProperty();
-        Min fieldAnnotation = USpringValidation.getFieldAnnotation(pojo.getDataType(), property, Min.class);
+        Max fieldAnnotation = USpringValidation.getFieldAnnotation(pojo.getDataType(), property, Max.class);
         return UMessage.message("validation.error.msg",
                 UMessage.message(pojo.getMessageCode(), fieldAnnotation.value()), property, pojo.getValue());
     }

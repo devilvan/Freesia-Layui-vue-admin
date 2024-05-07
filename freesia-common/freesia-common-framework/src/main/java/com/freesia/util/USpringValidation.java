@@ -2,8 +2,10 @@ package com.freesia.util;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.freesia.strategy.pojo.LengthValidPojo;
+import com.freesia.strategy.pojo.MaxValidPojo;
 import com.freesia.strategy.pojo.MinValidPojo;
 import com.freesia.strategy.validation.LengthValidator;
+import com.freesia.strategy.validation.MaxValidator;
 import com.freesia.strategy.validation.MinValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -12,6 +14,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
@@ -61,6 +64,8 @@ public class USpringValidation {
                 return new LengthValidator().valid(new LengthValidPojo(messageCode, dataType, field, property, invalidValue));
             } else if (annotationClass.isAssignableFrom(Min.class)) {
                 return new MinValidator().valid(new MinValidPojo(messageCode, dataType, field, property, invalidValue));
+            } else if (annotationClass.isAssignableFrom(Max.class)) {
+                return new MaxValidator().valid(new MaxValidPojo(messageCode, dataType, field, property, invalidValue));
             }
             return UMessage.message("validation.error.msg",
                     UMessage.message(messageCode), property, invalidValue);
