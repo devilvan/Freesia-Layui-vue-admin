@@ -1,5 +1,6 @@
 package com.freesia.crypt.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.crypt.service.CryptService;
 import com.freesia.vo.R;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CryptController {
     private final CryptService cryptService;
 
+    @SaIgnore
     @Operation(summary = "获取后端公钥")
     @PostMapping(value = "getPublicKey")
     public R<String> getPublicKey() {
@@ -30,6 +32,7 @@ public class CryptController {
         return R.ok(pub1);
     }
 
+    @SaIgnore
     @Operation(summary = "交换AES加密信息")
     @PostMapping(value = "wrapEncryptPub2")
     public R<String> wrapEncryptPub2(@RequestBody String request) throws Exception {

@@ -74,5 +74,5 @@ app.config.globalProperties.$getPublicKey = function () {
         }
     })
 }
-
+app.config.globalProperties.$getPublicKey();
 export default app;

@@ -255,10 +255,11 @@ const uploadFile = ref([])
 const loadCurrentUserInfo = () => {
   findCurrentUserProfile().then((res: any) => {
     if (res.code === 200) {
-      let decryptAes = $crypt.decryptAes(res.data);
-      let decrypt = JSON.parse(decryptAes);
-      currentUserProfileTemplate.value = {...decrypt};
-      sysUserVo.value = {...decrypt};
+      $crypt.decryptAes(res.data).then((decryptAes: any) => {
+        let decrypt = JSON.parse(decryptAes);
+        currentUserProfileTemplate.value = {...decrypt};
+        sysUserVo.value = {...decrypt};
+      });
     }
   })
 

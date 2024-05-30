@@ -32,4 +32,6 @@ public class FindCurrentUserProfileEntity extends BaseEntity {
     private String gender;
     @Schema(description = "头像地址")
     private String avatar;
+    @Schema(description = "备注")
+    private String remark;
 }

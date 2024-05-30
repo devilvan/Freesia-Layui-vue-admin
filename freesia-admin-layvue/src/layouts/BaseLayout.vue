@@ -243,7 +243,6 @@ export default {
   setup() {
     const appStore = useAppStore()
     const userInfoStore = useUserStore()
-    const crypt = useCryptStore();
     const $tab = useTabStore();
     const fullscreenRef = ref()
     const visible = ref(false)
@@ -270,7 +269,6 @@ export default {
         appStore.collapse = true
       }
       userInfoStore.getMenu()
-      app.config.globalProperties.$getPublicKey();
     })
 
     const changeVisible = () => {
