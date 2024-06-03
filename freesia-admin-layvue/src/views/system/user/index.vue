@@ -154,6 +154,23 @@
                 :maxlength="127"
             ></lay-textarea>
           </lay-form-item>
+          <lay-form-item label="头像" prop="avatar">
+            <lay-upload
+                style="margin: 60px"
+                :url="ossPath"
+                v-model="fileList"
+                field="file"
+                acceptMime="image/jpeg,image/png,image/gif,image/webp"
+                :auto="false"
+                :drag="true"
+            >
+              <template #preview>
+                <div v-if="fileList.length > 0" v-for="(file, index) in fileList">
+                  {{ file.name }}
+                </div>
+              </template>
+            </lay-upload>
+          </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: center">
           <lay-button size="sm" type="primary" @click="toSubmit">保存</lay-button>
@@ -215,6 +232,7 @@ import {Operate} from "../../../types/Constants";
 import {useCryptStore} from "../../../store/crypt";
 
 /* INIT*/
+const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
 const $router = router;
 const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_BASE_URL + "/api/sysUserController/userImport"

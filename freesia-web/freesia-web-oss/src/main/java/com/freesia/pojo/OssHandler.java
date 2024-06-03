@@ -32,8 +32,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -80,153 +80,6 @@ public class OssHandler {
         }
     }
 
-    public void createBucket() {
-        try {
-            String bucketName = properties.getBucketName();
-            if (client.doesBucketExistV2(bucketName)) {
-                return;
-            }
-            CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
-            AccessPolicy accessPolicy = getAccessPolicy();
-            createBucketRequest.setCannedAcl(accessPolicy.getAcl());
-            client.createBucket(createBucketRequest);
-            client.setBucketPolicy(bucketName, getPolicy(bucketName, accessPolicy.getPolicyType()));
-        } catch (Exception e) {
-            throw new OssException("创建Bucket失败, 请核对配置信息:[" + e.getMessage() + "]");
-        }
-    }
-
-    public UploadResultEntity upload(byte[] data, String path, String contentType) {
-        return upload(new ByteArrayInputStream(data), path, contentType);
-    }
-
-    public UploadResultEntity upload(InputStream inputStream, String path, String contentType) {
-        if (!(inputStream instanceof ByteArrayInputStream)) {
-            inputStream = new ByteArrayInputStream(IoUtil.readBytes(inputStream));
-        }
-        try {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(contentType);
-            metadata.setContentLength(inputStream.available());
-            PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getBucketName(), path, inputStream, metadata);
-            // 设置上传对象的 Acl 为公共读
-            putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
-            client.putObject(putObjectRequest);
-        } catch (Exception e) {
-            throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
-        }
-        return new UploadResultEntity(getUrl() + "/" + path, path);
-    }
-
-    public UploadResultEntity upload(File file, String path) {
-        try {
-            PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getBucketName(), path, file);
-            // 设置上传对象的 Acl 为公共读
-            putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
-            client.putObject(putObjectRequest);
-        } catch (Exception e) {
-            throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
-        }
-        return new UploadResultEntity(getUrl() + "/" + path, path);
-    }
-
-    public void delete(String path) {
-        path = path.replace(getUrl() + "/", "");
-        try {
-            client.deleteObject(properties.getBucketName(), path);
-        } catch (Exception e) {
-            throw new OssException("删除文件失败，请检查配置信息:[" + e.getMessage() + "]");
-        }
-    }
-
-    public UploadResultEntity uploadSuffix(byte[] data, String suffix, String contentType) {
-        return upload(data, getPath(properties.getPrefix(), suffix), contentType);
-    }
-
-    public UploadResultEntity uploadSuffix(InputStream inputStream, String suffix, String contentType) {
-        return upload(inputStream, getPath(properties.getPrefix(), suffix), contentType);
-    }
-
-    public UploadResultEntity uploadSuffix(File file, String suffix) {
-        return upload(file, getPath(properties.getPrefix(), suffix));
-    }
-
-    /**
-     * 获取文件元数据
-     *
-     * @param path 完整文件路径
-     */
-    public ObjectMetadata getObjectMetadata(String path) {
-        path = path.replace(getUrl() + "/", "");
-        S3Object object = client.getObject(properties.getBucketName(), path);
-        return object.getObjectMetadata();
-    }
-
-    public InputStream getObjectContent(String path) {
-        path = path.replace(getUrl() + "/", "");
-        S3Object object = client.getObject(properties.getBucketName(), path);
-        return object.getObjectContent();
-    }
-
-    public String getUrl() {
-        String domain = properties.getDomain();
-        String endpoint = properties.getEndpoint();
-        String header = Convert.toBool(properties.getIsHttps(), false) ? Constants.HTTPS : Constants.HTTP;
-        // 云服务商直接返回
-        if (StringUtils.containsAny(endpoint, OssConstant.CLOUD_SERVICE)) {
-            if (StringUtils.isNotBlank(domain)) {
-                return header + domain;
-            }
-            return header + properties.getBucketName() + "." + endpoint;
-        }
-        // minio 单独处理
-        if (StringUtils.isNotBlank(domain)) {
-            return header + domain + "/" + properties.getBucketName();
-        }
-        return header + endpoint + "/" + properties.getBucketName();
-    }
-
-    public String getPath(String prefix, String suffix) {
-        // 生成uuid
-        String uuid = IdUtil.fastSimpleUUID();
-        // 文件路径
-        String path = Constants.SDF_YMD_PATH.format(new Date()) + "/" + uuid;
-        if (StringUtils.isNotBlank(prefix)) {
-            path = prefix + "/" + path;
-        }
-        return path + suffix;
-    }
-
-
-    public String getConfigKey() {
-        return configKey;
-    }
-
-    /**
-     * 获取私有URL链接
-     *
-     * @param objectKey 对象KEY
-     * @param second    授权时间
-     */
-    public String getPrivateUrl(String objectKey, Integer second) {
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(properties.getBucketName(), objectKey)
-                        .withMethod(HttpMethod.GET)
-                        .withExpiration(new Date(System.currentTimeMillis() + 1000L * second));
-        URL url = client.generatePresignedUrl(generatePresignedUrlRequest);
-        return url.toString();
-    }
-
-
-    /**
-     * 获取当前桶权限类型
-     *
-     * @return 当前桶权限类型code
-     */
-    public AccessPolicy getAccessPolicy() {
-        return AccessPolicy.getByName(properties.getAccessPolicy());
-    }
-
     /**
      * @param bucketName 桶名称
      * @param policyType 桶类型
@@ -262,6 +115,244 @@ public class OssHandler {
         return builder.toString();
     }
 
+    public void createBucket() {
+        try {
+            String bucketName = properties.getBucketName();
+            if (client.doesBucketExistV2(bucketName)) {
+                return;
+            }
+            CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
+            AccessPolicy accessPolicy = getAccessPolicy();
+            createBucketRequest.setCannedAcl(accessPolicy.getAcl());
+            client.createBucket(createBucketRequest);
+            client.setBucketPolicy(bucketName, getPolicy(bucketName, accessPolicy.getPolicyType()));
+        } catch (Exception e) {
+            throw new OssException("创建Bucket失败, 请核对配置信息:[" + e.getMessage() + "]");
+        }
+    }
+
+    /**
+     * 上传文件
+     *
+     * @param data        数据流的字节数组
+     * @param path        上传路径
+     * @param contentType 请求头数据类型
+     * @param duration    文件过期时间
+     * @return 上传后响应实体
+     */
+    public UploadResultEntity upload(byte[] data, String path, String contentType, Duration duration) {
+        return upload(new ByteArrayInputStream(data), path, contentType, duration);
+    }
+
+    /**
+     * 上传文件
+     *
+     * @param inputStream 数据流
+     * @param path        上传路径
+     * @param contentType 请求头数据类型
+     * @param duration    文件过期时间
+     * @return 上传后响应实体
+     */
+    public UploadResultEntity upload(InputStream inputStream, String path, String contentType, Duration duration) {
+        if (!(inputStream instanceof ByteArrayInputStream)) {
+            inputStream = new ByteArrayInputStream(IoUtil.readBytes(inputStream));
+        }
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(contentType);
+            metadata.setContentLength(inputStream.available());
+            metadata.setExpirationTime(getExpirationTime(duration));
+            PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getBucketName(), path, inputStream, metadata);
+            // 设置上传对象的 Acl 为公共读
+            putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
+            client.putObject(putObjectRequest);
+        } catch (Exception e) {
+            throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
+        }
+        return new UploadResultEntity(getUrl() + "/" + path, path);
+    }
+
+    /**
+     * 上传文件
+     *
+     * @param file        文件对象
+     * @param path        上传路径
+     * @param contentType 请求头数据类型
+     * @param duration    文件过期时间
+     * @return 上传后响应实体
+     */
+    public UploadResultEntity upload(File file, String path, String contentType, Duration duration) {
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(contentType);
+            metadata.setContentLength(file.length());
+            metadata.setExpirationTime(getExpirationTime(duration));
+            PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getBucketName(), path, file);
+            // 设置上传对象的 Acl 为公共读
+            putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
+            client.putObject(putObjectRequest);
+        } catch (Exception e) {
+            throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
+        }
+        return new UploadResultEntity(getUrl() + "/" + path, path);
+    }
+
+    /**
+     * 根据文件后缀上传文件
+     *
+     * @param data        数据流的字节数组
+     * @param suffix      后缀
+     * @param contentType 请求头数据类型
+     * @return 上传后响应实体
+     */
+    public UploadResultEntity uploadSuffix(byte[] data, String suffix, String contentType) {
+        return upload(data, getPath(properties.getPrefix(), suffix), contentType, null);
+    }
+
+    /**
+     * 根据文件后缀上传文件
+     *
+     * @param data        数据流的字节数组
+     * @param suffix      后缀
+     * @param contentType 请求头数据类型
+     * @param duration    文件过期时间
+     * @return 上传后响应实体
+     */
+    public UploadResultEntity uploadSuffix(byte[] data, String suffix, String contentType, Duration duration) {
+        return upload(data, getPath(properties.getPrefix(), suffix), contentType, duration);
+    }
+
+    /**
+     * 根据文件后缀上传文件
+     *
+     * @param inputStream 数据流
+     * @param suffix      后缀
+     * @param contentType 请求头数据类型
+     * @param duration    文件过期时间
+     * @return 上传后响应实体
+     */
+    public UploadResultEntity uploadSuffix(InputStream inputStream, String suffix, String contentType, Duration duration) {
+        return upload(inputStream, getPath(properties.getPrefix(), suffix), contentType, duration);
+    }
+
+    /**
+     * 根据文件后缀上传文件
+     *
+     * @param file        文件
+     * @param suffix      后缀
+     * @param contentType 请求头数据类型
+     * @return 上传后响应实体
+     */
+    public UploadResultEntity uploadSuffix(File file, String suffix, String contentType, Duration duration) {
+        return upload(file, getPath(properties.getPrefix(), suffix), contentType, duration);
+    }
+
+    /**
+     * 根据路径删除文件
+     *
+     * @param path 文件路径
+     */
+    public void delete(String path) {
+        path = path.replace(getUrl() + "/", "");
+        try {
+            client.deleteObject(properties.getBucketName(), path);
+        } catch (Exception e) {
+            throw new OssException("删除文件失败，请检查配置信息:[" + e.getMessage() + "]");
+        }
+    }
+
+    /**
+     * 获取文件元数据
+     *
+     * @param path 完整文件路径
+     */
+    public ObjectMetadata getObjectMetadata(String path) {
+        path = path.replace(getUrl() + "/", "");
+        S3Object object = client.getObject(properties.getBucketName(), path);
+        return object.getObjectMetadata();
+    }
+
+    /**
+     * 获取文件对象的数据流
+     *
+     * @param path 文件所在路径
+     * @return 文件的数据流
+     */
+    public InputStream getObjectContent(String path) {
+        path = path.replace(getUrl() + "/", "");
+        S3Object object = client.getObject(properties.getBucketName(), path);
+        return object.getObjectContent();
+    }
+
+    public String getUrl() {
+        String domain = properties.getDomain();
+        String endpoint = properties.getEndpoint();
+        String header = Convert.toBool(properties.getIsHttps(), false) ? Constants.HTTPS : Constants.HTTP;
+        // 云服务商直接返回
+        if (StringUtils.containsAny(endpoint, OssConstant.CLOUD_SERVICE)) {
+            if (StringUtils.isNotBlank(domain)) {
+                return header + domain;
+            }
+            return header + properties.getBucketName() + "." + endpoint;
+        }
+        // minio 单独处理
+        if (StringUtils.isNotBlank(domain)) {
+            return header + domain + "/" + properties.getBucketName();
+        }
+        return header + endpoint + "/" + properties.getBucketName();
+    }
+
+    /**
+     * 构造以日期结构作区分的文件路径
+     *
+     * @param prefix 服务器信息等前缀
+     * @param suffix 文件后缀
+     * @return 文件路径
+     */
+    public String getPath(String prefix, String suffix) {
+        // 生成uuid
+        String uuid = IdUtil.fastSimpleUUID();
+        // 文件路径
+        String path = Constants.SDF_YMD_PATH.format(new Date()) + "/" + uuid;
+        if (StringUtils.isNotBlank(prefix)) {
+            path = prefix + "/" + path;
+        }
+        return path + suffix;
+    }
+
+    /**
+     * 获取所用文件系统的配置KEY
+     *
+     * @return 所用文件系统的配置KEY
+     */
+    public String getConfigKey() {
+        return configKey;
+    }
+
+    /**
+     * 获取私有URL链接
+     *
+     * @param objectKey 对象KEY
+     * @param second    授权时间
+     */
+    public String getPrivateUrl(String objectKey, Integer second) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                new GeneratePresignedUrlRequest(properties.getBucketName(), objectKey)
+                        .withMethod(HttpMethod.GET)
+                        .withExpiration(new Date(System.currentTimeMillis() + 1000L * second));
+        URL url = client.generatePresignedUrl(generatePresignedUrlRequest);
+        return url.toString();
+    }
+
+    /**
+     * 获取当前桶权限类型
+     *
+     * @return 当前桶权限类型code
+     */
+    public AccessPolicy getAccessPolicy() {
+        return AccessPolicy.getByName(properties.getAccessPolicy());
+    }
+
     /**
      * 检查配置是否相同
      *
@@ -270,6 +361,23 @@ public class OssHandler {
      */
     public boolean checkPropertiesSame(OssProperties properties) {
         return this.properties.equals(properties);
+    }
+
+
+    /**
+     * 获取设置文件的过期时间
+     *
+     * @param duration 过期时间
+     * @return 设置文件的过期时间
+     */
+    private Date getExpirationTime(Duration duration) {
+        if (duration == null) {
+            return null;
+        }
+        long millis = duration.toMillis();
+        Date date = new Date();
+        date.setTime(date.getTime() + millis);
+        return date;
     }
 
     /**
