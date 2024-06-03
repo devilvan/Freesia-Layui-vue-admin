@@ -1,7 +1,5 @@
 package com.freesia.entity;
 
-import com.freesia.annotation.Desensitize;
-import com.freesia.constant.DesensitizedType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

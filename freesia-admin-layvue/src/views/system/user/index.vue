@@ -316,8 +316,10 @@ const changeAddModalShowFlag = (operate: any, row?: any) => {
   if (Operate.EDIT === operate) {
     findEditUserById(row.id).then((res: any) => {
       if (res.code === 200) {
-        let data = $crypt.decryptAes(res.data)
-        sysUserVo.value = JSON.parse(data)
+        $crypt.decryptAes(res.data).then((decryptAes: any) => {
+          let decrypt = JSON.parse(decryptAes);
+          sysUserVo.value = {...decrypt};
+        })
       }
     })
   }

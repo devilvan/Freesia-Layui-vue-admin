@@ -1,5 +1,6 @@
 package com.freesia.component;
 
+import cn.hutool.http.ContentType;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.annotation.Encrypt;
 import com.freesia.constant.CryptModule;
@@ -20,7 +21,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -63,6 +63,7 @@ public class EncryptReturnValueHandler implements HandlerMethodReturnValueHandle
                     .map(nativeWebRequest -> nativeWebRequest.getNativeResponse(HttpServletResponse.class))
                     .orElseThrow(() -> new CryptException(CryptModule.SubModule.ENCRYPT, "crypt.get.native.response.failed"));
             httpServletResponse.setCharacterEncoding("UTF-8");
+            httpServletResponse.setHeader("Content-type", ContentType.TEXT_HTML.getValue());
             httpServletResponse.getWriter().write(responseBody);
             mavContainer.setRequestHandled(true);
         }
