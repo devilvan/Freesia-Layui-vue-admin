@@ -37,3 +37,14 @@ export function upload(file: File[]) {
     })
 }
 
+export function uploadTemp(file: File[]) {
+    let params = {
+        file: file,
+    }
+    return Http.post('/common/sysOssController/uploadTemp', params, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}
+

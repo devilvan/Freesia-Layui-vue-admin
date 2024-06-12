@@ -55,4 +55,8 @@ public class SysOssPo extends BasePo implements Serializable {
     @TableField(value = "SERVICE")
     @Column(name = "SERVICE", columnDefinition = "VARCHAR(20) NOT NULL COMMENT '服务商'")
     private String service;
+    @Schema(description = "是否为临时文件（0-否 1-是）")
+    @TableField(value = "TEMP_FLAG")
+    @Column(name = "TEMP_FLAG", columnDefinition = "TINYINT(1) DEFAULT 0 COMMENT '是否为临时文件（0-否 1-是）'")
+    private Boolean tempFlag;
 }

@@ -6,6 +6,7 @@ import com.freesia.properties.WebCommonProperties;
 import com.freesia.service.SysConfigService;
 import com.freesia.service.SysDictValueService;
 import com.freesia.service.SysOssConfigService;
+import com.freesia.service.SysOssService;
 import com.freesia.util.UMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +27,13 @@ public class FreesiaApplicationRunner implements ApplicationRunner {
     private final SysConfigService sysConfigService;
     private final SysDictValueService sysDictValueService;
     private final SysOssConfigService sysOssConfigService;
+    private final SysOssService sysOssService;
     private final CryptService cryptService;
 
     @Override
     public void run(ApplicationArguments args) {
         sysOssConfigService.loadSysOssConfig();
+        sysOssService.initDeleteTempFile();
         log.info(UMessage.message("oss.load.success", CacheConstant.SYS_OSS_DEFAULT_CONFIG));
         log.info(UMessage.message("oss.load.success", CacheConstant.SYS_OSS_CONFIG));
         if (webCommonProperties.getInitSysConfig()) {

@@ -77,7 +77,7 @@
           ></lay-switch>
         </template>
         <template #avatar="{ row }">
-          <lay-avatar :src="$SRC_ASSETS + row.avatar" @click="preview($SRC_ASSETS + row.avatar)"></lay-avatar>
+          <lay-avatar :src="parseImgPath(row.avatar)" @click="preview(parseImgPath(row.avatar))"></lay-avatar>
         </template>
         <template #gender="{ row }">
           <dict-tag :options="sysGenderList" :value="row.gender"/>
@@ -156,17 +156,18 @@
           </lay-form-item>
           <lay-form-item label="头像" prop="avatar">
             <lay-upload
-                style="margin: 60px"
                 :url="ossPath"
-                v-model="fileList"
+                v-model="updateFileList"
                 field="file"
                 acceptMime="image/jpeg,image/png,image/gif,image/webp"
                 :auto="false"
-                :drag="true"
+                @on-change="uploadOnChange"
             >
               <template #preview>
-                <div v-if="fileList.length > 0" v-for="(file, index) in fileList">
-                  {{ file.name }}
+                <div>
+                  <img v-if="sysUserVo.avatar" :src="parseImgPath(sysUserVo.avatar)"
+                       style="width: 300px; height: 300px; object-fit: cover;"
+                       alt="#">
                 </div>
               </template>
             </lay-upload>
@@ -230,6 +231,8 @@ import router from "../../../router";
 import app from "../../../main";
 import {Operate} from "../../../types/Constants";
 import {useCryptStore} from "../../../store/crypt";
+import {upload, uploadTemp} from "../../../api/system/Oss";
+import {parseImgPath} from "../../../util/UImage";
 
 /* INIT*/
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
@@ -282,6 +285,7 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+const updateFileList = ref([])
 /* VAR*/
 /*FUNCTION*/
 function toImport() {
@@ -340,6 +344,9 @@ const changeAddModalShowFlag = (operate: any, row?: any) => {
         })
       }
     })
+  } else if (Operate.ADD === operate) {
+    sysUserVo.value = {}
+    updateFileList.value = []
   }
   addModalShowFlag.value = !addModalShowFlag.value
 }
@@ -401,16 +408,28 @@ function toRemove() {
 }
 
 function toSubmit() {
-  saveUserInfo($crypt.encryptAes(sysUserVo.value)).then((res: any) => {
+  upload(updateFileList.value).then((res: any) => {
     if (res.code === 200) {
-      layer.msg(res.msg, {icon: 1})
-      change()
-      addModalShowFlag.value = !addModalShowFlag.value
+      if (res.data) {
+        sysUserVo.value.avatar = res.data.url
+      }
+      $crypt.encryptAes(sysUserVo.value).then(encrypt => {
+        saveUserInfo(encrypt).then((decrypt: any) => {
+          if (decrypt.code === 200) {
+            layer.msg(decrypt.msg, {icon: 1})
+            change()
+            addModalShowFlag.value = !addModalShowFlag.value
+          }
+        })
+      })
     }
   })
+
 }
 
 function toCancel() {
+  console.log("do toCancel")
+  updateFileList.value = []
   addModalShowFlag.value = false
 }
 
@@ -457,6 +476,16 @@ function assignRoleById(id: any) {
 function randomUserAvatar() {
   let index = Math.floor(Math.random() * avatarPath.length);
   return avatarPath[index].replace(app.config.globalProperties.$SRC_ASSETS, '');
+}
+
+function uploadOnChange(file: any) {
+  uploadTemp(file).then((res: any) => {
+    if (res.code === 200) {
+      if (res.data) {
+        sysUserVo.value.avatar = res.data.url
+      }
+    }
+  })
 }
 
 /*FUNCTION*/

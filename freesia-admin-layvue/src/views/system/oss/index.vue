@@ -94,8 +94,7 @@
             </template>
 
             <template v-slot:toolbar>
-              <lay-button size="sm" type="primary" @click="toImport"
-                          v-permission="[$MENU_PERMISSION.SYSTEM_OSS_UPLOAD]">
+              <lay-button size="sm" type="primary" @click="toImport">
                 <lay-icon class="layui-icon-upload-drag"></lay-icon>
                 上传
               </lay-button>

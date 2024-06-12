@@ -20,8 +20,7 @@ public class MenuPermission {
             SYSTEM_USER_EDIT = "system:user:edit",
             SYSTEM_USER_DELETE = "system:user:delete",
             SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole",
-            SYSTEM_USER_IMPORT_USER = "system:user:importUser",
-            SYSTEM_USER_UPLOAD_AVATAR = "system:user:uploadAvatar";
+            SYSTEM_USER_IMPORT_USER = "system:user:importUser";
 
     /* 菜单管理*/
     public static final String SYSTEM_MENU_INDEX = "system:menu:index",
@@ -68,7 +67,6 @@ public class MenuPermission {
     /* 文件管理*/
     public static final String SYSTEM_OSS_INDEX = "system:oss:index",
             SYSTEM_OSS_DELETE = "system:oss:delete",
-            SYSTEM_OSS_UPLOAD = "system:oss:upload",
             SYSTEM_OSS_DOWNLOAD = "system:oss:download";
 
     /* URL配置*/

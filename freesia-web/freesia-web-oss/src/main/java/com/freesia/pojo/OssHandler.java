@@ -137,11 +137,10 @@ public class OssHandler {
      * @param data        数据流的字节数组
      * @param path        上传路径
      * @param contentType 请求头数据类型
-     * @param duration    文件过期时间
      * @return 上传后响应实体
      */
-    public UploadResultEntity upload(byte[] data, String path, String contentType, Duration duration) {
-        return upload(new ByteArrayInputStream(data), path, contentType, duration);
+    public UploadResultEntity upload(byte[] data, String path, String contentType) {
+        return upload(new ByteArrayInputStream(data), path, contentType);
     }
 
     /**
@@ -150,10 +149,9 @@ public class OssHandler {
      * @param inputStream 数据流
      * @param path        上传路径
      * @param contentType 请求头数据类型
-     * @param duration    文件过期时间
      * @return 上传后响应实体
      */
-    public UploadResultEntity upload(InputStream inputStream, String path, String contentType, Duration duration) {
+    public UploadResultEntity upload(InputStream inputStream, String path, String contentType) {
         if (!(inputStream instanceof ByteArrayInputStream)) {
             inputStream = new ByteArrayInputStream(IoUtil.readBytes(inputStream));
         }
@@ -161,7 +159,6 @@ public class OssHandler {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(contentType);
             metadata.setContentLength(inputStream.available());
-            metadata.setExpirationTime(getExpirationTime(duration));
             PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getBucketName(), path, inputStream, metadata);
             // 设置上传对象的 Acl 为公共读
             putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
@@ -178,15 +175,13 @@ public class OssHandler {
      * @param file        文件对象
      * @param path        上传路径
      * @param contentType 请求头数据类型
-     * @param duration    文件过期时间
      * @return 上传后响应实体
      */
-    public UploadResultEntity upload(File file, String path, String contentType, Duration duration) {
+    public UploadResultEntity upload(File file, String path, String contentType) {
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(contentType);
             metadata.setContentLength(file.length());
-            metadata.setExpirationTime(getExpirationTime(duration));
             PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getBucketName(), path, file);
             // 设置上传对象的 Acl 为公共读
             putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
@@ -206,21 +201,9 @@ public class OssHandler {
      * @return 上传后响应实体
      */
     public UploadResultEntity uploadSuffix(byte[] data, String suffix, String contentType) {
-        return upload(data, getPath(properties.getPrefix(), suffix), contentType, null);
+        return upload(data, getPath(properties.getPrefix(), suffix), contentType);
     }
 
-    /**
-     * 根据文件后缀上传文件
-     *
-     * @param data        数据流的字节数组
-     * @param suffix      后缀
-     * @param contentType 请求头数据类型
-     * @param duration    文件过期时间
-     * @return 上传后响应实体
-     */
-    public UploadResultEntity uploadSuffix(byte[] data, String suffix, String contentType, Duration duration) {
-        return upload(data, getPath(properties.getPrefix(), suffix), contentType, duration);
-    }
 
     /**
      * 根据文件后缀上传文件
@@ -228,11 +211,10 @@ public class OssHandler {
      * @param inputStream 数据流
      * @param suffix      后缀
      * @param contentType 请求头数据类型
-     * @param duration    文件过期时间
      * @return 上传后响应实体
      */
-    public UploadResultEntity uploadSuffix(InputStream inputStream, String suffix, String contentType, Duration duration) {
-        return upload(inputStream, getPath(properties.getPrefix(), suffix), contentType, duration);
+    public UploadResultEntity uploadSuffix(InputStream inputStream, String suffix, String contentType) {
+        return upload(inputStream, getPath(properties.getPrefix(), suffix), contentType);
     }
 
     /**
@@ -243,8 +225,20 @@ public class OssHandler {
      * @param contentType 请求头数据类型
      * @return 上传后响应实体
      */
-    public UploadResultEntity uploadSuffix(File file, String suffix, String contentType, Duration duration) {
-        return upload(file, getPath(properties.getPrefix(), suffix), contentType, duration);
+    public UploadResultEntity uploadSuffix(File file, String suffix, String contentType) {
+        return upload(file, getPath(properties.getPrefix(), suffix), contentType);
+    }
+
+    /**
+     * 根据文件后缀上传临时文件
+     *
+     * @param data        数据流的字节数组
+     * @param suffix      后缀
+     * @param contentType 请求头数据类型
+     * @return 上传后响应实体
+     */
+    public UploadResultEntity uploadTemp(byte[] data, String suffix, String contentType) {
+        return upload(data, getTempPath(properties.getPrefix(), suffix), contentType);
     }
 
     /**
@@ -316,6 +310,24 @@ public class OssHandler {
         String path = Constants.SDF_YMD_PATH.format(new Date()) + "/" + uuid;
         if (StringUtils.isNotBlank(prefix)) {
             path = prefix + "/" + path;
+        }
+        return path + suffix;
+    }
+
+    /**
+     * 构造存储临时文件的文件路径
+     *
+     * @param prefix 服务器信息等前缀
+     * @param suffix 文件后缀
+     * @return 文件路径
+     */
+    public String getTempPath(String prefix, String suffix) {
+        // 生成uuid
+        String uuid = IdUtil.fastSimpleUUID();
+        // 文件路径
+        String path = "temp/" + Constants.SDF_YMD_PATH.format(new Date()) + "/" + uuid;
+        if (StringUtils.isNotBlank(prefix)) {
+            path = prefix + "/temp/" + path;
         }
         return path + suffix;
     }

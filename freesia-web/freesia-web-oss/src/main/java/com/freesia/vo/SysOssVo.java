@@ -1,14 +1,11 @@
 package com.freesia.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * @author Evad.Wu
@@ -36,4 +33,6 @@ public class SysOssVo extends BaseVo {
     @Schema(description = "服务商")
     @JSONField(alternateNames = {"service"})
     private String service;
+    @Schema(description = "是否为临时文件（0-否 1-是）")
+    private Boolean tempFlag;
 }

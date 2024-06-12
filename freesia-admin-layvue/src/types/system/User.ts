@@ -12,7 +12,8 @@ export interface SysUserVo extends BaseVo {
     gender?: string;
     remark?: string;
     createTimeFrom?: Date
-    createTimeTo?: Date
+    createTimeTo?: Date;
+    avatar?: string
 }
 
 export interface SysUserEntity extends BaseEntity {

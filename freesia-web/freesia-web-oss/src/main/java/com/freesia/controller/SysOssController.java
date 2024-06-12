@@ -1,7 +1,6 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysOssDto;
 import com.freesia.pojo.PageQuery;
@@ -112,11 +111,23 @@ public class SysOssController {
      * @param file 上传的文件
      * @return 形式返回
      */
-    @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_UPLOAD)
     @Operation(summary = "上传文件")
     @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public R<SysOssDto> upload(@RequestPart("file[]") MultipartFile file) {
         SysOssDto sysOssDto = sysOssService.upload(file);
+        return R.ok(sysOssDto);
+    }
+
+    /**
+     * 上传临时文件
+     *
+     * @param file 上传的文件
+     * @return 形式返回
+     */
+    @Operation(summary = "上传文件")
+    @PostMapping(value = "uploadTemp", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<SysOssDto> uploadTemp(@RequestPart("file[]") MultipartFile file) {
+        SysOssDto sysOssDto = sysOssService.uploadTemp(file);
         return R.ok(sysOssDto);
     }
 

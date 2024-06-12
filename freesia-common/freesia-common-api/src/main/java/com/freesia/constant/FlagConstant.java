@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FlagConstant {
     /**
-     * 启用
+     * 是
      */
     public static final String ENABLED = "1";
     /**
-     * 禁用
+     * 否
      */
     public static final String DISABLED = "0";
     /**
