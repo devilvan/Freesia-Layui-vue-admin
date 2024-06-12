@@ -108,14 +108,14 @@ public class SysOssController {
     /**
      * 上传文件
      *
-     * @param file 上传的文件
+     * @param files 上传的文件
      * @return 形式返回
      */
     @Operation(summary = "上传文件")
     @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public R<SysOssDto> upload(@RequestPart("file[]") MultipartFile file) {
-        SysOssDto sysOssDto = sysOssService.upload(file);
-        return R.ok(sysOssDto);
+    public R<List<SysOssDto>> upload(@RequestParam("file[]") List<MultipartFile> files) {
+        List<SysOssDto> sysOssDtoList = sysOssService.upload(files);
+        return R.ok(sysOssDtoList);
     }
 
     /**

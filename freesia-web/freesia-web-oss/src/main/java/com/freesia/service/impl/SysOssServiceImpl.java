@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -96,45 +97,49 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     }
 
     @Override
-    public SysOssDto upload(MultipartFile file) {
-        String originalFilename = file.getOriginalFilename();
-        String suffix = Optional.of(file)
-                .map(MultipartFile::getOriginalFilename)
-                .map(m -> m.substring(m.lastIndexOf('.') + 1))
-                .orElseThrow(() -> new OssException("oss.file.required"));
-        OssHandler ossHandler = OssFactory.getInstance();
-        OssHandler.UploadResultEntity uploadResultEntity = new OssHandler.UploadResultEntity();
-        try {
-            uploadResultEntity = ossHandler.uploadSuffix(file.getBytes(), "." + suffix, file.getContentType());
-        } catch (IOException e) {
-            e.printStackTrace();
+    public List<SysOssDto> upload(List<MultipartFile> files) {
+        List<SysOssDto> resultSysOssDtoList = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String originalFilename = file.getOriginalFilename();
+            String suffix = Optional.of(file)
+                    .map(MultipartFile::getOriginalFilename)
+                    .map(m -> m.substring(m.lastIndexOf('.') + 1))
+                    .orElseThrow(() -> new OssException("oss.file.required"));
+            OssHandler ossHandler = OssFactory.getInstance();
+            OssHandler.UploadResultEntity uploadResultEntity = new OssHandler.UploadResultEntity();
+            try {
+                uploadResultEntity = ossHandler.uploadSuffix(file.getBytes(), "." + suffix, file.getContentType());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 保存文件信息
+            SysOssDto sysOssDto = new SysOssDto();
+            String filename = uploadResultEntity.getFilename();
+            filename = filename.substring(filename.lastIndexOf("/") + 1);
+            sysOssDto.setFileName(filename);
+            sysOssDto.setOriginalName(originalFilename);
+            sysOssDto.setFileSuffix(suffix);
+            sysOssDto.setUrl(uploadResultEntity.getUrl());
+            sysOssDto.setService(ossHandler.getConfigKey());
+            setPrivateBucketExpirationUrl(sysOssDto);
+            SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
+            SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
+            resultSysOssDtoList.add(resultSysOssDto);
+            // 保存操作日志
+            SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
+                assignButtonLogBean.setModule(OssModule.OSS_MANAGEMENT);
+                assignButtonLogBean.setSubModule(OssModule.SubModule.OSS_UPLOAD);
+                assignButtonLogBean.setType(OssModule.SubModule.OSS_UPLOAD);
+                assignButtonLogBean.setResult(FlagConstant.SUCCESS);
+                assignButtonLogBean.setContextOld(null);
+                assignButtonLogBean.setContext(null);
+                assignButtonLogBean.setRemark(UMessage.message("oss.upload.success", originalFilename));
+                return assignButtonLogBean;
+            });
+            USpring.context().publishEvent(sysSensitiveLogBean);
         }
-        // 保存文件信息
-        SysOssDto sysOssDto = new SysOssDto();
-        String filename = uploadResultEntity.getFilename();
-        filename = filename.substring(filename.lastIndexOf("/") + 1);
-        sysOssDto.setFileName(filename);
-        sysOssDto.setOriginalName(originalFilename);
-        sysOssDto.setFileSuffix(suffix);
-        sysOssDto.setUrl(uploadResultEntity.getUrl());
-        sysOssDto.setService(ossHandler.getConfigKey());
-        setPrivateBucketExpirationUrl(sysOssDto);
-        SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
-        SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
-        // 保存操作日志
-        SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-            SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
-            assignButtonLogBean.setModule(OssModule.OSS_MANAGEMENT);
-            assignButtonLogBean.setSubModule(OssModule.SubModule.OSS_UPLOAD);
-            assignButtonLogBean.setType(OssModule.SubModule.OSS_UPLOAD);
-            assignButtonLogBean.setResult(FlagConstant.SUCCESS);
-            assignButtonLogBean.setContextOld(null);
-            assignButtonLogBean.setContext(null);
-            assignButtonLogBean.setRemark(UMessage.message("oss.upload.success", originalFilename));
-            return assignButtonLogBean;
-        });
-        USpring.context().publishEvent(sysSensitiveLogBean);
-        return resultSysOssDto;
+        return resultSysOssDtoList;
     }
 
     @Override

@@ -43,9 +43,6 @@
                         <img style="width: 100%" :src="captchaImg" alt="获取验证码"/>
                       </div>
                     </lay-form-item>
-                    <lay-form-item :hidden="true" prop="captchaKey">
-                      <lay-input v-model="loginForm.captchaKey"></lay-input>
-                    </lay-form-item>
                     <!--                    <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>-->
                     <lay-form-item :label-width="0">
                       <lay-button style="margin-top: 20px" type="primary" :loading="loging" :fluid="true"

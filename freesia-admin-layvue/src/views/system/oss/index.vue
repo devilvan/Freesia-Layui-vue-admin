@@ -140,6 +140,7 @@
               field="file"
               :auto="false"
               :drag="true"
+              :multiple="true"
           >
             <template #preview>
               <div v-if="fileList.length > 0" v-for="(file, index) in fileList">
@@ -215,6 +216,7 @@ const uploadLimitSize = 10 * 1024 * 1024;
 /* FUNCTION*/
 function toImport() {
   // layer.msg('导入')
+  fileList.value = []
   visibleImport.value = true
 }
 

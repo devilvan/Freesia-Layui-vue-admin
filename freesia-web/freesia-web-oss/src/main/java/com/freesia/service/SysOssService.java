@@ -58,10 +58,10 @@ public interface SysOssService {
     /**
      * 上传文件
      *
-     * @param file 文件对象
+     * @param files 文件对象
      * @return OSS对象存储实体
      */
-    SysOssDto upload(MultipartFile file);
+    List<SysOssDto> upload(List<MultipartFile> files);
 
     /**
      * 上传临时文件

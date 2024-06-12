@@ -165,7 +165,7 @@
             >
               <template #preview>
                 <div>
-                  <img v-if="sysUserVo.avatar" :src="parseImgPath(sysUserVo.avatar)"
+                  <img v-if="previewAvatar" :src="parseImgPath(previewAvatar)"
                        style="width: 300px; height: 300px; object-fit: cover;"
                        alt="#">
                 </div>
@@ -260,6 +260,7 @@ const sysGenderListSelect = ref<Array<SysDictValueEntity>>()
 const loading = ref(false)
 const selectedKeys = ref()
 const sysUserVo = ref<any>({})
+const previewAvatar = ref<any>('')
 const sysUserVoFormRef = ref()
 const addModalShowFlag = ref(false)
 const title = ref('新增')
@@ -341,6 +342,7 @@ const changeAddModalShowFlag = (operate: any, row?: any) => {
         $crypt.decryptAes(res.data).then((decryptAes: any) => {
           let decrypt = JSON.parse(decryptAes);
           sysUserVo.value = {...decrypt};
+          previewAvatar.value = decrypt.avatar
         })
       }
     })
@@ -410,8 +412,8 @@ function toRemove() {
 function toSubmit() {
   upload(updateFileList.value).then((res: any) => {
     if (res.code === 200) {
-      if (res.data) {
-        sysUserVo.value.avatar = res.data.url
+      if (res.data && res.data.length > 0) {
+        sysUserVo.value.avatar = res.data[0].url
       }
       $crypt.encryptAes(sysUserVo.value).then(encrypt => {
         saveUserInfo(encrypt).then((decrypt: any) => {
@@ -482,7 +484,7 @@ function uploadOnChange(file: any) {
   uploadTemp(file).then((res: any) => {
     if (res.code === 200) {
       if (res.data) {
-        sysUserVo.value.avatar = res.data.url
+        previewAvatar.value = res.data.url
       }
     }
   })
