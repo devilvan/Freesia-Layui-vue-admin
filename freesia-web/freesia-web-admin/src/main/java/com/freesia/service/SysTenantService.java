@@ -76,4 +76,12 @@ public interface SysTenantService {
      * @return 租户信息
      */
     List<SysTenantDto> findListSysTenantByUserId(Long userId);
+
+    /**
+     * 根据ID查询租户信息
+     *
+     * @param tenantId 租户ID
+     * @return 租户信息
+     */
+    SysTenantDto findSysTenantById(Long tenantId);
 }

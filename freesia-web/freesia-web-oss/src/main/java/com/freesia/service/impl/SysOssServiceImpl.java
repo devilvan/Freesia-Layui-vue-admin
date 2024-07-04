@@ -121,7 +121,6 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
             sysOssDto.setFileSuffix(suffix);
             sysOssDto.setUrl(uploadResultEntity.getUrl());
             sysOssDto.setService(ossHandler.getConfigKey());
-            setPrivateBucketExpirationUrl(sysOssDto);
             SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
             SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
             resultSysOssDtoList.add(resultSysOssDto);
@@ -254,7 +253,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         OssHandler ossHandler = OssFactory.getInstance(sysOssDto.getService());
         // 仅修改桶类型为 private 的URL，临时URL时长为120s
         if (AccessPolicy.PRIVATE == ossHandler.getAccessPolicy()) {
-            sysOssDto.setUrl(ossHandler.getPrivateUrl(sysOssDto.getFileName(), 120));
+            sysOssDto.setUrl(ossHandler.getPrivateUrl(sysOssDto.getFileName(), 60));
         }
     }
 }

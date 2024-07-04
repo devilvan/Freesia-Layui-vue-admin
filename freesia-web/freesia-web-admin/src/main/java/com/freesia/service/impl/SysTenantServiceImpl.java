@@ -10,6 +10,7 @@ import com.freesia.constant.TenantModule;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.entity.FindSysTenantEntity;
 import com.freesia.exception.ServiceException;
+import com.freesia.exception.TenantException;
 import com.freesia.mapper.SysTenantMapper;
 import com.freesia.po.SysTenantPo;
 import com.freesia.po.SysTenantUserPk;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -111,5 +113,12 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     public List<SysTenantDto> findListSysTenantByUserId(Long userId) {
         List<SysTenantPo> sysTenantPoList = sysTenantMapper.findListSysTenantByUserId(userId);
         return UCopy.fullCopyList(sysTenantPoList, SysTenantDto.class);
+    }
+
+    @Override
+    public SysTenantDto findSysTenantById(Long tenantId) {
+        SysTenantPo sysTenantPo = sysTenantRepository.findById(tenantId)
+                .orElseThrow(() -> new TenantException("tenant.query.failed", tenantId));
+        return UCopy.copyPo2Dto(sysTenantPo, SysTenantDto.class);
     }
 }

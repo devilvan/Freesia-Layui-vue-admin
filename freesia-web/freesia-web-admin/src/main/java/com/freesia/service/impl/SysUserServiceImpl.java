@@ -24,13 +24,17 @@ import com.freesia.mapper.SysUserMapper;
 import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.properties.LoginPasswordProperties;
 import com.freesia.repository.SysUserRepository;
+import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,9 +47,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> implements SysUserService {
+    private final LoginPasswordProperties loginPasswordProperties;
     private final SysUserRepository sysUserRepository;
     private final SysUserMapper sysUserMapper;
     private final SysDeptMapper sysDeptMapper;
+    private final SysTenantService sysTenantService;
 
     @Override
     public SysUserPo saveUpdate(SysUserDto sysUserDto) {
@@ -153,9 +159,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public void saveUserInfo(SysUserDto sysUserDto) {
         Long id = sysUserDto.getId();
-        SysUserPo sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed"));
-        UCopy.halfCopy(sysUserDto, sysUserPo);
-        sysUserRepository.save(sysUserPo);
+        SysUserPo sysUserPo;
+        if (UEmpty.isNotNull(id)) {
+            sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed"));
+            UCopy.halfCopy(sysUserDto, sysUserPo);
+            sysUserRepository.save(sysUserPo);
+        } else {
+            sysUserPo = buildInsertSysUserPo(sysUserDto);
+            sysUserPo = sysUserRepository.save(sysUserPo);
+            Long tenantId = USecurity.getTenantId();
+            sysTenantService.assignTenant2User(tenantId, Collections.singletonList(sysUserPo.getId()));
+        }
     }
 
     @Override
@@ -237,6 +251,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                 .in(SysUserPo::getUserName, distinctUserNameList);
         List<SysUserPo> sysUserPoList = this.list(queryWrapper);
         return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+    }
+
+    @Override
+    public List<SysUserDto> deleteUser(List<Long> idList) {
+        List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(idList);
+        sysUserPoList = sysUserPoList.stream().peek(sysUserPo -> sysUserPo.setLogicDel(true)).collect(Collectors.toList());
+        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+    }
+
+    /**
+     * 构建新增用户实体
+     *
+     * @param sysUserDto 前端采集的用户信息
+     * @return 构建后的新增用户实体
+     */
+    private SysUserPo buildInsertSysUserPo(SysUserDto sysUserDto) {
+        SysUserPo sysUserPo = UCopy.copyDto2Po(sysUserDto, SysUserPo.class);
+        sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
+        return sysUserPo;
     }
 
     /**
