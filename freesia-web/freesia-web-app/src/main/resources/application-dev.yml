@@ -24,6 +24,8 @@ login.password:
   maxRetryCount: 5
   # 密码锁定时间（默认10分钟 Duration）
   lockTime: 10M
+  # 初始化密码
+  init-password: 123456
 ---
 # 生成验证码
 captcha:

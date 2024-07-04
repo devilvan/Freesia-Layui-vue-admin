@@ -125,8 +125,11 @@
     </div>
     <lay-layer v-model="addModalShowFlag" :title="title" :area="['500px', '600px']">
       <div style="padding: 20px">
-        <lay-form :model="sysUserVo" ref="sysUserVoFormRef" required>
-          <lay-form-item label="昵称" prop="nickName">
+        <lay-form :model="sysUserVo" ref="sysUserVoFormRef">
+          <lay-form-item label="用户名" prop="userName" required>
+            <lay-input v-model="sysUserVo.userName" :disabled="userNameDisabled"></lay-input>
+          </lay-form-item>
+          <lay-form-item label="昵称" prop="nickName" required>
             <lay-input v-model="sysUserVo.nickName"></lay-input>
           </lay-form-item>
 
@@ -140,10 +143,10 @@
             >
             </lay-select>
           </lay-form-item>
-          <lay-form-item label="邮箱" prop="email">
+          <lay-form-item label="邮箱" prop="email" required>
             <lay-input v-model="sysUserVo.email"></lay-input>
           </lay-form-item>
-          <lay-form-item label="手机号" prop="telNo">
+          <lay-form-item label="手机号" prop="telNo" required>
             <lay-input v-model="sysUserVo.telNo"></lay-input>
           </lay-form-item>
           <lay-form-item label="描述" prop="remark">
@@ -258,6 +261,7 @@ const fileList = ref([])
 const sysGenderList = ref<Array<SysDictValueEntity>>()
 const sysGenderListSelect = ref<Array<SysDictValueEntity>>()
 const loading = ref(false)
+const userNameDisabled = ref(false)
 const selectedKeys = ref()
 const sysUserVo = ref<any>({})
 const previewAvatar = ref<any>('')
@@ -337,6 +341,7 @@ const loadDataSource = () => {
 const changeAddModalShowFlag = (operate: any, row?: any) => {
   title.value = Operate.ADD === operate ? '新增' : Operate.EDIT === operate ? '编辑' : '标题'
   if (Operate.EDIT === operate) {
+    userNameDisabled.value = true;
     findEditUserById(row.id).then((res: any) => {
       if (res.code === 200) {
         $crypt.decryptAes(res.data).then((decryptAes: any) => {
@@ -347,6 +352,8 @@ const changeAddModalShowFlag = (operate: any, row?: any) => {
       }
     })
   } else if (Operate.ADD === operate) {
+    userNameDisabled.value = false;
+    previewAvatar.value = null;
     sysUserVo.value = {}
     updateFileList.value = []
   }
@@ -410,23 +417,38 @@ function toRemove() {
 }
 
 function toSubmit() {
-  upload(updateFileList.value).then((res: any) => {
-    if (res.code === 200) {
-      if (res.data && res.data.length > 0) {
-        sysUserVo.value.avatar = res.data[0].url
-      }
-      $crypt.encryptAes(sysUserVo.value).then(encrypt => {
-        saveUserInfo(encrypt).then((decrypt: any) => {
-          if (decrypt.code === 200) {
-            layer.msg(decrypt.msg, {icon: 1})
-            change()
-            addModalShowFlag.value = !addModalShowFlag.value
+  sysUserVoFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      if (updateFileList.value && updateFileList.value.length > 0) {
+        upload(updateFileList.value).then((res: any) => {
+          if (res.code === 200) {
+            if (res.data && res.data.length > 0) {
+              sysUserVo.value.avatar = res.data[0].url
+            }
+            $crypt.encryptAes(sysUserVo.value).then(encrypt => {
+              saveUserInfo(encrypt).then((decrypt: any) => {
+                if (decrypt.code === 200) {
+                  layer.msg(decrypt.msg, {icon: 1})
+                  change()
+                  addModalShowFlag.value = !addModalShowFlag.value
+                }
+              })
+            })
           }
         })
-      })
+      } else {
+        $crypt.encryptAes(sysUserVo.value).then(encrypt => {
+          saveUserInfo(encrypt).then((decrypt: any) => {
+            if (decrypt.code === 200) {
+              layer.msg(decrypt.msg, {icon: 1})
+              change()
+              addModalShowFlag.value = !addModalShowFlag.value
+            }
+          })
+        })
+      }
     }
   })
-
 }
 
 function toCancel() {
