@@ -31,7 +31,6 @@ public class UCrypt {
     public static final String ALGORITHM = SymmetricAlgorithm.AES.getValue();
     public static final String PADDING = "AES/ECB/ZeroPadding";
     public static AES aes;
-    public static String aesKey;
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -45,10 +44,8 @@ public class UCrypt {
         if (UEmpty.isEmpty(KEY)) {
             throw new CryptException("crypt.aes.key.required");
         }
-        String key = decodeAesKey();
 //        System.out.println("AES KEY：" + key);
-        aes = new AES(Mode.ECB, Padding.ZeroPadding, key.getBytes(StandardCharsets.UTF_8));
-        aesKey = key;
+        aes = new AES(Mode.ECB, Padding.ZeroPadding, KEY.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

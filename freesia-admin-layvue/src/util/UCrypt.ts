@@ -32,8 +32,5 @@ export function decryptAes(data: string) {
         mode: CryptoJS.mode.ECB,
         padding: CryptoJS.pad.ZeroPadding,
     });
-    let s = CryptoJS.enc.Utf8.stringify(
-        decrypt
-    );
-    return s
+    return CryptoJS.enc.Utf8.stringify(decrypt);
 }

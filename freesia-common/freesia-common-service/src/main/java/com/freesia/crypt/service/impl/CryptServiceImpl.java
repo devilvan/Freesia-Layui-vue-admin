@@ -45,6 +45,6 @@ public class CryptServiceImpl implements CryptService {
             throw new CryptException("crypt.get.pri1.failed");
         }
         final String pub2 = UCrypt.rsaDecrypt(pri1, encryptPub2);
-        return UCrypt.rsaEncrypt(pub2, UCrypt.aesKey);
+        return UCrypt.rsaEncrypt(pub2, UCrypt.KEY);
     }
 }
