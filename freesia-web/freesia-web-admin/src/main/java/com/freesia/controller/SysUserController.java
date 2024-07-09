@@ -1,5 +1,6 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.StrUtil;
@@ -33,7 +34,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 import java.util.List;
@@ -84,6 +84,10 @@ public class SysUserController {
 
     @Operation(summary = "修改用户信息")
     @PutMapping("saveUserInfo")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_USER_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_USER_EDIT)
+    })
     public R<Void> saveUserInfo(@RequestBody String request) {
         SysUserVo sysUserVo = UCrypt.aesDecryptJSON(request, SysUserVo.class);
         SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
@@ -228,9 +232,9 @@ public class SysUserController {
         return R.ok(sysUserDto);
     }
 
-    @SaIgnore
     @Operation(summary = "新增用户")
     @PostMapping("addUser")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ADD})
     public R<Void> addUser(@RequestBody String request) {
 //        AddUserVo addUserVo = UCrypt.aesDecryptJSON(request, AddUserVo.class);
         AddUserVo addUserVo = JSONObject.parseObject(request, AddUserVo.class);
@@ -243,5 +247,13 @@ public class SysUserController {
             return r;
         }
         return R.ok();
+    }
+
+    @Operation(summary = "删除用户")
+    @PostMapping("deleteUser")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_DELETE})
+    public R<List<SysUserDto>> deleteUser(@RequestBody List<Long> idList) {
+        List<SysUserDto> sysUserDtoList = sysUserService.deleteUser(idList);
+        return R.ok(sysUserDtoList);
     }
 }

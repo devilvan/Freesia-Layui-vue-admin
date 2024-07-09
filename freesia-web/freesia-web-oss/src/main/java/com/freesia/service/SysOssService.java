@@ -58,10 +58,18 @@ public interface SysOssService {
     /**
      * 上传文件
      *
+     * @param files 文件对象
+     * @return OSS对象存储实体
+     */
+    List<SysOssDto> upload(List<MultipartFile> files);
+
+    /**
+     * 上传临时文件
+     *
      * @param file 文件对象
      * @return OSS对象存储实体
      */
-    SysOssDto upload(MultipartFile file);
+    SysOssDto uploadTemp(MultipartFile file);
 
     /**
      * 下载文件
@@ -78,4 +86,9 @@ public interface SysOssService {
      * @return OSS对象存储实体
      */
     SysOssDto findCacheById(Long id);
+
+    /**
+     * 初始化删除临时目录下的文件
+     */
+    void initDeleteTempFile();
 }

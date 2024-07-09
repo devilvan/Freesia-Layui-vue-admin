@@ -67,12 +67,11 @@ app.config.globalProperties.$getPublicKey = function () {
             encryptPub2 = encodeURI(encryptPub2)
             wrapEncryptPub2(encryptPub2).then((wrapEncryptPub2Res: any) => {
                 if (wrapEncryptPub2Res.code === 200) {
-                    let decryptAes = this.$decryptedData(pri2, decodeURI(wrapEncryptPub2Res.data));
-                    crypt.setAes(decryptAes).then(r => r);
+                    crypt.setAes(wrapEncryptPub2Res.data).then(r => r);
                 }
             })
         }
     })
 }
-
+app.config.globalProperties.$getPublicKey();
 export default app;

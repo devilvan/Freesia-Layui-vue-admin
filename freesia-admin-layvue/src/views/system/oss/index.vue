@@ -94,8 +94,7 @@
             </template>
 
             <template v-slot:toolbar>
-              <lay-button size="sm" type="primary" @click="toImport"
-                          v-permission="[$MENU_PERMISSION.SYSTEM_OSS_UPLOAD]">
+              <lay-button size="sm" type="primary" @click="toImport">
                 <lay-icon class="layui-icon-upload-drag"></lay-icon>
                 上传
               </lay-button>
@@ -141,6 +140,7 @@
               field="file"
               :auto="false"
               :drag="true"
+              :multiple="true"
           >
             <template #preview>
               <div v-if="fileList.length > 0" v-for="(file, index) in fileList">
@@ -216,6 +216,7 @@ const uploadLimitSize = 10 * 1024 * 1024;
 /* FUNCTION*/
 function toImport() {
   // layer.msg('导入')
+  fileList.value = []
   visibleImport.value = true
 }
 

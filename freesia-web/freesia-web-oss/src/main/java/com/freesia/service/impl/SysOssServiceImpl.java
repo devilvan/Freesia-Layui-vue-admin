@@ -13,6 +13,7 @@ import com.freesia.constant.OssModule;
 import com.freesia.dto.SysOssDto;
 import com.freesia.exception.OssException;
 import com.freesia.mapper.SysOssMapper;
+import com.freesia.po.BasePo;
 import com.freesia.po.SysOssPo;
 import com.freesia.pojo.OssFactory;
 import com.freesia.pojo.OssHandler;
@@ -31,8 +32,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -64,6 +67,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
                 .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysOss.getId()), SysOssPo::getId, sysOss.getId())
+                .eq(SysOssPo::getTempFlag, false)
                 .orderByDesc(SysOssPo::getCreateTime);
         Page<SysOssPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysOssDto.class));
@@ -73,26 +77,74 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     public SysOssDto findSysOss(SysOssDto sysOss) {
         LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
                 .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysOss.getId()), SysOssPo::getId, sysOss.getId());
+                .eq(UEmpty.isNotEmpty(sysOss.getId()), SysOssPo::getId, sysOss.getId())
+                .eq(SysOssPo::getTempFlag, false);
         return UCopy.copyPo2Dto(getOne(wrapper), SysOssDto.class);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteSysOss(List<Long> idList) {
-        Wrapper<SysOssPo> queryWrapper = new LambdaQueryWrapper<SysOssPo>()
-                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
-                .in(SysOssPo::getId, idList);
-        List<SysOssPo> sysOssPoList = this.list(queryWrapper);
-        for (SysOssPo sysOssPo : sysOssPoList) {
-            OssHandler ossHandler = OssFactory.getInstance(sysOssPo.getService());
-            ossHandler.delete(sysOssPo.getUrl());
+        if (UEmpty.isNotEmpty(idList)) {
+            Wrapper<SysOssPo> queryWrapper = new LambdaQueryWrapper<SysOssPo>()
+                    .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
+                    .in(SysOssPo::getId, idList);
+            List<SysOssPo> sysOssPoList = this.list(queryWrapper);
+            for (SysOssPo sysOssPo : sysOssPoList) {
+                OssHandler ossHandler = OssFactory.getInstance(sysOssPo.getService());
+                ossHandler.delete(sysOssPo.getUrl());
+            }
+            removeBatchByIds(idList);
         }
-        removeBatchByIds(idList);
     }
 
     @Override
-    public SysOssDto upload(MultipartFile file) {
+    public List<SysOssDto> upload(List<MultipartFile> files) {
+        List<SysOssDto> resultSysOssDtoList = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String originalFilename = file.getOriginalFilename();
+            String suffix = Optional.of(file)
+                    .map(MultipartFile::getOriginalFilename)
+                    .map(m -> m.substring(m.lastIndexOf('.') + 1))
+                    .orElseThrow(() -> new OssException("oss.file.required"));
+            OssHandler ossHandler = OssFactory.getInstance();
+            OssHandler.UploadResultEntity uploadResultEntity = new OssHandler.UploadResultEntity();
+            try {
+                uploadResultEntity = ossHandler.uploadSuffix(file.getBytes(), "." + suffix, file.getContentType());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 保存文件信息
+            SysOssDto sysOssDto = new SysOssDto();
+            String filename = uploadResultEntity.getFilename();
+            filename = filename.substring(filename.lastIndexOf("/") + 1);
+            sysOssDto.setFileName(filename);
+            sysOssDto.setOriginalName(originalFilename);
+            sysOssDto.setFileSuffix(suffix);
+            sysOssDto.setUrl(uploadResultEntity.getUrl());
+            sysOssDto.setService(ossHandler.getConfigKey());
+            SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
+            SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
+            resultSysOssDtoList.add(resultSysOssDto);
+            // 保存操作日志
+            SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
+                assignButtonLogBean.setModule(OssModule.OSS_MANAGEMENT);
+                assignButtonLogBean.setSubModule(OssModule.SubModule.OSS_UPLOAD);
+                assignButtonLogBean.setType(OssModule.SubModule.OSS_UPLOAD);
+                assignButtonLogBean.setResult(FlagConstant.SUCCESS);
+                assignButtonLogBean.setContextOld(null);
+                assignButtonLogBean.setContext(null);
+                assignButtonLogBean.setRemark(UMessage.message("oss.upload.success", originalFilename));
+                return assignButtonLogBean;
+            });
+            USpring.context().publishEvent(sysSensitiveLogBean);
+        }
+        return resultSysOssDtoList;
+    }
+
+    @Override
+    public SysOssDto uploadTemp(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         String suffix = Optional.of(file)
                 .map(MultipartFile::getOriginalFilename)
@@ -101,7 +153,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         OssHandler ossHandler = OssFactory.getInstance();
         OssHandler.UploadResultEntity uploadResultEntity = new OssHandler.UploadResultEntity();
         try {
-            uploadResultEntity = ossHandler.uploadSuffix(file.getBytes(), "." + suffix, file.getContentType());
+            uploadResultEntity = ossHandler.uploadTemp(file.getBytes(), "." + suffix, file.getContentType());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,6 +166,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         sysOssDto.setFileSuffix(suffix);
         sysOssDto.setUrl(uploadResultEntity.getUrl());
         sysOssDto.setService(ossHandler.getConfigKey());
+        sysOssDto.setTempFlag(true);
         setPrivateBucketExpirationUrl(sysOssDto);
         SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
         SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
@@ -182,6 +235,17 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         return UCopy.copyPo2Dto(getById(id), SysOssDto.class);
     }
 
+    @Override
+    public void initDeleteTempFile() {
+        LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
+                .select(SysOssPo::getId)
+                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(SysOssPo::getTempFlag, true);
+        List<SysOssPo> sysOssPoList = this.list(wrapper);
+        List<Long> idList = sysOssPoList.stream().map(BasePo::getId).collect(Collectors.toList());
+        deleteSysOss(idList);
+    }
+
     /**
      * 为私有桶设置URL过期时间
      *
@@ -191,7 +255,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         OssHandler ossHandler = OssFactory.getInstance(sysOssDto.getService());
         // 仅修改桶类型为 private 的URL，临时URL时长为120s
         if (AccessPolicy.PRIVATE == ossHandler.getAccessPolicy()) {
-            sysOssDto.setUrl(ossHandler.getPrivateUrl(sysOssDto.getFileName(), 120));
+            sysOssDto.setUrl(ossHandler.getPrivateUrl(sysOssDto.getFileName(), 60));
         }
     }
 }

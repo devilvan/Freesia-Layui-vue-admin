@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
-import com.freesia.constant.OssConstant;
 import com.freesia.dto.SysOssConfigDto;
 import com.freesia.mapper.SysOssConfigMapper;
 import com.freesia.po.SysOssConfigPo;

@@ -19,7 +19,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +36,16 @@ import java.util.regex.Pattern;
 @Slf4j
 public class FreesiaTest {
     private static final String ENCRYPT_KEY = "Y29tLnNpbm9zZXJ2aWNlcy5vcmc=";
+
+    @Test
+    public void testDuration() {
+        long millis = Duration.ofMillis(60 * 1000).toMillis();
+        Date date = new Date();
+        date.setTime(date.getTime() + millis);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println(sdf.format(date));
+
+    }
 
     @Test
     public void testAesEncrypt() {

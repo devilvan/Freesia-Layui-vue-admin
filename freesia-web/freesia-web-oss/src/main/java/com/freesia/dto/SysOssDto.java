@@ -1,10 +1,10 @@
 package com.freesia.dto;
 
-import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Evad.Wu
@@ -27,4 +27,6 @@ public class SysOssDto extends BaseDto {
     private String url;
     @Schema(description = "服务商")
     private String service;
+    @Schema(description = "是否为临时文件（0-否 1-是）")
+    private Boolean tempFlag;
 }

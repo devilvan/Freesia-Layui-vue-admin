@@ -1,6 +1,12 @@
 package com.freesia.util;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.freesia.strategy.pojo.LengthValidPojo;
+import com.freesia.strategy.pojo.MaxValidPojo;
+import com.freesia.strategy.pojo.MinValidPojo;
+import com.freesia.strategy.validation.LengthValidator;
+import com.freesia.strategy.validation.MaxValidator;
+import com.freesia.strategy.validation.MinValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -8,6 +14,8 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -53,29 +61,15 @@ public class USpringValidation {
             ConstraintDescriptor<?> constraintDescriptor = constraintViolation.getConstraintDescriptor();
             Class<? extends Annotation> annotationClass = constraintDescriptor.getAnnotation().annotationType();
             if (annotationClass.isAssignableFrom(Length.class)) {
-                return formatLength(messageCode, dataType, property, field, invalidValue);
+                return new LengthValidator().valid(new LengthValidPojo(messageCode, dataType, field, property, invalidValue));
+            } else if (annotationClass.isAssignableFrom(Min.class)) {
+                return new MinValidator().valid(new MinValidPojo(messageCode, dataType, field, property, invalidValue));
+            } else if (annotationClass.isAssignableFrom(Max.class)) {
+                return new MaxValidator().valid(new MaxValidPojo(messageCode, dataType, field, property, invalidValue));
             }
             return UMessage.message("validation.error.msg",
-                    UMessage.message(messageCode), field, invalidValue);
+                    UMessage.message(messageCode), property, invalidValue);
         }).collect(Collectors.toList());
-    }
-
-    /**
-     * 根据{@link Length}注解校验数据
-     *
-     * @param messageCode  消息键
-     * @param dataType     待校验的数据Class
-     * @param property     带校验的属性名
-     * @param field        错误字段（中文/属性名）
-     * @param invalidValue 错误值
-     * @return 校验后的错误信息
-     */
-    private static String formatLength(String messageCode, Class<?> dataType, String property, String field, Object invalidValue) {
-        Length fieldAnnotation = getFieldAnnotation(dataType, property, Length.class);
-        int max = fieldAnnotation.max();
-        int min = fieldAnnotation.min();
-        return UMessage.message("validation.error.msg",
-                UMessage.message(messageCode, min, max), field, invalidValue);
     }
 
     /**
@@ -103,7 +97,7 @@ public class USpringValidation {
      * @param annotationType 校验注解的类型
      * @return 描述
      */
-    private static <T extends Annotation> T getFieldAnnotation(Class<?> dataType, String property, Class<T> annotationType) {
+    public static <T extends Annotation> T getFieldAnnotation(Class<?> dataType, String property, Class<T> annotationType) {
         return ReflectUtil.getField(dataType, property).getAnnotation(annotationType);
     }
 }

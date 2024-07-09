@@ -36,8 +36,8 @@ public class SysUserImportEntity extends BaseImportEntity {
     @Email(message = "{email.invalid}")
     @Schema(description = "邮箱")
     private String email;
-    @NotEmpty(message = "{not.null}")
-    @Phone_CN(message = "{phone_CN_invalid}")
+    @NotEmpty(message = "not.null")
+    @Phone_CN(message = "phone_CN_invalid")
     @Schema(description = "手机号")
     private String telNo;
     @Schema(description = "用户类型")

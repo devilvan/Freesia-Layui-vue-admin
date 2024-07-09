@@ -2,6 +2,7 @@ import {defineStore} from 'pinia'
 // @ts-ignore
 import {JSEncrypt} from "encryptlong";
 import CryptoJS from "crypto-js";
+import app from "../main";
 
 export const useCryptStore = defineStore({
     id: 'crypt',
@@ -32,13 +33,17 @@ export const useCryptStore = defineStore({
             if (typeof (data) === 'object') {
                 data = JSON.stringify(data);
             }
-            return CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse(this.aes), {
+            return CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse(
+                app.config.globalProperties.$decryptedData(this.pri2, decodeURI(this.aes))
+            ), {
                 mode: CryptoJS.mode.ECB,
                 padding: CryptoJS.pad.ZeroPadding,
             }).toString();
         },
         async decryptAes(data: string) {
-            let decrypt = CryptoJS.AES.decrypt(data, CryptoJS.enc.Utf8.parse(this.aes), {
+            let decrypt = CryptoJS.AES.decrypt(data, CryptoJS.enc.Utf8.parse(
+                app.config.globalProperties.$decryptedData(this.pri2, decodeURI(this.aes))
+            ), {
                 mode: CryptoJS.mode.ECB,
                 padding: CryptoJS.pad.ZeroPadding,
             });

@@ -3,6 +3,7 @@ package com.freesia.controller;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
+import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.Constants;
 import com.freesia.dto.RouterDto;
 import com.freesia.dto.SysMenuDto;
@@ -50,6 +51,7 @@ public class SysLoginController {
     @PostMapping("sysLogin")
     public R<Map<String, Object>> sysLogin(@Valid @RequestBody String request) {
         LoginVo loginVo = UCrypt.aesDecryptJSON(request, LoginVo.class);
+//        LoginVo loginVo = JSONObject.parseObject(request, LoginVo.class);
         Map<String, Object> ajax = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
         // 生成令牌
         String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getCaptchaKey());

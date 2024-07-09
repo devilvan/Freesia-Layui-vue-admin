@@ -101,4 +101,11 @@ public class SysUserPo extends BasePo implements Serializable {
     @TableField(exist = false)
     @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysUserPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
+
+    @Schema(description = "用户在租户-用户关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysTenantUserPo.class, mappedBy = "sysUserPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysTenantUserPo> sysTenantUserPoSet = new HashSet<>(0);
 }

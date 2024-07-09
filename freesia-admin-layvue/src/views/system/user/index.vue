@@ -77,7 +77,7 @@
           ></lay-switch>
         </template>
         <template #avatar="{ row }">
-          <lay-avatar :src="$SRC_ASSETS + row.avatar" @click="preview($SRC_ASSETS + row.avatar)"></lay-avatar>
+          <lay-avatar :src="parseImgPath(row.avatar)" @click="preview(parseImgPath(row.avatar))"></lay-avatar>
         </template>
         <template #gender="{ row }">
           <dict-tag :options="sysGenderList" :value="row.gender"/>
@@ -125,8 +125,11 @@
     </div>
     <lay-layer v-model="addModalShowFlag" :title="title" :area="['500px', '600px']">
       <div style="padding: 20px">
-        <lay-form :model="sysUserVo" ref="sysUserVoFormRef" required>
-          <lay-form-item label="昵称" prop="nickName">
+        <lay-form :model="sysUserVo" ref="sysUserVoFormRef">
+          <lay-form-item label="用户名" prop="userName" required>
+            <lay-input v-model="sysUserVo.userName" :disabled="userNameDisabled"></lay-input>
+          </lay-form-item>
+          <lay-form-item label="昵称" prop="nickName" required>
             <lay-input v-model="sysUserVo.nickName"></lay-input>
           </lay-form-item>
 
@@ -140,10 +143,10 @@
             >
             </lay-select>
           </lay-form-item>
-          <lay-form-item label="邮箱" prop="email">
+          <lay-form-item label="邮箱" prop="email" required>
             <lay-input v-model="sysUserVo.email"></lay-input>
           </lay-form-item>
-          <lay-form-item label="手机号" prop="telNo">
+          <lay-form-item label="手机号" prop="telNo" required>
             <lay-input v-model="sysUserVo.telNo"></lay-input>
           </lay-form-item>
           <lay-form-item label="描述" prop="remark">
@@ -153,6 +156,24 @@
                 :show-count="true"
                 :maxlength="127"
             ></lay-textarea>
+          </lay-form-item>
+          <lay-form-item label="头像" prop="avatar">
+            <lay-upload
+                :url="ossPath"
+                v-model="updateFileList"
+                field="file"
+                acceptMime="image/jpeg,image/png,image/gif,image/webp"
+                :auto="false"
+                @on-change="uploadOnChange"
+            >
+              <template #preview>
+                <div>
+                  <img v-if="previewAvatar" :src="parseImgPath(previewAvatar)"
+                       style="width: 300px; height: 300px; object-fit: cover;"
+                       alt="#">
+                </div>
+              </template>
+            </lay-upload>
           </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: center">
@@ -213,8 +234,11 @@ import router from "../../../router";
 import app from "../../../main";
 import {Operate} from "../../../types/Constants";
 import {useCryptStore} from "../../../store/crypt";
+import {upload, uploadTemp} from "../../../api/system/Oss";
+import {parseImgPath} from "../../../util/UImage";
 
 /* INIT*/
+const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
 const $router = router;
 const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_BASE_URL + "/api/sysUserController/userImport"
@@ -237,8 +261,10 @@ const fileList = ref([])
 const sysGenderList = ref<Array<SysDictValueEntity>>()
 const sysGenderListSelect = ref<Array<SysDictValueEntity>>()
 const loading = ref(false)
+const userNameDisabled = ref(false)
 const selectedKeys = ref()
 const sysUserVo = ref<any>({})
+const previewAvatar = ref<any>('')
 const sysUserVoFormRef = ref()
 const addModalShowFlag = ref(false)
 const title = ref('新增')
@@ -264,6 +290,7 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+const updateFileList = ref([])
 /* VAR*/
 /*FUNCTION*/
 function toImport() {
@@ -314,12 +341,21 @@ const loadDataSource = () => {
 const changeAddModalShowFlag = (operate: any, row?: any) => {
   title.value = Operate.ADD === operate ? '新增' : Operate.EDIT === operate ? '编辑' : '标题'
   if (Operate.EDIT === operate) {
+    userNameDisabled.value = true;
     findEditUserById(row.id).then((res: any) => {
       if (res.code === 200) {
-        let data = $crypt.decryptAes(res.data)
-        sysUserVo.value = JSON.parse(data)
+        $crypt.decryptAes(res.data).then((decryptAes: any) => {
+          let decrypt = JSON.parse(decryptAes);
+          sysUserVo.value = {...decrypt};
+          previewAvatar.value = decrypt.avatar
+        })
       }
     })
+  } else if (Operate.ADD === operate) {
+    userNameDisabled.value = false;
+    previewAvatar.value = null;
+    sysUserVo.value = {}
+    updateFileList.value = []
   }
   addModalShowFlag.value = !addModalShowFlag.value
 }
@@ -381,16 +417,43 @@ function toRemove() {
 }
 
 function toSubmit() {
-  saveUserInfo($crypt.encryptAes(sysUserVo.value)).then((res: any) => {
-    if (res.code === 200) {
-      layer.msg(res.msg, {icon: 1})
-      change()
-      addModalShowFlag.value = !addModalShowFlag.value
+  sysUserVoFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      if (updateFileList.value && updateFileList.value.length > 0) {
+        upload(updateFileList.value).then((res: any) => {
+          if (res.code === 200) {
+            if (res.data && res.data.length > 0) {
+              sysUserVo.value.avatar = res.data[0].url
+            }
+            $crypt.encryptAes(sysUserVo.value).then(encrypt => {
+              saveUserInfo(encrypt).then((decrypt: any) => {
+                if (decrypt.code === 200) {
+                  layer.msg(decrypt.msg, {icon: 1})
+                  change()
+                  addModalShowFlag.value = !addModalShowFlag.value
+                }
+              })
+            })
+          }
+        })
+      } else {
+        $crypt.encryptAes(sysUserVo.value).then(encrypt => {
+          saveUserInfo(encrypt).then((decrypt: any) => {
+            if (decrypt.code === 200) {
+              layer.msg(decrypt.msg, {icon: 1})
+              change()
+              addModalShowFlag.value = !addModalShowFlag.value
+            }
+          })
+        })
+      }
     }
   })
 }
 
 function toCancel() {
+  console.log("do toCancel")
+  updateFileList.value = []
   addModalShowFlag.value = false
 }
 
@@ -437,6 +500,16 @@ function assignRoleById(id: any) {
 function randomUserAvatar() {
   let index = Math.floor(Math.random() * avatarPath.length);
   return avatarPath[index].replace(app.config.globalProperties.$SRC_ASSETS, '');
+}
+
+function uploadOnChange(file: any) {
+  uploadTemp(file).then((res: any) => {
+    if (res.code === 200) {
+      if (res.data) {
+        previewAvatar.value = res.data.url
+      }
+    }
+  })
 }
 
 /*FUNCTION*/

@@ -158,4 +158,12 @@ public interface SysUserService {
      * @return 已存在的用户
      */
     List<SysUserDto> findDistinctUserNameList(List<String> distinctUserNameList);
+
+    /**
+     * 删除用户
+     *
+     * @param idList 用户ID
+     * @return 删除用户的信息
+     */
+    List<SysUserDto> deleteUser(List<Long> idList);
 }
