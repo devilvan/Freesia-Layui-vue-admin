@@ -23,4 +23,8 @@ public class LoginPasswordProperties {
      * 密码锁定时间（默认10分钟）
      */
     private Duration lockTime = Duration.ofMinutes(10);
+    /**
+     * 初始化密码
+     */
+    private String initPassword = "123456";
 }

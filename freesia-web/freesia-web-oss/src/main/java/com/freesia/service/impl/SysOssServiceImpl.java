@@ -85,15 +85,17 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteSysOss(List<Long> idList) {
-        Wrapper<SysOssPo> queryWrapper = new LambdaQueryWrapper<SysOssPo>()
-                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
-                .in(UEmpty.isNotEmpty(idList), SysOssPo::getId, idList);
-        List<SysOssPo> sysOssPoList = this.list(queryWrapper);
-        for (SysOssPo sysOssPo : sysOssPoList) {
-            OssHandler ossHandler = OssFactory.getInstance(sysOssPo.getService());
-            ossHandler.delete(sysOssPo.getUrl());
+        if (UEmpty.isNotEmpty(idList)) {
+            Wrapper<SysOssPo> queryWrapper = new LambdaQueryWrapper<SysOssPo>()
+                    .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
+                    .in(SysOssPo::getId, idList);
+            List<SysOssPo> sysOssPoList = this.list(queryWrapper);
+            for (SysOssPo sysOssPo : sysOssPoList) {
+                OssHandler ossHandler = OssFactory.getInstance(sysOssPo.getService());
+                ossHandler.delete(sysOssPo.getUrl());
+            }
+            removeBatchByIds(idList);
         }
-        removeBatchByIds(idList);
     }
 
     @Override
