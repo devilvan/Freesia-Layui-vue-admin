@@ -5,6 +5,7 @@ export enum MenuPermission {
     SYSTEM_USER_DELETE = "system:user:delete",
     SYSTEM_USER_INDEX = "system:user:index",
     SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole",
+    SYSTEM_USER_ASSIGN_DEPT = "system:user:assignDept",
     SYSTEM_USER_IMPORT_USER = "system:user:importUser",
 
     /* 菜单管理*/

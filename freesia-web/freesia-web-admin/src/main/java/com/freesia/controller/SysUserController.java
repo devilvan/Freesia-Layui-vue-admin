@@ -256,4 +256,14 @@ public class SysUserController {
         List<SysUserDto> sysUserDtoList = sysUserService.deleteUser(idList);
         return R.ok(sysUserDtoList);
     }
+
+    @Operation(summary = "给用户分配部门")
+    @PostMapping("assignDept")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ASSIGN_DEPT})
+    public R<Void> assignDept(@RequestBody AssignDeptVo assignDeptVo) {
+        List<Long> userIdList = assignDeptVo.getUserIdList();
+        Long deptId = assignDeptVo.getDeptId();
+        sysUserService.assignDept(userIdList, deptId);
+        return R.ok();
+    }
 }

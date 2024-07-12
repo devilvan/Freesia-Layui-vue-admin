@@ -1,23 +1,33 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.constant.AdminConstant;
+import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysDeptDto;
 import com.freesia.entity.FindPageSysDeptListEntity;
+import com.freesia.entity.FindTreeDeptSelectEntity;
+import com.freesia.exception.DeptException;
+import com.freesia.exception.UserException;
 import com.freesia.model.LoginUserModel;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysDeptService;
 import com.freesia.util.UCopy;
+import com.freesia.util.UCrypt;
 import com.freesia.util.USecurity;
 import com.freesia.vo.R;
+import com.freesia.vo.SaveDeptVo;
 import com.freesia.vo.SysDeptVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -39,6 +49,7 @@ public class SysDeptController {
         return sysDeptService.findPageSysDeptList(sysDeptDto, pageQuery);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_INDEX)
     @Operation(summary = "获取部门下拉树")
     @GetMapping("findDeptTreeList")
     public R<List<FindPageSysDeptListEntity>> findDeptTreeList(SysDeptVo sysDeptVo) {
@@ -49,12 +60,65 @@ public class SysDeptController {
         return R.ok(deptTreeList);
     }
 
-    @SuppressWarnings("ConstantConditions")
-    @Operation(summary = "获取部门下拉树")
+    @Operation(summary = "获取当前用户的部门信息")
     @GetMapping("findDeptById")
     public R<SysDeptDto> findDeptById() {
         LoginUserModel loginUser = USecurity.getLoginUser();
-        SysDeptDto sysDeptDto = sysDeptService.findDeptById(loginUser.getDeptId());
+        Long deptId = Optional.ofNullable(loginUser).map(LoginUserModel::getDeptId)
+                .orElseThrow(() -> new DeptException("dept.id.required"));
+        SysDeptDto sysDeptDto = sysDeptService.findDeptById(deptId);
         return R.ok(sysDeptDto);
+    }
+
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_EDIT)
+    })
+    @Operation(summary = "保存部门信息")
+    @PostMapping("saveDept")
+    public R<SysDeptDto> saveDept(@RequestBody String encrypt) {
+        SaveDeptVo saveDeptVo = UCrypt.aesDecryptJSON(encrypt, SaveDeptVo.class);
+        SysDeptDto sysDeptDto = sysDeptService.saveDept(UCopy.copyVo2Dto(saveDeptVo, SysDeptDto.class));
+        return R.ok(sysDeptDto);
+    }
+
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_DELETE)
+    @Operation(summary = "删除部门信息")
+    @PostMapping("deleteDept")
+    public R<SysDeptDto> deleteDept(SysDeptVo sysDeptVo) {
+        SysDeptDto sysDeptDto = sysDeptService.deleteDept(UCopy.copyVo2Dto(sysDeptVo, SysDeptDto.class));
+        return R.ok(sysDeptDto);
+    }
+
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_INDEX)
+    @Operation(summary = "查询部门树下拉框集合")
+    @GetMapping(value = "findTreeDeptSelect")
+    public R<List<FindTreeDeptSelectEntity>> findTreeDeptSelect() {
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        List<FindTreeDeptSelectEntity> menuList = sysDeptService.findTreeDeptSelect(loginUser);
+        return R.ok(menuList);
+    }
+
+    @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_INDEX)
+    @Operation(summary = "查询部门树下拉框集合（分配部门）")
+    @GetMapping(value = "findTreeAssignDeptSelect")
+    public R<List<FindTreeDeptSelectEntity>> findTreeAssignDeptSelect() {
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        List<FindTreeDeptSelectEntity> menuList = sysDeptService.findTreeAssignDeptSelect(loginUser);
+        return R.ok(menuList);
+    }
+
+    @Validated
+    @Operation(summary = "查询自增排序号")
+    @GetMapping(value = "findIncrementOrderNum")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_ADD),
+            @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_EDIT)
+    })
+    public R<Long> findIncrementOrderNum(@RequestParam("parentId") @NotNull(message = "{not.null}") String parentId) {
+        SysDeptDto sysDeptDto = new SysDeptDto();
+        sysDeptDto.setParentId(Long.valueOf(parentId));
+        Long incrementOrderNum = sysDeptService.findIncrementOrderNum(sysDeptDto);
+        return R.ok(incrementOrderNum);
     }
 }

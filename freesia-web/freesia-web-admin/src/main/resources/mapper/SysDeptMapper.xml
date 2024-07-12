@@ -5,6 +5,19 @@
         <include refid="sysDept"/>
         ${ew.getCustomSqlSegment}
     </select>
+    <select id="findTreeDeptSelect" resultType="com.freesia.entity.FindTreeDeptSelectEntity">
+        SELECT D.ID,
+               D.REC_VER,
+               D.PARENT_ID,
+               D.DEPT_NAME AS TITLE
+        FROM sys_dept D
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findMaxOrderNum" resultType="java.lang.Long">
+        SELECT MAX(D.ORDER_NUM)
+        FROM SYS_DEPT D
+        WHERE D.PARENT_ID = #{parentId}
+    </select>
 
     <sql id="sysDept">
         SELECT D.ID,

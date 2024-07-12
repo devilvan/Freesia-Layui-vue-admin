@@ -76,7 +76,7 @@
         </lay-card>
       </lay-container>
     </div>
-    <lay-layer v-model="changeAssignUserModalFlag" title="已分配租户的用户信息" :area="['1000px', '500px']">
+    <lay-layer v-model="changeAssignUserModalFlag" title="可分配租户的用户信息" :area="['1000px', '500px']">
       <!-- table -->
       <lay-table
           class="table-style"

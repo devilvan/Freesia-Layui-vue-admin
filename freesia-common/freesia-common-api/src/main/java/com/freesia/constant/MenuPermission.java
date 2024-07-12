@@ -20,6 +20,7 @@ public class MenuPermission {
             SYSTEM_USER_EDIT = "system:user:edit",
             SYSTEM_USER_DELETE = "system:user:delete",
             SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole",
+            SYSTEM_USER_ASSIGN_DEPT = "system:user:assignDept",
             SYSTEM_USER_IMPORT_USER = "system:user:importUser";
 
     /* 菜单管理*/
@@ -44,7 +45,8 @@ public class MenuPermission {
     public static final String SYSTEM_DEPT_INDEX = "system:dept:index",
             SYSTEM_DEPT_ADD = "system:dept:add",
             SYSTEM_DEPT_EDIT = "system:dept:edit",
-            SYSTEM_DEPT_ENABLED = "system:dept:enabled";
+            SYSTEM_DEPT_ENABLED = "system:dept:enabled",
+            SYSTEM_DEPT_DELETE = "system:dept:delete";
 
     /* 字典管理*/
     public static final String SYSTEM_DICT_INDEX = "system:dict:index",

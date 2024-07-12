@@ -59,3 +59,8 @@ export interface AssignRoleVo {
     userId: string,
     afterRoleIdSet: string[]
 }
+
+export interface AssignDeptVo {
+    userIdList?: Array<string>,
+    deptId?: string,
+}

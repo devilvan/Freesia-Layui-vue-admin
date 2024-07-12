@@ -62,3 +62,8 @@ export interface SysDeptEntity extends BaseEntity {
     createTimeFrom?: Date;
     createTimeTo?: Date;
 }
+
+export interface SysDeptSelectEntity extends Tree<SysDeptSelectEntity> {
+    title?: string;
+    field?: string;
+}

@@ -166,4 +166,12 @@ public interface SysUserService {
      * @return 删除用户的信息
      */
     List<SysUserDto> deleteUser(List<Long> idList);
+
+    /**
+     * 给用户分配部门
+     *
+     * @param userIdList 用户ID
+     * @param deptId     部门ID
+     */
+    void assignDept(List<Long> userIdList, Long deptId);
 }

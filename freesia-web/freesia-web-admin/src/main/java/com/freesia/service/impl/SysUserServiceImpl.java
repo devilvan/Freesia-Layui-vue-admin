@@ -260,6 +260,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
     }
 
+    @Override
+    public void assignDept(List<Long> userIdList, Long deptId) {
+        List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(userIdList);
+        for (SysUserPo sysUserPo : sysUserPoList) {
+            sysUserPo.setDeptId(deptId);
+        }
+        sysUserRepository.saveAll(sysUserPoList);
+    }
+
     /**
      * 构建新增用户实体
      *
