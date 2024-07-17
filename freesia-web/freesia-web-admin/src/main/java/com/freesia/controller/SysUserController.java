@@ -95,8 +95,9 @@ public class SysUserController {
         return R.ok();
     }
 
-    @Operation(summary = "根据用户ID查询【分配用户】加载数据")
+    @Operation(summary = "根据用户ID查询【分配角色】加载数据")
     @GetMapping("findUserRolesByUserId")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ASSIGN_ROLE})
     public R<FindUserRolesByUserIdEntity> findUserRolesByUserId(@RequestParam Long userId) {
         FindUserRolesByUserIdEntity findUserRolesByUserIdEntity = sysUserService.findUserRolesByUserId(userId);
         return R.ok(findUserRolesByUserIdEntity);
@@ -215,7 +216,6 @@ public class SysUserController {
         return R.ok();
     }
 
-    //        @SaCheckPermission(value = MenuPermission.SYSTEM_USER_UPLOAD_AVATAR)
     @SaIgnore
     @Operation(summary = "用户头像上传")
     @PostMapping(value = "uploadAvatar")
@@ -230,23 +230,6 @@ public class SysUserController {
     public R<SysUserDto> findEditUserById(@NotEmpty(message = "{not.null}") @RequestParam String id) {
         final SysUserDto sysUserDto = sysUserService.findUserById(Long.valueOf(id));
         return R.ok(sysUserDto);
-    }
-
-    @Operation(summary = "新增用户")
-    @PostMapping("addUser")
-    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ADD})
-    public R<Void> addUser(@RequestBody String request) {
-//        AddUserVo addUserVo = UCrypt.aesDecryptJSON(request, AddUserVo.class);
-        AddUserVo addUserVo = JSONObject.parseObject(request, AddUserVo.class);
-        List<String> errorMsg = USpringValidation.errorMsg(addUserVo);
-        if (UEmpty.isNotEmpty(errorMsg)) {
-            R<Void> r = R.failed();
-            String join = String.join("\n", errorMsg);
-            log.warn(join);
-            r.setMsg(join);
-            return r;
-        }
-        return R.ok();
     }
 
     @Operation(summary = "删除用户")

@@ -44,6 +44,17 @@ public interface SysRoleRepository extends JpaRepository<SysRolePo, Long> {
             AND SRM.sysRoleMenuPk.roleId = :roleId
             AND SRM.sysRoleMenuPk.menuId IN (:removeButtonIdList)
             """)
+    @Transactional(rollbackFor = Exception.class)
     void removeRelationByRoleId(@Param("roleId") Long roleId, @Param("removeButtonIdList") List<Long> removeButtonIdList);
 
+    /**
+     * 根据角色ID删除 部门-角色信息表中的数据
+     *
+     * @param roleId 用户ID
+     */
+    @Modifying
+    @Query(value = """
+                DELETE FROM SysRoleDeptPo WHERE sysRoleDeptPk.roleId = :roleId
+            """)
+    void removeDeptRelationByRoleId(@Param("roleId") Long roleId);
 }

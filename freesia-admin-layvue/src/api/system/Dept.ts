@@ -1,5 +1,5 @@
 import Http from "../Http";
-import {SysDeptVo} from "../../types/system/Dept";
+import {AssignRoleVo, SysDeptVo} from "../../types/system/Dept";
 import {PageQuery} from "../../types/Common";
 import {buildPageUrlParam} from "../../util/URequest";
 import {R} from "../../types/Result";
@@ -31,3 +31,11 @@ export function saveDept(encrypt: string) {
     return Http.post("/api/sysDeptController/saveDept", param);
 }
 
+export const assignRole = function (assignRoleVo: AssignRoleVo) {
+    return Http.post('/api/sysDeptController/assignRole', assignRoleVo)
+}
+
+export const findDeptRolesByDeptId = function (deptId: string) {
+    let params = {deptId: deptId}
+    return Http.get('/api/sysDeptController/findDeptRolesByDeptId', params)
+}

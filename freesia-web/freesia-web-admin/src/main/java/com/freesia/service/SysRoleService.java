@@ -3,6 +3,7 @@ package com.freesia.service;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
+import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.po.SysRolePo;
 import com.freesia.pojo.PageQuery;
@@ -110,4 +111,19 @@ public interface SysRoleService {
      */
     void cancelAssignUser(Long roleId, List<Long> userIdList);
 
+    /**
+     * 给角色分配部门
+     *
+     * @param deptIdSet 待分配的部门ID集合
+     * @param roleId    角色ID
+     */
+    void assignDept(Long roleId, Set<Long> deptIdSet);
+
+    /**
+     * 根据角色ID查询【分配部门】加载数据
+     *
+     * @param roleId 角色ID
+     * @return 角色与已分配部门的信息
+     */
+    FindDeptRolesByRoleIdEntity findDeptRolesByRoleId(Long roleId);
 }

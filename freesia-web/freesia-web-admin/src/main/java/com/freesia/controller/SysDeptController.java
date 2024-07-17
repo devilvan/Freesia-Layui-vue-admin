@@ -2,9 +2,9 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.freesia.constant.AdminConstant;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysDeptDto;
+import com.freesia.entity.FindDeptRolesByDeptIdEntity;
 import com.freesia.entity.FindPageSysDeptListEntity;
 import com.freesia.entity.FindTreeDeptSelectEntity;
 import com.freesia.exception.DeptException;
@@ -16,6 +16,7 @@ import com.freesia.service.SysDeptService;
 import com.freesia.util.UCopy;
 import com.freesia.util.UCrypt;
 import com.freesia.util.USecurity;
+import com.freesia.vo.DeptAssignRoleVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SaveDeptVo;
 import com.freesia.vo.SysDeptVo;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -120,5 +122,23 @@ public class SysDeptController {
         sysDeptDto.setParentId(Long.valueOf(parentId));
         Long incrementOrderNum = sysDeptService.findIncrementOrderNum(sysDeptDto);
         return R.ok(incrementOrderNum);
+    }
+
+    @Operation(summary = "给部门分配角色")
+    @PostMapping("assignRole")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_DEPT_ASSIGN_ROLE})
+    public R<Void> assignRole(@RequestBody DeptAssignRoleVo assignRoleVo) {
+        Long deptId = assignRoleVo.getDeptId();
+        Set<Long> afterRoleIdSet = assignRoleVo.getAfterRoleIdSet();
+        sysDeptService.assignRole(deptId, afterRoleIdSet);
+        return R.ok();
+    }
+
+    @Operation(summary = "根据部门ID查询【分配角色】加载数据")
+    @GetMapping("findDeptRolesByDeptId")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_DEPT_ASSIGN_ROLE})
+    public R<FindDeptRolesByDeptIdEntity> findDeptRolesByDeptId(@RequestParam Long deptId) {
+        FindDeptRolesByDeptIdEntity findDeptRolesByDeptIdEntity = sysDeptService.findDeptRolesByDeptId(deptId);
+        return R.ok(findDeptRolesByDeptIdEntity);
     }
 }

@@ -163,44 +163,57 @@
 
     <lay-layer v-model="saveDirModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysDirVo" ref="saveDirFormRef">
-          <lay-row>
-            <lay-col md="12">
+        <lay-form :model="sysDirVo" ref="saveDirFormRef" label-position="top" size="md">
+          <lay-row space="20">
+            <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId">
                 <lay-tree-select v-model="sysDirVo.parentId" :data="treeMenuSelectList"
                                  @change="changeDirModalParentIdSelect"
                                  :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="路由路径" prop="path" required>
                 <lay-input v-model="sysDirVo.path" placeholder="例如：workspace"
                            :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-input>
               </lay-form-item>
-              <lay-form-item label="图标" prop="icon">
-                <lay-icon-picker v-model="sysDirVo.icon" allow-clear></lay-icon-picker>
-              </lay-form-item>
             </lay-col>
-            <lay-col md="12">
+            <lay-col md="6">
               <lay-form-item label="目录名称" prop="menuName" required>
                 <lay-input v-model="sysDirVo.menuName"></lay-input>
               </lay-form-item>
-              <lay-form-item label="排序" prop="orderNum" required>
-                <lay-input-number
-                    style="width: 100%"
-                    v-model="sysDirVo.orderNum"
-                    position="right"
-                    :min="0"
-                    :step="10"
-                ></lay-input-number>
-              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysDirVo.status" :options="isShowOptions" :items="sysDirVo.status"
                             style="width: 100%">
                 </lay-select>
               </lay-form-item>
             </lay-col>
-            <lay-form-item label="备注" prop="remark" required>
-              <lay-textarea v-model="sysDirVo.remark" :allow-clear="true" show-count :maxlength="127"></lay-textarea>
-            </lay-form-item>
+            <lay-row space="20">
+              <lay-col md="6">
+                <lay-form-item label="图标" prop="icon">
+                  <lay-icon-picker v-model="sysDirVo.icon" allow-clear></lay-icon-picker>
+                </lay-form-item>
+              </lay-col>
+              <lay-col md="6">
+                <lay-form-item label="排序" prop="orderNum" required>
+                  <lay-input-number
+                      style="width: 100%"
+                      v-model="sysDirVo.orderNum"
+                      position="right"
+                      :min="0"
+                      :step="10"
+                  ></lay-input-number>
+                </lay-form-item>
+              </lay-col>
+              <lay-col md="6">
+                <lay-form-item label="备注" prop="remark" required>
+                  <lay-textarea v-model="sysDirVo.remark" :allow-clear="true" show-count
+                                :maxlength="127"></lay-textarea>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
           </lay-row>
         </lay-form>
         <div style="width: 97%; text-align: right">
@@ -215,52 +228,71 @@
 
     <lay-layer v-model="saveMenuModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules">
-          <lay-row>
-            <lay-col md="12">
+        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules" label-position="top" size="md">
+          <lay-row space="20">
+            <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
-                <lay-tree-select v-model="sysMenuVo.parentId" :data="treeMenuSelectList"
-                                 @change="changeMenuModalParentIdSelect"
-                                 :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
+                <lay-tree-select
+                    class="widthResize"
+                    v-model="sysMenuVo.parentId" :data="treeMenuSelectList"
+                    @change="changeMenuModalParentIdSelect"
+                    :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="菜单名称" prop="menuName" required>
                 <lay-input v-model="sysMenuVo.menuName"></lay-input>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="路由路径" prop="path" required>
                 <lay-input v-model="sysMenuVo.path" placeholder="例如：workspace" @input="pathInputEvent($event)">
                 </lay-input>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="权限标识" prop="perms" required>
                 <lay-input v-model="sysMenuVo.perms" placeholder="例如：system:menu:index">
                 </lay-input>
               </lay-form-item>
             </lay-col>
-            <lay-col md="12">
-              <lay-form-item label="排序" prop="orderNum" required>
-                <lay-input-number
-                    style="width: 100%"
-                    v-model="sysMenuVo.orderNum"
-                    position="right"
-                    :min="0"
-                    :step="10"
-                ></lay-input-number>
-              </lay-form-item>
+            <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysMenuVo.status" :options="isShowOptions" :items="isShowOptions"
                             style="width: 100%">
                 </lay-select>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="组件路径" prop="component" :required="proceedCode === PROCEED_CODE.UPDATE">
                 <lay-input v-model="sysMenuVo.component" placeholder="例如：system/menu/index">
                 </lay-input>
               </lay-form-item>
-              <lay-form-item label="图标" prop="icon">
-                <lay-icon-picker v-model="sysMenuVo.icon" allow-clear></lay-icon-picker>
-              </lay-form-item>
             </lay-col>
-            <lay-form-item label="备注" prop="remark" required>
-              <lay-textarea v-model="sysMenuVo.remark" :allow-clear="true" show-count :maxlength="127"></lay-textarea>
-            </lay-form-item>
+            <lay-row space="20">
+              <lay-col md="6">
+                <lay-form-item label="图标" prop="icon">
+                  <lay-icon-picker v-model="sysMenuVo.icon" allow-clear></lay-icon-picker>
+                </lay-form-item>
+              </lay-col>
+              <lay-col md="6">
+                <lay-form-item label="排序" prop="orderNum" required>
+                  <lay-input-number
+                      style="width: 100%"
+                      v-model="sysMenuVo.orderNum"
+                      position="right"
+                      :min="0"
+                      :step="10"
+                  ></lay-input-number>
+                </lay-form-item>
+              </lay-col>
+              <lay-col md="6">
+                <lay-form-item label="备注" prop="remark" required>
+                  <lay-textarea v-model="sysMenuVo.remark" :allow-clear="true" show-count
+                                :maxlength="127"></lay-textarea>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
           </lay-row>
         </lay-form>
         <div style="width: 97%; text-align: right">
@@ -275,22 +307,28 @@
 
     <lay-layer v-model="saveButtonModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysMenuVoRules">
-          <lay-row>
-            <lay-col md="12">
+        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysMenuVoRules" label-position="top" size="md">
+          <lay-row space="20">
+            <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
-                <lay-tree-select v-model="sysButtonVo.parentId" :data="saveButtonTreeMenuSelectList"
-                                 @change="changeButtonModalParentIdSelect"
-                                 :allow-clear="true"></lay-tree-select>
+                <lay-tree-select
+                    class="widthResize"
+                    v-model="sysButtonVo.parentId" :data="saveButtonTreeMenuSelectList"
+                    @change="changeButtonModalParentIdSelect"
+                    :allow-clear="true"></lay-tree-select>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="菜单名称" prop="menuName" required>
                 <lay-input v-model="sysButtonVo.menuName" placeholder="例如：新增"></lay-input>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="权限标识" prop="perms" required>
                 <lay-input v-model="sysButtonVo.perms" placeholder="例如：system:menu:index"></lay-input>
               </lay-form-item>
             </lay-col>
-            <lay-col md="12">
+            <lay-col md="6">
               <lay-form-item label="排序" prop="orderNum" required>
                 <lay-input-number
                     style="width: 100%"
@@ -300,15 +338,24 @@
                     :step="10"
                 ></lay-input-number>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysButtonVo.status" :options="isShowOptions" :items="isShowOptions"
                             style="width: 100%">
                 </lay-select>
               </lay-form-item>
             </lay-col>
-            <lay-form-item label="备注" prop="remark" required>
-              <lay-textarea v-model="sysButtonVo.remark" :allow-clear="true" show-count :maxlength="127"></lay-textarea>
-            </lay-form-item>
+          </lay-row>
+          <lay-row>
+            <lay-col md="6">
+              <lay-form-item label="备注" prop="remark" required>
+                <lay-textarea
+                    class="widthResize"
+                    v-model="sysButtonVo.remark" :allow-clear="true" show-count
+                    :maxlength="127"></lay-textarea>
+              </lay-form-item>
+            </lay-col>
           </lay-row>
         </lay-form>
         <div style="width: 97%; text-align: right">
@@ -323,62 +370,78 @@
 
     <lay-layer v-model="saveLinkModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules">
-          <lay-row>
-            <lay-col md="12">
+        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules" label-position="top" size="md">
+          <lay-row space="20">
+            <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
-                <lay-tree-select v-model="sysLinkVo.parentId" :data="saveLinkTreeMenuSelectList"
-                                 @change="changeLinkModalParentIdSelect"
-                                 :allow-clear="true"></lay-tree-select>
+                <lay-tree-select
+                    class="widthResize"
+                    v-model="sysLinkVo.parentId"
+                    :data="saveLinkTreeMenuSelectList"
+                    @change="changeLinkModalParentIdSelect"
+                    :allow-clear="true"></lay-tree-select>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="菜单名称" prop="menuName" required>
                 <lay-input v-model="sysLinkVo.menuName" placeholder="例如：新增"></lay-input>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="链接地址" prop="path" required>
                 <lay-input v-model="sysLinkVo.path" placeholder="例如：https://www.baidu.com"></lay-input>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="组件路径" prop="component"
                              :required="sysLinkVo.componentType === LinkComponentType.INNER_LINK && proceedCode === PROCEED_CODE.UPDATE"
                              :hidden="sysLinkVo.componentType !== LinkComponentType.INNER_LINK">
                 <lay-input v-model="sysLinkVo.component" placeholder="例如：iframe/inner/index"></lay-input>
               </lay-form-item>
-              <lay-form-item label="图标" prop="icon">
-                <lay-icon-picker v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
-              </lay-form-item>
             </lay-col>
-            <lay-col md="12">
-              <lay-form-item label="排序" prop="orderNum" required>
-                <lay-input-number
-                    style="width: 100%"
-                    v-model="sysLinkVo.orderNum"
-                    position="right"
-                    :min="0"
-                    :step="10"
-                ></lay-input-number>
-              </lay-form-item>
+            <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
-                <lay-select v-model="sysLinkVo.status" :options="isShowOptions" :items="isShowOptions"
-                            style="width: 100%">
+                <lay-select class="widthResize"
+                            v-model="sysLinkVo.status" :options="isShowOptions" :items="isShowOptions">
                 </lay-select>
               </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="组件类型" prop="componentType" required>
                 <lay-select v-model="sysLinkVo.componentType" :options="linkComponentOptions"
                             :items="linkComponentOptions"
                             style="width: 100%"></lay-select>
               </lay-form-item>
-              <lay-form-item label="组件路径" prop="component" :hidden="!componentTypeEqInnerLink(sysLinkVo.componentType)"
-                             :required="componentTypeEqInnerLink(sysLinkVo.componentType)">
-                <lay-input v-model="sysLinkVo.component" placeholder="内部链接必填">
-                </lay-input>
-              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
               <lay-form-item label="权限标识" prop="perms" required>
                 <lay-input v-model="sysLinkVo.perms" placeholder="例如：system:menu:index"></lay-input>
               </lay-form-item>
-
             </lay-col>
-            <lay-form-item label="备注" prop="remark" required>
-              <lay-textarea v-model="sysLinkVo.remark" :allow-clear="true" show-count :maxlength="127"></lay-textarea>
-            </lay-form-item>
+            <lay-row space="20">
+              <lay-col md="6">
+                <lay-form-item label="图标" prop="icon">
+                  <lay-icon-picker class="widthResize" v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
+                </lay-form-item>
+              </lay-col>
+              <lay-col md="6">
+                <lay-form-item label="排序" prop="orderNum" required>
+                  <lay-input-number
+                      class="widthResize"
+                      v-model="sysLinkVo.orderNum"
+                      position="right"
+                      :min="0"
+                      :step="10"
+                  ></lay-input-number>
+                </lay-form-item>
+              </lay-col>
+              <lay-col md="6">
+                <lay-form-item label="备注" prop="remark" required>
+                  <lay-textarea v-model="sysLinkVo.remark" :allow-clear="true" show-count
+                                :maxlength="127"></lay-textarea>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
           </lay-row>
         </lay-form>
         <div style="width: 97%; text-align: right">
@@ -1024,5 +1087,9 @@ function changeLinkModalParentIdSelect(value: any) {
   display: inline-block;
   background-color: #e8f1ff;
   color: red;
+}
+
+.widthResize {
+  width: 100%
 }
 </style>

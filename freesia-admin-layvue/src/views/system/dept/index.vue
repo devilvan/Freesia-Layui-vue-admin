@@ -5,20 +5,37 @@
       <div :style="{ width: isFold ? `0px` : `300px` }" class="left-tree">
         <!-- tree -->
         <div v-show="!isFold">
-          <lay-button type="normal" size="sm" @click="toAdd">
-            <lay-icon type="layui-icon-addition"></lay-icon>
-            新建
-          </lay-button>
-          <lay-button type="warm" size="sm" @click="toEdit">
-            <lay-icon type="layui-icon-edit"></lay-icon>
-            修改
-          </lay-button>
-          <lay-button type="danger" size="sm" @click="toDelete">
-            <lay-icon type="layui-icon-delete"></lay-icon>
-            删除
-          </lay-button>
+          <lay-row>
+            <lay-col md="6">
+              <lay-button type="normal" size="sm" @click="toAdd"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_ADD]">
+                <lay-icon type="layui-icon-addition"></lay-icon>
+                新建
+              </lay-button>
+            </lay-col>
+            <lay-col md="6">
+              <lay-button type="warm" size="sm" @click="toEdit"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_EDIT]">
+                <lay-icon type="layui-icon-edit"></lay-icon>
+                修改
+              </lay-button>
+            </lay-col>
+            <lay-col md="6">
+              <lay-button type="danger" size="sm" @click="toDelete"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_DELETE]">
+                <lay-icon type="layui-icon-delete"></lay-icon>
+                删除
+              </lay-button>
+            </lay-col>
+            <lay-col md="6">
+              <lay-button type="normal" size="sm" @click="assignRole"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_ASSIGN_ROLE]">
+                <lay-icon type="layui-icon-delete"></lay-icon>
+                分配角色
+              </lay-button>
+            </lay-col>
+          </lay-row>
         </div>
-
         <lay-tree
             v-show="!isFold"
             style="margin-top: 10px"
@@ -118,7 +135,7 @@
         >
           <template #accountStatus="{ row }">
             <lay-switch
-                :model-value="row.accountStatus === Flag.ENABLED"
+                :model-value="row.accountStatus === '1'"
                 @change="changeStatus($event, row)"
             ></lay-switch>
           </template>
@@ -355,8 +372,10 @@ import {Constants, loadSysDictValue, matchDictValue} from "../../../util/UDict";
 import {MatchDictValueModel, SysDictValueEntity} from "../../../types/system/Dict";
 import DictTag from "../../component/DictTag.vue";
 import {useCryptStore} from "../../../store/crypt";
+import router from "../../../router";
 
 /* INIT*/
+const $router = router
 const $crypt = useCryptStore();
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER);
@@ -460,7 +479,6 @@ function handleClick(node: any) {
   selectedNode.value = JSON.parse(JSON.stringify(node))
   searchQuery.value.deptId = selectedNode.value.id
   editSysDeptVo.value = selectedNode.value
-  console.log(editSysDeptVo.value);
   dataSource.value = []
   change()
 }
@@ -472,7 +490,7 @@ function toAdd() {
 function toEdit() {
   if (Object.keys(editSysDeptVo.value).length === 0) {
     layer.msg("请选择部门！", {icon: 3});
-    return ;
+    return;
   }
   editVisibleFlag.value = true
 }
@@ -678,6 +696,18 @@ function changeEditModalParentIdSelect(value: any) {
   console.log(value);
   editSysDeptVo.value.ancestors = value.value;
   editSysDeptVo.value.parentId = value.currentClick.id;
+}
+
+function assignRole() {
+  if (!selectedNode.value && Object.keys(selectedNode.value).length !== 0) {
+    layer.msg("请选择1个部门", {icon: 3})
+    return;
+  }
+  $router.push("/system/dept/assignRole/" + selectedNode.value.id)
+}
+
+function assignRoleById(id: any) {
+  $router.push("/system/dept/assignRole/" + id)
 }
 
 /* FUNCTION*/

@@ -21,7 +21,6 @@ import com.freesia.exception.ServiceException;
 import com.freesia.mapper.SysMenuMapper;
 import com.freesia.mapper.SysRoleMapper;
 import com.freesia.po.SysMenuPo;
-import com.freesia.po.SysRoleMenuPk;
 import com.freesia.po.SysRoleMenuPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.repository.SysMenuRepository;
@@ -367,7 +366,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 .orElseThrow(() -> new ServiceException(RoleModule.ROLE_MANAGEMENT, "role.query.failed", roleId));
         Set<SysRoleMenuPo> afterSysRoleMenuPoSet = UCollection.optimizeInitialCapacitySet(assignButtonIdList.size());
         for (Long assignButtonId : assignButtonIdList) {
-            SysRoleMenuPo sysRoleMenuPo = new SysRoleMenuPo(new SysRoleMenuPk(assignButtonId, roleId));
+            SysRoleMenuPo sysRoleMenuPo = new SysRoleMenuPo(new SysRoleMenuPo.SysRoleMenuPk(assignButtonId, roleId));
             afterSysRoleMenuPoSet.add(sysRoleMenuPo);
         }
         List<Long> removeButtonIdList = sysRoleMapper.findListButtonIdByRoleId(roleId);
@@ -510,8 +509,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         }
         // 非外链并且是顶级菜单（MenuType为DIR）
         if (AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId())
-            && MenuType.DIR.getType().equals(menu.getMenuType())
-            && FlagConstant.DISABLED.equals(menu.getIsFrame())) {
+                && MenuType.DIR.getType().equals(menu.getMenuType())
+                && FlagConstant.DISABLED.equals(menu.getIsFrame())) {
             routerPath = PREFIX + menu.getPath();
         } else if (isMenuFrame(menu)) {
             // 非外链并且MenuType为MENU
@@ -546,8 +545,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
      */
     private boolean isDirInnerLink(SysMenuDto menu) {
         return FlagConstant.ENABLED.equals(menu.getIsFrame())
-               && MenuType.DIR.getType().equals(menu.getMenuType())
-               && UString.isHttp(menu.getPath());
+                && MenuType.DIR.getType().equals(menu.getMenuType())
+                && UString.isHttp(menu.getPath());
     }
 
     /**
@@ -578,8 +577,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     private boolean isMenuFrame(SysMenuDto menu) {
         // 菜单信息：是顶级菜单的子菜单--是
         return AdminConstant.MENU_TOP_PARENT_ID.equals(menu.getParentId())
-               && MenuType.MENU.getType().equals(menu.getMenuType())
-               && menu.getIsFrame().equals(FlagConstant.ENABLED);
+                && MenuType.MENU.getType().equals(menu.getMenuType())
+                && menu.getIsFrame().equals(FlagConstant.ENABLED);
     }
 
     /**
@@ -594,8 +593,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         if (StringUtils.isNotEmpty(menuComponent) && !isMenuFrame(menu)) {
             component = menuComponent;
         } else if (StringUtils.isEmpty(menuComponent)
-                   && menu.getParentId().intValue() != AdminConstant.MENU_TOP_PARENT_ID
-                   && isInnerLink(menu)) {
+                && menu.getParentId().intValue() != AdminConstant.MENU_TOP_PARENT_ID
+                && isInnerLink(menu)) {
             component = AdminConstant.INNER_LINK;
         } else if (StringUtils.isEmpty(menuComponent) && isBlankView(menu)) {
             component = AdminConstant.BLANK_LAYOUT;
@@ -611,7 +610,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
      */
     private boolean isBlankView(SysMenuDto menu) {
         return menu.getParentId().intValue() != AdminConstant.MENU_TOP_PARENT_ID
-               && MenuType.MENU.getType().equals(menu.getMenuType());
+                && MenuType.MENU.getType().equals(menu.getMenuType());
     }
 
     /**

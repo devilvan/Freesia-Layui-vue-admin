@@ -116,4 +116,32 @@ public class SysRolePo extends BasePo implements Serializable {
     @TableField(exist = false)
     @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
+    @Schema(description = "角色在角色-部门关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysRoleDeptPo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysRoleDeptPo> sysRoleDeptPoSet = new HashSet<>(0);
+
+    /**
+     * @author Evad.Wu
+     * @Description 角色-菜单 联合主键
+     * @date 2024-02-19
+     */
+    @Data
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
+    @Schema(description = "角色-菜单 联合主键")
+    public static class SysRoleMenuPk extends RelationPo implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 5069682381557493963L;
+        @Schema(description = "菜单ID")
+        @Column(name = "MENU_ID")
+        private Long menuId;
+        @Schema(description = "角色ID")
+        @Column(name = "ROLE_ID")
+        private Long roleId;
+    }
 }

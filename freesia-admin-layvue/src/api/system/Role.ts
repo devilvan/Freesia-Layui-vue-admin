@@ -1,6 +1,6 @@
 import {PageQuery} from "../../types/Common";
 import Http from "../Http";
-import {AssignUserVo, SaveRoleMenuPrivilegeVo, SysRoleEntity, SysRoleVo} from "../../types/system/Role";
+import {AssignDeptVo, AssignUserVo, SaveRoleMenuPrivilegeVo, SysRoleEntity, SysRoleVo} from "../../types/system/Role";
 import {buildPageUrlParam} from "../../util/URequest";
 import {R} from "../../types/Result";
 
@@ -47,4 +47,13 @@ export function cancelAssignUser(vo: AssignUserVo) {
         ...vo
     }
     return Http.post("/api/sysRoleController/cancelAssignUser", params)
+}
+
+export function assignDept(assignDeptVo: AssignDeptVo) {
+    return Http.post('/api/sysRoleController/assignDept', assignDeptVo)
+}
+
+export const findDeptRolesByRoleId = function (roleId: string) {
+    let params = {roleId: roleId}
+    return Http.get('/api/sysRoleController/findDeptRolesByRoleId', params)
 }

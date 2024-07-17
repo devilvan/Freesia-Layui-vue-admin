@@ -1,15 +1,15 @@
 <template>
   <div style="height: 100%; width: 100%">
     <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
-      <lay-container fluid="true" class="user-box">
+      <lay-container fluid="true" class="dept-box">
         <lay-card>
           <lay-form style="margin-top: 10px">
-            <lay-card title="用户信息">
+            <lay-card title="部门信息">
               <lay-row>
                 <lay-col :md="8">
-                  <lay-form-item label="用户ID" label-width="80">
+                  <lay-form-item label="部门ID" label-width="80">
                     <lay-input
-                        v-model="findUserRolesByUserIdEntity.userId"
+                        v-model="findDeptRolesByDeptIdEntity.deptId"
                         size="sm"
                         style="width: 98%"
                         :disabled="true"
@@ -17,9 +17,9 @@
                   </lay-form-item>
                 </lay-col>
                 <lay-col :md="8">
-                  <lay-form-item label="用户名" label-width="80">
+                  <lay-form-item label="部门名" label-width="80">
                     <lay-input
-                        v-model="findUserRolesByUserIdEntity.userName"
+                        v-model="findDeptRolesByDeptIdEntity.deptName"
                         size="sm"
                         style="width: 98%"
                         :disabled="true"
@@ -68,7 +68,7 @@
     </div>
     <div class="footer">
       <div class="footer-button">
-        <lay-button type="primary" @click="$tab.closeOpen('/system/user/index')">返回</lay-button>
+        <lay-button type="primary" @click="$tab.closeOpen('/system/dept/index')">返回</lay-button>
       </div>
     </div>
   </div>
@@ -78,15 +78,15 @@
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
-  name: "UserAssignRole",
+  name: "DeptAssignRole",
 };
 </script>
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
-import {FindUserRolesByUserIdEntity, SysUserVo} from "../../../types/system/User";
-import {assignRole, findUserRolesByUserId} from "../../../api/system/User";
+import {FindDeptRolesByDeptIdEntity, SysDeptVo} from "../../../types/system/Dept";
+import {assignRole, findDeptRolesByDeptId} from "../../../api/system/Dept";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import {useRoute} from "vue-router";
 import {Constants, loadSysDictValue} from "../../../util/UDict";
@@ -101,13 +101,13 @@ const $router = router;
 const $tab = useTabStore();
 onMounted(async () => {
   sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
-  userId.value = $route.params && $route.params.userId as string;
-  loadDataSource(userId.value)
+  deptId.value = $route.params && $route.params.deptId as string;
+  loadDataSource(deptId.value)
 })
 /* INIT*/
 /* VAR*/
-const userId = ref<string>('');
-const assignRoleVo = ref<SysUserVo>({})
+const deptId = ref<string>('');
+const assignRoleVo = ref<SysDeptVo>({})
 const visibleImport = ref(false)
 const file1 = ref<any>([])
 const model11 = ref<any>({})
@@ -116,7 +116,7 @@ const visible11 = ref(false)
 const title = ref('新增')
 const sysDataScopeList = ref<Array<SysDictValueEntity>>([])
 const dataSource = ref<Array<SysRoleEntity>>([]);
-const findUserRolesByUserIdEntity = ref<FindUserRolesByUserIdEntity>({});
+const findDeptRolesByDeptIdEntity = ref<FindDeptRolesByDeptIdEntity>({});
 const loading = ref(false)
 const selectedKeys = ref([''])
 const pageQuery: PageQuery = reactive<PageQuery>({
@@ -151,10 +151,10 @@ function toReset() {
 }
 
 const loadDataSource = (roleId: any) => {
-  findUserRolesByUserId(roleId).then((res: any) => {
+  findDeptRolesByDeptId(roleId).then((res: any) => {
     if (res.code == 200) {
       selectedKeys.value = res.data.selectedRoles
-      findUserRolesByUserIdEntity.value = res.data;
+      findDeptRolesByDeptIdEntity.value = res.data;
     }
   })
   findAllRoles().then((res: any) => {
@@ -166,12 +166,12 @@ const loadDataSource = (roleId: any) => {
 
 function assign() {
   assignRole({
-    userId: userId.value,
+    deptId: deptId.value,
     afterRoleIdSet: selectedKeys.value
   }).then((res: any) => {
     if (res.code === 200) {
       layer.msg(res.msg);
-      loadDataSource(userId.value)
+      loadDataSource(deptId.value)
     } else {
       layer.confirm(res.msg, {icon: 2})
     }
@@ -180,7 +180,7 @@ function assign() {
 </script>
 
 <style scoped>
-.user-box {
+.dept-box {
   height: calc(100vh - 110px);
   margin-top: 10px;
   box-sizing: border-box;

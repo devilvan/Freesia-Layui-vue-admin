@@ -95,13 +95,13 @@ public class SysUserPo extends BasePo implements Serializable {
     @ManyToOne(targetEntity = SysDeptPo.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "DEPT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private SysDeptPo sysDeptPo;
+
     @Schema(description = "用户在用户-角色关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
     @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysUserPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
-
     @Schema(description = "用户在租户-用户关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

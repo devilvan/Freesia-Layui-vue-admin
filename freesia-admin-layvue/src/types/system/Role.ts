@@ -1,4 +1,4 @@
-import {BaseVo} from "../Common";
+import {BaseEntity, BaseVo} from "../Common";
 import {SysUserEntity} from "./User";
 
 /**
@@ -50,4 +50,15 @@ export interface SysRoleEntity {
 export interface AssignUserVo {
     roleId: string;
     userIdList: string[]
+}
+
+export interface AssignDeptVo {
+    roleId?: string,
+    deptIdList?: Array<string>,
+}
+
+export interface FindDeptRolesByDeptIdEntity extends BaseEntity {
+    roleId?: string,
+    roleName?: string,
+    selectedDept?: string[]
 }

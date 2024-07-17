@@ -1,5 +1,6 @@
 package com.freesia.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -8,11 +9,9 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * @author Evad.Wu
@@ -39,5 +38,44 @@ public class SysRoleDeptPo extends RelationPo {
     @Id
     @Schema(description = "角色-部门 联合主键")
     private SysRoleDeptPk sysRoleDeptPk;
+    @Schema(description = "部门-角色关系表对应的角色")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @ManyToOne(targetEntity = SysRolePo.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    private SysRolePo sysRolePo;
+    @Schema(description = "部门-角色关系表对应的部门")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @ManyToOne(targetEntity = SysDeptPo.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    private SysDeptPo sysDeptPo;
+
+    public SysRoleDeptPo(SysRoleDeptPk sysRoleDeptPk) {
+        this.sysRoleDeptPk = sysRoleDeptPk;
+    }
+
+    /**
+     * @author Evad.Wu
+     * @Description 角色-部门 联合主键
+     * @date 2024-02-19
+     */
+    @Data
+    @Embeddable
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "角色-部门 联合主键")
+    public static class SysRoleDeptPk implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 5069682381557493963L;
+        @Schema(description = "部门ID")
+        @Column(name = "DEPT_ID")
+        private Long deptId;
+        @Schema(description = "角色ID")
+        @Column(name = "ROLE_ID")
+        private Long roleId;
+    }
 }
 

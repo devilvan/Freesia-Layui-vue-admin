@@ -208,7 +208,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                 sensitiveLog.setResult(FlagConstant.SUCCESS);
                 sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(roleIdList));
                 sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
-                sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_success"));
+                sensitiveLog.setRemark(UMessage.message("assign_role_permissions_success"));
                 return sensitiveLog;
             });
         } catch (Exception e) {
@@ -219,7 +219,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                 sensitiveLog.setSubModule(MenuModule.SubModule.ASSIGN_ROLE);
                 sensitiveLog.setType(MenuModule.SubModule.ASSIGN_ROLE);
                 sensitiveLog.setResult(FlagConstant.FAILED);
-                sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_failed"));
+                sensitiveLog.setRemark(UMessage.message("assign_role_permissions_failed"));
                 return sensitiveLog;
             });
         }

@@ -21,5 +21,9 @@ public class RoleModule extends SysModule {
          * 子模块 分配角色权限
          */
         public static final String ASSIGN_ROLE_PERMISSIONS = "assign_role_permissions";
+        /**
+         * 子模块 分配部门
+         */
+        public static final String ASSIGN_DEPT = "assign_dept";
     }
 }

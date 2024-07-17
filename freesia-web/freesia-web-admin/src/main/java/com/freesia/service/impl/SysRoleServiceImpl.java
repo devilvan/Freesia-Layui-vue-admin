@@ -1,7 +1,7 @@
 package com.freesia.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -15,12 +15,12 @@ import com.freesia.constant.RoleModule;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
+import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
+import com.freesia.exception.RoleException;
+import com.freesia.exception.UserException;
 import com.freesia.mapper.SysRoleMapper;
-import com.freesia.po.SysMenuPo;
-import com.freesia.po.SysRolePo;
-import com.freesia.po.SysUserPo;
-import com.freesia.po.SysUserRolePo;
+import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysMenuRepository;
@@ -29,10 +29,12 @@ import com.freesia.service.SysRoleService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -180,5 +182,68 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     @Override
     public void cancelAssignUser(Long roleId, List<Long> userIdList) {
         sysRoleRepository.cancelAssignUser(roleId, userIdList);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignDept(Long roleId, Set<Long> deptIdSet) {
+        SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseThrow(() -> new RoleException("role.not.exists"));
+        // 获取并修改分配后的角色
+        Set<SysDeptPo> sysDeptPoSet = sysRolePo.getSysDeptPoSet();
+        List<Long> deptIdList = sysDeptPoSet.stream().map(SysDeptPo::getId).collect(Collectors.toList());
+        Set<SysRoleDeptPo> afterSysRoleDeptPoSet = UCollection.optimizeInitialCapacitySet(deptIdSet.size());
+        for (Long deptId : deptIdSet) {
+            SysRoleDeptPo sysRoleDeptPo = new SysRoleDeptPo();
+            sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPo.SysRoleDeptPk(deptId, roleId));
+            afterSysRoleDeptPoSet.add(sysRoleDeptPo);
+        }
+        SysSensitiveLogBean sysSensitiveLogBean;
+        try {
+            sysRoleRepository.removeDeptRelationByRoleId(roleId);
+            // 设置分配后的部门-角色关联对象要在删除之后，否则会触发级联操作，导致SQL执行顺序变为insert->update->delete影响操作结果
+            sysRolePo.setSysRoleDeptPoSet(afterSysRoleDeptPoSet);
+            sysRoleRepository.save(sysRolePo);
+            sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
+                sensitiveLog.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
+                sensitiveLog.setType(RoleModule.SubModule.ASSIGN_DEPT);
+                sensitiveLog.setResult(FlagConstant.SUCCESS);
+                sensitiveLog.setContextOld("分配前部门ID：" + JSONObject.toJSONString(deptIdList));
+                sensitiveLog.setContext("分配后部门ID：" + JSONObject.toJSONString(deptIdSet));
+                sensitiveLog.setRemark(UMessage.message("assign_dept_permissions_success"));
+                return sensitiveLog;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
+                sensitiveLog.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
+                sensitiveLog.setType(RoleModule.SubModule.ASSIGN_DEPT);
+                sensitiveLog.setResult(FlagConstant.FAILED);
+                sensitiveLog.setRemark(UMessage.message("assign_dept_permissions_failed"));
+                return sensitiveLog;
+            });
+        }
+        USpring.context().publishEvent(sysSensitiveLogBean);
+    }
+
+    @Override
+    public FindDeptRolesByRoleIdEntity findDeptRolesByRoleId(Long roleId) {
+        // 获取角色对象
+        SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseThrow(() -> new UserException("role.query.failed", roleId));
+        // 获取部门
+        Set<SysDeptPo> sysDeptPoSet = sysRolePo.getSysDeptPoSet();
+        return buildFindDeptRolesByRoleIdEntity(sysRolePo, sysDeptPoSet);
+    }
+
+    private FindDeptRolesByRoleIdEntity buildFindDeptRolesByRoleIdEntity(SysRolePo sysRolePo, Set<SysDeptPo> sysDeptPoSet) {
+        FindDeptRolesByRoleIdEntity findDeptRolesByRoleIdEntity = new FindDeptRolesByRoleIdEntity();
+        findDeptRolesByRoleIdEntity.setRoleId(sysRolePo.getId());
+        findDeptRolesByRoleIdEntity.setRoleName(sysRolePo.getRoleName());
+        Set<Long> sysDeptIdList = sysDeptPoSet.stream().map(SysDeptPo::getId).collect(Collectors.toSet());
+        findDeptRolesByRoleIdEntity.setSelectedDept(sysDeptIdList);
+        return findDeptRolesByRoleIdEntity;
     }
 }

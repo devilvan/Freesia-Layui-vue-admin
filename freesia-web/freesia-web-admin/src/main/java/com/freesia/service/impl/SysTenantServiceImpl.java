@@ -13,7 +13,6 @@ import com.freesia.exception.ServiceException;
 import com.freesia.exception.TenantException;
 import com.freesia.mapper.SysTenantMapper;
 import com.freesia.po.SysTenantPo;
-import com.freesia.po.SysTenantUserPk;
 import com.freesia.po.SysTenantUserPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -97,7 +95,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                 .orElseThrow(() -> new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.query.failed", tenantId));
         Set<SysTenantUserPo> sysTenantUserPoSet = new HashSet<>();
         for (Long userId : userIdList) {
-            SysTenantUserPo sysTenantUserPo = new SysTenantUserPo(new SysTenantUserPk(tenantId, userId));
+            SysTenantUserPo sysTenantUserPo = new SysTenantUserPo(new SysTenantUserPo.SysTenantUserPk(tenantId, userId));
             sysTenantUserPoSet.add(sysTenantUserPo);
         }
         sysTenantPo.setSysTenantUserPoSet(sysTenantUserPoSet);
