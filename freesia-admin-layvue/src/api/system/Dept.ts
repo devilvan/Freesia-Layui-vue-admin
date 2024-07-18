@@ -39,3 +39,8 @@ export const findDeptRolesByDeptId = function (deptId: string) {
     let params = {deptId: deptId}
     return Http.get('/api/sysDeptController/findDeptRolesByDeptId', params)
 }
+
+export const deleteDept = function (deptId: string) {
+    let param = {deptId: deptId}
+    return Http.delete('/api/sysDeptController/deleteDept', param)
+}

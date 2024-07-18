@@ -582,7 +582,10 @@ function assign() {
     if (res.code === 200) {
       change()
       assignDeptModalChange()
+      layer.msg(res.msg, {icon: 1})
       assignDeptVo.value = {}
+    } else {
+      layer.msg(res.msg, {icon: 3})
     }
   })
 }

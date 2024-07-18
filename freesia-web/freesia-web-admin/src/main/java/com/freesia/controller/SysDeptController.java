@@ -86,9 +86,9 @@ public class SysDeptController {
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_DELETE)
     @Operation(summary = "删除部门信息")
-    @PostMapping("deleteDept")
-    public R<SysDeptDto> deleteDept(SysDeptVo sysDeptVo) {
-        SysDeptDto sysDeptDto = sysDeptService.deleteDept(UCopy.copyVo2Dto(sysDeptVo, SysDeptDto.class));
+    @DeleteMapping("deleteDept")
+    public R<SysDeptDto> deleteDept(@RequestParam Long deptId) {
+        SysDeptDto sysDeptDto = sysDeptService.deleteDept(deptId);
         return R.ok(sysDeptDto);
     }
 

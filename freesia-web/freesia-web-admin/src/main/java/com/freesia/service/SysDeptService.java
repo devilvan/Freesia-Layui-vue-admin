@@ -69,10 +69,10 @@ public interface SysDeptService {
     /**
      * 删除部门信息
      *
-     * @param sysDeptDto 部门信息
+     * @param deptId 部门ID
      * @return 删除的部门信息
      */
-    SysDeptDto deleteDept(SysDeptDto sysDeptDto);
+    SysDeptDto deleteDept(Long deptId);
 
     /**
      * 查询部门树下拉框集合

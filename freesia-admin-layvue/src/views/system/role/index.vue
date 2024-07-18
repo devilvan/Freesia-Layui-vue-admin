@@ -556,7 +556,7 @@ function toAssignButton() {
     layer.msg("请选择1条数据", {icon: 3})
     return;
   }
-  currentRow.value = dataSourceTableRef.value.getCheckData()[0]
+  let row = dataSourceTableRef.value.getCheckData()[0]
   selectRowRoleId.value = selectKeys[0];
   $router.push('/system/role/assignButton/' + row.id);
 }

@@ -34,28 +34,21 @@
         </lay-card>
       </lay-col>
       <lay-col style="flex: 1; background-color: #fff" :xs="24">
-        <lay-tab type="brief" v-model="activeTab">
+        <lay-tab type="brief" v-model="activeTab" >
           <lay-tab-item title="基本信息" id="baseInfo">
             <div class="tab-content">
               <lay-form
                   :model="sysUserVo"
                   ref="profileFormRef"
-                  label-width="60"
                   size="sm"
+                  label-position="left"
               >
-                <lay-form-item label="用户ID" prop="id" :hidden="true">
-                  <lay-input v-model="sysUserVo.id" :disabled="true"></lay-input>
+                <lay-form-item label="用户名" prop="userName">
+                  <lay-input v-model="sysUserVo.userName" :disabled="true"></lay-input>
                 </lay-form-item>
                 <lay-form-item label="昵称" prop="nickName" required>
                   <lay-input v-model="sysUserVo.nickName" allow-clear></lay-input>
                 </lay-form-item>
-                <!--                <lay-form-item label="密码" prop="password" required>-->
-                <!--                  <lay-input-->
-                <!--                      v-model="sysUserVo.password"-->
-                <!--                      type="password"-->
-                <!--                      allow-clear-->
-                <!--                  ></lay-input>-->
-                <!--                </lay-form-item>-->
                 <lay-form-item label="性别" prop="gender">
                   <lay-select
                       v-model="sysUserVo.gender"

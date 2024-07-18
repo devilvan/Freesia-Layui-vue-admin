@@ -89,8 +89,12 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     }
 
     @Override
-    public SysDeptDto deleteDept(SysDeptDto sysDeptDto) {
-        return null;
+    public SysDeptDto deleteDept(Long deptId) {
+        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists"));
+        sysDeptPo.setLogicDel(true);
+        sysDeptPo.setDeptStatus(FlagConstant.DISABLED);
+        SysDeptPo saveSysDeptPo = sysDeptRepository.save(sysDeptPo);
+        return UCopy.copyPo2Dto(saveSysDeptPo, SysDeptDto.class);
     }
 
     @Override
@@ -237,7 +241,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         UCopy.fullCopy(sysDeptDto, sysDeptPo);
         return Wrappers.<SysDeptPo>query()
                 .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
-                .eq(ObjectUtil.isNotNull(sysDeptPo.getDeptStatus()), "D.DEPT_STATUS", sysDeptPo.getDeptStatus())
+                .eq("D.DEPT_STATUS", UEmpty.isEmpty(sysDeptPo.getDeptStatus()) ? FlagConstant.ENABLED : sysDeptPo.getDeptStatus())
                 .eq(ObjectUtil.isNotNull(sysDeptPo.getParentId()), "D.PARENT_ID", sysDeptPo.getParentId())
                 .like(ObjectUtil.isNotNull(sysDeptPo.getDeptName()), "D.DEPT_NAME", sysDeptPo.getDeptName())
                 .between(ObjectUtil.isNotNull(sysDeptDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysDeptDto.getCreateTimeTo())

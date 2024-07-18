@@ -19,7 +19,7 @@
     </select>
     <select id="findPageSysUserList" resultType="com.freesia.entity.FindPageSysUserListEntity">
         SELECT U.ID,
-               U.DEPT_ID,
+               D.ID AS DEPT_ID,
                U.NICK_NAME,
                U.USER_NAME,
                U.EMAIL,
@@ -34,7 +34,15 @@
                D.DEPT_NAME,
                D.LEADER
         FROM sys_user U
-                 LEFT JOIN sys_dept D on U.DEPT_ID = D.ID
+                 LEFT JOIN (
+            SELECT ID,
+                   DEPT_NAME,
+                   LEADER
+            FROM SYS_DEPT
+            WHERE 1 = 1
+              AND LOGIC_DEL = FALSE
+              AND DEPT_STATUS = '1'
+        ) D ON U.DEPT_ID = D.ID
                  LEFT JOIN sys_tenant_user stu on U.ID = stu.USER_ID
             ${ew.getCustomSqlSegment}
     </select>
@@ -61,6 +69,7 @@
     </select>
     <select id="findCurrentUserProfile" resultType="com.freesia.po.SysUserPo">
         SELECT ID,
+               USER_NAME,
                NICK_NAME,
                EMAIL,
                TEL_NO,

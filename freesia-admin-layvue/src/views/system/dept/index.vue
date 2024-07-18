@@ -365,7 +365,13 @@ import {
   SysDeptVo
 } from "../../../types/system/Dept";
 import {PageQuery} from "../../../types/Common";
-import {findDeptTreeList, findIncrementOrderNum, findTreeDeptSelect, saveDept} from "../../../api/system/Dept";
+import {
+  deleteDept,
+  findDeptTreeList,
+  findIncrementOrderNum,
+  findTreeDeptSelect,
+  saveDept
+} from "../../../api/system/Dept";
 import {findPageSysUserByDept} from "../../../api/system/User";
 import {SysUserVo} from "../../../types/system/User";
 import {Constants, loadSysDictValue, matchDictValue} from "../../../util/UDict";
@@ -390,10 +396,7 @@ const deptTreeSelect = ref<SysDeptSelectEntity>({})
 const showLine = ref(true)
 const tailNodeIcon = ref(false)
 const selectedKey = ref('')
-const selectedNode = ref({
-  id: '',
-  deptName: ''
-})
+const selectedNode = ref()
 const isFold = ref(false)
 const searchQuery = ref<SysUserVo>({})
 const loading = ref(false)
@@ -496,21 +499,27 @@ function toEdit() {
 }
 
 function toDelete() {
-  if (selectedKey.value == '') {
-    layer.msg('您未选择组织机构，请先选择要删除的组织机构', {
+  if (!selectedKey.value || selectedKey.value === '') {
+    layer.msg('请选择要删除的部门', {
       icon: 3,
       time: 2000
     })
-    return
+    return;
   }
   layer.confirm(
-      '您将删除所选中的组织机构 [ ' + selectedNode.value.deptName + ' ] ？',
+      '您将删除所选中的部门【' + selectedNode.value.deptName + '】？',
       {
         title: '提示',
         btn: [
           {
             text: '确定',
             callback: (id: any) => {
+              deleteDept(selectedNode.value.id).then((res: any) => {
+                if (res.code == 200) {
+                  loadData();
+                  loadDataSource()
+                }
+              });
               layer.msg('您已成功删除')
               layer.close(id)
             }
@@ -518,7 +527,6 @@ function toDelete() {
           {
             text: '取消',
             callback: (id: any) => {
-              layer.msg('您已取消操作')
               layer.close(id)
             }
           }
@@ -699,7 +707,7 @@ function changeEditModalParentIdSelect(value: any) {
 }
 
 function assignRole() {
-  if (!selectedNode.value && Object.keys(selectedNode.value).length !== 0) {
+  if (!selectedNode.value || Object.keys(selectedNode.value).length === 0) {
     layer.msg("请选择1个部门", {icon: 3})
     return;
   }
