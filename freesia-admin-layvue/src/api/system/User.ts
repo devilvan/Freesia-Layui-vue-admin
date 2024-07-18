@@ -1,5 +1,5 @@
 import Http from "../Http"
-import {AssignRoleVo, SysUserEntity, SysUserVo} from "../../types/system/User";
+import {AssignRoleVo, AssignDeptVo, SysUserEntity, SysUserVo} from "../../types/system/User";
 import {PageQuery} from "../../types/Common";
 import {buildPageUrlParam} from "../../util/URequest";
 import {TableResult} from "../../types/Result";
@@ -68,4 +68,8 @@ export const uploadAvatar = function (file: File, id: string) {
 export function findEditUserById(id: string): Promise<String> {
     let params = {id: id}
     return Http.get("/api/sysUserController/findEditUserById", params);
+}
+
+export function assignDept(assignDeptVo: AssignDeptVo) {
+    return Http.post('/api/sysUserController/assignDept', assignDeptVo)
 }

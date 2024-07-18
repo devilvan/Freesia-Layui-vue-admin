@@ -60,6 +60,10 @@ public final class AdminConstant {
      */
     public static final Long MENU_TOP_PARENT_ID = -1L;
     /**
+     * 顶级部门的父菜单ID
+     */
+    public static final Long DEPT_TOP_PARENT_ID = -1L;
+    /**
      * 窗口打开
      */
     public static final String MODAL = "modal";

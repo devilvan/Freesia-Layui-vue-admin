@@ -95,8 +95,9 @@ public class SysUserController {
         return R.ok();
     }
 
-    @Operation(summary = "根据用户ID查询【分配用户】加载数据")
+    @Operation(summary = "根据用户ID查询【分配角色】加载数据")
     @GetMapping("findUserRolesByUserId")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ASSIGN_ROLE})
     public R<FindUserRolesByUserIdEntity> findUserRolesByUserId(@RequestParam Long userId) {
         FindUserRolesByUserIdEntity findUserRolesByUserIdEntity = sysUserService.findUserRolesByUserId(userId);
         return R.ok(findUserRolesByUserIdEntity);
@@ -215,7 +216,6 @@ public class SysUserController {
         return R.ok();
     }
 
-    //        @SaCheckPermission(value = MenuPermission.SYSTEM_USER_UPLOAD_AVATAR)
     @SaIgnore
     @Operation(summary = "用户头像上传")
     @PostMapping(value = "uploadAvatar")
@@ -232,28 +232,21 @@ public class SysUserController {
         return R.ok(sysUserDto);
     }
 
-    @Operation(summary = "新增用户")
-    @PostMapping("addUser")
-    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ADD})
-    public R<Void> addUser(@RequestBody String request) {
-//        AddUserVo addUserVo = UCrypt.aesDecryptJSON(request, AddUserVo.class);
-        AddUserVo addUserVo = JSONObject.parseObject(request, AddUserVo.class);
-        List<String> errorMsg = USpringValidation.errorMsg(addUserVo);
-        if (UEmpty.isNotEmpty(errorMsg)) {
-            R<Void> r = R.failed();
-            String join = String.join("\n", errorMsg);
-            log.warn(join);
-            r.setMsg(join);
-            return r;
-        }
-        return R.ok();
-    }
-
     @Operation(summary = "删除用户")
     @PostMapping("deleteUser")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_DELETE})
     public R<List<SysUserDto>> deleteUser(@RequestBody List<Long> idList) {
         List<SysUserDto> sysUserDtoList = sysUserService.deleteUser(idList);
         return R.ok(sysUserDtoList);
+    }
+
+    @Operation(summary = "给用户分配部门")
+    @PostMapping("assignDept")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ASSIGN_DEPT})
+    public R<Void> assignDept(@RequestBody AssignDeptVo assignDeptVo) {
+        List<Long> userIdList = assignDeptVo.getUserIdList();
+        Long deptId = assignDeptVo.getDeptId();
+        sysUserService.assignDept(userIdList, deptId);
+        return R.ok();
     }
 }

@@ -5,6 +5,7 @@ export enum MenuPermission {
     SYSTEM_USER_DELETE = "system:user:delete",
     SYSTEM_USER_INDEX = "system:user:index",
     SYSTEM_USER_ASSIGN_ROLE = "system:user:assignRole",
+    SYSTEM_USER_ASSIGN_DEPT = "system:user:assignDept",
     SYSTEM_USER_IMPORT_USER = "system:user:importUser",
 
     /* 菜单管理*/
@@ -24,6 +25,11 @@ export enum MenuPermission {
     SYSTEM_ROLE_ADD = "system:role:add",
 
     /* 部门管理*/
+    SYSTEM_DEPT_ADD = "system:dept:add",
+    SYSTEM_DEPT_EDIT = "system:dept:edit",
+    SYSTEM_DEPT_ENABLED = "system:dept:enabled",
+    SYSTEM_DEPT_DELETE = "system:dept:delete",
+    SYSTEM_DEPT_ASSIGN_ROLE = "system:dept:assignRole",
 
     /* 字典管理*/
     SYSTEM_DICT_KEY_ADD = "system:dict:key:add",

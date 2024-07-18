@@ -84,7 +84,8 @@
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
-          <lay-button size="sm" type="primary" @click="assignUser" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ASSIGN_USER_EDIT]">
+          <lay-button size="sm" type="primary" @click="assignUser"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ASSIGN_USER_EDIT]">
             分配用户
           </lay-button>
           <lay-button size="sm" type="normal" @click="toPrivilegesSelectKeys"
@@ -94,6 +95,10 @@
           <lay-button size="sm" type="warm" @click="toAssignButton()"
                       v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ASSIGN_BUTTON_EDIT]">
             按钮权限
+          </lay-button>
+          <lay-button size="sm" border="orange" @click="assignDeptModalChange"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_ASSIGN_ROLE]">
+            分配部门
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
@@ -128,7 +133,8 @@
               @confirm="confirm"
               @cancel="cancel"
           >
-            <lay-button size="xs" border="red" border-style="dashed" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_DELETE]"
+            <lay-button size="xs" border="red" border-style="dashed"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_DELETE]"
             >删除
             </lay-button
             >
@@ -214,6 +220,24 @@
       </div>
     </lay-layer>
   </lay-container>
+
+  <lay-layer v-model="changeAssignDeptModalFlag" title="可分配的部门" :area="['600px', '500px']">
+    <lay-button size="sm" type="primary" @click="assign" style="margin: 20px">
+      <lay-icon class="layui-icon-addition"></lay-icon>
+      分配
+    </lay-button>
+    <lay-tree
+        class="layTreeContainer"
+        :tail-node-icon="true"
+        :data="deptTreeSelect"
+        :default-expand-all="true"
+        :showCheckbox="true"
+        :checkStrictly="true"
+        v-model:checkedKeys="assignDeptVo.deptIdList"
+        :onlyIconControl="true"
+    >
+    </lay-tree>
+  </lay-layer>
 </template>
 <script lang="ts">
 /**
@@ -224,10 +248,10 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {defineComponent, onMounted, reactive, ref} from 'vue'
+import {defineComponent, onMounted, reactive, ref, watch} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {FindPageSysRoleListEntity, SaveRoleMenuPrivilegeVo, SysRoleVo} from "../../../types/system/Role";
-import {findPageSysRoleList, saveRoleMenuPrivilege} from "../../../api/system/Role";
+import {AssignDeptVo, FindPageSysRoleListEntity, SaveRoleMenuPrivilegeVo, SysRoleVo} from "../../../types/system/Role";
+import {assignDept, findDeptRolesByRoleId, findPageSysRoleList, saveRoleMenuPrivilege} from "../../../api/system/Role";
 import {PageQuery} from "../../../types/Common";
 import {FindAllMenuTreeEntity} from "../../../types/system/Menu";
 import {findAllMenuTree, findSelectedMenuListByRoleId} from "../../../api/system/Menu";
@@ -237,12 +261,19 @@ import {useAppStore} from "../../../store/app";
 import {useUserStore} from "../../../store/user";
 import app from "../../../main";
 import router from "../../../router";
+import {SysDeptSelectEntity} from "../../../types/system/Dept";
+import {findTreeAssignDeptSelect} from "../../../api/system/Dept";
 /* INIT*/
 onMounted(async () => {
   sysDataScope.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   sysDataScopeSelect.value = await sysDictValueSelect(sysDataScope.value);
   await loadDataSource()
   await loadAllMenuTree()
+  findTreeAssignDeptSelect().then((res: any) => {
+    if (res.code === 200) {
+      deptTreeSelect.value = res.data;
+    }
+  })
 })
 const loadDataSource = async () => {
   const {code, total, rows} = await findPageSysRoleList(searchQuery.value, pageQuery)
@@ -269,6 +300,7 @@ const userStore = useUserStore();
 const searchQuery = ref<SysRoleVo>({})
 const loading = ref(false)
 const selectedKeys = ref([])
+const checkedKeys = ref([])
 const pageQuery = reactive<PageQuery>({current: 1, limit: 10})
 const sysDataScope = ref<Array<SysDictValueEntity>>([]);
 const sysDataScopeSelect = ref<Array<SysDictValueEntity>>([]);
@@ -305,6 +337,9 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+const assignDeptVo = ref<AssignDeptVo>({});
+const changeAssignDeptModalFlag = ref(false)
+const deptTreeSelect = ref<SysDeptSelectEntity>({})
 /* VAR*/
 
 
@@ -452,7 +487,7 @@ async function toPrivilegesSelectKeys() {
   let selectKeys = selectedKeys.value
   if (selectKeys.length !== 1) {
     layer.msg("请选择1条数据", {icon: 3})
-    return ;
+    return;
   }
   let row = dataSourceTableRef.value.getCheckData()[0];
   selectRowRoleId.value = selectKeys[0];
@@ -479,7 +514,6 @@ async function toPrivilegesSubmit() {
     refresh()
   }
   layer.msg(msg, {icon: 1, time: 1000})
-  console.log(saveRoleMenuPrivilegeModel.value?.treeSelectedIdList)
   saveRoleMenuPrivilegeVisible.value = false
 }
 
@@ -520,12 +554,44 @@ function toAssignButton() {
   let selectKeys = selectedKeys.value
   if (selectKeys.length !== 1) {
     layer.msg("请选择1条数据", {icon: 3})
-    return ;
+    return;
   }
-  let row = dataSourceTableRef.value.getCheckData()[0];
+  let row = dataSourceTableRef.value.getCheckData()[0]
   selectRowRoleId.value = selectKeys[0];
   $router.push('/system/role/assignButton/' + row.id);
 }
+
+function assignDeptModalChange() {
+  if (!selectedKeys.value || selectedKeys.value.length === 0) {
+    layer.msg("请选择数据", {icon: 3})
+    return;
+  }
+  if (selectedKeys.value.length > 1) {
+    layer.msg("请选择1条数据", {icon: 3})
+    return;
+  }
+  let row = dataSourceTableRef.value.getCheckData()[0];
+  findDeptRolesByRoleId(row.id).then((res: any) => {
+    if (res.code === 200) {
+      assignDeptVo.value.deptIdList = res.data.selectedDept;
+      checkedKeys.value = res.data.selectedDept;
+    }
+  })
+  changeAssignDeptModalFlag.value = !changeAssignDeptModalFlag.value
+}
+
+function assign() {
+  let row = dataSourceTableRef.value.getCheckData()[0];
+  assignDeptVo.value.roleId = row.id;
+  assignDept(assignDeptVo.value).then((res: any) => {
+    if (res.code === 200) {
+      change()
+      assignDeptModalChange()
+      assignDeptVo.value = {}
+    }
+  })
+}
+
 /* FUNCTION*/
 
 </script>

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -85,4 +86,10 @@ public class SysDeptPo extends BasePo implements Serializable {
     @TableField(exist = false)
     @OneToMany(targetEntity = SysUserPo.class, mappedBy = "sysDeptPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysUserPo> sysUserPoSet;
+    @Schema(description = "部门在角色-部门关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysRoleDeptPo.class, mappedBy = "sysDeptPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysRoleDeptPo> sysRoleDeptPoSet = new HashSet<>(0);
 }

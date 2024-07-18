@@ -107,6 +107,10 @@
                       v-permission="[$MENU_PERMISSION.SYSTEM_USER_ASSIGN_ROLE]">
             分配角色
           </lay-button>
+          <lay-button size="sm" border="orange" @click="assignDeptModalChange"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_USER_ASSIGN_DEPT]">
+            分配部门
+          </lay-button>
         </template>
         <template v-slot:operator="{ row }">
           <lay-button size="xs" type="primary" @click="changeAddModalShowFlag(Operate.EDIT, row)"
@@ -212,6 +216,24 @@
         <lay-button size="sm" type="primary" @click="toUpload()">上传</lay-button>
       </div>
     </lay-layer>
+
+    <lay-layer v-model="changeAssignDeptModalFlag" title="可分配的部门" :area="['600px', '500px']">
+      <lay-button size="sm" type="primary" @click="assign" style="margin: 20px">
+        <lay-icon class="layui-icon-addition"></lay-icon>
+        分配
+      </lay-button>
+      <lay-tree
+          class="layTreeContainer"
+          :tail-node-icon="true"
+          :data="deptTreeSelect"
+          :default-expand-all="true"
+          v-model:selectedKey="assignDeptVo.deptId"
+          :onlyIconControl="true"
+          @node-click="handleClick"
+      >
+      </lay-tree>
+    </lay-layer>
+
   </lay-container>
 </template>
 <script lang="ts">
@@ -226,8 +248,14 @@ export default {
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
-import {FindPageSysUserListEntity, SysUserVo} from "../../../types/system/User";
-import {findEditUserById, findPageSysUserList, saveUserInfo, userImport} from "../../../api/system/User";
+import {FindPageSysUserListEntity, AssignDeptVo, SysUserVo} from "../../../types/system/User";
+import {
+  assignDept,
+  findEditUserById,
+  findPageSysUserList,
+  saveUserInfo,
+  userImport
+} from "../../../api/system/User";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import router from "../../../router";
@@ -236,6 +264,8 @@ import {Operate} from "../../../types/Constants";
 import {useCryptStore} from "../../../store/crypt";
 import {upload, uploadTemp} from "../../../api/system/Oss";
 import {parseImgPath} from "../../../util/UImage";
+import {SysDeptEntity, SysDeptSelectEntity} from "../../../types/system/Dept";
+import {findTreeAssignDeptSelect} from "../../../api/system/Dept";
 
 /* INIT*/
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
@@ -249,10 +279,17 @@ onMounted(async () => {
   for (const path in avatarPathGlob) {
     avatarPath.push(path);
   }
+  findTreeAssignDeptSelect().then((res: any) => {
+    if (res.code === 200) {
+      deptTreeSelect.value = res.data;
+    }
+  })
   change()
 })
 /* INIT*/
 /* VAR*/
+const assignDeptVo = ref<AssignDeptVo>({});
+const deptTreeSelect = ref<SysDeptSelectEntity>({})
 const avatarPath: any[] = [];
 const uploadAvatar = ref();
 const searchQuery = ref<SysUserVo>({})
@@ -291,6 +328,21 @@ const columns = ref([
   }
 ])
 const updateFileList = ref([])
+const changeAssignDeptModalFlag = ref(false)
+const assignDeptModalPageQuery: PageQuery = reactive<PageQuery>({
+  current: 1,
+  limit: 10
+})
+const assignDeptModalColumns = ref([
+  {title: '选项', type: 'checkbox', fixed: 'left'},
+  {title: '部门名称', key: 'userName'},
+  {title: '负责人', key: 'nickName'},
+  {title: '状态', key: 'deptStatus', customSlot: 'accountStatus'},
+  {title: '备注', key: 'remark', customSlot: 'remark'},
+])
+const assignDeptModalLoading = ref(false)
+const assignDeptModalEntityList = ref<Array<SysDeptEntity>>();
+const assignDeptModalSelectedKeys = ref([])
 /* VAR*/
 /*FUNCTION*/
 function toImport() {
@@ -512,6 +564,31 @@ function uploadOnChange(file: any) {
   })
 }
 
+function assignDeptModalChange() {
+  if (!selectedKeys.value || selectedKeys.value.length < 1) {
+    layer.msg("请选择数据", {icon: 3})
+    return;
+  }
+  assignDeptVo.value.userIdList = selectedKeys.value
+  changeAssignDeptModalFlag.value = !changeAssignDeptModalFlag.value
+}
+
+function handleClick(node: any) {
+  assignDeptVo.deptId = node.id
+}
+
+function assign() {
+  assignDept(assignDeptVo.value).then((res: any) => {
+    if (res.code === 200) {
+      change()
+      assignDeptModalChange()
+      layer.msg(res.msg, {icon: 1})
+      assignDeptVo.value = {}
+    } else {
+      layer.msg(res.msg, {icon: 3})
+    }
+  })
+}
 /*FUNCTION*/
 
 
@@ -565,5 +642,11 @@ function uploadOnChange(file: any) {
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
+}
+
+.layTreeContainer {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
 }
 </style>

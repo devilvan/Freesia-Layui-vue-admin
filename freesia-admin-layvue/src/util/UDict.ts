@@ -1,5 +1,6 @@
 import {findCacheSysDictValueList} from "../api/system/Dict";
 import {MatchDictValueModel, SysDictValueEntity} from "../types/system/Dict";
+import {Flag} from "../types/Constants";
 
 /**
  * 可选数据字典
@@ -86,14 +87,14 @@ export function isMatchDictValue(list: Array<SysDictValueEntity>, value: string)
 }
 
 
-export const sysDictValueSelect = async (list: Array<SysDictValueEntity>) : Promise<any[]> => {
+export const sysDictValueSelect = async (list: Array<SysDictValueEntity>): Promise<any[]> => {
     let sysDictValueSelect: any[] = [];
     if (list && list.length > 0) {
         list?.forEach(sysMenuType => {
             let obj = {
                 label: sysMenuType.valueName,
                 value: sysMenuType.value,
-                disabled: sysMenuType.status === '1'
+                disabled: sysMenuType.status === Flag.DISABLED
             }
             sysDictValueSelect.push(obj)
         })

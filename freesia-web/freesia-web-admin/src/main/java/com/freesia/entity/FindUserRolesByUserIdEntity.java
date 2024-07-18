@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * @author Evad.Wu
- * @Description 根据用户ID查询【分配用户】加载数据 持久层传输类
+ * @Description 根据用户ID查询【分配角色】加载数据 持久层传输类
  * {@link com.freesia.controller.SysUserController#findUserRolesByUserId}
  * @date 2023-11-25
  */

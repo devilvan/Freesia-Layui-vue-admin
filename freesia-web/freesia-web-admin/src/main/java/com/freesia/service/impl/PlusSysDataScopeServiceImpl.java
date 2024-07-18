@@ -3,6 +3,7 @@ package com.freesia.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.freesia.constant.FlagConstant;
 import com.freesia.helper.DataBaseHelper;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.po.SysDeptPo;
@@ -42,6 +43,8 @@ public class PlusSysDataScopeServiceImpl implements PlusSysDataScopeService {
     public String getDeptAndChild(Long deptId) {
         List<SysDeptPo> deptList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
                 .select(SysDeptPo::getId)
+                .eq(SysDeptPo::getLogicDel, false)
+                .eq(SysDeptPo::getDeptStatus, FlagConstant.ENABLED)
                 .apply(DataBaseHelper.findInSet(deptId, "ancestors")));
         List<Long> ids = UStream.toList(deptList, SysDeptPo::getId);
         ids.add(deptId);
