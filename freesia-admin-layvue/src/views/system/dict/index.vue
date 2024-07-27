@@ -53,7 +53,7 @@
       </div>
       <div style="width: 1200px">
         <lay-table
-            class="table-style"
+            class="table-box table-style"
             :columns="columns"
             :loading="loading"
             :default-toolbar="true"

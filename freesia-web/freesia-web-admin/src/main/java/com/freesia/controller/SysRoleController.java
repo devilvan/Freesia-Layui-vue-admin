@@ -1,6 +1,8 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
@@ -120,4 +122,28 @@ public class SysRoleController {
         FindDeptRolesByRoleIdEntity findDeptRolesByDeptIdEntity = sysRoleService.findDeptRolesByRoleId(roleId);
         return R.ok(findDeptRolesByDeptIdEntity);
     }
+
+    @Operation(summary = "保存角色")
+    @PostMapping("saveRole")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = {MenuPermission.SYSTEM_ROLE_ADD}),
+            @SaCheckPermission(value = {MenuPermission.SYSTEM_ROLE_EDIT})
+    })
+    public R<SysRoleDto> saveRole(@RequestBody SaveRoleVo saveRoleVo) {
+        String status = saveRoleVo.getStatus();
+        saveRoleVo.setStatus(FlagConstant.TRUE.equals(status) ? FlagConstant.ENABLED : FlagConstant.DISABLED);
+        SysRoleDto sysRoleDto = UCopy.copyVo2Dto(saveRoleVo, SysRoleDto.class);
+        sysRoleDto = sysRoleService.saveRole(sysRoleDto);
+        return R.ok(sysRoleDto);
+    }
+
+    @Operation(summary = "删除角色")
+    @PostMapping("deleteRole")
+    @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_DELETE)
+    public R<Void> deleteRole(@RequestBody SysRoleVo sysRoleVo) {
+        SysRoleDto sysRoleDto = UCopy.copyVo2Dto(sysRoleVo, SysRoleDto.class);
+        sysRoleService.deleteRole(sysRoleDto);
+        return R.ok();
+    }
+
 }

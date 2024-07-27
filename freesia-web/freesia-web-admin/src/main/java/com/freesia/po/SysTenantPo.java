@@ -80,6 +80,6 @@ public class SysTenantPo extends BasePo implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysTenantUserPo.class, mappedBy = "sysTenantPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysTenantUserPo.class, mappedBy = "sysTenantPo", fetch = FetchType.LAZY)
     private Set<SysTenantUserPo> sysTenantUserPoSet = new HashSet<>(0);
 }

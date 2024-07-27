@@ -58,9 +58,10 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <div class="table-box">
+    <div>
       <lay-table
-          class="table-style"
+          class="table-box table-style"
+          ref="dataSourceTableRef"
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
@@ -343,7 +344,9 @@ const assignDeptModalColumns = ref([
 const assignDeptModalLoading = ref(false)
 const assignDeptModalEntityList = ref<Array<SysDeptEntity>>();
 const assignDeptModalSelectedKeys = ref([])
+const dataSourceTableRef = ref()
 /* VAR*/
+
 /*FUNCTION*/
 function toImport() {
   visibleImport.value = true
@@ -565,11 +568,13 @@ function uploadOnChange(file: any) {
 }
 
 function assignDeptModalChange() {
-  if (!selectedKeys.value || selectedKeys.value.length < 1) {
-    layer.msg("请选择数据", {icon: 3})
+  if (!selectedKeys.value || selectedKeys.value.length !== 1) {
+    layer.msg("请选择1条数据", {icon: 3})
     return;
   }
   assignDeptVo.value.userIdList = selectedKeys.value
+  let row = dataSourceTableRef.value.getCheckData()[0];
+  assignDeptVo.value.deptId =  row.deptId;
   changeAssignDeptModalFlag.value = !changeAssignDeptModalFlag.value
 }
 
@@ -589,6 +594,7 @@ function assign() {
     }
   })
 }
+
 /*FUNCTION*/
 
 

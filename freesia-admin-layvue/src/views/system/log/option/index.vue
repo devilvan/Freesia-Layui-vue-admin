@@ -54,9 +54,9 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <div class="table-box">
+    <div>
       <lay-table
-          class="table-style"
+          class="table-box table-style"
           :height="tableHeight"
           :resize="true"
           :autoColsWidth="true"

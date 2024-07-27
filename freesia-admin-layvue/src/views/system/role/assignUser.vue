@@ -73,7 +73,7 @@
         <lay-card title="已分配角色用户信息">
           <!-- table -->
           <lay-table
-              class="table-style"
+              class="table-box table-style"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"
@@ -111,7 +111,7 @@
     <lay-layer v-model="openAssignUserModalFlag" title="已分配角色的用户" :area="['1000px', '500px']">
       <!-- table -->
       <lay-table
-          class="table-style"
+          class="table-box table-style"
           :page="assignUserModalPageQuery"
           :columns="assignUserModalColumns"
           :loading="assignUserModalLoading"

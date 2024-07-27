@@ -41,7 +41,7 @@
         <lay-card title="已分配租户的用户信息">
           <!-- table -->
           <lay-table
-              class="table-style"
+              class="table-box table-style"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"
@@ -79,7 +79,7 @@
     <lay-layer v-model="changeAssignUserModalFlag" title="可分配租户的用户信息" :area="['1000px', '500px']">
       <!-- table -->
       <lay-table
-          class="table-style"
+          class="table-box table-style"
           :page="assignUserModalPageQuery"
           :columns="assignUserModalColumns"
           :loading="assignUserModalLoading"

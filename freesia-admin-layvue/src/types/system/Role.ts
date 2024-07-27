@@ -1,5 +1,4 @@
-import {BaseEntity, BaseVo} from "../Common";
-import {SysUserEntity} from "./User";
+import {BaseVo} from "../Common";
 
 /**
  * 查询参数
@@ -57,8 +56,11 @@ export interface AssignDeptVo {
     deptIdList?: Array<string>,
 }
 
-export interface FindDeptRolesByDeptIdEntity extends BaseEntity {
-    roleId?: string,
-    roleName?: string,
-    selectedDept?: string[]
+export interface SaveRoleVo extends BaseVo {
+    roleName?: string;
+    roleKey?: string;
+    status?: string;
+    orderNum?: number;
+    dataScope?: string;
+    remark?: string;
 }

@@ -76,11 +76,11 @@ public abstract class BasePo implements Serializable {
     @TableField(value = "REC_VER", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "版本号")
     private Long recVer;
-    @Column(name = "BUILD_IN", columnDefinition = "TINYINT(1) DEFAULT 0 COMMENT '系统内置（0-否 1-是）' AFTER REC_VER")
+    @Column(name = "BUILD_IN", columnDefinition = "TINYINT(1) DEFAULT 0 COMMENT '系统内置（0-否 1-是）'")
     @TableField(value = "BUILD_IN", fill = FieldFill.INSERT)
     @Schema(description = "系统内置（0-否 1-是）")
     private Boolean buildIn;
-    @Column(name = "TENANT_ID", columnDefinition = "BIGINT(20) DEFAULT NULL COMMENT '租户ID' AFTER BUILD_IN")
+    @Column(name = "TENANT_ID", columnDefinition = "BIGINT(20) DEFAULT NULL COMMENT '租户ID'")
     @TableField(value = "TENANT_ID", fill = FieldFill.INSERT)
     @Schema(description = "租户ID")
     private Long tenantId;

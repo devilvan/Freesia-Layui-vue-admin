@@ -53,9 +53,9 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <div class="table-box">
+    <div>
       <lay-table
-          class="table-style"
+          class="table-box table-style"
           ref="dataSourceTableRef"
           :page="pageQuery"
           :columns="columns"
@@ -67,16 +67,13 @@
           @sortChange="sortChange"
       >
         <template #status="{ row }">
-          <lay-switch
-              :model-value="row.status === '1'"
-              @change="changeStatus($event, row)"
-          ></lay-switch>
+          <lay-switch :model-value="row.status === '1' || row.status"></lay-switch>
         </template>
         <template #dataScope="{ row }">
           <dict-scan :options="sysDataScope" :value="row.dataScope"/>
         </template>
         <template v-slot:toolbar>
-          <lay-button size="sm" type="primary" @click="changeVisible11('新增', null)">
+          <lay-button size="sm" type="primary" @click="toAdd">
             <lay-icon class="layui-icon-addition" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ADD]"></lay-icon>
             新增
           </lay-button>
@@ -102,65 +99,169 @@
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
-          <lay-button
-              size="xs"
-              border="green"
-              border-style="dashed"
-              @click="changeVisible11('编辑', row)"
-              v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_EDIT]"
-          >编辑
-          </lay-button
-          >
-          <lay-button
-              size="xs"
-              border="blue"
-              border-style="dashed"
-              @click="toPrivilegesRow(row)"
-              v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_MENU_EDIT]"
-          >菜单权限
-          </lay-button
-          >
-          <lay-button
-              size="xs"
-              border="blue"
-              border-style="dashed"
-              @click="assignUserById(row.id)"
-              v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ASSIGN_USER_EDIT]"
-          >分配用户
-          </lay-button>
-          <lay-popconfirm
-              content="确定要删除此角色吗?"
-              @confirm="confirm"
-              @cancel="cancel"
-          >
-            <lay-button size="xs" border="red" border-style="dashed"
-                        v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_DELETE]"
-            >删除
+          <div class="scrollable-div">
+            <lay-button
+                size="xs"
+                border="green"
+                border-style="dashed"
+                @click="toEdit(row)"
+                v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_EDIT]"
+            >编辑
             </lay-button
             >
-          </lay-popconfirm>
+            <lay-button
+                size="xs"
+                border="blue"
+                border-style="dashed"
+                @click="toPrivilegesRow(row)"
+                v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_MENU_EDIT]"
+            >菜单权限
+            </lay-button
+            >
+            <lay-button
+                size="xs"
+                border="blue"
+                border-style="dashed"
+                @click="assignUserById(row.id)"
+                v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ASSIGN_USER_EDIT]"
+            >分配用户
+            </lay-button>
+            <lay-button size="xs" border="red" border-style="dashed" @click="toRemove"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_DELETE]">
+              <lay-icon class="layui-icon-delete"></lay-icon>
+              删除
+            </lay-button>
+          </div>
         </template>
       </lay-table>
     </div>
 
-    <lay-layer v-model="visible11" :title="title" :area="['500px', '370px']">
+    <lay-layer v-model="addVisibleFlag" :title="title" :area="['1000px', '400px']">
       <div style="padding: 20px">
-        <lay-form :model="model11" ref="queryParamsFormRef" required>
-          <lay-form-item label="角色名称" prop="name">
-            <lay-input v-model="model11.name"></lay-input>
-          </lay-form-item>
-          <lay-form-item label="角色标识" prop="flage">
-            <lay-input v-model="model11.flage"></lay-input>
-          </lay-form-item>
-          <lay-form-item label="描述" prop="remark">
-            <lay-textarea
-                placeholder="请输入描述"
-                v-model="model11.remark"
-            ></lay-textarea>
-          </lay-form-item>
+        <lay-form :model="addRoleVo" ref="addRoleFormRef" labelPosition="top">
+          <lay-row space="20">
+            <lay-col md="6">
+              <lay-form-item label="角色名称" prop="roleName" required>
+                <lay-input v-model="addRoleVo.roleName"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="角色标识" prop="roleKey" required>
+                <lay-input v-model="addRoleVo.roleKey"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="数据范围" prop="dataScope" required>
+                <lay-select
+                    :disabled="!isAdmin()"
+                    class="search-input"
+                    size="sm"
+                    style="width: 100%"
+                    v-model="addRoleVo.dataScope"
+                    :options="sysDataScopeSelect"
+                    :items="sysDataScopeSelect"
+                    :allow-clear="true"
+                    placeholder="请选择"
+                ></lay-select>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="状态" prop="status" required>
+                <lay-switch v-model="addRoleVo.status"></lay-switch>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+          <lay-row space="20">
+            <lay-col md="6">
+              <lay-form-item label="排序号" prop="orderNum">
+                <lay-input-number
+                    style="width: 100%"
+                    v-model="addRoleVo.orderNum"
+                    position="right"
+                    :min="0"
+                    :step="10"
+                ></lay-input-number>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="描述" prop="remark">
+                <lay-textarea
+                    placeholder="请输入描述"
+                    v-model="addRoleVo.remark"
+                ></lay-textarea>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
         </lay-form>
-        <div style="width: 100%; text-align: center">
-          <lay-button size="sm" type="primary" @click="toSubmit"
+        <div style="width: 100%; text-align: right">
+          <lay-button size="sm" type="primary" @click="addToSubmit"
+          >保存
+          </lay-button
+          >
+          <lay-button size="sm" @click="toCancel">取消</lay-button>
+        </div>
+      </div>
+    </lay-layer>
+
+    <lay-layer v-model="editVisibleFlag" :title="title" :area="['1000px', '400px']">
+      <div style="padding: 20px">
+        <lay-form :model="editRoleVo" ref="editRoleFormRef" labelPosition="top">
+          <lay-row space="20">
+            <lay-col md="6">
+              <lay-form-item label="角色名称" prop="roleName" required>
+                <lay-input v-model="editRoleVo.roleName"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="角色标识" prop="roleKey" required>
+                <lay-input v-model="editRoleVo.roleKey"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="数据范围" prop="dataScope" required>
+                <lay-select
+                    :disabled="!isAdmin()"
+                    class="search-input"
+                    size="sm"
+                    style="width: 100%"
+                    v-model="editRoleVo.dataScope"
+                    :options="sysDataScopeSelect"
+                    :items="sysDataScopeSelect"
+                    :allow-clear="true"
+                    placeholder="请选择"
+                ></lay-select>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="状态" prop="status" required>
+                <lay-switch :model-value="editRoleVo.status"></lay-switch>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+          <lay-row space="20">
+            <lay-col md="6">
+              <lay-form-item label="排序号" prop="orderNum">
+                <lay-input-number
+                    style="width: 100%"
+                    v-model="editRoleVo.orderNum"
+                    position="right"
+                    :min="0"
+                    :step="10"
+                ></lay-input-number>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="描述" prop="remark">
+                <lay-textarea
+                    placeholder="请输入描述"
+                    v-model="editRoleVo.remark"
+                ></lay-textarea>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+        </lay-form>
+        <div style="width: 100%; text-align: right">
+          <lay-button size="sm" type="primary" @click="editToSubmit"
           >保存
           </lay-button
           >
@@ -250,8 +351,20 @@ export default {
 <script setup lang="ts">
 import {defineComponent, onMounted, reactive, ref, watch} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {AssignDeptVo, FindPageSysRoleListEntity, SaveRoleMenuPrivilegeVo, SysRoleVo} from "../../../types/system/Role";
-import {assignDept, findDeptRolesByRoleId, findPageSysRoleList, saveRoleMenuPrivilege} from "../../../api/system/Role";
+import {
+  SaveRoleVo,
+  AssignDeptVo,
+  FindPageSysRoleListEntity,
+  SaveRoleMenuPrivilegeVo,
+  SysRoleVo
+} from "../../../types/system/Role";
+import {
+  assignDept, deleteRole,
+  findDeptRolesByRoleId,
+  findPageSysRoleList,
+  saveRole,
+  saveRoleMenuPrivilege
+} from "../../../api/system/Role";
 import {PageQuery} from "../../../types/Common";
 import {FindAllMenuTreeEntity} from "../../../types/system/Menu";
 import {findAllMenuTree, findSelectedMenuListByRoleId} from "../../../api/system/Menu";
@@ -305,13 +418,11 @@ const pageQuery = reactive<PageQuery>({current: 1, limit: 10})
 const sysDataScope = ref<Array<SysDictValueEntity>>([]);
 const sysDataScopeSelect = ref<Array<SysDictValueEntity>>([]);
 
-const model11 = ref({
-  name: '',
-  flage: '',
-  remark: ''
-})
+const addRoleVo = ref<SaveRoleVo>({});
+const editRoleVo = ref<SaveRoleVo>({});
 const saveRoleMenuPrivilegeModel = ref<SaveRoleMenuPrivilegeVo>({});
-const queryParamsFormRef = ref()
+const addRoleFormRef = ref()
+const editRoleFormRef = ref()
 const saveRoleMenuPrivilegeFormRef = ref()
 const dataSourceTableRef = ref()
 const visible11 = ref(false)
@@ -340,6 +451,8 @@ const columns = ref([
 const assignDeptVo = ref<AssignDeptVo>({});
 const changeAssignDeptModalFlag = ref(false)
 const deptTreeSelect = ref<SysDeptSelectEntity>({})
+const addVisibleFlag = ref(false)
+const editVisibleFlag = ref(false)
 /* VAR*/
 
 
@@ -381,9 +494,9 @@ const changeVisible11 = (text: any, row: any) => {
   title.value = text
   if (row != null) {
     let info = JSON.parse(JSON.stringify(row))
-    model11.value = info
+    addRoleVo.value = info
   } else {
-    model11.value = {
+    addRoleVo.value = {
       name: '',
       flage: '',
       remark: ''
@@ -392,7 +505,7 @@ const changeVisible11 = (text: any, row: any) => {
   visible11.value = !visible11.value
 }
 const submit11 = function () {
-  queryParamsFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+  addRoleFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     layer.open({
       type: 1,
       title: '表单提交结果',
@@ -415,25 +528,33 @@ const submit11 = function () {
 }
 // 清除校验
 const clearValidate11 = function () {
-  queryParamsFormRef.value.clearValidate()
+  addRoleFormRef.value.clearValidate()
 }
 // 重置表单
 const reset11 = function () {
-  queryParamsFormRef.value.reset()
+  addRoleFormRef.value.reset()
 }
 
 function toRemove() {
-  if (selectedKeys.value.length == 0) {
-    layer.msg('您未选择数据，请先选择要删除的数据', {icon: 3, time: 2000})
-    return
+  if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {
+    layer.msg("请选择1条数据", {icon: 3})
+    return;
   }
-  layer.confirm('您将删除所有选中的数据？', {
+  layer.confirm('确定删除吗？', {
     title: '提示',
     btn: [
       {
         text: '确定',
         callback: (id: any) => {
-          layer.msg('您已成功删除')
+          deleteRole({id: selectedKeys.value[0]}).then((res: any) => {
+            if (res.code === 200) {
+              layer.msg(res.msg, {icon: 1})
+              toCancel();
+              loadDataSource()
+            } else {
+              layer.msg(res.msg, {icon: 3})
+            }
+          })
           layer.close(id)
         }
       },
@@ -448,17 +569,52 @@ function toRemove() {
   })
 }
 
-function toSubmit() {
-  layer.msg('保存成功！', {icon: 1, time: 1000})
-  visible11.value = false
+function addToSubmit() {
+  addRoleFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      saveRole(addRoleVo.value).then((res: any) => {
+        if (res.code === 200) {
+          layer.msg(res.msg, {icon: 1})
+          addRoleVo.value = {}
+          toCancel();
+          loadDataSource()
+        } else {
+          layer.msg(res.msg, {icon: 3})
+        }
+      }).catch(e => {
+        layer.confirm(e.msg, {icon: 2})
+      })
+    }
+  })
+}
+
+function editToSubmit() {
+  editRoleFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      saveRole(editRoleVo.value).then((res: any) => {
+        if (res.code === 200) {
+          layer.msg(res.msg, {icon: 1})
+          editRoleVo.value = {}
+          toCancel();
+          loadDataSource()
+        } else {
+          layer.msg(res.msg, {icon: 3})
+        }
+      }).catch(e => {
+        layer.confirm(e.msg, {icon: 2})
+      })
+    }
+  })
 }
 
 function toCancel() {
-  visible11.value = false
+  addVisibleFlag.value = false
+  editVisibleFlag.value = false
   saveRoleMenuPrivilegeVisible.value = false
 }
 
-function confirm() {
+function confirm(row: any) {
+  console.log(row)
   layer.msg('您已成功删除')
 }
 
@@ -592,6 +748,18 @@ function assign() {
   })
 }
 
+function toAdd() {
+  addRoleVo.value.status = true;
+  addRoleVo.value.orderNum = Math.floor(Math.max(...dataSource.value.map(obj => obj.orderNum))) + 10
+  addVisibleFlag.value = true
+}
+
+function toEdit(row: any) {
+  editRoleVo.value = row;
+  editRoleVo.value.status = row.status === '1'
+  editVisibleFlag.value = true
+}
+
 /* FUNCTION*/
 
 </script>
@@ -652,5 +820,10 @@ function assign() {
   display: inline-block;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+.scrollable-div {
+  display: flex;
+  overflow-x: auto;
 }
 </style>

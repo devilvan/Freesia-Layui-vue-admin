@@ -126,4 +126,19 @@ public interface SysRoleService {
      * @return 角色与已分配部门的信息
      */
     FindDeptRolesByRoleIdEntity findDeptRolesByRoleId(Long roleId);
+
+    /**
+     * 保存角色
+     *
+     * @param sysRoleDto 入参
+     * @return 保存后的角色信息
+     */
+    SysRoleDto saveRole(SysRoleDto sysRoleDto);
+
+    /**
+     * 删除角色
+     *
+     * @param sysRoleDto 入参
+     */
+    void deleteRole(SysRoleDto sysRoleDto);
 }

@@ -92,7 +92,7 @@ public class SysUserPo extends BasePo implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @ManyToOne(targetEntity = SysDeptPo.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = SysDeptPo.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "DEPT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private SysDeptPo sysDeptPo;
 

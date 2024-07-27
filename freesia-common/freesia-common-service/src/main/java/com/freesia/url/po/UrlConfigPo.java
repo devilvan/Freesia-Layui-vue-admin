@@ -45,7 +45,7 @@ public class UrlConfigPo extends BasePo implements Serializable {
     private String code;
     @Schema(description = "网址")
     @TableField(value = "URL")
-    @Column(name = "URL", columnDefinition = "TEXT(65,535) COMMENT '网址'")
+    @Column(name = "URL", columnDefinition = "TEXT(65535) COMMENT '网址'")
     private String url;
     @Schema(description = "请求方式")
     @TableField(value = "REQUEST_TYPE")
@@ -53,11 +53,11 @@ public class UrlConfigPo extends BasePo implements Serializable {
     private String requestType;
     @Schema(description = "请求头信息")
     @TableField(value = "HEADER")
-    @Column(name = "HEADER", columnDefinition = "TEXT(65,535) COMMENT '请求头信息'")
+    @Column(name = "HEADER", columnDefinition = "TEXT(65535) COMMENT '请求头信息'")
     private String header;
     @Schema(description = "请求参数")
     @TableField(value = "PARAM")
-    @Column(name = "PARAM", columnDefinition = "TEXT(65,535) COMMENT '请求参数'")
+    @Column(name = "PARAM", columnDefinition = "TEXT(65535) COMMENT '请求参数'")
     private String param;
     @Schema(description = "内容类型")
     @TableField(value = "CONTENT_TYPE")

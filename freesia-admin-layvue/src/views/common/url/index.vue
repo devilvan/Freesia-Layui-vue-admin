@@ -43,9 +43,9 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <div class="table-box">
+    <div>
       <lay-table
-          class="table-style"
+          class="table-box table-style"
           :page="pageQuery"
           :columns="columns"
           :loading="loading"

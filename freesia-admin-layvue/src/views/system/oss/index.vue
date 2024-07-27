@@ -57,9 +57,9 @@
           </lay-card>
         </lay-form>
         <!-- table -->
-        <div class="table-box">
+        <div>
           <lay-table
-              class="table-style"
+              class="table-box table-style"
               :height="`700px`"
               :page="pageQuery"
               :columns="columns"

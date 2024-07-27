@@ -111,11 +111,11 @@ public class SysSensitiveLogPo extends BasePo implements Serializable {
     private String result;
     @Schema(description = "操作前的JSON，敏感字段要加密")
     @TableField(value = "CONTEXT_OLD")
-    @Column(name = "CONTEXT_OLD", columnDefinition = "TEXT(65,535) COMMENT '操作前的JSON，敏感字段要加密'")
+    @Column(name = "CONTEXT_OLD", columnDefinition = "TEXT(65535) COMMENT '操作前的JSON，敏感字段要加密'")
     private String contextOld;
     @Schema(description = "操作后的JSON，敏感字段要加密")
     @TableField(value = "CONTEXT")
-    @Column(name = "CONTEXT", columnDefinition = "TEXT(65,535) COMMENT '操作后的JSON，敏感字段要加密'")
+    @Column(name = "CONTEXT", columnDefinition = "TEXT(65535) COMMENT '操作后的JSON，敏感字段要加密'")
     private String context;
     @Schema(description = "操作标识（字段、单号等）")
     @TableField(value = "SIGN")

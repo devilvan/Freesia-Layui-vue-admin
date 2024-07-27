@@ -8,10 +8,10 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -91,6 +91,8 @@ public class SysRolePo extends BasePo implements Serializable {
     @JoinTable(name = "SYS_ROLE_DEPT",
             joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "DEPT_ID", referencedColumnName = "ID")})
+    @Fetch(value = FetchMode.SUBSELECT)
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<SysDeptPo> sysDeptPoSet;
     @Schema(description = "角色对应的菜单")
     @ToString.Exclude
@@ -108,40 +110,18 @@ public class SysRolePo extends BasePo implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysRoleMenuPo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysRoleMenuPo.class, mappedBy = "sysRolePo", fetch = FetchType.LAZY)
     private Set<SysRoleMenuPo> sysRoleMenuPoSet = new HashSet<>(0);
     @Schema(description = "角色在用户-角色关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysRolePo", fetch = FetchType.LAZY)
     private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
     @Schema(description = "角色在角色-部门关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysRoleDeptPo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysRoleDeptPo.class, mappedBy = "sysRolePo", fetch = FetchType.LAZY)
     private Set<SysRoleDeptPo> sysRoleDeptPoSet = new HashSet<>(0);
-
-    /**
-     * @author Evad.Wu
-     * @Description 角色-菜单 联合主键
-     * @date 2024-02-19
-     */
-    @Data
-    @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    @Schema(description = "角色-菜单 联合主键")
-    public static class SysRoleMenuPk extends RelationPo implements Serializable {
-        @Serial
-        private static final long serialVersionUID = 5069682381557493963L;
-        @Schema(description = "菜单ID")
-        @Column(name = "MENU_ID")
-        private Long menuId;
-        @Schema(description = "角色ID")
-        @Column(name = "ROLE_ID")
-        private Long roleId;
-    }
 }

@@ -18,18 +18,17 @@ import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.exception.RoleException;
-import com.freesia.exception.UserException;
 import com.freesia.mapper.SysRoleMapper;
 import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.repository.SysMenuRepository;
-import com.freesia.repository.SysRoleRepository;
+import com.freesia.repository.*;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -44,9 +43,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> implements SysRoleService {
+    private final TransactionTemplate transactionTemplate;
     private final SysRoleRepository sysRoleRepository;
     private final SysMenuRepository sysMenuRepository;
     private final SysRoleMapper sysRoleMapper;
+    private final SysUserRoleRepository sysUserRoleRepository;
+    private final SysRoleMenuRepository sysRoleMenuRepository;
+    private final SysRoleDeptRepository sysRoleDeptRepository;
 
     @Override
     public SysRolePo saveUpdate(SysRoleDto sysRoleDto) {
@@ -232,12 +235,47 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     @Override
     public FindDeptRolesByRoleIdEntity findDeptRolesByRoleId(Long roleId) {
         // 获取角色对象
-        SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseThrow(() -> new UserException("role.query.failed", roleId));
+        SysRolePo sysRolePo = findSysRolePoById(roleId);
         // 获取部门
         Set<SysDeptPo> sysDeptPoSet = sysRolePo.getSysDeptPoSet();
         return buildFindDeptRolesByRoleIdEntity(sysRolePo, sysDeptPoSet);
     }
 
+    @Override
+    public SysRoleDto saveRole(SysRoleDto sysRoleDto) {
+        Long roleId = sysRoleDto.getId();
+        SysRolePo sysRolePo;
+        if (UEmpty.isNull(roleId)) {
+            // 新增
+            sysRolePo = new SysRolePo();
+            UCopy.fullCopy(sysRoleDto, sysRolePo);
+        } else {
+            // 修改
+            sysRolePo = findSysRolePoById(roleId);
+            UCopy.halfCopy(sysRoleDto, sysRolePo);
+        }
+        SysRolePo save = sysRoleRepository.save(sysRolePo);
+        return UCopy.copyPo2Dto(save, SysRoleDto.class);
+    }
+
+    @Override
+    public void deleteRole(SysRoleDto sysRoleDto) {
+        Long roleId = sysRoleDto.getId();
+        SysRolePo sysRolePo = findSysRolePoById(roleId);
+        // 用户-角色关联
+        Set<SysUserRolePo> sysUserRolePoSet = sysRolePo.getSysUserRolePoSet();
+        // 角色-部门关联
+        Set<SysRoleDeptPo> sysRoleDeptPoSet = sysRolePo.getSysRoleDeptPoSet();
+        // 角色-菜单关联
+        Set<SysRoleMenuPo> sysRoleMenuPoSet = sysRolePo.getSysRoleMenuPoSet();
+        transactionTemplate.execute(status -> {
+            sysUserRoleRepository.deleteAllInBatch(sysUserRolePoSet);
+            sysRoleMenuRepository.deleteAllInBatch(sysRoleMenuPoSet);
+            sysRoleDeptRepository.deleteAllInBatch(sysRoleDeptPoSet);
+            sysRoleRepository.delete(sysRolePo);
+            return null;
+        });
+    }
     private FindDeptRolesByRoleIdEntity buildFindDeptRolesByRoleIdEntity(SysRolePo sysRolePo, Set<SysDeptPo> sysDeptPoSet) {
         FindDeptRolesByRoleIdEntity findDeptRolesByRoleIdEntity = new FindDeptRolesByRoleIdEntity();
         findDeptRolesByRoleIdEntity.setRoleId(sysRolePo.getId());
@@ -246,4 +284,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
         findDeptRolesByRoleIdEntity.setSelectedDept(sysDeptIdList);
         return findDeptRolesByRoleIdEntity;
     }
+
+    private SysRolePo findSysRolePoById(Long roleId) {
+        return sysRoleRepository.findById(roleId).orElseThrow(() -> new RoleException("role.query.failed", roleId));
+    }
+
 }
