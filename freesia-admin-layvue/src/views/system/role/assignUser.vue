@@ -140,13 +140,10 @@
         </template>
       </lay-table>
     </lay-layer>
-
-    <div class="footer">
-      <div class="footer-button">
-        <lay-button type="primary" @click="$tab.closeOpen('/system/role/index')">返回</lay-button>
-      </div>
-    </div>
   </div>
+  <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom" v-if="target">
+    <lay-button type="primary" @click="$tab.closeOpen('/system/role/index')">返回</lay-button>
+  </lay-affix>
 </template>
 <script lang="ts">
 /**
@@ -157,7 +154,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from 'vue'
+import {computed, nextTick, onMounted, reactive, ref} from 'vue'
 import {PageQuery} from "../../../types/Common";
 import {SysUserEntity, SysUserVo} from "../../../types/system/User";
 import {SysDictValueEntity} from "../../../types/system/Dict";
@@ -233,7 +230,10 @@ const assignUserModalColumns = ref([
   {title: '状态', key: 'accountStatus', customSlot: 'accountStatus'},
   {title: '备注', key: 'remark', customSlot: 'remark'},
 ])
-
+const target = ref()
+nextTick(() => {
+  target.value = document.querySelector(".layui-body");
+})
 /* VAR*/
 
 function toReset() {
@@ -391,22 +391,5 @@ function assignUserModalChange() {
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-}
-
-.footer {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  border-top: 1px solid whitesmoke;
-  line-height: 60px;
-  height: 60px;
-}
-
-.footer-button {
-  right: 50px;
-  position: absolute;
 }
 </style>

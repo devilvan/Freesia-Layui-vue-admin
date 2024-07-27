@@ -108,13 +108,10 @@
         </template>
       </lay-table>
     </lay-layer>
-
-    <div class="footer">
-      <div class="footer-button">
-        <lay-button type="primary" @click="turnBack">返回</lay-button>
-      </div>
-    </div>
   </div>
+  <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom" v-if="target">
+    <lay-button type="primary" @click="turnBack">返回</lay-button>
+  </lay-affix>
 </template>
 <script lang="ts">
 /**
@@ -125,7 +122,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from 'vue'
+import {computed, nextTick, onMounted, reactive, ref} from 'vue'
 import {PageQuery} from "../../../types/Common";
 import {SysUserEntity} from "../../../types/system/User";
 import {SysDictValueEntity} from "../../../types/system/Dict";
@@ -195,7 +192,10 @@ const assignUserModalColumns = ref([
   {title: '状态', key: 'accountStatus', customSlot: 'accountStatus'},
   {title: '备注', key: 'remark', customSlot: 'remark'},
 ])
-
+const target = ref()
+nextTick(() => {
+  target.value = document.querySelector(".layui-body");
+})
 /* VAR*/
 const change = () => {
   loading.value = true
@@ -308,7 +308,7 @@ function turnBack() {
 
 <style scoped>
 .user-box {
-  height: calc(100vh - 110px);
+  height: calc(100vh - 60px);
   margin-top: 10px;
   box-sizing: border-box;
   overflow: hidden;
@@ -325,7 +325,7 @@ function turnBack() {
 .table-box {
   margin-top: 10px;
   padding: 10px;
-  height: 700px;
+  height: 500px;
   width: 100%;
   border-radius: 4px;
   box-sizing: border-box;
@@ -354,22 +354,5 @@ function turnBack() {
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-}
-
-.footer {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  border-top: 1px solid whitesmoke;
-  line-height: 60px;
-  height: 60px;
-}
-
-.footer-button {
-  right: 50px;
-  position: absolute;
 }
 </style>

@@ -122,33 +122,4 @@ function preview(path: any) {
   background-color: #e8f1ff;
   color: red;
 }
-
-.oneRow {
-  width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-}
-
-.footer {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  border-top: 1px solid whitesmoke;
-  line-height: 60px;
-  height: 60px;
-}
-
-.footer-button {
-  right: 50px;
-  position: absolute;
-}
-
-.row-padding {
-  margin-top: 20px;
-}
 </style>

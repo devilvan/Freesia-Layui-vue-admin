@@ -6,8 +6,8 @@
         <p class="describe">复杂表单常见于一次性输入和提交大批量数据的场景。</p>
       </lay-card>
       <lay-container
-        :fluid="true"
-        style="padding: 10px; padding-top: 0px; position: relative"
+          :fluid="true"
+          style="padding: 10px; padding-top: 0px; position: relative"
       >
         <lay-form :model="formData" ref="layFormRef" required>
           <lay-card title="基本信息">
@@ -15,16 +15,16 @@
               <lay-col md="8">
                 <lay-form-item label="名称" prop="name">
                   <lay-input
-                    placeholder="请输入名称"
-                    v-model="formData.name"
+                      placeholder="请输入名称"
+                      v-model="formData.name"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col md="8">
                 <lay-form-item label="域名" prop="domain">
                   <lay-input
-                    placeholder="请输入域名"
-                    v-model="formData.domain"
+                      placeholder="请输入域名"
+                      v-model="formData.domain"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
@@ -32,16 +32,16 @@
                 <lay-form-item label="管理员" prop="admin">
                   <lay-select v-model="formData.admin">
                     <lay-select-option
-                      value="1"
-                      label="张三"
+                        value="1"
+                        label="张三"
                     ></lay-select-option>
                     <lay-select-option
-                      value="2"
-                      label="李四"
+                        value="2"
+                        label="李四"
                     ></lay-select-option>
                     <lay-select-option
-                      value="3"
-                      label="王五"
+                        value="3"
+                        label="王五"
                     ></lay-select-option>
                   </lay-select>
                 </lay-form-item>
@@ -50,16 +50,16 @@
                 <lay-form-item label="审批人" prop="approver">
                   <lay-select v-model="formData.approver">
                     <lay-select-option
-                      value="1"
-                      label="张三"
+                        value="1"
+                        label="张三"
                     ></lay-select-option>
                     <lay-select-option
-                      value="2"
-                      label="李四"
+                        value="2"
+                        label="李四"
                     ></lay-select-option>
                     <lay-select-option
-                      value="3"
-                      label="王五"
+                        value="3"
+                        label="王五"
                     ></lay-select-option>
                   </lay-select>
                 </lay-form-item>
@@ -67,10 +67,10 @@
               <lay-col md="8">
                 <lay-form-item label="生效日期" prop="effectiveDate">
                   <lay-date-picker
-                    v-model="formData.effectiveDate"
-                    style="width: 100%"
-                    range
-                    placeholder="type : date"
+                      v-model="formData.effectiveDate"
+                      style="width: 100%"
+                      range
+                      placeholder="type : date"
                   ></lay-date-picker>
                 </lay-form-item>
               </lay-col>
@@ -78,16 +78,16 @@
                 <lay-form-item label="仓库类型" prop="type">
                   <lay-select v-model="formData.type">
                     <lay-select-option
-                      value="1"
-                      label="类型1"
+                        value="1"
+                        label="类型1"
                     ></lay-select-option>
                     <lay-select-option
-                      value="2"
-                      label="类型2"
+                        value="2"
+                        label="类型2"
                     ></lay-select-option>
                     <lay-select-option
-                      value="3"
-                      label="类型3"
+                        value="3"
+                        label="类型3"
                     ></lay-select-option>
                   </lay-select>
                 </lay-form-item>
@@ -100,16 +100,16 @@
               <lay-col md="8">
                 <lay-form-item label="名称" prop="taskName">
                   <lay-input
-                    placeholder="请输入名称"
-                    v-model="formData.taskName"
+                      placeholder="请输入名称"
+                      v-model="formData.taskName"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col md="8">
                 <lay-form-item label="表述" prop="description">
                   <lay-input
-                    placeholder="请输入表述"
-                    v-model="formData.description"
+                      placeholder="请输入表述"
+                      v-model="formData.description"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
@@ -117,16 +117,16 @@
                 <lay-form-item label="执行人" prop="admin">
                   <lay-select v-model="formData.executor">
                     <lay-select-option
-                      value="1"
-                      label="张三"
+                        value="1"
+                        label="张三"
                     ></lay-select-option>
                     <lay-select-option
-                      value="2"
-                      label="李四"
+                        value="2"
+                        label="李四"
                     ></lay-select-option>
                     <lay-select-option
-                      value="3"
-                      label="王五"
+                        value="3"
+                        label="王五"
                     ></lay-select-option>
                   </lay-select>
                 </lay-form-item>
@@ -135,16 +135,16 @@
                 <lay-form-item label="负责人" prop="principal">
                   <lay-select v-model="formData.principal">
                     <lay-select-option
-                      value="1"
-                      label="张三"
+                        value="1"
+                        label="张三"
                     ></lay-select-option>
                     <lay-select-option
-                      value="2"
-                      label="李四"
+                        value="2"
+                        label="李四"
                     ></lay-select-option>
                     <lay-select-option
-                      value="3"
-                      label="王五"
+                        value="3"
+                        label="王五"
                     ></lay-select-option>
                   </lay-select>
                 </lay-form-item>
@@ -152,8 +152,8 @@
               <lay-col md="8">
                 <lay-form-item label="提醒时间" prop="remindTime">
                   <lay-date-picker
-                    type="time"
-                    v-model="formData.remindTime"
+                      type="time"
+                      v-model="formData.remindTime"
                   ></lay-date-picker>
                 </lay-form-item>
               </lay-col>
@@ -161,16 +161,16 @@
                 <lay-form-item label="类型" prop="taskType">
                   <lay-select v-model="formData.taskType">
                     <lay-select-option
-                      value="1"
-                      label="类型1"
+                        value="1"
+                        label="类型1"
                     ></lay-select-option>
                     <lay-select-option
-                      value="2"
-                      label="类型2"
+                        value="2"
+                        label="类型2"
                     ></lay-select-option>
                     <lay-select-option
-                      value="3"
-                      label="类型3"
+                        value="3"
+                        label="类型3"
                     ></lay-select-option>
                   </lay-select>
                 </lay-form-item>
@@ -179,15 +179,15 @@
           </lay-card>
         </lay-form>
 
-        <br />
+        <br/>
 
         <lay-card title="货品列表">
           <lay-table :columns="columns" :data-source="tableData">
             <template #name="{ data }">
               <lay-input
-                v-if="data.isEdit"
-                :model-value="data.name"
-                @input="changeData($event, data, 'name')"
+                  v-if="data.isEdit"
+                  :model-value="data.name"
+                  @input="changeData($event, data, 'name')"
               ></lay-input>
               <span v-else>
                 {{ data.name }}
@@ -195,9 +195,9 @@
             </template>
             <template #description="{ data }">
               <lay-input
-                v-if="data.isEdit"
-                :model-value="data.description"
-                @input="changeData($event, data, 'description')"
+                  v-if="data.isEdit"
+                  :model-value="data.description"
+                  @input="changeData($event, data, 'description')"
               ></lay-input>
               <span v-else>
                 {{ data.description }}
@@ -205,9 +205,9 @@
             </template>
             <template #weight="{ data }">
               <lay-input
-                v-if="data.isEdit"
-                :model-value="data.weight"
-                @input="changeData($event, data, 'weight')"
+                  v-if="data.isEdit"
+                  :model-value="data.weight"
+                  @input="changeData($event, data, 'weight')"
               ></lay-input>
               <span v-else>
                 {{ data.weight }}
@@ -215,9 +215,9 @@
             </template>
             <template #remark="{ data }">
               <lay-input
-                v-if="data.isEdit"
-                :model-value="data.remark"
-                @input="changeData($event, data, 'remark')"
+                  v-if="data.isEdit"
+                  :model-value="data.remark"
+                  @input="changeData($event, data, 'remark')"
               ></lay-input>
               <span v-else>
                 {{ data.remark }}
@@ -225,18 +225,18 @@
             </template>
             <template #operate="{ data }">
               <lay-button
-                type="primary"
-                size="xs"
-                v-if="!data.isEdit"
-                @click="editHandle(data)"
+                  type="primary"
+                  size="xs"
+                  v-if="!data.isEdit"
+                  @click="editHandle(data)"
               >
                 编辑
               </lay-button>
               <lay-button
-                type="primary"
-                size="xs"
-                v-if="data.isEdit"
-                @click="saveTable(data)"
+                  type="primary"
+                  size="xs"
+                  v-if="data.isEdit"
+                  @click="saveTable(data)"
               >
                 保存
               </lay-button>
@@ -246,23 +246,22 @@
             </template>
           </lay-table>
           <lay-button
-            border="green"
-            border-style="dashed"
-            :fluid="true"
-            @click="addHandler"
-            style="margin-top: 10px"
-            >新增</lay-button
+              border="green"
+              border-style="dashed"
+              :fluid="true"
+              @click="addHandler"
+              style="margin-top: 10px"
+          >新增
+          </lay-button
           >
         </lay-card>
       </lay-container>
     </div>
-    <div class="footer">
-      <div class="footer-button">
-        <lay-button type="primary" @click="submitForm">提交</lay-button>
-        <lay-button>重置</lay-button>
-      </div>
-    </div>
   </div>
+  <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom" v-if="target">
+    <lay-button type="primary" @click="submitForm">提交</lay-button>
+    <lay-button>重置</lay-button>
+  </lay-affix>
 </template>
 
 <!--<script lang="ts">-->
@@ -274,8 +273,8 @@
 <!--};-->
 <!--</script>-->
 <script lang="ts" name="Intricate">
-import { ref, watch, reactive } from 'vue'
-import { layer } from '@layui/layer-vue'
+import {nextTick, ref} from 'vue'
+import {layer} from '@layui/layer-vue'
 
 export default {
   name: 'Intricate',
@@ -360,6 +359,11 @@ export default {
       }
     ])
 
+    const target = ref()
+    nextTick(() => {
+      target.value = document.querySelector(".layui-body");
+    })
+
     // 编辑表格
     const editHandle = (data: any) => {
       data.isEdit = true
@@ -431,33 +435,33 @@ export default {
     const layFormRef = ref()
     const submitForm = () => {
       layFormRef.value.validate(
-        (isValidate: boolean, model: any, errors: any) => {
-          if (isValidate) {
-            let id = layer.load(1)
-            setTimeout(() => {
-              layer.close(id)
-              layer.msg('提交成功', { icon: 1, time: 1000 })
-              formData.value = {
-                name: '',
-                domain: '',
-                admin: '',
-                approver: '',
-                effectiveDate: ['2022-09-25', '2022-10-25'],
-                type: '',
-                taskName: '',
-                description: '',
-                executor: '',
-                principal: '',
-                remindTime: '01:01:01',
-                taskType: ''
-              }
+          (isValidate: boolean, model: any, errors: any) => {
+            if (isValidate) {
+              let id = layer.load(1)
               setTimeout(() => {
-                layFormRef.value.clearValidate()
-              }, 200)
-            }, 2000)
-          } else {
+                layer.close(id)
+                layer.msg('提交成功', {icon: 1, time: 1000})
+                formData.value = {
+                  name: '',
+                  domain: '',
+                  admin: '',
+                  approver: '',
+                  effectiveDate: ['2022-09-25', '2022-10-25'],
+                  type: '',
+                  taskName: '',
+                  description: '',
+                  executor: '',
+                  principal: '',
+                  remindTime: '01:01:01',
+                  taskType: ''
+                }
+                setTimeout(() => {
+                  layFormRef.value.clearValidate()
+                }, 200)
+              }, 2000)
+            } else {
+            }
           }
-        }
       )
     }
     return {
@@ -488,6 +492,7 @@ export default {
   font-size: 14px;
   margin-bottom: 12px;
 }
+
 .footer {
   width: 100%;
   display: flex;
@@ -498,6 +503,7 @@ export default {
   border-top: 1px solid whitesmoke;
   line-height: 60px;
   height: 60px;
+
   .footer-button {
     right: 10px;
     position: absolute;

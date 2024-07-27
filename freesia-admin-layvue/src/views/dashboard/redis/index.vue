@@ -286,11 +286,6 @@ function formatNumber(num: number, decimalPlaces: number) {
   height: 60px;
 }
 
-.footer-button {
-  right: 50px;
-  position: absolute;
-}
-
 .row-padding {
   margin-top: 20px;
 }

@@ -7,21 +7,9 @@
     font-family: 'Courier New', Courier, monospace;
 }
 
-.footer {
-    width: 100%;
-    display: block;
-    align-items: center;
-    padding: 10px;
-    box-sizing: border-box;
-    background-color: #ffffff;
-    border-top: 1px solid whitesmoke;
-    line-height: 60px;
-    height: 60px;
-}
-
-.footer-button {
-    right: 50px;
+.affix-footer {
     position: absolute;
+    right: 30px;
 }
 
 .layui-layer-content {

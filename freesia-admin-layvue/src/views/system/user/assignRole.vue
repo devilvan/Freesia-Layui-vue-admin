@@ -66,12 +66,10 @@
         </lay-card>
       </lay-container>
     </div>
-    <div class="footer">
-      <div class="footer-button">
-        <lay-button type="primary" @click="$tab.closeOpen('/system/user/index')">返回</lay-button>
-      </div>
-    </div>
   </div>
+  <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom" v-if="target">
+    <lay-button type="primary" @click="$tab.closeOpen('/system/user/index')">返回</lay-button>
+  </lay-affix>
 </template>
 <script lang="ts">
 /**
@@ -82,7 +80,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {onMounted, reactive, ref} from 'vue'
+import {nextTick, onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
 import {FindUserRolesByUserIdEntity, SysUserVo} from "../../../types/system/User";
@@ -139,6 +137,10 @@ const columns = ref([
   //   fixed: 'right'
   // }
 ])
+const target = ref()
+nextTick(() => {
+  target.value = document.querySelector(".layui-body");
+})
 
 /* VAR*/
 
@@ -198,7 +200,6 @@ function assign() {
 .table-box {
   margin-top: 10px;
   padding: 10px;
-  height: 700px;
   width: 100%;
   border-radius: 4px;
   box-sizing: border-box;
@@ -227,22 +228,5 @@ function assign() {
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-}
-
-.footer {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  border-top: 1px solid whitesmoke;
-  line-height: 60px;
-  height: 60px;
-}
-
-.footer-button {
-  right: 50px;
-  position: absolute;
 }
 </style>
