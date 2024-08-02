@@ -692,7 +692,7 @@ function cancel() {
 function changeAddModalParentIdSelect(value: any) {
   addSysDeptVo.value.ancestors = value.value;
   addSysDeptVo.value.parentId = value.currentClick.id;
-  console.log(value);
+  console.logRecord(value);
   findIncrementOrderNum(value.currentClick.id).then((res: any) => {
     if (res.code === 200) {
       addSysDeptVo.value.orderNum = res.data
@@ -701,7 +701,7 @@ function changeAddModalParentIdSelect(value: any) {
 }
 
 function changeEditModalParentIdSelect(value: any) {
-  console.log(value);
+  console.logRecord(value);
   editSysDeptVo.value.ancestors = value.value;
   editSysDeptVo.value.parentId = value.currentClick.id;
 }

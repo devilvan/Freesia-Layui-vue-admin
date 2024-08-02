@@ -614,7 +614,7 @@ function toCancel() {
 }
 
 function confirm(row: any) {
-  console.log(row)
+  console.logRecord(row)
   layer.msg('您已成功删除')
 }
 

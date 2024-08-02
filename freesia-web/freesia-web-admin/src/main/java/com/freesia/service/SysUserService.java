@@ -11,6 +11,7 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -172,6 +173,7 @@ public interface SysUserService {
      *
      * @param userIdList 用户ID
      * @param deptId     部门ID
+     * @return 形式返回
      */
-    void assignDept(List<Long> userIdList, Long deptId);
+    Map<String, Object> assignDept(List<Long> userIdList, Long deptId);
 }

@@ -141,7 +141,7 @@ function rightClickShowMenu() {
   } else if (stat.value === '关闭') {
     stat.value = '开启'
   }
-  console.log("右键点击", stat.value)
+  console.logRecord("右键点击", stat.value)
 }
 </script>
 

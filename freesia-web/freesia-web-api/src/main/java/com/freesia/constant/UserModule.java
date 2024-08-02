@@ -41,5 +41,10 @@ public class UserModule extends SysModule {
          * 子模块 校验验证码
          */
         public static final String USER_IMPORT = "user_import";
+        /**
+         * 子模块 分配部门
+         */
+        public static final String ASSIGN_DEPT = "assign_dept";
+
     }
 }

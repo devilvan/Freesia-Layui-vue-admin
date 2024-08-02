@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
@@ -36,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -261,12 +263,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     }
 
     @Override
-    public void assignDept(List<Long> userIdList, Long deptId) {
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.ASSIGN_DEPT)
+    public Map<String, Object> assignDept(List<Long> userIdList, Long deptId) {
         List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(userIdList);
         for (SysUserPo sysUserPo : sysUserPoList) {
             sysUserPo.setDeptId(deptId);
         }
         sysUserRepository.saveAll(sysUserPoList);
+        return Map.of("deptId", deptId, "userIdList", userIdList);
     }
 
     /**
