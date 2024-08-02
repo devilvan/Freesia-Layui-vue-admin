@@ -76,7 +76,7 @@ public class SysRolePo extends BasePo implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @ManyToMany(targetEntity = SysUserPo.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity = SysUserPo.class, fetch = FetchType.LAZY)
     @JoinTable(name = "SYS_USER_ROLE",
             joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")})
@@ -106,22 +106,31 @@ public class SysRolePo extends BasePo implements Serializable {
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<SysMenuPo> sysMenuPoSet;
 
+    /**
+     * role控制role-menu关联
+     */
     @Schema(description = "角色在菜单-角色关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysRoleMenuPo.class, mappedBy = "sysRolePo", fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysRoleMenuPo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysRoleMenuPo> sysRoleMenuPoSet = new HashSet<>(0);
+    /**
+     * user控制user-role关联
+     */
     @Schema(description = "角色在用户-角色关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysRolePo", fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
+    /**
+     * role控制role-dept关联
+     */
     @Schema(description = "角色在角色-部门关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysRoleDeptPo.class, mappedBy = "sysRolePo", fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysRoleDeptPo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysRoleDeptPo> sysRoleDeptPoSet = new HashSet<>(0);
 }

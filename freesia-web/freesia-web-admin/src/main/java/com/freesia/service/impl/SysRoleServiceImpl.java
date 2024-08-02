@@ -172,7 +172,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
         Set<SysUserRolePo> sysUserRolePoSet = sysRolePo.getSysUserRolePoSet();
         for (Long userId : userIdList) {
             SysUserRolePo sysUserRolePo = new SysUserRolePo();
-            SysUserRolePo.SysUserRolePk sysUserRolePk = new SysUserRolePo.SysUserRolePk();
+            SysUserRolePk sysUserRolePk = new SysUserRolePk();
             sysUserRolePk.setRoleId(roleId);
             sysUserRolePk.setUserId(userId);
             sysUserRolePo.setSysRoleMenuPk(sysUserRolePk);
@@ -197,7 +197,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
         Set<SysRoleDeptPo> afterSysRoleDeptPoSet = UCollection.optimizeInitialCapacitySet(deptIdSet.size());
         for (Long deptId : deptIdSet) {
             SysRoleDeptPo sysRoleDeptPo = new SysRoleDeptPo();
-            sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPo.SysRoleDeptPk(deptId, roleId));
+            sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPk(deptId, roleId));
             afterSysRoleDeptPoSet.add(sysRoleDeptPo);
         }
         SysSensitiveLogBean sysSensitiveLogBean;
@@ -276,6 +276,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
             return null;
         });
     }
+
     private FindDeptRolesByRoleIdEntity buildFindDeptRolesByRoleIdEntity(SysRolePo sysRolePo, Set<SysDeptPo> sysDeptPoSet) {
         FindDeptRolesByRoleIdEntity findDeptRolesByRoleIdEntity = new FindDeptRolesByRoleIdEntity();
         findDeptRolesByRoleIdEntity.setRoleId(sysRolePo.getId());

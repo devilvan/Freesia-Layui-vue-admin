@@ -2,35 +2,28 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
-import cn.hutool.core.util.StrUtil;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.util.ListUtils;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.annotation.Encrypt;
-import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuPermission;
-import com.freesia.constant.UserModule;
-import com.freesia.constant.UserType;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.*;
+import com.freesia.excel.UserImportListener;
 import com.freesia.excel.constant.ExcelSuffix;
-import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.util.UExcel;
 import com.freesia.exception.OssException;
-import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysUserService;
-import com.freesia.util.*;
+import com.freesia.util.UCopy;
+import com.freesia.util.UCrypt;
+import com.freesia.util.UMessage;
+import com.freesia.util.USecurity;
 import com.freesia.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +32,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -138,88 +130,14 @@ public class SysUserController {
             throw new UserException("user.import.suffix.invalid", suffix);
         }
         try {
-            UExcel.read(file.getInputStream(), SysUserImportEntity.class, new BaseImportEntityListener<>() {
-                @Override
-                public void invoke(SysUserImportEntity sysUserImportEntity, AnalysisContext context) {
-                    cachedDataList.add(sysUserImportEntity);
-                    if (cachedDataList.size() >= BATCH_COUNT) {
-                        transactionSaveSysUser();
-                    }
-                }
-
-                @Override
-                public void doAfterAllAnalysed(AnalysisContext context) {
-                    transactionSaveSysUser();
-                }
-
-                private void transactionSaveSysUser() {
-                    List<SysUserDto> sysUserDtoList = UCollection.optimizeInitialCapacityArrayList(cachedDataList.size());
-                    for (SysUserImportEntity sysUserImportEntity : cachedDataList) {
-                        // 数据校验
-                        errorMsg.addAll(USpringValidation.errorMsg(sysUserImportEntity));
-                        SysUserDto sysUserDto = buildSysUserDto(sysUserImportEntity);
-                        sysUserDtoList.add(sysUserDto);
-                    }
-                    if (UEmpty.isNotEmpty(errorMsg)) {
-                        throw new ServiceException(UCollection.join(errorMsg, "\n"));
-                    }
-                    if (sysUserDtoList.size() > 0) {
-                        // 过滤相同用户名的数据
-                        sysUserDtoList = sysUserDtoList.stream()
-                                .filter(UCopy.distinctByKey(SysUserDto::getUserName))
-                                .collect(Collectors.toList());
-                        // 查询是否有重复用户名
-                        final List<String> distinctUserNameList = sysUserDtoList.stream().map(SysUserDto::getUserName).collect(Collectors.toList());
-                        List<SysUserDto> distinctSysUserDtoList = sysUserService.findDistinctUserNameList(distinctUserNameList);
-                        if (UEmpty.isNotEmpty(distinctSysUserDtoList)) {
-                            final List<String> nonUniqueUserNameList = distinctSysUserDtoList.stream().map(SysUserDto::getUserName).collect(Collectors.toList());
-                            final String nonUniqueUserNameJoin = StrUtil.join("\n", nonUniqueUserNameList);
-                            throw new ServiceException(UserModule.SubModule.USER_IMPORT, "user.name.not.unique", nonUniqueUserNameJoin);
-                        }
-                        // 保存
-                        sysUserService.saveUpdateBatch(sysUserDtoList);
-                    }
-                    cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
-                }
-
-                private SysUserDto buildSysUserDto(SysUserImportEntity sysUserImportEntity) {
-                    SysUserDto sysUserDto = new SysUserDto();
-                    sysUserDto.setUserName(sysUserImportEntity.getUserName());
-                    sysUserDto.setNickName(sysUserImportEntity.getNickName());
-                    sysUserDto.setEmail(sysUserImportEntity.getEmail());
-                    sysUserDto.setTelNo(sysUserImportEntity.getTelNo());
-                    sysUserDto.setPassword(BCrypt.hashpw(sysUserImportEntity.getPassword(), BCrypt.gensalt()));
-                    sysUserDto.setAccountStatus(FlagConstant.ENABLED);
-                    sysUserDto.setRemark(sysUserImportEntity.getRemark());
-                    sysUserDto.setAvatar(avatar);
-                    final String gender = sysUserImportEntity.getGender();
-                    if (UEmpty.isNotEmpty(gender)) {
-                        sysUserDto.setGender(gender);
-                    } else {
-                        sysUserDto.setGender("U");
-                    }
-                    if (UEmpty.isNotEmpty(sysUserImportEntity.getUserType())) {
-                        final UserType userType = UserType.getInstanceByKey(sysUserImportEntity.getUserType());
-                        sysUserDto.setUserType(userType.getUserType());
-                    } else {
-                        sysUserDto.setUserType(UserType.SYS_USER.getUserType());
-                    }
-                    return sysUserDto;
-                }
-            }, 0, null);
+            UExcel.read(file.getInputStream(), SysUserImportEntity.class,
+                    new UserImportListener<>(sysUserService, avatar), 0, null);
         } catch (IOException e) {
             e.printStackTrace();
             R<Void> failed = R.failed();
             failed.setMsg(UMessage.message("upload.failed"));
             return failed;
         }
-        return R.ok();
-    }
-
-    @SaIgnore
-    @Operation(summary = "用户头像上传")
-    @PostMapping(value = "uploadAvatar")
-    public R<Void> uploadAvatar(@RequestPart("file[]") MultipartFile file, @NotEmpty(message = "{not.null}") @RequestParam String id) {
         return R.ok();
     }
 

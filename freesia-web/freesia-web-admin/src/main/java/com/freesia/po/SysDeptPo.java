@@ -86,6 +86,10 @@ public class SysDeptPo extends BasePo implements Serializable {
     @TableField(exist = false)
     @OneToMany(targetEntity = SysUserPo.class, mappedBy = "sysDeptPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysUserPo> sysUserPoSet;
+
+    /**
+     * role控制role-dept关联
+     */
     @Schema(description = "部门在角色-部门关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

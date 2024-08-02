@@ -21,6 +21,7 @@ import com.freesia.exception.ServiceException;
 import com.freesia.mapper.SysMenuMapper;
 import com.freesia.mapper.SysRoleMapper;
 import com.freesia.po.SysMenuPo;
+import com.freesia.po.SysRoleMenuPk;
 import com.freesia.po.SysRoleMenuPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.repository.SysMenuRepository;
@@ -366,7 +367,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 .orElseThrow(() -> new ServiceException(RoleModule.ROLE_MANAGEMENT, "role.query.failed", roleId));
         Set<SysRoleMenuPo> afterSysRoleMenuPoSet = UCollection.optimizeInitialCapacitySet(assignButtonIdList.size());
         for (Long assignButtonId : assignButtonIdList) {
-            SysRoleMenuPo sysRoleMenuPo = new SysRoleMenuPo(new SysRoleMenuPo.SysRoleMenuPk(assignButtonId, roleId));
+            SysRoleMenuPo sysRoleMenuPo = new SysRoleMenuPo(new SysRoleMenuPk(assignButtonId, roleId));
             afterSysRoleMenuPoSet.add(sysRoleMenuPo);
         }
         List<Long> removeButtonIdList = sysRoleMapper.findListButtonIdByRoleId(roleId);

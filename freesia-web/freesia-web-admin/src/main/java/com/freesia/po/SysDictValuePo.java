@@ -79,7 +79,7 @@ public class SysDictValuePo extends BasePo implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @ManyToOne(targetEntity = SysDictKeyPo.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = SysDictKeyPo.class, fetch = FetchType.LAZY)
     @JoinColumns(value = {
             @JoinColumn(name = "KEY_ID", referencedColumnName = "ID", insertable = false, updatable = false),
             @JoinColumn(name = "DICT_KEY", referencedColumnName = "DICT_KEY", insertable = false, updatable = false)

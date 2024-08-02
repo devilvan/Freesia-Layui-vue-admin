@@ -20,6 +20,7 @@ import com.freesia.exception.UserException;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.model.LoginUserModel;
 import com.freesia.po.SysDeptPo;
+import com.freesia.po.SysRoleDeptPk;
 import com.freesia.po.SysRoleDeptPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.pojo.PageQuery;
@@ -156,7 +157,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         Set<SysRoleDeptPo> afterSysRoleDeptPoSet = UCollection.optimizeInitialCapacitySet(afterRoleIdSet.size());
         for (Long roleId : afterRoleIdSet) {
             SysRoleDeptPo sysRoleDeptPo = new SysRoleDeptPo();
-            sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPo.SysRoleDeptPk(deptId, roleId));
+            sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPk(deptId, roleId));
             afterSysRoleDeptPoSet.add(sysRoleDeptPo);
         }
         SysSensitiveLogBean sysSensitiveLogBean;

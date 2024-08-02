@@ -57,28 +57,6 @@ public class SysRoleMenuPo extends RelationPo {
         this.sysRoleMenuPk = sysRoleMenuPk;
     }
 
-    /**
-     * @author Evad.Wu
-     * @Description 角色-菜单 联合主键
-     * @date 2024-02-19
-     */
-    @Data
-    @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    @Schema(description = "角色-菜单 联合主键")
-    public static class SysRoleMenuPk extends RelationPo implements Serializable {
-        @Serial
-        private static final long serialVersionUID = 5069682381557493963L;
-        @Schema(description = "菜单ID")
-        @Column(name = "MENU_ID")
-        private Long menuId;
-        @Schema(description = "角色ID")
-        @Column(name = "ROLE_ID")
-        private Long roleId;
-    }
-
 }
 
 

@@ -101,11 +101,14 @@ public class SysMenuPo extends BasePo implements Serializable, Comparable<SysMen
     @ManyToMany(mappedBy = "sysMenuPoSet", fetch = FetchType.LAZY)
     private Set<SysRolePo> sysRolePoSet = new HashSet<>(0);
 
+    /**
+     * role控制role-menu关联
+     */
     @Schema(description = "菜单在菜单-角色关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysRoleMenuPo.class, mappedBy = "sysMenuPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysRoleMenuPo.class, mappedBy = "sysMenuPo", fetch = FetchType.LAZY)
     private Set<SysRoleMenuPo> sysRoleMenuPoSet = new HashSet<>(0);
 
     @Override

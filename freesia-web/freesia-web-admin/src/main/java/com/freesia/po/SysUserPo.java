@@ -86,26 +86,32 @@ public class SysUserPo extends BasePo implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @ManyToMany(mappedBy = "sysUserPoSet", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "sysUserPoSet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysRolePo> sysRolePoSet = new HashSet<>(0);
     @Schema(description = "用户对应的部门")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @ManyToOne(targetEntity = SysDeptPo.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = SysDeptPo.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "DEPT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private SysDeptPo sysDeptPo;
 
+    /**
+     * user控制user-role关联
+     */
     @Schema(description = "用户在用户-角色关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
     @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysUserPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
+    /**
+     * tenant控制tenant-user关联
+     */
     @Schema(description = "用户在租户-用户关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @OneToMany(targetEntity = SysTenantUserPo.class, mappedBy = "sysUserPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = SysTenantUserPo.class, mappedBy = "sysUserPo", fetch = FetchType.LAZY)
     private Set<SysTenantUserPo> sysTenantUserPoSet = new HashSet<>(0);
 }

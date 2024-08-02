@@ -191,7 +191,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         Set<SysUserRolePo> afterSysUserRolePoSet = UCollection.optimizeInitialCapacitySet(afterRoleIdSet.size());
         for (Long roleId : afterRoleIdSet) {
             SysUserRolePo sysUserRolePo = new SysUserRolePo();
-            sysUserRolePo.setSysRoleMenuPk(new SysUserRolePo.SysUserRolePk(userId, roleId));
+            sysUserRolePo.setSysRoleMenuPk(new SysUserRolePk(userId, roleId));
             afterSysUserRolePoSet.add(sysUserRolePo);
         }
         SysSensitiveLogBean sysSensitiveLogBean;

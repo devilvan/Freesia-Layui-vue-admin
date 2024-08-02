@@ -1,6 +1,7 @@
 package com.freesia.repository;
 
 
+import com.freesia.po.SysRoleDeptPk;
 import com.freesia.po.SysRoleDeptPo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,5 +12,5 @@ import org.springframework.stereotype.Repository;
  * @date 2024-07-26
  */
 @Repository
-public interface SysRoleDeptRepository extends JpaRepository<SysRoleDeptPo, SysRoleDeptPo.SysRoleDeptPk> {
+public interface SysRoleDeptRepository extends JpaRepository<SysRoleDeptPo, SysRoleDeptPk> {
 }

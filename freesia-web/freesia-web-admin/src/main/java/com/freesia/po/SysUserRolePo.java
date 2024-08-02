@@ -52,21 +52,6 @@ public class SysUserRolePo extends RelationPo {
     @ManyToOne(targetEntity = SysRolePo.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private SysRolePo sysRolePo;
-
-    @Data
-    @Embeddable
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SysUserRolePk implements Serializable {
-        @Serial
-        private static final long serialVersionUID = 5069682381557493963L;
-        @Schema(description = "用户ID")
-        @Column(name = "USER_ID")
-        private Long userId;
-        @Schema(description = "角色ID")
-        @Column(name = "ROLE_ID")
-        private Long roleId;
-    }
 }
 
 
