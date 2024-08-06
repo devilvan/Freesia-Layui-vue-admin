@@ -47,7 +47,6 @@ public class LogRecordAspect {
                 sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
                 sysSensitiveLogBean.setContextOld(request);
                 sysSensitiveLogBean.setContext(response);
-
                 sysSensitiveLogBean.setRemark(logRecord.message());
                 return sysSensitiveLogBean;
             });

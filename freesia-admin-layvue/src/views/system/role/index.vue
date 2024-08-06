@@ -377,6 +377,7 @@ import router from "../../../router";
 import {SysDeptSelectEntity} from "../../../types/system/Dept";
 import {findTreeAssignDeptSelect} from "../../../api/system/Dept";
 /* INIT*/
+const $ADMIN_ROLE = app.config.globalProperties.$ADMIN_ROLE
 onMounted(async () => {
   sysDataScope.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   sysDataScopeSelect.value = await sysDictValueSelect(sysDataScope.value);
@@ -614,7 +615,7 @@ function toCancel() {
 }
 
 function confirm(row: any) {
-  console.logRecord(row)
+  console.log(row)
   layer.msg('您已成功删除')
 }
 
@@ -714,6 +715,10 @@ function toAssignButton() {
   }
   let row = dataSourceTableRef.value.getCheckData()[0]
   selectRowRoleId.value = selectKeys[0];
+  if (row.roleKey === $ADMIN_ROLE) {
+    layer.msg("超级管理员无需分配按钮权限", {icon: 3})
+    return ;
+  }
   $router.push('/system/role/assignButton/' + row.id);
 }
 
@@ -726,7 +731,11 @@ function assignDeptModalChange() {
     layer.msg("请选择1条数据", {icon: 3})
     return;
   }
-  let row = dataSourceTableRef.value.getCheckData()[0];
+  let row = dataSourceTableRef.value.getCheckData()[0]
+  if (row.roleKey === $ADMIN_ROLE) {
+    layer.msg("超级管理员无需分配部门权限", {icon: 3})
+    return ;
+  }
   findDeptRolesByRoleId(row.id).then((res: any) => {
     if (res.code === 200) {
       assignDeptVo.value.deptIdList = res.data.selectedDept;

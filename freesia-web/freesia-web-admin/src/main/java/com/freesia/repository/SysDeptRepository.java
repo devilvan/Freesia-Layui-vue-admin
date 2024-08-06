@@ -15,14 +15,4 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SysDeptRepository extends JpaRepository<SysDeptPo, Long> {
-    /**
-     * 根据部门ID删除 部门-角色信息表中的数据
-     *
-     * @param deptId 用户ID
-     */
-    @Modifying
-    @Query(value = """
-                DELETE FROM SysRoleDeptPo WHERE sysRoleDeptPk.deptId = :deptId
-            """)
-    void removeRelationByDeptId(@Param("deptId") Long deptId);
 }

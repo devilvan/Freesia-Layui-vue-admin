@@ -169,7 +169,7 @@
             </lay-menu-item>
             <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
-                <lay-avatar :src="$SRC_ASSETS + userInfoStore.userInfo.avatar"></lay-avatar>
+                <lay-avatar :src="resolveImgPath(userInfoStore.userInfo.avatar)"></lay-avatar>
                 <template #content>
                   <lay-dropdown-menu>
                     <lay-dropdown-menu-item @click="toUserInfo">
@@ -228,7 +228,6 @@ import en_US from '../lang/en_US'
 import router from "../router";
 import {useTabStore} from "./composable/useTabStore";
 import app from "../main";
-import {useCryptStore} from "../store/crypt";
 
 export default {
   components: {
@@ -241,6 +240,7 @@ export default {
     GlobalMessageTab
   },
   setup() {
+    const $SRC_ASSETS = app.config.globalProperties.$SRC_ASSETS;
     const appStore = useAppStore()
     const userInfoStore = useUserStore()
     const $tab = useTabStore();
@@ -327,6 +327,16 @@ export default {
       window.open(import.meta.env.VITE_APP_GITEE_PATH, "_blank");
     }
 
+    function resolveImgPath(imgPath: string) {
+      if (!imgPath || imgPath == '') {
+        return;
+      } else if (imgPath.startsWith("http") || imgPath.startsWith("https")) {
+        return imgPath;
+      } else if (imgPath.startsWith("avatar")) {
+        return $SRC_ASSETS + imgPath;
+      }
+    }
+
     return {
       sideWidth,
       mainSelectedKey,
@@ -353,7 +363,8 @@ export default {
       flag,
       changeTenantSelect,
       toDoc,
-      toGitee
+      toGitee,
+      resolveImgPath
     }
   }
 }

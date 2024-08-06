@@ -179,7 +179,7 @@ import app from "../../../main";
 
 /* INIT*/
 onMounted(() => {
-  console.logRecord(pubKey);
+  console.log(pubKey);
   loadDataSource()
 })
 /* INIT*/

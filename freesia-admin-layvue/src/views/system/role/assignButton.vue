@@ -150,11 +150,9 @@
           </div>
         </div>
       </lay-container>
-      <div class="footer">
-        <div class="footer-button">
+      <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom" v-if="target">
           <lay-button type="primary" @click="$tab.closeOpen('/system/role/index')">返回</lay-button>
-        </div>
-      </div>
+      </lay-affix>
     </div>
   </div>
 </template>
@@ -167,7 +165,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {onMounted, reactive, ref} from 'vue'
+import {nextTick, onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {FindPageSysDeptListEntity, FindPageSysUserByDeptEntity} from "../../../types/system/Dept";
 import {PageQuery} from "../../../types/Common";
@@ -225,6 +223,10 @@ const columns = ref([
   {title: '权限标识', key: 'perms', width: '200px', customSlot: 'perms'},
   {title: '备注', key: 'remark', width: '200px', customSlot: 'remark'},
 ])
+const target = ref()
+nextTick(() => {
+  target.value = document.querySelector(".layui-body");
+})
 /* VAR*/
 
 /* FUNCTION*/

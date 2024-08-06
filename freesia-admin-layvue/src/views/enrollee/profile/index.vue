@@ -4,7 +4,7 @@
       <lay-col style="max-width: 400px" :xs="24">
         <lay-card shadow="hover" class="info-user">
           <div style="text-align: center">
-            <lay-avatar :src="$SRC_ASSETS + currentUserProfileTemplate.avatar" class="user-avatar"
+            <lay-avatar :src="resolveImgPath(currentUserProfileTemplate.avatar)" class="user-avatar"
                         @click="toImport()"></lay-avatar>
             <div class="user-name">{{ currentUserProfileTemplate.nickName }}</div>
             <div class="user-briefing">{{ currentUserProfileTemplate.remark }}</div>
@@ -34,7 +34,7 @@
         </lay-card>
       </lay-col>
       <lay-col style="flex: 1; background-color: #fff" :xs="24">
-        <lay-tab type="brief" v-model="activeTab" >
+        <lay-tab type="brief" v-model="activeTab">
           <lay-tab-item title="基本信息" id="baseInfo">
             <div class="tab-content">
               <lay-form
@@ -164,8 +164,8 @@ import {findDeptById} from "../../../api/system/Dept";
 import {SysDeptEntity} from "../../../types/system/Dept";
 import {findCurrentUserProfile, saveUserInfo, userImport} from "../../../api/system/User";
 import {refresh} from "../../../util/UCommon";
-import CryptoJS from "crypto-js";
 import {useCryptStore} from "../../../store/crypt";
+import {parseImgPath} from "../../../util/UImage";
 
 /* INIT*/
 onMounted(async () => {
@@ -332,6 +332,10 @@ function toUpload() {
       visibleImport.value = !visibleImport.value
     }
   })
+}
+
+function resolveImgPath(imgPath: string) {
+  return parseImgPath(imgPath)
 }
 
 /* FUNCTION*/

@@ -23,15 +23,4 @@ public interface SysUserRepository extends JpaRepository<SysUserPo, Long> {
      * @return 用户信息
      */
     SysUserPo findByUserNameAndLogicDel(String userName, boolean logicDel);
-
-    /**
-     * 根据用户ID删除 用户-角色信息表中的数据
-     *
-     * @param userId 用户ID
-     */
-    @Modifying
-    @Query(value = """
-                DELETE FROM SysUserRolePo WHERE sysRoleMenuPk.userId = :userId
-            """)
-    void removeRelationByUserId(@Param("userId") Long userId);
 }

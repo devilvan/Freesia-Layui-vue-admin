@@ -25,13 +25,14 @@ import com.freesia.po.SysRoleMenuPk;
 import com.freesia.po.SysRoleMenuPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.repository.SysMenuRepository;
-import com.freesia.repository.SysRoleRepository;
+import com.freesia.repository.SysRoleMenuRepository;
 import com.freesia.service.SysMenuService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -50,10 +51,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     private static final String NO_REDIRECT = "noRedirect";
     private static final String COMPONENT_REGEX = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$";
 
+    private final TransactionTemplate transactionTemplate;
     private final SysMenuMapper sysMenuMapper;
     private final SysMenuRepository sysMenuRepository;
     private final SysRoleMapper sysRoleMapper;
-    private final SysRoleRepository sysRoleRepository;
+    private final SysRoleMenuRepository sysRoleMenuRepository;
 
     @Override
     public SysMenuDto saveUpdate(SysMenuDto sysMenuDto) {
@@ -361,32 +363,57 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     @Transactional(rollbackFor = Exception.class)
     public void assignButton(AssignButtonDto assignButtonDto) {
         Long roleId = Long.parseLong(assignButtonDto.getRoleId());
-        List<String> beforeAssignButtonIdList = assignButtonDto.getBeforeAssignButtonIdList();
+        List<Long> beforeAssignButtonIdList = assignButtonDto.getBeforeAssignButtonIdList().stream().map(Long::parseLong).collect(Collectors.toList());
+        Set<SysRoleMenuPo> beforeSysRoleMenuPoSet = UCollection.optimizeInitialCapacitySet(beforeAssignButtonIdList.size());
+        for (Long beforeAssignButtonId : beforeAssignButtonIdList) {
+            SysRoleMenuPo sysRoleMenuPo = new SysRoleMenuPo(new SysRoleMenuPk(beforeAssignButtonId, roleId));
+            beforeSysRoleMenuPoSet.add(sysRoleMenuPo);
+        }
         List<Long> assignButtonIdList = assignButtonDto.getAssignButtonIdList().stream().map(Long::parseLong).collect(Collectors.toList());
-        SysRolePo sysRolePo = sysRoleRepository.findById(roleId)
-                .orElseThrow(() -> new ServiceException(RoleModule.ROLE_MANAGEMENT, "role.query.failed", roleId));
         Set<SysRoleMenuPo> afterSysRoleMenuPoSet = UCollection.optimizeInitialCapacitySet(assignButtonIdList.size());
         for (Long assignButtonId : assignButtonIdList) {
             SysRoleMenuPo sysRoleMenuPo = new SysRoleMenuPo(new SysRoleMenuPk(assignButtonId, roleId));
             afterSysRoleMenuPoSet.add(sysRoleMenuPo);
         }
-        List<Long> removeButtonIdList = sysRoleMapper.findListButtonIdByRoleId(roleId);
-        sysRoleRepository.removeRelationByRoleId(roleId, removeButtonIdList);
-        // 设置分配后的角色-菜单关联对象要在删除之后，否则会触发级联操作，导致SQL执行顺序变为insert->update->delete影响操作结果
-        sysRolePo.setSysRoleMenuPoSet(afterSysRoleMenuPoSet);
-        sysRoleRepository.save(sysRolePo);
-        SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-            SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
-            assignButtonLogBean.setModule(UserModule.USER_MANAGEMENT);
-            assignButtonLogBean.setSubModule(MenuModule.SubModule.ASSIGN_BUTTON);
-            assignButtonLogBean.setType(MenuModule.SubModule.ASSIGN_BUTTON);
-            assignButtonLogBean.setResult(FlagConstant.SUCCESS);
-            assignButtonLogBean.setContextOld("分配前菜单ID：" + JSONObject.toJSONString(beforeAssignButtonIdList));
-            assignButtonLogBean.setContext("分配后菜单ID：" + JSONObject.toJSONString(assignButtonIdList));
-            assignButtonLogBean.setRemark(UMessage.message("assigned_menu_permissions_success"));
-            return assignButtonLogBean;
+        transactionTemplate.execute(status -> {
+            SysSensitiveLogBean sysSensitiveLogBean = null;
+            try {
+                if (UEmpty.isNotEmpty(beforeSysRoleMenuPoSet)) {
+                    sysRoleMenuRepository.deleteAllInBatch(beforeSysRoleMenuPoSet);
+                }
+                if (UEmpty.isNotEmpty(afterSysRoleMenuPoSet)) {
+                    sysRoleMenuRepository.saveAll(afterSysRoleMenuPoSet);
+                }
+                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                    SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
+                    assignButtonLogBean.setModule(MenuModule.MENU_MANAGEMENT);
+                    assignButtonLogBean.setSubModule(MenuModule.SubModule.ASSIGN_BUTTON);
+                    assignButtonLogBean.setType(MenuModule.SubModule.ASSIGN_BUTTON);
+                    assignButtonLogBean.setResult(FlagConstant.SUCCESS);
+                    assignButtonLogBean.setContextOld("分配前菜单ID：" + JSONObject.toJSONString(beforeAssignButtonIdList));
+                    assignButtonLogBean.setContext("分配后菜单ID：" + JSONObject.toJSONString(assignButtonIdList));
+                    assignButtonLogBean.setRemark(UMessage.message("assigned_menu_permissions_success"));
+                    return assignButtonLogBean;
+                });
+            } catch (Exception e) {
+                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                    SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
+                    assignButtonLogBean.setModule(MenuModule.MENU_MANAGEMENT);
+                    assignButtonLogBean.setSubModule(MenuModule.SubModule.ASSIGN_BUTTON);
+                    assignButtonLogBean.setType(MenuModule.SubModule.ASSIGN_BUTTON);
+                    assignButtonLogBean.setResult(FlagConstant.FAILED);
+                    assignButtonLogBean.setContextOld("分配前菜单ID：" + JSONObject.toJSONString(beforeAssignButtonIdList));
+                    assignButtonLogBean.setRemark(UMessage.message("assigned_menu_permissions_failed"));
+                    return assignButtonLogBean;
+                });
+                throw e;
+            } finally {
+                if (UEmpty.isNotNull(sysSensitiveLogBean)) {
+                    USpring.context().publishEvent(sysSensitiveLogBean);
+                }
+            }
+            return status;
         });
-        USpring.context().publishEvent(sysSensitiveLogBean);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.MenuPermission;
@@ -12,10 +13,12 @@ import com.freesia.entity.FindAllMenuTreeEntity;
 import com.freesia.entity.FindMenuListByUserIdEntity;
 import com.freesia.entity.FindTreeMenuSelectEntity;
 import com.freesia.exception.ServiceException;
+import com.freesia.exception.UserException;
 import com.freesia.model.LoginUserModel;
 import com.freesia.service.SysMenuService;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.util.UMessage;
 import com.freesia.util.USecurity;
 import com.freesia.vo.AssignButtonVo;
 import com.freesia.vo.R;
@@ -29,6 +32,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,7 +75,7 @@ public class SysMenuController {
     @Operation(summary = "查询所有菜单下拉树")
     @GetMapping(value = "findAllMenuTree")
     public R<List<FindAllMenuTreeEntity>> findAllMenuTree() {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
         List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuService.findAllMenuTree(loginUser.getUserId());
         return R.ok(findAllMenuTreeEntityList);
     }

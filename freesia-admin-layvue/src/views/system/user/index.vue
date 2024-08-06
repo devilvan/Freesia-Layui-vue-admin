@@ -507,7 +507,7 @@ function toSubmit() {
 }
 
 function toCancel() {
-  console.logRecord("do toCancel")
+  console.log("do toCancel")
   updateFileList.value = []
   addModalShowFlag.value = false
 }

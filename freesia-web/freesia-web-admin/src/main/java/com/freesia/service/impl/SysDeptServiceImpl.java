@@ -26,10 +26,12 @@ import com.freesia.po.SysRolePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysDeptRepository;
+import com.freesia.repository.SysRoleDeptRepository;
 import com.freesia.service.SysDeptService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
@@ -45,8 +47,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> implements SysDeptService {
+    private final TransactionTemplate transactionTemplate;
     private final SysDeptRepository sysDeptRepository;
     private final SysDeptMapper sysDeptMapper;
+    private final SysRoleDeptRepository sysRoleDeptRepository;
 
     @Override
     public SysDeptDto saveUpdate(SysDeptDto sysDeptDto) {
@@ -153,43 +157,57 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists"));
         // 获取并修改分配后的角色
         Set<SysRolePo> sysRolePoSet = sysDeptPo.getSysRolePoSet();
-        List<Long> roleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toList());
+        List<Long> beforeRoleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toList());
+        Set<SysRoleDeptPo> beforeSysRoleDeptPoSet = UCollection.optimizeInitialCapacitySet(beforeRoleIdList.size());
+        for (Long roleId : beforeRoleIdList) {
+            SysRoleDeptPo sysRoleDeptPo = new SysRoleDeptPo();
+            sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPk(deptId, roleId));
+            beforeSysRoleDeptPoSet.add(sysRoleDeptPo);
+        }
         Set<SysRoleDeptPo> afterSysRoleDeptPoSet = UCollection.optimizeInitialCapacitySet(afterRoleIdSet.size());
         for (Long roleId : afterRoleIdSet) {
             SysRoleDeptPo sysRoleDeptPo = new SysRoleDeptPo();
             sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPk(deptId, roleId));
             afterSysRoleDeptPoSet.add(sysRoleDeptPo);
         }
-        SysSensitiveLogBean sysSensitiveLogBean;
-        try {
-            sysDeptRepository.removeRelationByDeptId(deptId);
-            // 设置分配后的部门-角色关联对象要在删除之后，否则会触发级联操作，导致SQL执行顺序变为insert->update->delete影响操作结果
-            sysDeptPo.setSysRoleDeptPoSet(afterSysRoleDeptPoSet);
-            sysDeptRepository.save(sysDeptPo);
-            sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                sensitiveLog.setModule(DeptModule.DEPT_MANAGEMENT);
-                sensitiveLog.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
-                sensitiveLog.setType(DeptModule.SubModule.ASSIGN_ROLE);
-                sensitiveLog.setResult(FlagConstant.SUCCESS);
-                sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(roleIdList));
-                sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
-                sensitiveLog.setRemark(UMessage.message("assign_role_permissions_success"));
-                return sensitiveLog;
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                sensitiveLog.setModule(DeptModule.DEPT_MANAGEMENT);
-                sensitiveLog.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
-                sensitiveLog.setType(DeptModule.SubModule.ASSIGN_ROLE);
-                sensitiveLog.setResult(FlagConstant.FAILED);
-                sensitiveLog.setRemark(UMessage.message("assign_role_permissions_failed"));
-                return sensitiveLog;
-            });
-        }
-        USpring.context().publishEvent(sysSensitiveLogBean);
+        transactionTemplate.execute(status -> {
+            SysSensitiveLogBean sysSensitiveLogBean = null;
+            try {
+                if (UEmpty.isNotEmpty(beforeSysRoleDeptPoSet)) {
+                    sysRoleDeptRepository.deleteAllInBatch(beforeSysRoleDeptPoSet);
+                }
+                if (UEmpty.isNotEmpty(afterSysRoleDeptPoSet)) {
+                    sysRoleDeptRepository.saveAll(afterSysRoleDeptPoSet);
+                }
+                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                    sensitiveLog.setModule(DeptModule.DEPT_MANAGEMENT);
+                    sensitiveLog.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
+                    sensitiveLog.setType(DeptModule.SubModule.ASSIGN_ROLE);
+                    sensitiveLog.setResult(FlagConstant.SUCCESS);
+                    sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(beforeRoleIdList));
+                    sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
+                    sensitiveLog.setRemark(UMessage.message("assign_role_permissions_success"));
+                    return sensitiveLog;
+                });
+            } catch (Exception e) {
+                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                    sensitiveLog.setModule(DeptModule.DEPT_MANAGEMENT);
+                    sensitiveLog.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
+                    sensitiveLog.setType(DeptModule.SubModule.ASSIGN_ROLE);
+                    sensitiveLog.setResult(FlagConstant.FAILED);
+                    sensitiveLog.setRemark(UMessage.message("assign_role_permissions_failed"));
+                    return sensitiveLog;
+                });
+                throw e;
+            } finally {
+                if (UEmpty.isNotNull(sysSensitiveLogBean)) {
+                    USpring.context().publishEvent(sysSensitiveLogBean);
+                }
+            }
+            return status;
+        });
     }
 
     @Override

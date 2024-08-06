@@ -32,22 +32,6 @@ public interface SysRoleRepository extends JpaRepository<SysRolePo, Long> {
     void cancelAssignUser(@Param("roleId") Long roleId, @Param("userIdList") List<Long> userIdList);
 
     /**
-     * 根据角色ID，删除角色-菜单关联表中已经分配的按钮
-     *
-     * @param roleId             角色ID
-     * @param removeButtonIdList 待删除的已分配的按钮ID
-     */
-    @Modifying
-    @Query(value = """
-            DELETE FROM SysRoleMenuPo SRM
-            WHERE 1=1
-            AND SRM.sysRoleMenuPk.roleId = :roleId
-            AND SRM.sysRoleMenuPk.menuId IN (:removeButtonIdList)
-            """)
-    @Transactional(rollbackFor = Exception.class)
-    void removeRelationByRoleId(@Param("roleId") Long roleId, @Param("removeButtonIdList") List<Long> removeButtonIdList);
-
-    /**
      * 根据角色ID删除 部门-角色信息表中的数据
      *
      * @param roleId 用户ID

@@ -627,7 +627,7 @@ function toAdd() {
 }
 
 function toEdit() {
-  console.logRecord(selectedKey.value)
+  console.log(selectedKey.value)
   if (selectedKey.value) {
     modalTitle.value = '修改字典'
     sysDictKeyList.value.find(sysDictKey => {

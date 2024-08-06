@@ -9,9 +9,8 @@ const $SRC_ASSETS = app.config.globalProperties.$SRC_ASSETS;
  */
 export function parseImgPath(imgPath: string) {
     if (!imgPath || imgPath == '') {
-        return ;
-    }
-    else if (imgPath.startsWith("http") || imgPath.startsWith("https")) {
+        return;
+    } else if (imgPath.startsWith("http") || imgPath.startsWith("https")) {
         return imgPath;
     } else if (imgPath.startsWith("avatar")) {
         return $SRC_ASSETS + imgPath;

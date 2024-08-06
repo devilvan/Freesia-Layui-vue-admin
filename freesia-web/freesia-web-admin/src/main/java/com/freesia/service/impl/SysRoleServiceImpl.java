@@ -193,43 +193,57 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
         SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseThrow(() -> new RoleException("role.not.exists"));
         // 获取并修改分配后的角色
         Set<SysDeptPo> sysDeptPoSet = sysRolePo.getSysDeptPoSet();
-        List<Long> deptIdList = sysDeptPoSet.stream().map(SysDeptPo::getId).collect(Collectors.toList());
+        List<Long> beforeDeptIdList = sysDeptPoSet.stream().map(SysDeptPo::getId).collect(Collectors.toList());
+        Set<SysRoleDeptPo> beforeSysRoleDeptPoSet = UCollection.optimizeInitialCapacitySet(beforeDeptIdList.size());
+        for (Long beforeDeptId : beforeDeptIdList) {
+            SysRoleDeptPo sysRoleDeptPo = new SysRoleDeptPo();
+            sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPk(beforeDeptId, roleId));
+            beforeSysRoleDeptPoSet.add(sysRoleDeptPo);
+        }
         Set<SysRoleDeptPo> afterSysRoleDeptPoSet = UCollection.optimizeInitialCapacitySet(deptIdSet.size());
         for (Long deptId : deptIdSet) {
             SysRoleDeptPo sysRoleDeptPo = new SysRoleDeptPo();
             sysRoleDeptPo.setSysRoleDeptPk(new SysRoleDeptPk(deptId, roleId));
             afterSysRoleDeptPoSet.add(sysRoleDeptPo);
         }
-        SysSensitiveLogBean sysSensitiveLogBean;
-        try {
-            sysRoleRepository.removeDeptRelationByRoleId(roleId);
-            // 设置分配后的部门-角色关联对象要在删除之后，否则会触发级联操作，导致SQL执行顺序变为insert->update->delete影响操作结果
-            sysRolePo.setSysRoleDeptPoSet(afterSysRoleDeptPoSet);
-            sysRoleRepository.save(sysRolePo);
-            sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
-                sensitiveLog.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
-                sensitiveLog.setType(RoleModule.SubModule.ASSIGN_DEPT);
-                sensitiveLog.setResult(FlagConstant.SUCCESS);
-                sensitiveLog.setContextOld("分配前部门ID：" + JSONObject.toJSONString(deptIdList));
-                sensitiveLog.setContext("分配后部门ID：" + JSONObject.toJSONString(deptIdSet));
-                sensitiveLog.setRemark(UMessage.message("assign_dept_permissions_success"));
-                return sensitiveLog;
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
-                sensitiveLog.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
-                sensitiveLog.setType(RoleModule.SubModule.ASSIGN_DEPT);
-                sensitiveLog.setResult(FlagConstant.FAILED);
-                sensitiveLog.setRemark(UMessage.message("assign_dept_permissions_failed"));
-                return sensitiveLog;
-            });
-        }
-        USpring.context().publishEvent(sysSensitiveLogBean);
+        transactionTemplate.execute(status -> {
+            SysSensitiveLogBean sysSensitiveLogBean = null;
+            try {
+                if (UEmpty.isNotEmpty(beforeSysRoleDeptPoSet)) {
+                    sysRoleDeptRepository.deleteAllInBatch(beforeSysRoleDeptPoSet);
+                }
+                if (UEmpty.isNotEmpty(afterSysRoleDeptPoSet)) {
+                    sysRoleDeptRepository.saveAll(afterSysRoleDeptPoSet);
+                }
+                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                    sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
+                    sensitiveLog.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
+                    sensitiveLog.setType(RoleModule.SubModule.ASSIGN_DEPT);
+                    sensitiveLog.setResult(FlagConstant.SUCCESS);
+                    sensitiveLog.setContextOld("分配前部门ID：" + JSONObject.toJSONString(beforeDeptIdList));
+                    sensitiveLog.setContext("分配后部门ID：" + JSONObject.toJSONString(deptIdSet));
+                    sensitiveLog.setRemark(UMessage.message("assign_dept_permissions_success"));
+                    return sensitiveLog;
+                });
+            } catch (Exception e) {
+                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                    sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
+                    sensitiveLog.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
+                    sensitiveLog.setType(RoleModule.SubModule.ASSIGN_DEPT);
+                    sensitiveLog.setResult(FlagConstant.FAILED);
+                    sensitiveLog.setRemark(UMessage.message("assign_dept_permissions_failed"));
+                    return sensitiveLog;
+                });
+                throw e;
+            } finally {
+                if (UEmpty.isNotNull(sysSensitiveLogBean)) {
+                    USpring.context().publishEvent(sysSensitiveLogBean);
+                }
+            }
+            return status;
+        });
     }
 
     @Override
