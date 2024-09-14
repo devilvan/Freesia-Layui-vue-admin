@@ -152,7 +152,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
     public void assignRole(Long deptId, Set<Long> afterRoleIdSet) {
         SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists"));
         // 获取并修改分配后的角色

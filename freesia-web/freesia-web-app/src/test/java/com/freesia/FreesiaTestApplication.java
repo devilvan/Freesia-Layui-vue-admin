@@ -28,8 +28,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @SpringBootTest
@@ -41,6 +45,19 @@ public class FreesiaTestApplication {
     private GiteeProperties giteeProperties;
     @Resource
     private SysOssConfigRepository sysOssConfigRepository;
+
+
+    @Test
+    public void testMappingOssConfig() {
+        List<SysOssConfigPo> sysOssConfigPoList = sysOssConfigRepository.findAll();
+        Map<String, String> pmCodeAndNameMap = sysOssConfigPoList.stream().collect(
+                Collectors.groupingBy(
+                        SysOssConfigPo::getConfigKey,
+                        Collectors.mapping(SysOssConfigPo::getBucketName, Collectors.joining())));
+        pmCodeAndNameMap.forEach((key, value) -> {
+            System.out.println("key: " + key + ", value: " + value);
+        });
+    }
 
     @SaIgnore
     @Operation(summary = "testDecrypt",

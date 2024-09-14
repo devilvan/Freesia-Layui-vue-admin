@@ -82,10 +82,7 @@ public class USpringValidation {
     private static String getFieldSchema(Class<?> dataType, String property) {
         String field = ReflectUtil.getField(dataType, property)
                 .getAnnotation(Schema.class).description();
-        if (UEmpty.isEmpty(field)) {
-            field = property;
-        }
-        return field;
+        return UEmpty.isNotEmpty(field) ? field : property;
     }
 
     /**

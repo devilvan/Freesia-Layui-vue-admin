@@ -40,8 +40,7 @@ public class SysRoleController {
     @GetMapping("findPageSysRoleList")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_ROLE_INDEX})
     public TableResult<FindPageSysRoleListEntity> findPageSysRoleList(SysRoleVo sysRoleVo, PageQuery pageQuery) {
-        SysRoleDto sysRoleDto = new SysRoleDto();
-        UCopy.fullCopy(sysRoleVo, sysRoleDto);
+        SysRoleDto sysRoleDto = UCopy.copyVo2Dto(sysRoleVo, SysRoleDto.class);
         return sysRoleService.findPageSysRoleList(sysRoleDto, pageQuery);
     }
 

@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
+import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.UserModule;
@@ -22,6 +23,7 @@ import com.freesia.exception.UserException;
 import com.freesia.helper.DataBaseHelper;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.mapper.SysUserMapper;
+import com.freesia.model.LoginUserModel;
 import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -34,7 +36,6 @@ import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Collections;
@@ -188,7 +189,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void assignRole(Long userId, Set<Long> afterRoleIdSet) {
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.not.exists"));
         // 获取并修改分配后的角色

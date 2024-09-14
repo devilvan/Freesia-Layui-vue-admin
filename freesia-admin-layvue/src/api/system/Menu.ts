@@ -14,6 +14,11 @@ export function findAllMenuTree() {
     return Http.get("/api/sysMenuController/findAllMenuTree");
 }
 
+export function findAllMenuTreeByRoleId(roleId: string) {
+    let params = {roleId: roleId}
+    return Http.get("/api/sysMenuController/findAllMenuTree", params);
+}
+
 export function findMenuListByUserId() {
     return Http.get("/api/sysMenuController/findMenuListByUserId")
 }

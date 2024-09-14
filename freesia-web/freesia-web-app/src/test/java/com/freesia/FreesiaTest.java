@@ -21,9 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +34,19 @@ import java.util.regex.Pattern;
 @Slf4j
 public class FreesiaTest {
     private static final String ENCRYPT_KEY = "Y29tLnNpbm9zZXJ2aWNlcy5vcmc=";
+
+    @Test
+    public void testNumberReg() {
+        Pattern p = Pattern.compile("\\d+");
+        Matcher m = p.matcher("25T以上");
+        List<String> numbers = new ArrayList<>();
+        while (m.find()) {
+            numbers.add(m.group());
+        }
+        for (String number : numbers) {
+            System.out.println(number);
+        }
+    }
 
     @Test
     public void testDuration() {

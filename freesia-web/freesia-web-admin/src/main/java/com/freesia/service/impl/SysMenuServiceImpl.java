@@ -31,7 +31,6 @@ import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.validation.Valid;
@@ -221,15 +220,28 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
 
     @Override
     public List<FindAllMenuTreeEntity> findAllMenuTree(Long userId) {
-        List<SysMenuPo> sysMenuPoList;
         QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
                 .eq("M.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("M.STATUS", FlagConstant.ENABLED)
                 .in("M.MENU_TYPE", MenuType.DIR.getType(), MenuType.MENU.getType())
                 .orderByAsc("M.PARENT_ID")
                 .orderByAsc("M.ORDER_NUM");
-        sysMenuPoList = AdminConstant.ADMIN_ID == userId ? sysMenuMapper.findAllMenuTree(wrapper) :
+        List<SysMenuPo> sysMenuPoList = AdminConstant.ADMIN_ID == userId ? sysMenuMapper.findAllMenuTree(wrapper) :
                 sysMenuMapper.findAllMenuTree(wrapper.eq(ObjectUtil.isNotNull(userId), "SUR.USER_ID", userId));
+        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyList(sysMenuPoList, FindAllMenuTreeEntity.class);
+        return UTree.buildTree(findAllMenuTreeEntityList);
+    }
+
+    @Override
+    public List<FindAllMenuTreeEntity> findAllMenuTree(Long roleId, Long userId) {
+        QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
+                .eq("M.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq("M.STATUS", FlagConstant.ENABLED)
+                .eq(ObjectUtil.isNotNull(roleId), "SUR.ROLE_ID", roleId)
+                .in("M.MENU_TYPE", MenuType.DIR.getType(), MenuType.MENU.getType())
+                .orderByAsc("M.PARENT_ID")
+                .orderByAsc("M.ORDER_NUM");
+        List<SysMenuPo> sysMenuPoList = sysMenuMapper.findAllMenuTree(wrapper);
         List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyList(sysMenuPoList, FindAllMenuTreeEntity.class);
         return UTree.buildTree(findAllMenuTreeEntityList);
     }
@@ -237,9 +249,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     @Override
     public List<Long> findSelectedMenuListByRoleId(Long roleId) {
         SysRolePo sysRolePo = sysRoleMapper.selectById(roleId);
+        // 20240913 由于角色管理-分配菜单权限 保存时包含基本数据与菜单数据，如果只保存基本数据会导致菜单数据中的按钮数据部分被删除
         if (AdminConstant.ADMIN.equals(sysRolePo.getRoleKey())) {
             return sysMenuMapper.findAdminMenuList();
         }
+        // 20240913 由于角色管理-分配菜单权限 保存时包含基本数据与菜单数据，如果只保存基本数据会导致菜单数据中的按钮数据部分被删除
         return sysMenuMapper.findSelectedMenuListByRoleId(roleId);
     }
 
@@ -360,7 +374,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void assignButton(AssignButtonDto assignButtonDto) {
         Long roleId = Long.parseLong(assignButtonDto.getRoleId());
         List<Long> beforeAssignButtonIdList = assignButtonDto.getBeforeAssignButtonIdList().stream().map(Long::parseLong).collect(Collectors.toList());

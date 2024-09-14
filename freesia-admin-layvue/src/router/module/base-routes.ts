@@ -39,7 +39,7 @@ export const dynamicRoutes = [
         path: '/system/user',
         component: BaseLayout,
         hidden: true,
-        permissions: [MenuPermission.SYSTEM_USER_ASSIGN_DEPT],
+        permissions: [MenuPermission.SYSTEM_USER_ASSIGN_ROLE],
         children: [
             {
                 path: 'assignRole/:userId(\\d+)',

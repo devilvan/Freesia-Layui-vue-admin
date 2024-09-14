@@ -48,6 +48,9 @@ export const useUserStore = defineStore({
         },
         async getRouters() {
             const {data, code} = await getRouters()
+            if (!data || !data.data || data.data.length === 0) {
+                router.push(loginPath).then(r => r)
+            }
             if (code === 200) {
                 this.sidebarRoutes = filterAsyncRouter(data)
                 let dynamic = filterDynamicRoutes(dynamicRoutes)
@@ -69,8 +72,21 @@ export const useUserStore = defineStore({
             this.roles = []
             this.permissions = []
             this.menus = []
+            this.userInfo = {
+                id: '',
+                deptId: '',
+                userName: '',
+                nickName: '',
+                userType: '',
+                email: '',
+                telNo: '',
+                gender: '',
+                avatar: '',
+            }
+            this.sysTenantDtoList = [{}]
             useTabStore().tabs = []
             useTabStore().tabsCache = []
+            useTabStore().currentPath = ''
             await router.replace(loginPath)
         },
         async reloadSysTenant() {
@@ -85,6 +101,9 @@ export const useUserStore = defineStore({
         paths: ['token', 'userInfo', 'permissions', 'roles', 'sysTenantDtoList'],
     }
 })
+
+function clearUserStore() {}
+
 
 function filterAsyncRouter(asyncRouterMap: any, lastRouter = false, type = false) {
     return asyncRouterMap.filter((route: any) => {

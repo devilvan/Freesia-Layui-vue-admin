@@ -55,8 +55,7 @@ public class SysDeptController {
     @Operation(summary = "获取部门下拉树")
     @GetMapping("findDeptTreeList")
     public R<List<FindPageSysDeptListEntity>> findDeptTreeList(SysDeptVo sysDeptVo) {
-        SysDeptDto sysDeptDto = new SysDeptDto();
-        UCopy.fullCopy(sysDeptVo, sysDeptDto);
+        SysDeptDto sysDeptDto = UCopy.copyVo2Dto(sysDeptVo, SysDeptDto.class);;
         sysDeptDto.setTenantId(USecurity.getTenantId());
         List<FindPageSysDeptListEntity> deptTreeList = sysDeptService.findDeptTreeList(sysDeptDto);
         return R.ok(deptTreeList);

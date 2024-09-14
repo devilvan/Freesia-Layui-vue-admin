@@ -12,6 +12,7 @@ import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.util.UExcel;
 import com.freesia.exception.OssException;
 import com.freesia.exception.UserException;
+import com.freesia.model.LoginUserModel;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysUserService;
@@ -50,8 +51,7 @@ public class SysUserController {
     @GetMapping("findPageSysUserList")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserVo sysUserVo, PageQuery pageQuery) {
-        SysUserDto sysUserDto = new SysUserDto();
-        UCopy.fullCopy(sysUserVo, sysUserDto);
+        SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
         return sysUserService.findPageSysUserList(sysUserDto, pageQuery);
     }
 

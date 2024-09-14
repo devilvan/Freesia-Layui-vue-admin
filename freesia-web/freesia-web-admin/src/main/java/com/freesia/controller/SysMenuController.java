@@ -80,6 +80,15 @@ public class SysMenuController {
         return R.ok(findAllMenuTreeEntityList);
     }
 
+    @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_INDEX)
+    @Operation(summary = "根据角色ID查询所有菜单下拉树")
+    @GetMapping(value = "findAllMenuTreeByRoleId")
+    public R<List<FindAllMenuTreeEntity>> findAllMenuTree(@RequestParam Long roleId) {
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuService.findAllMenuTree(roleId, loginUser.getUserId());
+        return R.ok(findAllMenuTreeEntityList);
+    }
+
     @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_MENU_EDIT)
     @Operation(summary = "根据角色ID查询菜单列表")
     @GetMapping(value = "findSelectedMenuListByRoleId")
@@ -93,8 +102,7 @@ public class SysMenuController {
     @Operation(summary = "根据用户ID查询菜单列表")
     @GetMapping(value = "findMenuListByUserId")
     public R<List<FindMenuListByUserIdEntity>> findMenuListByUserId(SysMenuVo sysMenuVo) {
-        SysMenuDto sysMenuDto = new SysMenuDto();
-        UCopy.fullCopy(sysMenuVo, sysMenuDto);
+        SysMenuDto sysMenuDto = UCopy.copyVo2Dto(sysMenuVo, SysMenuDto.class);
         LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
         List<FindMenuListByUserIdEntity> menuList = sysMenuService.findMenuListByUserId(sysMenuDto, loginUser.getUserId());
         return R.ok(menuList);

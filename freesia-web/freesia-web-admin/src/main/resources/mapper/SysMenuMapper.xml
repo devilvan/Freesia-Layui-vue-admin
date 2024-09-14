@@ -61,7 +61,7 @@
         WHERE 1 = 1
           AND M.LOGIC_DEL = '0'
           AND M.STATUS = '1'
-          AND M.MENU_TYPE IN ('D', 'M')
+          AND M.MENU_TYPE IN ('D', 'M', 'B')
           AND RM.ROLE_ID = #{roleId}
     </select>
     <select id="findAdminMenuList" resultType="java.lang.Long">
@@ -71,7 +71,7 @@
         WHERE 1 = 1
           AND M.LOGIC_DEL = '0'
           AND M.STATUS = '1'
-          AND M.MENU_TYPE IN ('D', 'M')
+          AND M.MENU_TYPE IN ('D', 'M', 'B')
     </select>
     <select id="findMenuListByUserId" resultType="com.freesia.entity.FindMenuListByUserIdEntity">
         SELECT DISTINCT M.ID,

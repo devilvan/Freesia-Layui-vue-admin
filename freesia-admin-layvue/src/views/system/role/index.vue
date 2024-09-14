@@ -300,7 +300,7 @@
                   class="layTreeContainer"
                   :tail-node-icon="true"
                   :data="menuTree"
-                  :showCheckbox="menuTreeShowCheckbox2"
+                  :showCheckbox="menuTreeShowCheckbox"
                   v-model:checkedKeys="saveRoleMenuPrivilegeModel.treeSelectedIdList"
               >
                 <template #title="{ data }">
@@ -333,7 +333,6 @@
         :data="deptTreeSelect"
         :default-expand-all="true"
         :showCheckbox="true"
-        :checkStrictly="true"
         v-model:checkedKeys="assignDeptVo.deptIdList"
         :onlyIconControl="true"
     >
@@ -428,7 +427,7 @@ const saveRoleMenuPrivilegeFormRef = ref()
 const dataSourceTableRef = ref()
 const visible11 = ref(false)
 const saveRoleMenuPrivilegeVisible = ref(false)
-const menuTreeShowCheckbox2 = ref(true)
+const menuTreeShowCheckbox = ref(true)
 const menuTree = ref<Array<FindAllMenuTreeEntity>>()
 const selectRowRoleId = ref<string>("");
 const title = ref('新增')

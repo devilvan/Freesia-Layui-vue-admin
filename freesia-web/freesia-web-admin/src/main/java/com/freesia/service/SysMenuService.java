@@ -77,6 +77,15 @@ public interface SysMenuService {
     List<FindAllMenuTreeEntity> findAllMenuTree(Long userId);
 
     /**
+     * 查询所有菜单下拉树
+     *
+     * @param roleId 角色ID
+     * @param userId 用户ID
+     * @return 菜单下拉树
+     */
+    List<FindAllMenuTreeEntity> findAllMenuTree(Long roleId, Long userId);
+
+    /**
      * 根据角色ID查询菜单列表
      *
      * @param roleId 角色ID

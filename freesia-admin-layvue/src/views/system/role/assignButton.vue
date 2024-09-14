@@ -231,7 +231,7 @@ nextTick(() => {
 
 /* FUNCTION*/
 function loadData() {
-  findAllMenuTree().then((res: any) => {
+  findAllMenuTree(roleId.value).then((res: any) => {
     if (res.code === 200) {
       menuTree.value = res.data;
       recursionTree(res.data);

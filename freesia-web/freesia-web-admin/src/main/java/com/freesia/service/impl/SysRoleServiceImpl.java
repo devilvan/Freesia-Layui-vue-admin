@@ -18,7 +18,9 @@ import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.exception.RoleException;
+import com.freesia.exception.UserException;
 import com.freesia.mapper.SysRoleMapper;
+import com.freesia.model.LoginUserModel;
 import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -27,7 +29,6 @@ import com.freesia.service.SysRoleService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.HashSet;
@@ -46,6 +47,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     private final TransactionTemplate transactionTemplate;
     private final SysRoleRepository sysRoleRepository;
     private final SysMenuRepository sysMenuRepository;
+    private final SysUserRepository sysUserRepository;
     private final SysRoleMapper sysRoleMapper;
     private final SysUserRoleRepository sysUserRoleRepository;
     private final SysRoleMenuRepository sysRoleMenuRepository;
@@ -95,11 +97,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     @Override
     public void saveRoleMenuPrivilege(List<Long> menuIdList, Long roleId, String dataScope) {
         SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseGet(SysRolePo::new);
-        Set<SysMenuPo> oldSysMenuPoSet = sysRolePo.getSysMenuPoSet();
-        List<Long> oldMenuIdList = UStream.toList(oldSysMenuPoSet, SysMenuPo::getId);
         if (AdminConstant.ADMIN.equals(sysRolePo.getRoleKey())) {
             return;
         }
+        Set<SysMenuPo> oldSysMenuPoSet = sysRolePo.getSysMenuPoSet();
+        List<Long> oldMenuIdList = UStream.toList(oldSysMenuPoSet, SysMenuPo::getId);
         List<SysMenuPo> sysMenuPoList = sysMenuRepository.findAllById(menuIdList);
         sysRolePo.setDataScope(dataScope);
         sysRolePo.setSysMenuPoSet(new HashSet<>(sysMenuPoList));
@@ -188,7 +190,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void assignDept(Long roleId, Set<Long> deptIdSet) {
         SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseThrow(() -> new RoleException("role.not.exists"));
         // 获取并修改分配后的角色
