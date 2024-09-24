@@ -73,8 +73,8 @@
           <dict-scan :options="sysDataScope" :value="row.dataScope"/>
         </template>
         <template v-slot:toolbar>
-          <lay-button size="sm" type="primary" @click="toAdd">
-            <lay-icon class="layui-icon-addition" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ADD]"></lay-icon>
+          <lay-button size="sm" type="primary" @click="toAdd" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ADD]">
+            <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
           <lay-button size="sm" @click="toRemove" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_DELETE]">

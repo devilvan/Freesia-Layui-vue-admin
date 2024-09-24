@@ -1,5 +1,6 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.alibaba.fastjson.JSONObject;
@@ -69,7 +70,7 @@ public class SysDictController {
         return R.ok(sysDictValueDtoList);
     }
 
-    @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_INDEX)
+    @SaCheckLogin
     @Operation(summary = "（缓存）查询字典值列表数据")
     @GetMapping(value = "findCacheSysDictValueList")
     public R<List<SysDictValueDto>> findCacheSysDictValueList(@RequestParam String dictKey) {

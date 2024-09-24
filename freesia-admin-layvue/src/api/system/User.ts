@@ -73,3 +73,14 @@ export function findEditUserById(id: string): Promise<String> {
 export function assignDept(assignDeptVo: AssignDeptVo) {
     return Http.post('/api/sysUserController/assignDept', assignDeptVo)
 }
+
+export function avatarUpdate(avatar: string) {
+    let params = {
+        avatar: avatar
+    }
+    return Http.post('/api/sysUserController/avatarUpdate', params, {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+}

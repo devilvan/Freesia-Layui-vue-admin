@@ -176,4 +176,11 @@ public interface SysUserService {
      * @return 形式返回
      */
     Map<String, Object> assignDept(List<Long> userIdList, Long deptId);
+
+    /**
+     * 用户头像更新
+     *
+     * @param avatar 头像地址
+     */
+    void avatarUpdate(String avatar);
 }

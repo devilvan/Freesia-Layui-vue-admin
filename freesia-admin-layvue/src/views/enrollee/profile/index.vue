@@ -116,33 +116,36 @@
         </lay-tab>
       </lay-col>
     </lay-row>
-    <!--    <lay-layer-->
-    <!--        v-model="visibleImport"-->
-    <!--        title="上传图片"-->
-    <!--        :area="['380px', '500px']"-->
-    <!--    >-->
-    <!--      <lay-upload-->
-    <!--          style="margin: 60px"-->
-    <!--          :url="userImportRoute"-->
-    <!--          v-model="uploadFile"-->
-    <!--          field="file"-->
-    <!--          acceptMime="image/jpeg,image/png,image/gif"-->
-    <!--          size="10240"-->
-    <!--          number="1"-->
-    <!--          :auto="false"-->
-    <!--          :drag="true"-->
-    <!--      >-->
-    <!--        <template #preview>-->
-    <!--          {{ uploadFile[0]?.name }}-->
-    <!--        </template>-->
-    <!--      </lay-upload>-->
-    <!--      <div style="width: 100%; text-align: center">-->
-    <!--        只能上传小于10MB的文件-->
-    <!--      </div>-->
-    <!--      <div style="width: 100%;margin-top: 20px; text-align: center">-->
-    <!--        <lay-button size="sm" type="primary" @click="toUpload()">上传</lay-button>-->
-    <!--      </div>-->
-    <!--    </lay-layer>-->
+    <lay-layer
+        v-model="visibleImport"
+        title="上传头像"
+        :area="['380px', '600px']"
+    >
+      <lay-upload
+          class="target"
+          :url="ossPath"
+          v-model="updateFileList"
+          field="file"
+          acceptMime="image/jpeg,image/png,image/gif,image/webp"
+          :auto="false"
+          :drag="true"
+          @on-change="uploadOnChange"
+      >
+        <template #preview>
+          <div style="width: 100%;text-align: center;">
+            只能上传小于10MB的文件
+          </div>
+          <div>
+            <img v-if="previewAvatar" :src="parseImgPath(previewAvatar)"
+                 style="width: 300px; height: 300px; object-fit: cover;"
+                 alt="#">
+          </div>
+        </template>
+      </lay-upload>
+      <div style="width: 100%;margin-top: 40px; text-align: center">
+        <lay-button size="sm" type="primary" @click="toUpload()">上传</lay-button>
+      </div>
+    </lay-layer>
   </lay-container>
 </template>
 
@@ -162,10 +165,12 @@ import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDi
 import {SysUserVo} from "../../../types/system/User";
 import {findDeptById} from "../../../api/system/Dept";
 import {SysDeptEntity} from "../../../types/system/Dept";
-import {findCurrentUserProfile, saveUserInfo, userImport} from "../../../api/system/User";
+import {avatarUpdate, findCurrentUserProfile, saveUserInfo, userImport} from "../../../api/system/User";
 import {refresh} from "../../../util/UCommon";
 import {useCryptStore} from "../../../store/crypt";
 import {parseImgPath} from "../../../util/UImage";
+import {upload, uploadTemp} from "../../../api/system/Oss";
+import {useUserStore} from "../../../store/user";
 
 /* INIT*/
 onMounted(async () => {
@@ -176,6 +181,8 @@ onMounted(async () => {
 /* INIT*/
 
 /* VAR */
+const ossPath = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
+const userStore = useUserStore();
 const $crypt = useCryptStore();
 const sysGenderList = ref<Array<SysDictValueEntity>>();
 const sysGenderListSelect = ref<Array<SysDictValueEntity>>();
@@ -239,9 +246,11 @@ const bindingAccountList = ref([
     color: '#e6162d'
   }
 ])
-const userImportRoute = import.meta.env.VITE_APP_BASE_URL + "/api/sysUserController/userImport"
 const visibleImport = ref(false)
-const uploadFile = ref([])
+const fileList = ref([])
+const uploadAvatar = ref();
+const previewAvatar = ref<any>('')
+const updateFileList = ref([])
 /* VAR */
 
 /* FUNCTION*/
@@ -325,17 +334,37 @@ function toImport() {
 }
 
 function toUpload() {
-  uploadAvatar.value = randomUserAvatar();
-  userImport(fileList.value, uploadAvatar.value).then((res: any) => {
-    if (res.code === 200) {
-      layer.msg(res.msg, {icon: 1})
-      visibleImport.value = !visibleImport.value
-    }
-  })
+  if (updateFileList.value && updateFileList.value.length > 0) {
+    upload(updateFileList.value).then((res: any) => {
+      if (res.code === 200) {
+        let url = res.data[0].url;
+        if (res.data && res.data.length > 0 && url) {
+          avatarUpdate(url).then((avatarUpdateRes: any) => {
+            if (avatarUpdateRes.code === 200) {
+              layer.msg(avatarUpdateRes.msg, {icon: 1})
+              userStore.userInfo.avatar = url
+              currentUserProfileTemplate.value.avatar = url
+            }
+          })
+          visibleImport.value = false
+        }
+      }
+    })
+  }
 }
 
 function resolveImgPath(imgPath: string) {
   return parseImgPath(imgPath)
+}
+
+function uploadOnChange(file: any) {
+  uploadTemp(file).then((res: any) => {
+    if (res.code === 200) {
+      if (res.data) {
+        previewAvatar.value = res.data.url
+      }
+    }
+  })
 }
 
 /* FUNCTION*/
@@ -417,5 +446,14 @@ function resolveImgPath(imgPath: string) {
   width: 45px;
   display: inline-block;
   color: var(--global-primary-color);
+}
+
+.target {
+  width: 100%;
+  height: 440px;
+  display: flex;
+  /*justify-content: center;*/
+  flex-direction: column;
+  align-items: center;
 }
 </style>

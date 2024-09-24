@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
-import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.UserModule;
@@ -38,10 +37,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -289,6 +285,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         }
         sysUserRepository.saveAll(sysUserPoList);
         return Map.of("deptId", deptId, "userIdList", userIdList);
+    }
+
+    @Override
+    public void avatarUpdate(String avatar) {
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        Long userId = loginUser.getUserId();
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
+        sysUserPo.setAvatar(avatar);
+        sysUserRepository.save(sysUserPo);
     }
 
     /**

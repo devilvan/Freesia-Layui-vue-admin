@@ -99,9 +99,8 @@
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
-          <lay-button size="sm" @click="toImport">
-            <lay-icon class="layui-icon-upload-drag"
-                      v-permission="[$MENU_PERMISSION.SYSTEM_USER_IMPORT_USER]"></lay-icon>
+          <lay-button size="sm" @click="toImport" v-permission="[$MENU_PERMISSION.SYSTEM_USER_IMPORT_USER]">
+            <lay-icon class="layui-icon-upload-drag"></lay-icon>
             导入
           </lay-button>
           <lay-button size="sm" type="normal" @click="assignRole"
@@ -272,7 +271,7 @@ import {findTreeAssignDeptSelect} from "../../../api/system/Dept";
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
 const $router = router;
 const $crypt = useCryptStore();
-const userImportRoute = import.meta.env.VITE_APP_BASE_URL + "/api/sysUserController/userImport"
+const userImportRoute = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
@@ -593,6 +592,10 @@ function assign() {
       layer.msg(res.msg, {icon: 3})
     }
   })
+}
+
+function resolveImgPath(imgPath: string) {
+  return parseImgPath(imgPath)
 }
 
 /*FUNCTION*/

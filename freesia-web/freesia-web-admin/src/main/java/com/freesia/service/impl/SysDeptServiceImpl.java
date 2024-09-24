@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +69,18 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
 
     @Override
     public List<FindPageSysDeptListEntity> findListSysDept(SysDeptDto sysDeptDto) {
-        return sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
+        List<FindPageSysDeptListEntity> list = sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
+        // 根据查询出的部门，查找其上级部门
+        List<Long> ancestorIdList = list.stream()
+                .map(FindPageSysDeptListEntity::getAncestors)
+                .flatMap(ancestor -> Arrays.stream(ancestor.split(",")))
+                .map(Long::parseLong)
+                .distinct()
+                .collect(Collectors.toList());
+        List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectBatchIds(ancestorIdList);
+        List<FindPageSysDeptListEntity> sysDeptListEntityList = UCopy.fullCopyList(sysDeptPoList, FindPageSysDeptListEntity.class);
+        list.addAll(sysDeptListEntityList);
+        return list;
     }
 
     @Override

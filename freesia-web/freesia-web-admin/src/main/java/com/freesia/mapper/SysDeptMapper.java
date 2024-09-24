@@ -31,6 +31,7 @@ public interface SysDeptMapper extends BaseMapper<SysDeptPo> {
      */
     @DataPermission({
             @DataColumn(key = "deptName", value = "D.ID"),
+            @DataColumn(key = "userName", value = "U.ID"),
     })
     List<FindPageSysDeptListEntity> findPageSysDeptList(@Param(Constants.WRAPPER) Wrapper<SysDeptPo> wrapper);
 

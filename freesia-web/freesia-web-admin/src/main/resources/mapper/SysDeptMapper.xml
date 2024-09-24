@@ -20,7 +20,7 @@
     </select>
 
     <sql id="sysDept">
-        SELECT D.ID,
+        select D.ID,
                D.CREATOR,
                D.MODIFIER,
                D.LOGIC_DEL,
@@ -35,6 +35,8 @@
                D.DEPT_STATUS,
                D.REMARK,
                D.REC_VER
-        FROM sys_dept D
+        from sys_dept D
+                 left join sys_user U on
+            U.DEPT_ID = D.ID
     </sql>
 </mapper>

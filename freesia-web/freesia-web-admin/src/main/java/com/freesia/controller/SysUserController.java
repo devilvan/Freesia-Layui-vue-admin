@@ -1,5 +1,6 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.annotation.Encrypt;
@@ -12,7 +13,6 @@ import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.util.UExcel;
 import com.freesia.exception.OssException;
 import com.freesia.exception.UserException;
-import com.freesia.model.LoginUserModel;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysUserService;
@@ -138,6 +138,14 @@ public class SysUserController {
             failed.setMsg(UMessage.message("upload.failed"));
             return failed;
         }
+        return R.ok();
+    }
+
+    @SaCheckLogin
+    @Operation(summary = "用户头像更新")
+    @PostMapping(value = "avatarUpdate")
+    public R<Void> avatarUpdate(@RequestParam String avatar) {
+        sysUserService.avatarUpdate(avatar);
         return R.ok();
     }
 
