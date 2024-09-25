@@ -49,7 +49,7 @@ export const useUserStore = defineStore({
         async getRouters() {
             const {data, code} = await getRouters()
             if (!data || !data.data || data.data.length === 0) {
-                router.push(loginPath).then(r => r)
+                // router.push(loginPath).then(r => r)
             }
             if (code === 200) {
                 this.sidebarRoutes = filterAsyncRouter(data)

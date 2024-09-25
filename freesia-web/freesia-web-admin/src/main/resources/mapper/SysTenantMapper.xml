@@ -21,4 +21,28 @@
           AND T.LOGIC_DEL = 0
           AND stu.USER_ID = #{userId}
     </select>
+    <select id="findPageSysTenant" resultType="com.freesia.po.SysTenantPo">
+        SELECT DISTINCT T.ID,
+                        T.CREATOR,
+                        T.CREATE_TIME,
+                        T.MODIFIER,
+                        T.MODIFY_TIME,
+                        T.LOGIC_DEL,
+                        T.REC_VER,
+                        T.BUILD_IN,
+                        T.TENANT_ID,
+                        T.CODE,
+                        T.`NAME`,
+                        T.`TYPE`,
+                        T.STATUS,
+                        T.REMARK,
+                        T.CONTACT_NAME,
+                        T.CONTACT_TEL,
+                        T.CONTACT_EMAIL,
+                        T.ADDRESS,
+                        T.BUSINESS_HOURS_FROM
+        FROM SYS_TENANT T
+                 LEFT JOIN SYS_TENANT_USER STU ON T.ID = STU.TENANT_ID
+            ${ew.getCustomSqlSegment}
+    </select>
 </mapper>

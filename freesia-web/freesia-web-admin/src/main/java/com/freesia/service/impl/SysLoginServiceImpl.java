@@ -5,6 +5,8 @@ import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.extra.expression.engine.spel.SpELEngine;
+import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
 import com.freesia.exception.ServiceException;
@@ -223,7 +225,7 @@ public class SysLoginServiceImpl implements SysLoginService {
         if (ObjectUtil.isNull(sysUserPo)) {
             log.info("登录用户：{} 不存在.", username);
             throw new UserException("user.not.exists", username);
-        } else if (FlagConstant.DISABLED.equals(sysUserPo.getAccountStatus())) {
+        } else if (FlagConstant.DISABLED.equals(sysUserPo.getAccountStatus()) || sysUserPo.getLogicDel()) {
             log.info("登录用户：{} 已被停用.", username);
             throw new UserException("user.blocked", username);
         }
@@ -231,6 +233,7 @@ public class SysLoginServiceImpl implements SysLoginService {
     }
 
     @Override
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.LOGOUT, message = "user.logout")
     public void logout() {
         try {
             LoginUserModel loginUser = USecurity.getLoginUser();
@@ -238,34 +241,6 @@ public class SysLoginServiceImpl implements SysLoginService {
                 return;
             }
             StpUtil.logout();
-            SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
-                String username = ObjectUtil.defaultIfNull(loginUser.getUsername(), AdminConstant.UNKNOWN);
-                String ip = UServlet.getInitiatedRequestIp();
-                SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
-                loginOperLog.setOperatorId(loginUser.getUserId());
-                loginOperLog.setOperatorName(username);
-                loginOperLog.setDeptId(loginUser.getDeptId());
-                loginOperLog.setDeptName(loginUser.getDeptName());
-                loginOperLog.setMethodType(UServlet.getMethod());
-                loginOperLog.setUrl(UServlet.getRequestUri());
-                loginOperLog.setBeOperatedId(loginUser.getUserId());
-                loginOperLog.setBeOperatedName(username);
-                loginOperLog.setIpAddress(ip);
-                loginOperLog.setLocation(URegion.getRealAddressByIp(ip));
-                loginOperLog.setOperateTime(new Date());
-                loginOperLog.setBrowser(UServlet.getBrowser());
-                loginOperLog.setOs(UServlet.getOs());
-                loginOperLog.setModule(UserModule.USER_MANAGEMENT);
-                loginOperLog.setSubModule(UserModule.SubModule.LOGOUT);
-                loginOperLog.setType(UserModule.SubModule.LOGOUT);
-                loginOperLog.setResult(FlagConstant.SUCCESS);
-                loginOperLog.setContextOld(null);
-                loginOperLog.setContext(null);
-                loginOperLog.setSign(username);
-                loginOperLog.setRemark(UMessage.message("user.logout.success"));
-                return loginOperLog;
-            });
-            USpring.context().publishEvent(loginOperLogEvent);
         } catch (NotLoginException ignored) {
         }
     }

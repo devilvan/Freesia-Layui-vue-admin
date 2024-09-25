@@ -69,7 +69,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         LambdaQueryWrapper<SysTenantPo> wrapper = new LambdaQueryWrapper<SysTenantPo>()
                 .eq(SysTenantPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysTenant.getId()), SysTenantPo::getId, sysTenant.getId());
-        Page<SysTenantPo> pagePo = page(pageQuery.build(), wrapper);
+        Page<SysTenantPo> pagePo = sysTenantMapper.findPageSysTenant(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysTenantDto.class));
     }
 

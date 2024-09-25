@@ -72,7 +72,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public SysUserPo findOneByUsername(String username) {
         LambdaQueryWrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(SysUserPo::getUserName, SysUserPo::getAccountStatus);
+        queryWrapper.select(SysUserPo::getUserName, SysUserPo::getAccountStatus, SysUserPo::getLogicDel);
         queryWrapper.eq(SysUserPo::getUserName, username);
         return this.getOne(queryWrapper);
     }
@@ -270,14 +270,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     }
 
     @Override
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.ASSIGN_DEPT, message = "user.delete")
     public List<SysUserDto> deleteUser(List<Long> idList) {
         List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(idList);
         sysUserPoList = sysUserPoList.stream().peek(sysUserPo -> sysUserPo.setLogicDel(true)).collect(Collectors.toList());
+        sysUserRepository.saveAll(sysUserPoList);
         return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
     }
 
     @Override
-    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.ASSIGN_DEPT)
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.ASSIGN_DEPT, message = "user.assignDept")
     public Map<String, Object> assignDept(List<Long> userIdList, Long deptId) {
         List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(userIdList);
         for (SysUserPo sysUserPo : sysUserPoList) {
@@ -288,6 +290,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     }
 
     @Override
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.AVATAR_UPDATE, message = "user.avatarUpdate")
     public void avatarUpdate(String avatar) {
         LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
         Long userId = loginUser.getUserId();

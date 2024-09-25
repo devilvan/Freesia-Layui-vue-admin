@@ -78,7 +78,8 @@ onMounted(() => {
   }
 
   // !$tab.tabsCache.includes(route.name as string)
-  if (route.path && !defaultTabsName.includes(route.name as string)) {
+  // !defaultTabsName.includes(route.name as string)
+  if (route.path && !$tab.tabsCache.includes(route.name as string)) {
     // const path = routes.find(item => item.path === route.path)
     $tab.tabs.push({
       meta: {...route.meta},

@@ -179,7 +179,7 @@
                       <template #default>系统设置</template>
                     </lay-dropdown-menu-item>
                     <lay-line></lay-line>
-                    <lay-dropdown-menu-item @click="logOut">
+                    <lay-dropdown-menu-item @click="logout">
                       <template #default>注销登录</template>
                     </lay-dropdown-menu-item>
                   </lay-dropdown-menu>
@@ -288,10 +288,10 @@ export default {
       }, 500)
     }
 
-    const logOut = () => {
+    const logout = () => {
       const userInfoStore = useUserStore()
       userInfoStore.logout()
-      router.push('/login')
+      router.replace('/login')
     }
 
     const locales = [
@@ -355,7 +355,7 @@ export default {
       changeMainSelectedKey,
       changeVisible,
       refresh,
-      logOut,
+      logout,
       locales,
       toUserInfo,
       toSystemSet,

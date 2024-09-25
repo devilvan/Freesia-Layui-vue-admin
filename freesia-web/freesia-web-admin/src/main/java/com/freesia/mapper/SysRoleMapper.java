@@ -40,6 +40,7 @@ public interface SysRoleMapper extends BaseMapper<SysRolePo> {
      */
     @DataPermission({
             @DataColumn(key = "deptName", value = "D.ID"),
+            @DataColumn(key = "userName", value = "U.ID"),
     })
     Page<FindPageSysRoleListEntity> findPageSysRoleList(@Param("page") Page<SysRolePo> page, @Param(Constants.WRAPPER) Wrapper<SysRolePo> wrapper);
 

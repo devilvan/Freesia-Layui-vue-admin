@@ -5,6 +5,7 @@ import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.util.UEmpty;
+import com.freesia.util.UMessage;
 import com.freesia.util.USecurity;
 import com.freesia.util.USpring;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,10 @@ public class LogRecordAspect {
                 sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
                 sysSensitiveLogBean.setContextOld(request);
                 sysSensitiveLogBean.setContext(response);
-                sysSensitiveLogBean.setRemark(logRecord.message());
+                String message = logRecord.message();
+                if (UEmpty.isNotEmpty(message)) {
+                    sysSensitiveLogBean.setRemark(UMessage.message(message));
+                }
                 return sysSensitiveLogBean;
             });
             USpring.context().publishEvent(logBean);

@@ -250,7 +250,7 @@ import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
 import {FindPageSysUserListEntity, AssignDeptVo, SysUserVo} from "../../../types/system/User";
 import {
-  assignDept,
+  assignDept, deleteUser,
   findEditUserById,
   findPageSysUserList,
   saveUserInfo,
@@ -455,7 +455,16 @@ function toRemove() {
       {
         text: '确定',
         callback: (id: any) => {
-          layer.msg('您已成功删除')
+          deleteUser(selectedKeys.value).then((res: any) => {
+            if (res.code === 200) {
+              layer.msg(res.msg, {icon: 1})
+              change()
+            } else {
+              layer.msg(res.msg, {icon: 3})
+            }
+          }).catch(e => {
+            layer.msg(e.msg, {icon: 2})
+          });
           layer.close(id)
         }
       },
@@ -512,6 +521,7 @@ function toCancel() {
 }
 
 function confirm() {
+  toRemove()
   layer.msg('您已成功删除')
 }
 
@@ -573,7 +583,7 @@ function assignDeptModalChange() {
   }
   assignDeptVo.value.userIdList = selectedKeys.value
   let row = dataSourceTableRef.value.getCheckData()[0];
-  assignDeptVo.value.deptId =  row.deptId;
+  assignDeptVo.value.deptId = row.deptId;
   changeAssignDeptModalFlag.value = !changeAssignDeptModalFlag.value
 }
 

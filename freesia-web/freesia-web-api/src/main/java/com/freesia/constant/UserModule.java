@@ -45,6 +45,10 @@ public class UserModule extends SysModule {
          * 子模块 分配部门
          */
         public static final String ASSIGN_DEPT = "assign_dept";
+        /**
+         * 子模块 用户头像修改
+         */
+        public static final String AVATAR_UPDATE = "avatar_update";
 
     }
 }

@@ -70,6 +70,10 @@ export function findEditUserById(id: string): Promise<String> {
     return Http.get("/api/sysUserController/findEditUserById", params);
 }
 
+export function deleteUser(idList: Array<string>) {
+    return Http.post('/api/sysUserController/deleteUser', idList)
+}
+
 export function assignDept(assignDeptVo: AssignDeptVo) {
     return Http.post('/api/sysUserController/assignDept', assignDeptVo)
 }
