@@ -29,5 +29,13 @@ public class MenuModule extends SysModule{
          * 子模块 分配按钮
          */
         public static final String ASSIGN_BUTTON = "assign_button";
+        /**
+         * 子模块 保存菜单
+         */
+        public static final String SAVE_MENU = "save_menu";
+        /**
+         * 子模块 删除菜单
+         */
+        public static final String DELETE_MENU = "delete_menu";
     }
 }

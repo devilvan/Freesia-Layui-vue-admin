@@ -25,6 +25,8 @@ public class TableResult<T> {
     private int code;
     @Schema(description = "消息内容")
     private String msg;
+    @Schema(description = "成功标识")
+    private boolean success;
 
     public TableResult(List<T> list, long total) {
         this.rows = list;
@@ -37,6 +39,7 @@ public class TableResult<T> {
         rspData.setMsg(UMessage.message("msg.info.query.success"));
         rspData.setRows(page.getRecords());
         rspData.setTotal(page.getTotal());
+        rspData.setSuccess(true);
         return rspData;
     }
 
@@ -46,6 +49,7 @@ public class TableResult<T> {
         rspData.setMsg(UMessage.message("msg.info.query.success"));
         rspData.setRows(list);
         rspData.setTotal(list.size());
+        rspData.setSuccess(true);
         return rspData;
     }
 
@@ -53,6 +57,7 @@ public class TableResult<T> {
         TableResult<T> rspData = new TableResult<>();
         rspData.setCode(ResultCode.SUCCESS_200.getCode());
         rspData.setMsg(UMessage.message("msg.info.query.success"));
+        rspData.setSuccess(true);
         return rspData;
     }
 }

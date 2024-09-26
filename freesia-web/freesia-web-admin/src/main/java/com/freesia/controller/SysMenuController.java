@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.annotation.Idempotent;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.MenuPermission;
 import com.freesia.constant.MenuType;
@@ -56,6 +57,7 @@ public class SysMenuController {
      * @param request {@link List<SysMenuVo>}
      * @return 形式返回
      */
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_EDIT),
             @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_DIR),
@@ -117,6 +119,7 @@ public class SysMenuController {
         return R.ok(menuList);
     }
 
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_EDIT),
             @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_ADD_DIR),
@@ -139,6 +142,7 @@ public class SysMenuController {
         return R.ok(sysMenuDto);
     }
 
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_DELETE)
     @Operation(summary = "删除目录、菜单、按钮、链接")
     @DeleteMapping(value = "deleteMenu")
@@ -165,6 +169,7 @@ public class SysMenuController {
         return R.ok(buttonIdList);
     }
 
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_ASSIGN_BUTTON_EDIT)
     @Operation(summary = "分配按钮")
     @PostMapping(value = "assignButton")

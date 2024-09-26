@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.Idempotent;
 import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
@@ -270,7 +271,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     }
 
     @Override
-    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.ASSIGN_DEPT, message = "user.delete")
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.DELETE_USER, message = "user.delete")
     public List<SysUserDto> deleteUser(List<Long> idList) {
         List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(idList);
         sysUserPoList = sysUserPoList.stream().peek(sysUserPo -> sysUserPo.setLogicDel(true)).collect(Collectors.toList());

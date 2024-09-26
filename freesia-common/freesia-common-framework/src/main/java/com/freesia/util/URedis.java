@@ -20,6 +20,42 @@ public class URedis {
     private static final RedisTemplate<String, Object> REDIS_TEMPLATE = USpring.getBean("freesiaRedisTemplate");
 
     /**
+     * string 互斥set操作
+     *
+     * @param key   键
+     * @param value 值
+     * @param <T>   值类型
+     */
+    public static <T> boolean setNx(String key, T value) {
+        return Convert.toBool(REDIS_TEMPLATE.opsForValue().setIfAbsent(key, value), false);
+    }
+
+    /**
+     * string 互斥set操作
+     *
+     * @param key      键
+     * @param value    值
+     * @param duration 持续时间
+     * @param <T>      值类型
+     */
+    public static <T> boolean setNx(String key, T value, Duration duration) {
+        return Convert.toBool(REDIS_TEMPLATE.opsForValue().setIfAbsent(key, value, duration), false);
+    }
+
+    /**
+     * string 互斥set操作
+     *
+     * @param key     键
+     * @param value   值
+     * @param timeout 持续时间
+     * @param unit    持续时间单位
+     * @param <T>     值类型
+     */
+    public static <T> boolean setNx(String key, T value, long timeout, TimeUnit unit) {
+        return Convert.toBool(REDIS_TEMPLATE.opsForValue().setIfAbsent(key, value, timeout, unit), false);
+    }
+
+    /**
      * 获取存活时间（秒）
      *
      * @param key 键
@@ -112,7 +148,7 @@ public class URedis {
      * @param key     map键
      * @param value   值
      */
-    public static void put(String hashKey, String key, String value) {
+    public static void put(String hashKey, String key, Object value) {
         REDIS_TEMPLATE.opsForHash().put(hashKey, key, value);
     }
 

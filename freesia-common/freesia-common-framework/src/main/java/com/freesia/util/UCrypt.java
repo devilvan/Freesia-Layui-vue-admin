@@ -17,6 +17,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 
@@ -129,6 +131,24 @@ public class UCrypt {
         String encrypt = JSONObject.parseObject(requestBody).getString(Constants.ENCRYPT);
         String decrypt = aesDecrypt(encrypt);
         return JSONObject.parseObject(decrypt, clz);
+    }
+
+    /**
+     * md5加密
+     *
+     * @param obj 入参
+     * @param <T> {@link Object,File,InputStream}
+     * @return 加密密文
+     */
+    public static <T> String md5Encrypt(T obj) {
+        if (obj instanceof String) {
+            return SecureUtil.md5((String) obj);
+        } else if (obj instanceof File) {
+            return SecureUtil.md5((File) obj);
+        } else if (obj instanceof InputStream) {
+            return SecureUtil.md5((InputStream) obj);
+        }
+        return null;
     }
 
     public static void main(String[] args) throws Exception {

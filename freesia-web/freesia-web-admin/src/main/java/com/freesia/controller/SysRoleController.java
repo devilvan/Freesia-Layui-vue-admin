@@ -2,6 +2,7 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.annotation.Idempotent;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysRoleDto;
@@ -44,6 +45,7 @@ public class SysRoleController {
         return sysRoleService.findPageSysRoleList(sysRoleDto, pageQuery);
     }
 
+    @Idempotent
     @Operation(summary = "保存角色对应的菜单信息")
     @PostMapping(value = "saveRoleMenuPrivilege")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_ROLE_MENU_EDIT})
@@ -85,6 +87,7 @@ public class SysRoleController {
         return sysRoleService.findPageAllowAssignUserByRoleId(sysRoleDto, pageQuery);
     }
 
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_ASSIGN_USER_EDIT)
     @Operation(summary = "分配用户")
     @PostMapping(value = "assignUser")
@@ -95,6 +98,7 @@ public class SysRoleController {
         return R.ok();
     }
 
+    @Idempotent
     @Operation(summary = "取消分配用户")
     @PostMapping(value = "cancelAssignUser")
     public R<Void> cancelAssignUser(@RequestBody @Validated AssignUserVo assignUserVo) {
@@ -104,6 +108,7 @@ public class SysRoleController {
         return R.ok();
     }
 
+    @Idempotent
     @Operation(summary = "给角色分配部门")
     @PostMapping("assignDept")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_ROLE_ASSIGN_DEPT})
@@ -122,6 +127,7 @@ public class SysRoleController {
         return R.ok(findDeptRolesByDeptIdEntity);
     }
 
+    @Idempotent
     @Operation(summary = "保存角色")
     @PostMapping("saveRole")
     @SaCheckOr(permission = {
@@ -136,6 +142,7 @@ public class SysRoleController {
         return R.ok(sysRoleDto);
     }
 
+    @Idempotent
     @Operation(summary = "删除角色")
     @PostMapping("deleteRole")
     @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_DELETE)

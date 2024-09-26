@@ -7,20 +7,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
-import com.freesia.constant.AdminConstant;
-import com.freesia.constant.FlagConstant;
-import com.freesia.constant.MenuModule;
-import com.freesia.constant.RoleModule;
+import com.freesia.constant.*;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.exception.RoleException;
-import com.freesia.exception.UserException;
 import com.freesia.mapper.SysRoleMapper;
-import com.freesia.model.LoginUserModel;
 import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -169,7 +165,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     }
 
     @Override
-    public void assignUser(Long roleId, List<Long> userIdList) {
+    @LogRecord(module = RoleModule.ROLE_MANAGEMENT, subModule = RoleModule.SubModule.ASSIGN_USER, message = "role.assignUser")
+    public SysRolePo assignUser(Long roleId, List<Long> userIdList) {
         SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseGet(SysRolePo::new);
         Set<SysUserRolePo> sysUserRolePoSet = sysRolePo.getSysUserRolePoSet();
         for (Long userId : userIdList) {
@@ -181,10 +178,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
             sysUserRolePoSet.add(sysUserRolePo);
         }
         sysRolePo.setSysUserRolePoSet(sysUserRolePoSet);
-        sysRoleRepository.save(sysRolePo);
+        return sysRoleRepository.save(sysRolePo);
     }
 
     @Override
+    @LogRecord(module = RoleModule.ROLE_MANAGEMENT, subModule = RoleModule.SubModule.CANCEL_ASSIGN_USER, message = "role.cancel.assignUser")
     public void cancelAssignUser(Long roleId, List<Long> userIdList) {
         sysRoleRepository.cancelAssignUser(roleId, userIdList);
     }
@@ -257,6 +255,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     }
 
     @Override
+    @LogRecord(module = RoleModule.ROLE_MANAGEMENT, subModule = RoleModule.SubModule.SAVE_ROLE, message = "role.save")
     public SysRoleDto saveRole(SysRoleDto sysRoleDto) {
         Long roleId = sysRoleDto.getId();
         SysRolePo sysRolePo;
@@ -274,6 +273,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     }
 
     @Override
+    @LogRecord(module = RoleModule.ROLE_MANAGEMENT, subModule = RoleModule.SubModule.DELETE_ROLE, message = "role.delete")
     public void deleteRole(SysRoleDto sysRoleDto) {
         Long roleId = sysRoleDto.getId();
         SysRolePo sysRolePo = findSysRolePoById(roleId);

@@ -56,6 +56,10 @@ public class FreesiaTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println(sdf.format(date));
 
+        Duration pt1H30M = Duration.parse("PT1H30M");
+        long millis1 = pt1H30M.toMillis();
+        date.setTime(date.getTime() + millis1);
+        System.out.println(sdf.format(date));
     }
 
     @Test

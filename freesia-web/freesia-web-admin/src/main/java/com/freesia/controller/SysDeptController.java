@@ -2,6 +2,7 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysDeptDto;
 import com.freesia.entity.FindDeptRolesByDeptIdEntity;
@@ -71,6 +72,7 @@ public class SysDeptController {
         return R.ok(sysDeptDto);
     }
 
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_ADD),
             @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_EDIT)
@@ -83,6 +85,7 @@ public class SysDeptController {
         return R.ok(sysDeptDto);
     }
 
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_DEPT_DELETE)
     @Operation(summary = "删除部门信息")
     @DeleteMapping("deleteDept")

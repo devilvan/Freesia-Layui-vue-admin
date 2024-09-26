@@ -13,6 +13,7 @@ import java.util.Set;
  * @Description Spirng缓存管理 工具类
  * @date 2023-09-21
  */
+@Deprecated
 @SuppressWarnings({"unchecked", "unused"})
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UCache {

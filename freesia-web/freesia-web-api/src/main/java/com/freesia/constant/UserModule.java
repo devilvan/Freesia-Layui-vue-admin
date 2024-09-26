@@ -49,6 +49,10 @@ public class UserModule extends SysModule {
          * 子模块 用户头像修改
          */
         public static final String AVATAR_UPDATE = "avatar_update";
+        /**
+         * 子模块 删除用户
+         */
+        public static final String DELETE_USER = "delete_user";
 
     }
 }

@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.Idempotent;
+import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
 import com.freesia.dto.SysConfigDto;
@@ -42,6 +44,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     @CachePut(cacheNames = CacheConstant.SYS_CONFIG, key = "#sysConfigDto.configKey")
+    @LogRecord(module = ConfigModule.CONFIG_MANAGEMENT, subModule = ConfigModule.SubModule.SAVE_CONFIG, message = "config.save")
     public SysConfigPo saveUpdate(SysConfigDto sysConfigDto) {
         SysConfigPo sysConfigPo = new SysConfigPo();
         UCopy.fullCopy(sysConfigDto, sysConfigPo);
@@ -49,6 +52,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     }
 
     @Override
+    @LogRecord(module = ConfigModule.CONFIG_MANAGEMENT, subModule = ConfigModule.SubModule.SAVE_CONFIG, message = "config.save")
     public List<SysConfigPo> saveUpdateBatch(List<SysConfigDto> list) {
         List<SysConfigPo> sysConfigPoList = UCopy.fullCopyList(list, SysConfigPo.class);
         return sysConfigRepository.saveAllAndFlush(sysConfigPoList);
@@ -89,7 +93,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
                 .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED);
         List<SysConfigPo> sysConfigPoList = this.list(queryWrapper);
-        sysConfigPoList.forEach(sysConfigPo -> UCache.put(CacheConstant.SYS_CONFIG, sysConfigPo.getConfigKey(), sysConfigPo.getConfigValue()));
+        sysConfigPoList.forEach(sysConfigPo -> URedis.put(CacheConstant.SYS_CONFIG, sysConfigPo.getConfigKey(), sysConfigPo.getConfigValue()));
     }
 
     @Override
@@ -119,6 +123,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     @CacheEvict(cacheNames = CacheConstant.SYS_CONFIG, key = "#configKey")
+    @LogRecord(module = ConfigModule.CONFIG_MANAGEMENT, subModule = ConfigModule.SubModule.DELETE_CONFIG, message = "config.delete")
     public void deleteConfig(String configKey) {
         Wrapper<SysConfigPo> updateWrapper = new LambdaUpdateWrapper<SysConfigPo>()
                 .eq(SysConfigPo::getConfigKey, configKey);

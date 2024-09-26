@@ -4,7 +4,10 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.Idempotent;
+import com.freesia.annotation.LogRecord;
 import com.freesia.constant.CacheConstant;
+import com.freesia.constant.DictModule;
 import com.freesia.constant.FlagConstant;
 import com.freesia.dto.SysDictDto;
 import com.freesia.dto.SysDictKeyDto;
@@ -15,9 +18,9 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysDictKeyRepository;
 import com.freesia.service.SysDictKeyService;
-import com.freesia.util.UCache;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.util.URedis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -78,12 +81,13 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
     }
 
     @Override
+    @LogRecord(module = DictModule.DICT_MANAGEMENT, subModule = DictModule.SubModule.SAVE_DICT_KEY, message = "dict.key.save")
     public SysDictKeyDto saveSysDictKey(SysDictKeyDto sysDictKeyDto) {
         Long id = sysDictKeyDto.getId();
         SysDictKeyDto dto = saveUpdate(sysDictKeyDto);
         if (ObjectUtil.isNull(id)) {
             // 新增字典键则，加入到缓存中
-            UCache.put(CacheConstant.SYS_DICT, sysDictKeyDto.getDictKey(), Collections.emptyList());
+            URedis.put(CacheConstant.SYS_DICT, sysDictKeyDto.getDictKey(), Collections.emptyList());
         }
         return dto;
     }
