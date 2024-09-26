@@ -25,5 +25,22 @@ public class RoleModule extends SysModule {
          * 子模块 分配部门
          */
         public static final String ASSIGN_DEPT = "assign_dept";
+        /**
+         * 子模块 分配用户
+         */
+        public static final String ASSIGN_USER = "assign_user";
+
+        /**
+         * 子模块 取消分配用户
+         */
+        public static final String CANCEL_ASSIGN_USER = "cancel_assign_user";
+        /**
+         * 子模块 保存用户
+         */
+        public static final String SAVE_ROLE = "save_role";
+        /**
+         * 子模块 删除用户
+         */
+        public static final String DELETE_ROLE = "delete_role";
     }
 }

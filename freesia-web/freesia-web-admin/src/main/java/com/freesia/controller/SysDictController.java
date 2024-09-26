@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysDictDto;
 import com.freesia.dto.SysDictKeyDto;
@@ -87,6 +88,7 @@ public class SysDictController {
         return sysDictKeyService.findPageSysDictList(sysDictDto, pageQuery);
     }
 
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ADD),
             @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_EDIT),
@@ -100,6 +102,7 @@ public class SysDictController {
         return R.ok();
     }
 
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_KEY_ADD),
             @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_KEY_EDIT),
@@ -113,6 +116,7 @@ public class SysDictController {
         return R.ok(sysDictKeyDto);
     }
 
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ADD),
             @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_EDIT),
@@ -126,6 +130,7 @@ public class SysDictController {
         return R.ok(sysDictValueDto);
     }
 
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ADD),
             @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_EDIT),
@@ -139,6 +144,7 @@ public class SysDictController {
         return R.ok();
     }
 
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_DELETE)
     @Operation(summary = "删除字典值")
     @PutMapping(value = "deleteSysDictValueList")
@@ -148,6 +154,7 @@ public class SysDictController {
         return R.ok();
     }
 
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_ENABLED)
     @Operation(summary = "启用/禁用字典键")
     @PutMapping(value = "enableSysDictValueList")
@@ -158,6 +165,7 @@ public class SysDictController {
     }
 
     @Validated
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_VALUE_FLUSH_CACHE)
     @Operation(summary = "刷新字典缓存值")
     @DeleteMapping(value = "flushCacheSysDictValue")

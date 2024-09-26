@@ -1,6 +1,7 @@
 package com.freesia.constant;
 
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
@@ -14,4 +15,16 @@ public class DictModule extends SysModule {
      * 主模块 字典管理模块
      */
     public static final String DICT_MANAGEMENT = "dict_management";
+
+    @Data
+    public static class SubModule {
+        /**
+         * 子模块 保存数据字典键
+         */
+        public static final String SAVE_DICT_KEY = "save_dict_key";
+        /**
+         * 子模块 保存数据字典值
+         */
+        public static final String SAVE_DICT_VALUE = "save_dict_value";
+    }
 }

@@ -6,7 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.Idempotent;
+import com.freesia.annotation.LogRecord;
 import com.freesia.constant.CacheConstant;
+import com.freesia.constant.DictModule;
 import com.freesia.constant.FlagConstant;
 import com.freesia.dto.SysDictValueDto;
 import com.freesia.mapper.SysDictValueMapper;
@@ -102,10 +105,11 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
                 .orderByAsc(SysDictValuePo::getOrderNum);
         List<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.selectList(queryWrapper);
         Map<String, List<SysDictValuePo>> sysDictValueMap = UStream.groupingByKey(sysDictValuePoList, SysDictValuePo::getDictKey);
-        sysDictValueMap.forEach((k, v) -> UCache.put(CacheConstant.SYS_DICT, k, v));
+        sysDictValueMap.forEach((k, v) -> URedis.put(CacheConstant.SYS_DICT, k, v));
     }
 
     @Override
+    @LogRecord(module = DictModule.DICT_MANAGEMENT, subModule = DictModule.SubModule.SAVE_DICT_VALUE, message = "dict.value.save")
     public SysDictValueDto saveSysDictValue(SysDictValueDto sysDictValueDto) {
         SysDictValuePo sysDictValuePo = new SysDictValuePo();
         if (UEmpty.isNotEmpty(sysDictValueDto.getId())) {
@@ -125,6 +129,7 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
     }
 
     @Override
+    @LogRecord(module = DictModule.DICT_MANAGEMENT, subModule = DictModule.SubModule.SAVE_DICT_VALUE, message = "dict.value.save")
     public void deleteSysDictValueList(List<Long> idList) {
         List<SysDictValuePo> sysDictValuePoList = sysDictValueRepository.findAllById(idList);
         for (SysDictValuePo sysDictValuePo : sysDictValuePoList) {

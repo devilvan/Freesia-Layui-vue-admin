@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
 import com.freesia.dto.AssignButtonDto;
@@ -308,6 +309,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     }
 
     @Override
+    @LogRecord(module = MenuModule.MENU_MANAGEMENT, subModule = MenuModule.SubModule.SAVE_MENU, message = "menu.save")
     public SysMenuDto saveMenu(SysMenuDto sysMenuDto) {
         //前端解析menu列表ID的逻辑不要处理后半部分
         if (UEmpty.isEmpty(sysMenuDto.getId())) {
@@ -337,6 +339,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     }
 
     @Override
+    @LogRecord(module = MenuModule.MENU_MANAGEMENT, subModule = MenuModule.SubModule.DELETE_MENU, message = "menu.delete")
     public void deleteMenu(Long id, Long userId) {
         QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
                 .orderByAsc("M.ID");

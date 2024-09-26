@@ -102,7 +102,7 @@ public interface SysRoleService {
      * @param roleId     角色ID
      * @param userIdList 用户列表
      */
-    void assignUser(Long roleId, List<Long> userIdList);
+    SysRolePo assignUser(Long roleId, List<Long> userIdList);
 
     /**
      * 取消分配角色

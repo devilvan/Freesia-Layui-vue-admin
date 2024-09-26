@@ -18,5 +18,6 @@ public class DeptModule extends SysModule {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class SubModule {
         public static final String ASSIGN_ROLE = "dept_assign_role";
+        public static final String DELETE_DEPT = "delete_dept";
     }
 }

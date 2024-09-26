@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.ObjectUtil;
+import com.freesia.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.pojo.PageQuery;
@@ -49,6 +50,7 @@ public class SysConfigController {
         return sysConfigService.findPageSysConfig(sysConfigDto, pageQuery);
     }
 
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_ADD),
             @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_EDIT),
@@ -61,6 +63,7 @@ public class SysConfigController {
         return R.ok();
     }
 
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_DELETE)
     @Operation(summary = "删除系统配置信息")
     @DeleteMapping(value = "deleteConfig")

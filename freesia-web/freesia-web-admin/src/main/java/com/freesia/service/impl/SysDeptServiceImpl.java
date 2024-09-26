@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.Idempotent;
+import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.AdminConstant;
 import com.freesia.constant.DeptModule;
 import com.freesia.constant.FlagConstant;
+import com.freesia.constant.UserModule;
 import com.freesia.dto.SysDeptDto;
 import com.freesia.entity.FindDeptRolesByDeptIdEntity;
 import com.freesia.entity.FindPageSysDeptListEntity;
@@ -105,6 +108,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     }
 
     @Override
+    @LogRecord(module = DeptModule.DEPT_MANAGEMENT, subModule = DeptModule.SubModule.DELETE_DEPT, message = "dept.delete")
     public SysDeptDto deleteDept(Long deptId) {
         SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists"));
         sysDeptPo.setLogicDel(true);
@@ -115,13 +119,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
 
     @Override
     public List<FindTreeDeptSelectEntity> findTreeDeptSelect(LoginUserModel loginUserModel) {
-        Long tenantId = loginUserModel.getTenantId();
-        QueryWrapper<SysDeptPo> wrapper = Wrappers.<SysDeptPo>query()
-                .eq("D.DEPT_STATUS", FlagConstant.ENABLED)
-                .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
-                .eq(UEmpty.isNotNull(tenantId), "D.TENANT_ID", tenantId)
-                .orderByAsc("D.ORDER_NUM");
-        List<FindTreeDeptSelectEntity> findTreeDeptSelectEntityList = sysDeptMapper.findTreeDeptSelect(wrapper);
+        List<FindTreeDeptSelectEntity> findTreeDeptSelectEntityList = findTreeDeptSelectEntityList(loginUserModel);
         FindTreeDeptSelectEntity deptTopParent = buildDeptTopParent();
         findTreeDeptSelectEntityList = UTree.buildTree(findTreeDeptSelectEntityList);
         deptTopParent.setChildren(findTreeDeptSelectEntityList);
@@ -152,13 +150,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
 
     @Override
     public List<FindTreeDeptSelectEntity> findTreeAssignDeptSelect(LoginUserModel loginUserModel) {
-        Long tenantId = loginUserModel.getTenantId();
-        QueryWrapper<SysDeptPo> wrapper = Wrappers.<SysDeptPo>query()
-                .eq("D.DEPT_STATUS", FlagConstant.ENABLED)
-                .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
-                .eq(UEmpty.isNotNull(tenantId), "D.TENANT_ID", tenantId)
-                .orderByAsc("D.ORDER_NUM");
-        List<FindTreeDeptSelectEntity> findTreeDeptSelectEntityList = sysDeptMapper.findTreeDeptSelect(wrapper);
+        List<FindTreeDeptSelectEntity> findTreeDeptSelectEntityList = findTreeDeptSelectEntityList(loginUserModel);
         return UTree.buildTree(findTreeDeptSelectEntityList);
     }
 
@@ -227,6 +219,16 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         // 获取角色
         Set<SysRolePo> sysRolePoSet = sysDeptPo.getSysRolePoSet();
         return buildFindDeptRolesByDeptIdEntity(sysDeptPo, sysRolePoSet);
+    }
+
+    private List<FindTreeDeptSelectEntity> findTreeDeptSelectEntityList(LoginUserModel loginUserModel) {
+        Long tenantId = loginUserModel.getTenantId();
+        QueryWrapper<SysDeptPo> wrapper = Wrappers.<SysDeptPo>query()
+                .eq("D.DEPT_STATUS", FlagConstant.ENABLED)
+                .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq(UEmpty.isNotNull(tenantId), "D.TENANT_ID", tenantId)
+                .orderByAsc("D.ORDER_NUM");
+        return sysDeptMapper.findTreeDeptSelect(wrapper);
     }
 
     private FindDeptRolesByDeptIdEntity buildFindDeptRolesByDeptIdEntity(SysDeptPo sysDeptPo, Set<SysRolePo> sysRolePoSet) {

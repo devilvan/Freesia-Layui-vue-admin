@@ -2,7 +2,6 @@ package com.freesia;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.annotation.Decrypt;
 import com.freesia.constant.AccessPolicy;
 import com.freesia.dto.GiteeCommitsRequestParamDto;
 import com.freesia.dto.GiteeCommitsResponseDto;
@@ -28,11 +27,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -67,7 +63,7 @@ public class FreesiaTestApplication {
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(ref = "request"))
     @PostMapping(value = "testDecrypt")
-    public void testDecrypt(Long id, @Decrypt @RequestParam String name, @Decrypt @RequestBody AssignRoleVo assignRoleVo) {
+    public void testDecrypt(Long id, @RequestParam String name, @RequestBody AssignRoleVo assignRoleVo) {
         System.out.println(id);
         System.out.println(name);
         System.out.println(assignRoleVo);

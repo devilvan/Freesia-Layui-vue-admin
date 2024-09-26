@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.annotation.Encrypt;
+import com.freesia.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
@@ -74,6 +75,7 @@ public class SysUserController {
         return R.ok(findCurrentUserProfileEntity);
     }
 
+    @Idempotent
     @Operation(summary = "修改用户信息")
     @PutMapping("saveUserInfo")
     @SaCheckOr(permission = {
@@ -95,6 +97,7 @@ public class SysUserController {
         return R.ok(findUserRolesByUserIdEntity);
     }
 
+    @Idempotent
     @Operation(summary = "给用户分配角色")
     @PostMapping("assignRole")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_ASSIGN_ROLE})
@@ -118,6 +121,7 @@ public class SysUserController {
         return sysUserService.findPageAllowAssignUserByTenantId(sysTenantDto, pageQuery);
     }
 
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_USER_IMPORT_USER)
     @Operation(summary = "用户导入")
     @PostMapping(value = "userImport")
@@ -141,6 +145,7 @@ public class SysUserController {
         return R.ok();
     }
 
+    @Idempotent
     @SaCheckLogin
     @Operation(summary = "用户头像更新")
     @PostMapping(value = "avatarUpdate")
@@ -158,6 +163,7 @@ public class SysUserController {
         return R.ok(sysUserDto);
     }
 
+    @Idempotent
     @Operation(summary = "删除用户")
     @PostMapping("deleteUser")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_DELETE})

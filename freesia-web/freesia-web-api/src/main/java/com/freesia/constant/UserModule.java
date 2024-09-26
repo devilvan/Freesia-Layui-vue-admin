@@ -45,6 +45,10 @@ public class UserModule extends SysModule {
          * 子模块 分配部门
          */
         public static final String ASSIGN_DEPT = "assign_dept";
+        /**
+         * 子模块 删除用户
+         */
+        public static final String DELETE_USER = "delete_user";
 
     }
 }

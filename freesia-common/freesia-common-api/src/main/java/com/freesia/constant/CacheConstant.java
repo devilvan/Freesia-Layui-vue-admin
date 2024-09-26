@@ -49,4 +49,8 @@ public final class CacheConstant {
      * 后端RSA私钥 缓存建
      */
     public static final String CRYPT_PRI = "crypt_pri1";
+    /**
+     * 防止重复提交 缓存建
+     */
+    public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";
 }

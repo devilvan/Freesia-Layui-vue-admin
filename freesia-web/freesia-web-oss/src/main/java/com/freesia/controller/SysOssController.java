@@ -1,6 +1,7 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysOssDto;
 import com.freesia.pojo.PageQuery;
@@ -68,6 +69,7 @@ public class SysOssController {
      * @param pageQuery 分页条件
      * @return 形式返回
      */
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_INDEX)
     @Operation(summary = "查询OSS对象存储表分页信息")
     @GetMapping(value = "findPageSysOss")

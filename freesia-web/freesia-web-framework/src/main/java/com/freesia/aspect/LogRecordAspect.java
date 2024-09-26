@@ -73,7 +73,7 @@ public class LogRecordAspect {
             for (int i = 0; i < args.length; i++) {
                 Object arg = args[i];
                 String parameterName = parameterNames[i];
-                if (!(arg instanceof ExtendedServletRequestDataBinder) && !(arg instanceof HttpServletResponseWrapper)) {
+                if (!(arg instanceof ExtendedServletRequestDataBinder || arg instanceof HttpServletResponseWrapper)) {
                     paramMap.put(parameterName, arg);
                 }
                 if (!paramMap.isEmpty()) {
