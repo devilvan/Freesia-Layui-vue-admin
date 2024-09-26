@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.LogRecord;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
+import com.freesia.constant.OssModule;
 import com.freesia.dto.SysOssConfigDto;
 import com.freesia.mapper.SysOssConfigMapper;
 import com.freesia.po.SysOssConfigPo;
@@ -34,6 +36,7 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
     private final SysOssConfigMapper sysOssConfigMapper;
 
     @Override
+    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS_CONFIG, message = "oss.config.save")
     public SysOssConfigDto saveUpdate(SysOssConfigDto sysOssConfigDto) {
         SysOssConfigPo sysOssConfigPo = new SysOssConfigPo();
         UCopy.fullCopy(sysOssConfigDto, sysOssConfigPo);
@@ -43,6 +46,7 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
     }
 
     @Override
+    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS_CONFIG, message = "oss.config.save")
     public List<SysOssConfigDto> saveUpdateBatch(List<SysOssConfigDto> list) {
         List<SysOssConfigPo> sysOssConfigPoList = UCopy.fullCopyList(list, SysOssConfigPo.class);
         return UCopy.fullCopyList(sysOssConfigRepository.saveAllAndFlush(sysOssConfigPoList), SysOssConfigDto.class);
@@ -66,6 +70,7 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
     }
 
     @Override
+    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.DELETE_OSS_CONFIG, message = "oss.config.delete")
     public void deleteSysOssConfig(List<Long> idList) {
         removeBatchByIds(idList);
     }

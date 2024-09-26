@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.AccessPolicy;
 import com.freesia.constant.CacheConstant;
@@ -48,6 +49,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     private final SysOssRepository sysOssRepository;
 
     @Override
+    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS, message = "oss.save")
     public SysOssDto saveUpdate(SysOssDto sysOssDto) {
         SysOssPo sysOssPo = new SysOssPo();
         UCopy.fullCopy(sysOssDto, sysOssPo);
@@ -57,6 +59,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     }
 
     @Override
+    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS, message = "oss.save")
     public List<SysOssDto> saveUpdateBatch(List<SysOssDto> list) {
         List<SysOssPo> sysOssPoList = UCopy.fullCopyList(list, SysOssPo.class);
         return UCopy.fullCopyList(sysOssRepository.saveAllAndFlush(sysOssPoList), SysOssDto.class);
@@ -84,6 +87,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.DELETE_OSS, message = "oss.delete")
     public void deleteSysOss(List<Long> idList) {
         if (UEmpty.isNotEmpty(idList)) {
             Wrapper<SysOssPo> queryWrapper = new LambdaQueryWrapper<SysOssPo>()

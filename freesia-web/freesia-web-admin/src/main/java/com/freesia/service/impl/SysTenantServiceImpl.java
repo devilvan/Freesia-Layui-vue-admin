@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.annotation.LogRecord;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.TenantModule;
+import com.freesia.constant.UserModule;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.entity.FindSysTenantEntity;
 import com.freesia.exception.ServiceException;
@@ -40,6 +42,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     private final SysTenantMapper sysTenantMapper;
 
     @Override
+    @LogRecord(module = TenantModule.TENANT_MANAGEMENT, subModule = TenantModule.SubModule.SAVE_TENANT, message = "tenant.save")
     public SysTenantDto saveUpdate(SysTenantDto sysTenantDto) {
         SysTenantPo sysTenantPo = new SysTenantPo();
         if (UEmpty.isEmpty(sysTenantDto.getId())) {
@@ -59,6 +62,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     }
 
     @Override
+    @LogRecord(module = TenantModule.TENANT_MANAGEMENT, subModule = TenantModule.SubModule.SAVE_TENANT, message = "tenant.save")
     public List<SysTenantDto> saveUpdateBatch(List<SysTenantDto> list) {
         List<SysTenantPo> sysTenantPoList = UCopy.fullCopyList(list, SysTenantPo.class);
         return UCopy.fullCopyList(sysTenantRepository.saveAllAndFlush(sysTenantPoList), SysTenantDto.class);
@@ -86,11 +90,13 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     }
 
     @Override
+    @LogRecord(module = TenantModule.TENANT_MANAGEMENT, subModule = TenantModule.SubModule.DELETE_TENANT, message = "tenant.delete")
     public void deleteSysTenant(List<Long> idList) {
         sysTenantRepository.updateLogicDel(idList);
     }
 
     @Override
+    @LogRecord(module = TenantModule.TENANT_MANAGEMENT, subModule = TenantModule.SubModule.ASSIGN_USER, message = "tenant.assignUser")
     public void assignTenant2User(Long tenantId, List<Long> userIdList) {
         SysTenantPo sysTenantPo = sysTenantRepository.findById(tenantId)
                 .orElseThrow(() -> new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.query.failed", tenantId));
@@ -104,6 +110,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     }
 
     @Override
+    @LogRecord(module = TenantModule.TENANT_MANAGEMENT, subModule = TenantModule.SubModule.CANCEL_ASSIGN_USER, message = "tenant.cancel.assignUser")
     public void cancelAssignUser(Long tenantId, List<Long> userIdList) {
         sysTenantRepository.cancelAssignUser(tenantId, userIdList);
     }

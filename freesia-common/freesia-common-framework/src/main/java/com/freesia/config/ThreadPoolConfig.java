@@ -21,7 +21,7 @@ public class ThreadPoolConfig {
     /**
      * 获取CPU核数
      */
-    private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
+    private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors() + 1;
 
     /**
      * 创建线程池
@@ -34,7 +34,7 @@ public class ThreadPoolConfig {
         ArrayBlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(1024);
         ThreadFactory threadFactory = ThreadFactoryBuilder.create().setNamePrefix("freesia-threadPoolExecutor").build();
         return new ThreadPoolExecutor(
-                AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS * 4, 300,
+                AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS * 2, 300,
                 TimeUnit.SECONDS, blockingQueue, threadFactory, RejectPolicy.DISCARD_OLDEST.getValue()
         );
     }

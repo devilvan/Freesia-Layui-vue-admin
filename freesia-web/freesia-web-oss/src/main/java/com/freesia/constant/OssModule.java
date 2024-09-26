@@ -26,5 +26,21 @@ public class OssModule extends SysModule {
          * 子模块 下载文件
          */
         public static final String OSS_DOWNLOAD = "oss_download";
+        /**
+         * 子模块 保存OSS配置信息
+         */
+        public static final String SAVE_OSS_CONFIG = "save_oss_config";
+        /**
+         * 子模块 删除OSS配置信息
+         */
+        public static final String DELETE_OSS_CONFIG = "delete_oss_config";
+        /**
+         * 子模块 保存OSS信息
+         */
+        public static final String SAVE_OSS = "save_oss";
+        /**
+         * 子模块 删除OSS信息
+         */
+        public static final String DELETE_OSS = "delete_oss";
     }
 }

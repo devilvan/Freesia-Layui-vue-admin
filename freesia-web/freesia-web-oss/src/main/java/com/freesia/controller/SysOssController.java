@@ -39,6 +39,7 @@ public class SysOssController {
      * @param sysOssVo 待保存对象
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "保存OSS对象存储表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysOssVo sysOssVo) {
@@ -54,6 +55,7 @@ public class SysOssController {
      *
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "保存OSS对象存储表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<SysOssVo> sysOssVoList) {
@@ -69,7 +71,6 @@ public class SysOssController {
      * @param pageQuery 分页条件
      * @return 形式返回
      */
-    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_INDEX)
     @Operation(summary = "查询OSS对象存储表分页信息")
     @GetMapping(value = "findPageSysOss")
@@ -99,6 +100,7 @@ public class SysOssController {
      * @param idList 主键
      * @return 形式返回
      */
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_DELETE)
     @Operation(summary = "删除OSS对象存储表")
     @PostMapping(value = "deleteSysOss")
@@ -113,6 +115,7 @@ public class SysOssController {
      * @param files 上传的文件
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "上传文件")
     @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public R<List<SysOssDto>> upload(@RequestParam("file[]") List<MultipartFile> files) {
@@ -126,6 +129,7 @@ public class SysOssController {
      * @param file 上传的文件
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "上传文件")
     @PostMapping(value = "uploadTemp", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public R<SysOssDto> uploadTemp(@RequestPart("file[]") MultipartFile file) {
@@ -138,6 +142,7 @@ public class SysOssController {
      *
      * @param id 文件ID
      */
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_OSS_DOWNLOAD)
     @Operation(summary = "下载文件")
     @GetMapping(value = "download/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)

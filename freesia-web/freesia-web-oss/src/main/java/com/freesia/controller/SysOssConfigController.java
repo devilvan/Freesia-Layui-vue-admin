@@ -1,5 +1,6 @@
 package com.freesia.controller;
 
+import com.freesia.annotation.Idempotent;
 import com.freesia.dto.SysOssConfigDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -32,6 +33,7 @@ public class SysOssConfigController {
      * @param sysOssConfigVo 待保存对象
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "保存OSS配置信息表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysOssConfigVo sysOssConfigVo) {
@@ -47,6 +49,7 @@ public class SysOssConfigController {
      *
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "保存OSS配置信息表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<SysOssConfigVo> sysOssConfigVoList) {
@@ -89,6 +92,7 @@ public class SysOssConfigController {
      * @param idList 主键
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "删除OSS配置信息表")
     @PostMapping(value = "deleteSysOssConfig")
     public R<Void> deleteSysOssConfig(@RequestBody List<Long> idList) {

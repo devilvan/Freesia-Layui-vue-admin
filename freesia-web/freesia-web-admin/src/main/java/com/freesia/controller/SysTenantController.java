@@ -2,6 +2,7 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.freesia.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.AssignTenantDto;
 import com.freesia.dto.SysTenantDto;
@@ -41,6 +42,7 @@ public class SysTenantController {
      *
      * @return 形式返回
      */
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_ADD),
             @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_EDIT),
@@ -58,6 +60,7 @@ public class SysTenantController {
      *
      * @return 形式返回
      */
+    @Idempotent
     @SaCheckOr(permission = {
             @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_ADD),
             @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_EDIT),
@@ -105,6 +108,7 @@ public class SysTenantController {
      * @param idList 主键
      * @return 形式返回
      */
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_DELETE)
     @Operation(summary = "删除租户信息表")
     @PostMapping(value = "deleteSysTenant")
@@ -119,6 +123,7 @@ public class SysTenantController {
      * @param assignTenantVo 入参
      * @return 形式返回
      */
+    @Idempotent
     @SaCheckPermission(value = MenuPermission.SYSTEM_TENANT_ASSIGN_USER)
     @Operation(summary = "分配租户")
     @PostMapping(value = "assignTenant")
@@ -138,6 +143,7 @@ public class SysTenantController {
      * @param assignTenantVo 入参
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "取消将租户分配给用户")
     @PostMapping(value = "cancelTenantAssignUser")
     public R<Void> cancelTenantAssignUser(@Validated @RequestBody AssignTenantVo assignTenantVo) {
