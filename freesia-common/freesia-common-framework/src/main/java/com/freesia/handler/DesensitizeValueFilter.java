@@ -4,6 +4,7 @@ import com.alibaba.fastjson.serializer.ValueFilter;
 import com.freesia.annotation.Desensitize;
 import com.freesia.constant.DesensitizedType;
 import com.freesia.util.UDesensitized;
+import com.freesia.util.UEmpty;
 
 import java.lang.reflect.Field;
 
@@ -27,32 +28,29 @@ public class DesensitizeValueFilter implements ValueFilter {
             if (!(value instanceof String valueStr) || ((String) value).length() == 0) {
                 return value;
             }
-            DesensitizedType strategy = Desensitize.strategy();
-            switch (strategy) {
-                case CHINESE_NAME:
-                    return UDesensitized.chineseName(valueStr);
-                case EURO_AMERICAN_NAME:
-                    return UDesensitized.euroAmericanName(valueStr);
-                case ID_CARD:
-                    return UDesensitized.idCardNum(valueStr, 1, 2);
-                case FIXED_PHONE:
-                    return UDesensitized.fixedPhone(valueStr);
-                case MOBILE_PHONE:
-                    return UDesensitized.mobilePhone(valueStr);
-                case ADDRESS:
-                    return UDesensitized.address(valueStr, 8);
-                case EMAIL:
-                    return UDesensitized.email(valueStr);
-                case PASSWORD:
-                    return UDesensitized.password(valueStr);
-                case CAR_LICENSE:
-                    return UDesensitized.carLicense(valueStr);
-                case BANK_CARD:
-                    return UDesensitized.bankCard(valueStr);
-                case NONE:
-                    return value;
-                default:
+            DesensitizedType[] strategyArr = Desensitize.strategy();
+            for (DesensitizedType strategy : strategyArr) {
+                switch (strategy) {
+                    case CHINESE_NAME -> valueStr = UDesensitized.chineseName(valueStr);
+                    case EURO_AMERICAN_NAME -> valueStr = UDesensitized.euroAmericanName(valueStr);
+                    case ID_CARD -> valueStr = UDesensitized.idCardNum(valueStr, 1, 2);
+                    case FIXED_PHONE -> valueStr = UDesensitized.fixedPhone(valueStr);
+                    case MOBILE_PHONE -> valueStr = UDesensitized.mobilePhone(valueStr);
+                    case ADDRESS -> valueStr = UDesensitized.address(valueStr, 8);
+                    case EMAIL -> valueStr = UDesensitized.email(valueStr);
+                    case PASSWORD -> valueStr = UDesensitized.password(valueStr);
+                    case CAR_LICENSE -> valueStr = UDesensitized.carLicense(valueStr);
+                    case BANK_CARD -> valueStr = UDesensitized.bankCard(valueStr);
+                    default -> {
+                        return value;
+                    }
+                }
+                // 如果已经经过某个脱敏规则处理被修改，则不再处理之后的规则
+                if (!((String) value).equalsIgnoreCase(valueStr)) {
+                    return valueStr;
+                }
             }
+            value = valueStr;
         } catch (NoSuchFieldException e) {
             return value;
         }

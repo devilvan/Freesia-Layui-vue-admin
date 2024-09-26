@@ -17,5 +17,5 @@ public @interface Desensitize {
     /**
      * 数据脱敏策略（类型），默认无
      */
-    DesensitizedType strategy() default DesensitizedType.NONE;
+    DesensitizedType[] strategy() default DesensitizedType.NONE;
 }

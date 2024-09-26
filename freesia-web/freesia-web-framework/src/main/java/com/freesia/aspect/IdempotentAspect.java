@@ -51,6 +51,9 @@ public class IdempotentAspect {
 
     /**
      * 参数拼装
+     *
+     * @param paramsArray 方法入参
+     * @return 处理、拼接后的字符串
      */
     private String argsArrayToString(Object[] paramsArray) {
         StringJoiner params = new StringJoiner(" ");

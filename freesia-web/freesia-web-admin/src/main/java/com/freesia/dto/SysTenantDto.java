@@ -4,9 +4,11 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.annotation.Desensitize;
 import com.freesia.constant.Constants;
 import com.freesia.constant.DesensitizedType;
-import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -32,9 +34,9 @@ public class SysTenantDto extends BaseDto {
     @Schema(description = "租户备注")
     private String remark;
     @Schema(description = "联系人姓名")
-    @Desensitize(strategy = DesensitizedType.EURO_AMERICAN_NAME)
+    @Desensitize(strategy = {DesensitizedType.EURO_AMERICAN_NAME, DesensitizedType.CHINESE_NAME})
     private String contactName;
-    @Desensitize(strategy = DesensitizedType.MOBILE_PHONE)
+    @Desensitize(strategy = {DesensitizedType.MOBILE_PHONE, DesensitizedType.FIXED_PHONE})
     @Schema(description = "联系人电话")
     private String contactTel;
     @Desensitize(strategy = DesensitizedType.EMAIL)
