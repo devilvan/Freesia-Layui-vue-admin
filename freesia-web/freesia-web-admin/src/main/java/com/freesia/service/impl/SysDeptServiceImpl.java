@@ -1,5 +1,6 @@
 package com.freesia.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
@@ -21,6 +22,7 @@ import com.freesia.entity.FindTreeDeptSelectEntity;
 import com.freesia.exception.DeptException;
 import com.freesia.exception.UserException;
 import com.freesia.mapper.SysDeptMapper;
+import com.freesia.mapper.SysUserMapper;
 import com.freesia.model.LoginUserModel;
 import com.freesia.po.SysDeptPo;
 import com.freesia.po.SysRoleDeptPk;
@@ -31,15 +33,13 @@ import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysDeptRepository;
 import com.freesia.repository.SysRoleDeptRepository;
 import com.freesia.service.SysDeptService;
+import com.freesia.service.SysUserService;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +54,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     private final SysDeptRepository sysDeptRepository;
     private final SysDeptMapper sysDeptMapper;
     private final SysRoleDeptRepository sysRoleDeptRepository;
+    private final SysUserService sysUserService;
 
     @Override
     public SysDeptDto saveUpdate(SysDeptDto sysDeptDto) {
@@ -72,18 +73,25 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
 
     @Override
     public List<FindPageSysDeptListEntity> findListSysDept(SysDeptDto sysDeptDto) {
-        List<FindPageSysDeptListEntity> list = sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
-        // 根据查询出的部门，查找其上级部门
-        List<Long> ancestorIdList = list.stream()
-                .map(FindPageSysDeptListEntity::getAncestors)
-                .flatMap(ancestor -> Arrays.stream(ancestor.split(",")))
-                .map(Long::parseLong)
-                .distinct()
-                .collect(Collectors.toList());
-        List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectBatchIds(ancestorIdList);
-        List<FindPageSysDeptListEntity> sysDeptListEntityList = UCopy.fullCopyList(sysDeptPoList, FindPageSysDeptListEntity.class);
-        list.addAll(sysDeptListEntityList);
-        return list;
+        // 是否管理员
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.info.null"));
+        boolean isAdmin = Convert.toBool(sysUserService.isAdmin(userId), false);
+        if (isAdmin) {
+            return sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
+        } else {
+            List<FindPageSysDeptListEntity> list = sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
+            // 根据查询出的部门，查找其上级部门
+            List<Long> ancestorIdList = list.stream()
+                    .map(FindPageSysDeptListEntity::getAncestors)
+                    .flatMap(ancestor -> Arrays.stream(ancestor.split(",")))
+                    .map(Long::parseLong)
+                    .distinct()
+                    .collect(Collectors.toList());
+            List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectBatchIds(ancestorIdList);
+            List<FindPageSysDeptListEntity> sysDeptListEntityList = UCopy.fullCopyList(sysDeptPoList, FindPageSysDeptListEntity.class);
+            list.addAll(sysDeptListEntityList);
+            return list;
+        }
     }
 
     @Override
