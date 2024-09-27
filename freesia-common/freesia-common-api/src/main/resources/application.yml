@@ -143,3 +143,6 @@ management:
     health:
       enabled: true
       show-details: always
+---
+sse:
+  enabled: false
