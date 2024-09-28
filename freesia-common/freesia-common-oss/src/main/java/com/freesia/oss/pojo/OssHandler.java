@@ -1,4 +1,4 @@
-package com.freesia.pojo;
+package com.freesia.oss.pojo;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.IoUtil;
@@ -15,12 +15,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
-import com.freesia.constant.AccessPolicy;
+import com.freesia.oss.constant.AccessPolicy;
 import com.freesia.constant.Constants;
-import com.freesia.constant.OssConstant;
-import com.freesia.constant.PolicyType;
-import com.freesia.exception.OssException;
-import com.freesia.properties.OssProperties;
+import com.freesia.oss.constant.OssConstant;
+import com.freesia.oss.constant.PolicyType;
+import com.freesia.oss.exception.OssException;
+import com.freesia.oss.properties.OssProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

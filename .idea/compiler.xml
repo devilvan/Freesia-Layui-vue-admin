@@ -10,22 +10,27 @@
         <module name="freesia-common-service" />
         <module name="freesia-web-api" />
         <module name="freesia-common-framework" />
-        <module name="freesia-web-oss" />
+        <module name="freesia-common-oss" />
         <module name="freesia-web-framework" />
         <module name="freesia-common-api" />
         <module name="freesia-web-app" />
+        <module name="freesia-common-cache" />
         <module name="freesia-common-codegen" />
-        <module name="freesia-web-sse" />
         <module name="freesia-web-admin" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="16" />
+    <bytecodeTargetLevel target="16">
+      <module name="freesia-web-oss" target="16" />
+      <module name="freesia-web-sse" target="16" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="freesia-common-api" options="-parameters" />
+      <module name="freesia-common-cache" options="-parameters" />
       <module name="freesia-common-codegen" options="-parameters" />
       <module name="freesia-common-framework" options="-parameters" />
+      <module name="freesia-common-oss" options="-parameters" />
       <module name="freesia-common-service" options="-parameters" />
       <module name="freesia-web-admin" options="-parameters" />
       <module name="freesia-web-api" options="-parameters" />

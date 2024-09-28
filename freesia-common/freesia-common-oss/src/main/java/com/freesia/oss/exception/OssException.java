@@ -1,7 +1,8 @@
-package com.freesia.exception;
+package com.freesia.oss.exception;
 
 
-import com.freesia.constant.OssModule;
+import com.freesia.exception.ServiceException;
+import com.freesia.oss.constant.OssModule;
 
 import java.io.Serial;
 

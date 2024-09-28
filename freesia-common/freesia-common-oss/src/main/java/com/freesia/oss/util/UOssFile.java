@@ -1,4 +1,4 @@
-package com.freesia.util;
+package com.freesia.oss.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  * @date 2024-03-04
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class OssFileUtil {
+public class UOssFile {
     public static final String ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
     public static final String CONTENT_DISPOSITION = "Content-disposition";
     public static final String DOWNLOAD_FILENAME = "download-filename";

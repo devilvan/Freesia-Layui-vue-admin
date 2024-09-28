@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>freesia-web</artifactId>
+        <artifactId>freesia-common</artifactId>
         <groupId>com.freesia</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>freesia-web-oss</artifactId>
+    <artifactId>freesia-common-oss</artifactId>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
@@ -21,11 +21,6 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-        </dependency>
-        <!-- Web-->
-        <dependency>
-            <groupId>com.freesia</groupId>
-            <artifactId>freesia-web-framework</artifactId>
         </dependency>
         <!-- Common模块-->
         <dependency>

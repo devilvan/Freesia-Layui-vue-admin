@@ -1,9 +1,9 @@
-package com.freesia.pojo;
+package com.freesia.oss.pojo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.CacheConstant;
-import com.freesia.exception.OssException;
-import com.freesia.properties.OssProperties;
+import com.freesia.oss.exception.OssException;
+import com.freesia.oss.properties.OssProperties;
 import com.freesia.util.UEmpty;
 import com.freesia.util.URedis;
 import lombok.extern.slf4j.Slf4j;

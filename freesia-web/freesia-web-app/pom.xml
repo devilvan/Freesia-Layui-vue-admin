@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>com.freesia</groupId>
-            <artifactId>freesia-web-oss</artifactId>
+            <artifactId>freesia-common-oss</artifactId>
         </dependency>
         <!--spring-test测试=-->
         <dependency>

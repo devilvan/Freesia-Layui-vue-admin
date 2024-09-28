@@ -1,4 +1,4 @@
-package com.freesia.constant;
+package com.freesia.oss.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

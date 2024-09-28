@@ -16,6 +16,8 @@
         <module>freesia-common-api</module>
         <module>freesia-common-codegen</module>
         <module>freesia-common-service</module>
+        <module>freesia-common-cache</module>
+        <module>freesia-common-oss</module>
     </modules>
 
     <properties>
@@ -43,6 +45,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-codegen</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-oss</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>

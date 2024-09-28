@@ -1,4 +1,4 @@
-package com.freesia.constant;
+package com.freesia.oss.constant;
 
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import lombok.AllArgsConstructor;

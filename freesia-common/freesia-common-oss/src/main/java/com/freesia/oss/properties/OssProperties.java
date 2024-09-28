@@ -1,4 +1,4 @@
-package com.freesia.properties;
+package com.freesia.oss.properties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
