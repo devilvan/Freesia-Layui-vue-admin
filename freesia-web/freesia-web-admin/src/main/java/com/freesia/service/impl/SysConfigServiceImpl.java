@@ -93,7 +93,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
                 .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED);
         List<SysConfigPo> sysConfigPoList = this.list(queryWrapper);
-        sysConfigPoList.forEach(sysConfigPo -> URedis.put(CacheConstant.SYS_CONFIG, sysConfigPo.getConfigKey(), sysConfigPo.getConfigValue()));
+        sysConfigPoList.forEach(sysConfigPo -> UCache.put(CacheConstant.SYS_CONFIG, sysConfigPo.getConfigKey(), sysConfigPo.getConfigValue()));
     }
 
     @Override

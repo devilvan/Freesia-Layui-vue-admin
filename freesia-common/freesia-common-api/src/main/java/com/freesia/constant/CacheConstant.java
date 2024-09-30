@@ -6,6 +6,12 @@ import lombok.NoArgsConstructor;
 /**
  * @author Evad.Wu
  * @Description 缓存的名字 静态类
+ * 缓存组名称常量
+ * key 格式为 cacheNames#ttl#maxIdleTime#maxSize
+ * ttl 过期时间 如果设置为0则不过期 默认为0
+ * maxIdleTime 最大空闲时间 根据LRU算法清理空闲数据 如果设置为0则不检测 默认为0
+ * maxSize 组最大长度 根据LRU算法清理溢出数据 如果设置为0则无限长 默认为0
+ * 例子: test#60s、test#0#60s、test#0#1m#1000、test#1h#0#500
  * @date 2023-08-12
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -28,7 +34,7 @@ public final class CacheConstant {
     /**
      * 登录账户密码错误次数 redis key
      */
-    public static final String  PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+    public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
     /**
      * 获取默认对象存储配置信息-缓存键
      */

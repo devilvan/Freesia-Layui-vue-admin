@@ -105,7 +105,7 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
                 .orderByAsc(SysDictValuePo::getOrderNum);
         List<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.selectList(queryWrapper);
         Map<String, List<SysDictValuePo>> sysDictValueMap = UStream.groupingByKey(sysDictValuePoList, SysDictValuePo::getDictKey);
-        sysDictValueMap.forEach((k, v) -> URedis.put(CacheConstant.SYS_DICT, k, v));
+        sysDictValueMap.forEach((k, v) -> UCache.put(CacheConstant.SYS_DICT, k, v));
     }
 
     @Override

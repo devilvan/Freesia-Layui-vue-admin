@@ -4,7 +4,6 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.freesia.annotation.Idempotent;
 import com.freesia.annotation.LogRecord;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.DictModule;
@@ -18,9 +17,9 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysDictKeyRepository;
 import com.freesia.service.SysDictKeyService;
+import com.freesia.util.UCache;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
-import com.freesia.util.URedis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -56,14 +55,14 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
     @Override
     public TableResult<FindPageSysDictKeyEntity> findPageSysDictList(SysDictDto sysDictDto, PageQuery pageQuery) {
         Page<FindPageSysDictKeyEntity> page = sysDictKeyMapper.findPageSysDictList(pageQuery.build(), Wrappers.<SysDictKeyPo>query()
-                .eq("DK.LOGIC_DEL", FlagConstant.DISABLED)
-                .eq("DV.LOGIC_DEL", FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DK.STATUS", sysDictDto.getStatus())
-                .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DV.STATUS", sysDictDto.getStatus())
-                .like(UEmpty.isNotEmpty(sysDictDto.getKeyName()), "DK.KEY_NAME", sysDictDto.getKeyName())
-                .like(UEmpty.isNotEmpty(sysDictDto.getDictKey()), "DK.DICT_KEY", sysDictDto.getDictKey())
-                .like(UEmpty.isNotEmpty(sysDictDto.getValue()), "DK.VALUE", sysDictDto.getValue())
-                .like(UEmpty.isNotEmpty(sysDictDto.getValueName()), "DK.NAME", sysDictDto.getValueName())
+                .eq("DK.LOGIC_DEL" , FlagConstant.DISABLED)
+                .eq("DV.LOGIC_DEL" , FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DK.STATUS" , sysDictDto.getStatus())
+                .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DV.STATUS" , sysDictDto.getStatus())
+                .like(UEmpty.isNotEmpty(sysDictDto.getKeyName()), "DK.KEY_NAME" , sysDictDto.getKeyName())
+                .like(UEmpty.isNotEmpty(sysDictDto.getDictKey()), "DK.DICT_KEY" , sysDictDto.getDictKey())
+                .like(UEmpty.isNotEmpty(sysDictDto.getValue()), "DK.VALUE" , sysDictDto.getValue())
+                .like(UEmpty.isNotEmpty(sysDictDto.getValueName()), "DK.NAME" , sysDictDto.getValueName())
                 .orderByDesc("DK.ID")
                 .orderByAsc("DV.ORDER_NUM"));
         return TableResult.build(page);
@@ -72,10 +71,10 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
     @Override
     public List<SysDictKeyDto> findSysDictKeyList(SysDictKeyDto sysDictKeyDto) {
         List<SysDictKeyPo> sysDictList = sysDictKeyMapper.findSysDictKeyList(Wrappers.<SysDictKeyPo>query()
-                .eq("DK.LOGIC_DEL", FlagConstant.DISABLED)
-                .like(UEmpty.isNotEmpty(sysDictKeyDto.getDictKey()), "DK.DICT_KEY", sysDictKeyDto.getDictKey())
-                .like(UEmpty.isNotEmpty(sysDictKeyDto.getKeyName()), "DK.KEY_NAME", sysDictKeyDto.getKeyName())
-                .eq(UEmpty.isNotEmpty(sysDictKeyDto.getStatus()), "DK.STATUS", sysDictKeyDto.getStatus())
+                .eq("DK.LOGIC_DEL" , FlagConstant.DISABLED)
+                .like(UEmpty.isNotEmpty(sysDictKeyDto.getDictKey()), "DK.DICT_KEY" , sysDictKeyDto.getDictKey())
+                .like(UEmpty.isNotEmpty(sysDictKeyDto.getKeyName()), "DK.KEY_NAME" , sysDictKeyDto.getKeyName())
+                .eq(UEmpty.isNotEmpty(sysDictKeyDto.getStatus()), "DK.STATUS" , sysDictKeyDto.getStatus())
                 .orderByDesc("DK.ID"));
         return UCopy.fullCopyList(sysDictList, SysDictKeyDto.class);
     }
@@ -87,7 +86,7 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
         SysDictKeyDto dto = saveUpdate(sysDictKeyDto);
         if (ObjectUtil.isNull(id)) {
             // 新增字典键则，加入到缓存中
-            URedis.put(CacheConstant.SYS_DICT, sysDictKeyDto.getDictKey(), Collections.emptyList());
+            UCache.put(CacheConstant.SYS_DICT, sysDictKeyDto.getDictKey(), Collections.emptyList());
         }
         return dto;
     }

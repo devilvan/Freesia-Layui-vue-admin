@@ -4,7 +4,6 @@ import com.alibaba.fastjson.serializer.ValueFilter;
 import com.freesia.annotation.Desensitize;
 import com.freesia.constant.DesensitizedType;
 import com.freesia.util.UDesensitized;
-import com.freesia.util.UEmpty;
 
 import java.lang.reflect.Field;
 
