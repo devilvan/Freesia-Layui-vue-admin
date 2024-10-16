@@ -2,7 +2,7 @@ package com.freesia.service;
 
 
 import com.freesia.constant.LoginRetryType;
-import com.freesia.model.LoginUserModel;
+import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.po.SysUserPo;
 
 import java.util.function.Supplier;

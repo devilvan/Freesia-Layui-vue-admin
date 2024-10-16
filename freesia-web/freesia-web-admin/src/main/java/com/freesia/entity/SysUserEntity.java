@@ -1,7 +1,6 @@
 package com.freesia.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.freesia.annotation.Desensitize;
+import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.constant.DesensitizedType;
 import com.freesia.controller.SysLoginController;
 import io.swagger.v3.oas.annotations.media.Schema;

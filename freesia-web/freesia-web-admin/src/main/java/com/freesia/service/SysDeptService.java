@@ -4,7 +4,7 @@ import com.freesia.dto.SysDeptDto;
 import com.freesia.entity.FindDeptRolesByDeptIdEntity;
 import com.freesia.entity.FindPageSysDeptListEntity;
 import com.freesia.entity.FindTreeDeptSelectEntity;
-import com.freesia.model.LoginUserModel;
+import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 

@@ -49,6 +49,46 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-oss</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-excel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-crypt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-satoken</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-desensitization</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-tenant</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-net</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-doc</artifactId>
+        </dependency>
         <!--spring-test测试=-->
         <dependency>
             <groupId>org.springframework</groupId>

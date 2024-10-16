@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.CacheConstant;
 import com.freesia.oss.exception.OssException;
 import com.freesia.oss.properties.OssProperties;
+import com.freesia.redis.util.URedis;
 import com.freesia.util.UEmpty;
-import com.freesia.util.URedis;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;

@@ -5,7 +5,6 @@ import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
-import com.freesia.model.LoginUserModel;
 import com.freesia.po.SysRolePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;

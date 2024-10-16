@@ -1,8 +1,8 @@
 package com.freesia.component;
 
 import com.freesia.constant.AdminConstant;
-import com.freesia.model.LoginUserModel;
-import com.freesia.util.USecurity;
+import com.freesia.satoken.model.LoginUserModel;
+import com.freesia.satoken.util.USecurity;
 import lombok.NonNull;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.AuditorAware;

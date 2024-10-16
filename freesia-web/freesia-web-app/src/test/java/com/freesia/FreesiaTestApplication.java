@@ -2,13 +2,13 @@ package com.freesia;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.constant.AccessPolicy;
 import com.freesia.dto.GiteeCommitsRequestParamDto;
 import com.freesia.dto.GiteeCommitsResponseDto;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
-import com.freesia.httpclient.builder.HttpBuilder;
-import com.freesia.httpclient.component.HttpClientComponent;
-import com.freesia.httpclient.dto.HttpClientDto;
+import com.freesia.net.builder.HttpBuilder;
+import com.freesia.net.component.HttpClientComponent;
+import com.freesia.net.dto.HttpClientDto;
+import com.freesia.oss.constant.AccessPolicy;
 import com.freesia.po.SysOssConfigPo;
 import com.freesia.properties.GiteeProperties;
 import com.freesia.repository.SysOssConfigRepository;

@@ -7,19 +7,31 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="freesia-common-service" />
+        <module name="freesia-common-tenant" />
         <module name="freesia-web-api" />
+        <module name="freesia-common-net" />
         <module name="freesia-common-framework" />
-        <module name="freesia-common-oss" />
-        <module name="freesia-web-framework" />
+        <module name="freesia-common-json" />
+        <module name="freesia-common-doc" />
+        <module name="freesia-common-excel" />
         <module name="freesia-common-api" />
         <module name="freesia-web-app" />
         <module name="freesia-common-cache" />
+        <module name="freesia-common-satoken" />
+        <module name="freesia-common-desensitization" />
+        <module name="freesia-common-service" />
+        <module name="freesia-common-oss" />
+        <module name="freesia-common-crypt" />
+        <module name="freesia-common-validation" />
+        <module name="freesia-web-framework" />
         <module name="freesia-common-codegen" />
+        <module name="freesia-common-log" />
+        <module name="freesia-common-redis" />
         <module name="freesia-web-admin" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="16">
+      <module name="freesia-common-desensitive" target="16" />
       <module name="freesia-web-oss" target="16" />
       <module name="freesia-web-sse" target="16" />
     </bytecodeTargetLevel>
@@ -29,9 +41,21 @@
       <module name="freesia-common-api" options="-parameters" />
       <module name="freesia-common-cache" options="-parameters" />
       <module name="freesia-common-codegen" options="-parameters" />
+      <module name="freesia-common-crypt" options="-parameters" />
+      <module name="freesia-common-desensitive" options="-parameters" />
+      <module name="freesia-common-desensitization" options="-parameters" />
+      <module name="freesia-common-doc" options="-parameters" />
+      <module name="freesia-common-excel" options="-parameters" />
       <module name="freesia-common-framework" options="-parameters" />
+      <module name="freesia-common-json" options="-parameters" />
+      <module name="freesia-common-log" options="-parameters" />
+      <module name="freesia-common-net" options="-parameters" />
       <module name="freesia-common-oss" options="-parameters" />
+      <module name="freesia-common-redis" options="-parameters" />
+      <module name="freesia-common-satoken" options="-parameters" />
       <module name="freesia-common-service" options="-parameters" />
+      <module name="freesia-common-tenant" options="-parameters" />
+      <module name="freesia-common-validation" options="-parameters" />
       <module name="freesia-web-admin" options="-parameters" />
       <module name="freesia-web-api" options="-parameters" />
       <module name="freesia-web-app" options="-parameters" />

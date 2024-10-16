@@ -1,8 +1,8 @@
 package com.freesia.entity;
 
-import com.freesia.annotation.Phone_CN;
 import com.freesia.constant.AdminConstant;
 import com.freesia.excel.pojo.BaseImportEntity;
+import com.freesia.validation.annotation.Phone_CN;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

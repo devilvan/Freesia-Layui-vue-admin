@@ -14,7 +14,7 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.UCopy;
-import com.freesia.util.USecurity;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

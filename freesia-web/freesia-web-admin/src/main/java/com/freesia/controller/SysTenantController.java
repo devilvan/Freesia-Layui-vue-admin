@@ -13,7 +13,7 @@ import com.freesia.service.SysTenantService;
 import com.freesia.util.UCollection;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
-import com.freesia.util.USecurity;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.vo.AssignTenantVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SysTenantVo;

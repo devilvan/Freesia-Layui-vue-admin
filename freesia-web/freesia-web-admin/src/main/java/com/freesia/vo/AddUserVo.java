@@ -1,8 +1,8 @@
 package com.freesia.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.freesia.annotation.Phone_CN;
 import com.freesia.constant.AdminConstant;
+import com.freesia.validation.annotation.Phone_CN;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 /**
  * @author Evad.Wu
  * @Description 新增用户 值对象
- * {@link com.freesia.controller.SysUserController#addUser}
+ * {@link com.freesia.controller.SysUserController#saveUserInfo}
  * @date 2024-04-13
  */
 @Data

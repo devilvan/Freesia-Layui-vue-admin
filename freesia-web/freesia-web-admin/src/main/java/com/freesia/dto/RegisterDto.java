@@ -1,6 +1,6 @@
 package com.freesia.dto;
 
-import com.freesia.constant.UserType;
+import com.freesia.satoken.constant.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

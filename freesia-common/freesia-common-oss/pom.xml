@@ -31,5 +31,9 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-redis</artifactId>
+        </dependency>
     </dependencies>
 </project>

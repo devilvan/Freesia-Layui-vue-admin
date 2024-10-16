@@ -10,7 +10,7 @@ import com.freesia.constant.Constants;
 import com.freesia.dto.CaptchaCodeDto;
 import com.freesia.properties.CaptchaProperties;
 import com.freesia.service.SysConfigService;
-import com.freesia.util.URedis;
+import com.freesia.redis.util.URedis;
 import com.freesia.util.UReflect;
 import com.freesia.util.USpring;
 import com.freesia.vo.R;

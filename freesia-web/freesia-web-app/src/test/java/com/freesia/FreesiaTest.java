@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import javax.crypto.*;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -34,6 +33,13 @@ import java.util.regex.Pattern;
 @Slf4j
 public class FreesiaTest {
     private static final String ENCRYPT_KEY = "Y29tLnNpbm9zZXJ2aWNlcy5vcmc=";
+
+    private static byte[] generateKey() throws NoSuchAlgorithmException {
+        KeyGenerator keyGen = KeyGenerator.getInstance("$AES");
+        SecureRandom random = new SecureRandom();
+        keyGen.init(random);
+        return keyGen.generateKey().getEncoded();
+    }
 
     @Test
     public void testNumberReg() {
@@ -141,7 +147,6 @@ public class FreesiaTest {
         return decodeByte;
     }
 
-
     @Test
     public void testExcelRead() {
         String fileName = "D:\\Mine\\文本文件\\测试导入.xls";
@@ -225,7 +230,6 @@ public class FreesiaTest {
 //        }
     }
 
-
     @Test
     public void lastIndexOf() {
         String component = "iframe/inner/index222";
@@ -281,13 +285,6 @@ public class FreesiaTest {
         cipher.init(Cipher.DECRYPT_MODE, secretKey); // 初始化解密器
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes); // 执行解密操作
         System.out.println("Decrypted Text: " + new String(decryptedBytes));
-    }
-
-    private static byte[] generateKey() throws NoSuchAlgorithmException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("$AES");
-        SecureRandom random = new SecureRandom();
-        keyGen.init(random);
-        return keyGen.generateKey().getEncoded();
     }
 
     @Test

@@ -4,13 +4,13 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.freesia.annotation.LogRecord;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.DictModule;
 import com.freesia.constant.FlagConstant;
 import com.freesia.dto.SysDictDto;
 import com.freesia.dto.SysDictKeyDto;
 import com.freesia.entity.FindPageSysDictKeyEntity;
+import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysDictKeyMapper;
 import com.freesia.po.SysDictKeyPo;
 import com.freesia.pojo.PageQuery;
@@ -55,14 +55,14 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
     @Override
     public TableResult<FindPageSysDictKeyEntity> findPageSysDictList(SysDictDto sysDictDto, PageQuery pageQuery) {
         Page<FindPageSysDictKeyEntity> page = sysDictKeyMapper.findPageSysDictList(pageQuery.build(), Wrappers.<SysDictKeyPo>query()
-                .eq("DK.LOGIC_DEL" , FlagConstant.DISABLED)
-                .eq("DV.LOGIC_DEL" , FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DK.STATUS" , sysDictDto.getStatus())
-                .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DV.STATUS" , sysDictDto.getStatus())
-                .like(UEmpty.isNotEmpty(sysDictDto.getKeyName()), "DK.KEY_NAME" , sysDictDto.getKeyName())
-                .like(UEmpty.isNotEmpty(sysDictDto.getDictKey()), "DK.DICT_KEY" , sysDictDto.getDictKey())
-                .like(UEmpty.isNotEmpty(sysDictDto.getValue()), "DK.VALUE" , sysDictDto.getValue())
-                .like(UEmpty.isNotEmpty(sysDictDto.getValueName()), "DK.NAME" , sysDictDto.getValueName())
+                .eq("DK.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq("DV.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DK.STATUS", sysDictDto.getStatus())
+                .eq(UEmpty.isNotEmpty(sysDictDto.getStatus()), "DV.STATUS", sysDictDto.getStatus())
+                .like(UEmpty.isNotEmpty(sysDictDto.getKeyName()), "DK.KEY_NAME", sysDictDto.getKeyName())
+                .like(UEmpty.isNotEmpty(sysDictDto.getDictKey()), "DK.DICT_KEY", sysDictDto.getDictKey())
+                .like(UEmpty.isNotEmpty(sysDictDto.getValue()), "DK.VALUE", sysDictDto.getValue())
+                .like(UEmpty.isNotEmpty(sysDictDto.getValueName()), "DK.NAME", sysDictDto.getValueName())
                 .orderByDesc("DK.ID")
                 .orderByAsc("DV.ORDER_NUM"));
         return TableResult.build(page);
@@ -71,10 +71,10 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
     @Override
     public List<SysDictKeyDto> findSysDictKeyList(SysDictKeyDto sysDictKeyDto) {
         List<SysDictKeyPo> sysDictList = sysDictKeyMapper.findSysDictKeyList(Wrappers.<SysDictKeyPo>query()
-                .eq("DK.LOGIC_DEL" , FlagConstant.DISABLED)
-                .like(UEmpty.isNotEmpty(sysDictKeyDto.getDictKey()), "DK.DICT_KEY" , sysDictKeyDto.getDictKey())
-                .like(UEmpty.isNotEmpty(sysDictKeyDto.getKeyName()), "DK.KEY_NAME" , sysDictKeyDto.getKeyName())
-                .eq(UEmpty.isNotEmpty(sysDictKeyDto.getStatus()), "DK.STATUS" , sysDictKeyDto.getStatus())
+                .eq("DK.LOGIC_DEL", FlagConstant.DISABLED)
+                .like(UEmpty.isNotEmpty(sysDictKeyDto.getDictKey()), "DK.DICT_KEY", sysDictKeyDto.getDictKey())
+                .like(UEmpty.isNotEmpty(sysDictKeyDto.getKeyName()), "DK.KEY_NAME", sysDictKeyDto.getKeyName())
+                .eq(UEmpty.isNotEmpty(sysDictKeyDto.getStatus()), "DK.STATUS", sysDictKeyDto.getStatus())
                 .orderByDesc("DK.ID"));
         return UCopy.fullCopyList(sysDictList, SysDictKeyDto.class);
     }
