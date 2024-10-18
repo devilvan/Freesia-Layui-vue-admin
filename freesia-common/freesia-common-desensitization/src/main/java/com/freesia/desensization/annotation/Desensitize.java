@@ -1,7 +1,7 @@
 package com.freesia.desensization.annotation;
 
 
-import com.freesia.constant.DesensitizedType;
+import com.freesia.desensization.constant.DesensitizedType;
 
 import java.lang.annotation.*;
 

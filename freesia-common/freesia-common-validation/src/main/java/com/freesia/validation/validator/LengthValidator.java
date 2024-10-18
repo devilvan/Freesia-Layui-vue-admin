@@ -1,6 +1,7 @@
-package com.freesia.validation.strategy;
+package com.freesia.validation.validator;
 
 import com.freesia.util.UMessage;
+import com.freesia.validation.strategy.ValidationStrategy;
 import com.freesia.validation.util.USpringValidation;
 import com.freesia.validation.pojo.LengthValidPojo;
 import org.hibernate.validator.constraints.Length;

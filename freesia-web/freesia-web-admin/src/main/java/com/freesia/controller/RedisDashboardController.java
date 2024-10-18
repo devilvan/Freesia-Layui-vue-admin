@@ -1,5 +1,6 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.RedissonPropertiesDto;
@@ -38,9 +39,9 @@ public class RedisDashboardController {
     final String PING = "ping";
     private final RedisTemplate<String, Object> freesiaRedisTemplate;
 
+    @SaCheckLogin
     @Operation(summary = "获取Redis面板信息")
     @GetMapping("findRedisDashboardInfo")
-    @SaIgnore
     public R<FindRedisDashboardInfoEntity> findRedisDashboardInfo() {
         // RedisTemplate获取到的是Redisson的连接
         Optional<RedisConnection> redisConnection = Optional.ofNullable(freesiaRedisTemplate.getConnectionFactory())

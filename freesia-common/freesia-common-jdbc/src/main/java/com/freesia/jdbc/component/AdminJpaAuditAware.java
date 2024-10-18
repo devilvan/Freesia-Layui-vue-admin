@@ -1,4 +1,4 @@
-package com.freesia.component;
+package com.freesia.jdbc.component;
 
 import com.freesia.constant.AdminConstant;
 import com.freesia.satoken.model.LoginUserModel;

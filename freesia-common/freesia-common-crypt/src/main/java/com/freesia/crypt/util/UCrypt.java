@@ -10,7 +10,7 @@ import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.Constants;
-import com.freesia.exception.CryptException;
+import com.freesia.crypt.exception.CryptException;
 import com.freesia.util.UEmpty;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

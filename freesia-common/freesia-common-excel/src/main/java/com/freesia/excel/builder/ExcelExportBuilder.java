@@ -10,7 +10,7 @@ import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.freesia.excel.constant.ExcelCellWriteStyle;
 import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.pojo.ExcelExportWriter;
-import com.freesia.util.UValidAssemble;
+import com.freesia.util.UPath;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +92,7 @@ public class ExcelExportBuilder {
             @Validated @NotNull(message = "导出路径不能为空！") String exportPath,
             @Validated @NotNull(message = "导出文件名不能为空！") String fileName,
             @Validated @NotNull(message = "文件后缀不能为空！") ExcelSuffix suffix) {
-        writerBuilder.file(UValidAssemble.validExportPath(exportPath, fileName, suffix.getSuffix()));
+        writerBuilder.file(UPath.validExportPath(exportPath, fileName, suffix.getSuffix()));
         return this;
     }
 

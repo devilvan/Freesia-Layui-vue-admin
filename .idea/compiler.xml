@@ -19,12 +19,13 @@
         <module name="freesia-common-cache" />
         <module name="freesia-common-satoken" />
         <module name="freesia-common-desensitization" />
-        <module name="freesia-common-service" />
+        <module name="freesia-common-idempotent" />
         <module name="freesia-common-oss" />
         <module name="freesia-common-crypt" />
         <module name="freesia-common-validation" />
         <module name="freesia-web-framework" />
         <module name="freesia-common-codegen" />
+        <module name="freesia-common-jdbc" />
         <module name="freesia-common-log" />
         <module name="freesia-common-redis" />
         <module name="freesia-web-admin" />
@@ -32,6 +33,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel target="16">
       <module name="freesia-common-desensitive" target="16" />
+      <module name="freesia-common-service" target="16" />
       <module name="freesia-web-oss" target="16" />
       <module name="freesia-web-sse" target="16" />
     </bytecodeTargetLevel>
@@ -47,6 +49,8 @@
       <module name="freesia-common-doc" options="-parameters" />
       <module name="freesia-common-excel" options="-parameters" />
       <module name="freesia-common-framework" options="-parameters" />
+      <module name="freesia-common-idempotent" options="-parameters" />
+      <module name="freesia-common-jdbc" options="-parameters" />
       <module name="freesia-common-json" options="-parameters" />
       <module name="freesia-common-log" options="-parameters" />
       <module name="freesia-common-net" options="-parameters" />

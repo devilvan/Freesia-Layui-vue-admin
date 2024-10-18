@@ -1,8 +1,9 @@
-package com.freesia.util;
+package com.freesia.desensization.util;
 
 import cn.hutool.core.util.CharUtil;
 import cn.hutool.core.util.StrUtil;
-import com.freesia.constant.DesensitizedType;
+import com.freesia.desensization.constant.DesensitizedType;
+import com.freesia.util.UEmpty;
 
 /**
  * @author Evad.Wu
@@ -10,43 +11,32 @@ import com.freesia.constant.DesensitizedType;
  * @date 2023-03-12
  */
 public class UDesensitized {
-    public static String desensitized(CharSequence str, DesensitizedType desensitizedType) {
-        if (StrUtil.isBlank(str)) {
+    public static String desensitized(CharSequence str, DesensitizedType... desensitizedTypes) {
+        if (UEmpty.isEmpty(str)) {
             return StrUtil.EMPTY;
         }
-        String newStr = String.valueOf(str);
-        switch (desensitizedType) {
-            case USER_ID:
-                newStr = String.valueOf(UDesensitized.userId());
-                break;
-            case CHINESE_NAME:
-                newStr = UDesensitized.chineseName(String.valueOf(str));
-                break;
-            case ID_CARD:
-                newStr = UDesensitized.idCardNum(String.valueOf(str), 1, 2);
-                break;
-            case FIXED_PHONE:
-                newStr = UDesensitized.fixedPhone(String.valueOf(str));
-                break;
-            case MOBILE_PHONE:
-                newStr = UDesensitized.mobilePhone(String.valueOf(str));
-                break;
-            case ADDRESS:
-                newStr = UDesensitized.address(String.valueOf(str), 8);
-                break;
-            case EMAIL:
-                newStr = UDesensitized.email(String.valueOf(str));
-                break;
-            case PASSWORD:
-                newStr = UDesensitized.password(String.valueOf(str));
-                break;
-            case CAR_LICENSE:
-                newStr = UDesensitized.carLicense(String.valueOf(str));
-                break;
-            case BANK_CARD:
-                newStr = UDesensitized.bankCard(String.valueOf(str));
-                break;
-            default:
+        String original = (String) str;
+        String newStr = String.valueOf(original);
+        for (DesensitizedType strategy : desensitizedTypes) {
+            switch (strategy) {
+                case CHINESE_NAME -> newStr = UDesensitized.chineseName(original);
+                case EURO_AMERICAN_NAME -> newStr = UDesensitized.euroAmericanName(original);
+                case ID_CARD -> newStr = UDesensitized.idCardNum(original, 1, 2);
+                case FIXED_PHONE -> newStr = UDesensitized.fixedPhone(original);
+                case MOBILE_PHONE -> newStr = UDesensitized.mobilePhone(original);
+                case ADDRESS -> newStr = UDesensitized.address(original, 8);
+                case EMAIL -> newStr = UDesensitized.email(original);
+                case PASSWORD -> newStr = UDesensitized.password(original);
+                case CAR_LICENSE -> newStr = UDesensitized.carLicense(original);
+                case BANK_CARD -> newStr = UDesensitized.bankCard(original);
+                default -> {
+                    return original;
+                }
+            }
+            // 如果已经经过某个脱敏规则处理被修改，则不再处理之后的规则
+            if (!newStr.equalsIgnoreCase(original)) {
+                return newStr;
+            }
         }
         return newStr;
     }

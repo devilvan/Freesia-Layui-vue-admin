@@ -15,7 +15,6 @@
         <module>freesia-common-framework</module>
         <module>freesia-common-api</module>
         <module>freesia-common-codegen</module>
-        <module>freesia-common-service</module>
         <module>freesia-common-cache</module>
         <module>freesia-common-oss</module>
         <module>freesia-common-redis</module>
@@ -29,6 +28,8 @@
         <module>freesia-common-validation</module>
         <module>freesia-common-net</module>
         <module>freesia-common-doc</module>
+        <module>freesia-common-jdbc</module>
+        <module>freesia-common-idempotent</module>
     </modules>
 
     <properties>
@@ -46,11 +47,6 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-framework</artifactId>
-                <version>${freesia.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-service</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
             <dependency>
@@ -111,6 +107,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-doc</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-jdbc</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>

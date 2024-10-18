@@ -25,10 +25,6 @@
         <!-- Common模块-->
         <dependency>
             <groupId>com.freesia</groupId>
-            <artifactId>freesia-common-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.freesia</groupId>
             <artifactId>freesia-common-framework</artifactId>
         </dependency>
         <dependency>

@@ -6,7 +6,7 @@ package com.freesia.util;
  * @Description 校验与装配 工具类
  * @date 2022-09-12
  */
-public class UValidAssemble {
+public class UPath {
     /**
      * 验证导出路径是否正确
      *

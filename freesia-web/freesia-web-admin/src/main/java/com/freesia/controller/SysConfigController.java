@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.ObjectUtil;
-import com.freesia.annotation.Idempotent;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.pojo.PageQuery;

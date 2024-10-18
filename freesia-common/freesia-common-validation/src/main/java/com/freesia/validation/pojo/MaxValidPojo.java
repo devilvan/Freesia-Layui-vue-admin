@@ -1,6 +1,6 @@
 package com.freesia.validation.pojo;
 
-import com.freesia.validation.strategy.MaxValidator;
+import com.freesia.validation.validator.MaxValidator;
 
 /**
  * @author Evad.Wu

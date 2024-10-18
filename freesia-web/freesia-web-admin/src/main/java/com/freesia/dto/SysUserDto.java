@@ -1,7 +1,7 @@
 package com.freesia.dto;
 
 import com.freesia.desensization.annotation.Desensitize;
-import com.freesia.constant.DesensitizedType;
+import com.freesia.desensization.constant.DesensitizedType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

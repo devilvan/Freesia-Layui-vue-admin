@@ -1,6 +1,6 @@
 package com.freesia.controller;
 
-import com.freesia.annotation.Idempotent;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.dto.SysOssConfigDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;

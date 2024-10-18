@@ -3,7 +3,7 @@ package com.freesia.controller;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.annotation.Idempotent;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.MenuPermission;
 import com.freesia.constant.MenuType;

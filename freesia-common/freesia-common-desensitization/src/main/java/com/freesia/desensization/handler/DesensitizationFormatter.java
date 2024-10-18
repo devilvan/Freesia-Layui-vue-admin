@@ -1,8 +1,8 @@
 package com.freesia.desensization.handler;
 
 import cn.hutool.core.util.StrUtil;
-import com.freesia.constant.DesensitizedType;
-import com.freesia.util.UDesensitized;
+import com.freesia.desensization.constant.DesensitizedType;
+import com.freesia.desensization.util.UDesensitized;
 import org.springframework.format.Formatter;
 
 import java.util.Locale;

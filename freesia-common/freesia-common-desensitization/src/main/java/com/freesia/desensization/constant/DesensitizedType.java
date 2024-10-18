@@ -1,4 +1,4 @@
-package com.freesia.constant;
+package com.freesia.desensization.constant;
 
 /**
  * @author Evad.Wu

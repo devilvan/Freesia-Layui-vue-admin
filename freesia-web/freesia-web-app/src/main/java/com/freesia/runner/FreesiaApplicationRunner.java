@@ -1,4 +1,4 @@
-package com.freesia.component;
+package com.freesia.runner;
 
 import com.freesia.constant.CacheConstant;
 import com.freesia.crypt.service.CryptService;

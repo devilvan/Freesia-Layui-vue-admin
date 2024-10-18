@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.annotation.Idempotent;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysDictDto;
 import com.freesia.dto.SysDictKeyDto;

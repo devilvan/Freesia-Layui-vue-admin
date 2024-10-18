@@ -1,4 +1,4 @@
-package com.freesia.component;
+package com.freesia.jdbc.component;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.freesia.constant.AuditConstant;

@@ -7,7 +7,7 @@ import com.freesia.excel.builder.ExcelExportBuilder;
 import com.freesia.excel.constant.ExcelCellWriteStyle;
 import com.freesia.excel.pojo.BaseExportEntity;
 import com.freesia.excel.pojo.ExcelExportDto;
-import com.freesia.util.UValidAssemble;
+import com.freesia.util.UPath;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.Valid;
@@ -29,7 +29,7 @@ public class ExcelExportHandler {
     public ExcelWriter doExcelWriter(@Valid ExcelExportDto excelExportDto) {
         ExcelWriter excelWriter = null;
         try {
-            String exportPath = UValidAssemble.validExportPath(excelExportDto.getExportPath(), excelExportDto.getFileName(), excelExportDto.getSuffix().getValue());
+            String exportPath = UPath.validExportPath(excelExportDto.getExportPath(), excelExportDto.getFileName(), excelExportDto.getSuffix().getValue());
             // 可选：.registerWriteHandler(new SimpleColumnWidthStyleStrategy(20))
             excelWriter = EasyExcelFactory.write(exportPath)
                     .head(excelExportDto.getClassType())

@@ -1,6 +1,6 @@
 package com.freesia.validation.pojo;
 
-import com.freesia.validation.strategy.LengthValidator;
+import com.freesia.validation.validator.LengthValidator;
 
 /**
  * @author Evad.Wu

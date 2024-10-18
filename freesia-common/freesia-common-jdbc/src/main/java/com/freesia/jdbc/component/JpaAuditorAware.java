@@ -1,5 +1,6 @@
-package com.freesia.component;
+package com.freesia.jdbc.component;
 
+import com.freesia.constant.AdminConstant;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,6 @@ public class JpaAuditorAware implements AuditorAware<String> {
     @Override
     @NonNull
     public Optional<String> getCurrentAuditor() {
-        return Optional.of("Evad");
+        return Optional.of(AdminConstant.SYSTEM);
     }
 }

@@ -2,10 +2,10 @@ package com.freesia.crypt.handler;
 
 import cn.hutool.http.ContentType;
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.annotation.Encrypt;
-import com.freesia.constant.CryptModule;
+import com.freesia.crypt.annotation.Encrypt;
+import com.freesia.crypt.constant.CryptModule;
 import com.freesia.crypt.util.UCrypt;
-import com.freesia.exception.CryptException;
+import com.freesia.crypt.exception.CryptException;
 import com.freesia.util.UEmpty;
 import com.freesia.vo.R;
 import lombok.NonNull;

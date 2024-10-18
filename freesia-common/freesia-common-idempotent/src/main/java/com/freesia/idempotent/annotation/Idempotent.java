@@ -1,4 +1,4 @@
-package com.freesia.annotation;
+package com.freesia.idempotent.annotation;
 
 import java.lang.annotation.*;
 

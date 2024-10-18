@@ -2,7 +2,7 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.freesia.annotation.Idempotent;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.AssignTenantDto;
 import com.freesia.dto.SysTenantDto;

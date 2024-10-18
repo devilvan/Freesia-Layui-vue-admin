@@ -1,6 +1,6 @@
 package com.freesia.validation.pojo;
 
-import com.freesia.validation.strategy.MinValidator;
+import com.freesia.validation.validator.MinValidator;
 
 /**
  * @author Evad.Wu

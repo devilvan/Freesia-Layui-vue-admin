@@ -17,6 +17,11 @@
     </properties>
 
     <dependencies>
+        <!--JSR303-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-framework</artifactId>

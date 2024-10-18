@@ -1,5 +1,6 @@
-package com.freesia.constant;
+package com.freesia.crypt.constant;
 
+import com.freesia.constant.SysModule;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;

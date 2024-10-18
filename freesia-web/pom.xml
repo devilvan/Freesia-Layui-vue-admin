@@ -49,11 +49,6 @@
             </dependency>
             <dependency>
                 <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-service</artifactId>
-                <version>${freesia.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-oss</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
@@ -110,6 +105,16 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-doc</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-jdbc</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-idempotent</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>
