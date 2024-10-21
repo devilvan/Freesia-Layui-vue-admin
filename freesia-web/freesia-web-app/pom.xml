@@ -47,6 +47,10 @@
         </dependency>
         <dependency>
             <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
             <artifactId>freesia-common-json</artifactId>
         </dependency>
         <dependency>

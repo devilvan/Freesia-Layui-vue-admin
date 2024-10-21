@@ -16,12 +16,12 @@ import java.util.regex.Pattern;
 
 /**
  * @author Evad.Wu
- * @Description 获取所有URL的配置 组件
+ * @Description 获取所有Controller路由的配置 组件
  * @date 2023-08-25
  */
 @Data
-@Component
-public class UrlsComponent implements InitializingBean {
+@Component(value = "mappings")
+public class MappingsComponent implements InitializingBean {
 
     private static final Pattern PATTERN = Pattern.compile("\\{(.*?)\\}");
 

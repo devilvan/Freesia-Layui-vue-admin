@@ -1,6 +1,7 @@
 package com.freesia;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.hutool.core.io.IoUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.GiteeCommitsRequestParamDto;
 import com.freesia.dto.GiteeCommitsResponseDto;
@@ -12,6 +13,7 @@ import com.freesia.oss.constant.AccessPolicy;
 import com.freesia.po.SysOssConfigPo;
 import com.freesia.properties.GiteeProperties;
 import com.freesia.repository.SysOssConfigRepository;
+import com.freesia.util.USpEl;
 import com.freesia.vo.AssignRoleVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,7 +21,14 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.Expression;
+import org.springframework.expression.spel.standard.SpelExpression;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +36,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,6 +56,39 @@ public class FreesiaTestApplication {
     @Resource
     private SysOssConfigRepository sysOssConfigRepository;
 
+    @Value("#{'${spring.application.name}'.split('-')[0]}")
+    private String man;
+
+    @Test
+    public void testResource() {
+        byte[] bs = "Do you like what you see?".getBytes(StandardCharsets.UTF_8);
+        ByteArrayResource bar = new ByteArrayResource(bs);
+        try {
+            InputStream inputStream = bar.getInputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IoUtil.write(baos,true,inputStream.readAllBytes());
+            System.out.println(baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testEl() {
+        String str = "#{ (\"www.\" + \"yootk.com\").substring(#start, #end).toUpperCase() }";
+        String parse = USpEl.parse(str, String.class, Map.of("start", 4, "end", 9));
+        System.out.println(parse);
+
+        String str1 = "#{ #convert('919') }";
+        try {
+            Method method = Integer.class.getMethod("parseInt", String.class);
+            System.out.println(USpEl.parse(str1, Integer.class, Map.of("convert", method)));
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(man);
+    }
 
     @Test
     public void testMappingOssConfig() {

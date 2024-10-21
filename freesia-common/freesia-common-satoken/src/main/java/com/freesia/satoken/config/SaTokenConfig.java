@@ -7,7 +7,7 @@ import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
-import com.freesia.component.UrlsComponent;
+import com.freesia.component.MappingsComponent;
 import com.freesia.satoken.handler.RedisSaTokenHandler;
 import com.freesia.satoken.properties.SecurityProperties;
 import com.freesia.satoken.service.impl.SaPermissionImpl;
@@ -34,11 +34,11 @@ public class SaTokenConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册路由拦截器，自定义验证规则
         registry.addInterceptor(new SaInterceptor(handler -> {
-            UrlsComponent urlsComponent = USpring.getBean("urlsComponent", UrlsComponent.class);
+            MappingsComponent mappingsComponent = USpring.getBean("mappings", MappingsComponent.class);
             // 登录验证 -- 排除多个路径
             SaRouter
                     // 获取所有的
-                    .match(urlsComponent.getUrls())
+                    .match(mappingsComponent.getUrls())
                     // 对未排除的路径进行检查，检查是否登录 是否有token
                     .check(StpUtil::checkLogin);
         })).addPathPatterns("/**")
