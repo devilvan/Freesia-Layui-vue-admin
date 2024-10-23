@@ -30,6 +30,7 @@
         <module>freesia-common-doc</module>
         <module>freesia-common-jdbc</module>
         <module>freesia-common-idempotent</module>
+        <module>freesia-common-sse</module>
     </modules>
 
     <properties>
@@ -112,6 +113,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-jdbc</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-sse</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>

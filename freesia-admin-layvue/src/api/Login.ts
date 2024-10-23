@@ -1,5 +1,7 @@
 import Http from "./Http";
 
+const sseDisconnectUrl = import.meta.env.VITE_SSE_DISCONNECT_URL
+
 export const login = function (encrypt: string) {
     let param = {encrypt: encrypt}
     return Http.post('/api/sysLoginController/sysLogin', param)
@@ -27,4 +29,8 @@ export const getMenu = function () {
 
 export const logout = function () {
     return Http.post('/api/sysLoginController/sysLogOut')
+}
+
+export const sseDisconnect = function () {
+    return Http.get(sseDisconnectUrl)
 }

@@ -1,12 +1,18 @@
 package com.freesia.config;
 
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -15,6 +21,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+    @Resource
+    private FastJsonHttpMessageConverter fastJsonHttpMessageConverter;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
@@ -49,5 +58,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
         source.registerCorsConfiguration("/**", config);
         // 返回新的CorsFilter
         return new CorsFilter(source);
+    }
+
+    /**
+     * Fastjson 处理前端或请求工具导致Long类型数据丢精度问题
+     *
+     * @param converters Http消息转换器
+     * @return 响应报文转换器
+     */
+    @Bean
+    public HttpMessageConverters fastjsonHttpMessageConverter(List<HttpMessageConverter<?>> converters) {
+        converters.add(fastJsonHttpMessageConverter);
+        return new HttpMessageConverters(converters);
+    }
+
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(fastJsonHttpMessageConverter);
     }
 }

@@ -21,6 +21,28 @@ public class URedis {
     private static final RedisTemplate<String, Object> REDIS_TEMPLATE = USpring.getBean("freesiaRedisTemplate");
 
     /**
+     * 发布消息
+     *
+     * @param topic   主题
+     * @param message 消息
+     */
+    public static void send(String topic, String message) {
+        REDIS_TEMPLATE.convertAndSend(topic, message);
+    }
+
+    /**
+     * 发布消息（批量主题）
+     *
+     * @param topicList 主题
+     * @param message   消息
+     */
+    public static void send(List<String> topicList, String message) {
+        for (String topic : topicList) {
+            send(topic, message);
+        }
+    }
+
+    /**
      * string 互斥set操作
      *
      * @param key   键
@@ -129,6 +151,26 @@ public class URedis {
      */
     public static <T> T randomMember(String key) {
         return (T) REDIS_TEMPLATE.opsForSet().randomMember(key);
+    }
+
+    /**
+     * Hash 判断键值对是否存在
+     *
+     * @param name Hash键
+     * @param key  map键
+     */
+    public static void hashExist(String name, Object key) {
+        REDIS_TEMPLATE.opsForHash().hasKey(name, key);
+    }
+
+    /**
+     * Hash 删除键值对
+     *
+     * @param name Hash键
+     * @param keys map键
+     */
+    public static void hashDelete(String name, Object... keys) {
+        REDIS_TEMPLATE.opsForHash().delete(name, keys);
     }
 
     /**

@@ -228,6 +228,9 @@ import en_US from '../lang/en_US'
 import router from "../router";
 import {useTabStore} from "./composable/useTabStore";
 import app from "../main";
+import {layer} from "@layui/layui-vue";
+import { EventSourcePolyfill } from "event-source-polyfill";
+import {sseDisconnect} from "../api/Login";
 
 export default {
   components: {
@@ -253,6 +256,7 @@ export default {
             ? '280px'
             : '220px'
     )
+    const sseConnectUrl = import.meta.env.VITE_SSE_CONNECT_URL
     const {
       selectedKey,
       openKeys,
@@ -265,6 +269,7 @@ export default {
     } = useMenu()
 
     onMounted(() => {
+      initSse();
       if (document.body.clientWidth < 768) {
         appStore.collapse = true
       }
@@ -290,6 +295,7 @@ export default {
 
     const logout = () => {
       const userInfoStore = useUserStore()
+      sseDisconnect()
       userInfoStore.logout()
       router.replace('/login')
     }
@@ -337,6 +343,22 @@ export default {
       }
     }
 
+    const initSse = () => {
+      let eventSource = new EventSourcePolyfill(sseConnectUrl, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Authorization': 'Bearer ' + userInfoStore.token as string,
+        },
+      })
+      eventSource.addEventListener("message", (e: { data: string }) => {
+        layer.notify({
+          title:"消息",
+          content: e.data
+        })
+        // layer.confirm(e.data, {icon: 1})
+      })
+    }
+
     return {
       sideWidth,
       mainSelectedKey,
@@ -364,7 +386,8 @@ export default {
       changeTenantSelect,
       toDoc,
       toGitee,
-      resolveImgPath
+      resolveImgPath,
+      initSse
     }
   }
 }

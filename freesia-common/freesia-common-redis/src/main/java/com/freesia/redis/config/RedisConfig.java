@@ -11,7 +11,6 @@ import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import com.freesia.constant.Constants;
 import com.freesia.desensization.handler.DesensitizeValueFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -19,11 +18,12 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -98,25 +98,9 @@ public class RedisConfig implements WebMvcConfigurer {
                 .build();
     }
 
-    @Override
-    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(buildFastJsonHttpMessageConverter());
-    }
 
-    /**
-     * Fastjson 处理前端或请求工具导致Long类型数据丢精度问题
-     *
-     * @param converters Http消息转换器
-     * @return 响应报文转换器
-     */
-    @Bean
-    public HttpMessageConverters fastjsonHttpMessageConverter(List<HttpMessageConverter<?>> converters) {
-        FastJsonHttpMessageConverter fastConverter = buildFastJsonHttpMessageConverter();
-        converters.add(fastConverter);
-        return new HttpMessageConverters(converters);
-    }
-
-    private FastJsonHttpMessageConverter buildFastJsonHttpMessageConverter() {
+    @Bean(value = "fastJsonHttpMessageConverter")
+    public FastJsonHttpMessageConverter buildFastJsonHttpMessageConverter() {
         FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         fastJsonConfig.setDateFormat(Constants.YMD_HMS);

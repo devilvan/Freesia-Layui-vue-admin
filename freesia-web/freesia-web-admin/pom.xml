@@ -77,5 +77,9 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-idempotent</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-sse</artifactId>
+        </dependency>
     </dependencies>
 </project>

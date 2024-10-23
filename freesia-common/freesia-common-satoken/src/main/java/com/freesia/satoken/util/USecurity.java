@@ -37,6 +37,15 @@ public class USecurity {
     public static final String USER_KEY = "userId";
 
     /**
+     * 获取当前用户的token信息
+     *
+     * @return token
+     */
+    public static String getToken() {
+        return StpUtil.getTokenValue();
+    }
+
+    /**
      * 构建敏感信息bean的函数接口，方便到行级别的自定义敏感数据
      *
      * @param supplier 接收敏感信息的生产者

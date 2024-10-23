@@ -26,6 +26,7 @@
         <module name="freesia-web-framework" />
         <module name="freesia-common-codegen" />
         <module name="freesia-common-jdbc" />
+        <module name="freesia-common-sse" />
         <module name="freesia-common-log" />
         <module name="freesia-common-redis" />
         <module name="freesia-web-admin" />
@@ -58,6 +59,7 @@
       <module name="freesia-common-redis" options="-parameters" />
       <module name="freesia-common-satoken" options="-parameters" />
       <module name="freesia-common-service" options="-parameters" />
+      <module name="freesia-common-sse" options="-parameters" />
       <module name="freesia-common-tenant" options="-parameters" />
       <module name="freesia-common-validation" options="-parameters" />
       <module name="freesia-web-admin" options="-parameters" />

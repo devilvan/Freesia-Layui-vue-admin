@@ -6,10 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @author Evad.Wu
@@ -30,12 +27,24 @@ public class ThreadPoolConfig {
      */
     @Lazy
     @Bean(value = "threadPoolExecutor")
-    public ThreadPoolExecutor getThreadPoolExecutor() {
+    public ThreadPoolExecutor buildThreadPoolExecutor() {
         ArrayBlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(1024);
         ThreadFactory threadFactory = ThreadFactoryBuilder.create().setNamePrefix("freesia-threadPoolExecutor").build();
         return new ThreadPoolExecutor(
                 AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS * 2, 300,
                 TimeUnit.SECONDS, blockingQueue, threadFactory, RejectPolicy.DISCARD_OLDEST.getValue()
         );
+    }
+
+    /**
+     * 创建定时任务线程池
+     *
+     * @return 线程池对象
+     */
+    @Lazy
+    @Bean(value = "scheduledThreadPoolExecutor")
+    public ScheduledThreadPoolExecutor buildScheduledThreadPoolExecutor() {
+        ThreadFactory threadFactory = ThreadFactoryBuilder.create().setNamePrefix("freesia-scheduledThreadPoolExecutor").build();
+        return new ScheduledThreadPoolExecutor(AVAILABLE_PROCESSORS, threadFactory, RejectPolicy.DISCARD_OLDEST.getValue());
     }
 }

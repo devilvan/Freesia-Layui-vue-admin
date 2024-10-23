@@ -18,6 +18,9 @@ import com.freesia.service.SysLoginService;
 import com.freesia.service.SysMenuService;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
+import com.freesia.sse.constant.SseTopic;
+import com.freesia.sse.dto.SseMessageDto;
+import com.freesia.sse.util.USse;
 import com.freesia.util.*;
 import com.freesia.vo.LoginVo;
 import com.freesia.vo.R;
@@ -28,8 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Evad.Wu
@@ -52,7 +58,6 @@ public class SysLoginController {
     @PostMapping("sysLogin")
     public R<Map<String, Object>> sysLogin(@Valid @RequestBody String request) {
         LoginVo loginVo = UCrypt.aesDecryptJSON(request, LoginVo.class);
-//        LoginVo loginVo = JSONObject.parseObject(request, LoginVo.class);
         Map<String, Object> ajax = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
         // 生成令牌
         String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getCaptchaKey());

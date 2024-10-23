@@ -21,12 +21,16 @@ import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.model.SysRoleModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.*;
+import com.freesia.sse.constant.SseTopic;
+import com.freesia.sse.dto.SseMessageDto;
+import com.freesia.sse.util.USse;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -39,6 +43,7 @@ import java.util.function.Supplier;
 @Service
 @RequiredArgsConstructor
 public class SysLoginServiceImpl implements SysLoginService {
+    private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private final LoginPasswordProperties loginPasswordProperties;
     private final SysConfigService sysConfigService;
     private final SysUserService sysUserService;
@@ -70,6 +75,14 @@ public class SysLoginServiceImpl implements SysLoginService {
             return loginLog;
         });
         USpring.context().publishEvent(loginLogEvent);
+        Long userId = USecurity.getUserId();
+        scheduledThreadPoolExecutor.schedule(() -> {
+            SseMessageDto dto = new SseMessageDto();
+            dto.setContent("欢迎登录Freesia后台管理系统");
+            dto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
+            dto.setUserIdList(List.of(userId));
+            USse.publish(dto);
+        }, 5, TimeUnit.SECONDS);
         return StpUtil.getTokenValue();
     }
 

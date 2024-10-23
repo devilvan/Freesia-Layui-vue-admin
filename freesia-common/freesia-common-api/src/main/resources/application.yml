@@ -145,4 +145,5 @@ management:
       show-details: always
 ---
 sse:
-  enabled: false
+  enabled: true
+  path: /resource/sse

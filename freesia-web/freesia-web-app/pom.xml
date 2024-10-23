@@ -97,6 +97,10 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-idempotent</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-sse</artifactId>
+        </dependency>
         <!--spring-test测试=-->
         <dependency>
             <groupId>org.springframework</groupId>
