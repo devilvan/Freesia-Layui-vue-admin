@@ -101,6 +101,10 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-sse</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-mail</artifactId>
+        </dependency>
         <!--spring-test测试=-->
         <dependency>
             <groupId>org.springframework</groupId>

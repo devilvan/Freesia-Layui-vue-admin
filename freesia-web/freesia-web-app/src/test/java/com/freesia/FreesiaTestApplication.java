@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.GiteeCommitsRequestParamDto;
 import com.freesia.dto.GiteeCommitsResponseDto;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
+import com.freesia.mail.util.UMail;
 import com.freesia.net.builder.HttpBuilder;
 import com.freesia.net.component.HttpClientComponent;
 import com.freesia.net.dto.HttpClientDto;
@@ -24,11 +25,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.Expression;
-import org.springframework.expression.spel.standard.SpelExpression;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,13 +56,18 @@ public class FreesiaTestApplication {
     private String man;
 
     @Test
+    public void testSendQQEmail() {
+        UMail.send("1005338848@qq.com", "测试邮件", "Do you like what you see?", false);
+    }
+
+    @Test
     public void testResource() {
         byte[] bs = "Do you like what you see?".getBytes(StandardCharsets.UTF_8);
         ByteArrayResource bar = new ByteArrayResource(bs);
         try {
             InputStream inputStream = bar.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            IoUtil.write(baos,true,inputStream.readAllBytes());
+            IoUtil.write(baos, true, inputStream.readAllBytes());
             System.out.println(baos);
         } catch (IOException e) {
             e.printStackTrace();

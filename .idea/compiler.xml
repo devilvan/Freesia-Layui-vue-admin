@@ -29,6 +29,7 @@
         <module name="freesia-common-sse" />
         <module name="freesia-common-log" />
         <module name="freesia-common-redis" />
+        <module name="freesia-common-mail" />
         <module name="freesia-web-admin" />
       </profile>
     </annotationProcessing>
@@ -54,6 +55,7 @@
       <module name="freesia-common-jdbc" options="-parameters" />
       <module name="freesia-common-json" options="-parameters" />
       <module name="freesia-common-log" options="-parameters" />
+      <module name="freesia-common-mail" options="-parameters" />
       <module name="freesia-common-net" options="-parameters" />
       <module name="freesia-common-oss" options="-parameters" />
       <module name="freesia-common-redis" options="-parameters" />

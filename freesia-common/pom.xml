@@ -31,6 +31,7 @@
         <module>freesia-common-jdbc</module>
         <module>freesia-common-idempotent</module>
         <module>freesia-common-sse</module>
+        <module>freesia-common-mail</module>
     </modules>
 
     <properties>
@@ -48,11 +49,6 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-framework</artifactId>
-                <version>${freesia.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-codegen</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
             <dependency>
@@ -118,6 +114,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-sse</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-mail</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>

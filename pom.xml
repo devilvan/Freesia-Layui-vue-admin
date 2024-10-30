@@ -33,9 +33,8 @@
         <fastjson.version>2.0.40</fastjson.version>
         <hutool.version>5.8.18</hutool.version>
         <jsoup.verison>1.11.3</jsoup.verison>
-        <redission.version>3.20.1</redission.version>
+        <redisson.version>3.18.1</redisson.version>
         <easyexcel.version>3.2.1</easyexcel.version>
-        <spring-cloud.version>3.1.3</spring-cloud.version>
         <ip2region.version>2.7.0</ip2region.version>
         <querydsl-jpa.version>5.0.0</querydsl-jpa.version>
         <springdoc-openapi.version>1.7.0</springdoc-openapi.version>
@@ -45,7 +44,9 @@
         <aws-java-sdk-s3.version>1.12.540</aws-java-sdk-s3.version>
         <bcpkix-jdk15on.version>1.68</bcpkix-jdk15on.version>
         <spring-security-crypto.version>5.7.11</spring-security-crypto.version>
-        <lock4j-redisson>2.2.7</lock4j-redisson>
+        <lock4j-redisson.version>2.2.7</lock4j-redisson.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
+
     </properties>
 
     <profiles>
@@ -103,7 +104,7 @@
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
-                <version>${redission.version}</version>
+                <version>${redisson.version}</version>
             </dependency>
             <!--Aspect-->
             <dependency>
@@ -167,6 +168,11 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-extra</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
             <!--EasyExcel-->
@@ -254,7 +260,13 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
-                <version>${lock4j-redisson}</version>
+                <version>${lock4j-redisson.version}</version>
+            </dependency>
+            <!-- 邮件模块-->
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${javax.mail.version}</version>
             </dependency>
             <!-- 基础模块-->
             <dependency>
@@ -265,11 +277,6 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-framework</artifactId>
-                <version>${freesia.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-codegen</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>
