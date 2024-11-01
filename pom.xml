@@ -33,7 +33,7 @@
         <fastjson.version>2.0.40</fastjson.version>
         <hutool.version>5.8.18</hutool.version>
         <jsoup.verison>1.11.3</jsoup.verison>
-        <redisson.version>3.18.1</redisson.version>
+        <redisson.version>3.17.3</redisson.version>
         <easyexcel.version>3.2.1</easyexcel.version>
         <ip2region.version>2.7.0</ip2region.version>
         <querydsl-jpa.version>5.0.0</querydsl-jpa.version>

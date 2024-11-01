@@ -8,6 +8,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     LayAvatar: typeof import('@layui/layui-vue')['LayAvatar']
+    LayBadge: typeof import('@layui/layui-vue')['LayBadge']
     LayBody: typeof import('@layui/layui-vue')['LayBody']
     LayBreadcrumb: typeof import('@layui/layui-vue')['LayBreadcrumb']
     LayBreadcrumbItem: typeof import('@layui/layui-vue')['LayBreadcrumbItem']

@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -57,7 +58,9 @@ public class FreesiaTestApplication {
 
     @Test
     public void testSendQQEmail() {
-        UMail.send("1005338848@qq.com", "测试邮件", "Do you like what you see?", false);
+//        UMail.send("1005338848@qq.com", "测试邮件", "Do you like what you see?", false);
+
+        UMail.sendHtml("1005338848@qq.com", "测试邮件", "Do you like what you see?\n<h1>Do you like what you see?</h1>", new File("D:\\Mine\\杂物\\猫猫舔嘴.gif"));
     }
 
     @Test
