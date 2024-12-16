@@ -75,10 +75,6 @@
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
-          <lay-button size="sm" @click="assignTenantUser()" v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_ASSIGN_USER]">
-            <lay-icon class="layui-icon-addition"></lay-icon>
-            分配用户
-          </lay-button>
         </template>
         <template v-slot:operator="{ row }">
           <lay-button
@@ -89,84 +85,49 @@
               v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]">编辑
           </lay-button>
           <lay-popconfirm
-              content="确定要删除此租户吗?"
+              content="确定要删除吗?"
               @confirm="confirm(row)"
               @cancel="cancel">
             <lay-button size="xs" border="red" border-style="dashed"
-                        v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_DELETE]">删除</lay-button>
+                        v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_DELETE]">删除
+            </lay-button>
           </lay-popconfirm>
         </template>
       </lay-table>
     </div>
 
-    <lay-layer v-model="sysTenantModalShowFlag" :title="title" :area="['1200px']">
+    <lay-layer v-model="addExpenseModalShowFlag" :title="title" :area="['1200px']">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit" @keydown.esc.prevent="toCancel">
-        <lay-form :model="sysTenantVo" ref="sysTenantFormRef" label-position="top">
+        <lay-form :model="accountCostVo" ref="addExpenseFormRef" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
-              <lay-form-item label="租户编码" prop="code" required>
-                <lay-input v-model="sysTenantVo.code" :allow-clear="true"></lay-input>
+              <lay-form-item label="开销描述" prop="desc" required>
+                <lay-input v-model="accountCostVo.desc" :allow-clear="true"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="联系人姓名" prop="contactName" required>
-                <lay-input v-model="sysTenantVo.contactName"></lay-input>
+              <lay-form-item label="开销金额" prop="amount" required>
+                <lay-input v-model="accountCostVo.amount"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="营业时间" prop="businessHoursFrom">
-                <lay-date-picker type="yearmonth" v-model="sysTenantVo.businessHoursFrom"
-                                 format="YYYY-MM"></lay-date-picker>
+              <lay-form-item label="开销类型" prop="type" required>
+                <lay-icon-picker v-model="accountCostVo.type" allow-clear></lay-icon-picker>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="租户名称" prop="name">
-                <lay-input v-model="sysTenantVo.name" :allow-clear="true"></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="联系人电话" prop="contactTel">
-                <lay-input v-model="sysTenantVo.contactTel"></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="租户类型" prop="type" required>
-                <lay-select
-                    class="search-input"
-                    size="sm"
-                    v-model="sysTenantVo.type"
-                    placeholder="请选择"
-                >
-                  <template v-for="(sysTenantType, index) in sysTenantTypeSelectList" :key="index">
-                    <lay-select-option :value="sysTenantType.value" :label="sysTenantType.label"></lay-select-option>
-                  </template>
-                </lay-select>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="联系人邮箱" prop="contactEmail" required>
-                <lay-input v-model="sysTenantVo.contactEmail"></lay-input>
-              </lay-form-item>
-            </lay-col>
-
-            <lay-col :md="6">
-              <lay-form-item label="租户状态" prop="status" required>
-                <lay-switch v-model="sysTenantVo.status"></lay-switch>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="租户地址" prop="address" required>
-                <lay-input v-model="sysTenantVo.address"></lay-input>
+              <lay-form-item label="开销时间" prop="paymentTime">
+                <lay-date-picker type="datetime" v-model="accountCostVo.paymentTime" allow-clear></lay-date-picker>
               </lay-form-item>
             </lay-col>
           </lay-row>
           <lay-row space="20">
             <lay-col :md="6">
-              <lay-form-item label="租户备注" prop="remark">
+              <lay-form-item label="备注" prop="remark">
                 <lay-textarea
                     allow-clear
-                    placeholder="请输入租户备注"
-                    v-model="sysTenantVo.remark"
+                    placeholder="请输入备注"
+                    v-model="accountCostVo.remark"
                 ></lay-textarea>
               </lay-form-item>
             </lay-col>
@@ -197,7 +158,7 @@ import {TableResult} from "../../../types/Result";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
 import {SysDictValueEntity} from "../../../types/system/Dict";
 import {SysTenantEntity, SysTenantVo} from "../../../types/system/Tenant";
-import {deleteSysTenant, findPageSysTenant, findSysTenant, saveUpdate} from "../../../api/system/Tenant";
+import {deleteAccountCost, findPageAccountCost, findAccountCost, saveUpdate} from "../../../api/account/Account";
 import router from "../../../router";
 import {Operate} from "../../../types/Constants";
 
@@ -208,7 +169,7 @@ onMounted(async () => {
   loadDataSource()
 })
 const loadDataSource = () => {
-  findPageSysTenant(searchQuery.value, pageQuery).then((res: TableResult<SysTenantEntity>) => {
+  findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<SysTenantEntity>) => {
     if (res.code == 200) {
       pageQuery.total = res.total;
       dataSource.value = res.rows
@@ -229,14 +190,14 @@ const sysTenantTypeSelectList = ref<Array>([])
 const searchQuery = ref<SysTenantEntity>({})
 const loading = ref(false)
 const selectedKeys = ref<Array<string>>([])
-const sysTenantVo = ref<SysTenantVo>({
+const accountCostVo = ref<SysTenantVo>({
   status: true
 })
 const sysTenantVoTemplate = ref<SysTenantVo>({
   status: true
 })
-const sysTenantFormRef = ref()
-const sysTenantModalShowFlag = ref(false)
+const addExpenseFormRef = ref()
+const addExpenseModalShowFlag = ref(false)
 const dataSource = ref<Array<SysTenantEntity>>()
 const title = ref('新增')
 const pageQuery = reactive<PageQuery>({
@@ -267,7 +228,7 @@ const columns = ref([
 
 /* FUNCTION*/
 function toReset() {
-  sysTenantVo.value = {
+  accountCostVo.value = {
     status: false
   }
 }
@@ -294,19 +255,19 @@ const remove = () => {
 const changeTenantModalFlag = (text: any, row: any) => {
   title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
   if (row != null) {
-    sysTenantVo.value = {...row}
+    accountCostVo.value = {...row}
   }
   // 编辑下查询包含敏感数据字段
   if (Operate.EDIT === text) {
-    findSysTenant({
+    findAccountCost({
       id: row.id
     }).then((res: any) => {
       if (res.code === 200) {
-        sysTenantVo.value = res.data;
+        accountCostVo.value = res.data;
       }
     })
   }
-  sysTenantModalShowFlag.value = !sysTenantModalShowFlag.value
+  addExpenseModalShowFlag.value = !addExpenseModalShowFlag.value
 }
 
 function toRemove() {
@@ -320,7 +281,7 @@ function toRemove() {
       {
         text: '确定',
         callback: (id: any) => {
-          deleteSysTenant(selectedKeys.value).then((res: any) => {
+          deleteAccountCost(selectedKeys.value).then((res: any) => {
             if (res.code === 200) {
               layer.msg('删除成功')
             }
@@ -342,14 +303,14 @@ function toRemove() {
 }
 
 function toSubmit() {
-  sysTenantFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+  addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      saveUpdate(sysTenantVo.value).then((res: any) => {
+      saveUpdate(accountCostVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
-          sysTenantVo.value = {};
-          sysTenantModalShowFlag.value = false
+          accountCostVo.value = {};
+          addExpenseModalShowFlag.value = false
         }
       })
     }
@@ -357,8 +318,8 @@ function toSubmit() {
 }
 
 function toCancel() {
-  sysTenantVo.value = {}
-  sysTenantModalShowFlag.value = false
+  accountCostVo.value = {}
+  addExpenseModalShowFlag.value = false
 }
 
 function confirm(row: any) {
@@ -366,7 +327,7 @@ function confirm(row: any) {
     layer.msg('系统内置参数无法删除！')
     return;
   } else {
-    deleteSysTenant([row.id]).then((res: any) => {
+    deleteAccountCost([row.id]).then((res: any) => {
       if (res.code === 200) {
         layer.msg('删除成功')
       }
@@ -381,13 +342,6 @@ function cancel() {
   layer.msg('您已取消操作')
 }
 
-function assignTenantUser() {
-  if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {
-    layer.msg("请选择1条数据", {icon: 3})
-    return;
-  }
-  $router.push("/system/tenant/assignUser/" + selectedKeys.value[0])
-}
 
 function assignTenantRole() {
   if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {

@@ -35,7 +35,7 @@
                     </lay-form-item>
                     <lay-form-item label="验证码" :label-width="0" prop="code" :hidden="!captchaEnabled"
                                    :required="!captchaEnabled">
-                      <div style="width: 264px; display: inline-block">
+                      <div style="width: 60%; display: inline-block">
                         <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="验证码"
                                    v-model="loginForm.code"></lay-input>
                       </div>

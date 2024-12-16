@@ -16,6 +16,7 @@ import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.math.BigDecimal;
 
 /**
  * @author ${author}

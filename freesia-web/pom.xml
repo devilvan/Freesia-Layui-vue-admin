@@ -16,6 +16,7 @@
         <module>freesia-web-api</module>
         <module>freesia-web-framework</module>
         <module>freesia-web-admin</module>
+        <module>freesia-web-account</module>
     </modules>
 
     <dependencyManagement>

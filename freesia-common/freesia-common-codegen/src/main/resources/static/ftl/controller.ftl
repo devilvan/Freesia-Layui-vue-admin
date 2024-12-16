@@ -3,12 +3,16 @@ package ${packageName}.controller;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import ${packageName}.vo.${dataBaseDto.className}Vo;
+import ${packageName}.dto.${dataBaseDto.className}Dto;
 import ${packageName}.service.${dataBaseDto.className}Service;
+import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 /**
  * @author ${author}
@@ -17,7 +21,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "${dataBaseDto.className?uncap_first}Controller")
+@RequestMapping(value = "/api/${dataBaseDto.className?uncap_first}Controller")
 @Tag(name = "${dataBaseDto.className}Controller", description = "${dataBaseDto.comment} 控制器")
 public class ${dataBaseDto.className}Controller {
     private final ${dataBaseDto.className}Service ${dataBaseDto.className?uncap_first}Service;

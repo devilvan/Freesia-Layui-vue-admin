@@ -7,28 +7,29 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="freesia-common-tenant" />
         <module name="freesia-web-api" />
-        <module name="freesia-common-net" />
         <module name="freesia-common-framework" />
         <module name="freesia-common-json" />
         <module name="freesia-common-doc" />
-        <module name="freesia-common-excel" />
-        <module name="freesia-common-api" />
         <module name="freesia-web-app" />
         <module name="freesia-common-cache" />
         <module name="freesia-common-satoken" />
-        <module name="freesia-common-desensitization" />
-        <module name="freesia-common-idempotent" />
         <module name="freesia-common-oss" />
-        <module name="freesia-common-crypt" />
-        <module name="freesia-common-validation" />
         <module name="freesia-web-framework" />
         <module name="freesia-common-codegen" />
-        <module name="freesia-common-jdbc" />
         <module name="freesia-common-sse" />
         <module name="freesia-common-log" />
         <module name="freesia-common-redis" />
+        <module name="freesia-common-tenant" />
+        <module name="freesia-common-net" />
+        <module name="freesia-common-excel" />
+        <module name="freesia-common-api" />
+        <module name="freesia-common-desensitization" />
+        <module name="freesia-web-account" />
+        <module name="freesia-common-idempotent" />
+        <module name="freesia-common-crypt" />
+        <module name="freesia-common-validation" />
+        <module name="freesia-common-jdbc" />
         <module name="freesia-common-mail" />
         <module name="freesia-web-admin" />
       </profile>
@@ -64,6 +65,7 @@
       <module name="freesia-common-sse" options="-parameters" />
       <module name="freesia-common-tenant" options="-parameters" />
       <module name="freesia-common-validation" options="-parameters" />
+      <module name="freesia-web-account" options="-parameters" />
       <module name="freesia-web-admin" options="-parameters" />
       <module name="freesia-web-api" options="-parameters" />
       <module name="freesia-web-app" options="-parameters" />
