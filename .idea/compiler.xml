@@ -34,12 +34,7 @@
         <module name="freesia-web-admin" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="16">
-      <module name="freesia-common-desensitive" target="16" />
-      <module name="freesia-common-service" target="16" />
-      <module name="freesia-web-oss" target="16" />
-      <module name="freesia-web-sse" target="16" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="16" />
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
@@ -47,7 +42,6 @@
       <module name="freesia-common-cache" options="-parameters" />
       <module name="freesia-common-codegen" options="-parameters" />
       <module name="freesia-common-crypt" options="-parameters" />
-      <module name="freesia-common-desensitive" options="-parameters" />
       <module name="freesia-common-desensitization" options="-parameters" />
       <module name="freesia-common-doc" options="-parameters" />
       <module name="freesia-common-excel" options="-parameters" />
@@ -61,7 +55,6 @@
       <module name="freesia-common-oss" options="-parameters" />
       <module name="freesia-common-redis" options="-parameters" />
       <module name="freesia-common-satoken" options="-parameters" />
-      <module name="freesia-common-service" options="-parameters" />
       <module name="freesia-common-sse" options="-parameters" />
       <module name="freesia-common-tenant" options="-parameters" />
       <module name="freesia-common-validation" options="-parameters" />
@@ -70,8 +63,6 @@
       <module name="freesia-web-api" options="-parameters" />
       <module name="freesia-web-app" options="-parameters" />
       <module name="freesia-web-framework" options="-parameters" />
-      <module name="freesia-web-oss" options="-parameters" />
-      <module name="freesia-web-sse" options="-parameters" />
     </option>
   </component>
 </project>

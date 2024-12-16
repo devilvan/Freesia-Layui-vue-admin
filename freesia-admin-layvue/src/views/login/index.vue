@@ -89,6 +89,12 @@
                   <p class="text">Github</p>
                 </div>
               </li>
+              <li>
+                <div class="line-container">
+                  <SvgIcon icon-name="068_买菜"></SvgIcon>
+                  <img style="color: #52c41a" class="icon" src="../../assets/svgIcon/068_买菜.svg"/>
+                </div>
+              </li>
             </ul>
           </div>
         </div>
@@ -108,6 +114,7 @@ import {getCaptchaCode} from "../../api/captcha/Captcha";
 import {loginQrcode} from "../../api/module/commone";
 import router from "../../router";
 import {useCryptStore} from "../../store/crypt";
+import SvgIcon from "../../views/component/svg/SvgIcon.vue";
 
 /* INIT*/
 onMounted(async () => {

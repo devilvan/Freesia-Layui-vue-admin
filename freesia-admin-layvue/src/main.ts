@@ -11,11 +11,15 @@ import {MenuPermission} from "./types/Permission";
 import {JSEncrypt} from "encryptlong";
 import {getPublicKey, wrapEncryptPub2} from "./api/Crypt";
 import {useCryptStore} from "./store/crypt";
+import './assets/svgIcon/index.js'
+import SvgIcon from "./views/component/svg/SvgIcon.vue";
+// 导入 svgIcon
 
 /**
  * 大坑，如果缺失src前的/，则会造成加载图片失败
  */
 const app = createApp(App)
+app.component('SvgIcon', SvgIcon);
 app.config.globalProperties.$SRC_ASSETS = "/src/assets/";
 app.config.globalProperties.$ADMIN_PERMISSION = "*:*:*";
 app.config.globalProperties.$ADMIN_ROLE = "admin";
