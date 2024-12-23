@@ -3,20 +3,20 @@ package com.freesia.account.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.mapper.AccountCostMapper;
+import com.freesia.account.po.AccountCostPo;
+import com.freesia.account.repository.AccountCostRepository;
+import com.freesia.account.service.AccountCostService;
 import com.freesia.constant.FlagConstant;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.po.AccountCostPo;
-import com.freesia.account.service.AccountCostService;
-import com.freesia.account.mapper.AccountCostMapper;
-import com.freesia.account.repository.AccountCostRepository;
-import org.springframework.stereotype.Service;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -33,9 +33,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public AccountCostDto saveUpdate(AccountCostDto accountCostDto) {
         AccountCostPo accountCostPo = new AccountCostPo();
         UCopy.fullCopy(accountCostDto, accountCostPo);
-        AccountCostDto resultDto = new AccountCostDto();
-        UCopy.fullCopy(accountCostRepository.saveAndFlush(accountCostPo), resultDto);
-        return resultDto;
+        return UCopy.copyPo2Dto(accountCostRepository.saveAndFlush(accountCostPo), AccountCostDto.class);
     }
 
     @Override
@@ -56,12 +54,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Override
     public AccountCostDto findAccountCost(AccountCostDto accountCost) {
         LambdaQueryWrapper<AccountCostPo> wrapper = new LambdaQueryWrapper<AccountCostPo>()
-            .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId());
+                .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), AccountCostDto.class);
     }
 
     @Override
+    @Transactional
     public void deleteAccountCost(List<Long> idList) {
         removeBatchByIds(idList);
     }

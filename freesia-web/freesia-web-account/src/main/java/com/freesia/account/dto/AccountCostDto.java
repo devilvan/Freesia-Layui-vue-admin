@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 开销表 数据传输对象
- * @date 2024-12-14
+ * @date 2024-12-23
  */
 @Data
 @NoArgsConstructor
@@ -19,11 +19,11 @@ import java.math.BigDecimal;
 @Schema(description = "开销表 数据传输对象")
 public class AccountCostDto extends BaseDto {
     @Schema(description = "开销描述")
-    private String desc;
+    private String costDesc;
     @Schema(description = "开销金额")
-    private BigDecimal amount;
+    private BigDecimal outlay;
     @Schema(description = "开销类型（ACCOUNT_COST_TYPE）")
-    private String type;
+    private String costType;
     @Schema(description = "开销标识（支出、收入）")
     private String paymentSign;
     @Schema(description = "时间")

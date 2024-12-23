@@ -1,5 +1,5 @@
 <template>
-  <lay-container fluid="true" class="role-box">
+  <lay-container class="role-box" fluid="true">
     <lay-card>
       <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
         <lay-row>
@@ -7,9 +7,9 @@
             <lay-form-item label="租户编码" label-width="80">
               <lay-input
                   v-model="searchQuery.code"
+                  :allow-clear="true"
                   placeholder="请输入"
                   size="sm"
-                  :allow-clear="true"
                   style="width: 98%"
               ></lay-input>
             </lay-form-item>
@@ -18,9 +18,9 @@
             <lay-form-item label="租户名称" label-width="80">
               <lay-input
                   v-model="searchQuery.name"
+                  :allow-clear="true"
                   placeholder="请输入"
                   size="sm"
-                  :allow-clear="true"
                   style="width: 98%"
               ></lay-input>
             </lay-form-item>
@@ -28,9 +28,9 @@
           <lay-col :md="6">
             <lay-form-item label-width="20">
               <lay-button
+                  size="sm"
                   style="margin-left: 20px"
                   type="normal"
-                  size="sm"
                   @click="toSearch"
               >
                 查询
@@ -44,80 +44,93 @@
     <!-- table -->
     <div>
       <lay-table
-          class="table-box table-style"
-          :page="pageQuery"
-          :columns="columns"
-          :loading="loading"
-          :default-toolbar="true"
-          :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
+          :columns="columns"
+          :data-source="dataSource"
+          :default-toolbar="true"
+          :loading="loading"
+          :page="pageQuery"
+          class="table-box table-style"
           @change="change"
           @sortChange="sortChange">
+        <template #iconType="{ row }">
+          <SvgIcon :name="row.icon" size="2em"></SvgIcon>
+          {{ row.costType }}
+        </template>
         <template #status="{ row }">
           <lay-switch
               :model-value="row.status"
           ></lay-switch>
         </template>
         <template #tenantType="{ row }">
-          <dict-tag :options="sysTenantTypeList" :value="row.type" :showValue="true"/>
+          <dict-tag :options="sysTenantTypeList" :showValue="true" :value="row.type"/>
         </template>
         <template v-slot:toolbar>
           <lay-button
+              v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_ADD]"
               size="sm"
               type="primary"
-              @click="changeTenantModalFlag(Operate.ADD, null)"
-              v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_ADD]"
+              @click="showExpenseModal(Operate.ADD, null)"
           >
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
-          <lay-button size="sm" @click="toRemove" v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]">
+          <lay-button v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]" size="sm" @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
           <lay-button
-              size="xs"
+              v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]"
               border="green"
               border-style="dashed"
-              @click="changeTenantModalFlag(Operate.EDIT, row)"
-              v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]">编辑
+              size="xs"
+              @click="showExpenseModal(Operate.EDIT, row)">编辑
           </lay-button>
           <lay-popconfirm
               content="确定要删除吗?"
-              @confirm="confirm(row)"
-              @cancel="cancel">
-            <lay-button size="xs" border="red" border-style="dashed"
-                        v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_DELETE]">删除
+              @cancel="cancel"
+              @confirm="confirm(row)">
+            <lay-button v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_DELETE]" border="red" border-style="dashed"
+                        size="xs">删除
             </lay-button>
           </lay-popconfirm>
         </template>
       </lay-table>
     </div>
 
-    <lay-layer v-model="addExpenseModalShowFlag" :title="title" :area="['1200px']">
+    <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit" @keydown.esc.prevent="toCancel">
-        <lay-form :model="accountCostVo" ref="addExpenseFormRef" label-position="top">
+        <lay-form ref="addExpenseFormRef" :model="accountCostVo" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
-              <lay-form-item label="开销描述" prop="desc" required>
-                <lay-input v-model="accountCostVo.desc" :allow-clear="true"></lay-input>
+              <lay-form-item label="开销描述" prop="costDesc" required>
+                <lay-input v-model="accountCostVo.costDesc" :allow-clear="true"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="开销金额" prop="amount" required>
-                <lay-input v-model="accountCostVo.amount"></lay-input>
+              <lay-form-item label="开销金额" prop="outlay" required>
+                <lay-input v-model="accountCostVo.outlay" type="number"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="开销类型" prop="type" required>
-                <lay-icon-picker v-model="accountCostVo.type" allow-clear></lay-icon-picker>
+              <lay-form-item label="图标" prop="icon" required>
+                <lay-row>
+                  <lay-col md="4">
+                    <lay-avatar v-if="!accountCostVo.icon" @click="changeSelectTypeModal"></lay-avatar>
+                    <SvgIcon v-else :name="accountCostVo.icon" size="3em" @click="changeSelectTypeModal"></SvgIcon>
+                  </lay-col>
+                  <lay-col md="20"
+                           style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
+                    图标：{{ accountCostVo.icon }}
+                  </lay-col>
+                </lay-row>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
               <lay-form-item label="开销时间" prop="paymentTime">
-                <lay-date-picker type="datetime" v-model="accountCostVo.paymentTime" allow-clear></lay-date-picker>
+                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"></lay-date-picker>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -125,9 +138,9 @@
             <lay-col :md="6">
               <lay-form-item label="备注" prop="remark">
                 <lay-textarea
+                    v-model="accountCostVo.remark"
                     allow-clear
                     placeholder="请输入备注"
-                    v-model="accountCostVo.remark"
                 ></lay-textarea>
               </lay-form-item>
             </lay-col>
@@ -140,6 +153,10 @@
         </div>
       </div>
     </lay-layer>
+
+    <lay-layer v-model="showSelectTypeModalFlag" :area="['1200px']" :title="title">
+      <AccountTypeIconPicker @callBack="callBackFun"></AccountTypeIconPicker>
+    </lay-layer>
   </lay-container>
 </template>
 <script lang="ts">
@@ -150,26 +167,24 @@ export default {
   name: "Tenant",
 };
 </script>
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../types/Common";
 import {TableResult} from "../../../types/Result";
-import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
-import {SysDictValueEntity} from "../../../types/system/Dict";
-import {SysTenantEntity, SysTenantVo} from "../../../types/system/Tenant";
 import {deleteAccountCost, findPageAccountCost, findAccountCost, saveUpdate} from "../../../api/account/Account";
 import router from "../../../router";
 import {Operate} from "../../../types/Constants";
+import {AccountCostEntity, AccountCostVo, AccountType} from "@/types/account/Account";
+import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
+import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 
 /* INIT*/
 onMounted(async () => {
-  sysTenantTypeList.value = await loadSysDictValue(Constants.SYS_TENANT_TYPE)
-  sysTenantTypeSelectList.value = await sysDictValueSelect(sysTenantTypeList.value);
   loadDataSource()
 })
 const loadDataSource = () => {
-  findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<SysTenantEntity>) => {
+  findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<AccountCostEntity>) => {
     if (res.code == 200) {
       pageQuery.total = res.total;
       dataSource.value = res.rows
@@ -185,20 +200,19 @@ const loadDataSource = () => {
 
 /* VAR*/
 const $router = router;
-const sysTenantTypeList = ref<Array<SysDictValueEntity>>([])
-const sysTenantTypeSelectList = ref<Array>([])
-const searchQuery = ref<SysTenantEntity>({})
+const teleportProps = ref({to: 'body', disabled: false})
+const searchQuery = ref<AccountCostEntity>({})
 const loading = ref(false)
 const selectedKeys = ref<Array<string>>([])
-const accountCostVo = ref<SysTenantVo>({
+const accountCostVo = ref<AccountCostVo>({
   status: true
 })
-const sysTenantVoTemplate = ref<SysTenantVo>({
+const sysTenantVoTemplate = ref<AccountCostVo>({
   status: true
 })
 const addExpenseFormRef = ref()
 const addExpenseModalShowFlag = ref(false)
-const dataSource = ref<Array<SysTenantEntity>>()
+const dataSource = ref<Array<AccountCostEntity>>()
 const title = ref('新增')
 const pageQuery = reactive<PageQuery>({
   current: 1,
@@ -206,16 +220,11 @@ const pageQuery = reactive<PageQuery>({
 })
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '租户编码', width: '130px', key: 'code', fixed: 'left'},
-  {title: '租户名称', width: '130px', key: 'name'},
-  {title: '租户类型', width: '150px', key: 'type', sort: 'desc', customSlot: 'tenantType'},
-  {title: '租户状态', width: '100px', key: 'status', customSlot: 'status'},
-  {title: '联系人姓名', width: '150px', key: 'contactName', sort: 'desc'},
-  {title: '联系人电话', width: '140px', key: 'contactTel'},
-  {title: '联系人邮箱', width: '160px', key: 'contactEmail'},
-  {title: '租户地址', width: '160px', key: 'address'},
-  {title: '租户备注', width: '150px', key: 'remark', sort: 'desc'},
-  {title: '营业时间', width: '160px', key: 'businessHoursFrom'},
+  {title: '开销描述', width: '130px', key: 'costDesc', fixed: 'left'},
+  {title: '开销金额', width: '130px', key: 'outlay'},
+  {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
+  {title: '开销标识', width: '130px', key: 'paymentSign'},
+  {title: '时间', width: '150px', key: 'paymentType'},
   {
     title: '操作',
     width: '150px',
@@ -224,12 +233,13 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+const showSelectTypeModalFlag = ref<Boolean>(false)
 /* VAR*/
 
 /* FUNCTION*/
 function toReset() {
   accountCostVo.value = {
-    status: false
+    status: false,
   }
 }
 
@@ -249,10 +259,7 @@ const change = () => {
 const sortChange = (key: any, sort: number) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
 }
-const remove = () => {
-  layer.msg(selectedKeys.value, {area: '50%'})
-}
-const changeTenantModalFlag = (text: any, row: any) => {
+const showExpenseModal = (text: any, row: any) => {
   title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
   if (row != null) {
     accountCostVo.value = {...row}
@@ -267,6 +274,7 @@ const changeTenantModalFlag = (text: any, row: any) => {
       }
     })
   }
+  accountCostVo.value.paymentSign = AccountType.EXPENSES
   addExpenseModalShowFlag.value = !addExpenseModalShowFlag.value
 }
 
@@ -305,6 +313,7 @@ function toRemove() {
 function toSubmit() {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
+      accountCostVo.value.costType = accountCostVo.value.icon?.split("_")[0];
       saveUpdate(accountCostVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
@@ -343,12 +352,14 @@ function cancel() {
 }
 
 
-function assignTenantRole() {
-  if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {
-    layer.msg("请选择1条数据", {icon: 3})
-    return;
-  }
-  $router.push("/system/tenant/assignRole/" + selectedKeys.value[0])
+function changeSelectTypeModal() {
+  showSelectTypeModalFlag.value = !showSelectTypeModalFlag.value
+}
+
+
+const callBackFun = (icon: any) => {
+  accountCostVo.value.icon = icon;
+  changeSelectTypeModal()
 }
 
 /* FUNCTION*/

@@ -144,6 +144,8 @@ springdoc:
       paths-to-match: /common/**
     - group: 10. 租户模块
       paths-to-match: /api/sysTenantController/**
+    - group: 11. 记账模块
+      paths-to-match: /api/accountCostController/**
 # knife4j的增强配置，不需要增强可以不配
 #knife4j:
 #  enable: true

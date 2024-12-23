@@ -1,69 +1,43 @@
 <template>
   <ul class="site-doc-icon">
-    <li v-for="(layIcon, index) of LayIconList" @click="copy(layIcon.class)">
-      <i :class="[`layui-icon ${layIcon.class}`]"></i>
-      <div class="doc-icon-name">{{ layIcon.name }}</div>
-      <div class="doc-icon-code">&amp;#x{{ iconsUnicode[index] }};</div>
-      <div class="doc-icon-fontclass">{{ layIcon.class }}</div>
+    <li v-for="(layIcon, index) of accountIconNameList">
+      <div @click="selectIcon(layIcon)">
+        <SvgIcon :color="props.color" :name="layIcon" :size="props.size"></SvgIcon>
+        <div class="doc-icon-name">{{ layIcon.split("_")[1] }}</div>
+      </div>
     </li>
   </ul>
 </template>
 
 <script setup>
-import {nextTick, onMounted, reactive} from 'vue'
-import {useClipboard, usePermission} from "@vueuse/core";
-import {layer} from '@layui/layer-vue';
-import {LayIconList} from '@layui/icons-vue';
+import {onMounted, ref} from 'vue'
+import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 
-const iconsUnicode = reactive([]);
-
-function copy(iconClass) {
-  const {isSupported, copy, copied} = useClipboard()
-  const permissionWrite = usePermission('clipboard-write')
-  if (isSupported && permissionWrite.value === 'granted') {
-    copy(iconClass)
-    copied.value = true
-  } else {
-    let inputEl = document.createElement('input')
-    inputEl.value = iconClass
-    document.body.appendChild(inputEl)
-    inputEl.select()
-    document.execCommand('Copy')
-    inputEl.remove()
-    copied.value = true
-  }
-  if (copied.value) {
-    layer.msg(`复制成功 &nbsp<span style="color:#5FB878;" >${iconClass}</span>`,
-        {
-          icon: 1,
-          time: 1500,
-          offset: ['15%', '50%'],
-          isHtmlFragment: true
-        },
-        () => {
-        }
-    )
-  } else {
-    layer.msg('复制失败', {icon: 2, time: 1500,}, () => {
-    })
-  }
-}
-
-function getIconUnicode(iconClass) {
-  const iconEl = document.querySelector(`.site-doc-icon > li > .${iconClass}`);
-  const iconBeforeContent = window?.getComputedStyle(iconEl)?.content;
-  return iconBeforeContent;
-}
-
-onMounted(() => {
-  nextTick(() => {
-    LayIconList?.forEach((icon) => {
-      // unicode 10进制转16进制
-      const unicode = getIconUnicode(icon.class).charCodeAt(1).toString(16);
-      iconsUnicode.push(unicode)
-    });
-  })
+const props = defineProps({
+  color: {
+    type: String,
+    default: '#009688'
+  },
+  size: {
+    type: String,
+    default: '3em'
+  },
+  icon: {}
 })
+const emit = defineEmits(['callBack']);
+
+const accountIconNameGlob = import.meta.glob("../../../assets/svgIcon/*.svg")
+const accountIconNameList = ref([])
+onMounted(() => {
+  for (let accountIconName in accountIconNameGlob) {
+    accountIconNameList.value.push(accountIconName.substring(accountIconName.lastIndexOf("/") + 1, accountIconName.lastIndexOf(".")))
+  }
+})
+
+function selectIcon(layIcon) {
+  emit('callBack', layIcon);
+  console.log("传值给父组件");
+}
 </script>
 
 <style>
@@ -72,34 +46,26 @@ onMounted(() => {
   font-size: 0;
 }
 
-.site-doc-icon li .doc-icon-name,
-.site-doc-icon li .doc-icon-code {
-  color: #c2c2c2;
-}
-
-.site-doc-icon li .doc-icon-fontclass {
-  height: 40px;
-  line-height: 20px;
-  padding: 0 5px;
-  font-size: 13px;
-  color: #333;
-}
-
 .site-doc-icon li {
   display: inline-block;
   vertical-align: middle;
-  width: 16.5%;
+  width: 10%;
   height: 105px;
   line-height: 25px;
   padding: 20px 0;
-  margin-right: -1px;
-  margin-bottom: -1px;
+  //margin-right: -1px;
+  //margin-bottom: -1px;
   border: 1px solid #e2e2e2;
   font-size: 14px;
   text-align: center;
-  color: #666;
+  color: #000;
   transition: all 0.3s;
   -webkit-transition: all 0.3s;
+}
+
+.site-doc-icon li .doc-icon-name,
+.site-doc-icon li .doc-icon-code {
+  color: #c2c2c2;
 }
 
 .site-doc-icon li:hover {

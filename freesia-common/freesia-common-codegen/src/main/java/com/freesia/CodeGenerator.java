@@ -1,9 +1,9 @@
 package com.freesia;
 
 import cn.hutool.core.util.StrUtil;
+import com.freesia.dto.ColumnFieldDto;
 import com.freesia.dto.DataBaseDto;
 import com.freesia.dto.TableDto;
-import com.freesia.dto.ColumnFieldDto;
 import com.freesia.exception.BaseException;
 import com.freesia.handler.FreemarkerTemplateHandler;
 import com.freesia.util.UEmpty;
@@ -58,12 +58,12 @@ public class CodeGenerator {
             generateVo(dataBaseDto);
             generatePo(dataBaseDto);
             generateDto(dataBaseDto);
-            generateController(dataBaseDto);
-            generateService(dataBaseDto);
-            generateServiceImpl(dataBaseDto);
-            generateRepository(dataBaseDto);
-            generateMapper(dataBaseDto);
-            generateMapperXml(dataBaseDto);
+//            generateController(dataBaseDto);
+//            generateService(dataBaseDto);
+//            generateServiceImpl(dataBaseDto);
+//            generateRepository(dataBaseDto);
+//            generateMapper(dataBaseDto);
+//            generateMapperXml(dataBaseDto);
         }
     }
 

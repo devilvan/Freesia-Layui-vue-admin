@@ -25,15 +25,15 @@
                 <div style="height: 400px">
                   <lay-form :model="loginForm" label-position="top" ref="loginFormRef" :rules="loginFormRules"
                             @keyup.enter.prevent="loginSubmit">
-                    <lay-form-item label="用户名" :label-width="0" prop="username">
+                    <lay-form-item label="用户名" prop="username">
                       <lay-input :allow-clear="true" prefix-icon="layui-icon-username" placeholder="用户名"
                                  v-model="loginForm.username"></lay-input>
                     </lay-form-item>
-                    <lay-form-item label="密码" :label-width="0" prop="password">
+                    <lay-form-item label="密码" prop="password">
                       <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="密码" password
                                  type="password" v-model="loginForm.password"></lay-input>
                     </lay-form-item>
-                    <lay-form-item label="验证码" :label-width="0" prop="code" :hidden="!captchaEnabled"
+                    <lay-form-item label="验证码" prop="code" :hidden="!captchaEnabled"
                                    :required="!captchaEnabled">
                       <div style="width: 60%; display: inline-block">
                         <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="验证码"
@@ -44,7 +44,7 @@
                       </div>
                     </lay-form-item>
                     <!--                    <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>-->
-                    <lay-form-item :label-width="0">
+                    <lay-form-item>
                       <lay-button style="margin-top: 20px" type="primary" :loading="loging" :fluid="true"
                                   loadingIcon="layui-icon-loading" @click="loginSubmit">登录
                       </lay-button>
@@ -91,8 +91,8 @@
               </li>
               <li>
                 <div class="line-container">
-                  <SvgIcon icon-name="068_买菜"></SvgIcon>
-                  <img style="color: #52c41a" class="icon" src="../../assets/svgIcon/068_买菜.svg"/>
+                  <SvgIcon name="068_买菜" size="2em"></SvgIcon>
+                  <!--                  <img style="color: #52c41a" class="icon" src="../../assets/svgIcon/068_买菜.svg"/>-->
                 </div>
               </li>
             </ul>
@@ -100,7 +100,9 @@
         </div>
       </div>
     </div>
+    <AccountTypeIconPicker></AccountTypeIconPicker>
   </div>
+
 </template>
 
 <script lang="ts" setup>
@@ -114,7 +116,8 @@ import {getCaptchaCode} from "../../api/captcha/Captcha";
 import {loginQrcode} from "../../api/module/commone";
 import router from "../../router";
 import {useCryptStore} from "../../store/crypt";
-import SvgIcon from "../../views/component/svg/SvgIcon.vue";
+import SvgIcon from "@/views/component/svg/SvgIcon.vue";
+import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 
 /* INIT*/
 onMounted(async () => {

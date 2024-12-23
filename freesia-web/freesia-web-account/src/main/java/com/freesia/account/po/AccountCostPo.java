@@ -12,16 +12,19 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Evad.Wu
  * @Description 开销表 映射
- * @date 2024-12-14
+ * @date 2024-12-23
  */
 @Setter
 @Getter
@@ -36,18 +39,20 @@ import java.math.BigDecimal;
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "开销表 映射")
 public class AccountCostPo extends BasePo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -1468239437494588583L;
     @Schema(description = "开销描述")
-    @TableField(value = "DESC")
-    @Column(name = "DESC", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '开销描述'")
-    private String desc;
+    @TableField(value = "COST_DESC")
+    @Column(name = "COST_DESC", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '开销描述'")
+    private String costDesc;
     @Schema(description = "开销金额")
-    @TableField(value = "AMOUNT")
-    @Column(name = "AMOUNT", columnDefinition = "DECIMAL(18) NOT NULL COMMENT '开销金额'")
-    private BigDecimal amount;
+    @TableField(value = "OUTLAY")
+    @Column(name = "OUTLAY", columnDefinition = "DECIMAL(18) NOT NULL COMMENT '开销金额'")
+    private BigDecimal outlay;
     @Schema(description = "开销类型（ACCOUNT_COST_TYPE）")
-    @TableField(value = "TYPE")
-    @Column(name = "TYPE", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '开销类型（ACCOUNT_COST_TYPE）'")
-    private String type;
+    @TableField(value = "COST_TYPE")
+    @Column(name = "COST_TYPE", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '开销类型（ACCOUNT_COST_TYPE）'")
+    private String costType;
     @Schema(description = "开销标识（支出、收入）")
     @TableField(value = "PAYMENT_SIGN")
     @Column(name = "PAYMENT_SIGN", columnDefinition = "VARCHAR(16) NOT NULL COMMENT '开销标识（支出、收入）'")

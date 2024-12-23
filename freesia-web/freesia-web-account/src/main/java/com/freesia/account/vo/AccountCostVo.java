@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 开销表 值对象
- * @date 2024-12-14
+ * @date 2024-12-23
  */
 @Data
 @NoArgsConstructor
@@ -20,14 +20,14 @@ import java.math.BigDecimal;
 @Schema(description = "开销表 值对象")
 public class AccountCostVo {
     @Schema(description = "开销描述")
-    @JSONField(alternateNames = {"desc"})
-    private String desc;
+    @JSONField(alternateNames = {"costDesc"})
+    private String costDesc;
     @Schema(description = "开销金额")
-    @JSONField(alternateNames = {"amount"})
-    private BigDecimal amount;
+    @JSONField(alternateNames = {"outlay"})
+    private BigDecimal outlay;
     @Schema(description = "开销类型（ACCOUNT_COST_TYPE）")
-    @JSONField(alternateNames = {"type"})
-    private String type;
+    @JSONField(alternateNames = {"costType"})
+    private String costType;
     @Schema(description = "开销标识（支出、收入）")
     @JSONField(alternateNames = {"paymentSign"})
     private String paymentSign;

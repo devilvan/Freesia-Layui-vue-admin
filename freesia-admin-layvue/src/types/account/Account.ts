@@ -1,9 +1,9 @@
 import {BaseEntity, BaseVo} from "../Common";
 
 export interface AccountCostVo extends BaseVo {
-    desc?: string;
-    amount?: string;
-    type?: string;
+    costDesc?: string;
+    outlay?: string;
+    costType?: string;
     paymentSign?: string;
     paymentTime?: Date;
     icon?: string;
@@ -11,11 +11,23 @@ export interface AccountCostVo extends BaseVo {
 }
 
 export interface AccountCostEntity extends BaseEntity {
-    desc?: string;
-    amount?: string;
+    costDesc?: string;
+    outlay?: string;
     type?: string;
     paymentSign?: string;
     paymentTime?: Date;
     icon?: string;
     remark?: string;
+}
+
+export enum AccountType {
+    /**
+     * 支出
+     */
+    EXPENSES = "EXPENSES",
+    /**
+     * 收入
+     */
+    INCOME = "INCOME",
+
 }

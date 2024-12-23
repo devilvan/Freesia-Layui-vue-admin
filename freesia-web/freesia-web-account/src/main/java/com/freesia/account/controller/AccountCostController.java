@@ -1,16 +1,17 @@
 package com.freesia.account.controller;
 
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
-import com.freesia.account.vo.AccountCostVo;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.service.AccountCostService;
+import com.freesia.account.vo.AccountCostVo;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,13 +30,15 @@ public class AccountCostController {
     /**
      * 保存开销表信息
      *
-     * @param accountCostVo    待保存对象
+     * @param accountCostVo 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存开销表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        Long tenantId = USecurity.getTenantId();
+        accountCostDto.setTenantId(tenantId);
         accountCostService.saveUpdate(accountCostDto);
         return R.ok();
     }
@@ -43,13 +46,17 @@ public class AccountCostController {
     /**
      * 批量保存开销表信息
      *
-     * accountCostVoList    待保存对象
+     * @param accountCostVoList 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存开销表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<AccountCostVo> accountCostVoList) {
         List<AccountCostDto> accountCostDtoList = UCopy.fullCopyList(accountCostVoList, AccountCostDto.class);
+        Long tenantId = USecurity.getTenantId();
+        for (AccountCostDto accountCostDto : accountCostDtoList) {
+            accountCostDto.setTenantId(tenantId);
+        }
         accountCostService.saveUpdateBatch(accountCostDtoList);
         return R.ok();
     }
@@ -58,7 +65,7 @@ public class AccountCostController {
      * 查询开销表分页信息
      *
      * @param accountCostVo 查询条件
-     * @param pageQuery   分页条件
+     * @param pageQuery     分页条件
      * @return 形式返回
      */
     @Operation(summary = "查询开销表分页信息")

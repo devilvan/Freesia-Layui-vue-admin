@@ -1,43 +1,38 @@
 <template>
-  <svg :class="svgClass" aria-hidden="true">
-    <use :fill="color" :xlink:href="iconClassName"/>
+  <svg :height="props.size" :width="props.size" aria-hidden="true" class="svg-icon">
+    <use :fill="props.color" :xlink:href="symbolId"/>
   </svg>
 </template>
-<script lang="ts" setup>
-import {computed} from 'vue';
+
+<script setup>
+import {computed} from 'vue'
 
 const props = defineProps({
-  iconName: {
+  prefix: {
+    type: String,
+    default: 'icon'
+  },
+  name: {
     type: String,
     required: true
   },
-  className: {
-    type: String,
-    default: ''
-  },
   color: {
     type: String,
-    default: '#409eff'
+    default: '#009688'
+  },
+  size: {
+    type: String,
+    default: '1em'
   }
-});
-// 图标在 iconfont 中的名字
-const iconClassName = computed(() => {
-  return `${props.iconName}`;
 })
-// 给图标添加上类名
-const svgClass = computed(() => {
-  if (props.className) {
-    return `svg-icon ${props.className}`;
-  }
-  return 'svg-icon';
-});
+
+// const symbolId = computed(() => `#${props.prefix}-${props.name}`)
+const symbolId = computed(() => `#icon-${props.name}`)
 </script>
-<style scoped>
-.svg-icon {
-  width: 1em;
-  height: 1em;
-  position: relative;
-  fill: currentColor;
-  vertical-align: -2px;
-}
-</style>
+<!--<style scoped>-->
+<!--.svg-icon {-->
+<!--  position: relative;-->
+<!--  fill: currentColor;-->
+<!--  vertical-align: -2px;-->
+<!--}-->
+<!--</style>-->
