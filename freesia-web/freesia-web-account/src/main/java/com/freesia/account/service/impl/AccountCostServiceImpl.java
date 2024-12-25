@@ -46,7 +46,8 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public TableResult<AccountCostDto> findPageAccountCost(AccountCostDto accountCost, PageQuery pageQuery) {
         LambdaQueryWrapper<AccountCostPo> wrapper = new LambdaQueryWrapper<AccountCostPo>()
                 .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId());
+                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId())
+                .orderByDesc(AccountCostPo::getPaymentTime);
         Page<AccountCostPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, AccountCostDto.class));
     }

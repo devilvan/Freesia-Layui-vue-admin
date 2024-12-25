@@ -73,7 +73,7 @@ function selectIcon(layIcon) {
 }
 
 .site-doc-icon li:hover {
-  background-color: red;
+  background-color: #ff9a9e;
 }
 
 .site-doc-icon li .layui-icon {

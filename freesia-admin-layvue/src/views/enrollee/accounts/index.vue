@@ -55,7 +55,7 @@
           @sortChange="sortChange">
         <template #iconType="{ row }">
           <SvgIcon :name="row.icon" size="2em"></SvgIcon>
-          {{ row.costType }}
+          {{ row.icon }}
         </template>
         <template #status="{ row }">
           <lay-switch
@@ -130,7 +130,7 @@
             </lay-col>
             <lay-col :md="6">
               <lay-form-item label="开销时间" prop="paymentTime">
-                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"></lay-date-picker>
+                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="date"></lay-date-picker>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -148,7 +148,7 @@
         </lay-form>
         <div style="width: 100%; text-align: right">
           <lay-button size="sm" type="primary" @click="toSubmit">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="toReset()">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -224,7 +224,7 @@ const columns = ref([
   {title: '开销金额', width: '130px', key: 'outlay'},
   {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '开销标识', width: '130px', key: 'paymentSign'},
-  {title: '时间', width: '150px', key: 'paymentType'},
+  {title: '时间', width: '150px', key: 'paymentTime'},
   {
     title: '操作',
     width: '150px',

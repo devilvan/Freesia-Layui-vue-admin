@@ -1,11 +1,16 @@
 package com.freesia.account.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Evad.Wu
@@ -27,6 +32,7 @@ public class AccountCostDto extends BaseDto {
     @Schema(description = "开销标识（支出、收入）")
     private String paymentSign;
     @Schema(description = "时间")
+    @JSONField(format = Constants.YMD_HM)
     private Date paymentTime;
     @Schema(description = "图标")
     private String icon;
