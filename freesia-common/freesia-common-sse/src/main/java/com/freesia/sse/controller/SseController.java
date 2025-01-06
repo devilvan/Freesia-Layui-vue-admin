@@ -2,6 +2,7 @@ package com.freesia.sse.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
+import com.freesia.controller.BaseController;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.sse.component.SseEmitterManager;
 import com.freesia.sse.constant.SseTopic;
@@ -29,7 +30,7 @@ import java.util.List;
 @RestController
 @ConditionalOnProperty(value = "sse.enabled", havingValue = "true")
 @Tag(name = "SseController", description = "SSE (Server-Sent Events) 控制器")
-public class SseController implements DisposableBean {
+public class SseController extends BaseController implements DisposableBean {
     @Resource
     private SseEmitterManager sseEmitterManager;
 

@@ -32,10 +32,14 @@ public class AccountCostDto extends BaseDto {
     @Schema(description = "开销标识（支出、收入）")
     private String paymentSign;
     @Schema(description = "时间")
-    @JSONField(format = Constants.YMD_HM)
+    @JSONField(format = Constants.YMD)
     private Date paymentTime;
     @Schema(description = "图标")
     private String icon;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "查询时间从")
+    private Date paymentTimeFrom;
+    @Schema(description = "查询时间到")
+    private Date paymentTimeTo;
 }

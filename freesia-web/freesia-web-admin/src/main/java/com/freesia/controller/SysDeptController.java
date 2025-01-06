@@ -41,7 +41,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysDeptController")
 @Tag(name = "SysDeptController", description = "部门信息表 控制器")
-public class SysDeptController {
+public class SysDeptController extends BaseController {
     private final SysDeptService sysDeptService;
 
     @Operation(summary = "获取部门列表分页")

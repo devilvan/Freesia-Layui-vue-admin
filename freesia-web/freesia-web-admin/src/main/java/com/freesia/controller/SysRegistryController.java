@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysRegistryController")
 @Tag(name = "SysRegistryController", description = "注册功能 控制器")
-public class SysRegistryController {
+public class SysRegistryController extends BaseController {
     private final SysRegisterService sysRegisterService;
     private final SysConfigService sysConfigService;
 

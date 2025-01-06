@@ -45,7 +45,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysUserController")
 @Tag(name = "SysUserController", description = "用户信息表 控制器")
-public class SysUserController {
+public class SysUserController extends BaseController {
     private final SysUserService sysUserService;
 
     @Operation(summary = "获取用户列表分页")

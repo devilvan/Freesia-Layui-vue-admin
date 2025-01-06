@@ -3,6 +3,8 @@ package com.freesia;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.constant.Constants;
+import com.freesia.controller.BaseController;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
 import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.pojo.DemoData;
@@ -34,6 +36,15 @@ import java.util.regex.Pattern;
 public class FreesiaTest {
     private static final String ENCRYPT_KEY = "Y29tLnNpbm9zZXJ2aWNlcy5vcmc=";
 
+    @Test
+    public void testCalendar() {
+        BaseController baseController = new BaseController();
+        Date[] dates = baseController.defaultDateRange(7);
+        SimpleDateFormat sdfYmdhms = Constants.SDF_YMDHMS;
+        for (Date date : dates) {
+            System.out.println(sdfYmdhms.format(date));
+        }
+    }
     private static byte[] generateKey() throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("$AES");
         SecureRandom random = new SecureRandom();

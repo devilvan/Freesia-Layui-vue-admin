@@ -38,7 +38,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysDictController")
 @Tag(name = "SysDictController", description = "字典键信息表 控制器")
-public class SysDictController {
+public class SysDictController extends BaseController {
     private final SysDictKeyService sysDictKeyService;
     private final SysDictValueService sysDictValueService;
 

@@ -35,7 +35,7 @@ import java.time.Duration;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/captchaController")
-public class CaptchaController {
+public class CaptchaController extends BaseController {
     private final CaptchaProperties captchaProperties;
     private final SysConfigService sysConfigService;
 

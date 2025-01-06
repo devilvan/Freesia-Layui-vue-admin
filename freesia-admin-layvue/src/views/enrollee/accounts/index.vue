@@ -4,38 +4,42 @@
       <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
         <lay-row>
           <lay-col :md="6">
-            <lay-form-item label="租户编码" label-width="80">
+            <lay-form-item label="开销描述">
               <lay-input
-                  v-model="searchQuery.code"
+                  v-model="searchQuery.costDesc"
                   :allow-clear="true"
                   placeholder="请输入"
                   size="sm"
-                  style="width: 98%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
-            <lay-form-item label="租户名称" label-width="80">
+            <lay-form-item label="开销备注">
               <lay-input
-                  v-model="searchQuery.name"
+                  v-model="searchQuery.remark"
                   :allow-clear="true"
                   placeholder="请输入"
                   size="sm"
-                  style="width: 98%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
-            <lay-form-item label-width="20">
-              <lay-button
+            <lay-form-item label="开销时间">
+              <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
+                               :shortcuts="defaultShortcuts" simple></lay-date-picker>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="6">
+            <lay-form-item label="开销标识">
+              <lay-select
+                  class="search-input"
                   size="sm"
-                  style="margin-left: 20px"
-                  type="normal"
-                  @click="toSearch"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
+                  v-model="searchQuery.paymentSign"
+                  :options="paymentSignSelectList"
+                  :items="paymentSignSelectList"
+                  :allow-clear="true"
+                  placeholder="请选择"
+              ></lay-select>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -53,19 +57,23 @@
           class="table-box table-style"
           @change="change"
           @sortChange="sortChange">
+        <template #paymentSign="{ row }">
+          <dict-scan :options="paymentSignSelect" :value="row.paymentSign"/>
+        </template>
         <template #iconType="{ row }">
           <SvgIcon :name="row.icon" size="2em"></SvgIcon>
           {{ row.icon }}
         </template>
-        <template #status="{ row }">
-          <lay-switch
-              :model-value="row.status"
-          ></lay-switch>
-        </template>
-        <template #tenantType="{ row }">
-          <dict-tag :options="sysTenantTypeList" :showValue="true" :value="row.type"/>
-        </template>
         <template v-slot:toolbar>
+          <lay-button
+              size="sm"
+              style="margin-left: 20px"
+              type="normal"
+              @click="toSearch"
+          >
+            查询
+          </lay-button>
+          <lay-button size="sm" @click="toReset"> 重置</lay-button>
           <lay-button
               v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_ADD]"
               size="sm"
@@ -101,8 +109,8 @@
     </div>
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
-      <div style="padding: 20px" @keydown.enter.prevent="toSubmit" @keydown.esc.prevent="toCancel">
-        <lay-form ref="addExpenseFormRef" :model="accountCostVo" label-position="top">
+      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
+        <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
               <lay-form-item label="开销描述" prop="costDesc" required>
@@ -129,12 +137,26 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="开销时间" prop="paymentTime">
-                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="date"></lay-date-picker>
+              <lay-form-item label="开销标识" prop="paymentSign" required>
+                <lay-select
+                    size="sm"
+                    style="width: 100%"
+                    v-model="accountCostVo.paymentSign"
+                    :options="paymentSignSelectList"
+                    :items="paymentSignSelectList"
+                    :allow-clear="true"
+                    placeholder="请选择"
+                ></lay-select>
               </lay-form-item>
             </lay-col>
           </lay-row>
           <lay-row space="20">
+            <lay-col :md="6">
+              <lay-form-item label="开销时间" prop="paymentTime">
+                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="date" :shortcuts="singleShortcuts"
+                                 style="width: 100%" simple></lay-date-picker>
+              </lay-form-item>
+            </lay-col>
             <lay-col :md="6">
               <lay-form-item label="备注" prop="remark">
                 <lay-textarea
@@ -147,7 +169,7 @@
           </lay-row>
         </lay-form>
         <div style="width: 100%; text-align: right">
-          <lay-button size="sm" type="primary" @click="toSubmit">保存</lay-button>
+          <lay-button size="sm" type="primary" @click="toSubmit(true)">保存</lay-button>
           <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
@@ -175,39 +197,31 @@ import {TableResult} from "../../../types/Result";
 import {deleteAccountCost, findPageAccountCost, findAccountCost, saveUpdate} from "../../../api/account/Account";
 import router from "../../../router";
 import {Operate} from "../../../types/Constants";
-import {AccountCostEntity, AccountCostVo, AccountType} from "@/types/account/Account";
+import {AccountCostEntity, AccountCostVo, PaymentSign} from "@/types/account/Account";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {SysDictValueEntity} from "@/types/system/Dict";
+import {List} from "echarts";
+import {buildRange, defaultShortcuts, singleShortcuts} from "@/util/UDate";
 
 /* INIT*/
 onMounted(async () => {
+  paymentSignSelect.value = await loadSysDictValue(Constants.PAYMENT_SIGN)
+  paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
+  searchQuery.value.paymentTimeRange = buildRange(7)
   loadDataSource()
 })
-const loadDataSource = () => {
-  findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<AccountCostEntity>) => {
-    if (res.code == 200) {
-      pageQuery.total = res.total;
-      dataSource.value = res.rows
-    } else {
-      layer.msg(res.msg)
-      return;
-    }
-  }).catch(e => {
-    layer.msg(e.msg)
-  });
-}
 /* INIT*/
 
 /* VAR*/
 const $router = router;
-const teleportProps = ref({to: 'body', disabled: false})
-const searchQuery = ref<AccountCostEntity>({})
+const paymentSignSelect = ref();
+const paymentSignSelectList = ref();
+const searchQuery = ref<AccountCostVo>({})
 const loading = ref(false)
 const selectedKeys = ref<Array<string>>([])
 const accountCostVo = ref<AccountCostVo>({
-  status: true
-})
-const sysTenantVoTemplate = ref<AccountCostVo>({
   status: true
 })
 const addExpenseFormRef = ref()
@@ -223,8 +237,8 @@ const columns = ref([
   {title: '开销描述', width: '130px', key: 'costDesc', fixed: 'left'},
   {title: '开销金额', width: '130px', key: 'outlay'},
   {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
-  {title: '开销标识', width: '130px', key: 'paymentSign'},
-  {title: '时间', width: '150px', key: 'paymentTime'},
+  {title: '开销标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
+  {title: '开支时间', width: '150px', key: 'paymentTime'},
   {
     title: '操作',
     width: '150px',
@@ -234,9 +248,35 @@ const columns = ref([
   }
 ])
 const showSelectTypeModalFlag = ref<Boolean>(false)
+const now = new Date()
+const expenseFromRules = ref({
+  outlay: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (value <= 0) {
+        callback(new Error("金额不能为0"));
+      } else {
+        return true;
+      }
+    }
+  },
+})
 /* VAR*/
 
 /* FUNCTION*/
+const loadDataSource = () => {
+  findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<AccountCostEntity>) => {
+    if (res.code == 200) {
+      pageQuery.total = res.total;
+      dataSource.value = res.rows
+    } else {
+      layer.msg(res.msg)
+      return;
+    }
+  }).catch(e => {
+    layer.msg(e.msg)
+  });
+}
+
 function toReset() {
   accountCostVo.value = {
     status: false,
@@ -264,7 +304,6 @@ const showExpenseModal = (text: any, row: any) => {
   if (row != null) {
     accountCostVo.value = {...row}
   }
-  // 编辑下查询包含敏感数据字段
   if (Operate.EDIT === text) {
     findAccountCost({
       id: row.id
@@ -273,8 +312,15 @@ const showExpenseModal = (text: any, row: any) => {
         accountCostVo.value = res.data;
       }
     })
+  } else if (Operate.ADD === text) {
+    accountCostVo.value.paymentTime = now
+    let isDefaultPaymentSignSelect = paymentSignSelectList.value.find((paymentSignSelect: SysDictValueEntity) => {
+      return paymentSignSelect.isDefault
+    });
+    if (isDefaultPaymentSignSelect) {
+      accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
+    }
   }
-  accountCostVo.value.paymentSign = AccountType.EXPENSES
   addExpenseModalShowFlag.value = !addExpenseModalShowFlag.value
 }
 
@@ -310,7 +356,7 @@ function toRemove() {
   })
 }
 
-function toSubmit() {
+function toSubmit(clickFlag: boolean) {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
       accountCostVo.value.costType = accountCostVo.value.icon?.split("_")[0];
@@ -318,8 +364,19 @@ function toSubmit() {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
+          let paymentTime = accountCostVo.value.paymentTime;
           accountCostVo.value = {};
-          addExpenseModalShowFlag.value = false
+          if (clickFlag) {
+            addExpenseModalShowFlag.value = false
+          } else {
+            accountCostVo.value.paymentTime = paymentTime
+            let isDefaultPaymentSignSelect = paymentSignSelectList.value.find((paymentSignSelect: SysDictValueEntity) => {
+              return paymentSignSelect.isDefault
+            });
+            if (isDefaultPaymentSignSelect) {
+              accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
+            }
+          }
         }
       })
     }

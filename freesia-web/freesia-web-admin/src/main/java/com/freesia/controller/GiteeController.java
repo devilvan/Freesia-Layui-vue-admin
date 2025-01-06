@@ -24,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping(value = "/dashboard/giteeController")
 @Tag(name = "GiteeController", description = "Gitee面板 控制器")
-public class GiteeController {
+public class GiteeController extends BaseController {
     private final GiteeService giteeService;
 
     @SaIgnore

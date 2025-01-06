@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/api/sysMenuController")
 @Tag(name = "SysMenuController", description = "目录-菜单-按钮信息表 控制器")
-public class SysMenuController {
+public class SysMenuController extends BaseController {
     @Resource(name = "sysMenuServiceImpl")
     private SysMenuService sysMenuService;
 

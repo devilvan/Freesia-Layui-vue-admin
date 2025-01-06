@@ -11,6 +11,7 @@ import com.freesia.account.service.AccountCostService;
 import com.freesia.constant.FlagConstant;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         LambdaQueryWrapper<AccountCostPo> wrapper = new LambdaQueryWrapper<AccountCostPo>()
                 .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId())
+                .like(UEmpty.isNotEmpty(accountCost.getCostDesc()), AccountCostPo::getCostDesc, accountCost.getCostDesc())
+                .like(UEmpty.isNotEmpty(accountCost.getRemark()), AccountCostPo::getRemark, accountCost.getRemark())
+                .eq(UEmpty.isNotEmpty(accountCost.getPaymentSign()), AccountCostPo::getPaymentSign, accountCost.getPaymentSign())
+                .between(UEmpty.isNotEmpty(accountCost.getPaymentTimeFrom()) && UEmpty.isNotEmpty(accountCost.getPaymentTimeTo()),
+                        AccountCostPo::getPaymentTime,
+                        accountCost.getPaymentTimeFrom(),
+                        accountCost.getPaymentTimeTo())
                 .orderByDesc(AccountCostPo::getPaymentTime);
         Page<AccountCostPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, AccountCostDto.class));
@@ -54,9 +62,11 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
 
     @Override
     public AccountCostDto findAccountCost(AccountCostDto accountCost) {
+        Long tenantId = USecurity.getTenantId();
         LambdaQueryWrapper<AccountCostPo> wrapper = new LambdaQueryWrapper<AccountCostPo>()
                 .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId());
+                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId())
+                .eq(UEmpty.isNotEmpty(tenantId), AccountCostPo::getTenantId, tenantId);
         return UCopy.copyPo2Dto(getOne(wrapper), AccountCostDto.class);
     }
 

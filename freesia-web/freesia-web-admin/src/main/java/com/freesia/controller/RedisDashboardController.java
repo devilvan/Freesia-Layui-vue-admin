@@ -34,7 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping(value = "/dashboard/redisDashboardController")
 @Tag(name = "RedisDashboardController", description = "Redis面板 控制器")
-public class RedisDashboardController {
+public class RedisDashboardController extends BaseController {
     final String COMMAND_STATS = "commandstats";
     final String PING = "ping";
     private final RedisTemplate<String, Object> freesiaRedisTemplate;

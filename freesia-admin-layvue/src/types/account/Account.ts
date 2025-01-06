@@ -6,6 +6,7 @@ export interface AccountCostVo extends BaseVo {
     costType?: string;
     paymentSign?: string;
     paymentTime?: Date;
+    paymentTimeRange?: string[];
     icon?: string;
     remark?: string;
 }
@@ -20,7 +21,7 @@ export interface AccountCostEntity extends BaseEntity {
     remark?: string;
 }
 
-export enum AccountType {
+export enum PaymentSign {
     /**
      * 支出
      */

@@ -3,17 +3,25 @@ package com.freesia.account.controller;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.vo.AccountCostVo;
+import com.freesia.constant.Constants;
+import com.freesia.controller.BaseController;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
+import com.freesia.util.UString;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * @author Evad.Wu
@@ -24,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/accountCostController")
 @Tag(name = "AccountCostController", description = "开销表 控制器")
-public class AccountCostController {
+public class AccountCostController extends BaseController {
     private final AccountCostService accountCostService;
 
     /**
@@ -71,9 +79,13 @@ public class AccountCostController {
     @Operation(summary = "查询开销表分页信息")
     @GetMapping(value = "findPageAccountCost")
     public TableResult<AccountCostDto> findPageAccountCost(AccountCostVo accountCostVo, PageQuery pageQuery) {
+        Date[] dateRange = parseDateRange(accountCostVo.getPaymentTimeRange(), UString.SEPARATOR, Constants.SDF_YMDHMS);
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        accountCostDto.setPaymentTimeFrom(dateRange[0]);
+        accountCostDto.setPaymentTimeTo(dateRange[1]);
         return accountCostService.findPageAccountCost(accountCostDto, pageQuery);
     }
+
 
     /**
      * 条件查询开销表

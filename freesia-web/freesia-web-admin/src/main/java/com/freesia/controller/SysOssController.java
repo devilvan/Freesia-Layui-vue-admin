@@ -30,7 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/common/sysOssController")
 @Tag(name = "SysOssController", description = "OSS对象存储表 控制器")
-public class SysOssController {
+public class SysOssController extends BaseController {
     private final SysOssService sysOssService;
 
     /**

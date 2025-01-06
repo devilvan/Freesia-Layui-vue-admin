@@ -1,13 +1,15 @@
 package com.freesia.account.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Evad.Wu
@@ -15,10 +17,11 @@ import java.math.BigDecimal;
  * @date 2024-12-23
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "开销表 值对象")
-public class AccountCostVo {
+public class AccountCostVo extends BaseVo {
     @Schema(description = "开销描述")
     @JSONField(alternateNames = {"costDesc"})
     private String costDesc;
@@ -34,6 +37,9 @@ public class AccountCostVo {
     @Schema(description = "时间")
     @JSONField(alternateNames = {"paymentTime"})
     private Date paymentTime;
+    @Schema(description = "时间范围（查询）")
+    @JSONField(alternateNames = {"paymentTimeRange"})
+    private String paymentTimeRange;
     @Schema(description = "图标")
     @JSONField(alternateNames = {"icon"})
     private String icon;

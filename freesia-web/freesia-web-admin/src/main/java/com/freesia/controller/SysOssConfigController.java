@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/common/sysOssConfigController")
 @Tag(name = "SysOssConfigController", description = "OSS配置信息表 控制器")
-public class SysOssConfigController {
+public class SysOssConfigController extends BaseController {
     private final SysOssConfigService sysOssConfigService;
 
     /**
