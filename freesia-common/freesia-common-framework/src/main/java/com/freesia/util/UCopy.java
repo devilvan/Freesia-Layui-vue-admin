@@ -8,14 +8,19 @@ import com.freesia.entity.BaseEntity;
 import com.freesia.po.BasePo;
 import com.freesia.vo.BaseVo;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 /**
  * @author Evad.Wu
@@ -25,6 +30,65 @@ import java.util.function.Predicate;
 @SuppressWarnings(value = {"unused", "DuplicatedCode"})
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UCopy {
+    /**
+     * 增量同步 根据外部集合查询内部集合，并根据增量匹配规则过滤出待新增和待更新的集合
+     *
+     * @param synCustomerBeanList                     外部集合
+     * @param buildOuter2InnerCollectionFunction      外部集合转换为内部集合
+     * @param findExistInnerCollectionFunction        根据外部集合查找出待匹配的内部集合
+     * @param buildMatchAdditionKeyCollectionFunction 增量匹配规则
+     * @param buildInsertInnerFunction                构建新增集合
+     * @param buildUpdateInnerFunction                构建更新集合
+     * @param <OUTER>                                 外部集合泛型
+     * @param <INNER>                                 内部集合泛型
+     * @return 增量同步处理结果
+     */
+    public static <OUTER, INNER> SyncAdditionCollectionDto<INNER> syncAddition(
+            Collection<OUTER> synCustomerBeanList,
+            Function<Collection<OUTER>, Collection<INNER>> buildOuter2InnerCollectionFunction,
+            Function<Collection<INNER>, List<INNER>> findExistInnerCollectionFunction,
+            Function<INNER, String> buildMatchAdditionKeyCollectionFunction,
+            Function<INNER, INNER> buildInsertInnerFunction,
+            BiFunction<INNER, INNER, INNER> buildUpdateInnerFunction) {
+        // 外部集合转换为内部集合
+        Collection<INNER> outer2InnerCollection = buildOuter2InnerCollectionFunction.apply(synCustomerBeanList);
+        // 根据外部集合查找出待匹配的内部集合
+        List<INNER> existInnerCollection = findExistInnerCollectionFunction.apply(outer2InnerCollection);
+        // 获取增量匹配规则
+        // 在内部集合中根据增量匹配规则查询存在的元素的键
+        List<String> existInnerMatchAdditionKeyList = UStream.toList(existInnerCollection, buildMatchAdditionKeyCollectionFunction);
+        List<INNER> insertList = new ArrayList<>();
+        List<INNER> updateList = null;
+        if (UEmpty.isEmpty(existInnerCollection)) {
+            for (INNER outer2Inner : outer2InnerCollection) {
+                insertList.add(buildInsertInnerFunction.apply(outer2Inner));
+            }
+        } else {
+            updateList = new ArrayList<>();
+            for (INNER outer2Inner : outer2InnerCollection) {
+                String matchAdditionKey = buildMatchAdditionKeyCollectionFunction.apply(outer2Inner);
+                // 遍历下标，在已存在的内部集合中查询匹配当前增量键的元素，有则更新，无则新增
+                int indexOf = IntStream.range(0, existInnerCollection.size())
+                        .filter(index -> {
+                            INNER inner = existInnerCollection.get(index);
+                            String additionKey = buildMatchAdditionKeyCollectionFunction.apply(inner);
+                            return matchAdditionKey.equals(additionKey);
+                        })
+                        .findFirst().orElse(-1);
+                if (indexOf != -1) {
+                    updateList.add(buildUpdateInnerFunction.apply(outer2Inner, existInnerCollection.get(indexOf)));
+                } else {
+                    insertList.add(buildInsertInnerFunction.apply(outer2Inner));
+                }
+            }
+        }
+        List<INNER> mergeList = new ArrayList<>(insertList);
+        if (UEmpty.isNotEmpty(updateList)) {
+            mergeList.addAll(updateList);
+        }
+        return new SyncAdditionCollectionDto<>(insertList, updateList, mergeList);
+    }
+
     /**
      * PO转DTO
      *
@@ -237,7 +301,7 @@ public class UCopy {
      * @param targetType 目标类型
      * @param excludes   排除的属性
      */
-    public static <E, T> List<T> fullCopyList(List<E> source, Class<T> targetType, String... excludes) {
+    public static <E, T> List<T> fullCopyList(Collection<E> source, Class<T> targetType, String... excludes) {
         Iterator<E> sourceIter = source.iterator();
         List<T> list = UCollection.optimizeInitialCapacityArrayList(source.size());
         try {
@@ -289,5 +353,29 @@ public class UCopy {
             e.printStackTrace();
         }
         return list;
+    }
+
+    /**
+     * 增量处理方法 结果集
+     * {@link UCopy#syncAddition
+     *
+     * @param <T> 集合泛型
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SyncAdditionCollectionDto<T> {
+        /**
+         * 新增集合
+         */
+        private Collection<T> insertCollection;
+        /**
+         * 更新集合
+         */
+        private Collection<T> updateCollection;
+        /**
+         * 合并集合
+         */
+        private Collection<T> mergeCollection;
     }
 }
