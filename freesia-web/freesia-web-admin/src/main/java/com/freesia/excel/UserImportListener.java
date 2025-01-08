@@ -1,16 +1,15 @@
 package com.freesia.excel;
 
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.util.ListUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.FlagConstant;
-import com.freesia.constant.UserModule;
-import com.freesia.satoken.constant.UserType;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.SysUserImportEntity;
 import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.pojo.BaseImportEntity;
 import com.freesia.exception.ServiceException;
+import com.freesia.satoken.constant.UserType;
 import com.freesia.service.SysUserService;
 import com.freesia.util.UCollection;
 import com.freesia.util.UCopy;
@@ -20,6 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,19 +61,29 @@ public class UserImportListener<T extends BaseImportEntity> extends BaseImportEn
         }
         if (sysUserDtoList.size() > 0) {
             // 过滤相同用户名的数据
-            sysUserDtoList = sysUserDtoList.stream()
-                    .filter(UCopy.distinctByKey(SysUserDto::getUserName))
-                    .collect(Collectors.toList());
-            // 查询是否有重复用户名
-            final List<String> distinctUserNameList = sysUserDtoList.stream().map(SysUserDto::getUserName).collect(Collectors.toList());
-            List<SysUserDto> distinctSysUserDtoList = sysUserService.findDistinctUserNameList(distinctUserNameList);
-            if (UEmpty.isNotEmpty(distinctSysUserDtoList)) {
-                final List<String> nonUniqueUserNameList = distinctSysUserDtoList.stream().map(SysUserDto::getUserName).collect(Collectors.toList());
-                final String nonUniqueUserNameJoin = StrUtil.join("\n", nonUniqueUserNameList);
-                throw new ServiceException(UserModule.SubModule.USER_IMPORT, "user.name.not.unique", nonUniqueUserNameJoin);
-            }
+            UCopy.SyncAdditionCollectionDto<SysUserDto> sysUserDtoSyncAdditionCollectionDto = UCopy.syncAddition(
+                    sysUserDtoList,
+                    sysUserDtoCollection -> sysUserDtoCollection,
+                    sysUserDtoCollection -> {
+                        final List<String> nonUniqueUserNameList = sysUserDtoCollection.stream().map(SysUserDto::getUserName).collect(Collectors.toList());
+                        return sysUserService.findDistinctUserNameList(nonUniqueUserNameList);
+                    },
+                    SysUserDto::getUserName,
+                    sysUserDto -> sysUserDto,
+                    (outer, existInner) -> {
+                        existInner.setNickName(outer.getNickName());
+                        existInner.setEmail(outer.getEmail());
+                        existInner.setUserType(outer.getUserType());
+                        existInner.setGender(outer.getGender());
+                        existInner.setRemark(outer.getRemark());
+                        return existInner;
+                    });
+            System.out.println(JSONObject.toJSONString(sysUserDtoSyncAdditionCollectionDto));
             // 保存
-            sysUserService.saveUpdateBatch(sysUserDtoList);
+            Collection<SysUserDto> mergeCollection = sysUserDtoSyncAdditionCollectionDto.getMergeCollection();
+            if (UEmpty.isNotEmpty(mergeCollection)) {
+                sysUserService.saveUpdateBatch(new ArrayList<>(mergeCollection));
+            }
         }
         cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
     }

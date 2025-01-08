@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-codegen/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-crypt/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-desensitization/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-doc/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-framework/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-idempotent/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-jdbc/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-json/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-log/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-mail/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-net/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-oss/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-redis/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-satoken/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-sse/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-tenant/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-common/freesia-common-validation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-app/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freesia-web/freesia-web-framework/src/main/java" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>
