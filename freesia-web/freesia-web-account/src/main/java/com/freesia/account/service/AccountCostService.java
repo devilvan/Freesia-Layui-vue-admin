@@ -1,8 +1,9 @@
 package com.freesia.account.service;
 
+import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.account.dto.AccountCostDto;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public interface AccountCostService {
      * 查询开销表信息
      *
      * @param accountCostDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery      分页条件
      * @return 分页信息
      */
     TableResult<AccountCostDto> findPageAccountCost(AccountCostDto accountCostDto, PageQuery pageQuery);
@@ -51,4 +52,12 @@ public interface AccountCostService {
      * @param idList 主键
      */
     void deleteAccountCost(List<Long> idList);
+
+    /**
+     * 查询待导出的记账数据，并构建导出格式
+     *
+     * @param accountCostDto 查询条件
+     * @return 待导出的数据集合
+     */
+    List<AccountCostExportEntity> findBuildListAccountsExport(AccountCostDto accountCostDto);
 }

@@ -100,7 +100,6 @@
         </div>
       </div>
     </div>
-    <AccountTypeIconPicker></AccountTypeIconPicker>
   </div>
 
 </template>

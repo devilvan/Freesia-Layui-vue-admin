@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.account.mapper.AccountCostMapper">
+    <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
+        SELECT
+        AC.COST_DESC,
+        AC.OUTLAY,
+        AC.COST_TYPE,
+        AC.PAYMENT_SIGN,
+        SDV.VALUE_NAME AS PAYMENT_SIGN_NAME,
+        AC.PAYMENT_TIME,
+        AC.ICON,
+        AC.REMARK,
+        DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME_GROUPING_KEY
+        FROM account_cost AC
+        LEFT JOIN SYS_DICT_VALUE SDV
+        ON SDV.DICT_KEY = 'PAYMENT_SIGN'
+        WHERE 1=1
+        AND AC.LOGIC_DEL = 0
+        <if test="accountCostDto.tenantId != null and accountCostDto.tenantId != ''">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
+        <if test="accountCostDto.paymentTimeFrom != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        </if>
+        <if test="accountCostDto.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
+        </if>
+        GROUP BY AC.PAYMENT_TIME, AC.CREATE_TIME
+        ORDER BY AC.PAYMENT_TIME DESC, AC.CREATE_TIME ASC
+    </select>
 </mapper>

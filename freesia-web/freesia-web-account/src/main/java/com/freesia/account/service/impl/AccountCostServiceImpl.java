@@ -3,7 +3,9 @@ package com.freesia.account.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.account.constant.CostType;
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.mapper.AccountCostMapper;
 import com.freesia.account.po.AccountCostPo;
 import com.freesia.account.repository.AccountCostRepository;
@@ -14,11 +16,19 @@ import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.util.UStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -29,6 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, AccountCostPo> implements AccountCostService {
     private final AccountCostRepository accountCostRepository;
+    private final AccountCostMapper accountCostMapper;
 
     @Override
     public AccountCostDto saveUpdate(AccountCostDto accountCostDto) {
@@ -45,17 +56,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
 
     @Override
     public TableResult<AccountCostDto> findPageAccountCost(AccountCostDto accountCost, PageQuery pageQuery) {
-        LambdaQueryWrapper<AccountCostPo> wrapper = new LambdaQueryWrapper<AccountCostPo>()
-                .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId())
-                .like(UEmpty.isNotEmpty(accountCost.getCostDesc()), AccountCostPo::getCostDesc, accountCost.getCostDesc())
-                .like(UEmpty.isNotEmpty(accountCost.getRemark()), AccountCostPo::getRemark, accountCost.getRemark())
-                .eq(UEmpty.isNotEmpty(accountCost.getPaymentSign()), AccountCostPo::getPaymentSign, accountCost.getPaymentSign())
-                .between(UEmpty.isNotEmpty(accountCost.getPaymentTimeFrom()) && UEmpty.isNotEmpty(accountCost.getPaymentTimeTo()),
-                        AccountCostPo::getPaymentTime,
-                        accountCost.getPaymentTimeFrom(),
-                        accountCost.getPaymentTimeTo())
-                .orderByDesc(AccountCostPo::getPaymentTime);
+        LambdaQueryWrapper<AccountCostPo> wrapper = buildAccountCostPoLambdaQueryWrapper(accountCost);
         Page<AccountCostPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, AccountCostDto.class));
     }
@@ -74,5 +75,67 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Transactional
     public void deleteAccountCost(List<Long> idList) {
         removeBatchByIds(idList);
+    }
+
+    @Override
+    public List<AccountCostExportEntity> findBuildListAccountsExport(AccountCostDto accountCostDto) {
+        List<AccountCostExportEntity> findListAccountsExport = accountCostMapper.findListAccountsExport(accountCostDto);
+        Map<String, List<AccountCostExportEntity>> dateListMap = UStream.groupingByKey(findListAccountsExport, AccountCostExportEntity::getPaymentTimeGroupingKey);
+        List<AccountCostExportEntity> toExportList = new ArrayList<>();
+        if (UEmpty.isNotEmpty(dateListMap)) {
+            Set<Map.Entry<String, List<AccountCostExportEntity>>> entrySet = dateListMap.entrySet();
+            for (Map.Entry<String, List<AccountCostExportEntity>> entry : entrySet) {
+                List<AccountCostExportEntity> accountCostExportEntityList = entry.getValue();
+                // 每个分组最后一行添加合计列
+                buildStatisticRow(accountCostExportEntityList);
+                toExportList.addAll(accountCostExportEntityList);
+            }
+        }
+        return UCopy.fullCopyList(toExportList, AccountCostExportEntity.class);
+    }
+
+    /**
+     * 构建统计行
+     *
+     * @param accountCostExportEntityList 待导出的数据
+     */
+    private static void buildStatisticRow(List<AccountCostExportEntity> accountCostExportEntityList) {
+        BigDecimal expenses = new BigDecimal(BigInteger.ZERO);
+        BigDecimal income = new BigDecimal(BigInteger.ZERO);
+        if (UEmpty.isNotEmpty(accountCostExportEntityList)) {
+            for (AccountCostExportEntity accountCostExportEntity : accountCostExportEntityList) {
+                BigDecimal outlay = accountCostExportEntity.getOutlay();
+                if (outlay.compareTo(BigDecimal.ZERO) >= 0) {
+                    String paymentSign = accountCostExportEntity.getPaymentSign();
+                    if (CostType.EXPENSE.getCode().equals(paymentSign)) {
+                        expenses = expenses.add(outlay);
+                    } else if (CostType.INCOME.getCode().equals(paymentSign)) {
+                        income = income.add(outlay);
+                    }
+                }
+            }
+            AccountCostExportEntity accountCostExportEntity = accountCostExportEntityList.get(accountCostExportEntityList.size() - 1);
+            StringBuilder sb = new StringBuilder();
+            income = income.setScale(2, RoundingMode.HALF_UP);
+            expenses = expenses.setScale(2, RoundingMode.HALF_UP);
+            sb.append("总计").append(income.subtract(expenses, MathContext.UNLIMITED)).append("元")
+                    .append("，支出：").append(expenses).append("元")
+                    .append("，收入：").append(income).append("元");
+            accountCostExportEntity.setStatistic(sb.toString());
+        }
+    }
+
+    private static LambdaQueryWrapper<AccountCostPo> buildAccountCostPoLambdaQueryWrapper(AccountCostDto accountCost) {
+        return new LambdaQueryWrapper<AccountCostPo>()
+                .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId())
+                .like(UEmpty.isNotEmpty(accountCost.getCostDesc()), AccountCostPo::getCostDesc, accountCost.getCostDesc())
+                .like(UEmpty.isNotEmpty(accountCost.getRemark()), AccountCostPo::getRemark, accountCost.getRemark())
+                .eq(UEmpty.isNotEmpty(accountCost.getPaymentSign()), AccountCostPo::getPaymentSign, accountCost.getPaymentSign())
+                .between(UEmpty.isNotEmpty(accountCost.getPaymentTimeFrom()) && UEmpty.isNotEmpty(accountCost.getPaymentTimeTo()),
+                        AccountCostPo::getPaymentTime,
+                        accountCost.getPaymentTimeFrom(),
+                        accountCost.getPaymentTimeTo())
+                .orderByDesc(AccountCostPo::getPaymentTime);
     }
 }

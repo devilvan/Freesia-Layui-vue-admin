@@ -261,7 +261,7 @@ export default {
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue'
 import * as echarts from 'echarts'
-import router from "../../../router";
+import router from "../../../../router";
 
 const mainRef = ref()
 const currentIndex = ref('1')

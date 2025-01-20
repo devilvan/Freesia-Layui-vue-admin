@@ -914,7 +914,7 @@ function saveMenuSubmit(menuType: any) {
 
 function pathInputEvent(val: any, row: any) {
   sysMenuVo.value.component = parentPath.value + "/" + sysMenuVo.value.path + "/index"
-  sysMenuVo.value.perms = parentPath.value + ":" + sysMenuVo.value.path + ":index"
+  sysMenuVo.value.perms = parentPath.value.replaceAll("/", ":") + ":" + sysMenuVo.value.path + ":index"
 }
 
 function componentTypeEqInnerLink(componentType: any) {

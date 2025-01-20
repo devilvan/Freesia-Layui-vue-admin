@@ -9,8 +9,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="freesia-web-api" />
         <module name="freesia-common-framework" />
-        <module name="freesia-common-json" />
         <module name="freesia-common-doc" />
+        <module name="freesia-common-json" />
         <module name="freesia-common-cache" />
         <module name="freesia-web-app" />
         <module name="freesia-common-satoken" />
@@ -34,36 +34,6 @@
         <module name="freesia-web-admin" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="freesia" target="16" />
-      <module name="freesia-common" target="16" />
-      <module name="freesia-common-api" target="16" />
-      <module name="freesia-common-cache" target="16" />
-      <module name="freesia-common-codegen" target="16" />
-      <module name="freesia-common-crypt" target="16" />
-      <module name="freesia-common-desensitization" target="16" />
-      <module name="freesia-common-doc" target="16" />
-      <module name="freesia-common-excel" target="16" />
-      <module name="freesia-common-framework" target="16" />
-      <module name="freesia-common-idempotent" target="16" />
-      <module name="freesia-common-jdbc" target="16" />
-      <module name="freesia-common-json" target="16" />
-      <module name="freesia-common-log" target="16" />
-      <module name="freesia-common-mail" target="16" />
-      <module name="freesia-common-net" target="16" />
-      <module name="freesia-common-oss" target="16" />
-      <module name="freesia-common-redis" target="16" />
-      <module name="freesia-common-satoken" target="16" />
-      <module name="freesia-common-sse" target="16" />
-      <module name="freesia-common-tenant" target="16" />
-      <module name="freesia-common-validation" target="16" />
-      <module name="freesia-web" target="16" />
-      <module name="freesia-web-account" target="16" />
-      <module name="freesia-web-admin" target="16" />
-      <module name="freesia-web-api" target="16" />
-      <module name="freesia-web-app" target="16" />
-      <module name="freesia-web-framework" target="16" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

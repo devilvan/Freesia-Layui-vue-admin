@@ -25,3 +25,19 @@ export function findAccountCost(sysTenantVo: AccountCostVo): Promise<AccountCost
 export function deleteAccountCost(idList: Array<string>) {
     return Http.post("/api/accountCostController/deleteAccountCost", idList);
 }
+
+export const accountsImport = function (file: File) {
+    let params = {
+        file: file,
+    }
+    return Http.post('/api/accountCostController/accountsImport', params, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}
+
+export function accountsExport(accountsExportVo: AccountCostVo) {
+    let params = buildUrlParam(accountsExportVo);
+    return Http.get("/api/accountCostController/accountsExport", params);
+}

@@ -57,6 +57,11 @@
           class="table-box table-style"
           @change="change"
           @sortChange="sortChange">
+        <template #remark="{ row }">
+          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
+            <div class="oneRow">{{ row.remark }}</div>
+          </lay-tooltip>
+        </template>
         <template #paymentSign="{ row }">
           <dict-scan :options="paymentSignSelect" :value="row.paymentSign"/>
         </template>
@@ -86,6 +91,16 @@
           <lay-button v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]" size="sm" @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
+          </lay-button>
+          <lay-button type="warm" v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]" size="sm"
+                      @click="showAccountsImportModal">
+            <lay-icon class="layui-icon-down"></lay-icon>
+            导入
+          </lay-button>
+          <lay-button type="normal" v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]" size="sm"
+                      @click="showAccountsExportModal">
+            <lay-icon class="layui-icon-up"></lay-icon>
+            按时间导出
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
@@ -153,7 +168,8 @@
           <lay-row space="20">
             <lay-col :md="6">
               <lay-form-item label="开销时间" prop="paymentTime">
-                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="date" :shortcuts="singleShortcuts"
+                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
+                                 :shortcuts="singleShortcuts" :inputFormat="'YYYY-MM-DD HH:mm'"
                                  style="width: 100%" simple></lay-date-picker>
               </lay-form-item>
             </lay-col>
@@ -179,6 +195,57 @@
     <lay-layer v-model="showSelectTypeModalFlag" :area="['1200px']" :title="title">
       <AccountTypeIconPicker @callBack="callBackFun"></AccountTypeIconPicker>
     </lay-layer>
+
+    <lay-layer
+        v-model="visibleImport"
+        title="导入"
+        :area="['380px', '500px']"
+    >
+      <lay-upload
+          style="margin: 60px"
+          :url="accountsImportUrl"
+          v-model="fileList"
+          field="file"
+          acceptMime="application/vnd.ms-excel,
+          application/vnd.ms-excel.sheet.binary.macroenabled.12,
+          application/vnd.ms-excel.sheet.macroenabled.12,
+          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          :auto="false"
+          :drag="true"
+      >
+        <template #preview>
+          <div v-if="fileList.length > 0" v-for="(file, index) in fileList">
+            {{ index + ". " + file.name }}
+          </div>
+        </template>
+      </lay-upload>
+      <div style="width: 100%; text-align: center">
+        只能上传小于10MB的文件
+      </div>
+      <div style="width: 100%;margin-top: 20px; text-align: center">
+        <lay-button size="sm" type="primary" @click="toUpload">上传</lay-button>
+      </div>
+    </lay-layer>
+
+    <lay-layer v-model="showAccountsExportModalFlag" :area="['600px']" :title="title">
+      <div style="padding: 20px" @keydown.esc.prevent="toCancel">
+        <lay-form ref="accountsExportFormRef" :model="accountsExportVo" :rules="accountsExportFromRules"
+                  label-position="top">
+          <lay-row space="20">
+            <lay-col :md="24">
+              <lay-form-item label="导出时间" prop="paymentTime" required>
+                <lay-date-picker style="width: 100%" v-model="accountsExportVo.paymentTimeRange" allow-clear range type="datetime"
+                                 :shortcuts="defaultShortcuts" simple></lay-date-picker>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+        </lay-form>
+        <div style="width: 100%; text-align: right">
+          <lay-button size="sm" type="primary" @click="doExport">确定</lay-button>
+          <lay-button size="sm" @click="toCancel">取消</lay-button>
+        </div>
+      </div>
+    </lay-layer>
   </lay-container>
 </template>
 <script lang="ts">
@@ -186,24 +253,31 @@
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
-  name: "Tenant",
+  name: "MineAccounts",
 };
 </script>
 <script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "../../../types/Common";
-import {TableResult} from "../../../types/Result";
-import {deleteAccountCost, findPageAccountCost, findAccountCost, saveUpdate} from "../../../api/account/Account";
-import router from "../../../router";
-import {Operate} from "../../../types/Constants";
+import {PageQuery} from "../../../../types/Common";
+import {TableResult} from "../../../../types/Result";
+import {
+  deleteAccountCost,
+  findPageAccountCost,
+  findAccountCost,
+  saveUpdate,
+  accountsImport, accountsExport
+} from "../../../../api/account/Account";
+import router from "../../../../router";
+import {Operate} from "../../../../types/Constants";
 import {AccountCostEntity, AccountCostVo, PaymentSign} from "@/types/account/Account";
-import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
-import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {List} from "echarts";
 import {buildRange, defaultShortcuts, singleShortcuts} from "@/util/UDate";
+import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
+import SvgIcon from "@/views/component/svg/SvgIcon.vue";
+import {userImport} from "@/api/system/User";
 
 /* INIT*/
 onMounted(async () => {
@@ -239,6 +313,7 @@ const columns = ref([
   {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '开销标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
   {title: '开支时间', width: '150px', key: 'paymentTime'},
+  {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
     width: '150px',
@@ -256,6 +331,33 @@ const expenseFromRules = ref({
         callback(new Error("金额不能为0"));
       } else {
         return true;
+      }
+    }
+  },
+})
+const fileList = ref([])
+const accountsImportUrl = import.meta.env.VITE_APP_BASE_URL as string + '/api/accountCostController/accountsImport'
+const visibleImport = ref(false)
+const showAccountsExportModalFlag = ref(false)
+const accountsExportFormRef = ref()
+const accountsExportVo = ref<AccountCostVo>({})
+const accountsExportFromRules = ref({
+  paymentTime: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (!value) {
+        callback(new Error("日期不能为空"));
+        let split = value.split(",");
+        if (split.length !== 2) {
+          callback(new Error("日期格式不正确，应包含日期从、日期到"));
+        }
+        let dateFrom = new Date(split[0]);
+        if (!isNaN(dateFrom.getTime())) {
+          callback(new Error("日期从格式有误" + dateFrom));
+        }
+        let dateTo = new Date(split[0]);
+        if (!isNaN(dateTo.getTime())) {
+          callback(new Error("日期到格式有误" + dateTo));
+        }
       }
     }
   },
@@ -386,6 +488,7 @@ function toSubmit(clickFlag: boolean) {
 function toCancel() {
   accountCostVo.value = {}
   addExpenseModalShowFlag.value = false
+  showAccountsExportModalFlag.value = false;
 }
 
 function confirm(row: any) {
@@ -417,6 +520,35 @@ function changeSelectTypeModal() {
 const callBackFun = (icon: any) => {
   accountCostVo.value.icon = icon;
   changeSelectTypeModal()
+}
+
+function showAccountsImportModal() {
+  visibleImport.value = true
+}
+
+function showAccountsExportModal() {
+  accountsExportVo.value.paymentTimeRange = buildRange(7)
+  showAccountsExportModalFlag.value = true
+}
+
+function toUpload() {
+  accountsImport(fileList.value).then((res: any) => {
+    if (res.code === 200) {
+      layer.msg(res.msg, {icon: 1})
+      fileList.value = []
+      loadDataSource()
+      visibleImport.value = !visibleImport.value
+    }
+  })
+}
+
+function doExport() {
+  accountsExport(accountsExportVo.value).then((res: any) => {
+    if (res.code === 200) {
+      layer.msg(res.msg, {icon: 1})
+      showAccountsExportModalFlag.value = !showAccountsExportModalFlag.value
+    }
+  })
 }
 
 /* FUNCTION*/

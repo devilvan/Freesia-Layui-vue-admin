@@ -534,6 +534,7 @@ function toUpload() {
   userImport(fileList.value, uploadAvatar.value).then((res: any) => {
     if (res.code === 200) {
       layer.msg(res.msg, {icon: 1})
+      fileList.value = []
       visibleImport.value = !visibleImport.value
     }
   })
