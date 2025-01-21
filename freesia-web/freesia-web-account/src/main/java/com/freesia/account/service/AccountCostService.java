@@ -2,6 +2,7 @@ package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
+import com.freesia.entity.EchartOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -60,4 +61,12 @@ public interface AccountCostService {
      * @return 待导出的数据集合
      */
     List<AccountCostExportEntity> findBuildListAccountsExport(AccountCostDto accountCostDto);
+
+    /**
+     * 饼图-查询各类型开销比例
+     *
+     * @param accountCostDto 入参
+     * @return 结果集
+     */
+    EchartOptionEntity findCostTypeRatePie(AccountCostDto accountCostDto);
 }

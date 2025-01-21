@@ -106,7 +106,7 @@ spring:
       hibernate:
         jdbc:
           # 批量保存时重写SQL语句，每批1000条提交
-          batch_size: 1000
+          batch_size: 20
           batch_versioned_data: true
         order_inserts: true
         order_updates: true

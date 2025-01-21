@@ -32,6 +32,7 @@ export enum MenuPermission {
     SYSTEM_DEPT_ASSIGN_ROLE = "system:dept:assignRole",
 
     /* 字典管理*/
+    SYSTEM_DICT_INDEX = "SYSTEM_DICT_INDEX",
     SYSTEM_DICT_KEY_ADD = "system:dict:key:add",
     SYSTEM_DICT_KEY_EDIT = "system:dict:key:edit",
     SYSTEM_DICT_KEY_DELETE = "system:dict:key:delete",

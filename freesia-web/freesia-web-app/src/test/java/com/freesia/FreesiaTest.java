@@ -15,6 +15,7 @@ import org.junit.Test;
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -37,6 +38,22 @@ public class FreesiaTest {
     private static final String ENCRYPT_KEY = "Y29tLnNpbm9zZXJ2aWNlcy5vcmc=";
 
     @Test
+    public void testLoopDirFiles() {
+        // 获取目录下的所有文件和子目录
+        File[] files = new File("C:\\Project\\freesia\\freesia-admin-layvue\\src\\assets\\svgIcon").listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                // 如果是文件，打印文件名
+                if (file.isFile()) {
+                    String name = file.getName().replace(".svg", "");
+                    System.out.println(name);
+                }
+            }
+        }
+    }
+
+    @Test
     public void testCalendar() {
         BaseController baseController = new BaseController();
         Date[] dates = baseController.defaultDateRange(7);
@@ -45,6 +62,7 @@ public class FreesiaTest {
             System.out.println(sdfYmdhms.format(date));
         }
     }
+
     private static byte[] generateKey() throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("$AES");
         SecureRandom random = new SecureRandom();

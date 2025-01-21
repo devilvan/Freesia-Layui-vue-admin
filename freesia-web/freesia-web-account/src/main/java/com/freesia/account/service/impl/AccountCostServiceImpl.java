@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
+import com.freesia.account.entity.FindCostTypeRatePieEntity;
 import com.freesia.account.mapper.AccountCostMapper;
 import com.freesia.account.po.AccountCostPo;
 import com.freesia.account.repository.AccountCostRepository;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.constant.FlagConstant;
+import com.freesia.entity.EchartOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -92,6 +95,26 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             }
         }
         return UCopy.fullCopyList(toExportList, AccountCostExportEntity.class);
+    }
+
+    @Override
+    public EchartOptionEntity findCostTypeRatePie(AccountCostDto accountCostDto) {
+        List<FindCostTypeRatePieEntity> accountCostPoList = accountCostMapper.findCostTypeRatePie(accountCostDto);
+        EchartOptionEntity echartOptionEntity = new EchartOptionEntity();
+        if (UEmpty.isNotEmpty(accountCostPoList)) {
+            Set<String> legendSet = accountCostPoList.stream().map(FindCostTypeRatePieEntity::getCostType).collect(Collectors.toSet());
+            echartOptionEntity.setLegends(legendSet);
+            List<EchartOptionEntity.Series> series = new ArrayList<>();
+            for (FindCostTypeRatePieEntity findCostTypeRatePieEntity : accountCostPoList) {
+                EchartOptionEntity.Series tmp = new EchartOptionEntity.Series();
+                tmp.setName(findCostTypeRatePieEntity.getCostType());
+                tmp.setValue(findCostTypeRatePieEntity.getOutlay().setScale(2, RoundingMode.HALF_UP).toString());
+                series.add(tmp);
+            }
+            echartOptionEntity.setSeries(series);
+            return echartOptionEntity;
+        }
+        return null;
     }
 
     /**

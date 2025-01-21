@@ -41,3 +41,8 @@ export function accountsExport(accountsExportVo: AccountCostVo) {
     let params = buildUrlParam(accountsExportVo);
     return Http.get("/api/accountCostController/accountsExport", params);
 }
+
+export function findCostTypeRatePie(accountsExportVo: AccountCostVo) {
+    let params = buildUrlParam(accountsExportVo);
+    return Http.get("/api/accountCostController/findCostTypeRatePie", params);
+}

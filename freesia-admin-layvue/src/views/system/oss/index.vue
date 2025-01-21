@@ -333,6 +333,10 @@ function preview(row) {
 }
 
 function toUpload() {
+  if (!fileList.value || fileList.value.length < 1) {
+    layer.confirm('清选择文件', {icon: 3})
+    return ;
+  }
   upload(fileList.value).then((res: any) => {
     if (res.code === 200) {
       layer.msg(res.msg, {icon: 1})

@@ -1,100 +1,53 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
     <lay-row space="10">
-      <lay-col md="8" sm="8" xs="12">
+      <lay-col md="12" sm="8" xs="12">
         <lay-card>
-          <template #title> 快捷方式</template>
+          <template #title>{{costTypeRatePieTitle}}</template>
           <lay-row :space="10">
-            <lay-col :md="6">
-              <a class="shortcut" @click="changeAddExpensesModal">
-                <i class="layui-icon layui-icon-rate"></i>
-                <cite>支出</cite>
-              </a>
-            </lay-col>
-            <lay-col :md="6">
-              <a class="shortcut" @click="changeAddIncomeModal">
-                <i class="layui-icon layui-icon-rate-solid"></i>
-                <cite>收入</cite>
-              </a>
-            </lay-col>
-            <lay-col :md="6">
-              <router-link to="/workspace/analysis" class="shortcut">
-                <i class="layui-icon layui-icon-template-one"></i>
-                <cite>主页三</cite>
-              </router-link>
-            </lay-col>
-            <lay-col :md="6">
-              <a lay-href="home/homepage1" @click="changePage" class="shortcut">
-                <i class="layui-icon layui-icon-chat"></i>
-                <cite>主页四</cite>
-              </a>
-            </lay-col>
-            <lay-col :md="6">
-              <a lay-href="home/homepage1" class="shortcut">
-                <i class="layui-icon layui-icon-find-fill"></i>
-                <cite>主页五</cite>
-              </a>
-            </lay-col>
-            <lay-col :md="6">
-              <a lay-href="home/homepage1" class="shortcut">
-                <i class="layui-icon layui-icon-survey"></i>
-                <cite>主页六</cite>
-              </a>
-            </lay-col>
-            <lay-col :md="6">
-              <a lay-href="home/homepage1" class="shortcut">
-                <i class="layui-icon layui-icon-user"></i>
-                <cite>主页七</cite>
-              </a>
-            </lay-col>
-            <lay-col :md="6">
-              <a lay-href="home/homepage1" class="shortcut">
-                <i class="layui-icon layui-icon-set"></i>
-                <cite>主页八</cite>
-              </a>
-            </lay-col>
+            <div ref="costTypeRatePieRef" style="height: 500px"></div>
           </lay-row>
         </lay-card>
       </lay-col>
-      <lay-col md="8" sm="8" xs="12">
-        <lay-card>
-          <template #title> 代办事项</template>
-          <lay-row :space="10">
-            <lay-col :md="12">
-              <a class="agency">
-                <h3>待审评论</h3>
-                <p>
-                  <cite>66</cite>
-                </p>
-              </a>
-            </lay-col>
-            <lay-col :md="12">
-              <a class="agency">
-                <h3>待审帖子</h3>
-                <p>
-                  <cite>12</cite>
-                </p>
-              </a>
-            </lay-col>
-            <lay-col :md="12">
-              <a class="agency">
-                <h3>待审商品</h3>
-                <p>
-                  <cite>99</cite>
-                </p>
-              </a>
-            </lay-col>
-            <lay-col :md="12">
-              <a class="agency">
-                <h3>等待发货</h3>
-                <p>
-                  <cite>20</cite>
-                </p>
-              </a>
-            </lay-col>
-          </lay-row>
-        </lay-card>
-      </lay-col>
+<!--      <lay-col md="8" sm="8" xs="12">-->
+<!--        <lay-card>-->
+<!--          <template #title> 代办事项</template>-->
+<!--          <lay-row :space="10">-->
+<!--            <lay-col :md="12">-->
+<!--              <a class="agency">-->
+<!--                <h3>待审评论</h3>-->
+<!--                <p>-->
+<!--                  <cite>66</cite>-->
+<!--                </p>-->
+<!--              </a>-->
+<!--            </lay-col>-->
+<!--            <lay-col :md="12">-->
+<!--              <a class="agency">-->
+<!--                <h3>待审帖子</h3>-->
+<!--                <p>-->
+<!--                  <cite>12</cite>-->
+<!--                </p>-->
+<!--              </a>-->
+<!--            </lay-col>-->
+<!--            <lay-col :md="12">-->
+<!--              <a class="agency">-->
+<!--                <h3>待审商品</h3>-->
+<!--                <p>-->
+<!--                  <cite>99</cite>-->
+<!--                </p>-->
+<!--              </a>-->
+<!--            </lay-col>-->
+<!--            <lay-col :md="12">-->
+<!--              <a class="agency">-->
+<!--                <h3>等待发货</h3>-->
+<!--                <p>-->
+<!--                  <cite>20</cite>-->
+<!--                </p>-->
+<!--              </a>-->
+<!--            </lay-col>-->
+<!--          </lay-row>-->
+<!--        </lay-card>-->
+<!--      </lay-col>-->
       <lay-col md="8" sm="8" xs="12">
         <lay-card>
           <template #title> 版本信息</template>
@@ -187,71 +140,6 @@
       </lay-col>
     </lay-row>
   </lay-container>
-
-  <lay-layer v-model="addExpensesModalFlag" :title="title">
-    <div style="padding: 20px">
-      <lay-form :model="sysDirVo" ref="addExpensesRef" label-position="top" size="md">
-        <lay-row space="20">
-          <lay-col md="6">
-            <lay-form-item label="父目录" prop="parentId">
-              <lay-tree-select v-model="sysDirVo.parentId" :data="treeMenuSelectList"
-                               @change="changeDirModalParentIdSelect"
-                               :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
-            </lay-form-item>
-          </lay-col>
-          <lay-col md="6">
-            <lay-form-item label="路由路径" prop="path" required>
-              <lay-input v-model="sysDirVo.path" placeholder="例如：workspace"
-                         :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col md="6">
-            <lay-form-item label="目录名称" prop="menuName" required>
-              <lay-input v-model="sysDirVo.menuName"></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col md="6">
-            <lay-form-item label="是否显示" prop="status" required>
-              <lay-select v-model="sysDirVo.status" :options="isShowOptions" :items="sysDirVo.status"
-                          style="width: 100%">
-              </lay-select>
-            </lay-form-item>
-          </lay-col>
-          <lay-row space="20">
-            <lay-col md="6">
-              <lay-form-item label="图标" prop="icon">
-                <lay-icon-picker v-model="sysDirVo.icon" allow-clear></lay-icon-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col md="6">
-              <lay-form-item label="排序" prop="orderNum" required>
-                <lay-input-number
-                    style="width: 100%"
-                    v-model="sysDirVo.orderNum"
-                    position="right"
-                    :min="0"
-                    :step="10"
-                ></lay-input-number>
-              </lay-form-item>
-            </lay-col>
-            <lay-col md="6">
-              <lay-form-item label="备注" prop="remark" required>
-                <lay-textarea v-model="sysDirVo.remark" :allow-clear="true" show-count
-                              :maxlength="127"></lay-textarea>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
-        </lay-row>
-      </lay-form>
-      <div style="width: 97%; text-align: right">
-        <lay-button size="sm" type="primary" @click="saveMenuSubmit(MenuType.DIR)">保存</lay-button>
-        <lay-button size="sm" type="primary" @click="resetModal(MenuType.DIR)"
-                    :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
-        </lay-button>
-        <lay-button size="sm" @click="toCancel">取消</lay-button>
-      </div>
-    </div>
-  </lay-layer>
 </template>
 <script lang="ts">
 export default {
@@ -262,6 +150,7 @@ export default {
 import {onMounted, ref} from 'vue'
 import * as echarts from 'echarts'
 import router from "../../../../router";
+import {findCostTypeRatePie} from "@/api/account/Account";
 
 const mainRef = ref()
 const currentIndex = ref('1')
@@ -503,6 +392,48 @@ onMounted(() => {
     ]
   }
   option && myChart.setOption(option)
+
+  findCostTypeRatePie().then((res: any) => {
+    if (res.code === 200) {
+      let data = res.data
+      const costTypeRatePieOption = {
+        title: {
+          text: costTypeRatePieTitle,
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          type: 'scroll',
+          orient: 'vertical',
+          right: 10,
+          top: 20,
+          bottom: 20,
+          data: data.legends
+        },
+        series: [
+          {
+            name: '类型',
+            type: 'pie',
+            radius: '55%',
+            center: ['40%', '50%'],
+            data: data.series,
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      };
+      let costTypeRatePieChart = echarts.init(costTypeRatePieRef.value);
+      costTypeRatePieChart.setOption(costTypeRatePieOption)
+    }
+  })
 })
 /* INIT*/
 
@@ -570,12 +501,15 @@ const dataSource21 = [
     remark: 'layui - vue（谐音：类 UI) '
   }
 ]
+const costTypeRatePieRef = ref(null);
+const costTypeRatePieTitle = "支出类型占比"
 /* VAR*/
 
 /* FUNCTION*/
 const changePage = () => {
   $router.push({path: '/form/base', query: {id: '1111'}})
 }
+
 /* FUNCTION*/
 
 function changeAddExpensesModal() {
@@ -585,6 +519,8 @@ function changeAddExpensesModal() {
 function changeAddIncomeModal() {
   addIncomeModalFlag.value = !addIncomeModalFlag.value
 }
+
+
 </script>
 
 <style lang="less" scoped>

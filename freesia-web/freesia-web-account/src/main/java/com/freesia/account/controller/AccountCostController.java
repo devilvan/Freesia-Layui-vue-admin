@@ -10,6 +10,7 @@ import com.freesia.account.service.AccountCostService;
 import com.freesia.account.vo.AccountCostVo;
 import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
+import com.freesia.entity.EchartOptionEntity;
 import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.handler.ExcelExportHandler;
 import com.freesia.excel.pojo.ExcelExportDto;
@@ -142,10 +143,10 @@ public class AccountCostController extends BaseController {
                 .map(m -> m.substring(m.lastIndexOf('.') + 1))
                 .orElseThrow(() -> new OssException("oss.file.required"));
         if (!ExcelSuffix.includeBySuffix(suffix)) {
-            throw new UserException("user.import.suffix.invalid", suffix);
+            throw new UserException("import.suffix.invalid", suffix);
         }
         try {
-            UExcel.read(file.getInputStream(), AccountCostImportEntity.class,
+            UExcel.read(file.getInputStream(), AccountCostImportEntity.class, ExcelSuffix.getInstanceBySuffix(suffix).getExcelTypeEnum(),
                     new AccountsImportListener<>(accountCostService), 0, null);
         } catch (IOException e) {
             e.printStackTrace();
@@ -156,6 +157,12 @@ public class AccountCostController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * 记账导出
+     *
+     * @param accountsExportVo 查询入参
+     * @return 形式返回
+     */
     @Idempotent
 //    @SaCheckPermission(value = MenuPermission.SYSTEM_USER_IMPORT_USER)
     @Operation(summary = "记账导出")
@@ -169,6 +176,15 @@ public class AccountCostController extends BaseController {
         List<AccountCostExportEntity> accountCostExportEntityList = accountCostService.findBuildListAccountsExport(accountCostDto);
         doAccountsExport(accountCostExportEntityList, dates);
         return R.ok();
+    }
+
+    @Operation(summary = "饼图-查询各类型开销比例")
+    @GetMapping(value = "findCostTypeRatePie")
+    public R<EchartOptionEntity> findCostTypeRatePie(AccountCostVo accountCostVo) {
+        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        accountCostDto.setTenantId(USecurity.getTenantId());
+        EchartOptionEntity echartOptionEntity = accountCostService.findCostTypeRatePie(accountCostDto);
+        return R.ok(echartOptionEntity);
     }
 
     private static void doAccountsExport(List<AccountCostExportEntity> accountCostExportEntityList, Date[] dates) {

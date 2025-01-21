@@ -30,14 +30,21 @@
         <result column="VALUE_STATUS" property="valueStatus"/>
     </resultMap>
     <select id="findSysDictKeyList" resultType="com.freesia.po.SysDictKeyPo">
-        SELECT DISTINCT DK.ID,
-                        DK.REC_VER,
-                        DK.LOGIC_DEL,
-                        DK.KEY_NAME,
-                        DK.DICT_KEY,
-                        DK.STATUS,
-                        DK.REMARK
-        FROM sys_dict_key DK
-            ${ew.getCustomSqlSegment}
+        SELECT DISTINCT SDK.ID,
+        SDK.REC_VER,
+        SDK.LOGIC_DEL,
+        SDK.KEY_NAME,
+        SDK.DICT_KEY,
+        SDK.STATUS,
+        SDK.REMARK
+        FROM sys_dict_key SDK
+        WHERE 1 = 1
+        AND SDK.LOGIC_DEL = 0
+        <if test="sysDictKeyDto.keyNameOrDictKey != null and sysDictKeyDto.keyNameOrDictKey != ''">
+            AND
+            (SDK.DICT_KEY LIKE CONCAT('%', #{sysDictKeyDto.keyNameOrDictKey}, '%') OR
+            SDK.KEY_NAME LIKE CONCAT('%', #{sysDictKeyDto.keyNameOrDictKey}, '%'))
+        </if>
+        ORDER BY SDK.ID DESC
     </select>
 </mapper>

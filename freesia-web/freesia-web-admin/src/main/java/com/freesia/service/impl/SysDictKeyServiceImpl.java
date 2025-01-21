@@ -70,12 +70,7 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
 
     @Override
     public List<SysDictKeyDto> findSysDictKeyList(SysDictKeyDto sysDictKeyDto) {
-        List<SysDictKeyPo> sysDictList = sysDictKeyMapper.findSysDictKeyList(Wrappers.<SysDictKeyPo>query()
-                .eq("DK.LOGIC_DEL", FlagConstant.DISABLED)
-                .like(UEmpty.isNotEmpty(sysDictKeyDto.getDictKey()), "DK.DICT_KEY", sysDictKeyDto.getDictKey())
-                .like(UEmpty.isNotEmpty(sysDictKeyDto.getKeyName()), "DK.KEY_NAME", sysDictKeyDto.getKeyName())
-                .eq(UEmpty.isNotEmpty(sysDictKeyDto.getStatus()), "DK.STATUS", sysDictKeyDto.getStatus())
-                .orderByDesc("DK.ID"));
+        List<SysDictKeyPo> sysDictList = sysDictKeyMapper.findSysDictKeyList(sysDictKeyDto);
         return UCopy.fullCopyList(sysDictList, SysDictKeyDto.class);
     }
 

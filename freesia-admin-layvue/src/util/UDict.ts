@@ -33,7 +33,11 @@ export enum Constants {
     /**
      * 开支标识
      */
-    PAYMENT_SIGN = "PAYMENT_SIGN"
+    PAYMENT_SIGN = "PAYMENT_SIGN",
+    /**
+     * 启用标识
+     */
+    ENABLED_STATUS = "ENABLED_STATUS",
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {

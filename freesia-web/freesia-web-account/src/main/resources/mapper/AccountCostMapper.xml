@@ -29,4 +29,17 @@
         GROUP BY AC.PAYMENT_TIME, AC.CREATE_TIME
         ORDER BY AC.PAYMENT_TIME DESC, AC.CREATE_TIME ASC
     </select>
+    <select id="findCostTypeRatePie" resultType="com.freesia.account.entity.FindCostTypeRatePieEntity">
+        SELECT
+        AC.COST_TYPE,
+        SUM(AC.OUTLAY) AS OUTLAY
+        FROM account_cost AC
+        WHERE 1=1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        <if test="accountCostDto.tenantId != null and accountCostDto.tenantId != ''">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
+        GROUP BY AC.COST_TYPE
+    </select>
 </mapper>

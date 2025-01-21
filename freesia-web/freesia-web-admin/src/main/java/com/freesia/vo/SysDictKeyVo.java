@@ -34,4 +34,7 @@ public class SysDictKeyVo extends BaseVo {
     @Schema(description = "备注")
     @JSONField(alternateNames = {"remark"})
     private String remark;
+    @Schema(description = "根据字典键或字典键名查询键")
+    @JSONField(alternateNames = {"keyNameOrDictKey"})
+    private String keyNameOrDictKey;
 }

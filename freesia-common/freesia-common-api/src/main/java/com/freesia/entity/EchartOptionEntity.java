@@ -1,0 +1,35 @@
+package com.freesia.entity;
+
+import lombok.Data;
+
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * @author Evad.Wu
+ * @Description Echarts图标返回结果集
+ * @date 2025-01-20
+ */
+@Data
+public class EchartOptionEntity {
+    /**
+     * 图表项标识
+     */
+    private Collection<String> legends;
+    /**
+     * 图表序列（K-V对）
+     */
+    private List<Series> series;
+
+    @Data
+    public static class Series {
+        /**
+         * 名称
+         */
+        private String name;
+        /**
+         * 值
+         */
+        private String value;
+    }
+}

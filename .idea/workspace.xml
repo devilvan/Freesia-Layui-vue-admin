@@ -5,40 +5,57 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【新增】Evad 1. 记账模块-导出功能开发">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jpa-buddy.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/freesia-web-account.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/constant/CostType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/AccountCostExportEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/AccountCostImportEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/listener/AccountsImportListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/entity/EchartOptionEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/FindCostTypeRatePieEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/freesia-web-admin.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/entity/SysDictValueImportEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/excel/DictValueImportListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/Account.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/index1.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/login/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/login/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/menu/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/menu/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/api/system/Dict.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/system/Dict.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svgIcon/account_记账.svg" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svg/account_记账.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svgIcon/details_明细.svg" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svg/details_明细.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svgIcon/edit_编辑.svg" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svg/edit_编辑.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svgIcon/setup_设置.svg" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svg/setup_设置.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/types/Permission.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/types/Permission.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/types/system/Dict.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/types/system/Dict.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/util/UDict.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/util/UDict.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/dashboard/redis/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/dashboard/redis/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/dict/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/dict/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/oss/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/oss/index.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/user/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/user/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/builder/ExcelExportBuilder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/handler/ExcelExportHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/handler/ExcelExportHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/pojo/ExcelExportDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/pojo/ExcelExportDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/pojo/ExcelExportWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/pojo/ExcelExportWriter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-framework/src/main/java/com/freesia/util/UPath.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-framework/src/main/java/com/freesia/util/UPath.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-framework/src/main/java/com/freesia/util/UStream.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-framework/src/main/java/com/freesia/util/UStream.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/constant/MenuPermission.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/constant/MenuPermission.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/constant/ExcelSuffix.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/constant/ExcelSuffix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/util/UExcel.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/util/UExcel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/dto/AccountCostDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/dto/AccountCostDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/mapper/AccountCostMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/mapper/AccountCostMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/AccountCostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/AccountCostService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysDictController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysDictController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysUserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/dto/SysDictKeyDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/dto/SysDictKeyDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/excel/UserImportListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/excel/UserImportListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysDictKeyMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysDictKeyMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysDictValueMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysDictValueMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/SysDictValueService.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/SysDictValueService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictKeyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictKeyServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictValueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictValueServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/vo/SysDictKeyVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/vo/SysDictKeyVo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysDictKeyMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysDictKeyMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysDictValueMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysDictValueMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_en_US.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_en_US.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_zh_CN.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_zh_CN.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-app/src/test/java/com/freesia/FreesiaTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-app/src/test/java/com/freesia/FreesiaTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,8 +68,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -75,12 +92,14 @@
 }</component>
   <component name="ProjectId" id="2qhySWDUkzbkz303ejcTZq9Jk59" />
   <component name="ProjectViewState">
+    <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
     <option name="showScratchesAndConsoles" value="false" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "JUnit.FreesiaTest.testCalendar.executor": "Debug",
+    "JUnit.FreesiaTest.testLoopDirFiles.executor": "Debug",
     "JUnit.FreesiaTest.testLoopFileName.executor": "Debug",
     "JUnit.FreesiaTestApplication.testExport.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
@@ -120,11 +139,14 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Project\freesia\freesia-admin-layvue\src\assets\svg" />
       <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\accountsDashboard" />
       <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\dashboard" />
       <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\mine" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.freesia.entity" />
+      <recent name="com.freesia.excel" />
       <recent name="com.freesia.account.entity" />
       <recent name="com.freesia.account.listener" />
       <recent name="com.freesia.exception" />
@@ -138,19 +160,6 @@
     </option>
   </component>
   <component name="RunManager" selected="Spring Boot.FreesiaAdminApplication">
-    <configuration name="UCrypt" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.freesia.util.UCrypt" />
-      <module name="freesia-common-framework" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.freesia.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="FreesiaTestApplication.testExport" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="freesia-web-app" />
       <extension name="coverage">
@@ -178,6 +187,22 @@
       <option name="PACKAGE_NAME" value="com.freesia" />
       <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
       <option name="METHOD_NAME" value="testCalendar" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FreesiaTest.testLoopDirFiles" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="freesia-web-app" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.freesia.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.freesia" />
+      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
+      <option name="METHOD_NAME" value="testLoopDirFiles" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -230,7 +255,7 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Application.UCrypt" />
+      <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
       <item itemvalue="JUnit.FreesiaTest.testCalendar" />
       <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
       <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
@@ -239,11 +264,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
         <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
         <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
         <item itemvalue="JUnit.FreesiaTest.testCalendar" />
         <item itemvalue="npm.dev" />
-        <item itemvalue="Application.UCrypt" />
       </list>
     </recent_temporary>
   </component>
@@ -273,7 +298,9 @@
       <workItem from="1736686174003" duration="2406000" />
       <workItem from="1736688593877" duration="3412000" />
       <workItem from="1737186210216" duration="8225000" />
-      <workItem from="1737334343245" duration="15832000" />
+      <workItem from="1737334343245" duration="22847000" />
+      <workItem from="1737363047463" duration="5303000" />
+      <workItem from="1737420733342" duration="19186000" />
     </task>
     <task id="LOCAL-00001" summary="【新增】Evad 1. 记账模块开发">
       <option name="closed" value="true" />
@@ -283,7 +310,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736170503957</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="【新增】Evad 1. 记账模块-导出功能开发">
+      <option name="closed" value="true" />
+      <created>1737351122655</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1737351122655</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

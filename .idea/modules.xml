@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/freesia-web/freesia-web-account/freesia-web-account.iml" filepath="$PROJECT_DIR$/freesia-web/freesia-web-account/freesia-web-account.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freesia-web/freesia-web-admin/freesia-web-admin.iml" filepath="$PROJECT_DIR$/freesia-web/freesia-web-admin/freesia-web-admin.iml" />
     </modules>
   </component>
 </project>

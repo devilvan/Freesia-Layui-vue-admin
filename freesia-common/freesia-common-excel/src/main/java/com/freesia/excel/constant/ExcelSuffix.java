@@ -1,5 +1,6 @@
 package com.freesia.excel.constant;
 
+import com.alibaba.excel.support.ExcelTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,20 +15,21 @@ public enum ExcelSuffix {
     /**
      * XLS类型
      */
-    XLS("xls"),
+    XLS("xls", ExcelTypeEnum.XLS),
     /**
      * XLSX类型
      */
-    XLSX("xlsx"),
+    XLSX("xlsx", ExcelTypeEnum.XLSX),
     /**
      * CSV类型
      */
-    CSV("csv");
+    CSV("csv", ExcelTypeEnum.CSV);
 
     /**
      * 后缀
      */
-    String suffix;
+    final String suffix;
+    final ExcelTypeEnum excelTypeEnum;
 
     /**
      * 判断入参的类型是否为合法的EXCEL类型
@@ -43,5 +45,15 @@ public enum ExcelSuffix {
             }
         }
         return false;
+    }
+
+    public static ExcelSuffix getInstanceBySuffix(String suffix) {
+        ExcelSuffix[] excelSuffixes = ExcelSuffix.values();
+        for (ExcelSuffix excelSuffix : excelSuffixes) {
+            if (excelSuffix.getSuffix().equalsIgnoreCase(suffix)) {
+                return excelSuffix;
+            }
+        }
+        return XLS;
     }
 }

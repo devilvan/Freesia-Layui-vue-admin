@@ -4,6 +4,7 @@ import {SysDictKeyVo, SysDictValueEntity, SysDictValueVo, SysDictVo} from "../..
 import {PageQuery} from "../../types/Common";
 import {TableResult} from "../../types/Result";
 import {layer} from "@layui/layui-vue";
+import {k} from "vite/dist/node/types.d-aGj9QkWt";
 
 export function findSysDictKeyList(searchQuery: SysDictVo) {
     let params = buildUrlParam(searchQuery);
@@ -45,4 +46,24 @@ export function deleteSysDictValueList(idList: string[]) {
 
 export function enableSysDictValueList(idList: string[]) {
     return Http.put("/api/sysDictController/enableSysDictValueList", idList);
+}
+
+export const importSysDictValue = function (file: File, dictKey: string, keyId: string) {
+    let params = {
+        file: file,
+        dictKey: dictKey,
+        keyId: keyId
+    }
+    return Http.post('/api/sysDictController/importSysDictValue', params, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}
+
+export function findMaxOrderNumByKeyId(keyId: string) {
+    let params = {
+        keyId: keyId
+    }
+    return Http.get("/api/sysDictController/findMaxOrderNumByKeyId", params);
 }
