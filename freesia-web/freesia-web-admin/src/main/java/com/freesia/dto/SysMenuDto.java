@@ -48,4 +48,6 @@ public class SysMenuDto extends TreeDto<SysMenuDto> {
     private String icon;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "用户ID")
+    private Long roleId;
 }

@@ -2,7 +2,8 @@ package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
-import com.freesia.entity.EchartOptionEntity;
+import com.freesia.entity.EchartLineOptionEntity;
+import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -68,5 +69,13 @@ public interface AccountCostService {
      * @param accountCostDto 入参
      * @return 结果集
      */
-    EchartOptionEntity findCostTypeRatePie(AccountCostDto accountCostDto);
+    EchartPieOptionEntity findCostTypeRatePie(AccountCostDto accountCostDto);
+
+    /**
+     * 折线图-根据时间查询
+     *
+     * @param accountCostDto 入参
+     * @return 结果集
+     */
+    EchartLineOptionEntity findCostLineChart(AccountCostDto accountCostDto);
 }

@@ -126,24 +126,31 @@
                    )
     </select>
     <select id="findAllSysButton" resultType="com.freesia.po.SysMenuPo">
-        SELECT DISTINCT M.ID,
-                        M.REC_VER,
-                        M.BUILD_IN,
-                        M.MENU_NAME,
-                        M.PARENT_ID,
-                        M.ORDER_NUM,
-                        M.PATH,
-                        M.COMPONENT,
-                        M.IS_CACHE,
-                        M.MENU_TYPE,
-                        M.VISIBLE,
-                        M.STATUS,
-                        M.PERMS,
-                        M.ICON,
-                        M.REMARK
-        FROM sys_menu M
-            ${ew.getCustomSqlSegment}
-
+        SELECT DISTINCT SM.ID,
+        SM.REC_VER,
+        SM.BUILD_IN,
+        SM.MENU_NAME,
+        SM.PARENT_ID,
+        SM.ORDER_NUM,
+        SM.PATH,
+        SM.COMPONENT,
+        SM.IS_CACHE,
+        SM.MENU_TYPE,
+        SM.VISIBLE,
+        SM.STATUS,
+        SM.PERMS,
+        SM.ICON,
+        SM.REMARK
+        FROM sys_menu SM
+        LEFT JOIN sys_role_menu SRM ON SM.ID = SRM.MENU_ID
+        WHERE 1 = 1
+        AND SM.LOGIC_DEL = 0
+        AND SM.MENU_TYPE = 'B'
+        AND SM.PARENT_ID = #{sysMenuDto.id}
+        <if test="sysMenuDto.menuName != null and sysMenuDto.menuName != ''">
+            AND SM.MENU_NAME LIKE CONCAT(#{sysMenuDto.menuName, '%'})
+        </if>
+        ORDER BY SM.ORDER_NUM
     </select>
     <select id="findAssignedSysButtonByRoleId" resultType="java.lang.Long">
         SELECT DISTINCT ID

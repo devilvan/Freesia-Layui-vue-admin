@@ -4,152 +4,406 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【新增】Evad 1. 记账模块-导出功能开发">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/entity/EchartOptionEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/FindCostTypeRatePieEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/freesia-web-admin.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/entity/SysDictValueImportEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/excel/DictValueImportListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+    <list default="true" id="e2c6d0f8-ce5a-4d64-8271-538fe39fc371" name="Default Changelist" comment="【新增、修改】Evad 1. 添加增量同步功能 2. 改造用户导入功能">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__antlr_antlr_2_7_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_2_11.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_core_1_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_dev33_sa_token_core_1_35_0_RC.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_dev33_sa_token_jwt_1_35_0_RC.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_dev33_sa_token_servlet_1_35_0_RC.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_dev33_sa_token_spring_boot_autoconfig_1_35_0_RC.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_dev33_sa_token_spring_boot_starter_1_35_0_RC.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_all_5_8_18.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_core_5_8_18.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_core_5_8_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_crypto_5_8_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_extra_5_8_18.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_json_5_8_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_jwt_5_8_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_log_5_8_18.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cn_hutool_hutool_setting_5_8_18.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_druid_1_1_16.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_druid_spring_boot_starter_1_1_16.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_easyexcel_3_2_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_easyexcel_core_3_2_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_easyexcel_support_3_2_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_fastjson2_fastjson2_2_0_40.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_fastjson2_fastjson2_extension_2_0_40.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_fastjson_2_0_40.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_amazonaws_aws_java_sdk_core_1_12_540.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_amazonaws_aws_java_sdk_kms_1_12_540.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_amazonaws_aws_java_sdk_s3_1_12_540.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_amazonaws_jmespath_java_1_12_540.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_3_5_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_annotation_3_5_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_boot_starter_3_5_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_core_3_5_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_extension_3_5_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_classmate_1_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_dataformat_jackson_dataformat_cbor_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_dataformat_jackson_dataformat_yaml_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_jdk8_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_module_jackson_module_parameter_names_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_ben_manes_caffeine_caffeine_2_9_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jsqlparser_jsqlparser_4_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_therapi_therapi_runtime_javadoc_0_15_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_virtuald_curvesapi_1_06.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_errorprone_error_prone_annotations_2_10_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_protobuf_protobuf_java_3_6_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_jayway_jsonpath_json_path_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_mysema_commons_mysema_commons_lang_0_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_querydsl_querydsl_core_5_0_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_querydsl_querydsl_jpa_5_0_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_activation_jakarta_activation_1_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_istack_istack_commons_runtime_3_0_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_mail_jakarta_mail_1_6_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_vaadin_external_google_android_json_0_0_20131108_vaadin1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_zaxxer_HikariCP_4_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_zaxxer_SparseBitSet_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_codec_commons_codec_1_15.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_logging_commons_logging_1_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_lettuce_lettuce_core_6_1_8_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_micrometer_micrometer_core_1_9_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_buffer_4_1_77_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_codec_4_1_77_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_codec_dns_4_1_77_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_common_4_1_77_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_handler_4_1_77_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_resolver_4_1_77_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_resolver_dns_4_1_77_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_transport_4_1_77_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_projectreactor_reactor_core_3_4_18.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_reactivex_rxjava3_rxjava_3_0_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_swagger_core_v3_swagger_annotations_2_2_9.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_swagger_core_v3_swagger_core_2_2_9.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_swagger_core_v3_swagger_models_2_2_9.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_activation_jakarta_activation_api_1_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_annotation_jakarta_annotation_api_1_3_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_mail_jakarta_mail_api_1_6_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_validation_jakarta_validation_api_2_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_xml_bind_jakarta_xml_bind_api_2_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_activation_javax_activation_api_1_2_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_cache_cache_api_1_1_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_persistence_javax_persistence_api_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_xml_bind_jaxb_api_2_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__joda_time_joda_time_2_8_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_13_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_8_0_13.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_bytebuddy_byte_buddy_1_12_10.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_bytebuddy_byte_buddy_agent_1_12_10.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_minidev_accessors_smart_2_4_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_minidev_json_smart_2_4_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_collections4_4_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_compress_1_19.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_csv_1_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_lang3_3_12_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_math3_3_6_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_pool2_2_11_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpclient_4_5_13.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpcore_4_4_15.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_api_2_17_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_to_slf4j_2_17_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_poi_poi_4_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_poi_poi_ooxml_4_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_poi_poi_ooxml_schemas_4_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_core_9_0_63.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_el_9_0_63.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_websocket_9_0_63.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_xmlbeans_xmlbeans_3_1_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apiguardian_apiguardian_api_1_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_aspectj_aspectjrt_1_9_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_aspectj_aspectjtools_1_9_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_aspectj_aspectjweaver_1_9_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_assertj_assertj_core_3_22_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_bouncycastle_bcpkix_jdk15on_1_68.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_bouncycastle_bcprov_jdk15on_1_68.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_checkerframework_checker_qual_3_19_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_ehcache_ehcache_3_10_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_freemarker_freemarker_2_3_31.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_glassfish_jaxb_jaxb_runtime_2_3_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_glassfish_jaxb_txw2_2_3_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hdrhistogram_HdrHistogram_2_1_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hibernate_common_hibernate_commons_annotations_5_1_2_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hibernate_hibernate_core_5_6_9_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hibernate_hibernate_entitymanager_5_6_9_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hibernate_validator_hibernate_validator_6_2_3_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jboss_jandex_2_4_2_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jboss_logging_jboss_logging_3_4_3_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jboss_marshalling_jboss_marshalling_2_0_11_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jboss_marshalling_jboss_marshalling_river_2_0_11_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jboss_spec_javax_transaction_jboss_transaction_api_1_2_spec_1_1_1_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jodd_jodd_bean_5_1_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jodd_jodd_core_5_1_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_latencyutils_LatencyUtils_2_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_lionsoul_ip2region_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mockito_mockito_core_4_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mockito_mockito_junit_jupiter_4_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_mybatis_3_5_10.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_mybatis_spring_2_0_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_objenesis_objenesis_3_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_opentest4j_opentest4j_1_2_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_ow2_asm_asm_9_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_projectlombok_lombok_1_18_24.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_reactivestreams_reactive_streams_1_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_redisson_redisson_3_17_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_redisson_redisson_spring_boot_starter_3_17_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_redisson_redisson_spring_data_27_3_17_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_skyscreamer_jsonassert_1_5_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_jul_to_slf4j_1_7_36.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_36.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springdoc_springdoc_openapi_common_1_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springdoc_springdoc_openapi_javadoc_1_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springdoc_springdoc_openapi_ui_1_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springdoc_springdoc_openapi_webmvc_core_1_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_actuator_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_actuator_autoconfigure_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_autoconfigure_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_actuator_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_data_redis_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_freemarker_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_jdbc_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_json_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_logging_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_test_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_tomcat_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_validation_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_web_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_test_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_test_autoconfigure_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_data_spring_data_commons_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_data_spring_data_jpa_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_data_spring_data_keyvalue_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_data_spring_data_redis_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_retry_spring_retry_1_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_security_spring_security_crypto_5_7_11.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_aop_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_aspects_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_beans_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_context_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_context_support_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_core_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_expression_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_jcl_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_jdbc_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_orm_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_oxm_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_test_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_tx_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_web_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_webmvc_5_3_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_webjars_swagger_ui_4_18_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_xmlunit_xmlunit_core_2_9_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_30.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__p6spy_p6spy_3_9_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__redis_clients_jedis_3_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__software_amazon_ion_ion_java_1_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/freesia-common-api.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/entity/EchartPieOptionEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-cache/freesia-common-cache.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/freesia-common-codegen.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-crypt/freesia-common-crypt.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-desensitization/freesia-common-desensitization.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-doc/freesia-common-doc.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/freesia-common-excel.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-framework/freesia-common-framework.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-idempotent/freesia-common-idempotent.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-jdbc/freesia-common-jdbc.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-json/freesia-common-json.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-log/freesia-common-log.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-mail/freesia-common-mail.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-net/freesia-common-net.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-oss/freesia-common-oss.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-redis/freesia-common-redis.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-satoken/freesia-common-satoken.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-sse/freesia-common-sse.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-tenant/freesia-common-tenant.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-validation/freesia-common-validation.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/constant/DateScope.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/FindCostLineChartEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/vo/FindCostLineChartVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/i18n/messages_account.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/i18n/messages_account_en_US.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/i18n/messages_account_zh_CN.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/freesia-web-api.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-app/freesia-web-app.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-framework/freesia-web-framework.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jpa-buddy.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jpa-buddy.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/Account.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/api/system/Dict.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/system/Dict.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svgIcon/account_记账.svg" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svg/account_记账.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svgIcon/details_明细.svg" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svg/details_明细.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svgIcon/edit_编辑.svg" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svg/edit_编辑.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svgIcon/setup_设置.svg" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/svg/setup_设置.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/types/Permission.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/types/Permission.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/types/system/Dict.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/types/system/Dict.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/util/UDict.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/util/UDict.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/dashboard/redis/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/dashboard/redis/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/api/system/Menu.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/system/Menu.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/types/account/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/types/account/Account.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/util/UDate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/util/UDate.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/dict/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/dict/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/oss/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/oss/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/user/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/user/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/constant/MenuPermission.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/constant/MenuPermission.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/constant/ExcelSuffix.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/constant/ExcelSuffix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/util/UExcel.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/src/main/java/com/freesia/excel/util/UExcel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/role/assignButton.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/system/role/assignButton.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/entity/EchartOptionEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/entity/EchartLineOptionEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-framework/src/main/java/com/freesia/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-framework/src/main/java/com/freesia/controller/BaseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/freesia-web-account.iml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/freesia-web-account.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/dto/AccountCostDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/dto/AccountCostDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/mapper/AccountCostMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/mapper/AccountCostMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/AccountCostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/AccountCostService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/freesia-web-admin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/freesia-web-admin.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysDictController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysDictController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysUserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/dto/SysDictKeyDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/dto/SysDictKeyDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/excel/UserImportListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/excel/UserImportListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysDictKeyMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysDictKeyMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysDictValueMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysDictValueMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/SysDictValueService.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/SysDictValueService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictKeyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictKeyServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictValueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictValueServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/vo/SysDictKeyVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/vo/SysDictKeyVo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysDictKeyMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysDictKeyMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysDictValueMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysDictValueMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysMenuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysMenuController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/dto/SysMenuDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/dto/SysMenuDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysMenuMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/mapper/SysMenuMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysMenuServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysMenuServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysMenuMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/resources/mapper/SysMenuMapper.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_en_US.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_en_US.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_zh_CN.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_zh_CN.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-app/src/test/java/com/freesia/FreesiaTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-app/src/test/java/com/freesia/FreesiaTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-app/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-app/src/main/resources/application-dev.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CodeInsightWorkspaceSettings">
-    <option name="optimizeImportsOnTheFly" value="true" />
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
+        <option value="AnnotationType" />
+        <option value="package-info" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PATH_TO_GIT" value="D:\Environment\Git\bin\git.exe" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="develop" />
+        <entry key="$PROJECT_DIR$" value="feature/20250108_Evad.Wu_添加增量同步功能" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="SOFT" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-core/1.12.540/aws-java-sdk-core-1.12.540-sources.jar!/com/amazonaws/AmazonWebServiceRequest.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/ObjectMetadata.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/AmazonS3.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/PutObjectRequest.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/freesia-admin-layvue/node_modules/@layui/layui-vue/lib/index.css" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/AbstractPutObjectRequest.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="JpbToolWindowState">
-    <option name="isToolWindowVisible" value="false" />
+    <option name="myId2FirstActivated">
+      <map>
+        <entry key="JPA Structure" value="true" />
+      </map>
+    </option>
+    <option name="myId2Visible">
+      <map>
+        <entry key="JPA Structure" value="false" />
+      </map>
+    </option>
   </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$PROJECT_DIR$/../../../Environment/Maven/apache-maven-3.6.3" />
+        <option name="userSettingsFile" value="D:\Environment\Maven\apache-maven-3.6.3\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 8
-}</component>
-  <component name="ProjectId" id="2qhySWDUkzbkz303ejcTZq9Jk59" />
+  <component name="MavenRunner">
+    <option name="skipTests" value="true" />
+  </component>
+  <component name="ProjectId" id="2ehtnuzyrLaXWLzuHhXqgPneljz" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
-    <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
-    <option name="showScratchesAndConsoles" value="false" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JUnit.FreesiaTest.testCalendar.executor": "Debug",
-    "JUnit.FreesiaTest.testLoopDirFiles.executor": "Debug",
-    "JUnit.FreesiaTest.testLoopFileName.executor": "Debug",
-    "JUnit.FreesiaTestApplication.testExport.executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.FreesiaAdminApplication.executor": "Debug",
-    "git-widget-placeholder": "feature/20241214__Evad.Wu__记账功能",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Project/betrice-b",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
-    "nodejs_package_manager_path": "yarn",
-    "npm.run.executor": "Run",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.33908045",
-    "settings.editor.selected.configurable": "editor.preferences.import",
-    "ts.external.directory.path": "C:\\Project\\freesia\\freesia-admin-layvue\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
-  },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "com.p6spy.engine.spy.P6SpyDriver",
-      "mysql"
-    ]
-  }
-}]]></component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ExpandSpringBootJavaOptionsPanel" value="true" />
+    <property name="Git.Branch.Popup.ShowAllLocals" value="false" />
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="ignore.preview.features.used" value="true" />
+    <property name="jdk.selected.JAVA_MODULE" value="16" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/freesia-admin-layvue/src/api/account" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.stylelint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.stylelint" value="" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path" value="$PROJECT_DIR$/../../../Environment/Nodejs16/node" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.22444679" />
+    <property name="project.structure.side.proportion" value="0.21494102" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="ts.external.directory.path" value="D:\Mine\Maven\freesia\freesia-admin-layvue\node_modules\typescript\lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
+  <component name="ReaderModeSettings">
+    <option name="showRenderedDocs" value="false" />
+  </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\api\account" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\types\account" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\views\enrollee\accounts" />
+      <recent name="D:\Mine\Maven\freesia\freesia-common\freesia-common-cache\src\main\java\com\freesia\cache\manage" />
+      <recent name="D:\Mine\Maven\freesia\freesia-web\freesia-web-sse\src\main\resources\META-INF\spring" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Project\freesia\freesia-admin-layvue\src\assets\svg" />
-      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\accountsDashboard" />
-      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\dashboard" />
-      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\mine" />
+      <recent name="D:\Mine\Maven\freesia\freesia-common\freesia-common-log\src\main\resources\mapper" />
+      <recent name="D:\Mine\Maven\freesia\freesia-web\freesia-web-admin\src\main\resources\mapper" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\views\system\user" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.freesia.entity" />
-      <recent name="com.freesia.excel" />
-      <recent name="com.freesia.account.entity" />
-      <recent name="com.freesia.account.listener" />
-      <recent name="com.freesia.exception" />
+      <recent name="com.freesia.pojo" />
+      <recent name="com.freesia.handler" />
+      <recent name="com.freesia.mail.properties" />
+      <recent name="com.freesia.sse.constant" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -160,7 +414,33 @@
     </option>
   </component>
   <component name="RunManager" selected="Spring Boot.FreesiaAdminApplication">
-    <configuration name="FreesiaTestApplication.testExport" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="CodeGenerator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.freesia.CodeGenerator" />
+      <module name="freesia-common-codegen" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.freesia.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FreesiaTestApplication.testEl" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="freesia-web-app" />
       <extension name="coverage">
         <pattern>
@@ -170,13 +450,13 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.freesia" />
       <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTestApplication" />
-      <option name="METHOD_NAME" value="testExport" />
+      <option name="METHOD_NAME" value="testEl" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FreesiaTest.testCalendar" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="FreesiaTest.testParseJSON" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="freesia-web-app" />
       <extension name="coverage">
         <pattern>
@@ -186,13 +466,13 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.freesia" />
       <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
-      <option name="METHOD_NAME" value="testCalendar" />
+      <option name="METHOD_NAME" value="testParseJSON" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FreesiaTest.testLoopDirFiles" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="FreesiaTest.testRow2Column" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="freesia-web-app" />
       <extension name="coverage">
         <pattern>
@@ -202,44 +482,29 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.freesia" />
       <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
-      <option name="METHOD_NAME" value="testLoopDirFiles" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="FreesiaTest.testLoopFileName" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="freesia-web-app" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.freesia.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.freesia" />
-      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
-      <option name="METHOD_NAME" value="testLoopFileName" />
+      <option name="METHOD_NAME" value="testRow2Column" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="JetRunConfigurationType">
-      <module name="freesia-common-tenant" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="freesia-common-tenant" />
       <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FreesiaAdminApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <configuration name="FreesiaAdminApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="freesia-web-app" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.freesia.FreesiaAdminApplication" />
+      <option name="VM_PARAMETERS" value="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED " />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -255,71 +520,595 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
-      <item itemvalue="JUnit.FreesiaTest.testCalendar" />
-      <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
-      <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
+      <item itemvalue="Application.CodeGenerator" />
+      <item itemvalue="JUnit.FreesiaTest.testParseJSON" />
+      <item itemvalue="JUnit.FreesiaTestApplication.testEl" />
+      <item itemvalue="JUnit.FreesiaTest.testRow2Column" />
       <item itemvalue="npm.dev" />
       <item itemvalue="Spring Boot.FreesiaAdminApplication" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
-        <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
-        <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
-        <item itemvalue="JUnit.FreesiaTest.testCalendar" />
         <item itemvalue="npm.dev" />
+        <item itemvalue="JUnit.FreesiaTest.testParseJSON" />
+        <item itemvalue="JUnit.FreesiaTest.testRow2Column" />
+        <item itemvalue="JUnit.FreesiaTestApplication.testEl" />
+        <item itemvalue="Application.CodeGenerator" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【修改】Evad 1. 记账模块开发" />
-      <created>1735129102491</created>
+      <changelist id="e2c6d0f8-ce5a-4d64-8271-538fe39fc371" name="Default Changelist" comment="" />
+      <created>1712368810290</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1735129102491</updated>
-      <workItem from="1735129103848" duration="1133000" />
-      <workItem from="1735216008556" duration="4853000" />
-      <workItem from="1735295293350" duration="4660000" />
-      <workItem from="1735827285172" duration="7774000" />
-      <workItem from="1735899631858" duration="1529000" />
-      <workItem from="1735901173047" duration="73000" />
-      <workItem from="1735901253220" duration="168000" />
-      <workItem from="1735901428502" duration="4151000" />
-      <workItem from="1736137574098" duration="1424000" />
-      <workItem from="1736169435127" duration="11182000" />
-      <workItem from="1736245748671" duration="868000" />
-      <workItem from="1736340044728" duration="827000" />
-      <workItem from="1736340895225" duration="107000" />
-      <workItem from="1736431306814" duration="5139000" />
-      <workItem from="1736506674119" duration="2966000" />
-      <workItem from="1736686174003" duration="2406000" />
-      <workItem from="1736688593877" duration="3412000" />
-      <workItem from="1737186210216" duration="8225000" />
-      <workItem from="1737334343245" duration="22847000" />
-      <workItem from="1737363047463" duration="5303000" />
-      <workItem from="1737420733342" duration="19186000" />
+      <updated>1712368810290</updated>
+      <workItem from="1712368811711" duration="128000" />
+      <workItem from="1712455565485" duration="347000" />
+      <workItem from="1712477162741" duration="3724000" />
+      <workItem from="1712481149607" duration="1029000" />
+      <workItem from="1712494822015" duration="871000" />
+      <workItem from="1712495713477" duration="3520000" />
+      <workItem from="1712502354166" duration="1998000" />
+      <workItem from="1712504375320" duration="402000" />
+      <workItem from="1712537394626" duration="841000" />
+      <workItem from="1712566640015" duration="252000" />
+      <workItem from="1712566898707" duration="586000" />
+      <workItem from="1712567618349" duration="74000" />
+      <workItem from="1712567800651" duration="397000" />
+      <workItem from="1712568335687" duration="14000" />
+      <workItem from="1712568360294" duration="2398000" />
+      <workItem from="1712574693317" duration="672000" />
+      <workItem from="1712575383808" duration="406000" />
+      <workItem from="1712575808170" duration="8789000" />
+      <workItem from="1712623868675" duration="1855000" />
+      <workItem from="1712632370868" duration="14460000" />
+      <workItem from="1712669358534" duration="295000" />
+      <workItem from="1712673107521" duration="728000" />
+      <workItem from="1712709938506" duration="12000" />
+      <workItem from="1712753715530" duration="3473000" />
+      <workItem from="1712796546353" duration="703000" />
+      <workItem from="1712972868409" duration="4077000" />
+      <workItem from="1712978822927" duration="129000" />
+      <workItem from="1712978968974" duration="10101000" />
+      <workItem from="1712999381027" duration="3205000" />
+      <workItem from="1713141875959" duration="2462000" />
+      <workItem from="1713151462832" duration="46000" />
+      <workItem from="1713320139831" duration="173000" />
+      <workItem from="1713320329304" duration="1347000" />
+      <workItem from="1713968544225" duration="384000" />
+      <workItem from="1713968943256" duration="172000" />
+      <workItem from="1714012969884" duration="202000" />
+      <workItem from="1714116917611" duration="127000" />
+      <workItem from="1714117060864" duration="7258000" />
+      <workItem from="1715138830376" duration="22000" />
+      <workItem from="1715138858516" duration="80000" />
+      <workItem from="1715138945925" duration="241000" />
+      <workItem from="1715419157717" duration="81000" />
+      <workItem from="1715419253125" duration="1384000" />
+      <workItem from="1715561536999" duration="1572000" />
+      <workItem from="1715766532180" duration="705000" />
+      <workItem from="1715820505088" duration="4644000" />
+      <workItem from="1715923846362" duration="2567000" />
+      <workItem from="1715927456488" duration="9228000" />
+      <workItem from="1716185208129" duration="4811000" />
+      <workItem from="1716298141254" duration="1704000" />
+      <workItem from="1716346095501" duration="1096000" />
+      <workItem from="1717050937131" duration="2241000" />
+      <workItem from="1717053927078" duration="6058000" />
+      <workItem from="1717375930666" duration="14000" />
+      <workItem from="1717397698786" duration="8910000" />
+      <workItem from="1717462891507" duration="497000" />
+      <workItem from="1717655198179" duration="2867000" />
+      <workItem from="1717661928612" duration="5544000" />
+      <workItem from="1717736760182" duration="428000" />
+      <workItem from="1717746983665" duration="1203000" />
+      <workItem from="1718093454915" duration="6521000" />
+      <workItem from="1718153910557" duration="8430000" />
+      <workItem from="1718170365618" duration="8716000" />
+      <workItem from="1718185420877" duration="2204000" />
+      <workItem from="1718239563589" duration="1117000" />
+      <workItem from="1718953169005" duration="8676000" />
+      <workItem from="1719193063943" duration="664000" />
+      <workItem from="1719214824459" duration="1423000" />
+      <workItem from="1720071889237" duration="14467000" />
+      <workItem from="1720140744257" duration="11575000" />
+      <workItem from="1720165466272" duration="6828000" />
+      <workItem from="1720405151888" duration="66000" />
+      <workItem from="1720407418317" duration="3629000" />
+      <workItem from="1720492214740" duration="21135000" />
+      <workItem from="1720572425957" duration="943000" />
+      <workItem from="1720680582175" duration="19000" />
+      <workItem from="1720680609756" duration="9251000" />
+      <workItem from="1720767118480" duration="107000" />
+      <workItem from="1720767233811" duration="11009000" />
+      <workItem from="1721011390466" duration="9285000" />
+      <workItem from="1721118545199" duration="32000" />
+      <workItem from="1721118582674" duration="3431000" />
+      <workItem from="1721177359510" duration="18737000" />
+      <workItem from="1721269319664" duration="20058000" />
+      <workItem from="1721351010641" duration="1150000" />
+      <workItem from="1721352420637" duration="965000" />
+      <workItem from="1721354717298" duration="458000" />
+      <workItem from="1721355187375" duration="1269000" />
+      <workItem from="1721617047545" duration="4163000" />
+      <workItem from="1721638309758" duration="33000" />
+      <workItem from="1721640912229" duration="593000" />
+      <workItem from="1721958880496" duration="5669000" />
+      <workItem from="1721973205832" duration="6458000" />
+      <workItem from="1721987813888" duration="1154000" />
+      <workItem from="1722044089521" duration="16535000" />
+      <workItem from="1722333903108" duration="117000" />
+      <workItem from="1722568544968" duration="3767000" />
+      <workItem from="1722577354155" duration="2156000" />
+      <workItem from="1722579537412" duration="43000" />
+      <workItem from="1722579600696" duration="10999000" />
+      <workItem from="1722818590530" duration="868000" />
+      <workItem from="1722906054313" duration="23000" />
+      <workItem from="1722906083689" duration="1560000" />
+      <workItem from="1722921386619" duration="344000" />
+      <workItem from="1722925231560" duration="18418000" />
+      <workItem from="1722991685739" duration="2905000" />
+      <workItem from="1723096286531" duration="28000" />
+      <workItem from="1723096322948" duration="2767000" />
+      <workItem from="1723165692817" duration="9355000" />
+      <workItem from="1723424625012" duration="329000" />
+      <workItem from="1724058216561" duration="1047000" />
+      <workItem from="1724115705143" duration="186000" />
+      <workItem from="1724124795267" duration="784000" />
+      <workItem from="1725275138035" duration="1387000" />
+      <workItem from="1725325289804" duration="13000" />
+      <workItem from="1725348931089" duration="8000" />
+      <workItem from="1725523725522" duration="462000" />
+      <workItem from="1725587906871" duration="910000" />
+      <workItem from="1726190951288" duration="3502000" />
+      <workItem from="1726194500226" duration="20163000" />
+      <workItem from="1726277762577" duration="13000" />
+      <workItem from="1726277781410" duration="19038000" />
+      <workItem from="1726708239545" duration="594000" />
+      <workItem from="1727149937015" duration="9134000" />
+      <workItem from="1727166578673" duration="7326000" />
+      <workItem from="1727226238130" duration="16255000" />
+      <workItem from="1727313558424" duration="622000" />
+      <workItem from="1727314194031" duration="21907000" />
+      <workItem from="1727419530974" duration="13000" />
+      <workItem from="1727419551408" duration="7836000" />
+      <workItem from="1727504808220" duration="2001000" />
+      <workItem from="1727508889965" duration="6245000" />
+      <workItem from="1727574180286" duration="1907000" />
+      <workItem from="1727580609182" duration="62000" />
+      <workItem from="1727580723573" duration="12000" />
+      <workItem from="1727580754216" duration="1724000" />
+      <workItem from="1727590633449" duration="11607000" />
+      <workItem from="1727659932279" duration="8009000" />
+      <workItem from="1727684691456" duration="18000" />
+      <workItem from="1727684717203" duration="51000" />
+      <workItem from="1727684775435" duration="71000" />
+      <workItem from="1727684861849" duration="2245000" />
+      <workItem from="1728178495562" duration="3462000" />
+      <workItem from="1728288932211" duration="1517000" />
+      <workItem from="1728350582724" duration="2365000" />
+      <workItem from="1728374991468" duration="653000" />
+      <workItem from="1728469899840" duration="3586000" />
+      <workItem from="1728522581891" duration="20685000" />
+      <workItem from="1728625302510" duration="1440000" />
+      <workItem from="1728626767082" duration="3909000" />
+      <workItem from="1728630800205" duration="5909000" />
+      <workItem from="1728638615129" duration="1950000" />
+      <workItem from="1728645596087" duration="1160000" />
+      <workItem from="1728696575663" duration="104000" />
+      <workItem from="1728697174366" duration="1869000" />
+      <workItem from="1728867156641" duration="120000" />
+      <workItem from="1728997069089" duration="2333000" />
+      <workItem from="1729048378207" duration="6004000" />
+      <workItem from="1729127920462" duration="8872000" />
+      <workItem from="1729158223901" duration="1348000" />
+      <workItem from="1729215939105" duration="48000" />
+      <workItem from="1729216247028" duration="1714000" />
+      <workItem from="1729474653155" duration="15711000" />
+      <workItem from="1729511611057" duration="1781000" />
+      <workItem from="1729558456685" duration="16000" />
+      <workItem from="1729558478921" duration="27708000" />
+      <workItem from="1729644770746" duration="6185000" />
+      <workItem from="1729651036655" duration="1116000" />
+      <workItem from="1729652180765" duration="613000" />
+      <workItem from="1729652820028" duration="15000" />
+      <workItem from="1729652851149" duration="905000" />
+      <workItem from="1729653781602" duration="15837000" />
+      <workItem from="1729753956097" duration="751000" />
+      <workItem from="1729756357103" duration="6065000" />
+      <workItem from="1729836433203" duration="6297000" />
+      <workItem from="1730076790109" duration="5406000" />
+      <workItem from="1730094628313" duration="5793000" />
+      <workItem from="1730101693600" duration="1206000" />
+      <workItem from="1730280551640" duration="622000" />
+      <workItem from="1730281185933" duration="1522000" />
+      <workItem from="1730423813413" duration="26341000" />
+      <workItem from="1730714678410" duration="2351000" />
+      <workItem from="1730767371860" duration="907000" />
+      <workItem from="1730771949258" duration="4266000" />
+      <workItem from="1730793424893" duration="1179000" />
+      <workItem from="1731051981003" duration="15000" />
+      <workItem from="1731052003455" duration="6011000" />
+      <workItem from="1732100932928" duration="592000" />
+      <workItem from="1732243081565" duration="2154000" />
+      <workItem from="1733813841108" duration="1378000" />
+      <workItem from="1733819600117" duration="637000" />
+      <workItem from="1733878609950" duration="30000" />
+      <workItem from="1734080263411" duration="3697000" />
+      <workItem from="1734088425918" duration="1544000" />
+      <workItem from="1734135144647" duration="10631000" />
+      <workItem from="1734310630475" duration="34000" />
+      <workItem from="1734340648617" duration="3564000" />
+      <workItem from="1734354780221" duration="405000" />
+      <workItem from="1734396327148" duration="1023000" />
+      <workItem from="1735088134217" duration="743000" />
+      <workItem from="1735522534381" duration="371000" />
+      <workItem from="1735799472990" duration="1377000" />
+      <workItem from="1735802454344" duration="1091000" />
+      <workItem from="1736232278107" duration="339000" />
+      <workItem from="1736232639200" duration="8937000" />
+      <workItem from="1736319185119" duration="8016000" />
+      <workItem from="1736327408763" duration="5268000" />
+      <workItem from="1736383848101" duration="842000" />
+      <workItem from="1736494366434" duration="1050000" />
+      <workItem from="1736729779602" duration="221000" />
+      <workItem from="1737101919749" duration="1745000" />
+      <workItem from="1737106661927" duration="803000" />
+      <workItem from="1737545445081" duration="729000" />
+      <workItem from="1737546304758" duration="2123000" />
+      <workItem from="1737597384110" duration="54000" />
+      <workItem from="1737597451752" duration="36000" />
+      <workItem from="1737597500655" duration="16400000" />
+      <workItem from="1737645090642" duration="2383000" />
+      <workItem from="1737695100502" duration="25501000" />
+      <workItem from="1737785860707" duration="4933000" />
     </task>
-    <task id="LOCAL-00001" summary="【新增】Evad 1. 记账模块开发">
-      <option name="closed" value="true" />
-      <created>1736170503957</created>
+    <task id="LOCAL-00001" summary="【修改】Evad 1. 重装后测试">
+      <created>1712368899486</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1736170503957</updated>
+      <updated>1712368899486</updated>
     </task>
-    <task id="LOCAL-00002" summary="【新增】Evad 1. 记账模块-导出功能开发">
-      <option name="closed" value="true" />
-      <created>1737351122655</created>
+    <task id="LOCAL-00002" summary="【修改】Evad 1.前端问题修复">
+      <created>1712576909815</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1737351122655</updated>
+      <updated>1712576909815</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="【新增】Evad 1.结合SpringMVC对响应报文加密">
+      <created>1712576961186</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1712576961186</updated>
+    </task>
+    <task id="LOCAL-00004" summary="【修改】Evad 1. 解密请求报文修改">
+      <created>1712655680634</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1712655680634</updated>
+    </task>
+    <task id="LOCAL-00005" summary="【修改、新增】Evad 1. 部分接口转化为加密/解密接口 2. 手动数据校验时，部分注解根据额外参数赋值">
+      <created>1712993138041</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1712993138041</updated>
+    </task>
+    <task id="LOCAL-00006" summary="【修改】Evad 1. 完善手动数据校验">
+      <created>1714125535422</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1714125535422</updated>
+    </task>
+    <task id="LOCAL-00007" summary="【新增】Evad 1. 接入shardingjdbc实验">
+      <created>1715939453906</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1715939453906</updated>
+    </task>
+    <task id="LOCAL-00008" summary="【修改】Evad 1. 重写雪花算法">
+      <created>1717052424685</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1717052424685</updated>
+    </task>
+    <task id="LOCAL-00009" summary="【修复】Evad 1. 前端加密模块缺陷修复 2. 添加自定义雪花算法 2. 用户模块功能完善">
+      <created>1717063114886</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1717063114886</updated>
+    </task>
+    <task id="LOCAL-00010" summary="【修复】Evad 1. 前端加密模块完善 2. 响应报文加密返回中文乱码">
+      <created>1717400024272</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1717400024273</updated>
+    </task>
+    <task id="LOCAL-00011" summary="【修改】Evad 1. 用户模块完善">
+      <created>1717408897328</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1717408897328</updated>
+    </task>
+    <task id="LOCAL-00012" summary="【新增、修改】Evad 1. 上传临时文件到临时文件夹 2. 用户修改模块完善 3. layui版本更新4. 用户修改上传头像功能完善 5. 初始化删除临时文件夹的文件">
+      <created>1718172177236</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1718172177236</updated>
+    </task>
+    <task id="LOCAL-00013" summary="【新增、修改】Evad 1. OSS模块功能完善">
+      <created>1718172424031</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1718172424031</updated>
+    </task>
+    <task id="LOCAL-00014" summary="【修改】Evad 1. 用户、OSS模块功能完善">
+      <created>1718175060890</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1718175060890</updated>
+    </task>
+    <task id="LOCAL-00015" summary="【修改】Evad 1. 新增、修改用户功能完善">
+      <created>1720082407985</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1720082407985</updated>
+    </task>
+    <task id="LOCAL-00016" summary="【修改】Evad 1. 新增、修改用户功能完善">
+      <created>1720082626637</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1720082626637</updated>
+    </task>
+    <task id="LOCAL-00017" summary="【修改】Evad 1. 前后端数据加密功能完善">
+      <created>1720168952259</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1720168952259</updated>
+    </task>
+    <task id="LOCAL-00018" summary="【修改、修复】Evad 1. 添加新增角色默认密码 2. 修复启动项目后删除正常文件的缺陷">
+      <created>1720514658775</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1720514658776</updated>
+    </task>
+    <task id="LOCAL-00019" summary="【新增】Evad 1. 部门新增、修改、分配部门功能">
+      <created>1720776752241</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1720776752241</updated>
+    </task>
+    <task id="LOCAL-00020" summary="【新增】Evad 1. 部门管理-分配角色 2. 角色管理-分配部门">
+      <created>1721204566613</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1721204566613</updated>
+    </task>
+    <task id="LOCAL-00021" summary="【新增】Evad 1. 部门管理-删除">
+      <created>1721282527694</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1721282527694</updated>
+    </task>
+    <task id="LOCAL-00022" summary="【新增】Evad 1. 角色管理-新增、修改、删除 2. 增加关联表持久层组件处理关联信息">
+      <created>1722063470050</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1722063470050</updated>
+    </task>
+    <task id="LOCAL-00023" summary="【修改】Evad 1. 子页中返回按钮位置固定">
+      <created>1722070189713</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1722070189713</updated>
+    </task>
+    <task id="LOCAL-00024" summary="【修改】Evad 1. 对象关系重组">
+      <created>1722582426061</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1722582426061</updated>
+    </task>
+    <task id="LOCAL-00025" summary="【新增】Evad 1. 添加注解记录操作日志功能">
+      <created>1722593053050</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1722593053050</updated>
+    </task>
+    <task id="LOCAL-00026" summary="【修改】Evad 1. 修改中间表关系代码重构 2. 前端优化">
+      <created>1722948019535</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1722948019535</updated>
+    </task>
+    <task id="LOCAL-00027" summary="【修复】Evad 1. 处理普通用户查询部门管理数据失效问题">
+      <created>1726285877493</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1726285877494</updated>
+    </task>
+    <task id="LOCAL-00028" summary="【新增、修复】Evad 1. 部门信息查询调整 2. 用户头像上传">
+      <created>1727156874965</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1727156874965</updated>
+    </task>
+    <task id="LOCAL-00029" summary="【新增、修复】Evad 1. 添加日志记录注解 2. 处理注销再登录后内容页重复渲染的问题">
+      <created>1727249502542</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1727249502542</updated>
+    </task>
+    <task id="LOCAL-00030" summary="【新增】Evad 1. 添加幂等性处理功能 2. 添加日志记录注解">
+      <created>1727335572280</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1727335572280</updated>
+    </task>
+    <task id="LOCAL-00031" summary="【新增】Evad 1. 添加幂等性处理功能 2. 添加日志记录注解">
+      <created>1727339284965</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1727339284965</updated>
+    </task>
+    <task id="LOCAL-00032" summary="【修改】Evad 1. 脱敏规则支持处理多种脱敏规则">
+      <created>1727340792310</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1727340792310</updated>
+    </task>
+    <task id="LOCAL-00033" summary="【修复】Evad 1. 管理员部门查询功能异常问题处理">
+      <created>1727423230462</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1727423230462</updated>
+    </task>
+    <task id="LOCAL-00034" summary="【修改】Evad 1. OSS模块文件迁移">
+      <created>1727426389885</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1727426389885</updated>
+    </task>
+    <task id="LOCAL-00035" summary="【新增】Evad 1. SSE模块接入">
+      <created>1727428081366</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1727428081366</updated>
+    </task>
+    <task id="LOCAL-00036" summary="【新增】Evad 1. Caffeine模块接入 2. OSS模块迁移">
+      <created>1727508640874</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1727508640874</updated>
+    </task>
+    <task id="LOCAL-00037" summary="【修改】Evad 1. 还原UCache方法使用">
+      <created>1727666272837</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1727666272837</updated>
+    </task>
+    <task id="LOCAL-00038" summary="【新增】Evad 1. Cache文件提交">
+      <created>1727666355190</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1727666355190</updated>
+    </task>
+    <task id="LOCAL-00039" summary="【修改】Evad 1. 重构Jackson和Redisson">
+      <created>1728630580451</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1728630580451</updated>
+    </task>
+    <task id="LOCAL-00040" summary="【修改】Evad 1. 重构模块">
+      <created>1729061800683</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1729061800683</updated>
+    </task>
+    <task id="LOCAL-00041" summary="【修改】Evad 1. 重构模块">
+      <created>1729245607096</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1729245607096</updated>
+    </task>
+    <task id="LOCAL-00042" summary="【新增】Evad 1. 添加Spring EL工具类">
+      <created>1729498949592</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1729498949592</updated>
+    </task>
+    <task id="LOCAL-00043" summary="【新增】Evad 1. 新增SSE模块">
+      <created>1729674075260</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1729674075260</updated>
+    </task>
+    <task id="LOCAL-00044" summary="【新增】Evad 1. 新增邮件模块">
+      <created>1730282564674</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1730282564674</updated>
+    </task>
+    <task id="LOCAL-00045" summary="【修复】Evad 1. 处理测试类Redisson版本导致的出错问题">
+      <created>1730427132180</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1730427132180</updated>
+    </task>
+    <task id="LOCAL-00046" summary="【修改】Evad 1. 修改validation校验逻辑">
+      <created>1731058807524</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1731058807524</updated>
+    </task>
+    <task id="LOCAL-00047" summary="【新增】Evad 1. 添加记账功能">
+      <created>1734354895276</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1734354895276</updated>
+    </task>
+    <task id="LOCAL-00048" summary="【新增、修改】Evad 1. 添加增量同步功能 2. 改造用户导入功能">
+      <created>1736333155147</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1736333155147</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
+  </component>
+  <component name="TerminalProjectNonSharedOptionsProvider">
+    <envs>
+      <env key="PATH" value="D:\Environment\Nodejs16;Path=C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Environment\Git\cmd;C:\Program Files\TortoiseSVN\bin;D:\Environment\JDK\jdk-16.0.1/bin;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;D:\Environment\Nodejs16\node_modules\npm;D:\Environment\Nodejs16\node_global\node_modules\yarn;D:\Environment\Nodejs16\node_global\node_modules\yarn\bin" />
+    </envs>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
@@ -331,7 +1120,6 @@
         <option value="Default.Author" />
         <option value="Default.Date" />
         <option value="Default.Subject" />
-        <option value="Space.CommitStatus" />
       </list>
     </option>
   </component>
@@ -345,14 +1133,63 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="【新增】Evad 1. 记账模块开发" />
-    <MESSAGE value="【新增】Evad 1. 记账模块-导出功能开发" />
-    <option name="LAST_COMMIT_MESSAGE" value="【新增】Evad 1. 记账模块-导出功能开发" />
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="【新增】Evad 1. 角色管理-新增、修改、删除 2. 增加关联表持久层组件处理关联信息" />
+    <MESSAGE value="【修改】Evad 1. 子页中返回按钮位置固定" />
+    <MESSAGE value="【修改】Evad 1. 对象关系重组" />
+    <MESSAGE value="【新增】Evad 1. 添加注解记录操作日志功能" />
+    <MESSAGE value="【修改】Evad 1. 修改中间表关系代码重构 2. 前端优化" />
+    <MESSAGE value="【修复】Evad 1. 处理普通用户查询部门管理数据失效问题" />
+    <MESSAGE value="【新增、修复】Evad 1. 部门信息查询调整 2. 用户头像上传" />
+    <MESSAGE value="【新增、修复】Evad 1. 添加日志记录注解 2. 处理注销再登录后内容页重复渲染的问题" />
+    <MESSAGE value="【新增】Evad 1. 添加幂等性处理功能 2. 添加日志记录注解" />
+    <MESSAGE value="【修改】Evad 1. 脱敏规则支持处理多种脱敏规则" />
+    <MESSAGE value="【修复】Evad 1. 管理员部门查询功能异常问题处理" />
+    <MESSAGE value="【修改】Evad 1. OSS模块文件迁移" />
+    <MESSAGE value="【新增】Evad 1. SSE模块接入" />
+    <MESSAGE value="【新增】Evad 1. Caffeine模块接入 2. OSS模块迁移" />
+    <MESSAGE value="【修改】Evad 1. 还原UCache方法使用" />
+    <MESSAGE value="【新增】Evad 1. Cache文件提交" />
+    <MESSAGE value="【修改】Evad 1. 重构Jackson和Redisson" />
+    <MESSAGE value="【修改】Evad 1. 重构模块" />
+    <MESSAGE value="【新增】Evad 1. 添加Spring EL工具类" />
+    <MESSAGE value="【新增】Evad 1. 新增SSE模块" />
+    <MESSAGE value="【新增】Evad 1. 新增邮件模块" />
+    <MESSAGE value="【修复】Evad 1. 处理测试类Redisson版本导致的出错问题" />
+    <MESSAGE value="【修改】Evad 1. 修改validation校验逻辑" />
+    <MESSAGE value="【新增】Evad 1. 添加记账功能" />
+    <MESSAGE value="【新增、修改】Evad 1. 添加增量同步功能 2. 改造用户导入功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="【新增、修改】Evad 1. 添加增量同步功能 2. 改造用户导入功能" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="SpringBootApplicationConfigurationType">
+        <watch expression="binder.getBindingResult().hasErrors()" />
+        <watch expression="isBindExceptionRequired(binder, parameter)" />
+        <watch expression="parameter.getNestedGenericParameterType()" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
+    <expand>
+      <path>
+        <item name="freesia" type="b2602c69:ProjectViewProjectNode" />
+        <item name="freesia" type="462c0819:PsiDirectoryNode" />
+      </path>
+      <path>
+        <item name="freesia" type="b2602c69:ProjectViewProjectNode" />
+        <item name="freesia" type="462c0819:PsiDirectoryNode" />
+        <item name="freesia-admin-layvue" type="462c0819:PsiDirectoryNode" />
+      </path>
+      <path>
+        <item name="freesia" type="b2602c69:ProjectViewProjectNode" />
+        <item name="freesia" type="462c0819:PsiDirectoryNode" />
+        <item name="freesia-web" type="462c0819:PsiDirectoryNode" />
+      </path>
+    </expand>
     <select />
   </component>
 </project>

@@ -222,7 +222,7 @@ public class SysDictController extends BaseController {
     })
     public R<Integer> findMaxOrderNumByKeyId(@NotNull(message = "{not.null}") @RequestParam("keyId") Long keyId) {
         Integer maxOrderNum = Convert.toInt(sysDictValueService.findMaxOrderNumByKeyId(keyId), 0);
-        maxOrderNum = (maxOrderNum / 10) * 10;
+        maxOrderNum = (maxOrderNum / 10) * 10 + 10;
         return R.ok(maxOrderNum);
     }
 }

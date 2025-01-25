@@ -151,7 +151,7 @@
         </div>
       </lay-container>
       <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom" v-if="target">
-          <lay-button type="primary" @click="$tab.closeOpen('/system/role/index')">返回</lay-button>
+        <lay-button type="primary" @click="$tab.closeOpen('/system/role/index')">返回</lay-button>
       </lay-affix>
     </div>
   </div>
@@ -294,7 +294,7 @@ const changeStatus = (isChecked: boolean, row: any) => {
   })
 }
 const loadDataSource = () => {
-  findAllSysButton(searchQuery.value).then((res: any) => {
+  findAllSysButton(searchQuery.value, roleId.value).then((res: any) => {
     if (res.code == 200) {
       dataSource.value = res.data;
     }

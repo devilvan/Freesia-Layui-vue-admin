@@ -59,6 +59,10 @@ export function within(text: string, days: number) {
             const end = new Date()
             const start = new Date()
             start.setTime(start.getTime() - 3600 * 1000 * 24 * days)
+            start.setHours(0, 0, 0)
+            start.setDate(start.getDate() - days)
+            end.setHours(23, 59, 59)
+            end.setDate(end.getDate())
             return [start, end]
         },
     }
@@ -98,3 +102,23 @@ export const singleShortcuts = [
     toDay("昨天", -1),
     toDay("明天", +1),
 ]
+
+export function getDaysInMonth(year: number, month: number, format: string) {
+    let date = new Date(year, month, 1); // 月份从0开始，所以1代表2月，2代表3月，依此类推
+    let days = new Date(year, month + 1, 0).getDate(); // 获取下一个月的第一天的前一天，即为当前月的最后一天
+    let result = [];
+
+    for (let i = 1; i <= days; i++) {
+        result.push(formatDateTime(new Date(year, month, i), format));
+    }
+    console.log(result)
+    return result;
+}
+
+function getMonthInYear(year: number) {
+    let result: string[] = [];
+    for (let month = 1; month <= 12; month++) {
+        result.push(`${year}-${month.toString().padStart(2, '0')}`);
+    }
+    return result;
+}

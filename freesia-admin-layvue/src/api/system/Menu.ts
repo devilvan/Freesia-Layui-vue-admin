@@ -41,8 +41,9 @@ export function deleteMenu(id: any) {
     return Http.delete("/api/sysMenuController/deleteMenu", params)
 }
 
-export function findAllSysButton(searchQuery: SysMenuVo): Promise<R<SysMenuEntity>> {
+export function findAllSysButton(searchQuery: SysMenuVo, roleId: string): Promise<R<SysMenuEntity>> {
     let params = buildUrlParam(searchQuery);
+    params['roleId'] = roleId;
     return Http.get("/api/sysMenuController/findAllSysButton", params);
 }
 

@@ -3,51 +3,22 @@
     <lay-row space="10">
       <lay-col md="12" sm="8" xs="12">
         <lay-card>
-          <template #title>{{costTypeRatePieTitle}}</template>
+          <template #title>{{ costTypeRatePieTitle }}</template>
           <lay-row :space="10">
-            <div ref="costTypeRatePieRef" style="height: 500px"></div>
+            <lay-col>
+              <lay-form :model="findCostTypeRatePieQueryVo" ref="findCostTypeRatePieQueryRef" label-position="left">
+                <lay-form-item label="按时间：" prop="paymentTimeRange">
+                  <lay-date-picker style="width: 100%" @change="doFind"
+                                   v-model="findCostTypeRatePieQueryVo.paymentTimeRange" allow-clear range
+                                   :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" :shortcuts="defaultShortcuts"
+                                   simple></lay-date-picker>
+                </lay-form-item>
+              </lay-form>
+            </lay-col>
           </lay-row>
+          <div ref="costTypeRatePieRef" style="height: 500px"></div>
         </lay-card>
       </lay-col>
-<!--      <lay-col md="8" sm="8" xs="12">-->
-<!--        <lay-card>-->
-<!--          <template #title> 代办事项</template>-->
-<!--          <lay-row :space="10">-->
-<!--            <lay-col :md="12">-->
-<!--              <a class="agency">-->
-<!--                <h3>待审评论</h3>-->
-<!--                <p>-->
-<!--                  <cite>66</cite>-->
-<!--                </p>-->
-<!--              </a>-->
-<!--            </lay-col>-->
-<!--            <lay-col :md="12">-->
-<!--              <a class="agency">-->
-<!--                <h3>待审帖子</h3>-->
-<!--                <p>-->
-<!--                  <cite>12</cite>-->
-<!--                </p>-->
-<!--              </a>-->
-<!--            </lay-col>-->
-<!--            <lay-col :md="12">-->
-<!--              <a class="agency">-->
-<!--                <h3>待审商品</h3>-->
-<!--                <p>-->
-<!--                  <cite>99</cite>-->
-<!--                </p>-->
-<!--              </a>-->
-<!--            </lay-col>-->
-<!--            <lay-col :md="12">-->
-<!--              <a class="agency">-->
-<!--                <h3>等待发货</h3>-->
-<!--                <p>-->
-<!--                  <cite>20</cite>-->
-<!--                </p>-->
-<!--              </a>-->
-<!--            </lay-col>-->
-<!--          </lay-row>-->
-<!--        </lay-card>-->
-<!--      </lay-col>-->
       <lay-col md="8" sm="8" xs="12">
         <lay-card>
           <template #title> 版本信息</template>
@@ -71,8 +42,39 @@
         <lay-row :space="10">
           <lay-col :md="24">
             <lay-card>
-              <template #title> 数据概览</template>
-              <div id="main" ref="mainRef"></div>
+              <template #title>{{ costLineChartTitle }}</template>
+              <lay-form :model="findCostLineChartQueryVo" ref="findCostLineChartQueryRef" label-position="left">
+                <lay-row :space="10">
+                  <lay-col :md="12">
+                    <lay-form-item label="时间范围：" prop="dateScope">
+                      <lay-radio v-model="findCostLineChartQueryVo.dateScope" name="action" :value="DateScope.WEEK"
+                                 label="近一周" @change="changeDateScope(DateScope.WEEK)"></lay-radio>
+                      <lay-radio v-model="findCostLineChartQueryVo.dateScope" name="action" :value="DateScope.MONTH"
+                                 label="月" @change="changeDateScope(DateScope.MONTH)"></lay-radio>
+                      <lay-radio v-model="findCostLineChartQueryVo.dateScope" name="action" :value="DateScope.YEAR"
+                                 label="年" @change="changeDateScope(DateScope.YEAR)"></lay-radio>
+                    </lay-form-item>
+                  </lay-col>
+                  <lay-col :md="12">
+                    <lay-form-item label="选择时间：" prop="month">
+                      <lay-date-picker v-if="findCostLineChartQueryVo.dateScope === DateScope.MONTH" style="width: 100%"
+                                       @change="doFindCostLineChart"
+                                       v-model="findCostLineChartQueryVo.dateValue" type="yearmonth" allow-clear
+                                       :format="sdf_YM" :inputFormat="sdf_YM" simple></lay-date-picker>
+                      <lay-date-picker v-if="findCostLineChartQueryVo.dateScope === DateScope.YEAR" style="width: 100%"
+                                       @change="doFindCostLineChart"
+                                       v-model="findCostLineChartQueryVo.dateValue" type="year" allow-clear
+                                       :format="sdf_Y" :inputFormat="sdf_Y" simple></lay-date-picker>
+                    </lay-form-item>
+                  </lay-col>
+                </lay-row>
+              </lay-form>
+              <div v-if="findCostLineChartQueryVo.dateScope === DateScope.WEEK" ref="weekCostLineChartRef"
+                   style="height: 500px"></div>
+              <div v-if="findCostLineChartQueryVo.dateScope === DateScope.MONTH" ref="monthCostLineChartRef"
+                   style="height: 500px"></div>
+              <div v-if="findCostLineChartQueryVo.dateScope === DateScope.YEAR" ref="yearCostLineChartRef"
+                   style="height: 500px"></div>
             </lay-card>
           </lay-col>
           <lay-col :md="24">
@@ -147,10 +149,13 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import * as echarts from 'echarts'
 import router from "../../../../router";
 import {findCostTypeRatePie} from "@/api/account/Account";
+import {AccountCostVo, FindCostLineChartVo, DateScope} from "../../../../types/account/Account";
+import {buildRange, defaultShortcuts, getDaysInMonth} from "../../../../util/UDate";
+import {findCostLineChart} from "../../../../api/account/Account";
 
 const mainRef = ref()
 const currentIndex = ref('1')
@@ -158,12 +163,11 @@ const $router = router
 const addExpensesModalFlag = ref(false)
 const addIncomeModalFlag = ref(false)
 const addExpensesRef = ref()
-
 /* INIT*/
 onMounted(() => {
-  var chartDom = mainRef.value
+  // var chartDom = mainRef.value
   // @ts-ignore
-  var myChart = echarts.init(chartDom)
+  // var myChart = echarts.init(chartDom)
   var option
 
   let color = [
@@ -391,49 +395,13 @@ onMounted(() => {
       }
     ]
   }
-  option && myChart.setOption(option)
+  // option && myChart.setOption(option)
 
-  findCostTypeRatePie().then((res: any) => {
-    if (res.code === 200) {
-      let data = res.data
-      const costTypeRatePieOption = {
-        title: {
-          text: costTypeRatePieTitle,
-          left: 'center'
-        },
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
-        },
-        legend: {
-          type: 'scroll',
-          orient: 'vertical',
-          right: 10,
-          top: 20,
-          bottom: 20,
-          data: data.legends
-        },
-        series: [
-          {
-            name: '类型',
-            type: 'pie',
-            radius: '55%',
-            center: ['40%', '50%'],
-            data: data.series,
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            }
-          }
-        ]
-      };
-      let costTypeRatePieChart = echarts.init(costTypeRatePieRef.value);
-      costTypeRatePieChart.setOption(costTypeRatePieOption)
-    }
-  })
+  findCostTypeRatePieQueryVo.value.paymentTimeRange = buildRange(7)
+  doFindCostTypeRatePie()
+
+  findCostLineChartQueryVo.value.dateScope = DateScope.WEEK
+  doFindCostLineChart()
 })
 /* INIT*/
 
@@ -501,8 +469,19 @@ const dataSource21 = [
     remark: 'layui - vue（谐音：类 UI) '
   }
 ]
-const costTypeRatePieRef = ref(null);
+const costTypeRatePieRef = ref();
 const costTypeRatePieTitle = "支出类型占比"
+const findCostTypeRatePieQueryVo = ref<AccountCostVo>({});
+const findCostTypeRatePieQueryRef = ref(null)
+const sdf_YMDHMS = 'YYYY-MM-DD HH:mm:ss'
+const sdf_YM = 'YYYY-MM'
+const sdf_Y = 'YYYY'
+const weekCostLineChartRef = ref();
+const monthCostLineChartRef = ref();
+const yearCostLineChartRef = ref();
+const costLineChartTitle = "开销折线图"
+const findCostLineChartQueryVo = ref<FindCostLineChartVo>({});
+const findCostLineChartQueryRef = ref(null)
 /* VAR*/
 
 /* FUNCTION*/
@@ -520,6 +499,237 @@ function changeAddIncomeModal() {
   addIncomeModalFlag.value = !addIncomeModalFlag.value
 }
 
+function doFindCostTypeRatePie() {
+  findCostTypeRatePie(findCostTypeRatePieQueryVo.value).then((res: any) => {
+    if (res.code === 200) {
+      let data = res.data
+      const costTypeRatePieOption = {
+        title: {
+          text: costTypeRatePieTitle,
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          type: 'scroll',
+          orient: 'vertical',
+          right: 10,
+          top: 20,
+          bottom: 20,
+          data: data.legends
+        },
+        markLine: {
+          data: [{type: 'average', name: 'Avg'}]
+        },
+        series: [
+          {
+            name: '类型',
+            type: 'pie',
+            radius: '55%',
+            center: ['40%', '50%'],
+            data: data.series,
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      };
+      let costTypeRatePieChart = echarts.init(costTypeRatePieRef.value);
+      costTypeRatePieChart.setOption(costTypeRatePieOption)
+    }
+  })
+}
+
+function doFindCostLineChart() {
+  let dateScope = findCostLineChartQueryVo.value.dateScope;
+  if (dateScope === DateScope.MONTH || dateScope === DateScope.YEAR) {
+    let dateValue = findCostLineChartQueryVo.value.dateValue;
+    if (!dateValue || dateValue === '') {
+      return;
+    }
+  }
+  findCostLineChart(findCostLineChartQueryVo.value).then((res: any) => {
+    if (res.code === 200) {
+      let data = res.data;
+      if (dateScope === DateScope.WEEK) {
+        showWeekCostLineChart(data);
+      } else if (dateScope === DateScope.MONTH) {
+        showMonthCostLineChart(data);
+      } else if (dateScope === DateScope.YEAR) {
+        showYearCostLineChart(data);
+      }
+    }
+  })
+}
+
+function changeDateScope(dateScope: string) {
+  findCostLineChartQueryVo.value.dateScope = dateScope;
+  findCostLineChartQueryVo.value.dateValue = null
+  doFindCostLineChart();
+}
+
+function showWeekCostLineChart(data) {
+  let option = {
+    title: {
+      text: costLineChartTitle,
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis',
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        dataView: {readOnly: false},
+        magicType: {type: ['line', 'bar']},
+        restore: {},
+        saveAsImage: {}
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        data: data.series[0].data,
+        type: 'line',
+        stack: 'Total',
+        areaStyle: {},
+        emphasis: {
+          focus: 'series'
+        },
+        markLine: {
+          data: [{type: 'average', name: 'Avg'}]
+        },
+        markPoint: {
+          data: [
+            {type: 'max', name: 'Max'},
+            {type: 'min', name: 'Min'}
+          ]
+        },
+      }
+    ]
+  }
+  let weekCostLineChart = echarts.init(weekCostLineChartRef.value)
+  weekCostLineChart.setOption(option)
+}
+
+function showMonthCostLineChart(data) {
+  let option = {
+    title: {
+      text: costLineChartTitle,
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        dataView: {readOnly: false},
+        magicType: {type: ['line', 'bar']},
+        restore: {},
+        saveAsImage: {}
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: data.xAxis
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        data: data.series[0].data,
+        type: 'line',
+        areaStyle: {},
+        emphasis: {
+          focus: 'series'
+        },
+        markLine: {
+          data: [{type: 'average', name: 'Avg'}]
+        },
+        markPoint: {
+          data: [
+            {type: 'max', name: 'Max'},
+            {type: 'min', name: 'Min'}
+          ]
+        },
+      }
+    ]
+  }
+  let monthCostLineChart = echarts.init(monthCostLineChartRef.value)
+  monthCostLineChart.setOption(option)
+}
+
+function showYearCostLineChart(data) {
+  let option = {
+    title: {
+      text: costLineChartTitle,
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        dataView: {readOnly: false},
+        magicType: {type: ['line', 'bar']},
+        restore: {},
+        saveAsImage: {}
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: data.xAxis
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        data: data.series[0].data,
+        type: 'line',
+        areaStyle: {},
+        emphasis: {
+          focus: 'series'
+        },
+        markLine: {
+          data: [{type: 'average', name: 'Avg'}]
+        },
+        markPoint: {
+          data: [
+            {type: 'max', name: 'Max'},
+            {type: 'min', name: 'Min'}
+          ]
+        },
+      }
+    ]
+  }
+  let yearCostLineChart = echarts.init(yearCostLineChartRef.value)
+  yearCostLineChart.setOption(option)
+}
 
 </script>
 

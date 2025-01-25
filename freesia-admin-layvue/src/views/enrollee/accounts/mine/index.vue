@@ -23,9 +23,10 @@
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="12">
             <lay-form-item label="开销时间">
               <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
+                               :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
                                :shortcuts="defaultShortcuts" simple></lay-date-picker>
             </lay-form-item>
           </lay-col>
@@ -234,7 +235,8 @@
           <lay-row space="20">
             <lay-col :md="24">
               <lay-form-item label="导出时间" prop="paymentTime" required>
-                <lay-date-picker style="width: 100%" v-model="accountsExportVo.paymentTimeRange" allow-clear range type="datetime"
+                <lay-date-picker style="width: 100%" v-model="accountsExportVo.paymentTimeRange" allow-clear range
+                                 type="datetime"
                                  :shortcuts="defaultShortcuts" simple></lay-date-picker>
               </lay-form-item>
             </lay-col>
@@ -277,7 +279,6 @@ import {List} from "echarts";
 import {buildRange, defaultShortcuts, singleShortcuts} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
-import {userImport} from "@/api/system/User";
 
 /* INIT*/
 onMounted(async () => {
@@ -362,6 +363,7 @@ const accountsExportFromRules = ref({
     }
   },
 })
+const sdf_YMDHMS = 'YYYY-MM-DD HH:mm:ss'
 /* VAR*/
 
 /* FUNCTION*/
@@ -415,6 +417,7 @@ const showExpenseModal = (text: any, row: any) => {
       }
     })
   } else if (Operate.ADD === text) {
+    accountCostVo.value = {}
     accountCostVo.value.paymentTime = now
     let isDefaultPaymentSignSelect = paymentSignSelectList.value.find((paymentSignSelect: SysDictValueEntity) => {
       return paymentSignSelect.isDefault
@@ -534,7 +537,7 @@ function showAccountsExportModal() {
 function toUpload() {
   if (!fileList.value || fileList.value.length < 1) {
     layer.confirm('清选择文件', {icon: 3})
-    return ;
+    return;
   }
   accountsImport(fileList.value).then((res: any) => {
     if (res.code === 200) {

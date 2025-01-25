@@ -32,3 +32,24 @@ export enum PaymentSign {
     INCOME = "INCOME",
 
 }
+
+export interface FindCostLineChartVo extends AccountCostVo {
+    dateScope?: string;
+    dateValue?: string;
+}
+
+export enum DateScope {
+    /**
+     * 周
+     */
+    WEEK = "WEEK",
+    /**
+     * 月
+     */
+    MONTH = "MONTH",
+    /**
+     * 年
+     */
+    YEAR = "YEAR",
+
+}

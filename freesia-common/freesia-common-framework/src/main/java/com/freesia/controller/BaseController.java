@@ -1,23 +1,18 @@
 package com.freesia.controller;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.CalendarUtil;
 import com.freesia.constant.Constants;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
 import com.freesia.util.UString;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * @author Evad.Wu
@@ -62,30 +57,30 @@ public class BaseController {
      * @return [时间范围从, 时间范围到]
      */
     public Date[] parseDateRange(String dateRageStr) {
-        return parseDateRange(dateRageStr, UString.SEPARATOR);
+        return parseDateRange(dateRageStr,  Constants.SDF_YMDHMS);
     }
 
     /**
      * 解析查询条件中时间范围的字段
      *
      * @param dateRageStr （字符串）时间范围字段
-     * @param separator   间隔符
-     * @return [时间范围从, 时间范围到]
-     */
-    public Date[] parseDateRange(String dateRageStr, String separator) {
-        return parseDateRange(dateRageStr, separator, Constants.SDF_YMDHMS);
-    }
-
-    /**
-     * 解析查询条件中时间范围的字段
-     *
-     * @param dateRageStr （字符串）时间范围字段
-     * @param separator   间隔符
      * @param sdf         日期格式化器
      * @return [时间范围从, 时间范围到]
      */
+    public Date[] parseDateRange(String dateRageStr, SimpleDateFormat sdf) {
+        return parseDateRange(dateRageStr, Constants.SDF_YMDHMS, UString.SEPARATOR);
+    }
+
+    /**
+     * 解析查询条件中时间范围的字段
+     *
+     * @param dateRageStr （字符串）时间范围字段
+     * @param sdf         日期格式化器
+     * @param separator   间隔符
+     * @return [时间范围从, 时间范围到]
+     */
     @SneakyThrows
-    public Date[] parseDateRange(String dateRageStr, String separator, SimpleDateFormat sdf) {
+    public Date[] parseDateRange(String dateRageStr, SimpleDateFormat sdf, String separator) {
         if (UEmpty.isEmpty(dateRageStr)) {
             throw new IllegalArgumentException(UMessage.message("field.dateRange.not.empty"));
         }

@@ -42,4 +42,19 @@ public class AccountCostDto extends BaseDto {
     private Date paymentTimeFrom;
     @Schema(description = "查询时间到")
     private Date paymentTimeTo;
+    /**
+     * {@link com.freesia.account.constant.DateScope}
+     */
+    @Schema(description = "时间范围")
+    private String dateScope;
+    /**
+     * 年
+     */
+    @Schema(description = "年")
+    private Integer year;
+    /**
+     * 月
+     */
+    @Schema(description = "月")
+    private Integer month;
 }

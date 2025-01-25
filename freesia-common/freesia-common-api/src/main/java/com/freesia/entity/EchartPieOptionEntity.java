@@ -7,11 +7,11 @@ import java.util.List;
 
 /**
  * @author Evad.Wu
- * @Description Echarts图标返回结果集
+ * @Description Echarts饼图 实体类
  * @date 2025-01-20
  */
 @Data
-public class EchartOptionEntity {
+public class EchartPieOptionEntity {
     /**
      * 图表项标识
      */
