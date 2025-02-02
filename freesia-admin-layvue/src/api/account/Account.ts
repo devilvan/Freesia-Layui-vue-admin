@@ -2,7 +2,12 @@ import Http from "../Http";
 import {PageQuery} from "../../types/Common";
 import {TableResult} from "../../types/Result";
 import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
-import {AccountCostEntity, AccountCostVo} from "../../types/account/Account";
+import {
+    AccountCostEntity,
+    AccountCostVo,
+    FindCostSumCalendarNearYearVo,
+    FindCostLineChartVo
+} from "../../types/account/Account";
 
 export function saveUpdate(sysTenantVo: AccountCostVo) {
     return Http.post("/api/accountCostController/saveUpdate", sysTenantVo);
@@ -47,7 +52,12 @@ export function findCostTypeRatePie(accountCostVo: AccountCostVo) {
     return Http.get("/api/accountCostController/findCostTypeRatePie", params);
 }
 
-export function findCostLineChart(accountCostVo: AccountCostVo) {
-    let params = buildUrlParam(accountCostVo);
+export function findCostLineChart(findCostLineChartVo: FindCostLineChartVo) {
+    let params = buildUrlParam(findCostLineChartVo);
     return Http.get("/api/accountCostController/findCostLineChart", params);
+}
+
+export function findCostSumCalendarNearYear(findCostSumCalendarNearYearVo: FindCostSumCalendarNearYearVo) {
+    let params = buildUrlParam(findCostSumCalendarNearYearVo);
+    return Http.get("/api/accountCostController/findCostSumCalendarNearYear", params);
 }

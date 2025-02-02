@@ -2,6 +2,7 @@ package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
+import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.pojo.PageQuery;
@@ -78,4 +79,12 @@ public interface AccountCostService {
      * @return 结果集
      */
     EchartLineOptionEntity findCostLineChart(AccountCostDto accountCostDto);
+
+    /**
+     * 日历-查询近一年支出
+     *
+     * @param accountCostDto 入参
+     * @return 结果集
+     */
+    EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto);
 }

@@ -1,7 +1,7 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
     <lay-row space="10">
-      <lay-col md="12" sm="8" xs="12">
+      <lay-col md="10">
         <lay-card>
           <template #title>{{ costTypeRatePieTitle }}</template>
           <lay-row :space="10">
@@ -10,6 +10,7 @@
                 <lay-form-item label="按时间：" prop="paymentTimeRange">
                   <lay-date-picker style="width: 100%" @change="doFind"
                                    v-model="findCostTypeRatePieQueryVo.paymentTimeRange" allow-clear range
+                                   type="datetime"
                                    :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" :shortcuts="defaultShortcuts"
                                    simple></lay-date-picker>
                 </lay-form-item>
@@ -19,23 +20,17 @@
           <div ref="costTypeRatePieRef" style="height: 500px"></div>
         </lay-card>
       </lay-col>
-      <lay-col md="8" sm="8" xs="12">
+      <lay-col md="14" sm="8" xs="12">
         <lay-card>
-          <template #title> 版本信息</template>
-          <table class="layui-table">
-            <tr>
-              <td>页面模式</td>
-              <td>单页面</td>
-            </tr>
-            <tr>
-              <td>涉及技术</td>
-              <td>vue / layui-vue</td>
-            </tr>
-            <tr>
-              <td>主要特色</td>
-              <td>单页面 / 响应式 / 清爽 / 极简</td>
-            </tr>
-          </table>
+          <template #title>{{ costCountCalendarLastYearTitle }}</template>
+          <lay-row :space="10">
+            <lay-col>
+              <lay-form :model="FindCostSumCalendarNearYearQueryVo" ref="findCostSumCalendarNearYearQueryRef"
+                        label-position="left">
+              </lay-form>
+            </lay-col>
+          </lay-row>
+          <div ref="costSumCalendarNearYearRef" style="height: 500px"></div>
         </lay-card>
       </lay-col>
       <lay-col md="16" sm="16" xs="24">
@@ -153,9 +148,14 @@ import {computed, onMounted, ref} from 'vue'
 import * as echarts from 'echarts'
 import router from "../../../../router";
 import {findCostTypeRatePie} from "@/api/account/Account";
-import {AccountCostVo, FindCostLineChartVo, DateScope} from "../../../../types/account/Account";
+import {
+  AccountCostVo,
+  FindCostLineChartVo,
+  DateScope,
+  FindCostSumCalendarNearYearVo
+} from "../../../../types/account/Account";
 import {buildRange, defaultShortcuts, getDaysInMonth} from "../../../../util/UDate";
-import {findCostLineChart} from "../../../../api/account/Account";
+import {findCostLineChart, findCostSumCalendarNearYear} from "../../../../api/account/Account";
 
 const mainRef = ref()
 const currentIndex = ref('1')
@@ -402,6 +402,9 @@ onMounted(() => {
 
   findCostLineChartQueryVo.value.dateScope = DateScope.WEEK
   doFindCostLineChart()
+
+  doFindCostSumCalendarNearYear();
+
 })
 /* INIT*/
 
@@ -482,23 +485,15 @@ const yearCostLineChartRef = ref();
 const costLineChartTitle = "开销折线图"
 const findCostLineChartQueryVo = ref<FindCostLineChartVo>({});
 const findCostLineChartQueryRef = ref(null)
+
+const costCountCalendarLastYearRef = ref();
+const costCountCalendarLastYearTitle = "近一年支付"
+const findCostSumCalendarNearYearQueryVo = ref<FindCostSumCalendarNearYearVo>({});
+const costSumCalendarNearYearRef = ref(null);
+const findCostSumCalendarNearYearQueryRef = ref(null)
 /* VAR*/
 
 /* FUNCTION*/
-const changePage = () => {
-  $router.push({path: '/form/base', query: {id: '1111'}})
-}
-
-/* FUNCTION*/
-
-function changeAddExpensesModal() {
-  addExpensesModalFlag.value = !addExpensesModalFlag.value
-}
-
-function changeAddIncomeModal() {
-  addIncomeModalFlag.value = !addIncomeModalFlag.value
-}
-
 function doFindCostTypeRatePie() {
   findCostTypeRatePie(findCostTypeRatePieQueryVo.value).then((res: any) => {
     if (res.code === 200) {
@@ -731,6 +726,59 @@ function showYearCostLineChart(data) {
   yearCostLineChart.setOption(option)
 }
 
+function doFindCostSumCalendarNearYear() {
+  findCostSumCalendarNearYear(findCostSumCalendarNearYearQueryVo.value).then((res: any) => {
+    if (res.code === 200) {
+      let data = res.data;
+      let option = {
+        tooltip: {
+          position: 'left',
+          formatter: (item) => {
+            return item.data[0] + '<br>' + item.data[1];
+          }
+        },
+        visualMap: {
+          min: 0,
+          max: data.maxValue,
+          calculable: true,
+          orient: 'horizontal',
+          left: 'center',
+          top: 'top',
+          bottom: 20
+        },
+        calendar: [
+          {
+            top: 120,
+            left: 0,
+            range: data.range,
+            cellSize: ['auto', 20],
+            dayLabel: {
+              nameMap: 'ZH'
+            },
+            monthLabel: {
+              nameMap: 'ZH'
+            },
+            yearLabel: {
+              position: 'top'
+            }
+          }
+        ],
+        series: [
+          {
+            type: 'heatmap',
+            coordinateSystem: 'calendar',
+            calendarIndex: 0,
+            data: data.series
+          },
+        ]
+      };
+      let costSumCalendarNearYear = echarts.init(costSumCalendarNearYearRef.value)
+      costSumCalendarNearYear.setOption(option)
+    }
+  })
+}
+
+/* FUNCTION*/
 </script>
 
 <style lang="less" scoped>

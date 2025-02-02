@@ -8,12 +8,15 @@ import com.freesia.account.constant.DateScope;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.FindCostLineChartEntity;
+import com.freesia.account.entity.FindCostSumCalendarNearYearEntity;
 import com.freesia.account.entity.FindCostTypeRatePieEntity;
 import com.freesia.account.mapper.AccountCostMapper;
 import com.freesia.account.po.AccountCostPo;
 import com.freesia.account.repository.AccountCostRepository;
 import com.freesia.account.service.AccountCostService;
+import com.freesia.constant.Constants;
 import com.freesia.constant.FlagConstant;
+import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.pojo.PageQuery;
@@ -30,10 +33,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -181,6 +181,35 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             echartLineOptionEntity = buildEchartLineOptionEntity(findCostLineChartEntityList);
         }
         return echartLineOptionEntity;
+    }
+
+    @Override
+    public EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto) {
+        List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList = accountCostMapper.findCostSumCalendarNearYear(accountCostDto);
+        return buildEchartCalendarOptionEntity(findCostSumCalendarNearYearEntityList, accountCostDto);
+    }
+
+    private EchartCalendarOptionEntity buildEchartCalendarOptionEntity(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList, AccountCostDto accountCostDto) {
+        EchartCalendarOptionEntity echartCalendarOptionEntity = new EchartCalendarOptionEntity();
+        if (UEmpty.isNotEmpty(findCostSumCalendarNearYearEntityList)) {
+            List<List<String>> series = new ArrayList<>();
+            for (FindCostSumCalendarNearYearEntity findCostSumCalendarNearYearEntity : findCostSumCalendarNearYearEntityList) {
+                BigDecimal outlay = findCostSumCalendarNearYearEntity.getOutlay().setScale(2, RoundingMode.HALF_UP);
+                String paymentTime = findCostSumCalendarNearYearEntity.getPaymentTime();
+                List<String> seriesList = Arrays.asList(paymentTime, outlay.toString());
+                series.add(seriesList);
+            }
+            BigDecimal maxValue = findCostSumCalendarNearYearEntityList.stream()
+                    .map(FindCostSumCalendarNearYearEntity::getOutlay)
+                    .max(BigDecimal::compareTo)
+                    .orElse(BigDecimal.ZERO);
+            echartCalendarOptionEntity.setMaxValue(maxValue);
+            String paymentTimeFrom = Constants.SDF_YMD.format(accountCostDto.getPaymentTimeFrom());
+            String paymentTimeTo = Constants.SDF_YMD.format(accountCostDto.getPaymentTimeTo());
+            echartCalendarOptionEntity.setRange(new String[]{paymentTimeFrom, paymentTimeTo});
+            echartCalendarOptionEntity.setSeries(series);
+        }
+        return echartCalendarOptionEntity;
     }
 
     private EchartLineOptionEntity buildEchartLineOptionEntity(List<FindCostLineChartEntity> findCostLineChartEntityList) {

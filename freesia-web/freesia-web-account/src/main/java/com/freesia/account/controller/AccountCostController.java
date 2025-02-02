@@ -10,8 +10,10 @@ import com.freesia.account.listener.AccountsImportListener;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.vo.AccountCostVo;
 import com.freesia.account.vo.FindCostLineChartVo;
+import com.freesia.account.vo.FindCostSumCalendarNeaerYearVo;
 import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
+import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.excel.constant.ExcelSuffix;
@@ -259,5 +261,15 @@ public class AccountCostController extends BaseController {
         return R.ok(echartLineOptionEntity);
     }
 
-
+    @Validated
+    @Operation(summary = "日历-查询近一年支出")
+    @GetMapping(value = "findCostSumCalendarNearYear")
+    public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNeaerYearVo findCostSumCalendarNeaerYearVo) {
+        AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostSumCalendarNeaerYearVo, AccountCostDto.class);
+        Date[] dates = defaultDateRange(365);
+        accountCostDto.setPaymentTimeFrom(dates[0]);
+        accountCostDto.setPaymentTimeTo(dates[1]);
+        EchartCalendarOptionEntity echartCalendarOptionEntity = accountCostService.findCostSumCalendarNearYear(accountCostDto);
+        return R.ok(echartCalendarOptionEntity);
+    }
 }

@@ -38,6 +38,9 @@ export interface FindCostLineChartVo extends AccountCostVo {
     dateValue?: string;
 }
 
+export interface FindCostSumCalendarNearYearVo extends AccountCostVo {
+}
+
 export enum DateScope {
     /**
      * 周

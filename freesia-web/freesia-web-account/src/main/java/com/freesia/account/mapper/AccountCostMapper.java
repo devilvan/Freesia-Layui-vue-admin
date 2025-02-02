@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.FindCostLineChartEntity;
+import com.freesia.account.entity.FindCostSumCalendarNearYearEntity;
 import com.freesia.account.entity.FindCostTypeRatePieEntity;
 import com.freesia.account.po.AccountCostPo;
 import org.apache.ibatis.annotations.Mapper;
@@ -58,4 +59,12 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @return 结果集
      */
     List<FindCostLineChartEntity> findYearCostLineChart(@Param("accountCostDto") AccountCostDto accountCostDto);
+
+    /**
+     * 日历-查询近一年支出
+     *
+     * @param accountCostDto 入参
+     * @return 结果集
+     */
+    List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYear(@Param("accountCostDto") AccountCostDto accountCostDto);
 }

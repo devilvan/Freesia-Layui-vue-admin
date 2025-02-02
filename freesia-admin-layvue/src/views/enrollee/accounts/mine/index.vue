@@ -299,7 +299,7 @@ const selectedKeys = ref<Array<string>>([])
 const accountCostVo = ref<AccountCostVo>({
   status: true
 })
-const addExpenseFormRef = ref()
+const addExpenseFormRef = ref(null)
 const addExpenseModalShowFlag = ref(false)
 const dataSource = ref<Array<AccountCostEntity>>()
 const title = ref('新增')
@@ -485,6 +485,7 @@ function toSubmit(clickFlag: boolean) {
         }
       })
     }
+    addExpenseFormRef.value.focus();
   })
 }
 
