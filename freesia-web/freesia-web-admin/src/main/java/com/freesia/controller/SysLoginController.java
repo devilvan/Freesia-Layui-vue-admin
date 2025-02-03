@@ -18,10 +18,9 @@ import com.freesia.service.SysLoginService;
 import com.freesia.service.SysMenuService;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
-import com.freesia.sse.constant.SseTopic;
-import com.freesia.sse.dto.SseMessageDto;
-import com.freesia.sse.util.USse;
-import com.freesia.util.*;
+import com.freesia.util.UCollection;
+import com.freesia.util.UCopy;
+import com.freesia.util.UMessage;
 import com.freesia.vo.LoginVo;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,11 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Evad.Wu

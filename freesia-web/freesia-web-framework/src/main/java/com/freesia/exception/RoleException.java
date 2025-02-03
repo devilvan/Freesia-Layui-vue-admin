@@ -14,7 +14,7 @@ public class RoleException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 8756197040766756051L;
 
-    public RoleException(String code, Object... args) {
-        super(RoleModule.ROLE_MANAGEMENT, code, args, null);
+    public RoleException(String code, Object[] args) {
+        super(RoleModule.ROLE_MANAGEMENT, code, args);
     }
 }

@@ -46,11 +46,11 @@ public class SysRegisterServiceImpl implements SysRegisterService {
         sysUserDto.setPassword(BCrypt.hashpw(password));
         sysUserDto.setUserType(userType);
         if (sysUserService.checkUserNameUnique(sysUserDto)) {
-            throw new UserException("user.register.not.unique", username);
+            throw new UserException("user.register.not.unique", new Object[] {username});
         }
         boolean flag = sysUserService.register(sysUserDto);
         if (!flag) {
-            throw new UserException("user.register.error");
+            throw new UserException("user.register.error", new Object[] {});
         }
         SysSensitiveLogBean registerOperLogEvent = USecurity.recordSensitiveLog(() -> {
             String ip = UServlet.getInitiatedRequestIp();

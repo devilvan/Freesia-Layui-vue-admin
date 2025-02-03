@@ -49,7 +49,7 @@ public class RedisDashboardController extends BaseController {
         // Redis内置信息
         RedissonPropertiesDto redissonPropertiesDto = redisConnection.map(RedisConnection::info)
                 .map(properties -> JSONObject.parseObject(JSONObject.toJSONString(properties), RedissonPropertiesDto.class))
-                .orElseThrow(() -> new DashboardException("dashboard.redis.info.find.failed"));
+                .orElseThrow(() -> new DashboardException("dashboard.redis.info.find.failed", new Object[]{}));
         // Redis指令信息
         List<Map<String, String>> commandStats = redisConnection.map(m -> m.info(COMMAND_STATS))
                 .map(commandStat -> {
@@ -67,10 +67,10 @@ public class RedisDashboardController extends BaseController {
                     });
                     return pieList;
                 })
-                .orElseThrow(() -> new DashboardException("dashboard.redis.info.find.failed"));
+                .orElseThrow(() -> new DashboardException("dashboard.redis.info.find.failed", new Object[]{}));
         // Redis DB容量
         Long dbSize = redisConnection.map(RedisServerCommands::dbSize)
-                .orElseThrow(() -> new DashboardException("dashboard.redis.info.find.failed"));
+                .orElseThrow(() -> new DashboardException("dashboard.redis.info.find.failed", new Object[]{}));
         FindRedisDashboardInfoEntity findRedisDashboardInfoEntity = new FindRedisDashboardInfoEntity(redissonPropertiesDto, commandStats, dbSize);
         return R.ok(findRedisDashboardInfoEntity);
     }

@@ -15,7 +15,7 @@ public class CryptException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 8756197040766756051L;
 
-    public CryptException(String code, Object... args) {
-        super(CryptModule.CRYPT_MANAGEMENT, code, args, null);
+    public CryptException(String code, Object[] args) {
+        super(CryptModule.CRYPT_MANAGEMENT, code, args);
     }
 }

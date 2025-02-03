@@ -165,7 +165,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         Long id = sysUserDto.getId();
         SysUserPo sysUserPo;
         if (UEmpty.isNotNull(id)) {
-            sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed"));
+            sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed", new Object[] {}));
             UCopy.halfCopy(sysUserDto, sysUserPo);
             sysUserRepository.save(sysUserPo);
         } else {
@@ -179,7 +179,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public FindUserRolesByUserIdEntity findUserRolesByUserId(Long userId) {
         // 获取用户对象
-        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.query.failed", userId));
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.query.failed", new Object[] {userId}));
         // 获取角色
         Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
         return buildFindUserRolesByUserIdEntity(sysUserPo, sysRolePoSet);
@@ -187,7 +187,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public void assignRole(Long userId, Set<Long> afterRoleIdSet) {
-        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.not.exists"));
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.not.exists", new Object[] {}));
         // 获取并修改分配后的角色
         Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
         List<Long> beforeRoleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toList());
@@ -293,7 +293,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.AVATAR_UPDATE, message = "user.avatarUpdate")
     public void avatarUpdate(String avatar) {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
         Long userId = loginUser.getUserId();
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
         sysUserPo.setAvatar(avatar);

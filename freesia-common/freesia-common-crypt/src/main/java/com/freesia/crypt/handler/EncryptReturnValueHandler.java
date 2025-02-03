@@ -61,7 +61,7 @@ public class EncryptReturnValueHandler implements HandlerMethodReturnValueHandle
         if (UEmpty.isNotNull(responseBody)) {
             HttpServletResponse httpServletResponse = Optional.of(webRequest)
                     .map(nativeWebRequest -> nativeWebRequest.getNativeResponse(HttpServletResponse.class))
-                    .orElseThrow(() -> new CryptException(CryptModule.SubModule.ENCRYPT, "crypt.get.native.response.failed"));
+                    .orElseThrow(() -> new CryptException("crypt.get.native.response.failed", new Object[][] {}));
             httpServletResponse.setCharacterEncoding("UTF-8");
             httpServletResponse.setHeader("Content-type", ContentType.TEXT_HTML.getValue());
             httpServletResponse.getWriter().write(responseBody);

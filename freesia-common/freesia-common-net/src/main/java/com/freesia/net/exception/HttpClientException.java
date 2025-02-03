@@ -14,7 +14,7 @@ public class HttpClientException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 711360139646536614L;
 
-    public HttpClientException(String code, Object... args) {
-        super(HttpClientModule.HTTP_CLIENT_MANAGEMENT, code, args, null);
+    public HttpClientException(String code, Object[] args) {
+        super(HttpClientModule.HTTP_CLIENT_MANAGEMENT, code, args);
     }
 }

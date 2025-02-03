@@ -67,7 +67,7 @@ public class SysDeptController extends BaseController {
     public R<SysDeptDto> findDeptById() {
         LoginUserModel loginUser = USecurity.getLoginUser();
         Long deptId = Optional.ofNullable(loginUser).map(LoginUserModel::getDeptId)
-                .orElseThrow(() -> new DeptException("dept.id.required"));
+                .orElseThrow(() -> new DeptException("dept.id.required", new Object[] {}));
         SysDeptDto sysDeptDto = sysDeptService.findDeptById(deptId);
         return R.ok(sysDeptDto);
     }
@@ -98,7 +98,7 @@ public class SysDeptController extends BaseController {
     @Operation(summary = "查询部门树下拉框集合")
     @GetMapping(value = "findTreeDeptSelect")
     public R<List<FindTreeDeptSelectEntity>> findTreeDeptSelect() {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
         List<FindTreeDeptSelectEntity> menuList = sysDeptService.findTreeDeptSelect(loginUser);
         return R.ok(menuList);
     }
@@ -107,7 +107,7 @@ public class SysDeptController extends BaseController {
     @Operation(summary = "查询部门树下拉框集合（分配部门）")
     @GetMapping(value = "findTreeAssignDeptSelect")
     public R<List<FindTreeDeptSelectEntity>> findTreeAssignDeptSelect() {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
         List<FindTreeDeptSelectEntity> menuList = sysDeptService.findTreeAssignDeptSelect(loginUser);
         return R.ok(menuList);
     }

@@ -72,7 +72,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     @Override
     public List<FindPageSysDeptListEntity> findListSysDept(SysDeptDto sysDeptDto) {
         // 是否管理员
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.info.null"));
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
         boolean isAdmin = Convert.toBool(sysUserService.isAdmin(userId), false);
         if (isAdmin) {
             return sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
@@ -116,7 +116,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     @Override
     @LogRecord(module = DeptModule.DEPT_MANAGEMENT, subModule = DeptModule.SubModule.DELETE_DEPT, message = "dept.delete")
     public SysDeptDto deleteDept(Long deptId) {
-        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists"));
+        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists", new Object[]{}));
         sysDeptPo.setLogicDel(true);
         sysDeptPo.setDeptStatus(FlagConstant.DISABLED);
         SysDeptPo saveSysDeptPo = sysDeptRepository.save(sysDeptPo);
@@ -162,7 +162,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
 
     @Override
     public void assignRole(Long deptId, Set<Long> afterRoleIdSet) {
-        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists"));
+        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists", new Object[]{}));
         // 获取并修改分配后的角色
         Set<SysRolePo> sysRolePoSet = sysDeptPo.getSysRolePoSet();
         List<Long> beforeRoleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toList());
@@ -221,7 +221,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     @Override
     public FindDeptRolesByDeptIdEntity findDeptRolesByDeptId(Long deptId) {
         // 获取部门对象
-        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new UserException("dept.query.failed", deptId));
+        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new UserException("dept.query.failed", new Object[] {deptId}));
         // 获取角色
         Set<SysRolePo> sysRolePoSet = sysDeptPo.getSysRolePoSet();
         return buildFindDeptRolesByDeptIdEntity(sysDeptPo, sysRolePoSet);
@@ -250,7 +250,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         SysDeptPo sysDeptPo = new SysDeptPo();
         Long id = sysDeptDto.getId();
         if (UEmpty.isNotNull(id)) {
-            sysDeptPo = sysDeptRepository.findById(id).orElseThrow(() -> new DeptException("dept.query.failed", id));
+            sysDeptPo = sysDeptRepository.findById(id).orElseThrow(() -> new DeptException("dept.query.failed", new Object[]{id}));
             UCopy.halfCopy(sysDeptDto, sysDeptPo);
         } else {
             Long parentId = sysDeptDto.getParentId();

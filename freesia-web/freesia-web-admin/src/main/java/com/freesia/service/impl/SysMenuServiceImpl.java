@@ -319,7 +319,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 boolean componentExistsFlag = sysMenuMapper.findByComponentExists(component);
                 if (componentExistsFlag) {
                     // 如果组件路径存在
-                    throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.component.exists", component);
+                    throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.component.exists", new Object[]{component});
                 }
             }
         }
@@ -511,7 +511,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     private void checkAddButton(SysMenuDto sysMenuDto) {
         SysMenuDto findMenuByParentIdDto = findMenuByParentId(sysMenuDto.getParentId());
         if (ObjectUtil.isNull(findMenuByParentIdDto.getId())) {
-            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.button.find.parent.failed", sysMenuDto.getMenuName(), sysMenuDto.getParentId());
+            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.button.find.parent.failed", new Object[]{sysMenuDto.getMenuName(), sysMenuDto.getParentId()});
         }
     }
 
@@ -529,7 +529,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         SysMenuPo sysMenuPo = UCopy.copyDto2Po(sysMenuDto, SysMenuPo.class);
         boolean flag = sysMenuMapper.findMenuPathExist(sysMenuPo);
         if (flag) {
-            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.path.existed", sysMenuPo.getPath());
+            throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.path.existed", new Object[]{sysMenuPo.getPath()});
         }
     }
 

@@ -74,7 +74,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "查询所有菜单下拉树")
     @GetMapping(value = "findAllMenuTree")
     public R<List<FindAllMenuTreeEntity>> findAllMenuTree() {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
         List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuService.findAllMenuTree(loginUser.getUserId());
         return R.ok(findAllMenuTreeEntityList);
     }
@@ -83,7 +83,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "根据角色ID查询所有菜单下拉树")
     @GetMapping(value = "findAllMenuTreeByRoleId")
     public R<List<FindAllMenuTreeEntity>> findAllMenuTree(@RequestParam Long roleId) {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null"));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
         List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuService.findAllMenuTree(roleId, loginUser.getUserId());
         return R.ok(findAllMenuTreeEntityList);
     }

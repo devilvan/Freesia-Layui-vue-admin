@@ -47,7 +47,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         if (UEmpty.isEmpty(sysTenantDto.getId())) {
             int flag = Convert.toInt(sysTenantMapper.findExistCode(sysTenantDto.getCode()), 0);
             if (flag != 0) {
-                throw new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.code.exists", sysTenantDto.getCode());
+                throw new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.code.exists", new Object[]{sysTenantDto.getCode()});
             }
             UCopy.fullCopy(sysTenantDto, sysTenantPo);
             return UCopy.copyPo2Dto(sysTenantRepository.saveAndFlush(sysTenantPo), SysTenantDto.class);
@@ -98,7 +98,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @LogRecord(module = TenantModule.TENANT_MANAGEMENT, subModule = TenantModule.SubModule.ASSIGN_USER, message = "tenant.assignUser")
     public void assignTenant2User(Long tenantId, List<Long> userIdList) {
         SysTenantPo sysTenantPo = sysTenantRepository.findById(tenantId)
-                .orElseThrow(() -> new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.query.failed", tenantId));
+                .orElseThrow(() -> new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.query.failed", new Object[]{tenantId}));
         Set<SysTenantUserPo> sysTenantUserPoSet = new HashSet<>();
         for (Long userId : userIdList) {
             SysTenantUserPo sysTenantUserPo = new SysTenantUserPo(new SysTenantUserPk(tenantId, userId));
@@ -123,7 +123,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     public SysTenantDto findSysTenantById(Long tenantId) {
         SysTenantPo sysTenantPo = sysTenantRepository.findById(tenantId)
-                .orElseThrow(() -> new TenantException("tenant.query.failed", tenantId));
+                .orElseThrow(() -> new TenantException("tenant.query.failed", new Object[]{tenantId}));
         return UCopy.copyPo2Dto(sysTenantPo, SysTenantDto.class);
     }
 }

@@ -84,7 +84,7 @@ public class BaseController {
         if (UEmpty.isEmpty(dateRageStr)) {
             throw new IllegalArgumentException(UMessage.message("field.dateRange.not.empty"));
         }
-        String[] range = Optional.ofNullable(dateRageStr)
+        String[] range = Optional.of(dateRageStr)
                 .map(dateRange -> dateRange.split(Convert.toStr(separator, UString.SEPARATOR)))
                 .orElseGet(() -> new String[0]);
         if (range.length != 2) {

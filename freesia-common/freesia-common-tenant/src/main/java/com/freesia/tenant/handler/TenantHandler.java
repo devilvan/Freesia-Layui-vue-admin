@@ -28,7 +28,7 @@ public class TenantHandler implements TenantLineHandler {
         if (tenantProperties.getEnabled()) {
             Long tenantId = USecurity.getTenantId();
             if (UEmpty.isNull(tenantId)) {
-                throw new TenantException("tenant.required");
+                throw new TenantException("tenant.required", new Object[] {});
             }
             return new LongValue(tenantId);
         }

@@ -86,17 +86,17 @@ public class GiteeServiceImpl implements GiteeService {
                 findGiteeCommitsEntity.setRemark(author.getRemark());
                 findGiteeCommitsEntity.setType(author.getType());
                 return findGiteeCommitsEntity;
-            }).orElseThrow(() -> new GiteeCommitException("gitee.author.required"));
+            }).orElseThrow(() -> new GiteeCommitException("gitee.author.required", new Object[]{}));
             Optional.ofNullable(giteeCommitsResponseDto.getCommit()).map(commit -> {
                 findGiteeCommitsEntity.setMessage(commit.getMessage());
                 return findGiteeCommitsEntity;
-            }).orElseThrow(() -> new GiteeCommitException("gitee.commit.message.required"));
+            }).orElseThrow(() -> new GiteeCommitException("gitee.commit.message.required", new Object[]{}));
             Optional.ofNullable(giteeCommitsResponseDto.getCommit().getAuthor()).map(commitAuthor -> {
                 findGiteeCommitsEntity.setDate(Constants.SDF_YMDHMS.format(commitAuthor.getDate()));
                 findGiteeCommitsEntity.setDateKey(Constants.SDF_YMD.format(commitAuthor.getDate()));
                 findGiteeCommitsEntity.setEmail(commitAuthor.getEmail());
                 return findGiteeCommitsEntity;
-            }).orElseThrow(() -> new GiteeCommitException("gitee.commit.date.required"));
+            }).orElseThrow(() -> new GiteeCommitException("gitee.commit.date.required", new Object[]{}));
             findGiteeCommitsEntityList.add(findGiteeCommitsEntity);
         }
         return findGiteeCommitsEntityList;

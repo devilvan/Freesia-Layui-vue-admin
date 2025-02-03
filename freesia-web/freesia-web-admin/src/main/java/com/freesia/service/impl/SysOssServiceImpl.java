@@ -195,7 +195,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     @Override
     public void download(Long id, HttpServletResponse response) {
         SysOssDto sysOssDto = USpring.getAopProxy(this).findCacheById(id);
-        sysOssDto = Optional.of(sysOssDto).orElseThrow(() -> new OssException("oss.file.not.found", id));
+        sysOssDto = Optional.of(sysOssDto).orElseThrow(() -> new OssException("oss.file.not.found", new Object[]{id}));
         // 设置响应体选项
         String originalName = sysOssDto.getOriginalName();
         UOssFile.setAttachmentResponseHeader(response, originalName);

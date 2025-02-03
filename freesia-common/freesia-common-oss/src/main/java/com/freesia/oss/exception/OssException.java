@@ -19,7 +19,7 @@ public class OssException extends ServiceException {
         super(defaultMessage);
     }
 
-    public OssException(String code, Object... args) {
-        super(OssModule.OSS_MANAGEMENT, code, args, null);
+    public OssException(String code, Object[] args) {
+        super(OssModule.OSS_MANAGEMENT, code, args);
     }
 }

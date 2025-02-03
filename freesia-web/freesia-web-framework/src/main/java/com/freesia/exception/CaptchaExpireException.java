@@ -12,6 +12,6 @@ public class CaptchaExpireException extends UserException {
     private static final long serialVersionUID = -2626363894568717960L;
 
     public CaptchaExpireException() {
-        super("user.jcaptcha.expire");
+        super("user.jcaptcha.expire", null);
     }
 }

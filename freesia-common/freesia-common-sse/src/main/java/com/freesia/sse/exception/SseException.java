@@ -17,7 +17,7 @@ public class SseException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 8756197040766756051L;
 
-    public SseException(String code, Object... args) {
-        super(SseModule.SSE_MANAGEMENT, code, args, null);
+    public SseException(String code, Object[] args) {
+        super(SseModule.SSE_MANAGEMENT, code, args);
     }
 }

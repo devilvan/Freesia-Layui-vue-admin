@@ -13,7 +13,7 @@ public class DashboardException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 9168523946223394482L;
 
-    public DashboardException(String code, Object... args) {
-        super(DashboardModule.DASHBOARD_MANAGEMENT, code, args, null);
+    public DashboardException(String code, Object[] args) {
+        super(DashboardModule.DASHBOARD_MANAGEMENT, code, args);
     }
 }

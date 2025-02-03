@@ -22,7 +22,11 @@ public class ServiceException extends BaseException {
         super(defaultMessage);
     }
 
-    public ServiceException(String module, String code, Object... args) {
+    public ServiceException(String module, String code) {
+        super(module, code, null, null);
+    }
+
+    public ServiceException(String module, String code, Object[] args) {
         super(module, code, args, null);
     }
 }

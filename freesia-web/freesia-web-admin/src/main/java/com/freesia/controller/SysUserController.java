@@ -131,7 +131,7 @@ public class SysUserController extends BaseController {
                 .map(m -> m.substring(m.lastIndexOf('.') + 1))
                 .orElseThrow(() -> new OssException("oss.file.required"));
         if (!ExcelSuffix.includeBySuffix(suffix)) {
-            throw new UserException("import.suffix.invalid", suffix);
+            throw new UserException("import.suffix.invalid", new Object[] {suffix});
         }
         try {
             UExcel.read(file.getInputStream(), SysUserImportEntity.class, ExcelSuffix.getInstanceBySuffix(suffix).getExcelTypeEnum(),

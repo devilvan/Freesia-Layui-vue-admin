@@ -42,7 +42,7 @@ public class CryptServiceImpl implements CryptService {
         // 获取后端私钥，解密入参
         final String pri1 = URedis.get(CacheConstant.CRYPT_PRI).toString();
         if (UEmpty.isEmpty(pri1)) {
-            throw new CryptException("crypt.get.pri1.failed");
+            throw new CryptException("crypt.get.pri1.failed", new Object[] {});
         }
         final String pub2 = UCrypt.rsaDecrypt(pri1, encryptPub2);
         return UCrypt.rsaEncrypt(pub2, UCrypt.KEY);

@@ -14,7 +14,7 @@ public class DeptException extends ServiceException {
     @Serial
     private static final long serialVersionUID = 8756197040766756051L;
 
-    public DeptException(String code, Object... args) {
-        super(DeptModule.DEPT_MANAGEMENT, code, args, null);
+    public DeptException(String code, Object[] args) {
+        super(DeptModule.DEPT_MANAGEMENT, code, args);
     }
 }

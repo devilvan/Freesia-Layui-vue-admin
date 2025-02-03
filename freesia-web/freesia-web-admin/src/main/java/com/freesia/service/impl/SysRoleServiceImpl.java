@@ -191,7 +191,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
 
     @Override
     public void assignDept(Long roleId, Set<Long> deptIdSet) {
-        SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseThrow(() -> new RoleException("role.not.exists"));
+        SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseThrow(() -> new RoleException("role.not.exists", new Object[]{}));
         // 获取并修改分配后的角色
         Set<SysDeptPo> sysDeptPoSet = sysRolePo.getSysDeptPoSet();
         List<Long> beforeDeptIdList = sysDeptPoSet.stream().map(SysDeptPo::getId).collect(Collectors.toList());
@@ -304,7 +304,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     }
 
     private SysRolePo findSysRolePoById(Long roleId) {
-        return sysRoleRepository.findById(roleId).orElseThrow(() -> new RoleException("role.query.failed", roleId));
+        return sysRoleRepository.findById(roleId).orElseThrow(() -> new RoleException("role.query.failed", new Object[]{roleId}));
     }
 
 }

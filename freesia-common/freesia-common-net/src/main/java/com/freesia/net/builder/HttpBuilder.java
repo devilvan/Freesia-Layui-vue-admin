@@ -3,8 +3,8 @@ package com.freesia.net.builder;
 import com.freesia.net.constant.HttpContentType;
 import com.freesia.net.dto.HttpClientDto;
 import com.freesia.net.exception.HttpClientException;
-import com.freesia.util.UEmpty;
 import com.freesia.net.util.UServlet;
+import com.freesia.util.UEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -72,7 +72,7 @@ public class HttpBuilder {
      */
     public final HttpBuilder setHttpRequest(RequestMethod requestMethod, String url) {
         this.httpRequest = Optional.ofNullable(requestMethod2HttpRequestBase(requestMethod, url))
-                .orElseThrow(() -> new HttpClientException("http.request.type.invalid", requestMethod.name()));
+                .orElseThrow(() -> new HttpClientException("http.request.type.invalid", new Object[]{requestMethod.name()}));
         return this;
     }
 
@@ -87,7 +87,7 @@ public class HttpBuilder {
      */
     public final <T> HttpBuilder setHttpRequest(RequestMethod requestMethod, String url, T param) {
         this.httpRequest = Optional.ofNullable(requestMethod2HttpRequestBase(requestMethod, url))
-                .orElseThrow(() -> new HttpClientException("请求类型格式有误！"));
+                .orElseThrow(() -> new HttpClientException("请求类型格式有误！", new Object[]{}));
         this.checkSetHttpParam(requestMethod).accept(param);
         return this;
     }
@@ -112,7 +112,7 @@ public class HttpBuilder {
             } else if (t instanceof String) {
                 // 判断请求类型是否支持请求体
                 if (!isSupportRequestBody(requestMethod)) {
-                    throw new HttpClientException("http.request.type.body.not.support", requestMethod.name());
+                    throw new HttpClientException("http.request.type.body.not.support", new Object[]{requestMethod.name()});
                 }
                 String requestBody = t.toString();
                 if (UEmpty.isNotEmpty(requestBody)) {
@@ -133,8 +133,8 @@ public class HttpBuilder {
      */
     private boolean isSupportRequestBody(RequestMethod requestMethod) {
         return RequestMethod.POST.equals(requestMethod) ||
-               RequestMethod.PUT.equals(requestMethod) ||
-               RequestMethod.PATCH.equals(requestMethod);
+                RequestMethod.PUT.equals(requestMethod) ||
+                RequestMethod.PATCH.equals(requestMethod);
     }
 
     /**

@@ -45,7 +45,7 @@ public class UCrypt {
      */
     private static void initAes() {
         if (UEmpty.isEmpty(KEY)) {
-            throw new CryptException("crypt.aes.key.required");
+            throw new CryptException("crypt.aes.key.required", new Object[] {});
         }
 //        System.out.println("AES KEY：" + key);
         aes = new AES(Mode.ECB, Padding.ZeroPadding, KEY.getBytes(StandardCharsets.UTF_8));
@@ -69,7 +69,7 @@ public class UCrypt {
      */
     private static String buildAesKey(String key) {
         if (UEmpty.isEmpty(key)) {
-            throw new CryptException("crypt.aes.key.required");
+            throw new CryptException("crypt.aes.key.required", new Object[] {});
         }
         //随机生成密钥
         final SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), ALGORITHM);

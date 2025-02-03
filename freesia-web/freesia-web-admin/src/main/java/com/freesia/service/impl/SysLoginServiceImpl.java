@@ -97,7 +97,7 @@ public class SysLoginServiceImpl implements SysLoginService {
         // 获取用户对应的部门
         SysDeptPo sysDeptPo = sysUserPo.getSysDeptPo();
         if (UEmpty.isNull(sysDeptPo)) {
-            throw new ServiceException(UserModule.SubModule.LOGIN, "user.dept.non.assign", sysUserPo.getUserName());
+            throw new ServiceException(UserModule.SubModule.LOGIN, "user.dept.non.assign", new Object[] {sysUserPo.getUserName()});
         }
         // 是否管理员
         boolean isAdmin = isAdmin(sysUserPo);
@@ -202,7 +202,7 @@ public class SysLoginServiceImpl implements SysLoginService {
             String message = UMessage.message(loginRetryType.getRetryLimitExceed(), errorCount, loginPasswordProperties.getLockTime().toMinutes());
             SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
             USpring.context().publishEvent(sysSensitiveLogBean);
-            throw new UserException(loginRetryType.getRetryLimitExceed(), errorCount, loginPasswordProperties.getLockTime().toMinutes());
+            throw new UserException(loginRetryType.getRetryLimitExceed(), new Object[] {errorCount, loginPasswordProperties.getLockTime().toMinutes()});
         }
         // 密码输入错误
         if (bcrptCheckpw.get()) {
@@ -214,7 +214,7 @@ public class SysLoginServiceImpl implements SysLoginService {
                 String message = UMessage.message(loginRetryType.getRetryLimitExceed(), errorCount, loginPasswordProperties.getLockTime().toMinutes());
                 SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
                 USpring.context().publishEvent(sysSensitiveLogBean);
-                throw new UserException(loginRetryType.getRetryLimitExceed(), errorCount, loginPasswordProperties.getLockTime().toMinutes());
+                throw new UserException(loginRetryType.getRetryLimitExceed(), new Object[] {errorCount, loginPasswordProperties.getLockTime().toMinutes()});
             } else {
                 // 未达到最大重试次数
                 // 更新Redis中的密码错误次数，保存12小时
@@ -222,7 +222,7 @@ public class SysLoginServiceImpl implements SysLoginService {
                 String message = UMessage.message(loginRetryType.getRetryLimitCount(), errorCount);
                 SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
                 USpring.context().publishEvent(sysSensitiveLogBean);
-                throw new UserException(loginRetryType.getRetryLimitCount(), errorCount);
+                throw new UserException(loginRetryType.getRetryLimitCount(), new Object[] {errorCount});
             }
         }
         // 登录成功，清除登录失败次数
@@ -240,10 +240,10 @@ public class SysLoginServiceImpl implements SysLoginService {
         SysUserPo sysUserPo = sysUserService.findOneByUsername(username);
         if (ObjectUtil.isNull(sysUserPo)) {
             log.info("登录用户：{} 不存在.", username);
-            throw new UserException("user.not.exists", username);
+            throw new UserException("user.not.exists", new Object[] {username});
         } else if (FlagConstant.DISABLED.equals(sysUserPo.getAccountStatus()) || sysUserPo.getLogicDel()) {
             log.info("登录用户：{} 已被停用.", username);
-            throw new UserException("user.blocked", username);
+            throw new UserException("user.blocked", new Object[] {username});
         }
         return sysUserService.findByUsername(username);
     }
