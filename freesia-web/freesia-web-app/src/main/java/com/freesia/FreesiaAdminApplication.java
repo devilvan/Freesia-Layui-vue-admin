@@ -1,5 +1,6 @@
 package com.freesia;
 
+import cn.hutool.crypto.SecureUtil;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackages = {"com.freesia.**.repository"})
 public class FreesiaAdminApplication {
     public static void main(String[] args) {
+        SecureUtil.disableBouncyCastle();
         SpringApplication.run(FreesiaAdminApplication.class, args);
     }
 }
