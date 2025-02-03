@@ -59,6 +59,7 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
                 .like(UEmpty.isNotEmpty(sysDictValueDto.getValueName()), "DV.VALUE_NAME", sysDictValueDto.getValueName())
                 .like(UEmpty.isNotEmpty(sysDictValueDto.getValue()), "DV.VALUE", sysDictValueDto.getValue())
                 .eq(UEmpty.isNotEmpty(sysDictValueDto.getStatus()), "DV.STATUS", sysDictValueDto.getStatus())
+                .eq(UEmpty.isNotEmpty(sysDictValueDto.getIsDefault()), "DV.IS_DEFAULT", sysDictValueDto.getIsDefault())
                 .orderByDesc("DV.IS_DEFAULT")
                 .orderByAsc("DV.ORDER_NUM"));
         Page<SysDictValueDto> sysDictValueDtoPage = UCopy.convertPagePo2Dto(sysDictValuePoList, SysDictValueDto.class);
@@ -111,6 +112,16 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
     @LogRecord(module = DictModule.DICT_MANAGEMENT, subModule = DictModule.SubModule.SAVE_DICT_VALUE, message = "dict.value.save")
     public SysDictValueDto saveSysDictValue(SysDictValueDto sysDictValueDto) {
         SysDictValuePo sysDictValuePo = new SysDictValuePo();
+        // 判断字典是否已经有默认值了，如果有则替换
+        if (FlagConstant.ENABLED.equals(sysDictValueDto.getIsDefault())) {
+            List<SysDictValuePo> defaultSysDictValuePoList = sysDictValueMapper.findDefaultFlagByKeyId(sysDictValueDto.getKeyId());
+            if (UEmpty.isNotEmpty(defaultSysDictValuePoList)) {
+                for (SysDictValuePo dictValuePo : defaultSysDictValuePoList) {
+                    dictValuePo.setIsDefault(FlagConstant.DISABLED);
+                }
+                sysDictValueRepository.saveAll(defaultSysDictValuePoList);
+            }
+        }
         if (UEmpty.isNotEmpty(sysDictValueDto.getId())) {
             sysDictValuePo = sysDictValueRepository.findById(sysDictValueDto.getId()).orElseGet(SysDictValuePo::new);
             UCopy.halfCopy(sysDictValueDto, sysDictValuePo);
@@ -149,5 +160,16 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
             }
         }
         sysDictValueRepository.saveAll(sysDictValuePoList);
+    }
+
+    @Override
+    public List<SysDictValueDto> findDistinctDictValueNameList(List<String> distinctDictValueNameList, String dictKey, Long keyId) {
+        List<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.findDistinctDictValueNameList(distinctDictValueNameList, dictKey, keyId);
+        return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
+    }
+
+    @Override
+    public Integer findMaxOrderNumByKeyId(Long keyId) {
+        return sysDictValueMapper.findMaxOrderNumByKeyId(keyId);
     }
 }

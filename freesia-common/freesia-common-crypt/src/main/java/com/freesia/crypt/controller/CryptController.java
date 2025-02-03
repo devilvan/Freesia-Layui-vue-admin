@@ -2,6 +2,7 @@ package com.freesia.crypt.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.controller.BaseController;
 import com.freesia.crypt.service.CryptService;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping(value = "/common/cryptController")
 @Tag(name = "CryptController", description = "加密/解密 控制器")
-public class CryptController {
+public class CryptController extends BaseController {
     private final CryptService cryptService;
 
     @SaIgnore

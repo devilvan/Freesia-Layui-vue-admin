@@ -15,7 +15,7 @@ public class UPath {
      * @param suffix     后缀
      * @return 验证后的导出路径
      */
-    public static String validExportPath(String exportPath, String fileName, String suffix) {
+    public static String buildExportPath(String exportPath, String fileName, String suffix) {
         String split = "\\";
         StringBuilder sb = new StringBuilder();
         sb.append(exportPath);

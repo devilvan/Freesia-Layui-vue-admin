@@ -104,18 +104,16 @@
         <lay-form :model="sysTenantVo" ref="sysTenantFormRef" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
-              <lay-form-item label="主键" prop="id" required :hidden="true">
-                <lay-input v-model="sysTenantVo.id"></lay-input>
-              </lay-form-item>
-              <lay-form-item label="版本号" prop="recVer" required :hidden="true">
-                <lay-input v-model="sysTenantVo.recVer"></lay-input>
-              </lay-form-item>
               <lay-form-item label="租户编码" prop="code" required>
                 <lay-input v-model="sysTenantVo.code" :allow-clear="true"></lay-input>
               </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
               <lay-form-item label="联系人姓名" prop="contactName" required>
                 <lay-input v-model="sysTenantVo.contactName"></lay-input>
               </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
               <lay-form-item label="营业时间" prop="businessHoursFrom">
                 <lay-date-picker type="yearmonth" v-model="sysTenantVo.businessHoursFrom"
                                  format="YYYY-MM"></lay-date-picker>
@@ -125,15 +123,10 @@
               <lay-form-item label="租户名称" prop="name">
                 <lay-input v-model="sysTenantVo.name" :allow-clear="true"></lay-input>
               </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
               <lay-form-item label="联系人电话" prop="contactTel">
                 <lay-input v-model="sysTenantVo.contactTel"></lay-input>
-              </lay-form-item>
-              <lay-form-item label="租户备注" prop="remark">
-                <lay-textarea
-                    allow-clear
-                    placeholder="请输入租户备注"
-                    v-model="sysTenantVo.remark"
-                ></lay-textarea>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
@@ -149,16 +142,32 @@
                   </template>
                 </lay-select>
               </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
               <lay-form-item label="联系人邮箱" prop="contactEmail" required>
                 <lay-input v-model="sysTenantVo.contactEmail"></lay-input>
               </lay-form-item>
             </lay-col>
+
             <lay-col :md="6">
               <lay-form-item label="租户状态" prop="status" required>
                 <lay-switch v-model="sysTenantVo.status"></lay-switch>
               </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
               <lay-form-item label="租户地址" prop="address" required>
                 <lay-input v-model="sysTenantVo.address"></lay-input>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+          <lay-row space="20">
+            <lay-col :md="6">
+              <lay-form-item label="租户备注" prop="remark">
+                <lay-textarea
+                    allow-clear
+                    placeholder="请输入租户备注"
+                    v-model="sysTenantVo.remark"
+                ></lay-textarea>
               </lay-form-item>
             </lay-col>
           </lay-row>

@@ -45,7 +45,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysUserController")
 @Tag(name = "SysUserController", description = "用户信息表 控制器")
-public class SysUserController {
+public class SysUserController extends BaseController {
     private final SysUserService sysUserService;
 
     @Operation(summary = "获取用户列表分页")
@@ -131,10 +131,10 @@ public class SysUserController {
                 .map(m -> m.substring(m.lastIndexOf('.') + 1))
                 .orElseThrow(() -> new OssException("oss.file.required"));
         if (!ExcelSuffix.includeBySuffix(suffix)) {
-            throw new UserException("user.import.suffix.invalid", suffix);
+            throw new UserException("import.suffix.invalid", suffix);
         }
         try {
-            UExcel.read(file.getInputStream(), SysUserImportEntity.class,
+            UExcel.read(file.getInputStream(), SysUserImportEntity.class, ExcelSuffix.getInstanceBySuffix(suffix).getExcelTypeEnum(),
                     new UserImportListener<>(sysUserService, avatar), 0, null);
         } catch (IOException e) {
             e.printStackTrace();

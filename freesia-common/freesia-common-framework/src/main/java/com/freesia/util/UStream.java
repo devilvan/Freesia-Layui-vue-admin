@@ -3,10 +3,12 @@ package com.freesia.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.freesia.vo.R;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,7 @@ public class UStream {
         if (CollUtil.isEmpty(sourceList)) {
             return false;
         }
-        return sourceList.stream().anyMatch(function);
+        return sourceList.stream().filter(ObjectUtil::isNotNull).anyMatch(function);
     }
 
     /**

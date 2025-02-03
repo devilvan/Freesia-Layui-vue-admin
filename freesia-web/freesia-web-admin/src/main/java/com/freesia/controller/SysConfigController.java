@@ -31,7 +31,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysConfigController")
 @Tag(name = "SysConfigController", description = "全局配置信息表 控制器")
-public class SysConfigController {
+public class SysConfigController extends BaseController {
     private final SysConfigService sysConfigService;
 
     @SaIgnore

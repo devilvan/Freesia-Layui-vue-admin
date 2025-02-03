@@ -29,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/common/urlConfigController")
 @Tag(name = "UrlConfigController", description = "URL配置信息表 控制器")
-public class UrlConfigController {
+public class UrlConfigController extends BaseController {
     private final UrlConfigService urlConfigService;
 
     /**

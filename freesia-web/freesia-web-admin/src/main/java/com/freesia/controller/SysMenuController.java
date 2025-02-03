@@ -3,7 +3,6 @@ package com.freesia.controller;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.alibaba.fastjson.JSONObject;
-import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.MenuPermission;
 import com.freesia.constant.MenuType;
@@ -14,11 +13,12 @@ import com.freesia.entity.FindMenuListByUserIdEntity;
 import com.freesia.entity.FindTreeMenuSelectEntity;
 import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.satoken.model.LoginUserModel;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysMenuService;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
-import com.freesia.satoken.util.USecurity;
 import com.freesia.vo.AssignButtonVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SysMenuVo;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/api/sysMenuController")
 @Tag(name = "SysMenuController", description = "目录-菜单-按钮信息表 控制器")
-public class SysMenuController {
+public class SysMenuController extends BaseController {
     @Resource(name = "sysMenuServiceImpl")
     private SysMenuService sysMenuService;
 
@@ -152,8 +152,9 @@ public class SysMenuController {
 
     @Operation(summary = "查询菜单下所有的按钮")
     @GetMapping(value = "findAllSysButton")
-    public R<List<SysMenuDto>> findAllSysButton(SysMenuVo sysMenuVo) {
+    public R<List<SysMenuDto>> findAllSysButton(SysMenuVo sysMenuVo, @Validated @NotEmpty String roleId) {
         SysMenuDto sysMenuDto = UCopy.copyVo2Dto(sysMenuVo, SysMenuDto.class);
+        sysMenuDto.setRoleId(Long.valueOf(roleId));
         List<SysMenuDto> sysMenuDtoList = sysMenuService.findAllSysButton(sysMenuDto);
         return R.ok(sysMenuDtoList);
     }

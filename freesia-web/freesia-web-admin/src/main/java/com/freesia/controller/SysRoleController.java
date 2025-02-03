@@ -34,7 +34,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysRoleController")
 @Tag(name = "SysRoleController", description = "角色信息表 控制器")
-public class SysRoleController {
+public class SysRoleController extends BaseController {
     private final SysRoleService sysRoleService;
 
     @Operation(summary = "获取角色列表分页")

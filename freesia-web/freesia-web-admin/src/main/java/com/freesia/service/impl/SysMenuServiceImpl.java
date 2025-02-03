@@ -86,7 +86,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     public List<SysMenuDto> findMenuTreeByUserId(Long userId) {
         List<SysMenuPo> sysMenuPoList;
         // 管理员可以使用所有目录与菜单
-        if (AdminConstant.ADMIN_ID == userId) {
+        if (USecurity.isAdmin(userId)) {
             sysMenuPoList = sysMenuMapper.findAllDirAndMenu();
         } else {
             // 非管理员则查询可用的菜单权限
@@ -228,7 +228,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 .in("M.MENU_TYPE", MenuType.DIR.getType(), MenuType.MENU.getType())
                 .orderByAsc("M.PARENT_ID")
                 .orderByAsc("M.ORDER_NUM");
-        List<SysMenuPo> sysMenuPoList = AdminConstant.ADMIN_ID == userId ? sysMenuMapper.findAllMenuTree(wrapper) :
+        List<SysMenuPo> sysMenuPoList = USecurity.isAdmin(userId) ? sysMenuMapper.findAllMenuTree(wrapper) :
                 sysMenuMapper.findAllMenuTree(wrapper.eq(ObjectUtil.isNotNull(userId), "SUR.USER_ID", userId));
         List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyList(sysMenuPoList, FindAllMenuTreeEntity.class);
         return UTree.buildTree(findAllMenuTreeEntityList);
@@ -294,7 +294,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
         } else if (MenuType.BUTTON.getType().equals(menuType)) {
             wrapper.in("M.MENU_TYPE", MenuType.DIR.getType(), MenuType.MENU.getType());
         }
-        List<FindTreeMenuSelectEntity> findAllMenuTreeEntityList = AdminConstant.ADMIN_ID == userId ? sysMenuMapper.findTreeMenuSelect(wrapper) :
+        List<FindTreeMenuSelectEntity> findAllMenuTreeEntityList = USecurity.isAdmin(userId) ? sysMenuMapper.findTreeMenuSelect(wrapper) :
                 sysMenuMapper.findTreeMenuSelect(wrapper.eq(ObjectUtil.isNotNull(userId), "SUR.USER_ID", userId));
         return UTree.buildTree(findAllMenuTreeEntityList);
     }
@@ -344,7 +344,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     public void deleteMenu(Long id, Long userId) {
         QueryWrapper<SysMenuPo> wrapper = Wrappers.<SysMenuPo>query()
                 .orderByAsc("M.ID");
-        List<SysMenuPo> sysMenuPoList = AdminConstant.ADMIN_ID == userId ? sysMenuMapper.findAllMenuTree(wrapper) :
+        List<SysMenuPo> sysMenuPoList = USecurity.isAdmin(userId) ? sysMenuMapper.findAllMenuTree(wrapper) :
                 sysMenuMapper.findAllMenuTree(wrapper.eq(ObjectUtil.isNotNull(userId), "SUR.USER_ID", userId));
         SysMenuPo sysMenuPo = binarySearch(id, sysMenuPoList);
         List<SysMenuPo> nodeAndChildren = bfs(sysMenuPoList, sysMenuPo);
@@ -361,7 +361,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 .eq(SysMenuPo::getParentId, sysMenuDto.getId())
                 .likeRight(UEmpty.isNotEmpty(sysMenuDto.getMenuName()), SysMenuPo::getMenuName, sysMenuDto.getMenuName())
                 .orderByAsc(SysMenuPo::getOrderNum);
-        List<SysMenuPo> sysMenuPoList = sysMenuMapper.findAllSysButton(queryWrapper);
+        List<SysMenuPo> sysMenuPoList = sysMenuMapper.findAllSysButton(sysMenuDto, USecurity.isAdmin());
         return UCopy.fullCopyList(sysMenuPoList, SysMenuDto.class);
     }
 

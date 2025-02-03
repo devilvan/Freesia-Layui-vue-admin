@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysLoginController")
 @Tag(name = "SysLoginController", description = "登录功能 控制器")
-public class SysLoginController {
+public class SysLoginController extends BaseController {
     private final SysLoginService sysLoginService;
     private final SysUserService sysUserService;
     private final SysMenuService sysMenuService;

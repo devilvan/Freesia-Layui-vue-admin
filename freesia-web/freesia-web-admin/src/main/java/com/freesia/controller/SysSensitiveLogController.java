@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysSensitiveLogController")
 @Tag(name = "SysSensitiveLogController", description = "敏感操作信息表 控制器")
-public class SysSensitiveLogController {
+public class SysSensitiveLogController extends BaseController {
     private final SysSensitiveLogService sysSensitiveLogService;
 
     /**

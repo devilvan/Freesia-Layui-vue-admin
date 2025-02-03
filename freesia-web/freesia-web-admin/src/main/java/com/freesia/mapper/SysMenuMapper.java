@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuType;
+import com.freesia.dto.SysMenuDto;
 import com.freesia.entity.FindMenuListByUserIdEntity;
 import com.freesia.entity.FindTreeMenuSelectEntity;
 import com.freesia.po.SysMenuPo;
@@ -111,10 +112,11 @@ public interface SysMenuMapper extends BaseMapper<SysMenuPo> {
     /**
      * 查询菜单下所有的按钮
      *
-     * @param wrapper 查询条件
+     * @param sysMenuDto 查询入参
+     * @param adminFlag  是否管理员
      * @return 菜单下所有的按钮
      */
-    List<SysMenuPo> findAllSysButton(@Param(Constants.WRAPPER) Wrapper<SysMenuPo> wrapper);
+    List<SysMenuPo> findAllSysButton(@Param("sysMenuDto") SysMenuDto sysMenuDto, boolean adminFlag);
 
     /**
      * 根据角色ID查询菜单下已分配的按钮ID

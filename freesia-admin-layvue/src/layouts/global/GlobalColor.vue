@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<ColorProps>(), {
     '#009688',
     '#36b368',
     '#2d8cf0',
-    '#f6ad55',
+    '#FFB800',
     '#f56c6c',
     '#3963bc',
     '#998adb',

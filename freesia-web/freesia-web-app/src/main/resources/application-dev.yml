@@ -37,7 +37,7 @@ captcha:
 spring:
   messages:
     # 引入不同模块的i18n messages文件，逗号分隔
-    basename: i18n/messages_common_service,i18n/messages_common,i18n/messages
+    basename: i18n/messages_account,i18n/messages_common,i18n/messages
     encoding: UTF-8
 ---
 # Sa-Token配置
@@ -144,6 +144,8 @@ springdoc:
       paths-to-match: /common/**
     - group: 10. 租户模块
       paths-to-match: /api/sysTenantController/**
+    - group: 11. 记账模块
+      paths-to-match: /api/accountCostController/**
 # knife4j的增强配置，不需要增强可以不配
 #knife4j:
 #  enable: true

@@ -3,6 +3,8 @@ package com.freesia;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.constant.Constants;
+import com.freesia.controller.BaseController;
 import com.freesia.dto.GiteeOauthTokenRequestDto;
 import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.pojo.DemoData;
@@ -13,6 +15,7 @@ import org.junit.Test;
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -33,6 +36,32 @@ import java.util.regex.Pattern;
 @Slf4j
 public class FreesiaTest {
     private static final String ENCRYPT_KEY = "Y29tLnNpbm9zZXJ2aWNlcy5vcmc=";
+
+    @Test
+    public void testLoopDirFiles() {
+        // 获取目录下的所有文件和子目录
+        File[] files = new File("C:\\Project\\freesia\\freesia-admin-layvue\\src\\assets\\svgIcon").listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                // 如果是文件，打印文件名
+                if (file.isFile()) {
+                    String name = file.getName().replace(".svg", "");
+                    System.out.println(name);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testCalendar() {
+        BaseController baseController = new BaseController();
+        Date[] dates = baseController.defaultDateRange(7);
+        SimpleDateFormat sdfYmdhms = Constants.SDF_YMDHMS;
+        for (Date date : dates) {
+            System.out.println(sdfYmdhms.format(date));
+        }
+    }
 
     private static byte[] generateKey() throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("$AES");

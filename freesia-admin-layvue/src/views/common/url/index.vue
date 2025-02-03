@@ -97,9 +97,6 @@
     <lay-layer v-model="urlConfigModalShowFlag" :title="title" :area="['500px']">
       <div style="padding: 20px">
         <lay-form :model="urlConfigVo" ref="urlConfigFormRef">
-          <lay-form-item label="ID" prop="id" :hidden="true" required>
-            <lay-input v-model="urlConfigVo.id" disabled></lay-input>
-          </lay-form-item>
           <lay-form-item label="配置标识" prop="code" required>
             <lay-input v-model="urlConfigVo.code"></lay-input>
           </lay-form-item>

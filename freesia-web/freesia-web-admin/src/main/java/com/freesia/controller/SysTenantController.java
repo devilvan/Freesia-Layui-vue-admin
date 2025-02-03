@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysTenantController")
 @Tag(name = "SysTenantController", description = "租户信息表 控制器")
-public class SysTenantController {
+public class SysTenantController extends BaseController {
     private final SysTenantService sysTenantService;
 
     /**

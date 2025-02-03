@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.account.mapper.AccountCostMapper">
+    <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
+        SELECT
+        AC.COST_DESC,
+        AC.OUTLAY,
+        AC.COST_TYPE,
+        AC.PAYMENT_SIGN,
+        SDV.VALUE_NAME AS PAYMENT_SIGN_NAME,
+        AC.PAYMENT_TIME,
+        AC.ICON,
+        AC.REMARK,
+        DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME_GROUPING_KEY
+        FROM account_cost AC
+        LEFT JOIN SYS_DICT_VALUE SDV
+        ON SDV.DICT_KEY = 'PAYMENT_SIGN'
+        WHERE 1=1
+        AND AC.LOGIC_DEL = 0
+        <if test="accountCostDto.tenantId != null and accountCostDto.tenantId != ''">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
+        <if test="accountCostDto.paymentTimeFrom != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        </if>
+        <if test="accountCostDto.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
+        </if>
+        GROUP BY AC.PAYMENT_TIME, AC.CREATE_TIME
+        ORDER BY AC.PAYMENT_TIME DESC, AC.CREATE_TIME ASC
+    </select>
+    <select id="findCostTypeRatePie" resultType="com.freesia.account.entity.FindCostTypeRatePieEntity">
+        SELECT
+        SDV.VALUE AS COST_TYPE,
+        SUM(AC.OUTLAY) AS OUTLAY
+        FROM account_cost AC
+        LEFT JOIN SYS_DICT_VALUE SDV ON SDV.DICT_KEY = 'ACCOUNT_COST_TYPE'
+        AND SDV.VALUE_NAME = AC.COST_TYPE
+        WHERE 1=1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        <if test="accountCostDto.paymentTimeFrom != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        </if>
+        <if test="accountCostDto.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
+        </if>
+        GROUP BY AC.COST_TYPE
+    </select>
+    <select id="findWeekCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
+        SELECT SUM(AC.OUTLAY)                           AS OUTLAY,
+               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
+               SDV.VALUE_NAME                           AS X_AXIS
+        FROM account_cost AC
+                 LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'
+            AND SDV.VALUE = WEEKDAY(STR_TO_DATE(AC.PAYMENT_TIME, '%Y-%m-%d')) + 1
+        WHERE 1 = 1
+          AND AC.LOGIC_DEL = 0
+          AND AC.PAYMENT_SIGN = 'EXPENSES'
+          AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+          AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d')
+    </select>
+    <select id="findMonthCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
+        SELECT SUM(AC.OUTLAY)                           AS OUTLAY,
+               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
+               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS X_AXIS
+        FROM account_cost AC
+        WHERE 1 = 1
+          AND AC.LOGIC_DEL = 0
+          AND AC.PAYMENT_SIGN = 'EXPENSES'
+          AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+          AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
+        GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d')
+    </select>
+    <select id="findYearCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
+        SELECT SUM(AC.OUTLAY)                        AS OUTLAY,
+               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m') AS PAYMENT_TIME,
+               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m') AS X_AXIS
+        FROM account_cost AC
+        WHERE 1 = 1
+          AND AC.LOGIC_DEL = 0
+          AND AC.PAYMENT_SIGN = 'EXPENSES'
+          AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m')
+    </select>
+    <select id="findCostSumCalendarNearYear"
+            resultType="com.freesia.account.entity.FindCostSumCalendarNearYearEntity">
+        SELECT SUM(AC.OUTLAY)                           AS OUTLAY,
+               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
+               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS X_AXIS
+        FROM account_cost AC
+        WHERE 1 = 1
+          AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+          AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d')
+    </select>
+</mapper>

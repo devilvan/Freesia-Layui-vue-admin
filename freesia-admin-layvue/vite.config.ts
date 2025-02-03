@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import {LayuiVueResolver} from 'unplugin-vue-components/resolvers'
+import {createSvgIconsPlugin} from "vite-plugin-svg-icons";
 import path = require("path");
 
 const excludeComponents = ['LightIcon', 'DarkIcon']
@@ -41,6 +42,11 @@ export default defineConfig(({mode, command}) => {
                         exclude: excludeComponents
                     }),
                 ],
+            }),
+            createSvgIconsPlugin({
+                iconDirs: [path.resolve(process.cwd(), 'src/assets/svgIcon')],
+                // 指定symbolId格式
+                symbolId: 'icon-[dir]-[name]',
             }),
             vue(),
         ],

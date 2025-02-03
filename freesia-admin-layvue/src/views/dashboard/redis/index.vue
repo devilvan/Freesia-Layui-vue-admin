@@ -11,7 +11,7 @@
               运行模式：{{
                 redissonPropertiesEntity.redisMode === 'standalone' ? '单点模式'
                     : redissonPropertiesEntity.redisMode === 'cluster' ? '集群模式'
-                    : '哨兵模式'
+                        : '哨兵模式'
               }}
             </lay-col>
             <lay-col :md="6">
@@ -150,40 +150,9 @@ const loadDataSource = () => {
         ]
       };
       const usedMemoryOption = {
-        tooltip: {
-          trigger: 'item',
-          formatter: "{b} : {c} ({d}%)"
-        },
         legend: {
           top: 'bottom'
         },
-        series: [
-          {
-            name: 'Access From',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            label: {
-              show: false,
-              position: 'center'
-            },
-            labelLine: {
-              show: false
-            },
-            data: [
-              {
-                value: data.redissonPropertiesDto.usedMemoryPeak - data.redissonPropertiesDto.usedMemory,
-                name: 'Redis消耗的最大内存峰值（KBps）'
-              },
-              {value: data.redissonPropertiesDto.usedMemory, name: 'Redis分配的字节数（KBps）'},
-            ]
-          }
-        ],
         tooltip: {
           formatter: '{a} <br/>{b} : {c}%'
         },

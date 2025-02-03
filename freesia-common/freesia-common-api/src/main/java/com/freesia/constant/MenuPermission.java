@@ -59,7 +59,8 @@ public class MenuPermission {
             SYSTEM_DICT_VALUE_EDIT = "system:dict:value:edit",
             SYSTEM_DICT_VALUE_DELETE = "system:dict:value:delete",
             SYSTEM_DICT_VALUE_ENABLED = "system:dict:value:enabled",
-            SYSTEM_DICT_VALUE_FLUSH_CACHE = "system:dict:value:flushCache";
+            SYSTEM_DICT_VALUE_FLUSH_CACHE = "system:dict:value:flushCache",
+            SYSTEM_DICT_VALUE_IMPORT = "system:dict:value:import";
 
     /* 租户管理*/
     public static final String SYSTEM_TENANT_INDEX = "system:tenant:index",

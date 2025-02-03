@@ -12,21 +12,23 @@
             <lay-icon type="layui-icon-edit"></lay-icon>
             修改
           </lay-button>
-          <lay-button type="danger" size="sm" @click="toDelete" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_KEY_DELETE]">
+          <lay-button type="danger" size="sm" @click="toDelete"
+                      v-permission="[$MENU_PERMISSION.SYSTEM_DICT_KEY_DELETE]">
             <lay-icon type="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
         </div>
-        <div style="padding-top: 10px">
+        <div style="padding-top: 10px" v-if="!isFold">
           <lay-form :model="sysDictKeySearchQuery" ref="layFormRef11" required>
             <lay-input
-                v-model="sysDictKeySearchQuery.keyName"
-                placeholder="请输入字典键名查询"
+                v-model="sysDictKeySearchQuery.keyNameOrDictKey"
+                placeholder="请输入字典键或字典键名查询"
                 size="sm"
                 :allow-clear="true"
                 style="width: 200px; margin-right: 10px; background: #fff"
             ></lay-input>
-            <lay-button type="normal" size="sm" @click="searchSysDictKey" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_KEY_QUERY]">
+            <lay-button type="normal" size="sm" @click="searchSysDictKey"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_DICT_KEY_QUERY]">
               查询
             </lay-button>
           </lay-form>
@@ -51,7 +53,48 @@
           <lay-icon v-else class="layui-icon-right"></lay-icon>
         </div>
       </div>
+
       <div style="width: 1200px">
+        <lay-card>
+          <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
+            <lay-row>
+              <lay-col :md="6">
+                <lay-form-item label="字典值名称">
+                  <lay-input
+                      v-model="sysDictValueSearchQuery.valueName"
+                      placeholder="请输入字典值名称"
+                      size="sm"
+                      :allow-clear="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="字典值">
+                  <lay-input
+                      v-model="sysDictValueSearchQuery.value"
+                      placeholder="请输入字典值"
+                      size="sm"
+                      :allow-clear="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="状态">
+                  <lay-select
+                      class="search-input"
+                      size="sm"
+                      v-model="sysDictValueSearchQuery.status"
+                      :options="enabledStatusSelectList"
+                      :items="enabledStatusSelectList"
+                      :allow-clear="true"
+                      placeholder="请选择"
+                  >
+                  </lay-select>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
+          </lay-form>
+        </lay-card>
         <lay-table
             class="table-box table-style"
             :columns="columns"
@@ -78,14 +121,8 @@
             </div>
           </template>
           <template v-slot:toolbar>
-            <lay-input
-                v-model="sysDictValueSearchQuery.name"
-                placeholder="请输入关键字查询"
-                size="sm"
-                :allow-clear="true"
-                style="width: 200px; margin-right: 10px; background: #fff"
-            ></lay-input>
-            <lay-button type="normal" size="sm" @click="toSearch" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_QUERY]">
+            <lay-button type="normal" size="sm" @click="toSearch"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_DICT_INDEX]">
               查询
             </lay-button>
             <lay-button
@@ -96,16 +133,23 @@
             >新增
             </lay-button
             >
-            <lay-button size="sm" type="danger" @click="toRemove" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_DELETE]"
+            <lay-button size="sm" type="danger" @click="toRemove"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_DELETE]"
             >删除
             </lay-button
             >
-            <lay-button size="sm" style="background-color: #FFB800;color:whitesmoke" @click="toEnable" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_ENABLED]"
+            <lay-button size="sm" style="background-color: #FFB800;color:whitesmoke" @click="toEnable"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_ENABLED]"
             >启用/禁用
             </lay-button
             >
-            <lay-button type="normal" size="sm" @click="flushCache" v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_FLUSH_CACHE]"
+            <lay-button type="normal" size="sm" @click="flushCache"
+                        v-permission="[$MENU_PERMISSION.SYSTEM_DICT_VALUE_FLUSH_CACHE]"
             >刷新缓存
+            </lay-button
+            >
+            <lay-button type="normal" size="sm" @click="toImportSysDictValue"
+            >导入
             </lay-button
             >
           </template>
@@ -163,6 +207,11 @@
               </lay-form-item>
               <lay-form-item label="字典值" prop="value">
                 <lay-input v-model="insertSysDictValueVo.value"></lay-input>
+              </lay-form-item>
+              <lay-form-item label="是否默认" prop="isDefault" :required="proceedCode === PROCEED_CODE.UPDATE"
+                             :hidden="proceedCode === PROCEED_CODE.ADD"
+                             :style="proceedCode === PROCEED_CODE.ADD ? 'display: none' : ''">
+                <lay-switch v-model="insertSysDictValueVo.isDefault" onswitch-value="1" unswitch-value="0"></lay-switch>
               </lay-form-item>
               <lay-form-item label="排序" prop="orderNum">
                 <lay-input-number
@@ -258,6 +307,37 @@
         </div>
       </div>
     </lay-layer>
+
+    <lay-layer
+        v-model="showImportSysDictValueFlag"
+        title="导入缓存键"
+        :area="['380px', '500px']"
+    >
+      <lay-upload
+          style="margin: 60px"
+          :url="importRoute"
+          v-model="fileList"
+          field="file"
+          acceptMime="application/vnd.ms-excel,
+          application/vnd.ms-excel.sheet.binary.macroenabled.12,
+          application/vnd.ms-excel.sheet.macroenabled.12,
+          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          :auto="false"
+          :drag="true"
+      >
+        <template #preview>
+          <div v-if="fileList.length > 0" v-for="(file, index) in fileList">
+            {{ index + ". " + file.name }}
+          </div>
+        </template>
+      </lay-upload>
+      <div style="width: 100%; text-align: center">
+        只能上传小于10MB的文件
+      </div>
+      <div style="width: 100%;margin-top: 20px; text-align: center">
+        <lay-button size="sm" type="primary" @click="confirmImportSysDictValue">上传</lay-button>
+      </div>
+    </lay-layer>
   </lay-container>
 </template>
 <script lang="ts">
@@ -281,18 +361,29 @@ import {
 import {PageQuery} from "../../../types/Common";
 import {
   deleteSysDictValueList,
-  enableSysDictValueList,
+  enableSysDictValueList, findMaxOrderNumByKeyId,
   findPageSysDictValue,
   findSysDictKeyList,
-  flushCacheSysDictValue,
+  flushCacheSysDictValue, importSysDictValue,
   saveSysDictKey,
   saveSysDictValue
 } from "../../../api/system/Dict";
+import {PROCEED_CODE} from "@/types/Constants";
+import {defaultShortcuts} from "@/util/UDate";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 
+/* INIT*/
 onMounted(async () => {
+  enabledStatusSelect.value = await loadSysDictValue(Constants.ENABLED_STATUS)
+  enabledStatusSelectList.value = await sysDictValueSelect(enabledStatusSelect.value)
   selectedNode.value = {}
   await loadSysDictKeyList();
 })
+/* INIT*/
+
+/* VAR*/
+const enabledStatusSelect = ref();
+const enabledStatusSelectList = ref();
 const expandKeys = ref<string[]>()
 const sysDictKeyList = ref<Array<SysDictKeyEntity>>([])
 const sysDictValueList = ref<Array<SysDictValueEntity>>()
@@ -302,7 +393,48 @@ const selectedNode = ref<SysDictKeyEntity>({})
 const isFold = ref(false)
 const sysDictKeySearchQuery = ref<SysDictVo>({})
 const sysDictValueSearchQuery = ref<SysDictVo>({})
+const proceedCode = ref(PROCEED_CODE.ADD)
+const loading = ref(false)
+const selectedKeys = ref()
+const pageQuery = reactive<PageQuery>({
+  current: 1,
+  limit: 10,
+})
+const columns = ref([
+  {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
+  {title: '字典值名', key: 'valueName', width: '200px'},
+  {title: '字典值', key: 'value', width: '200px'},
+  {title: '状态', key: 'status', width: '80px', customSlot: 'status'},
+  {title: '排序', width: '80px', key: 'orderNum', sort: 'asc'},
+  {title: '是否默认', width: '120px', key: 'isDefault', sort: 'desc', customSlot: 'isDefault'},
+  {title: '创建时间', width: '160px', key: 'createTime', sort: 'desc'},
+  {title: '备注', width: '160px', key: 'remark'},
+  {
+    title: '操作',
+    width: '150px',
+    customSlot: 'operator',
+    key: 'operator',
+    fixed: 'right'
+  }
+])
+const insertSysDictValueVo = ref<SysDictValueVo>({})
+const modifySysDictValueVo = ref<SysDictValueVo>({})
+const layFormRef11 = ref()
+const showSysDictValueSaveModalFlag = ref(false)
+const title = ref('新增')
+const insertSysDictKey = ref<SysDictKeyVo>({})
+const modifySysDictKey = ref<SysDictKeyVo>({})
+const editSysDictKey = ref<SysDictKeyVo>({})
+const layFormRef22 = ref()
+const sysDictKeyInsertModal = ref(false)
+const sysDictKeyModifyModal = ref(false)
+const modalTitle = ref('新建字典')
+const showImportSysDictValueFlag = ref(false)
+const importRoute = import.meta.env.VITE_APP_BASE_URL + "/"
+const fileList = ref([])
+/* VAR*/
 
+/* FUNCTION*/
 function toReset() {
   sysDictValueSearchQuery.value = {}
 }
@@ -382,90 +514,28 @@ function flushCache() {
 }
 
 function toSearch() {
+  if (!selectedNode.value.id) {
+    layer.msg('清先选择字典键', {icon: 3})
+    return;
+  }
+  sysDictValueSearchQuery.value.keyId = selectedNode.value.id
   pageQuery.current = 1
+  findPageSysDictValue(sysDictValueSearchQuery.value, pageQuery).then((res: any) => {
+    if (res.code === 200) {
+      sysDictValueList.value = res.rows;
+      pageQuery.total = res.total;
+      change()
+    }
+  })
 }
 
 async function searchSysDictKey() {
-  pageQuery.current = 1
   const {data} = await findSysDictKeyList(sysDictKeySearchQuery.value);
   sysDictKeyList.value = data;
   sysDictValueList.value = []
 }
 
-const dataSourceSex = ref([
-  {
-    id: '1',
-    name: '男',
-    nameValue: 1,
-    sort: 1,
-    joinTime: '2022-02-09',
-    status: true
-  },
-  {
-    id: '2',
-    name: '女',
-    nameValue: 2,
-    sort: 2,
-    joinTime: '2022-02-09',
-    status: true
-  }
-])
-const dataSourceOri = ref([
-  {
-    id: '1',
-    name: '公司',
-    nameValue: 1,
-    sort: 1,
-    joinTime: '2022-02-09'
-  },
-  {
-    id: '2',
-    name: '子公司',
-    nameValue: 2,
-    sort: 2,
-    joinTime: '2022-02-09',
-    status: true
-  },
-  {
-    id: '3',
-    name: '部门',
-    nameValue: 3,
-    sort: 3,
-    joinTime: '2022-02-09',
-    status: true
-  },
-  {
-    id: '4',
-    name: '小组',
-    nameValue: 4,
-    sort: 4,
-    joinTime: '2022-02-09',
-    status: true
-  }
-])
-const loading = ref(false)
-const selectedKeys = ref()
-const pageQuery = reactive<PageQuery>({
-  current: 1,
-  limit: 10,
-})
-const columns = ref([
-  {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '字典键', key: 'dictKey', width: '150px'},
-  {title: '字典值名', key: 'valueName', width: '200px'},
-  {title: '状态', key: 'status', width: '80px', customSlot: 'status'},
-  {title: '排序', width: '80px', key: 'orderNum', sort: 'desc'},
-  {title: '是否默认', width: '120px', key: 'isDefault', sort: 'desc', customSlot: 'isDefault'},
-  {title: '创建时间', width: '160px', key: 'createTime', sort: 'desc'},
-  {title: '备注', width: '160px', key: 'remark'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+/* FUNCTION*/
 const change = () => {
   loading.value = true
   setTimeout(() => {
@@ -501,35 +571,33 @@ const editModalChangeStatus = (isChecked: boolean, row: any) => {
 const remove = () => {
   layer.msg(selectedKeys.value, {area: '50%'})
 }
-
-const insertSysDictValueVo = ref<SysDictValueVo>({})
-const modifySysDictValueVo = ref<SysDictValueVo>({})
-const layFormRef11 = ref()
-const showSysDictValueSaveModalFlag = ref(false)
-const title = ref('新增')
 const showSysDictValueSaveModal = (text: any, row: SysDictValueEntity) => {
   if (selectedNode.value.id) {
     title.value = text
     if (row) {
       // 编辑操作
-      insertSysDictValueVo.value = {
-        id: row.id,
-        keyId: selectedNode.value.id,
-        dictKey: selectedNode.value.dictKey,
-        valueName: row.valueName,
-        value: row.value,
-        orderNum: row.orderNum,
-        isDefault: row.isDefault,
-        status: row.status,
-        remark: row.remark,
-        cssStyle: row.cssStyle
-      }
+      proceedCode.value = PROCEED_CODE.UPDATE
+      insertSysDictValueVo.value.id = row.id
+      insertSysDictValueVo.value.keyId = selectedNode.value.id
+      insertSysDictValueVo.value.dictKey = selectedNode.value.dictKey
+      insertSysDictValueVo.value.valueName = row.valueName
+      insertSysDictValueVo.value.value = row.value
+      insertSysDictValueVo.value.orderNum = row.orderNum
+      insertSysDictValueVo.value.isDefault = row.isDefault
+      insertSysDictValueVo.value.status = row.status
+      insertSysDictValueVo.value.remark = row.remark
+      insertSysDictValueVo.value.cssStyle = row.cssStyle
     } else {
+      proceedCode.value = PROCEED_CODE.ADD
       // 新增操作
-      insertSysDictValueVo.value = {
-        keyId: selectedNode.value.id,
-        dictKey: selectedNode.value.dictKey,
-      }
+      insertSysDictValueVo.value = {}
+      insertSysDictValueVo.value.keyId = selectedNode.value.id
+      insertSysDictValueVo.value.dictKey = selectedNode.value.dictKey
+      findMaxOrderNumByKeyId(insertSysDictValueVo.value.keyId).then((res: any) => {
+        if (res.code === 200) {
+          insertSysDictValueVo.value.orderNum = res.data
+        }
+      })
     }
     showSysDictValueSaveModalFlag.value = !showSysDictValueSaveModalFlag.value
   }
@@ -596,7 +664,6 @@ function toRemove() {
 function toEnable() {
   if (selectedKeys.value.length == 0) {
     layer.msg('您未选择数据，请先选择要启用/禁用的字典项', {icon: 3, time: 2000})
-    return
   }
   layer.confirm('您将启用/禁用所有选中的字典项？', {
     title: '提示',
@@ -692,13 +759,29 @@ function cancel() {
   layer.msg('您已取消操作')
 }
 
-const insertSysDictKey = ref<SysDictKeyVo>({})
-const modifySysDictKey = ref<SysDictKeyVo>({})
-const editSysDictKey = ref<SysDictKeyVo>({})
-const layFormRef22 = ref()
-const sysDictKeyInsertModal = ref(false)
-const sysDictKeyModifyModal = ref(false)
-const modalTitle = ref('新建字典')
+function toImportSysDictValue() {
+  showImportSysDictValueFlag.value = !showImportSysDictValueFlag.value
+}
+
+function confirmImportSysDictValue() {
+  if (!fileList.value || fileList.value.length < 1) {
+    layer.confirm('清选择文件', {icon: 3})
+    return;
+  }
+  if (!selectedNode.value.dictKey) {
+    layer.confirm('清先选择字典键', {icon: 3})
+    return;
+  }
+  importSysDictValue(fileList.value, selectedNode.value.dictKey, selectedNode.value.id).then((res: any) => {
+    if (res.code === 200) {
+      layer.msg(res.msg, {icon: 1})
+      fileList.value = []
+      showImportSysDictValueFlag.value = !showImportSysDictValueFlag.value
+    }
+  })
+}
+
+/* FUNCTION*/
 </script>
 
 <style scoped>

@@ -11,6 +11,9 @@ import {MenuPermission} from "./types/Permission";
 import {JSEncrypt} from "encryptlong";
 import {getPublicKey, wrapEncryptPub2} from "./api/Crypt";
 import {useCryptStore} from "./store/crypt";
+import 'virtual:svg-icons-register'
+import SvgIcon from "./views/component/svg/SvgIcon.vue";
+// 导入 svgIcon
 
 /**
  * 大坑，如果缺失src前的/，则会造成加载图片失败
@@ -26,6 +29,8 @@ app.use(Router);
 app.component("DictTag", DictTag)
 app.component("DictScan", DictScan)
 app.component("InnerLink", InnerLink)
+app.component('SvgIcon', SvgIcon);
+
 
 app.directive("permission", permission);
 app.directive("role", role);

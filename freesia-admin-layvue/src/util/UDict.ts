@@ -29,7 +29,15 @@ export enum Constants {
     /**
      * 租户类型
      */
-    SYS_TENANT_TYPE = "SYS_TENANT_TYPE"
+    SYS_TENANT_TYPE = "SYS_TENANT_TYPE",
+    /**
+     * 开支标识
+     */
+    PAYMENT_SIGN = "PAYMENT_SIGN",
+    /**
+     * 启用标识
+     */
+    ENABLED_STATUS = "ENABLED_STATUS",
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {
@@ -90,11 +98,12 @@ export function isMatchDictValue(list: Array<SysDictValueEntity>, value: string)
 export const sysDictValueSelect = async (list: Array<SysDictValueEntity>): Promise<any[]> => {
     let sysDictValueSelect: any[] = [];
     if (list && list.length > 0) {
-        list?.forEach(sysMenuType => {
+        list?.forEach(sysDictValueEntity => {
             let obj = {
-                label: sysMenuType.valueName,
-                value: sysMenuType.value,
-                disabled: sysMenuType.status === Flag.DISABLED
+                label: sysDictValueEntity.valueName,
+                value: sysDictValueEntity.value,
+                disabled: sysDictValueEntity.status === Flag.DISABLED,
+                isDefault: sysDictValueEntity.isDefault
             }
             sysDictValueSelect.push(obj)
         })
