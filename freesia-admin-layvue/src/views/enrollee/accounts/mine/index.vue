@@ -1,7 +1,7 @@
 <template>
   <lay-container class="role-box" fluid="true">
     <lay-card>
-      <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
+      <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch" :model="searchQuery">
         <lay-row>
           <lay-col :md="6">
             <lay-form-item label="开销描述">
@@ -55,7 +55,6 @@
           :default-toolbar="true"
           :loading="loading"
           :page="pageQuery"
-          class="table-box table-style"
           @change="change"
           @sortChange="sortChange">
         <template #remark="{ row }">
@@ -79,7 +78,7 @@
           >
             查询
           </lay-button>
-          <lay-button size="sm" @click="toReset"> 重置</lay-button>
+          <lay-button size="sm" @click="queryFormReset()"> 重置</lay-button>
           <lay-button
               v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_ADD]"
               size="sm"
@@ -126,7 +125,7 @@
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
+        <lay-form :ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
               <lay-form-item label="开销描述" prop="costDesc" required>
@@ -557,6 +556,11 @@ function doExport() {
       showAccountsExportModalFlag.value = !showAccountsExportModalFlag.value
     }
   })
+}
+
+function queryFormReset() {
+  searchQuery.value = {}
+  searchQuery.value.paymentTimeRange = buildRange(7)
 }
 
 /* FUNCTION*/

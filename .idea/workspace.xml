@@ -4,23 +4,43 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e2c6d0f8-ce5a-4d64-8271-538fe39fc371" name="Default Changelist" comment="【新增、修改】Evad 1. 记账看板-折线图开发">
-      <change afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/entity/EchartCalendarOptionEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/FindCostSumCalendarNearYearEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/vo/FindCostSumCalendarNeaerYearVo.java" afterDir="false" />
+    <list default="true" id="e2c6d0f8-ce5a-4d64-8271-538fe39fc371" name="Default Changelist" comment="【新增】Evad 1. 记账看板-日历图开发">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/Account.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/types/account/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/types/account/Account.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/mapper/AccountCostMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/mapper/AccountCostMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/AccountCostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/AccountCostService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-cache/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-cache/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-crypt/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-crypt/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-desensitization/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-desensitization/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-doc/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-doc/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-framework/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-framework/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-idempotent/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-idempotent/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-jdbc/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-jdbc/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-json/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-json/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-log/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-log/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-mail/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-mail/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-net/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-net/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-oss/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-oss/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-redis/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-redis/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-satoken/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-satoken/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-sse/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-sse/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-tenant/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-tenant/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-validation/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-validation/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/freesia-web-account.iml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/freesia-web-account.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-app/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-app/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-app/src/main/java/com/freesia/FreesiaAdminApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-app/src/main/java/com/freesia/FreesiaAdminApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-framework/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-framework/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +142,7 @@
     <property name="project.structure.proportion" value="0.22444679" />
     <property name="project.structure.side.proportion" value="0.21494102" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
     <property name="ts.external.directory.path" value="D:\Mine\Maven\freesia\freesia-admin-layvue\node_modules\typescript\lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -153,6 +173,13 @@
       <recent name="com.freesia.handler" />
     </key>
   </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn release:prepare" />
+      <command value="mvn versions:set -DnewVersion=1.0.1" />
+      <command value="mvn versions:set -DnewVersion=1.0.1 clean install" />
+    </option>
+  </component>
   <component name="RunDashboard">
     <option name="configurationTypes">
       <set>
@@ -170,6 +197,17 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -507,13 +545,8 @@
       <workItem from="1737951056973" duration="5030000" />
       <workItem from="1737994010042" duration="2639000" />
       <workItem from="1738037505512" duration="3968000" />
-    </task>
-    <task id="LOCAL-00001" summary="【修改】Evad 1. 重装后测试">
-      <created>1712368899486</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1712368899486</updated>
+      <workItem from="1738469196637" duration="1302000" />
+      <workItem from="1738581422181" duration="5842000" />
     </task>
     <task id="LOCAL-00002" summary="【修改】Evad 1.前端问题修复">
       <created>1712576909815</created>
@@ -851,7 +884,14 @@
       <option name="project" value="LOCAL" />
       <updated>1737794425485</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="【新增】Evad 1. 记账看板-日历图开发">
+      <created>1738469264164</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1738469264164</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TerminalProjectNonSharedOptionsProvider">
@@ -886,7 +926,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="【修改】Evad 1. 子页中返回按钮位置固定" />
     <MESSAGE value="【修改】Evad 1. 对象关系重组" />
     <MESSAGE value="【新增】Evad 1. 添加注解记录操作日志功能" />
     <MESSAGE value="【修改】Evad 1. 修改中间表关系代码重构 2. 前端优化" />
@@ -911,7 +950,8 @@
     <MESSAGE value="【新增】Evad 1. 添加记账功能" />
     <MESSAGE value="【新增、修改】Evad 1. 添加增量同步功能 2. 改造用户导入功能" />
     <MESSAGE value="【新增、修改】Evad 1. 记账看板-折线图开发" />
-    <option name="LAST_COMMIT_MESSAGE" value="【新增、修改】Evad 1. 记账看板-折线图开发" />
+    <MESSAGE value="【新增】Evad 1. 记账看板-日历图开发" />
+    <option name="LAST_COMMIT_MESSAGE" value="【新增】Evad 1. 记账看板-日历图开发" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
