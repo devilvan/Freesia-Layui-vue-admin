@@ -88,7 +88,7 @@ public class EncryptReturnValueHandler implements HandlerMethodReturnValueHandle
         } else if (returnValue instanceof Character) {
             encrypt = UCrypt.aesEncrypt(Character.toString((Character) returnValue));
         } else if (returnValue instanceof Object[]) {
-            encrypt = Arrays.toString((Object[]) returnValue);
+            encrypt = UCrypt.aesEncrypt(Arrays.toString((Object[]) returnValue));
         } else {
             encrypt = UCrypt.aesEncrypt(JSONObject.toJSONString(returnValue));
         }

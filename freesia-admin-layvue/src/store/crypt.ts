@@ -37,7 +37,7 @@ export const useCryptStore = defineStore({
                 app.config.globalProperties.$decryptedData(this.pri2, decodeURI(this.aes))
             ), {
                 mode: CryptoJS.mode.ECB,
-                padding: CryptoJS.pad.ZeroPadding,
+                padding: CryptoJS.pad.Pkcs7,
             }).toString();
         },
         async decryptAes(data: string) {
@@ -45,7 +45,7 @@ export const useCryptStore = defineStore({
                 app.config.globalProperties.$decryptedData(this.pri2, decodeURI(this.aes))
             ), {
                 mode: CryptoJS.mode.ECB,
-                padding: CryptoJS.pad.ZeroPadding,
+                padding: CryptoJS.pad.Pkcs7,
             });
             return CryptoJS.enc.Utf8.stringify(decrypt);
         }

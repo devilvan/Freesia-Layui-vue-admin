@@ -16,8 +16,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -45,37 +43,10 @@ public class UCrypt {
      */
     private static void initAes() {
         if (UEmpty.isEmpty(KEY)) {
-            throw new CryptException("crypt.aes.key.required", new Object[] {});
+            throw new CryptException("crypt.aes.key.required", new Object[]{});
         }
 //        System.out.println("AES KEY：" + key);
-        aes = new AES(Mode.ECB, Padding.ZeroPadding, KEY.getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * BASE64解密AES key
-     *
-     * @return 解密后明文
-     */
-    private static String decodeAesKey() {
-        return Base64.decodeStr(KEY);
-    }
-
-
-    /**
-     * 没有AES key时，执行该方法获取AES Key，并添加到成员变量{@link UCrypt#KEY} 中
-     *
-     * @param key 加密前明文
-     * @return 生成的AES key
-     */
-    private static String buildAesKey(String key) {
-        if (UEmpty.isEmpty(key)) {
-            throw new CryptException("crypt.aes.key.required", new Object[] {});
-        }
-        //随机生成密钥
-        final SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), ALGORITHM);
-        //转成字符串
-        final SecretKey secretKey = SecureUtil.generateKey(PADDING, keySpec);
-        return Base64.encodeStr(secretKey.getEncoded(), false, false);
+        aes = new AES(Mode.ECB, Padding.PKCS5Padding, KEY.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -158,9 +129,10 @@ public class UCrypt {
 //        System.out.println(encryptBase64);
         String base64 =
 //                "b6Gzu7Y+opaihJ0raRLwLViEGz6kDtyYzudQ4TniLgYNxVP5pcs0wQZHTAgiB+ZJM/xexrsJrxXSpF43DhyiyoRqtHTx1DyIZzZ3G4cOX5gr6/7ZFlF2EvpjUumb0lZpRGzU/OAh34VrlnC6Yejfr6xoGyRR65ilGQI781Whhy08fVXHZrHF3/7ZG+/jpHQoHXsjfaXUGiP61bPw1aMduORsmVopx13dgWjcSuDwVoi3nNF9upRN5o446bb9A+2ZbbVavtmXskG1OELY7jI8IKfgm6KUp0c9xyGUf+g3S13QLWFuAL32q5me5NgjPpnXWF4eWRpjphxSZGY16i8eiExJ3Cd19s3dDfX7LQ/XwQpx1qIohQGlkSi1cx0ktp+lXKdeoyVtIPuRELVUbBrMNnzjgCodSIaIrSw/smlYSkjQCfMoy81vsl5Rm0DDSHK5yelxl0+3lk/lOrsjyOQ8Aect3VxnrdcnB2+/b8gFMSMk6Yt5SA+X7L7wztJGUjGKP/7TGokDa13yEQwe5na/cH4vzo+L9hFiVfOOhYL49MSvu8vYv+YfEfZ688chiCvRoq4YJdSrikDhVon8mvSD6lDIkf14Dd3cxCiz9HNIA65ZwoHbnhrWIKTjetqc2yFD7ozInTDZNskEd15ZqTcoSNv+QCJtV4kn8J6zsCfR+IQ7RQzTefoYU7vELD94tOi4BxyftH3tgljWrx4mIWrp2KtPbGiG3CqfmQzyJLZo1djtU3oqLw9d2AgGdY/HXyUCBTlJMuvFRDiXt521iVZZPQ==";
-                "b6Gzu7Y+opaihJ0raRLwLViEGz6kDtyYzudQ4TniLgbT78YTAYQsBskpdQ1o/ubKR+mW4PSpNlhVCWfgllfL89nUYQRr3q0f3cwFxD1mlERgA9Le50r/MV6vhynRFRTH4jS/PFBJeyGGziWkmDJmOMSMODfOTXMcxzcajP47qze7MQes4z/7Szh8qXVVD+OjJU4dkat286EX+1s0NiMNW3BMCRqzs7MJ0ef5OM+njkYiBeNQ7dERWDzg0vwsNPo0pra/grLi+IdwRmRPc6Ruw5IQFrEzVUrl0FNCJhs22dloVmi8HGpKTer4Ngyh9tU6tjIXzCKfwp925jnOxAvPUVS4XK5x7NKRonq9G5Tiv1fwWgxoF2LpaWOitRVLiTKa4UTXalxkCq5Ls7l4XOTg4DOEWYlI343/DKG5k7YAVK53LmOMh4jFEVVubFpsWfrVmXa4DLZySc+6BpIQNv8nOuzIyCLvyIImr1/tBpd+l7sJGLRY9KPxZKUo1wCtl4d/BwyukjwQ0f+U3HHCX1MY7RVk3CLaazCdE5l3wvy/Sk7nsZM136IYrx+STcrb68WHL0+nivwXxLIWBlrWsnF9jIRFZd5TRJca7F1nHae5me7auE/s6DPTQkh1RtFriD0/UYphN9gU5mhtBvjxR+CKmg==";
-//        final String aesDesEncrypt = aesDecrypt(base64);
-//        System.out.println(aesDesEncrypt);
+//                "b6Gzu7Y+opaihJ0raRLwLViEGz6kDtyYzudQ4TniLgbT78YTAYQsBskpdQ1o/ubKR+mW4PSpNlhVCWfgllfL89nUYQRr3q0f3cwFxD1mlERgA9Le50r/MV6vhynRFRTH4jS/PFBJeyGGziWkmDJmOMSMODfOTXMcxzcajP47qze7MQes4z/7Szh8qXVVD+OjJU4dkat286EX+1s0NiMNW3BMCRqzs7MJ0ef5OM+njkYiBeNQ7dERWDzg0vwsNPo0pra/grLi+IdwRmRPc6Ruw5IQFrEzVUrl0FNCJhs22dloVmi8HGpKTer4Ngyh9tU6tjIXzCKfwp925jnOxAvPUVS4XK5x7NKRonq9G5Tiv1fwWgxoF2LpaWOitRVLiTKa4UTXalxkCq5Ls7l4XOTg4DOEWYlI343/DKG5k7YAVK53LmOMh4jFEVVubFpsWfrVmXa4DLZySc+6BpIQNv8nOuzIyCLvyIImr1/tBpd+l7sJGLRY9KPxZKUo1wCtl4d/BwyukjwQ0f+U3HHCX1MY7RVk3CLaazCdE5l3wvy/Sk7nsZM136IYrx+STcrb68WHL0+nivwXxLIWBlrWsnF9jIRFZd5TRJca7F1nHae5me7auE/s6DPTQkh1RtFriD0/UYphN9gU5mhtBvjxR+CKmg==";
+                "b6Gzu7Y+opaihJ0raRLwLc4u6Rxkgzm5RouLL4PAm5C1Ow7SSAn4YiYrwbr9e8V35cNYEVtdLxJqlap59BDd+MLZVTojAKB349AXwywmtjY3ZHkB4Ulv6LZse/2xwow10dAEzPCOaT384/hc3rUuLIn963smJ3mzne2Ijb/AapDvbZI8anSZrGQgPTzkjv69/vzgn7j0/CH65GrbTALXApa7mTE+ZbJmK15bZuhyyf5GQCrBSNqMHzGv2ryq7gPiLzPPWegqc81tj2h/BAXd723yBJREktCkNUfFwI348k8Jg5+TTYAs6vBkW8mNsibXesq5faXkxNiLD0aR0fe/LuA2AqZWt67/H8k1juT6kM8bNX2UjTvR9urKvKBDIctN12sDF2VO2wWL9n0xxfJ0EYy4bqNIiVqhwekY3f98FhZG3rw+QPwRMw3isELVjAQov2LfgRmGb/uX3KRqvGLvz5edHNwifrI2iiADXenzZPnmH6qCoe1dtmA8v2+pua2yN/YiSM51Qxa9x4Wh9VrfTqgBjIHrn/j4S52nQl3t0Wcc3qQ76XCLlXoUeczELqIyC+Cf0ZplKeucO2eYkF4ZbJ4c/Tt0+/6RcBJNafL+HJp/CH3T3Chr/2EoN1b1Ixl7TgVdCjqdX+JctwEA4piyDaMfvX34DWEf8pjumH6Gqn9XJPLFn7+eafOxnYATo5Yrd/Pp5n+/K9D/sdIZsk4ZASdkHlm/wA9oo+9N5mD8/dj4o/WfsRo97qq9jMu3XqibQ1B0BXdYPR/JQDBuHpG10gccn7R97YJY1q8eJiFq6dirT2xohtwqn5kM8iS2aNXY7VN6Ki8PXdgIBnWPx18lAot13nZKKqC63xIT5C24QWM=";
+        final String aesDesEncrypt = aesDecrypt(base64);
+        System.out.println(aesDesEncrypt);
 
 
         String aesKey = "KysrKytqamtrbGw7JzEyMw==";

@@ -51,6 +51,7 @@ declare module '@vue/runtime-core' {
     LayTag: typeof import('@layui/layui-vue')['LayTag']
     LayTextarea: typeof import('@layui/layui-vue')['LayTextarea']
     LayTooltip: typeof import('@layui/layui-vue')['LayTooltip']
+    LayTree: typeof import('@layui/layui-vue')['LayTree']
     LayUpload: typeof import('@layui/layui-vue')['LayUpload']
     LayWatermark: typeof import('@layui/layui-vue')['LayWatermark']
     RouterLink: typeof import('vue-router')['RouterLink']
