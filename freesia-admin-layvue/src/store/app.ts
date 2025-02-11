@@ -4,7 +4,6 @@ export const useAppStore = defineStore({
     id: 'app',
     state: () => {
         return {
-            title: import.meta.env.VITE_APP_TITLE,
             tab: true,
             logo: true,
             level: true,
@@ -33,6 +32,6 @@ export const useAppStore = defineStore({
     },
     persist: {
         storage: localStorage,
-        paths: ['title', 'tab', 'locale', 'theme', 'logo', 'level', 'inverted', 'breadcrumb', 'sideTheme', 'greyMode', 'accordion', 'themeVariable', 'subfield', 'tagsTheme', 'currentTenant'],
+        paths: ['tab', 'locale', 'theme', 'logo', 'level', 'inverted', 'breadcrumb', 'sideTheme', 'greyMode', 'accordion', 'themeVariable', 'subfield', 'tagsTheme', 'currentTenant'],
     }
 })

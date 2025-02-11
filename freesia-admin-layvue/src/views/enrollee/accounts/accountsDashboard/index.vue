@@ -28,9 +28,9 @@
               <lay-form :model="FindCostSumCalendarNearYearQueryVo" ref="findCostSumCalendarNearYearQueryRef"
                         label-position="left">
               </lay-form>
+              <div ref="costSumCalendarNearYearRef" style="height: 500px"></div>
             </lay-col>
           </lay-row>
-          <div ref="costSumCalendarNearYearRef" style="height: 500px"></div>
         </lay-card>
       </lay-col>
       <lay-col md="16" sm="16" xs="24">
@@ -749,7 +749,7 @@ function doFindCostSumCalendarNearYear() {
         calendar: [
           {
             top: 120,
-            left: 0,
+            left: 20,
             range: data.range,
             cellSize: ['auto', 20],
             dayLabel: {

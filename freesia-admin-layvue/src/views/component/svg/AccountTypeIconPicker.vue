@@ -9,7 +9,7 @@
   </ul>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 
@@ -27,14 +27,14 @@ const props = defineProps({
 const emit = defineEmits(['callBack']);
 
 const accountIconNameGlob = import.meta.glob("../../../assets/svgIcon/*.svg")
-const accountIconNameList = ref([])
+const accountIconNameList = ref<string[]>([])
 onMounted(() => {
   for (let accountIconName in accountIconNameGlob) {
     accountIconNameList.value.push(accountIconName.substring(accountIconName.lastIndexOf("/") + 1, accountIconName.lastIndexOf(".")))
   }
 })
 
-function selectIcon(layIcon) {
+function selectIcon(layIcon: any) {
   emit('callBack', layIcon);
   console.log("传值给父组件");
 }

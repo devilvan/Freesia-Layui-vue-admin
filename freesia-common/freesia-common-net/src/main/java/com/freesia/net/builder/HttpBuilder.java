@@ -87,7 +87,7 @@ public class HttpBuilder {
      */
     public final <T> HttpBuilder setHttpRequest(RequestMethod requestMethod, String url, T param) {
         this.httpRequest = Optional.ofNullable(requestMethod2HttpRequestBase(requestMethod, url))
-                .orElseThrow(() -> new HttpClientException("请求类型格式有误！", new Object[]{}));
+                .orElseThrow(() -> new HttpClientException("request.type.invalid", new Object[]{}));
         this.checkSetHttpParam(requestMethod).accept(param);
         return this;
     }
