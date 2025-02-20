@@ -22,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -105,7 +106,8 @@ public class UserImportListener<T extends BaseImportEntity> extends BaseImportEn
             sysUserDto.setGender("U");
         }
         if (UEmpty.isNotEmpty(sysUserImportEntity.getUserType())) {
-            final UserType userType = UserType.getInstanceByKey(sysUserImportEntity.getUserType());
+            UserType userType = UserType.getInstanceByKey(sysUserImportEntity.getUserType());
+            userType = Optional.ofNullable(userType).orElse(UserType.SYS_USER);
             sysUserDto.setUserType(userType.getUserType());
         } else {
             sysUserDto.setUserType(UserType.SYS_USER.getUserType());

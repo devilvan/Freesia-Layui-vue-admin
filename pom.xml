@@ -32,7 +32,7 @@
         <druid.version>1.1.16</druid.version>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <logback-core.version>1.2.3</logback-core.version>
-        <fastjson.version>2.0.40</fastjson.version>
+        <fastjson.version>2.0.50</fastjson.version>
         <hutool.version>5.8.18</hutool.version>
         <jsoup.verison>1.11.3</jsoup.verison>
         <redisson.version>3.17.3</redisson.version>

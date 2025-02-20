@@ -159,7 +159,7 @@ public class SysUserController extends BaseController {
     @GetMapping(value = "findEditUserById")
     @SaCheckPermission(value = MenuPermission.SYSTEM_USER_EDIT)
     public R<SysUserDto> findEditUserById(@NotEmpty(message = "{not.null}") @RequestParam String id) {
-        final SysUserDto sysUserDto = sysUserService.findUserById(Long.valueOf(id));
+        SysUserDto sysUserDto = sysUserService.findUserById(Long.valueOf(id));
         return R.ok(sysUserDto);
     }
 
