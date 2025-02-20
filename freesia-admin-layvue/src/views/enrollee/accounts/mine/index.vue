@@ -274,7 +274,6 @@ import {Operate} from "../../../../types/Constants";
 import {AccountCostEntity, AccountCostVo, PaymentSign} from "@/types/account/Account";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {List} from "echarts";
 import {buildRange, defaultShortcuts, singleShortcuts} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
