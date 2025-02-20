@@ -5,11 +5,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
@@ -30,6 +31,8 @@ import java.util.Set;
 @TableName(value = "SYS_ROLE")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_ROLE")
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "角色信息表 映射")
@@ -44,9 +47,9 @@ public class SysRolePo extends BasePo implements Serializable {
     @TableField(value = "ROLE_KEY")
     @Column(name = "ROLE_KEY", columnDefinition = "VARCHAR(100) NOT NULL COMMENT '角色权限字符串'")
     private String roleKey;
-    @Schema(description = "角色状态（0正常 1停用）")
+    @Schema(description = "角色状态（0-停用，1-正常）")
     @TableField(value = "STATUS")
-    @Column(name = "STATUS", columnDefinition = "CHAR(1) NOT NULL COMMENT '角色状态（0正常 1停用）'")
+    @Column(name = "STATUS", columnDefinition = "CHAR(1) NOT NULL COMMENT '角色状态（0-停用，1-正常）'")
     private String status;
     @Schema(description = "显示顺序")
     @TableField(value = "ORDER_NUM")
@@ -73,7 +76,7 @@ public class SysRolePo extends BasePo implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @ManyToMany(targetEntity = SysUserPo.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity = SysUserPo.class, fetch = FetchType.LAZY)
     @JoinTable(name = "SYS_USER_ROLE",
             joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")})
@@ -88,6 +91,8 @@ public class SysRolePo extends BasePo implements Serializable {
     @JoinTable(name = "SYS_ROLE_DEPT",
             joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "DEPT_ID", referencedColumnName = "ID")})
+    @Fetch(value = FetchMode.SUBSELECT)
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<SysDeptPo> sysDeptPoSet;
     @Schema(description = "角色对应的菜单")
     @ToString.Exclude
@@ -101,10 +106,31 @@ public class SysRolePo extends BasePo implements Serializable {
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<SysMenuPo> sysMenuPoSet;
 
-    @Schema(description = "菜单在菜单-角色关系表中的数据")
+    /**
+     * role控制role-menu关联
+     */
+    @Schema(description = "角色在菜单-角色关系表中的数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
     @OneToMany(targetEntity = SysRoleMenuPo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysRoleMenuPo> sysRoleMenuPoSet = new HashSet<>(0);
+    /**
+     * user控制user-role关联
+     */
+    @Schema(description = "角色在用户-角色关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
+    /**
+     * role控制role-dept关联
+     */
+    @Schema(description = "角色在角色-部门关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysRoleDeptPo.class, mappedBy = "sysRolePo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysRoleDeptPo> sysRoleDeptPoSet = new HashSet<>(0);
 }

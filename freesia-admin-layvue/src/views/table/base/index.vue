@@ -8,21 +8,21 @@
               <lay-col :md="6">
                 <lay-form-item label="账号：" label-width="50">
                   <lay-input
-                    v-model="searchAccount"
-                    style="width: 90%"
+                      v-model="searchAccount"
+                      style="width: 90%"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
                 <lay-form-item label="邮箱：" label-width="50">
                   <lay-input
-                    v-model="searchEmail"
-                    style="width: 90%"
+                      v-model="searchEmail"
+                      style="width: 90%"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
-                <lay-form-item label-width="0">
+                <lay-form-item>
                   <lay-button type="primary" @click="toSearch">查询</lay-button>
                   <lay-button @click="toReset">重置</lay-button>
                 </lay-form-item>
@@ -34,13 +34,13 @@
       <lay-col :md="24">
         <lay-card>
           <lay-table
-            :page="page"
-            :columns="columns"
-            :dataSource="dataSource"
-            :default-toolbar="defaultToolbar"
-            v-model:selectedKeys="selectedKeys"
-            @row="rowClick"
-            @change="change"
+              v-model:selectedKeys="selectedKeys"
+              :columns="columns"
+              :dataSource="dataSource"
+              :default-toolbar="defaultToolbar"
+              :page="page"
+              @change="change"
+              @row="rowClick"
           >
             <template v-slot:toolbar>
               <lay-button size="sm" type="primary">新增</lay-button>
@@ -67,15 +67,16 @@
 </template>
 
 <script lang="ts">
-import { ref, watch } from 'vue'
-import { layer } from '@layui/layer-vue'
+import {ref} from 'vue'
+import {layer} from '@layui/layer-vue'
 
 export default {
+  name: 'Base',
   setup() {
     const selectedKeys = ref(['1'])
     const checkbox = ref(true)
     const defaultToolbar = ref(true)
-    const page = ref({ total: 100, limit: 10, current: 2 })
+    const page = ref({total: 100, limit: 10, current: 2})
 
     const columns = [
       {
@@ -195,18 +196,23 @@ export default {
       }
     ]
 
-    const rowClick = function (data: any) {}
+    const rowClick = function (data: any) {
+    }
 
-    const rowDoubleClick = function (data: any) {}
+    const rowDoubleClick = function (data: any) {
+    }
 
-    const change = function ({ current, limit }: any) {
+    const change = function ({current, limit}: any) {
       layer.msg('current:' + current + ' limit:' + limit)
     }
+
     function toSearch() {
-      layer.load(2, { time: 3000 })
+      layer.load(2, {time: 3000})
     }
+
     const searchAccount = ref('')
     const searchEmail = ref('')
+
     function toReset() {
       searchAccount.value = ''
       searchEmail.value = ''

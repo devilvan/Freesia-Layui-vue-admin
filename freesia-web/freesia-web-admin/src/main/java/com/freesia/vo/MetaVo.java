@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@Schema(description = "路由器显示信息 值对象")
 public class MetaVo {
     @Schema(description = "设置该路由在侧边栏和面包屑中展示的名字")
     private String title;

@@ -1,7 +1,9 @@
 import Login from '../../views/login/index.vue'
 import BaseLayout from "../../layouts/BaseLayout.vue";
+import ErrorCode from "../../views/error/ErrorCode.vue";
+import {MenuPermission} from "../../types/Permission";
 
-const modules = import.meta.glob('./../../views/**/*.vue')
+// const modules = import.meta.glob('./../../views/**/*.vue')
 
 export const constantRoutes = [
     {
@@ -14,68 +16,93 @@ export const constantRoutes = [
         meta: {title: '登录页面'},
     },
     {
+        path: '/workSpace',
+        redirect: '/workSpace/workbench/index',
+        component: BaseLayout,
+        meta: {title: '工作空间'},
+    },
+    {
+        path: '/error/:code',
+        component: ErrorCode,
+        meta: {title: '错误页面'},
+    },
+    {
         path: "/:pathMatch(.*)*",
         component: () => import('@/views/error/404.vue'),
         hidden: true
     },
+
+]
+
+export const dynamicRoutes = [
     {
-        path: '/workSpace',
-        redirect: '/workSpace/workbench',
+        path: '/system/user',
         component: BaseLayout,
-        meta: {title: '工作空间'},
+        hidden: true,
+        permissions: [MenuPermission.SYSTEM_USER_ASSIGN_ROLE],
         children: [
             {
-                name: 'Workbench',
-                path: '/workSpace/workbench',
-                component: () => import('@/views/workSpace/workbench/index.vue'),
-                // closable默认为false，true为不可关闭状态
-                meta: {title: '工作台', requireAuth: true, affix: true, closable: true},
-            },
-            {
-                path: '/workSpace/console',
-                component: () => import('@/views/workSpace/console/index.vue'),
-                meta: {title: '控制台', requireAuth: true},
-            },
-            {
-                path: '/workSpace/analysis',
-                component: () => import('@/views/workSpace/analysis/index.vue'),
-                meta: {title: '分析页', requireAuth: true},
-            },
-            {
-                path: '/workSpace/monitor',
-                component: () => import('@/views/workSpace/monitor/index.vue'),
-                meta: {title: '监控页', requireAuth: true},
+                path: 'assignRole/:userId(\\d+)',
+                component: () => import('@/views/system/user/assignRole.vue'),
+                name: 'AssignRole',
+                meta: {title: '分配角色', affix: false, cache: false, closable: true}
             }
         ]
     },
     {
-        path: '/error',
+        path: '/system/role',
         component: BaseLayout,
-        meta: {title: '错误页面'},
+        hidden: true,
+        permissions: [MenuPermission.SYSTEM_ROLE_ASSIGN_USER_EDIT],
         children: [
             {
-                path: '/error/401',
-                component: () => import('@/views/error/401.vue'),
-                meta: {title: '401'},
-            },
-            {
-                path: '/error/403',
-                component: () => import('@/views/error/403.vue'),
-                meta: {title: '403'},
-            },
-            {
-                path: '/error/404',
-                component: () => import('@/views/error/404.vue'),
-                meta: {title: '404'},
-            },
-            {
-                path: '/error/500',
-                component: () => import('@/views/error/500.vue'),
-                meta: {title: '500'},
+                path: 'assignUser/:roleId(\\d+)',
+                component: () => import('@/views/system/role/assignUser.vue'),
+                name: 'AssignUser',
+                meta: {title: '分配用户', affix: false, cache: false, closable: true}
             }
         ]
-    }
-
+    },
+    {
+        path: '/system/role',
+        component: BaseLayout,
+        hidden: true,
+        permissions: [MenuPermission.SYSTEM_ROLE_ASSIGN_BUTTON_EDIT],
+        children: [
+            {
+                path: 'assignButton/:roleId(\\d+)',
+                component: () => import('@/views/system/role/assignButton.vue'),
+                name: 'AssignButton',
+                meta: {title: '分配按钮权限', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
+    {
+        path: '/system/tenant',
+        component: BaseLayout,
+        hidden: true,
+        permissions: [MenuPermission.SYSTEM_TENANT_ASSIGN_USER],
+        children: [
+            {
+                path: 'assignUser/:tenantId(\\d+)',
+                component: () => import('@/views/system/tenant/assignUser.vue'),
+                name: 'TenantAssignUser',
+                meta: {title: '分配用户', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
+    {
+        path: '/system/dept',
+        component: BaseLayout,
+        hidden: true,
+        permissions: [MenuPermission.SYSTEM_DEPT_ASSIGN_ROLE],
+        children: [
+            {
+                path: 'assignRole/:deptId(\\d+)',
+                component: () => import('@/views/system/dept/assignRole.vue'),
+                name: 'DeptAssignRole',
+                meta: {title: '分配用户', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
 ]
-
-export const dynamicRoutes = []

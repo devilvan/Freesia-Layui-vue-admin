@@ -1,5 +1,6 @@
 package com.freesia.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,8 +22,11 @@ public class SysDictKeyDto extends BaseDto {
     private String keyName;
     @Schema(description = "字典键")
     private String dictKey;
-    @Schema(description = "状态 0-启用 1-禁用")
+    @Schema(description = "状态（0-禁用，1-启用）")
     private String status;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "根据字典键或字典键名查询键")
+    @JSONField(alternateNames = {"keyNameOrDictKey"})
+    private String keyNameOrDictKey;
 }

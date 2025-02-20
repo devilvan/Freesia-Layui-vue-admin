@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serial;
@@ -28,6 +30,8 @@ import java.util.Set;
 @TableName(value = "SYS_USER")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_USER")
 @Schema(description = "用户信息表 映射")
 public class SysUserPo extends BasePo implements Serializable {
@@ -69,9 +73,9 @@ public class SysUserPo extends BasePo implements Serializable {
     @TableField(value = "PASSWORD")
     @Column(name = "PASSWORD", columnDefinition = "VARCHAR(100) COMMENT '密码'")
     private String password;
-    @Schema(description = "帐号状态（见ACCOUNT_STATUS）")
+    @Schema(description = "帐号状态（0-否，1-是）")
     @TableField(value = "ACCOUNT_STATUS")
-    @Column(name = "ACCOUNT_STATUS", columnDefinition = "CHAR(1) COMMENT '帐号状态（见ACCOUNT_STATUS）'")
+    @Column(name = "ACCOUNT_STATUS", columnDefinition = "CHAR(1) COMMENT '帐号状态（0-否，1-是）'")
     private String accountStatus;
     @Schema(description = "备注")
     @TableField(value = "REMARK")
@@ -82,7 +86,7 @@ public class SysUserPo extends BasePo implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @ManyToMany(mappedBy = "sysUserPoSet", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "sysUserPoSet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysRolePo> sysRolePoSet = new HashSet<>(0);
     @Schema(description = "用户对应的部门")
     @ToString.Exclude
@@ -91,4 +95,23 @@ public class SysUserPo extends BasePo implements Serializable {
     @ManyToOne(targetEntity = SysDeptPo.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "DEPT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private SysDeptPo sysDeptPo;
+
+    /**
+     * user控制user-role关联
+     */
+    @Schema(description = "用户在用户-角色关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysUserRolePo.class, mappedBy = "sysUserPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysUserRolePo> sysUserRolePoSet = new HashSet<>(0);
+    /**
+     * tenant控制tenant-user关联
+     */
+    @Schema(description = "用户在租户-用户关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysTenantUserPo.class, mappedBy = "sysUserPo", fetch = FetchType.LAZY)
+    private Set<SysTenantUserPo> sysTenantUserPoSet = new HashSet<>(0);
 }

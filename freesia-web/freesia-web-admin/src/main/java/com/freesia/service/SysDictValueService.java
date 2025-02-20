@@ -86,4 +86,22 @@ public interface SysDictValueService {
      * @param idList 字典键ID集合
      */
     void enableSysDictValueList(List<Long> idList);
+
+    /**
+     * 根据字典键、字典值名称，查询数据
+     *
+     * @param distinctDictValueNameList 去重的字典值名称
+     * @param dictKey                   字典键
+     * @param keyId                     字典键ID
+     * @return 结果集
+     */
+    List<SysDictValueDto> findDistinctDictValueNameList(List<String> distinctDictValueNameList, String dictKey, Long keyId);
+
+    /**
+     * 根据字典键ID查询最大的排序号
+     *
+     * @param keyId 字典键ID
+     * @return 最大排序号
+     */
+    Integer findMaxOrderNumByKeyId(Long keyId);
 }

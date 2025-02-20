@@ -6,20 +6,22 @@
           <lay-form style="margin-top: 20px">
             <lay-row>
               <lay-col :md="4">
-                <lay-form-item :label-width="0">
+                <lay-form-item>
                   <lay-input
-                    v-model="searchTitle"
-                    style="width: 100%"
+                      v-model="searchTitle"
+                      style="width: 100%"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
-                <lay-form-item label-width="0">
+
+                <lay-form-item>
                   <lay-button
-                    type="primary"
-                    style="margin-left: 10px"
-                    @click="toSearch"
-                    >查询</lay-button
+                      style="margin-left: 10px"
+                      type="primary"
+                      @click="toSearch"
+                  >查询
+                  </lay-button
                   >
                   <lay-button @click="toSearch">重置</lay-button>
                 </lay-form-item>
@@ -31,27 +33,35 @@
       <lay-col :md="24">
         <lay-card>
           <lay-row :space="10">
-            <lay-col :md="6" v-for="(item, index) in dataSource" :key="index">
+            <lay-col v-for="(item, index) in dataSource" :key="index" :md="6">
               <lay-card class="card-list-item">
                 <img
-                  src="https://gw.alipayobjects.com/zos/rmsportal/iXjVmWVHbCJAyqvDxdtx.png"
+                    src="https://gw.alipayobjects.com/zos/rmsportal/iXjVmWVHbCJAyqvDxdtx.png"
                 />
                 <template #footer>
                   <div class="button-list">
-                    <div><lay-icon type="layui-icon-flag"></lay-icon></div>
-                    <div><lay-icon type="layui-icon-edit"></lay-icon></div>
-                    <div><lay-icon type="layui-icon-share"></lay-icon></div>
-                    <div><lay-icon type="layui-icon-more"></lay-icon></div>
+                    <div>
+                      <lay-icon type="layui-icon-flag"></lay-icon>
+                    </div>
+                    <div>
+                      <lay-icon type="layui-icon-edit"></lay-icon>
+                    </div>
+                    <div>
+                      <lay-icon type="layui-icon-share"></lay-icon>
+                    </div>
+                    <div>
+                      <lay-icon type="layui-icon-more"></lay-icon>
+                    </div>
                   </div>
                 </template>
               </lay-card>
             </lay-col>
           </lay-row>
           <lay-page
-            v-model="page.current"
-            :total="page.total"
-            :limit="page.limit"
-            :showPage="true"
+              v-model="page.current"
+              :limit="page.limit"
+              :showPage="true"
+              :total="page.total"
           >
           </lay-page>
         </lay-card>
@@ -61,12 +71,13 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
-import { layer } from '@layui/layer-vue'
+import {ref} from 'vue'
+import {layer} from '@layui/layer-vue'
 
 export default {
+  name: 'Card',
   setup() {
-    const page = ref({ total: 100, limit: 10, current: 2 })
+    const page = ref({total: 100, limit: 10, current: 2})
 
     const dataSource = [
       {
@@ -127,9 +138,11 @@ export default {
       }
     ]
     const searchTitle = ref('')
+
     function toSearch() {
-      layer.load(2, { time: 3000 })
+      layer.load(2, {time: 3000})
     }
+
     function toReset() {
       searchTitle.value = ''
     }

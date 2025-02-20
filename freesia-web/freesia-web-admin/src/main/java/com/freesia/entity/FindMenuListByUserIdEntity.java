@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 /**
  * @author Evad.Wu
  * @Description 根据用户ID查询菜单列表 持久层传输对象
- * {@link SysMenuMapper#findMenuListByUser}
+ * {@link com.freesia.controller.SysMenuController#findMenuListByUserId}
  * @date 2023-09-08
  */
 @Data
@@ -28,12 +28,14 @@ public class FindMenuListByUserIdEntity extends TreeDto<FindMenuListByUserIdEnti
     private String component;
     @Schema(description = "权限标识")
     private String perms;
-    @Schema(description = "显示状态（0显示 1隐藏）")
+    @Schema(description = "显示状态（0-隐藏 1-显示）")
     private String visible;
     @Schema(description = "状态（0-启用 1-禁用）")
     private String status;
     @Schema(description = "是否外链")
     private String isFrame;
+    @Schema(description = "是否缓存")
+    private String isCache;
     @Schema(description = "备注")
     private String remark;
 }

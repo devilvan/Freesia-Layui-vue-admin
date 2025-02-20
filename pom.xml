@@ -23,6 +23,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>16</java.version>
 
         <log4j.version>1.2.17</log4j.version>
@@ -33,15 +35,20 @@
         <fastjson.version>2.0.40</fastjson.version>
         <hutool.version>5.8.18</hutool.version>
         <jsoup.verison>1.11.3</jsoup.verison>
-        <redission.version>3.16.8</redission.version>
-        <easyexcel.version>3.1.0</easyexcel.version>
-        <spring-cloud.version>3.1.3</spring-cloud.version>
+        <redisson.version>3.17.3</redisson.version>
+        <easyexcel.version>3.2.1</easyexcel.version>
         <ip2region.version>2.7.0</ip2region.version>
         <querydsl-jpa.version>5.0.0</querydsl-jpa.version>
         <springdoc-openapi.version>1.7.0</springdoc-openapi.version>
         <knife.version>3.0.3</knife.version>
         <p6spy.version>3.9.1</p6spy.version>
         <satoken.version>1.35.0.RC</satoken.version>
+        <aws-java-sdk-s3.version>1.12.540</aws-java-sdk-s3.version>
+        <bcprov-jdk15to18.version>1.64</bcprov-jdk15to18.version>
+        <spring-security-crypto.version>5.7.11</spring-security-crypto.version>
+        <lock4j-redisson.version>2.2.7</lock4j-redisson.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
+
     </properties>
 
     <profiles>
@@ -99,7 +106,7 @@
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
-                <version>${redission.version}</version>
+                <version>${redisson.version}</version>
             </dependency>
             <!--Aspect-->
             <dependency>
@@ -165,6 +172,11 @@
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-extra</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
             <!--EasyExcel-->
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -186,6 +198,11 @@
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-javadoc</artifactId>
                 <version>${springdoc-openapi.version}</version>
             </dependency>
             <!-- querydsl -->
@@ -224,6 +241,35 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- OSS配置-->
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-s3</artifactId>
+                <version>${aws-java-sdk-s3.version}</version>
+            </dependency>
+            <!-- 加密模块-->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-crypto</artifactId>
+                <version>${spring-security-crypto.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15to18</artifactId>
+                <version>${bcprov-jdk15to18.version}</version>
+            </dependency>
+            <!-- Lock4j-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
+                <version>${lock4j-redisson.version}</version>
+            </dependency>
+            <!-- 邮件模块-->
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${javax.mail.version}</version>
+            </dependency>
             <!-- 基础模块-->
             <dependency>
                 <groupId>com.freesia</groupId>
@@ -235,23 +281,31 @@
                 <artifactId>freesia-common-framework</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-service</artifactId>
-                <version>${freesia.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-codegen</artifactId>
-                <version>${freesia.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>${spring-cloud.version}</version>
-        </dependency>
-    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>huawei nexus</name>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>huawei nexus</name>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

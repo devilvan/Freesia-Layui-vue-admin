@@ -4,29 +4,32 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
 import com.freesia.constant.Constants;
+import com.freesia.crypt.util.UCrypt;
 import com.freesia.dto.RouterDto;
 import com.freesia.dto.SysMenuDto;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.RouterEntity;
+import com.freesia.entity.SysUserEntity;
 import com.freesia.entity.SysUserInfoEntity;
-import com.freesia.model.LoginUserModel;
+import com.freesia.satoken.model.LoginUserModel;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysLoginService;
 import com.freesia.service.SysMenuService;
+import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.UCollection;
 import com.freesia.util.UCopy;
 import com.freesia.util.UMessage;
-import com.freesia.util.USecurity;
 import com.freesia.vo.LoginVo;
 import com.freesia.vo.R;
-import com.freesia.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -40,18 +43,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/sysLoginController")
 @Tag(name = "SysLoginController", description = "登录功能 控制器")
-public class SysLoginController {
+public class SysLoginController extends BaseController {
     private final SysLoginService sysLoginService;
     private final SysUserService sysUserService;
     private final SysMenuService sysMenuService;
+    private final SysTenantService sysTenantService;
 
     @SaIgnore
     @Operation(summary = "客户端登录")
     @PostMapping("sysLogin")
-    public R<Map<String, Object>> sysLogin(@Validated @RequestBody LoginVo loginVo) {
+    public R<Map<String, Object>> sysLogin(@Valid @RequestBody String request) {
+        LoginVo loginVo = UCrypt.aesDecryptJSON(request, LoginVo.class);
         Map<String, Object> ajax = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
         // 生成令牌
-        String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getUuid());
+        String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getCaptchaKey());
         ajax.put(Constants.TOKEN, token);
         return R.ok(ajax);
     }
@@ -73,6 +78,8 @@ public class SysLoginController {
         }
         SysUserDto sysUserDto = sysUserService.findUserById(loginUserModel.getUserId());
         SysUserInfoEntity sysUserInfoEntity = sysUserDto2Entity(sysUserDto, loginUserModel);
+        List<SysTenantDto> sysTenantPoList = sysTenantService.findListSysTenantByUserId(loginUserModel.getUserId());
+        sysUserInfoEntity.setSysTenantDtoList(sysTenantPoList);
         return R.ok(sysUserInfoEntity);
     }
 
@@ -103,9 +110,9 @@ public class SysLoginController {
      */
     private SysUserInfoEntity sysUserDto2Entity(SysUserDto sysUserDto, LoginUserModel loginUserModel) {
         SysUserInfoEntity sysUserInfoEntity = new SysUserInfoEntity();
-        SysUserVo sysUserVo = new SysUserVo();
-        UCopy.fullCopy(sysUserDto, sysUserVo);
-        sysUserInfoEntity.setUser(sysUserVo);
+        SysUserEntity sysUserEntity = new SysUserEntity();
+        UCopy.fullCopy(sysUserDto, sysUserEntity);
+        sysUserInfoEntity.setUser(sysUserEntity);
         sysUserInfoEntity.setRoles(loginUserModel.getRolePermission());
         sysUserInfoEntity.setPermissions(loginUserModel.getMenuPermission());
         return sysUserInfoEntity;

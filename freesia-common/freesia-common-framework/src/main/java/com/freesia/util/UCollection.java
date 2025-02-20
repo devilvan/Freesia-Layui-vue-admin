@@ -1,5 +1,6 @@
 package com.freesia.util;
 
+import cn.hutool.core.collection.CollUtil;
 import com.freesia.exception.BaseException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,12 +14,36 @@ import java.util.*;
  */
 @SuppressWarnings(value = "unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UCollection {
+public class UCollection extends CollUtil {
     public static final int MAXIMUM_CAPACITY = 1 << 30;
     public static final float LOAD_FACTOR = 0.75f;
     public static final int LIST_INIT_CAPACITY = 10;
     public static final int LIST_MAX_LENGTH = Integer.MAX_VALUE - 8;
 
+    /**
+     * 判断map中对应的属性是否全部存在
+     *
+     * @param map    键值
+     * @param fields 待判断的属性
+     * @param <T>    map类型
+     * @return 判断结果
+     */
+    public static <T> boolean checkFieldAllPresentInMap(Map<String, T> map, String... fields) {
+        for (String field : fields) {
+            if (!map.containsKey(field)) {
+                throw new BaseException("map.not.contain.field", field);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 根据期望的容量初始化集合
+     *
+     * @param expectSize 期望的容量
+     * @param <T>        集合元素的类型
+     * @return 初始化的集合
+     */
     public static <T> List<T> optimizeInitialCapacityArrayList(int expectSize) {
         if (expectSize < 0) {
             return new ArrayList<>(LIST_INIT_CAPACITY);
@@ -37,13 +62,21 @@ public class UCollection {
      */
     public static int arrayListRightSize(int num) {
         if (num > 0) {
-            //向上取整
-            return (int) Math.ceil(1.5 * num);
+            // 扩容示例：10、15、22、33、49、77、109
+            // 当达到以上的数值时就会触发扩容，所以初始的容量在之上+1即可
+            return 5 + num + (num / 10);
         } else {
             return LIST_INIT_CAPACITY;
         }
     }
 
+    /**
+     * 根据期望的容量初始化集合
+     *
+     * @param expectSize 期望的容量
+     * @param <T>        集合元素的类型
+     * @return 初始化的集合
+     */
     public static <T> Set<T> optimizeInitialCapacitySet(int expectSize) {
         return optimizeInitialCapacitySet(expectSize, LOAD_FACTOR);
     }
@@ -69,6 +102,13 @@ public class UCollection {
         }
     }
 
+    /**
+     * 根据期望的容量初始化集合
+     *
+     * @param expectSize 期望的容量
+     * @param <T>        集合元素的类型
+     * @return 初始化的集合
+     */
     public static <T> Map<String, T> optimizeInitialCapacityMap(int expectSize) {
         return optimizeInitialCapacityMap(expectSize, LOAD_FACTOR);
     }

@@ -1,12 +1,12 @@
 <template>
   <lay-config-provider
-    :themeVariable="appStore.themeVariable"
-    :theme="appStore.theme"
-    :locales="locales"
-    :locale="appStore.locale"
+      :themeVariable="appStore.themeVariable"
+      :theme="appStore.theme"
+      :locales="locales"
+      :locale="appStore.locale"
   >
     <lay-layout
-      :class="[
+        :class="[
         appStore.tab ? 'has-tab' : '',
         appStore.collapse ? 'collapse' : '',
         appStore.greyMode ? 'grey-mode' : ''
@@ -14,39 +14,40 @@
     >
       <!-- 遮盖层 -->
       <div
-        v-if="!appStore.collapse"
-        class="layui-layer-shade hidden-sm-and-up"
-        @click="collapse"
+          v-if="!appStore.collapse"
+          class="layui-layer-shade hidden-sm-and-up"
+          @click="collapse"
       ></div>
       <!-- 核心菜单  -->
       <lay-side
-        :width="sideWidth"
-        :class="appStore.sideTheme == 'dark' ? 'dark changeBgc' : 'light'"
+          :width="sideWidth"
+          :class="appStore.sideTheme == 'dark' ? 'dark changeBgc' : 'light'"
       >
         <lay-logo v-if="appStore.logo">
-          <lay-avatar :src="$SRC_ASSETS + 'RideOn.jpg'"></lay-avatar>
-          Devilvan's Bliss
+          <lay-avatar :src="$SRC_ASSETS + '不要停下来啊.png'"></lay-avatar>
+          <span style="padding-left: 20px; font-size: 18pt; font-family: 'Consolas'"
+                v-if="!appStore.collapse">Freesia</span>
         </lay-logo>
         <div class="side-menu-wrapper">
           <div
-            class="side-menu1"
-            v-if="appStore.subfield && appStore.subfieldPosition == 'side'"
+              class="side-menu1"
+              v-if="appStore.subfield && appStore.subfieldPosition == 'side'"
           >
             <global-main-menu
-              :collapse="true"
-              :menus="mainMenus"
-              :selectedKey="mainSelectedKey"
-              @changeSelectedKey="changeMainSelectedKey"
+                :collapse="true"
+                :menus="mainMenus"
+                :selectedKey="mainSelectedKey"
+                @changeSelectedKey="changeMainSelectedKey"
             ></global-main-menu>
           </div>
           <div class="side-menu2">
             <global-menu
-              :collapse="appStore.collapse"
-              :menus="menus"
-              :openKeys="openKeys"
-              :selectedKey="selectedKey"
-              @changeOpenKeys="changeOpenKeys"
-              @changeSelectedKey="changeSelectedKey"
+                :collapse="appStore.collapse"
+                :menus="menus"
+                :openKeys="openKeys"
+                :selectedKey="selectedKey"
+                @changeOpenKeys="changeOpenKeys"
+                @changeSelectedKey="changeSelectedKey"
             ></global-menu>
           </div>
         </div>
@@ -57,8 +58,8 @@
           <lay-menu class="layui-layout-left">
             <lay-menu-item @click="collapse">
               <lay-icon
-                v-if="appStore.collapse"
-                type="layui-icon-spread-left"
+                  v-if="appStore.collapse"
+                  type="layui-icon-spread-left"
               ></lay-icon>
               <lay-icon v-else type="layui-icon-shrink-right"></lay-icon>
             </lay-menu-item>
@@ -66,19 +67,19 @@
               <lay-icon type="layui-icon-refresh-one"></lay-icon>
             </lay-menu-item>
             <lay-menu-item
-              class="hidden-xs-only"
-              v-if="appStore.breadcrumb"
-              style="padding: 0px 15px"
+                class="hidden-xs-only"
+                v-if="appStore.breadcrumb"
+                style="padding: 0px 15px"
             >
               <GlobalBreadcrumb></GlobalBreadcrumb>
             </lay-menu-item>
           </lay-menu>
           <!-- 菜单分组 -->
           <lay-menu
-            v-if="appStore.subfield && appStore.subfieldPosition == 'head'"
-            class="layui-nav-center"
-            :selectedKey="mainSelectedKey"
-            @changeSelectedKey="changeMainSelectedKey"
+              v-if="appStore.subfield && appStore.subfieldPosition == 'head'"
+              class="layui-nav-center"
+              :selectedKey="mainSelectedKey"
+              @changeSelectedKey="changeMainSelectedKey"
           >
             <template v-for="(menu, index) in mainMenus" :key="index">
               <lay-menu-item :id="menu.id" v-if="index < 4">
@@ -87,22 +88,23 @@
             </template>
           </lay-menu>
           <lay-dropdown
-            v-if="appStore.subfield && appStore.subfieldPosition == 'head'"
-            trigger="hover"
-            placement="bottom"
+              v-if="appStore.subfield && appStore.subfieldPosition == 'head'"
+              trigger="hover"
+              placement="bottom"
           >
             <lay-icon
-              type="layui-icon-more"
-              style="padding: 0px 15px"
+                type="layui-icon-more"
+                style="padding: 0px 15px"
             ></lay-icon>
             <template #content>
               <lay-dropdown-menu>
                 <template v-for="(menu, index) in mainMenus">
                   <lay-dropdown-menu-item
-                    :key="menu.id"
-                    v-if="index >= 4"
-                    @click="changeMainSelectedKey(menu.id)"
-                    >{{ menu.title }}</lay-dropdown-menu-item
+                      :key="menu.id"
+                      v-if="index >= 4"
+                      @click="changeMainSelectedKey(menu.id)"
+                  >{{ menu.title }}
+                  </lay-dropdown-menu-item
                   >
                 </template>
               </lay-dropdown-menu>
@@ -110,10 +112,21 @@
           </lay-dropdown>
           <lay-menu class="layui-layout-right">
             <lay-menu-item>
+              <lay-select
+                  v-model="appStore.currentTenant"
+                  placeholder="请选择租户"
+                  @change="changeTenantSelect"
+              >
+                <template v-for="(sysTenant, index) in userInfoStore.sysTenantDtoList" :key="index">
+                  <lay-select-option :value="sysTenant.id" :label="sysTenant.name"></lay-select-option>
+                </template>
+              </lay-select>
+            </lay-menu-item>
+            <lay-menu-item>
               <lay-fullscreen v-slot="{ toggle, isFullscreen }">
                 <lay-icon
-                  @click="toggle()"
-                  :type="
+                    @click="toggle()"
+                    :type="
                     isFullscreen
                       ? 'layui-icon-screen-restore'
                       : 'layui-icon-screen-full'
@@ -122,10 +135,13 @@
               </lay-fullscreen>
             </lay-menu-item>
             <lay-menu-item>
+              <lay-icon type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
+            </lay-menu-item>
+            <lay-menu-item>
               <global-message-tab :flag="flag">
                 <lay-icon
-                  type="layui-icon-notice"
-                  @click="changeDropdown"
+                    type="layui-icon-notice"
+                    @click="changeDropdown"
                 ></lay-icon>
               </global-message-tab>
             </lay-menu-item>
@@ -135,12 +151,12 @@
                 <template #content>
                   <lay-dropdown-menu>
                     <lay-dropdown-menu-item
-                      @click="() => (appStore.locale = 'zh_CN')"
+                        @click="() => (appStore.locale = 'zh_CN')"
                     >
                       <template #default>中文</template>
                     </lay-dropdown-menu-item>
                     <lay-dropdown-menu-item
-                      @click="() => (appStore.locale = 'en_US')"
+                        @click="() => (appStore.locale = 'en_US')"
                     >
                       <template #default>英文</template>
                     </lay-dropdown-menu-item>
@@ -149,8 +165,11 @@
               </lay-dropdown>
             </lay-menu-item>
             <lay-menu-item>
+              <lay-icon type="layui-icon-read" title="接口文档" @click="toDoc"></lay-icon>
+            </lay-menu-item>
+            <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
-                <lay-avatar :src="$SRC_ASSETS + userInfoStore.userInfo.avatar"></lay-avatar>
+                <lay-avatar :src="resolveImgPath(userInfoStore.userInfo.avatar)"></lay-avatar>
                 <template #content>
                   <lay-dropdown-menu>
                     <lay-dropdown-menu-item @click="toUserInfo">
@@ -160,7 +179,7 @@
                       <template #default>系统设置</template>
                     </lay-dropdown-menu-item>
                     <lay-line></lay-line>
-                    <lay-dropdown-menu-item @click="logOut">
+                    <lay-dropdown-menu-item @click="logout">
                       <template #default>注销登录</template>
                     </lay-dropdown-menu-item>
                   </lay-dropdown-menu>
@@ -174,7 +193,7 @@
         </lay-header>
         <lay-body>
           <global-tab
-            :class="
+              :class="
               appStore.tagsTheme == 'concise'
                 ? ''
                 : appStore.tagsTheme == 'underpainting'
@@ -193,9 +212,9 @@
 </template>
 
 <script lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useAppStore } from '../store/app'
-import { useUserStore } from '../store/user'
+import {computed, onMounted, ref} from 'vue'
+import {useAppStore} from '../store/app'
+import {useUserStore} from '../store/user'
 import GlobalSetup from './global/GlobalSetup.vue'
 import GlobalContent from './global/GlobalContent.vue'
 import GlobalBreadcrumb from './global/GlobalBreadcrumb.vue'
@@ -203,10 +222,15 @@ import GlobalTab from './global/GlobalTab.vue'
 import GlobalMenu from './global/GlobalMenu.vue'
 import GlobalMainMenu from './global/GlobalMainMenu.vue'
 import GlobalMessageTab from './global/GlobalMessageTab.vue'
-import { useRouter } from 'vue-router'
-import { useMenu } from './composable/useMenu'
+import {useMenu} from './composable/useMenu'
 import zh_CN from '../lang/zh_CN'
 import en_US from '../lang/en_US'
+import router from "../router";
+import {useTabStore} from "./composable/useTabStore";
+import app from "../main";
+import {layer} from "@layui/layui-vue";
+import { EventSourcePolyfill } from "event-source-polyfill";
+import {sseDisconnect} from "../api/Login";
 
 export default {
   components: {
@@ -219,19 +243,20 @@ export default {
     GlobalMessageTab
   },
   setup() {
+    const $SRC_ASSETS = app.config.globalProperties.$SRC_ASSETS;
     const appStore = useAppStore()
     const userInfoStore = useUserStore()
+    const $tab = useTabStore();
     const fullscreenRef = ref()
     const visible = ref(false)
     const sideWidth = computed(() =>
-      appStore.collapse
-        ? '60px'
-        : appStore.subfield && appStore.subfieldPosition == 'side'
-        ? '280px'
-        : '220px'
+        appStore.collapse
+            ? '60px'
+            : appStore.subfield && appStore.subfieldPosition == 'side'
+            ? '280px'
+            : '220px'
     )
-    const router = useRouter()
-
+    const sseConnectUrl = import.meta.env.VITE_SSE_CONNECT_URL
     const {
       selectedKey,
       openKeys,
@@ -244,6 +269,7 @@ export default {
     } = useMenu()
 
     onMounted(() => {
+      initSse();
       if (document.body.clientWidth < 768) {
         appStore.collapse = true
       }
@@ -267,25 +293,70 @@ export default {
       }, 500)
     }
 
-    const logOut = () => {
+    const logout = () => {
       const userInfoStore = useUserStore()
+      sseDisconnect()
       userInfoStore.logout()
-      router.push('/login')
+      router.replace('/login')
     }
 
     const locales = [
-      { name: 'zh_CN', locale: zh_CN, merge: true },
-      { name: 'en_US', locale: en_US, merge: true }
+      {name: 'zh_CN', locale: zh_CN, merge: true},
+      {name: 'en_US', locale: en_US, merge: true}
     ]
+
     function toUserInfo() {
-      router.push('/enrollee/profile')
+      router.push('/enrollee/profile/index')
     }
+
     function toSystemSet() {
-      router.push('/system/menu')
+      router.push('/system/menu/index')
     }
+
     const flag = ref(false)
+
     function changeDropdown() {
       flag.value = !flag.value
+    }
+
+    function changeTenantSelect(value: any) {
+      appStore.currentTenant = value;
+      window.location.reload()
+      router.push($tab.currentPath)
+    }
+
+    function toDoc() {
+      window.open(import.meta.env.VITE_APP_SPRING_DOC_PATH, "_blank");
+    }
+
+    function toGitee() {
+      window.open(import.meta.env.VITE_APP_GITEE_PATH, "_blank");
+    }
+
+    function resolveImgPath(imgPath: string) {
+      if (!imgPath || imgPath == '') {
+        return;
+      } else if (imgPath.startsWith("http") || imgPath.startsWith("https")) {
+        return imgPath;
+      } else if (imgPath.startsWith("avatar")) {
+        return $SRC_ASSETS + imgPath;
+      }
+    }
+
+    const initSse = () => {
+      let eventSource = new EventSourcePolyfill(sseConnectUrl, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Authorization': 'Bearer ' + userInfoStore.token as string,
+        },
+      })
+      eventSource.addEventListener("message", (e: { data: string }) => {
+        layer.notify({
+          title:"消息",
+          content: e.data
+        })
+        // layer.confirm(e.data, {icon: 1})
+      })
     }
 
     return {
@@ -306,12 +377,17 @@ export default {
       changeMainSelectedKey,
       changeVisible,
       refresh,
-      logOut,
+      logout,
       locales,
       toUserInfo,
       toSystemSet,
       changeDropdown,
-      flag
+      flag,
+      changeTenantSelect,
+      toDoc,
+      toGitee,
+      resolveImgPath,
+      initSse
     }
   }
 }
@@ -323,6 +399,10 @@ export default {
     position: absolute;
     height: 100vh;
   }
+}
+
+.layui-nav .layui-nav-item > a * {
+  color: darkgray;
 }
 
 /*鼠标经过背景色，增加了improtant，否则设置无效*/
@@ -409,6 +489,20 @@ export default {
   }
 }
 
+.designer {
+  .layui-tab-title {
+    .layui-this {
+      color: var(--global-primary-color) !important;
+      border-bottom: 2px solid var(--global-primary-color) !important;
+      background-color: #009b8e0d !important;
+
+      .layui-icon {
+        color: var(--global-primary-color) !important;
+      }
+    }
+  }
+}
+
 .underpainting {
   .layui-tab-title {
     .layui-this {
@@ -422,24 +516,28 @@ export default {
     }
   }
 }
+
 .layui-body
-  > .global-tab
-  > .layui-tab
-  > .layui-tab-head
-  > .layui-tab-title
-  > li {
+> .global-tab
+> .layui-tab
+> .layui-tab-head
+> .layui-tab-title
+> li {
   height: 38px;
   line-height: 38px;
 }
+
 .designer {
   padding-left: 5px;
   box-sizing: border-box;
+
   .layui-tab-head {
     background-color: unset !important;
   }
 
   .layui-tab-title {
     background-color: unset !important;
+
     > li {
       background-color: #fff;
       margin: 5px 0 0 5px;

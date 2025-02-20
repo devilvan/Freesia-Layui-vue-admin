@@ -1,14 +1,18 @@
 package com.freesia.service;
 
 
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
+import com.freesia.entity.FindUserRolesByUserIdEntity;
 import com.freesia.po.SysUserPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -105,4 +109,78 @@ public interface SysUserService {
      * @param sysUserDto 用户信息
      */
     void saveUserInfo(SysUserDto sysUserDto);
+
+    /**
+     * 根据用户ID查询【分配用户】加载数据
+     *
+     * @param userId 用户ID
+     * @return 用户与已分配角色的信息
+     */
+    FindUserRolesByUserIdEntity findUserRolesByUserId(Long userId);
+
+    /**
+     * 给用户分配角色
+     *
+     * @param userId         被分配角色的用户ID
+     * @param afterRoleIdSet 分配后该用户对应的角色ID
+     */
+    void assignRole(Long userId, Set<Long> afterRoleIdSet);
+
+    /**
+     * 根据租户ID查询已分配该租户的用户
+     *
+     * @param tenantId  租户ID
+     * @param pageQuery 分页信息
+     * @return 已分配该租户的用户
+     */
+    TableResult<SysUserDto> findPageUserByTenantId(Long tenantId, PageQuery pageQuery);
+
+    /**
+     * 根据租户ID查询可分配该租户的用户
+     *
+     * @param sysTenantDto 租户信息
+     * @param pageQuery    分页信息
+     * @return 可分配该租户的用户
+     */
+    TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantDto sysTenantDto, PageQuery pageQuery);
+
+    /**
+     * 根据用户ID查询是否为管理员
+     *
+     * @param id 用户ID
+     * @return 是否为管理员
+     */
+    Boolean isAdmin(Long id);
+
+    /**
+     * 根据用户名集合查询是否与已存在的用户重合
+     *
+     * @param distinctUserNameList 用户名集合
+     * @return 已存在的用户
+     */
+    List<SysUserDto> findDistinctUserNameList(List<String> distinctUserNameList);
+
+    /**
+     * 删除用户
+     *
+     * @param idList 用户ID
+     * @return 删除用户的信息
+     */
+    List<SysUserDto> deleteUser(List<Long> idList);
+
+    /**
+     * 给用户分配部门
+     *
+     * @param userIdList 用户ID
+     * @param deptId     部门ID
+     * @return 形式返回
+     */
+    Map<String, Object> assignDept(List<Long> userIdList, Long deptId);
+
+    /**
+     * 用户头像更新
+     *
+     * @param avatar 头像地址
+     */
+    void avatarUpdate(String avatar);
 }

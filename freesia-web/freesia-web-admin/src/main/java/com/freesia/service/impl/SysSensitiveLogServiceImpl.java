@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
-import com.freesia.constant.SysModule;
+import com.freesia.constant.UserModule;
 import com.freesia.dto.SysSensitiveLogDto;
 import com.freesia.mapper.SysSensitiveLogMapper;
 import com.freesia.po.SysSensitiveLogPo;
@@ -41,15 +41,15 @@ public class SysSensitiveLogServiceImpl extends ServiceImpl<SysSensitiveLogMappe
 
     @Override
     public List<SysSensitiveLogPo> saveUpdateBatch(List<SysSensitiveLogDto> list) {
-        List<SysSensitiveLogPo> sysSensitiveLogPoList = UCopy.fullCopyCollections(list, SysSensitiveLogPo.class);
+        List<SysSensitiveLogPo> sysSensitiveLogPoList = UCopy.fullCopyList(list, SysSensitiveLogPo.class);
         return sysSensitiveLogRepository.saveAllAndFlush(sysSensitiveLogPoList);
     }
 
     @Override
     public TableResult<SysSensitiveLogDto> findPageLoginLog(SysSensitiveLogDto sysSensitiveLogDto, PageQuery pageQuery) {
         Wrapper<SysSensitiveLogPo> queryWrapper = Wrappers.<SysSensitiveLogPo>query()
-                .eq("SL.LOGIC_DEL", FlagConstant.ENABLED)
-                .eq("SL.MODULE", SysModule.USER_MANAGEMENT)
+                .eq("SL.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq("SL.MODULE", UserModule.USER_MANAGEMENT)
                 .eq(UEmpty.isNotEmpty(sysSensitiveLogDto.getOperatorName()), "SL.OPERATOR_NAME", sysSensitiveLogDto.getOperatorName())
                 .eq(UEmpty.isNotEmpty(sysSensitiveLogDto.getDeptName()), "SL.DEPT_NAME", sysSensitiveLogDto.getDeptName())
                 .like(UEmpty.isNotEmpty(sysSensitiveLogDto.getUrl()), "SL.URL", sysSensitiveLogDto.getUrl())
@@ -71,8 +71,8 @@ public class SysSensitiveLogServiceImpl extends ServiceImpl<SysSensitiveLogMappe
     @Override
     public TableResult<SysSensitiveLogDto> findPageOptionLog(SysSensitiveLogDto sysSensitiveLogDto, PageQuery pageQuery) {
         Wrapper<SysSensitiveLogPo> queryWrapper = Wrappers.<SysSensitiveLogPo>query()
-                .eq("SL.LOGIC_DEL", FlagConstant.ENABLED)
-                .ne("SL.MODULE", SysModule.USER_MANAGEMENT)
+                .eq("SL.LOGIC_DEL", FlagConstant.DISABLED)
+                .ne("SL.MODULE", UserModule.USER_MANAGEMENT)
                 .eq(UEmpty.isNotEmpty(sysSensitiveLogDto.getOperatorName()), "SL.OPERATOR_NAME", sysSensitiveLogDto.getOperatorName())
                 .eq(UEmpty.isNotEmpty(sysSensitiveLogDto.getDeptName()), "SL.DEPT_NAME", sysSensitiveLogDto.getDeptName())
                 .like(UEmpty.isNotEmpty(sysSensitiveLogDto.getUrl()), "SL.URL", sysSensitiveLogDto.getUrl())

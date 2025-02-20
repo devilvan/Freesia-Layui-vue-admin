@@ -1,7 +1,7 @@
 package com.freesia.component;
 
-import cn.hutool.core.lang.Snowflake;
-import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.lang.Singleton;
+import com.freesia.pojo.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -18,7 +18,7 @@ import java.io.Serializable;
  */
 @Slf4j
 @Component
-public class SnowFlakeIdGenerator implements IdentifierGenerator {
+public class SnowFlakeIdGenerator implements IdentifierGenerator, com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator {
     /**
      * 数据中心ID
      */
@@ -30,14 +30,19 @@ public class SnowFlakeIdGenerator implements IdentifierGenerator {
     @Value("${mybatis-plus.global-config.worker-id}")
     private long workerId;
 
-    public long snowflakeId(long workerId, long datacenterId) {
-        Snowflake snowflake = IdUtil.getSnowflake(workerId, datacenterId);
-        return snowflake.nextId();
+    @Override
+    public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
+        return generate();
     }
 
     @Override
-    public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-        return snowflakeId(workerId, datacenterId);
+    public Number nextId(Object entity) {
+        return generate();
+    }
+
+    private long generate() {
+        SnowFlake snowflake = Singleton.get(SnowFlake.class, workerId, datacenterId);
+        return snowflake.nextId();
     }
 }
 

@@ -11,10 +11,12 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * @author Evad.Wu
- * @Description 登录功能 值对象传递 {@link SysLoginController#sysLogin}
+ * @Description 登录功能 值对象
+ * {@link SysLoginController#sysLogin}
  * @date 2023-08-11
  */
 @Data
+@Schema(description = "登录功能 值对象")
 public class LoginVo {
     @Schema(description = "用户名")
     @NotBlank(message = "{user.username.not.null}")
@@ -23,10 +25,10 @@ public class LoginVo {
     private String username;
     @Schema(description = "用户密码")
     @NotBlank(message = "{user.password.not.null}")
-    @Length(min = AdminConstant.PASSWORD_MIN_LENGTH, max = AdminConstant.PASSWORD_MAX_LENGTH, message = "{user.password.length.valid}")
+    @Length(min = AdminConstant.PASSWORD_MIN_LENGTH, max = AdminConstant.PASSWORD_MAX_LENGTH, message = "{user.password.length.invalid}")
     private String password;
     @Schema(description = "验证码")
     private String code;
     @Schema(description = "唯一标识")
-    private String uuid;
+    private String captchaKey;
 }

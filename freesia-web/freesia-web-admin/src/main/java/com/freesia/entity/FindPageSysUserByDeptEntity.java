@@ -1,7 +1,9 @@
 package com.freesia.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.constant.Constants;
+import com.freesia.desensization.constant.DesensitizedType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +12,8 @@ import java.util.Date;
 
 /**
  * @author Evad.Wu
- * @Description 查询部门下的用户 {@link SysUserMapper#findPageSysUserByDept} 持久层传输对象
+ * @Description 查询部门下的用户 持久层传输对象
+ * {@link com.freesia.controller.SysUserController#findPageSysUserByDept}
  * @date 2023-09-04
  */
 @Data
@@ -25,8 +28,10 @@ public class FindPageSysUserByDeptEntity extends BaseEntity {
     @Schema(description = "用户名")
     private String userName;
     @Schema(description = "邮箱")
+    @Desensitize(strategy = DesensitizedType.EMAIL)
     private String email;
     @Schema(description = "电话号码")
+    @Desensitize(strategy = {DesensitizedType.MOBILE_PHONE, DesensitizedType.FIXED_PHONE})
     private String telNo;
     @Schema(description = "性别")
     private String gender;

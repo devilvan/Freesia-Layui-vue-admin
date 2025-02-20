@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -28,8 +26,6 @@ import java.util.Date;
  * @date 2022-07-10
  */
 @Data
-@DynamicInsert
-@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
@@ -71,7 +67,7 @@ public abstract class BasePo implements Serializable {
     @Schema(description = "修改时间")
     private Date modifyTime;
     @Column(name = "LOGIC_DEL", columnDefinition = "TINYINT DEFAULT 0 COMMENT '逻辑删除'")
-    @TableField(value = "LOGIC_DEL")
+    @TableField(value = "LOGIC_DEL", fill = FieldFill.INSERT)
     @Schema(description = "逻辑删除")
     private Boolean logicDel;
     @Version
@@ -80,4 +76,12 @@ public abstract class BasePo implements Serializable {
     @TableField(value = "REC_VER", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "版本号")
     private Long recVer;
+    @Column(name = "BUILD_IN", columnDefinition = "TINYINT(1) DEFAULT 0 COMMENT '系统内置（0-否 1-是）'")
+    @TableField(value = "BUILD_IN", fill = FieldFill.INSERT)
+    @Schema(description = "系统内置（0-否 1-是）")
+    private Boolean buildIn;
+    @Column(name = "TENANT_ID", columnDefinition = "BIGINT(20) DEFAULT NULL COMMENT '租户ID'")
+    @TableField(value = "TENANT_ID", fill = FieldFill.INSERT)
+    @Schema(description = "租户ID")
+    private Long tenantId;
 }

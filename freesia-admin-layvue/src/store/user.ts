@@ -2,23 +2,38 @@ import {defineStore} from 'pinia'
 import {getInfo, getMenu, getRouters, logout} from "../api/Login";
 import BaseLayout from "../layouts/BaseLayout.vue";
 import BlankLayout from "../layouts/BlankLayout.vue";
-import InnerLink from "../layouts/InnerLink.vue"
-// import {constantRoutes, dynamicRoutes} from "../router/module/base-routes";
+import Inner from "../views/iframe/inner/index.vue"
 import auth from "../directives/auth";
+import {dynamicRoutes} from "../router/module/base-routes";
+import router, {addRoutes} from "../router";
+import {RouterComponent} from "../types/Menu";
+import {reloadSysTenant} from "../api/system/Tenant";
+import {useTabStore} from "../layouts/composable/useTabStore";
+import {loginPath} from "../api/Http";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
-
 export const useUserStore = defineStore({
     id: 'user',
     state: () => {
         return {
             token: '',
-            userInfo: {},
+            userInfo: {
+                id: '',
+                deptId: '',
+                userName: '',
+                nickName: '',
+                userType: '',
+                email: '',
+                telNo: '',
+                gender: '',
+                avatar: '',
+            },
             permissions: [],
             menus: [],
             roles: [],
-            sidebarRoutes: [{}]
+            sidebarRoutes: [{}],
+            sysTenantDtoList: [{}]
         }
     },
     actions: {
@@ -28,12 +43,21 @@ export const useUserStore = defineStore({
                 this.userInfo = data.user;
                 this.permissions = data.permissions;
                 this.roles = data.roles;
+                this.sysTenantDtoList = data.sysTenantDtoList
             }
         },
         async getRouters() {
             const {data, code} = await getRouters()
+            if (!data || !data.data || data.data.length === 0) {
+                // router.push(loginPath).then(r => r)
+            }
             if (code === 200) {
                 this.sidebarRoutes = filterAsyncRouter(data)
+                let dynamic = filterDynamicRoutes(dynamicRoutes)
+                dynamic.forEach((f: any) => {
+                    this.sidebarRoutes.push(f);
+                })
+                addRoutes(this.sidebarRoutes, router);
             }
         },
         async getMenu() {
@@ -48,13 +72,38 @@ export const useUserStore = defineStore({
             this.roles = []
             this.permissions = []
             this.menus = []
+            this.userInfo = {
+                id: '',
+                deptId: '',
+                userName: '',
+                nickName: '',
+                userType: '',
+                email: '',
+                telNo: '',
+                gender: '',
+                avatar: '',
+            }
+            this.sysTenantDtoList = [{}]
+            useTabStore().tabs = []
+            useTabStore().tabsCache = []
+            useTabStore().currentPath = ''
+            await router.replace(loginPath)
+        },
+        async reloadSysTenant() {
+            const {data, code} = await reloadSysTenant()
+            if (code === 200) {
+                this.sysTenantDtoList = data
+            }
         }
     },
     persist: {
         storage: localStorage,
-        paths: ['token', 'userInfo','permissions', 'roles'],
+        paths: ['token', 'userInfo', 'permissions', 'roles', 'sysTenantDtoList'],
     }
 })
+
+function clearUserStore() {}
+
 
 function filterAsyncRouter(asyncRouterMap: any, lastRouter = false, type = false) {
     return asyncRouterMap.filter((route: any) => {
@@ -62,13 +111,13 @@ function filterAsyncRouter(asyncRouterMap: any, lastRouter = false, type = false
             route.children = filterChildren(route.children)
         }
         if (route.component) {
-            // Layout ParentView 组件特殊处理
-            if (route.component === 'BaseLayout') {
+            // BaseLayout 组件特殊处理
+            if (route.component === RouterComponent.BASE_LAYOUT) {
                 route.component = BaseLayout
-            } else if (route.component === 'BlankLayout') {
+            } else if (route.component === RouterComponent.BLANK_LAYOUT) {
                 route.component = BlankLayout
-            } else if (route.component === 'InnerLink') {
-                route.component = InnerLink
+            } else if (route.component === RouterComponent.INNER_LINK) {
+                route.component = Inner
             } else {
                 route.component = loadView(route.component)
             }
@@ -104,7 +153,7 @@ function filterChildren(childrenMap: any, lastRouter = false) {
     var children: any[] = []
     childrenMap.forEach((el: { children: any[]; component: string; path: string; }, index: any) => {
         if (el.children && el.children.length) {
-            if (el.component === 'BlankLayout' && !lastRouter) {
+            if (el.component === RouterComponent.BLANK_LAYOUT && !lastRouter) {
                 el.children.forEach(c => {
                     c.path = el.path + '/' + c.path
                     // c.path = '/' + c.path

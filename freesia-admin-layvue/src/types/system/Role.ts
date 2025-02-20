@@ -4,7 +4,7 @@ import {BaseVo} from "../Common";
  * 查询参数
  */
 
-export interface SysRoleVo {
+export interface SysRoleVo extends BaseVo {
     roleName?: string;
     roleKey?: string;
     status?: string;
@@ -35,4 +35,32 @@ export interface SaveRoleMenuPrivilegeVo extends BaseVo {
     roleId?: string,
     dataScope?: string;
     treeSelectedIdList?: Array<string>;
+}
+
+export interface SysRoleEntity {
+    id?: string,
+    roleKey?: string,
+    roleName?: string,
+    dataScope?: string,
+    status?: string,
+    remark?: string,
+}
+
+export interface AssignUserVo {
+    roleId: string;
+    userIdList: string[]
+}
+
+export interface AssignDeptVo {
+    roleId?: string,
+    deptIdList?: Array<string>,
+}
+
+export interface SaveRoleVo extends BaseVo {
+    roleName?: string;
+    roleKey?: string;
+    status?: string;
+    orderNum?: number;
+    dataScope?: string;
+    remark?: string;
 }

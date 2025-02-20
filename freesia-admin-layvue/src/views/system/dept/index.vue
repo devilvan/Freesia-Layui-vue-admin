@@ -5,20 +5,37 @@
       <div :style="{ width: isFold ? `0px` : `300px` }" class="left-tree">
         <!-- tree -->
         <div v-show="!isFold">
-          <lay-button type="normal" size="sm" @click="toAdd">
-            <lay-icon type="layui-icon-addition"></lay-icon>
-            新建
-          </lay-button>
-          <lay-button type="warm" size="sm" @click="toEdit">
-            <lay-icon type="layui-icon-edit"></lay-icon>
-            修改
-          </lay-button>
-          <lay-button type="danger" size="sm" @click="toDelete">
-            <lay-icon type="layui-icon-delete"></lay-icon>
-            删除
-          </lay-button>
+          <lay-row>
+            <lay-col md="6">
+              <lay-button type="normal" size="sm" @click="toAdd"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_ADD]">
+                <lay-icon type="layui-icon-addition"></lay-icon>
+                新建
+              </lay-button>
+            </lay-col>
+            <lay-col md="6">
+              <lay-button type="warm" size="sm" @click="toEdit"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_EDIT]">
+                <lay-icon type="layui-icon-edit"></lay-icon>
+                修改
+              </lay-button>
+            </lay-col>
+            <lay-col md="6">
+              <lay-button type="danger" size="sm" @click="toDelete"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_DELETE]">
+                <lay-icon type="layui-icon-delete"></lay-icon>
+                删除
+              </lay-button>
+            </lay-col>
+            <lay-col md="6">
+              <lay-button type="normal" size="sm" @click="assignRole"
+                          v-permission="[$MENU_PERMISSION.SYSTEM_DEPT_ASSIGN_ROLE]">
+                <lay-icon type="layui-icon-delete"></lay-icon>
+                分配角色
+              </lay-button>
+            </lay-col>
+          </lay-row>
         </div>
-
         <lay-tree
             v-show="!isFold"
             style="margin-top: 10px"
@@ -28,6 +45,7 @@
             :showLine="showLine"
             :onlyIconControl="true"
             :expandKeys="expandKeys"
+            :defaultExpandAll="true"
             @node-click="handleClick"
         >
           <template #title="{ data }">
@@ -105,7 +123,7 @@
           </lay-form>
         </lay-card>
         <lay-table
-            class="table-style"
+            class="table-box table-style"
             :page="pageQuery"
             :columns="columns"
             :loading="loading"
@@ -117,7 +135,7 @@
         >
           <template #accountStatus="{ row }">
             <lay-switch
-                :model-value="row.accountStatus === '0'"
+                :model-value="row.accountStatus === '1'"
                 @change="changeStatus($event, row)"
             ></lay-switch>
           </template>
@@ -162,7 +180,7 @@
     </div>
     <lay-layer v-model="visible11" :title="title" :area="['500px', '450px']">
       <div style="padding: 20px">
-        <lay-form :model="model11" ref="layFormRef11" required>
+        <lay-form :model="model11" ref="addModalFormRef" required>
           <lay-form-item label="用户账号" prop="account">
             <lay-input v-model="model11.account"></lay-input>
           </lay-form-item>
@@ -183,7 +201,7 @@
           </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: center">
-          <lay-button size="sm" type="primary" @click="toSubmit"
+          <lay-button size="sm" type="primary" @click="saveInsertDept"
           >保存
           </lay-button
           >
@@ -192,64 +210,134 @@
       </div>
     </lay-layer>
 
-    <lay-layer v-model="visible22" :title="title22" :area="['700px', '400px']">
+    <lay-layer v-model="addVisibleFlag" :title="addModalTitle" :area="['1200px', '500px']">
       <div style="padding: 20px">
-        <lay-form :model="model22" ref="layFormRef11" required>
-          <lay-row>
-            <lay-col md="12">
-              <lay-form-item label="上级机构" prop="organization">
-                <lay-select v-model="model22.organization" style="width: 100%">
-                  <lay-select-option value="1" label="研发部">
-                  </lay-select-option>
-                  <lay-select-option value="2" label="测试部">
-                  </lay-select-option>
-                  <lay-select-option value="3" label="设计部">
-                  </lay-select-option>
-                  <lay-select-option value="4" label="市场部">
-                  </lay-select-option>
-                  <lay-select-option value="5" label="运维部">
-                  </lay-select-option>
-                </lay-select>
-              </lay-form-item>
-              <lay-form-item label="机构名称" prop="name">
-                <lay-input v-model="model22.name"></lay-input>
-              </lay-form-item>
-              <lay-form-item label="机构全称" prop="fullName">
-                <lay-input v-model="model22.fullName"></lay-input>
-              </lay-form-item>
-              <lay-form-item label="机构代码" prop="code">
-                <lay-input v-model="model22.code"></lay-input>
+        <lay-form :model="addSysDeptVo" ref="addModalFormRef" label-position="top" size="md">
+          <lay-row space="20">
+            <lay-col md="6">
+              <lay-form-item label="上级部门" prop="parentId" required>
+                <!-- :onlyLastLevel="true" 不能与:changeOnSelect="true" 一起使用-->
+                <lay-cascader style="width: 100%"
+                              :options="deptTreeSelect"
+                              v-model="addSysDeptVo.ancestors"
+                              :replaceFields="replaceFields"
+                              decollator=","
+                              allow-clear
+                              :changeOnSelect="true"
+                              @change="changeAddModalParentIdSelect">
+                </lay-cascader>
               </lay-form-item>
             </lay-col>
-            <lay-col md="12">
-              <lay-form-item label="机构类型" prop="type">
-                <lay-select v-model="model22.type" style="width: 100%">
-                  <lay-select-option value="1" label="公司"></lay-select-option>
-                  <lay-select-option value="2" label="子公司">
-                  </lay-select-option>
-                  <lay-select-option value="3" label="部门"></lay-select-option>
-                  <lay-select-option value="4" label="小组"></lay-select-option>
-                </lay-select>
+            <lay-col md="6">
+              <lay-form-item label="部门名称" prop="deptName" required>
+                <lay-input v-model="addSysDeptVo.deptName" style="width: 100%"></lay-input>
               </lay-form-item>
-              <lay-form-item label="排序号" prop="sort">
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="负责人" prop="leader" required>
+                <lay-input v-model="addSysDeptVo.leader"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="联系电话" prop="telNo">
+                <lay-input v-model="addSysDeptVo.telNo"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="邮箱" prop="email">
+                <lay-input v-model="addSysDeptVo.email"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="排序号" prop="orderNum">
                 <lay-input-number
                     style="width: 100%"
-                    v-model="model22.sort"
+                    v-model="addSysDeptVo.orderNum"
                     position="right"
                 ></lay-input-number>
               </lay-form-item>
-              <lay-form-item label="备注" prop="remark">
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="备注" prop="remark" required>
                 <lay-textarea
                     placeholder="请输入备注"
-                    v-model="model22.remark"
+                    v-model="addSysDeptVo.remark"
                     :rows="4"
                 ></lay-textarea>
               </lay-form-item>
             </lay-col>
           </lay-row>
         </lay-form>
-        <div style="width: 100%; text-align: center">
-          <lay-button size="sm" type="primary" @click="toSubmit"
+        <div style="width: 100%; text-align: right">
+          <lay-button size="sm" type="primary" @click="saveInsertDept"
+          >保存
+          </lay-button
+          >
+          <lay-button size="sm" @click="toCancel">取消</lay-button>
+        </div>
+      </div>
+    </lay-layer>
+
+    <lay-layer v-model="editVisibleFlag" :title="editModalTitle" :area="['1200px', '500px']">
+      <div style="padding: 20px">
+        <lay-form :model="editSysDeptVo" ref="editModalFormRef" label-position="top" size="md">
+          <lay-row space="20">
+            <lay-col md="6">
+              <lay-form-item label="上级部门" prop="parentId" required>
+                <!-- :onlyLastLevel="true" 不能与:changeOnSelect="true" 一起使用-->
+                <lay-cascader style="width: 100%"
+                              :options="deptTreeSelect"
+                              v-model="editSysDeptVo.ancestors"
+                              :replaceFields="replaceFields"
+                              decollator=","
+                              allow-clear
+                              :changeOnSelect="true"
+                              @change="changeEditModalParentIdSelect">
+                </lay-cascader>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="部门名称" prop="deptName" required>
+                <lay-input v-model="editSysDeptVo.deptName" style="width: 100%"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="负责人" prop="leader" required>
+                <lay-input v-model="editSysDeptVo.leader"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="联系电话" prop="telNo">
+                <lay-input v-model="editSysDeptVo.telNo"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="邮箱" prop="email">
+                <lay-input v-model="editSysDeptVo.email"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="排序号" prop="orderNum">
+                <lay-input-number
+                    style="width: 100%"
+                    v-model="editSysDeptVo.orderNum"
+                    position="right"
+                ></lay-input-number>
+              </lay-form-item>
+            </lay-col>
+            <lay-col md="6">
+              <lay-form-item label="备注" prop="remark" required>
+                <lay-textarea
+                    placeholder="请输入备注"
+                    v-model="editSysDeptVo.remark"
+                    :rows="4"
+                ></lay-textarea>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+        </lay-form>
+        <div style="width: 100%; text-align: right">
+          <lay-button size="sm" type="primary" @click="saveEditDept"
           >保存
           </lay-button
           >
@@ -259,129 +347,86 @@
     </lay-layer>
   </lay-container>
 </template>
+<script lang="ts">
+/**
+ * 创建组件时要添加name，否则在使用keep-alive时就会失效
+ */
+export default {
+  name: "Dept",
+};
+</script>
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {FindPageSysDeptListEntity, FindPageSysUserByDeptEntity} from "../../../types/system/Dept";
+import {
+  FindPageSysDeptListEntity,
+  FindPageSysUserByDeptEntity,
+  SysDeptSelectEntity,
+  SysDeptVo
+} from "../../../types/system/Dept";
 import {PageQuery} from "../../../types/Common";
-import {findDeptTreeList} from "../../../api/system/Dept";
+import {
+  deleteDept,
+  findDeptTreeList,
+  findIncrementOrderNum,
+  findTreeDeptSelect,
+  saveDept
+} from "../../../api/system/Dept";
 import {findPageSysUserByDept} from "../../../api/system/User";
 import {SysUserVo} from "../../../types/system/User";
 import {Constants, loadSysDictValue, matchDictValue} from "../../../util/UDict";
 import {MatchDictValueModel, SysDictValueEntity} from "../../../types/system/Dict";
 import DictTag from "../../component/DictTag.vue";
+import {useCryptStore} from "../../../store/crypt";
+import router from "../../../router";
+
+/* INIT*/
+const $router = router
+const $crypt = useCryptStore();
 onMounted(async () => {
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER);
   await loadData()
 })
+/* INIT*/
+
+/* VAR*/
 const sysGenderList = ref<Array<SysDictValueEntity>>([]);
 const deptTree = ref<Array<FindPageSysDeptListEntity>>()
+const deptTreeSelect = ref<SysDeptSelectEntity>({})
 const showLine = ref(true)
 const tailNodeIcon = ref(false)
 const selectedKey = ref('')
-const selectedNode = ref({
-  id: '',
-  deptName: ''
-})
+const selectedNode = ref()
 const isFold = ref(false)
 const searchQuery = ref<SysUserVo>({})
-
-const loadData = async () => {
-  const {data, code} = await findDeptTreeList(searchQuery.value, pageQuery)
-  if (code === 200) {
-    deptTree.value = data;
-    recursionTree(data);
-  }
-}
-
-function recursionTree(data: any) {
-  if (data) {
-    data.forEach((f: { id: string, children: Array<any> }) => {
-      expandKeys.value.push(f.id)
-      if (f.children && f.children.length > 0) {
-        recursionTree(f.children)
-      }
-    })
-  }
-
-}
-
-function toReset() {
-  searchQuery.value = {}
-}
-
-function handleClick(node: any) {
-  selectedNode.value = JSON.parse(JSON.stringify(node))
-  searchQuery.value.deptId = selectedNode.value.id
-  dataSource.value = []
-  change()
-}
-
-function toAdd() {
-  visible22.value = true
-}
-
-function toEdit() {
-  model22.value = {
-    organization: '1',
-    name: '研发部',
-    fullName: 'xxxx公司-研发部',
-    code: '001',
-    type: '1',
-    sort: 1,
-    remark: '备注'
-  }
-  visible22.value = true
-}
-
-function toDelete() {
-  if (selectedKey.value == '') {
-    layer.msg('您未选择组织机构，请先选择要删除的组织机构', {
-      icon: 3,
-      time: 2000
-    })
-    return
-  }
-  layer.confirm(
-      '您将删除所选中的组织机构 [ ' + selectedNode.value.deptName + ' ] ？',
-      {
-        title: '提示',
-        btn: [
-          {
-            text: '确定',
-            callback: (id: any) => {
-              layer.msg('您已成功删除')
-              layer.close(id)
-            }
-          },
-          {
-            text: '取消',
-            callback: (id: any) => {
-              layer.msg('您已取消操作')
-              layer.close(id)
-            }
-          }
-        ]
-      }
-  )
-}
-
-function toSearch() {
-  pageQuery.current = 1
-  change()
-}
-
 const loading = ref(false)
 const selectedKeys = ref()
 const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const expandKeys = ref<string[]>([])
-
+const dataSource = ref<Array<FindPageSysUserByDeptEntity>>()
+const expandKeys = ref<any[]>()
+const addSysDeptVo = ref<SysDeptVo>({})
+const editSysDeptVo = ref<SysDeptVo>({})
+const layFormRef22 = ref()
+const addVisibleFlag = ref(false)
+const editVisibleFlag = ref(false)
+const addModalTitle = ref('新建')
+const editModalTitle = ref('编辑')
+const model11 = ref({
+  name: '',
+  role: '',
+  sex: '',
+  status: '',
+  account: ''
+})
+const addModalFormRef = ref()
+const editModalFormRef = ref()
+const visible11 = ref(false)
+const title = ref('新增')
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '编号', width: '130px', key: 'id', fixed: 'left', sort: 'id'},
   {title: '用户名', width: '80px', key: 'userName', sort: 'userName'},
   {title: '用户昵称', width: '80px', key: 'nickName', sort: 'nickName'},
   {title: '性别', width: '80px', key: 'gender', sort: 'gender', customSlot: 'gender'},
@@ -396,6 +441,105 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+const replaceFields = {
+  label: 'title',
+  value: 'id',
+  children: 'children'
+}
+/* VAR*/
+
+/* FUNCTION*/
+const loadData = async () => {
+  findDeptTreeList(searchQuery.value, pageQuery).then((res: any) => {
+    if (res.code === 200) {
+      deptTree.value = res.data;
+      // 递归树结构默认展开所有
+      recursionTree(res.data);
+    }
+  })
+  findTreeDeptSelect().then((res: any) => {
+    if (res.code === 200) {
+      deptTreeSelect.value = res.data;
+    }
+  })
+}
+
+function recursionTree(data: any) {
+  if (data) {
+    data.forEach((f: { id: string, children: Array<any> }) => {
+      if (f.children && f.children.length > 0) {
+        recursionTree(f.children)
+      }
+    })
+  }
+}
+
+function toReset() {
+  searchQuery.value = {}
+}
+
+function handleClick(node: any) {
+  selectedNode.value = JSON.parse(JSON.stringify(node))
+  searchQuery.value.deptId = selectedNode.value.id
+  editSysDeptVo.value = selectedNode.value
+  dataSource.value = []
+  change()
+}
+
+function toAdd() {
+  addVisibleFlag.value = true
+}
+
+function toEdit() {
+  if (Object.keys(editSysDeptVo.value).length === 0) {
+    layer.msg("请选择部门！", {icon: 3});
+    return;
+  }
+  editVisibleFlag.value = true
+}
+
+function toDelete() {
+  if (!selectedKey.value || selectedKey.value === '') {
+    layer.msg('请选择要删除的部门', {
+      icon: 3,
+      time: 2000
+    })
+    return;
+  }
+  layer.confirm(
+      '您将删除所选中的部门【' + selectedNode.value.deptName + '】？',
+      {
+        title: '提示',
+        btn: [
+          {
+            text: '确定',
+            callback: (id: any) => {
+              deleteDept(selectedNode.value.id).then((res: any) => {
+                if (res.code == 200) {
+                  loadData();
+                  loadDataSource()
+                }
+              });
+              layer.msg('您已成功删除')
+              layer.close(id)
+            }
+          },
+          {
+            text: '取消',
+            callback: (id: any) => {
+              layer.close(id)
+            }
+          }
+        ]
+      }
+  )
+}
+
+function toSearch() {
+  pageQuery.current = 1
+  change()
+}
+
 const change = () => {
   loading.value = true
   setTimeout(() => {
@@ -406,12 +550,12 @@ const change = () => {
 const sortChange = (key: any, sort: number) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
 }
-const dataSource = ref<Array<FindPageSysUserByDeptEntity>>()
+
 const changeStatus = (isChecked: boolean, row: any) => {
   dataSource.value?.forEach((item) => {
     if (item.id === row.id) {
       layer.msg('Success', {icon: 1}, () => {
-        item.accountStatus = isChecked ? '0' : '1'
+        item.accountStatus = isChecked ? '1' : '0'
       })
     }
   })
@@ -430,16 +574,7 @@ const loadDataSource = async () => {
   }
   return rows
 }
-const model11 = ref({
-  name: '',
-  role: '',
-  sex: '',
-  status: '',
-  account: ''
-})
-const layFormRef11 = ref()
-const visible11 = ref(false)
-const title = ref('新增')
+
 const changeVisible11 = (text: any, row: any) => {
   title.value = text
   if (row != null) {
@@ -457,7 +592,7 @@ const changeVisible11 = (text: any, row: any) => {
   visible11.value = !visible11.value
 }
 const submit11 = function () {
-  layFormRef11.value.validate((isValidate: any, model: any, errors: any) => {
+  addModalFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     layer.open({
       type: 1,
       title: '表单提交结果',
@@ -480,11 +615,11 @@ const submit11 = function () {
 }
 // 清除校验
 const clearValidate11 = function () {
-  layFormRef11.value.clearValidate()
+  addModalFormRef.value.clearValidate()
 }
 // 重置表单
 const reset11 = function () {
-  layFormRef11.value.reset()
+  addModalFormRef.value.reset()
 }
 
 function toRemove() {
@@ -513,15 +648,37 @@ function toRemove() {
   })
 }
 
-function toSubmit() {
-  layer.msg('保存成功！', {icon: 1, time: 1000})
-  visible11.value = false
-  visible22.value = false
+function saveInsertDept() {
+  $crypt.encryptAes(addSysDeptVo.value).then(encrypt => {
+    saveDept(encrypt).then((decrypt: any) => {
+      if (decrypt.code === 200) {
+        layer.msg(decrypt.msg, {icon: 1})
+        addVisibleFlag.value = false
+        addSysDeptVo.value = {}
+        loadData()
+      }
+    })
+  })
+}
+
+function saveEditDept() {
+  $crypt.encryptAes(editSysDeptVo.value).then(encrypt => {
+    saveDept(encrypt).then((decrypt: any) => {
+      if (decrypt.code === 200) {
+        layer.msg(decrypt.msg, {icon: 1})
+        editVisibleFlag.value = false
+        editSysDeptVo.value = {}
+        loadData()
+      }
+    })
+  })
+
 }
 
 function toCancel() {
   visible11.value = false
-  visible22.value = false
+  addVisibleFlag.value = false
+  editVisibleFlag.value = false
 }
 
 function confirm() {
@@ -532,18 +689,37 @@ function cancel() {
   layer.msg('您已取消操作')
 }
 
-const model22 = ref({
-  organization: '',
-  name: '',
-  fullName: '',
-  code: '',
-  type: '',
-  sort: 0,
-  remark: ''
-})
-const layFormRef22 = ref()
-const visible22 = ref(false)
-const title22 = ref('新建')
+function changeAddModalParentIdSelect(value: any) {
+  addSysDeptVo.value.ancestors = value.value;
+  addSysDeptVo.value.parentId = value.currentClick.id;
+  console.log(value);
+  findIncrementOrderNum(value.currentClick.id).then((res: any) => {
+    if (res.code === 200) {
+      addSysDeptVo.value.orderNum = res.data
+    }
+  })
+}
+
+function changeEditModalParentIdSelect(value: any) {
+  console.log(value);
+  editSysDeptVo.value.ancestors = value.value;
+  editSysDeptVo.value.parentId = value.currentClick.id;
+}
+
+function assignRole() {
+  if (!selectedNode.value || Object.keys(selectedNode.value).length === 0) {
+    layer.msg("请选择1个部门", {icon: 3})
+    return;
+  }
+  $router.push("/system/dept/assignRole/" + selectedNode.value.id)
+}
+
+function assignRoleById(id: any) {
+  $router.push("/system/dept/assignRole/" + id)
+}
+
+/* FUNCTION*/
+
 </script>
 
 <style scoped>

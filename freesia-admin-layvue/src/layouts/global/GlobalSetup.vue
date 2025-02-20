@@ -7,7 +7,7 @@
     v-model="visible"
   >
     <div class="global-setup">
-      <div class="global-setup-title">Overall style</div>
+      <div class="global-setup-title">布局样式</div>
       <global-setup-theme v-model="appStore.sideTheme"></global-setup-theme>
       <global-setup-theme
         v-model="appStore.subfieldPosition"

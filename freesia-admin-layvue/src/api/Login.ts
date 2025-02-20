@@ -1,15 +1,17 @@
-import {LoginVo} from "../types/login/LoginForm";
 import Http from "./Http";
 
-export const login = function(loginForm: LoginVo) {
-    return Http.post('/api/sysLoginController/sysLogin', loginForm)
+const sseDisconnectUrl = import.meta.env.VITE_SSE_DISCONNECT_URL
+
+export const login = function (encrypt: string) {
+    let param = {encrypt: encrypt}
+    return Http.post('/api/sysLoginController/sysLogin', param)
 }
 
-export const menu = function() {
+export const menu = function () {
     return Http.get('/user/menu')
 }
 
-export const permission = function() {
+export const permission = function () {
     return Http.get('/user/permission')
 }
 
@@ -27,5 +29,8 @@ export const getMenu = function () {
 
 export const logout = function () {
     return Http.post('/api/sysLoginController/sysLogOut')
+}
 
+export const sseDisconnect = function () {
+    return Http.get(sseDisconnectUrl)
 }

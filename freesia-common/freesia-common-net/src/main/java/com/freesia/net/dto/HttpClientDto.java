@@ -1,0 +1,31 @@
+package com.freesia.net.dto;
+
+import com.freesia.net.builder.HttpBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.HttpRequestBase;
+
+import java.util.Map;
+
+/**
+ * @author Evad.Wu
+ * @Description 由 {@link HttpBuilder}构建的HttpClient对象
+ * @date 2022-11-21
+ */
+@Data
+@AllArgsConstructor
+public class HttpClientDto {
+    /**
+     * 请求对象
+     */
+    private HttpRequestBase httpRequest;
+    /**
+     * 请求对象的头信息
+     */
+    private Map<String, String> headers;
+    /**
+     * 代理对象的证书
+     */
+    private CredentialsProvider credentialsProvider;
+}

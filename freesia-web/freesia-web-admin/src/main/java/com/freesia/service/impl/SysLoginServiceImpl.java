@@ -7,21 +7,31 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
+import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
-import com.freesia.mapper.SysUserMapper;
-import com.freesia.model.LoginUserModel;
-import com.freesia.model.SysRoleModel;
+import com.freesia.log.annotation.LogRecord;
+import com.freesia.net.util.UServlet;
 import com.freesia.po.SysDeptPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.po.SysUserPo;
 import com.freesia.properties.LoginPasswordProperties;
+import com.freesia.redis.util.URedis;
+import com.freesia.satoken.constant.DeviceType;
+import com.freesia.satoken.model.LoginUserModel;
+import com.freesia.satoken.model.SysRoleModel;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.service.*;
+import com.freesia.sse.constant.SseTopic;
+import com.freesia.sse.dto.SseMessageDto;
+import com.freesia.sse.util.USse;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -33,17 +43,17 @@ import java.util.function.Supplier;
 @Service
 @RequiredArgsConstructor
 public class SysLoginServiceImpl implements SysLoginService {
+    private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private final LoginPasswordProperties loginPasswordProperties;
     private final SysConfigService sysConfigService;
     private final SysUserService sysUserService;
     private final SysRoleService sysRoleService;
     private final SysMenuService sysMenuService;
-    private final SysUserMapper sysUserMapper;
 
 
     @Override
-    public String login(String username, String password, String code, String uuid) {
-        sysConfigService.validateCaptcha(username, code, uuid);
+    public String login(String username, String password, String code, String captchaKey) {
+        sysConfigService.validateCaptcha(username, code, captchaKey);
         SysUserPo sysUserPo = findByUsername(username);
         // 检查登录状态
         checkLogin(LoginRetryType.PASSWORD, username, () -> !BCrypt.checkpw(password, sysUserPo.getPassword()));
@@ -52,34 +62,27 @@ public class SysLoginServiceImpl implements SysLoginService {
         // 登录系统，基于不同设备类型，用于不同的客户端
         USecurity.loginByDevice(loginUserModel, DeviceType.PC);
         // 登录成功后记录操作日志
-        SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
-            SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
-            String ip = UServlet.getInitiatedRequestIp();
+        SysSensitiveLogBean loginLogEvent = USecurity.recordSensitiveLog(() -> {
+            SysSensitiveLogBean loginLog = new SysSensitiveLogBean();
             LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
-            loginOperLog.setOperatorId(loginUser.getUserId());
-            loginOperLog.setOperatorName(username);
-            loginOperLog.setDeptId(loginUser.getDeptId());
-            loginOperLog.setDeptName(loginUser.getDeptName());
-            loginOperLog.setMethodType(UServlet.getMethod());
-            loginOperLog.setUrl(UServlet.getRequestUri());
-            loginOperLog.setBeOperatedId(loginUser.getUserId());
-            loginOperLog.setBeOperatedName(username);
-            loginOperLog.setIpAddress(ip);
-            loginOperLog.setLocation(URegion.getRealAddressByIp(ip));
-            loginOperLog.setOperateTime(new Date());
-            loginOperLog.setBrowser(UServlet.getBrowser());
-            loginOperLog.setOs(UServlet.getOs());
-            loginOperLog.setModule(SysModule.USER_MANAGEMENT);
-            loginOperLog.setSubModule(SysModule.LOGIN);
-            loginOperLog.setType(SysModule.LOGIN);
-            loginOperLog.setResult(FlagConstant.SUCCESS);
-            loginOperLog.setContextOld(null);
-            loginOperLog.setContext(null);
-            loginOperLog.setSign(username);
-            loginOperLog.setRemark(UMessage.message("user.login.success"));
-            return loginOperLog;
+            loginLog.setBeOperatedId(loginUser.getUserId());
+            loginLog.setBeOperatedName(username);
+            loginLog.setModule(UserModule.USER_MANAGEMENT);
+            loginLog.setSubModule(UserModule.SubModule.LOGIN);
+            loginLog.setType(UserModule.SubModule.LOGIN);
+            loginLog.setResult(FlagConstant.SUCCESS);
+            loginLog.setRemark(UMessage.message("user.login.success"));
+            return loginLog;
         });
-        USpring.context().publishEvent(loginOperLogEvent);
+        USpring.context().publishEvent(loginLogEvent);
+        Long userId = USecurity.getUserId();
+        scheduledThreadPoolExecutor.schedule(() -> {
+            SseMessageDto dto = new SseMessageDto();
+            dto.setContent("欢迎登录Freesia后台管理系统");
+            dto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
+            dto.setUserIdList(List.of(userId));
+            USse.publish(dto);
+        }, 5, TimeUnit.SECONDS);
         return StpUtil.getTokenValue();
     }
 
@@ -93,6 +96,9 @@ public class SysLoginServiceImpl implements SysLoginService {
     public LoginUserModel buildLoginUser(SysUserPo sysUserPo) {
         // 获取用户对应的部门
         SysDeptPo sysDeptPo = sysUserPo.getSysDeptPo();
+        if (UEmpty.isNull(sysDeptPo)) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "user.dept.non.assign", new Object[] {sysUserPo.getUserName()});
+        }
         // 是否管理员
         boolean isAdmin = isAdmin(sysUserPo);
         // 获取用户对应的角色
@@ -173,7 +179,7 @@ public class SysLoginServiceImpl implements SysLoginService {
      */
     @Override
     public boolean isAdmin(SysUserPo sysUserPo) {
-        return Convert.toBool(sysUserMapper.isAdmin(sysUserPo.getId()), false);
+        return Convert.toBool(sysUserService.isAdmin(sysUserPo.getId()), false);
     }
 
     /**
@@ -193,94 +199,30 @@ public class SysLoginServiceImpl implements SysLoginService {
         // 如果输入错误超过最大次数，则锁定
         String ip = UServlet.getInitiatedRequestIp();
         if (errorCount >= maxRetryCount) {
-            String message = UMessage.message(loginRetryType.getRetryLimitExceed(), errorCount, maxRetryCount);
-            SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
-                loginOperLog.setOperatorId(0L);
-                loginOperLog.setOperatorName(username);
-                loginOperLog.setMethodType(UServlet.getMethod());
-                loginOperLog.setUrl(UServlet.getRequestUri());
-                loginOperLog.setBeOperatedId(0L);
-                loginOperLog.setBeOperatedName(username);
-                loginOperLog.setIpAddress(ip);
-                loginOperLog.setLocation(URegion.getRealAddressByIp(ip));
-                loginOperLog.setOperateTime(new Date());
-                loginOperLog.setBrowser(UServlet.getBrowser());
-                loginOperLog.setOs(UServlet.getOs());
-                loginOperLog.setModule(SysModule.USER_MANAGEMENT);
-                loginOperLog.setSubModule(SysModule.CHECK_PASSWORD);
-                loginOperLog.setType(SysModule.LOGIN);
-                loginOperLog.setResult(FlagConstant.FAILED);
-                loginOperLog.setContextOld(null);
-                loginOperLog.setContext(null);
-                loginOperLog.setSign(username);
-                loginOperLog.setRemark(message);
-                return loginOperLog;
-            });
-            USpring.context().publishEvent(loginOperLogEvent);
-            throw new UserException(loginRetryType.getRetryLimitExceed(), errorCount, maxRetryCount);
+            String message = UMessage.message(loginRetryType.getRetryLimitExceed(), errorCount, loginPasswordProperties.getLockTime().toMinutes());
+            SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
+            USpring.context().publishEvent(sysSensitiveLogBean);
+            throw new UserException(loginRetryType.getRetryLimitExceed(), new Object[] {errorCount, loginPasswordProperties.getLockTime().toMinutes()});
         }
         // 密码输入错误
         if (bcrptCheckpw.get()) {
             errorCount++;
-            // 更新Redis中的密码错误次数
-            URedis.set(errorKey, errorCount);
             // 如果输入错误超过最大次数，则锁定
             if (errorCount >= maxRetryCount) {
-                String message = UMessage.message(loginRetryType.getRetryLimitExceed(), errorCount, maxRetryCount);
-                SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
-                    SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
-                    loginOperLog.setOperatorId(0L);
-                    loginOperLog.setOperatorName(username);
-                    loginOperLog.setMethodType(UServlet.getMethod());
-                    loginOperLog.setUrl(UServlet.getRequestUri());
-                    loginOperLog.setBeOperatedId(0L);
-                    loginOperLog.setBeOperatedName(username);
-                    loginOperLog.setIpAddress(ip);
-                    loginOperLog.setLocation(URegion.getRealAddressByIp(ip));
-                    loginOperLog.setOperateTime(new Date());
-                    loginOperLog.setBrowser(UServlet.getBrowser());
-                    loginOperLog.setOs(UServlet.getOs());
-                    loginOperLog.setModule(SysModule.USER_MANAGEMENT);
-                    loginOperLog.setSubModule(SysModule.CHECK_PASSWORD);
-                    loginOperLog.setType(SysModule.LOGIN);
-                    loginOperLog.setResult(FlagConstant.FAILED);
-                    loginOperLog.setContextOld(null);
-                    loginOperLog.setContext(null);
-                    loginOperLog.setSign(username);
-                    loginOperLog.setRemark(message);
-                    return loginOperLog;
-                });
-                USpring.context().publishEvent(loginOperLogEvent);
-                throw new UserException(loginRetryType.getRetryLimitExceed(), errorCount, maxRetryCount);
+                // 锁定
+                URedis.set(errorKey, errorCount, loginPasswordProperties.getLockTime());
+                String message = UMessage.message(loginRetryType.getRetryLimitExceed(), errorCount, loginPasswordProperties.getLockTime().toMinutes());
+                SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
+                USpring.context().publishEvent(sysSensitiveLogBean);
+                throw new UserException(loginRetryType.getRetryLimitExceed(), new Object[] {errorCount, loginPasswordProperties.getLockTime().toMinutes()});
             } else {
                 // 未达到最大重试次数
+                // 更新Redis中的密码错误次数，保存12小时
+                URedis.set(errorKey, errorCount, 12, TimeUnit.HOURS);
                 String message = UMessage.message(loginRetryType.getRetryLimitCount(), errorCount);
-                SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
-                    SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
-                    loginOperLog.setOperatorId(0L);
-                    loginOperLog.setOperatorName(username);
-                    loginOperLog.setMethodType(UServlet.getMethod());
-                    loginOperLog.setUrl(UServlet.getRequestUri());
-                    loginOperLog.setBeOperatedId(0L);
-                    loginOperLog.setBeOperatedName(username);
-                    loginOperLog.setIpAddress(ip);
-                    loginOperLog.setLocation(URegion.getRealAddressByIp(ip));
-                    loginOperLog.setOperateTime(new Date());
-                    loginOperLog.setBrowser(UServlet.getBrowser());
-                    loginOperLog.setOs(UServlet.getOs());
-                    loginOperLog.setModule(SysModule.USER_MANAGEMENT);
-                    loginOperLog.setSubModule(UMessage.message(SysModule.CHECK_CAPTCHA));
-                    loginOperLog.setType(SysModule.LOGIN);
-                    loginOperLog.setResult(FlagConstant.FAILED);
-                    loginOperLog.setContextOld(null);
-                    loginOperLog.setContext(null);
-                    loginOperLog.setSign(username);
-                    loginOperLog.setRemark(message);
-                    return loginOperLog;
-                });
-                USpring.context().publishEvent(loginOperLogEvent);
-                throw new UserException(loginRetryType.getRetryLimitCount(), errorCount);
+                SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
+                USpring.context().publishEvent(sysSensitiveLogBean);
+                throw new UserException(loginRetryType.getRetryLimitCount(), new Object[] {errorCount});
             }
         }
         // 登录成功，清除登录失败次数
@@ -298,15 +240,16 @@ public class SysLoginServiceImpl implements SysLoginService {
         SysUserPo sysUserPo = sysUserService.findOneByUsername(username);
         if (ObjectUtil.isNull(sysUserPo)) {
             log.info("登录用户：{} 不存在.", username);
-            throw new UserException("user.not.exists", username);
-        } else if (FlagConstant.DISABLED.equals(sysUserPo.getAccountStatus())) {
+            throw new UserException("user.not.exists", new Object[] {username});
+        } else if (FlagConstant.DISABLED.equals(sysUserPo.getAccountStatus()) || sysUserPo.getLogicDel()) {
             log.info("登录用户：{} 已被停用.", username);
-            throw new UserException("user.blocked", username);
+            throw new UserException("user.blocked", new Object[] {username});
         }
         return sysUserService.findByUsername(username);
     }
 
     @Override
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.LOGOUT, message = "user.logout")
     public void logout() {
         try {
             LoginUserModel loginUser = USecurity.getLoginUser();
@@ -314,35 +257,34 @@ public class SysLoginServiceImpl implements SysLoginService {
                 return;
             }
             StpUtil.logout();
-            SysSensitiveLogBean loginOperLogEvent = USecurity.recordSensitiveLog(() -> {
-                String username = ObjectUtil.defaultIfNull(loginUser.getUsername(), AdminConstant.UNKWNOW);
-                String ip = UServlet.getInitiatedRequestIp();
-                SysSensitiveLogBean loginOperLog = new SysSensitiveLogBean();
-                loginOperLog.setOperatorId(loginUser.getUserId());
-                loginOperLog.setOperatorName(username);
-                loginOperLog.setDeptId(loginUser.getDeptId());
-                loginOperLog.setDeptName(loginUser.getDeptName());
-                loginOperLog.setMethodType(UServlet.getMethod());
-                loginOperLog.setUrl(UServlet.getRequestUri());
-                loginOperLog.setBeOperatedId(loginUser.getUserId());
-                loginOperLog.setBeOperatedName(username);
-                loginOperLog.setIpAddress(ip);
-                loginOperLog.setLocation(URegion.getRealAddressByIp(ip));
-                loginOperLog.setOperateTime(new Date());
-                loginOperLog.setBrowser(UServlet.getBrowser());
-                loginOperLog.setOs(UServlet.getOs());
-                loginOperLog.setModule(SysModule.USER_MANAGEMENT);
-                loginOperLog.setSubModule(SysModule.LOGOUT);
-                loginOperLog.setType(SysModule.LOGOUT);
-                loginOperLog.setResult(FlagConstant.SUCCESS);
-                loginOperLog.setContextOld(null);
-                loginOperLog.setContext(null);
-                loginOperLog.setSign(username);
-                loginOperLog.setRemark(UMessage.message("user.logout.success"));
-                return loginOperLog;
-            });
-            USpring.context().publishEvent(loginOperLogEvent);
         } catch (NotLoginException ignored) {
         }
+    }
+
+    private SysSensitiveLogBean buildSysSensitiveLogBean(String username, String ip, String message) {
+        SysSensitiveLogBean sysSensitiveLogBean = new SysSensitiveLogBean();
+        sysSensitiveLogBean.setOperatorId(0L);
+        sysSensitiveLogBean.setDeptId(-1L);
+        sysSensitiveLogBean.setDeptName(AdminConstant.UNKNOWN);
+        sysSensitiveLogBean.setOperatorName(username);
+        sysSensitiveLogBean.setMethodType(UServlet.getMethod());
+        sysSensitiveLogBean.setUrl(UServlet.getRequestUri());
+        sysSensitiveLogBean.setBeOperatedId(0L);
+        sysSensitiveLogBean.setBeOperatedName(username);
+        sysSensitiveLogBean.setIpAddress(ip);
+        sysSensitiveLogBean.setLocation(URegion.getRealAddressByIp(ip));
+        sysSensitiveLogBean.setOperateTime(new Date());
+        sysSensitiveLogBean.setBrowser(UServlet.getBrowser());
+        sysSensitiveLogBean.setOs(UServlet.getOs());
+        sysSensitiveLogBean.setModule(UserModule.USER_MANAGEMENT);
+        sysSensitiveLogBean.setSubModule(UserModule.SubModule.CHECK_PASSWORD);
+        sysSensitiveLogBean.setType(UserModule.SubModule.LOGIN);
+        sysSensitiveLogBean.setResult(FlagConstant.FAILED);
+        sysSensitiveLogBean.setContextOld(null);
+        sysSensitiveLogBean.setContext(null);
+        sysSensitiveLogBean.setSign(username);
+        sysSensitiveLogBean.setRemark(message);
+        sysSensitiveLogBean.setTenantId(-1L);
+        return sysSensitiveLogBean;
     }
 }

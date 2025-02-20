@@ -1,37 +1,29 @@
 <template>
   <div :style="'height:' + height">
     <iframe
-        :id="iframeId"
+        :id="props.iframeId"
+        :iframeId="props.iframeId"
         style="width: 100%; height: 100%"
-        :src="src"
-        frameborder="yes"
+        :src="props.src + '?' + new Date().getTime()"
+        :frameborder="'yes'"
     ></iframe>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import {defineComponent, ref} from "vue";
 
-const props = defineProps({
-  src: {
-    type: String,
-    default: "/"
-  },
-  iframeId: {
-    type: String
-  }
+defineComponent({
+  name: "InnerLink"
+})
+
+interface InnerLinkProps {
+  src: string,
+  iframeId?: string
+}
+
+const props = withDefaults(defineProps<InnerLinkProps>(), {
+  src: "/"
 });
-
-// const height = ref(document.documentElement.clientHeight + "px");
 const height = ref(820 + "px");
 </script>
-
-<style>
-layui-body {
-  display: flex;
-  background: #5FB878;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-</style>

@@ -1,6 +1,9 @@
 package com.freesia.service;
 
 import com.freesia.dto.SysRoleDto;
+import com.freesia.dto.SysUserDto;
+import com.freesia.entity.FindAllRolesEntity;
+import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.po.SysRolePo;
 import com.freesia.pojo.PageQuery;
@@ -58,4 +61,84 @@ public interface SysRoleService {
      * @param dataScope  数据范围
      */
     void saveRoleMenuPrivilege(List<Long> menuIdList, Long roleId, String dataScope);
+
+    /**
+     * 查询所有角色
+     *
+     * @return 所有角色集合
+     */
+    List<FindAllRolesEntity> findAllRoles();
+
+    /**
+     * 查询用户信息和已分配该角色的用户列表
+     *
+     * @param sysRoleDto 查询信息
+     * @param pageQuery  分页信息
+     * @return 分页数据
+     */
+    TableResult<SysUserDto> findPageUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery);
+
+    /**
+     * 根据ID查询角色
+     *
+     * @param roleId 角色ID
+     * @return 角色
+     */
+    SysRoleDto findRoleById(Long roleId);
+
+    /**
+     * 查询未分配该角色的用户列表
+     *
+     * @param sysRoleDto 查询信息
+     * @param pageQuery  分页信息
+     * @return 分页数据
+     */
+    TableResult<SysUserDto> findPageAllowAssignUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery);
+
+    /**
+     * 分配角色
+     *
+     * @param roleId     角色ID
+     * @param userIdList 用户列表
+     */
+    SysRolePo assignUser(Long roleId, List<Long> userIdList);
+
+    /**
+     * 取消分配角色
+     *
+     * @param roleId     角色ID
+     * @param userIdList 用户列表
+     */
+    void cancelAssignUser(Long roleId, List<Long> userIdList);
+
+    /**
+     * 给角色分配部门
+     *
+     * @param deptIdSet 待分配的部门ID集合
+     * @param roleId    角色ID
+     */
+    void assignDept(Long roleId, Set<Long> deptIdSet);
+
+    /**
+     * 根据角色ID查询【分配部门】加载数据
+     *
+     * @param roleId 角色ID
+     * @return 角色与已分配部门的信息
+     */
+    FindDeptRolesByRoleIdEntity findDeptRolesByRoleId(Long roleId);
+
+    /**
+     * 保存角色
+     *
+     * @param sysRoleDto 入参
+     * @return 保存后的角色信息
+     */
+    SysRoleDto saveRole(SysRoleDto sysRoleDto);
+
+    /**
+     * 删除角色
+     *
+     * @param sysRoleDto 入参
+     */
+    void deleteRole(SysRoleDto sysRoleDto);
 }

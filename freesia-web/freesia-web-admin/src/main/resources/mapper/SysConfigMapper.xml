@@ -5,10 +5,12 @@
         SELECT ID,
                CREATE_TIME,
                REC_VER,
+               LOGIC_DEL,
+               REC_VER,
+               BUILD_IN,
                CONFIG_NAME,
                CONFIG_KEY,
-               CONFIG_VALUE,
-               CONFIG_TYPE
+               CONFIG_VALUE
         FROM sys_config C
             ${ew.getCustomSqlSegment}
     </select>

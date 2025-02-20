@@ -19,14 +19,26 @@ import java.util.List;
 @Repository
 public interface SysRoleRepository extends JpaRepository<SysRolePo, Long> {
     /**
-     * 根据角色ID删除 角色-菜单中间表
+     * 取消给用户分配角色
      *
-     * @param idList 角色ID
+     * @param roleId     角色ID
+     * @param userIdList 取消分配的用户ID
      */
     @Modifying
     @Query(value = """
-                DELETE FROM SysRoleMenuPo WHERE sysRoleMenuPk.roleId in (:idList)
+                DELETE FROM SysUserRolePo WHERE sysRoleMenuPk.roleId = :roleId and sysRoleMenuPk.userId in (:userIdList)
             """)
     @Transactional(rollbackFor = Exception.class)
-    void deleteRoleMenu(@Param("idList") List<Long> idList);
+    void cancelAssignUser(@Param("roleId") Long roleId, @Param("userIdList") List<Long> userIdList);
+
+    /**
+     * 根据角色ID删除 部门-角色信息表中的数据
+     *
+     * @param roleId 用户ID
+     */
+    @Modifying
+    @Query(value = """
+                DELETE FROM SysRoleDeptPo WHERE sysRoleDeptPk.roleId = :roleId
+            """)
+    void removeDeptRelationByRoleId(@Param("roleId") Long roleId);
 }

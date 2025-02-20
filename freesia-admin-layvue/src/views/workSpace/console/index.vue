@@ -3,7 +3,7 @@
     <lay-row space="10">
       <lay-col md="8" sm="8" xs="12">
         <lay-card>
-          <template #title> 快捷方式 </template>
+          <template #title> 快捷方式</template>
           <lay-row :space="10">
             <lay-col :md="6">
               <router-link to="/workspace/workbench" class="shortcut">
@@ -58,7 +58,7 @@
       </lay-col>
       <lay-col md="8" sm="8" xs="12">
         <lay-card>
-          <template #title> 代办事项 </template>
+          <template #title> 代办事项</template>
           <lay-row :space="10">
             <lay-col :md="12">
               <a class="agency">
@@ -97,7 +97,7 @@
       </lay-col>
       <lay-col md="8" sm="8" xs="12">
         <lay-card>
-          <template #title> 版本信息 </template>
+          <template #title> 版本信息</template>
           <table class="layui-table">
             <tr>
               <td>页面模式</td>
@@ -118,7 +118,7 @@
         <lay-row :space="10">
           <lay-col :md="24">
             <lay-card>
-              <template #title> 数据概览 </template>
+              <template #title> 数据概览</template>
               <div id="main" ref="mainRef"></div>
             </lay-card>
           </lay-col>
@@ -127,14 +127,14 @@
               <lay-tab type="brief" v-model="currentIndex">
                 <lay-tab-item title="今日热搜" id="1">
                   <lay-table
-                    :columns="columns21"
-                    :data-source="dataSource21"
+                      :columns="columns21"
+                      :data-source="dataSource21"
                   ></lay-table>
                 </lay-tab-item>
                 <lay-tab-item title="今日热帖" id="2">
                   <lay-table
-                    :columns="columns21"
-                    :data-source="dataSource21"
+                      :columns="columns21"
+                      :data-source="dataSource21"
                   ></lay-table>
                 </lay-tab-item>
               </lay-tab>
@@ -189,19 +189,20 @@
   </lay-container>
 </template>
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import {defineComponent, onMounted, ref} from 'vue'
 
 import * as echarts from 'echarts'
+import router from "../../../router";
 
 export default defineComponent({
+  name: 'Console',
   setup() {
     const mainRef = ref()
     const currentIndex = ref('1')
-    const router = useRouter()
+    const $router = router
 
     const changePage = () => {
-      router.push({ path: '/form/base', query: { id: '1111' } })
+      $router.push({path: '/form/base', query: {id: '1111'}})
     }
 
     onMounted(() => {
@@ -269,7 +270,7 @@ export default defineComponent({
         let reg = /^#[\da-f]{6}$/i
         if (reg.test(hex)) {
           rgbaColor = `rgba(${parseInt('0x' + hex.slice(1, 3))},${parseInt(
-            '0x' + hex.slice(3, 5)
+              '0x' + hex.slice(3, 5)
           )},${parseInt('0x' + hex.slice(5, 7))},${opacity})`
         }
         return rgbaColor
@@ -288,18 +289,18 @@ export default defineComponent({
             params.forEach((v: any) => {
               html += `<div style="color: #666;font-size: 14px;line-height: 24px">
 					                <span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:${
-                            color[v.componentIndex]
-                          };"></span>
+                  color[v.componentIndex]
+              };"></span>
 					                ${v.seriesName}.${v.name}
 					                <span style="color:${
-                            color[v.componentIndex]
-                          };font-weight:700;font-size: 18px">${v.value}</span>
+                  color[v.componentIndex]
+              };font-weight:700;font-size: 18px">${v.value}</span>
 					                万元`
             })
             return html
           },
           extraCssText:
-            'background: #fff; border-radius: 0;box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);color: #333;',
+              'background: #fff; border-radius: 0;box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);color: #333;',
           axisPointer: {
             type: 'shadow'
           }
@@ -373,21 +374,21 @@ export default defineComponent({
             areaStyle: {
               normal: {
                 color: new echarts.graphic.LinearGradient(
-                  0,
-                  0,
-                  0,
-                  1,
-                  [
-                    {
-                      offset: 0,
-                      color: hexToRgba(color[0], 0.3)
-                    },
-                    {
-                      offset: 1,
-                      color: hexToRgba(color[0], 0.1)
-                    }
-                  ],
-                  false
+                    0,
+                    0,
+                    0,
+                    1,
+                    [
+                      {
+                        offset: 0,
+                        color: hexToRgba(color[0], 0.3)
+                      },
+                      {
+                        offset: 1,
+                        color: hexToRgba(color[0], 0.1)
+                      }
+                    ],
+                    false
                 ),
                 shadowColor: hexToRgba(color[0], 0.1),
                 shadowBlur: 10
@@ -412,21 +413,21 @@ export default defineComponent({
             areaStyle: {
               normal: {
                 color: new echarts.graphic.LinearGradient(
-                  0,
-                  0,
-                  0,
-                  1,
-                  [
-                    {
-                      offset: 0,
-                      color: hexToRgba(color[1], 0.3)
-                    },
-                    {
-                      offset: 1,
-                      color: hexToRgba(color[1], 0.1)
-                    }
-                  ],
-                  false
+                    0,
+                    0,
+                    0,
+                    1,
+                    [
+                      {
+                        offset: 0,
+                        color: hexToRgba(color[1], 0.3)
+                      },
+                      {
+                        offset: 1,
+                        color: hexToRgba(color[1], 0.1)
+                      }
+                    ],
+                    false
                 ),
                 shadowColor: hexToRgba(color[1], 0.1),
                 shadowBlur: 10
@@ -550,6 +551,7 @@ export default defineComponent({
     font-size: 14px;
   }
 }
+
 .shortcut:hover {
   i {
     font-weight: 700;
@@ -557,6 +559,7 @@ export default defineComponent({
     color: #009688;
     box-shadow: 1px 1px 4px #cccccc53;
   }
+
   cite {
     font-weight: 600;
     color: #009688;

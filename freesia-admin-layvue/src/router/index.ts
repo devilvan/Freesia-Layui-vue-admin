@@ -1,16 +1,18 @@
-import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized} from 'vue-router'
+import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw} from 'vue-router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import {constantRoutes} from "./module/base-routes";
 import {useUserStore} from "../store/user";
+import {RouterComponent} from "../types/Menu";
+import {loginPath} from "../api/Http";
 
 NProgress.configure({showSpinner: false})
 
 
 /* 构建路由*/
-const router = createRouter({
+export const router = createRouter({
     history: createWebHistory('/'),
-    routes: constantRoutes,
+    routes: constantRoutes as RouteRecordRaw[],
 });
 
 /* 构建路由*/
@@ -30,10 +32,14 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     const userStore = useUserStore();
     NProgress.start();
     let token = userStore.token;
-    if (to.path === '/login') {
-        if (!token) {
+    if (to.path === loginPath) {
+        if (!token || token === '') {
+            // 如果token不存在，直接跳转到登录页
             userStore.token = ''
             next()
+        } else if ((token || token !== '') && to.path === loginPath) {
+            // 如果token存在（已登录），则跳转到默认页
+            next({path: '/'})
         } else {
             next()
         }
@@ -42,13 +48,12 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         if (!isGetRouter) {
             isGetRouter = true;
             await userStore.getRouters()
-            addRoutes(userStore.sidebarRoutes, router);
             next(to.fullPath)
         } else {
             next()
         }
     } else {
-        next({path: '/login'})
+        next({path: loginPath})
     }
 })
 
@@ -56,10 +61,10 @@ router.afterEach(() => {
     NProgress.done();
 })
 
-export const addRoutes = (sidebarRoutes: any, router: any) => {
-    if (sidebarRoutes && sidebarRoutes.length > 0) {
-        sidebarRoutes.forEach((sidebarRoute: any) => {
-            router.addRoute(sidebarRoute.name || 'Layout', sidebarRoute);
+export const addRoutes = (routes: any, router: any) => {
+    if (routes && routes.length > 0) {
+        routes.forEach((route: any) => {
+            router.addRoute(route.name || RouterComponent.BASE_LAYOUT, route);
         })
     }
 }

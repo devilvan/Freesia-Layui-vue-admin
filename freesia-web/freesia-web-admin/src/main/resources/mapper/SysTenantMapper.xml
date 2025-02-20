@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysTenantMapper">
+    <select id="findExistCode" resultType="java.lang.Integer">
+        SELECT 1
+        FROM sys_tenant
+        WHERE 1 = 1
+          AND code = #{code}
+    </select>
+    <select id="findListSysTenantByUserId" resultType="com.freesia.po.SysTenantPo">
+        SELECT DISTINCT T.ID,
+                        T.REC_VER,
+                        T.CODE,
+                        T.NAME,
+                        T.TYPE,
+                        T.STATUS,
+                        T.REMARK
+        FROM sys_tenant T
+                 LEFT JOIN sys_tenant_user stu on T.ID = stu.TENANT_ID
+        WHERE 1 = 1
+          AND T.LOGIC_DEL = 0
+          AND stu.USER_ID = #{userId}
+    </select>
+    <select id="findPageSysTenant" resultType="com.freesia.po.SysTenantPo">
+        SELECT DISTINCT T.ID,
+                        T.CREATOR,
+                        T.CREATE_TIME,
+                        T.MODIFIER,
+                        T.MODIFY_TIME,
+                        T.LOGIC_DEL,
+                        T.REC_VER,
+                        T.BUILD_IN,
+                        T.TENANT_ID,
+                        T.CODE,
+                        T.`NAME`,
+                        T.`TYPE`,
+                        T.STATUS,
+                        T.REMARK,
+                        T.CONTACT_NAME,
+                        T.CONTACT_TEL,
+                        T.CONTACT_EMAIL,
+                        T.ADDRESS,
+                        T.BUSINESS_HOURS_FROM
+        FROM SYS_TENANT T
+                 LEFT JOIN SYS_TENANT_USER STU ON T.ID = STU.TENANT_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+</mapper>

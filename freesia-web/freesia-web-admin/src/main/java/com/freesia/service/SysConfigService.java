@@ -1,7 +1,6 @@
 package com.freesia.service;
 
 
-import com.freesia.constant.AdminConstant;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.po.SysConfigPo;
 import com.freesia.pojo.PageQuery;
@@ -33,7 +32,7 @@ public interface SysConfigService {
 
     /**
      * 查询验证码开关，并保存到缓存中
-     * 编码：{@link AdminConstant#SYS_ACCOUNT_CAPTCHA_ENABLED}
+     * 编码：{@link com.freesia.constant.SysConfigConstant#SYS_ACCOUNT_CAPTCHA_ENABLED}
      *
      * @return 开启/关闭
      */
@@ -42,7 +41,7 @@ public interface SysConfigService {
     /**
      * 查询全局配置表中是否启用注册功能
      *
-     * @param configKey config键，{@link AdminConstant#SYS_ACCOUNT_REGISTER_USER}
+     * @param configKey config键，{@link com.freesia.constant.SysConfigConstant#SYS_ACCOUNT_REGISTER_USER}
      * @return flag
      */
     String findConfigByKey(String configKey);
@@ -51,11 +50,11 @@ public interface SysConfigService {
      * 1. 判断验证码功能是否开启
      * 2. 若开启则验证用户输入的验证码
      *
-     * @param username 用户名
-     * @param code     用户输入的验证码
-     * @param uuid     唯一ID
+     * @param username   用户名
+     * @param code       用户输入的验证码
+     * @param captchaKey 唯一ID
      */
-    void validateCaptcha(String username, String code, String uuid);
+    void validateCaptcha(String username, String code, String captchaKey);
 
     /**
      * 应用启动初始化数据字典
@@ -70,4 +69,26 @@ public interface SysConfigService {
      * @return 参数配置分页对象
      */
     TableResult<SysConfigDto> findPageSysConfig(SysConfigDto sysConfigDto, PageQuery pageQuery);
+
+    /**
+     * 保存系统配置信息
+     *
+     * @param sysConfigDto 系统配置信息
+     */
+    void saveConfig(SysConfigDto sysConfigDto);
+
+    /**
+     * 根据键查询系统配置参数
+     *
+     * @param configKey 系统配置键
+     * @return 系统配置参数对象
+     */
+    SysConfigDto findSysConfigByConfigKey(String configKey);
+
+    /**
+     * 删除系统配置参数
+     *
+     * @param configKey 系统配置键
+     */
+    void deleteConfig(String configKey);
 }

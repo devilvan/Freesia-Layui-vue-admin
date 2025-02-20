@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.freesia.dto.SysDictKeyDto;
 import com.freesia.entity.FindPageSysDictKeyEntity;
 import com.freesia.po.SysDictKeyPo;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,8 +32,8 @@ public interface SysDictKeyMapper extends BaseMapper<SysDictKeyPo> {
     /**
      * 查询字典键列表
      *
-     * @param wrapper 条件SQL
+     * @param sysDictKeyDto 入参
      * @return 字典键列表
      */
-    List<SysDictKeyPo> findSysDictKeyList(@Param(Constants.WRAPPER) Wrapper<SysDictKeyPo> wrapper);
+    List<SysDictKeyPo> findSysDictKeyList(@Param("sysDictKeyDto") SysDictKeyDto sysDictKeyDto);
 }

@@ -8,8 +8,8 @@
                  LEFT JOIN sys_user_role SUR ON SUR.ROLE_ID = SRM.ROLE_ID
                  LEFT JOIN sys_role sr on sr.ID = SUR.ROLE_ID
         WHERE 1 = 1
-          AND SM.STATUS = '0'
-          AND SR.STATUS = '0'
+          AND SM.STATUS = '1'
+          AND SR.STATUS = '1'
           AND SUR.USER_ID = #{id}
     </select>
 
@@ -37,8 +37,8 @@
         WHERE 1 = 1
           AND U.ID = #{userId}
           AND M.MENU_TYPE IN ('D', 'M')
-          AND M.STATUS = '0'
-          AND R.STATUS = '0'
+          AND M.STATUS = '1'
+          AND R.STATUS = '1'
         ORDER BY M.PARENT_ID, M.ORDER_NUM
 
     </select>
@@ -60,9 +60,9 @@
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
           AND M.LOGIC_DEL = '0'
-          AND M.STATUS = '0'
+          AND M.STATUS = '1'
+          AND M.MENU_TYPE IN ('D', 'M', 'B')
           AND RM.ROLE_ID = #{roleId}
-
     </select>
     <select id="findAdminMenuList" resultType="java.lang.Long">
         SELECT M.ID
@@ -70,10 +70,13 @@
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
           AND M.LOGIC_DEL = '0'
-          AND M.STATUS = '0'
+          AND M.STATUS = '1'
+          AND M.MENU_TYPE IN ('D', 'M', 'B')
     </select>
     <select id="findMenuListByUserId" resultType="com.freesia.entity.FindMenuListByUserIdEntity">
         SELECT DISTINCT M.ID,
+                        M.REC_VER,
+                        M.LOGIC_DEL,
                         M.PARENT_ID,
                         M.MENU_NAME,
                         M.MENU_TYPE,
@@ -85,6 +88,7 @@
                         M.VISIBLE,
                         M.STATUS,
                         M.IS_FRAME,
+                        M.IS_CACHE,
                         M.REMARK
         FROM sys_menu M
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
@@ -101,5 +105,62 @@
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
                  LEFT JOIN sys_user_role SUR ON RM.ROLE_ID = SUR.ROLE_ID
             ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findMenuPathExist" resultType="java.lang.Boolean">
+        SELECT count(1)
+        FROM sys_menu M
+        WHERE 1 = 1
+        AND M.LOGIC_DEL = 0
+        AND M.PATH = #{sysMenuPo.path}
+        <if test="sysMenuPo.id != null and sysMenuPo.id != 0">
+            AND M.ID != #{sysMenuPo.id}
+        </if>
+    </select>
+    <select id="findByComponentExists" resultType="java.lang.Boolean">
+        SELECT EXISTS(
+                       SELECT 1
+                       FROM SYS_MENU
+                       WHERE 1 = 1
+                         AND COMPONENT = #{component}
+                         AND COMPONENT NOT IN ('modal', 'blank')
+                   )
+    </select>
+    <select id="findAllSysButton" resultType="com.freesia.po.SysMenuPo">
+        SELECT DISTINCT SM.ID,
+        SM.REC_VER,
+        SM.BUILD_IN,
+        SM.MENU_NAME,
+        SM.PARENT_ID,
+        SM.ORDER_NUM,
+        SM.PATH,
+        SM.COMPONENT,
+        SM.IS_CACHE,
+        SM.MENU_TYPE,
+        SM.VISIBLE,
+        SM.STATUS,
+        SM.PERMS,
+        SM.ICON,
+        SM.REMARK
+        FROM sys_menu SM
+        LEFT JOIN sys_role_menu SRM ON SM.ID = SRM.MENU_ID
+        WHERE 1 = 1
+        AND SM.LOGIC_DEL = 0
+        AND SM.MENU_TYPE = 'B'
+        AND SM.PARENT_ID = #{sysMenuDto.id}
+        <if test="sysMenuDto.menuName != null and sysMenuDto.menuName != ''">
+            AND SM.MENU_NAME LIKE CONCAT(#{sysMenuDto.menuName, '%'})
+        </if>
+        ORDER BY SM.ORDER_NUM
+    </select>
+    <select id="findAssignedSysButtonByRoleId" resultType="java.lang.Long">
+        SELECT DISTINCT ID
+        FROM sys_menu M
+                 LEFT JOIN sys_role_menu srm on M.ID = srm.MENU_ID
+            ${ew.getCustomSqlSegment}
+    </select>
+    <select id="findMaxOrderNum" resultType="java.lang.Long">
+        SELECT MAX(M.ORDER_NUM)
+        FROM SYS_MENU M
+        WHERE M.PARENT_ID = #{id}
     </select>
 </mapper>

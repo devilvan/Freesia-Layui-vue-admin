@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 /**
  * @author Evad.Wu
  * @Description 获取部门下拉树 持久层传输对象
- * {@link SysDeptMapper#findPageSysDeptList}
+ * {@link com.freesia.controller.SysDeptController#findPageSysDeptList}
  * @date 2023-09-02
  */
 @Data
@@ -26,7 +26,7 @@ public class FindPageSysDeptListEntity extends TreeDto<FindPageSysDeptListEntity
     private String telNo;
     @Schema(description = "邮箱")
     private String email;
-    @Schema(description = "部门状态（见DEPT_STATUS）")
+    @Schema(description = "部门状态（0-禁用，1-启用）")
     private String deptStatus;
     @Schema(description = "备注")
     private String remark;

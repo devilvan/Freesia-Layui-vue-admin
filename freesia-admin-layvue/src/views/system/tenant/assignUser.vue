@@ -1,0 +1,358 @@
+<template>
+  <div style="height: 100%; width: 100%">
+    <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
+      <lay-container fluid="true" class="user-box">
+        <lay-form style="margin-top: 10px">
+          <lay-card title="租户信息">
+            <lay-row>
+              <lay-col :md="6">
+                <lay-form-item label="租户ID" label-width="80">
+                  <lay-input
+                      v-model="sysTenantEntity.id"
+                      size="sm"
+                      style="width: 98%"
+                      :disabled="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="租户编码" label-width="200">
+                  <lay-input
+                      v-model="sysTenantEntity.code"
+                      size="sm"
+                      style="width: 98%"
+                      :disabled="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="租户名称" label-width="200">
+                  <lay-input
+                      v-model="sysTenantEntity.name"
+                      size="sm"
+                      style="width: 98%"
+                      :disabled="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
+          </lay-card>
+        </lay-form>
+        <lay-card title="已分配租户的用户信息">
+          <!-- table -->
+          <lay-table
+              class="table-box table-style"
+              :page="pageQuery"
+              :columns="columns"
+              :loading="loading"
+              :data-source="userEntityList"
+              v-model:selected-keys="selectedKeys"
+              @change="change"
+          >
+            <template #accountStatus="{ row }">
+              <div v-show="row.accountStatus === '1'">
+                <lay-tag color="#2dc570" variant="light">启用</lay-tag>
+              </div>
+              <div v-show="row.accountStatus === '0'">
+                <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
+              </div>
+            </template>
+            <template #remark="{ row }">
+              <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
+                <div class="oneRow">{{ row.remark }}</div>
+              </lay-tooltip>
+            </template>
+            <template v-slot:toolbar>
+              <lay-button size="sm" type="normal" @click="assignUserModalChange">
+                <lay-icon class="layui-icon-addition"></lay-icon>
+                分配用户
+              </lay-button>
+              <lay-button size="sm" type="danger" @click="cancelAssign">
+                <lay-icon class="layui-icon-subtraction"></lay-icon>
+                取消分配
+              </lay-button>
+            </template>
+          </lay-table>
+        </lay-card>
+      </lay-container>
+    </div>
+    <lay-layer v-model="changeAssignUserModalFlag" title="可分配租户的用户信息" :area="['1000px', '500px']">
+      <!-- table -->
+      <lay-table
+          class="table-box table-style"
+          :page="assignUserModalPageQuery"
+          :columns="assignUserModalColumns"
+          :loading="assignUserModalLoading"
+          :data-source="assignUserModalEntityList"
+          v-model:selected-keys="assignUserModalSelectedKeys"
+          @change="assignUserModalChange"
+      >
+        <template #accountStatus="{ row }">
+          <div v-show="row.accountStatus === '1'">
+            <lay-tag color="#2dc570" variant="light">启用</lay-tag>
+          </div>
+          <div v-show="row.accountStatus === '0'">
+            <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
+          </div>
+        </template>
+        <template #remark="{ row }">
+          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
+            <div class="oneRow">{{ row.remark }}</div>
+          </lay-tooltip>
+        </template>
+        <template v-slot:toolbar>
+          <lay-button size="sm" type="primary" @click="assign">
+            <lay-icon class="layui-icon-addition"></lay-icon>
+            分配
+          </lay-button>
+        </template>
+      </lay-table>
+    </lay-layer>
+  </div>
+  <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom" v-if="target">
+    <lay-button type="primary" @click="turnBack">返回</lay-button>
+  </lay-affix>
+</template>
+<script lang="ts">
+/**
+ * 创建组件时要添加name，否则在使用keep-alive时就会失效
+ */
+export default {
+  name: "TenantAssignUser",
+};
+</script>
+<script setup lang="ts">
+import {computed, nextTick, onMounted, reactive, ref} from 'vue'
+import {PageQuery} from "../../../types/Common";
+import {SysUserEntity} from "../../../types/system/User";
+import {SysDictValueEntity} from "../../../types/system/Dict";
+import {useRoute} from "vue-router";
+import {useTabStore} from "../../../layouts/composable/useTabStore";
+import {layer} from "@layui/layui-vue";
+import router from "../../../router";
+import {findPageAllowAssignUserByTenantId, findPageUserByTenantId} from "../../../api/system/User";
+import {SysTenantEntity} from "../../../types/system/Tenant";
+import {assignTenant, cancelTenantAssignUser, findSysTenant, reloadSysTenant} from "../../../api/system/Tenant";
+import {useUserStore} from "../../../store/user";
+
+/* INIT*/
+const $route = useRoute();
+const $router = router;
+const userInfoStore = useUserStore()
+const {closeOpen} = useTabStore();
+onMounted(async () => {
+  // sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
+  tenantId.value = $route.params && $route.params.tenantId as string;
+  loadFindSysTenant(tenantId.value);
+  change()
+})
+/* INIT*/
+/* VAR*/
+const tenantId = ref<string>('');
+const visible11 = ref(false)
+const title = ref('新增')
+const sysDataScopeList = ref<Array<SysDictValueEntity>>([])
+const dataSource = ref<Array<SysTenantEntity>>([]);
+const sysTenantEntity = ref<SysTenantEntity>({});
+const userEntityList = ref<Array<SysUserEntity>>();
+const assignUserModalEntityList = ref<Array<SysUserEntity>>();
+const loading = ref(false)
+const assignUserModalLoading = ref(false)
+const selectedKeys = ref([])
+const assignUserModalSelectedKeys = ref([])
+const changeAssignUserModalFlag = ref<boolean>(false)
+const pageQuery: PageQuery = reactive<PageQuery>({
+  current: 1,
+  limit: 10
+})
+const assignUserModalPageQuery: PageQuery = reactive<PageQuery>({
+  current: 1,
+  limit: 10
+})
+const columns = ref([
+  {title: '选项', type: 'checkbox', fixed: 'left'},
+  {title: '用户名称', key: 'userName'},
+  {title: '用户昵称', key: 'nickName'},
+  {title: '用户类型', key: 'userType'},
+  {title: '状态', key: 'accountStatus', customSlot: 'accountStatus'},
+  {title: '备注', key: 'remark', customSlot: 'remark'},
+  {
+    title: '操作',
+    width: '120px',
+    customSlot: 'operator',
+    key: 'operator',
+    fixed: 'right'
+  }
+])
+const assignUserModalColumns = ref([
+  {title: '选项', type: 'checkbox', fixed: 'left'},
+  {title: '用户名称', key: 'userName'},
+  {title: '用户昵称', key: 'nickName'},
+  {title: '用户类型', key: 'userType'},
+  {title: '状态', key: 'accountStatus', customSlot: 'accountStatus'},
+  {title: '备注', key: 'remark', customSlot: 'remark'},
+])
+const target = ref()
+nextTick(() => {
+  target.value = document.querySelector(".layui-body");
+})
+/* VAR*/
+const change = () => {
+  loading.value = true
+  setTimeout(() => {
+    loadDataSource()
+    loading.value = false
+  }, 1000)
+}
+const loadFindSysTenant = (tenantId: any) => {
+  findSysTenant({id: tenantId}).then((res: any) => {
+    if (res.code == 200) {
+      sysTenantEntity.value = res.data
+    }
+  })
+}
+
+const loadDataSource = () => {
+  findPageUserByTenantId({id: tenantId.value}, pageQuery).then((res: any) => {
+    if (res.code == 200) {
+      userEntityList.value = res.rows;
+      pageQuery.total = res.total;
+    }
+  })
+}
+
+function assign() {
+  if (assignUserModalSelectedKeys.value.length < 1) {
+    layer.msg("请选择数据", {icon: 3})
+    return;
+  }
+  assignTenant({
+    tenantId: tenantId.value,
+    userIdList: assignUserModalSelectedKeys.value
+  }).then((res: any) => {
+    if (res.code === 200) {
+      layer.msg(res.msg);
+      change()
+      assignUserModalPageQuery.current = 1;
+      changeAssignUserModal()
+      userInfoStore.reloadSysTenant();
+      window.location.reload()
+    } else {
+      layer.confirm(res.msg, {icon: 2})
+    }
+  })
+}
+
+function cancelAssign() {
+  if (selectedKeys.value.length < 1) {
+    layer.msg("请选择数据", {icon: 3})
+    return;
+  }
+  layer.confirm('确定取消分配该用户的角色吗？', {
+    btn: [
+      {
+        text: '确定',
+        callback: () => {
+          cancelTenantAssignUser({
+            tenantId: tenantId.value,
+            userIdList: selectedKeys.value
+          }).then((res: any) => {
+            if (res.code == 200) {
+              layer.msg(res.msg);
+              pageQuery.current = 1;
+              change();
+            } else {
+              layer.confirm(res.msg, {icon: 2})
+            }
+          })
+          layer.closeAll()
+        }
+      },
+      {
+        text: '取消',
+        callback: () => {
+          layer.closeAll()
+        }
+      }
+    ]
+  })
+
+}
+
+function changeAssignUserModal() {
+  changeAssignUserModalFlag.value = !changeAssignUserModalFlag.value
+}
+
+function loadAssignUserModalDataSource() {
+  findPageAllowAssignUserByTenantId({id: tenantId.value}, assignUserModalPageQuery).then((res: any) => {
+    if (res.code == 200) {
+      assignUserModalEntityList.value = res.rows;
+      assignUserModalPageQuery.total = res.total;
+    }
+  })
+}
+
+function assignUserModalChange() {
+  assignUserModalLoading.value = true
+  changeAssignUserModal()
+  setTimeout(() => {
+    loadAssignUserModalDataSource();
+    assignUserModalLoading.value = false
+  }, 1000)
+}
+
+function turnBack() {
+  closeOpen('/system/tenant/index');
+}
+</script>
+
+<style scoped>
+.user-box {
+  height: calc(100vh - 60px);
+  margin-top: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.top-search {
+  margin-top: 10px;
+  padding: 10px;
+  height: 40px;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.table-box {
+  margin-top: 10px;
+  padding: 10px;
+  height: 500px;
+  width: 100%;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.search-input {
+  display: inline-block;
+  width: 98%;
+  margin-right: 10px;
+}
+
+.table-style {
+  margin-top: 10px;
+}
+
+.isChecked {
+  display: inline-block;
+  background-color: #e8f1ff;
+  color: red;
+}
+
+.oneRow {
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+</style>

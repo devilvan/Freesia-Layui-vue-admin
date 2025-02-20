@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -26,6 +29,8 @@ import java.util.Set;
 @TableName(value = "SYS_DEPT")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_DEPT")
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "部门信息表 映射")
@@ -60,9 +65,9 @@ public class SysDeptPo extends BasePo implements Serializable {
     @TableField(value = "EMAIL")
     @Column(name = "EMAIL", columnDefinition = "VARCHAR(50) COMMENT '邮箱'")
     private String email;
-    @Schema(description = "部门状态（见DEPT_STATUS）")
+    @Schema(description = "部门状态（0-禁用，1-启用）")
     @TableField(value = "DEPT_STATUS")
-    @Column(name = "DEPT_STATUS", columnDefinition = "CHAR(1) COMMENT '部门状态（见DEPT_STATUS）'")
+    @Column(name = "DEPT_STATUS", columnDefinition = "CHAR(1) COMMENT '部门状态（0-禁用，1-启用）'")
     private String deptStatus;
     @Schema(description = "备注")
     @TableField(value = "REMARK")
@@ -81,4 +86,14 @@ public class SysDeptPo extends BasePo implements Serializable {
     @TableField(exist = false)
     @OneToMany(targetEntity = SysUserPo.class, mappedBy = "sysDeptPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SysUserPo> sysUserPoSet;
+
+    /**
+     * role控制role-dept关联
+     */
+    @Schema(description = "部门在角色-部门关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysRoleDeptPo.class, mappedBy = "sysDeptPo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SysRoleDeptPo> sysRoleDeptPoSet = new HashSet<>(0);
 }

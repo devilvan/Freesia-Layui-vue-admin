@@ -1,6 +1,6 @@
 package com.freesia.dto;
 
-import com.freesia.constant.UserType;
+import com.freesia.satoken.constant.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -19,7 +19,7 @@ public class RegisterDto {
     @Schema(description = "验证码")
     private String code;
     @Schema(description = "唯一标识")
-    private String uuid;
+    private String captchaKey;
     /**
      * {@link UserType}
      */

@@ -1,6 +1,7 @@
 package com.freesia.service;
 
 
+import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.RouterDto;
 import com.freesia.dto.SysMenuDto;
 import com.freesia.entity.FindAllMenuTreeEntity;
@@ -76,6 +77,15 @@ public interface SysMenuService {
     List<FindAllMenuTreeEntity> findAllMenuTree(Long userId);
 
     /**
+     * 查询所有菜单下拉树
+     *
+     * @param roleId 角色ID
+     * @param userId 用户ID
+     * @return 菜单下拉树
+     */
+    List<FindAllMenuTreeEntity> findAllMenuTree(Long roleId, Long userId);
+
+    /**
      * 根据角色ID查询菜单列表
      *
      * @param roleId 角色ID
@@ -120,7 +130,40 @@ public interface SysMenuService {
     /**
      * 删除目录、菜单、按钮、链接
      *
-     * @param id 菜单ID
+     * @param id     菜单ID
+     * @param userId 用户ID
      */
-    void deleteMenu(Long id);
+    void deleteMenu(Long id, Long userId);
+
+    /**
+     * 查询菜单下所有的按钮
+     *
+     * @param sysMenuDto 查询条件
+     * @return 菜单下所有的按钮
+     */
+    List<SysMenuDto> findAllSysButton(SysMenuDto sysMenuDto);
+
+    /**
+     * 根据角色ID查询菜单下已分配的按钮ID
+     *
+     * @param sysMenuDto 查询条件
+     * @param roleId     角色ID
+     * @return 菜单下已分配的按钮ID
+     */
+    List<Long> findAssignedSysButtonByRoleId(SysMenuDto sysMenuDto, Long roleId);
+
+    /**
+     * 分配分配按钮
+     *
+     * @param assignButtonDto 入参
+     */
+    void assignButton(AssignButtonDto assignButtonDto);
+
+    /**
+     * 查询自增排序号
+     *
+     * @param sysMenuDto 入参
+     * @return 自增排序号
+     */
+    Long findIncrementOrderNum(SysMenuDto sysMenuDto);
 }

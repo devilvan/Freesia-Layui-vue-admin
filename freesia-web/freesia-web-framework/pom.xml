@@ -25,5 +25,29 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-satoken</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-tenant</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-crypt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-net</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-idempotent</artifactId>
+        </dependency>
     </dependencies>
 </project>

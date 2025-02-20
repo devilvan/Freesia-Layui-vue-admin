@@ -1,5 +1,7 @@
 package com.freesia.dto;
 
+import com.freesia.desensization.annotation.Desensitize;
+import com.freesia.desensization.constant.DesensitizedType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +30,7 @@ public class SysUserDto extends BaseDto {
     @Schema(description = "用户类型（见USER_TYPE）")
     private String userType;
     @Schema(description = "用户邮箱")
+    @Desensitize(strategy = DesensitizedType.EMAIL)
     private String email;
     @Schema(description = "手机号码")
     private String telNo;
@@ -37,7 +40,7 @@ public class SysUserDto extends BaseDto {
     private String avatar;
     @Schema(description = "密码")
     private String password;
-    @Schema(description = "帐号状态（见ACCOUNT_STATUS）")
+    @Schema(description = "帐号状态（0-否，1-是）")
     private String accountStatus;
     @Schema(description = "备注")
     private String remark;

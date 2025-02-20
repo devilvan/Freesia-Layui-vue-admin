@@ -1,5 +1,6 @@
 package com.freesia.po;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Column;
@@ -30,6 +33,8 @@ import java.io.Serializable;
 @TableName(value = "SYS_CONFIG")
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "SYS_CONFIG")
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "全局配置信息表 映射")
@@ -48,8 +53,4 @@ public class SysConfigPo extends BasePo implements Serializable {
     @TableField(value = "CONFIG_VALUE")
     @Column(name = "CONFIG_VALUE", columnDefinition = "VARCHAR(500) COMMENT '参数键值'")
     private String configValue;
-    @Schema(description = "系统内置（Y是 N否）")
-    @TableField(value = "CONFIG_TYPE")
-    @Column(name = "CONFIG_TYPE", columnDefinition = "CHAR(1) COMMENT '系统内置（Y是 N否）'")
-    private String configType;
 }

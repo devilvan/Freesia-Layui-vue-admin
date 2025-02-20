@@ -28,10 +28,13 @@ public class SysDictKeyVo extends BaseVo {
     @JSONField(alternateNames = {"dictKey"})
     @NotEmpty(message = "{not.null}")
     private String dictKey;
-    @Schema(description = "状态 0-启用 1-禁用")
+    @Schema(description = "状态（0-禁用，1-启用）")
     @JSONField(alternateNames = {"status"})
     private String status;
     @Schema(description = "备注")
     @JSONField(alternateNames = {"remark"})
     private String remark;
+    @Schema(description = "根据字典键或字典键名查询键")
+    @JSONField(alternateNames = {"keyNameOrDictKey"})
+    private String keyNameOrDictKey;
 }

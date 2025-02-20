@@ -35,4 +35,29 @@ public interface SysDictValueMapper extends BaseMapper<SysDictValuePo> {
      */
     List<SysDictValuePo> findSysDictValueList(@Param(Constants.WRAPPER) Wrapper<SysDictValuePo> wrapper);
 
+    /**
+     * 根据字典键、字典值名称，查询数据
+     *
+     * @param distinctDictValueNameList 去重的字典值名称
+     * @param dictKey                   字典键
+     * @param keyId                     字典键ID
+     * @return 结果集
+     */
+    List<SysDictValuePo> findDistinctDictValueNameList(@Param("distinctDictValueNameList") List<String> distinctDictValueNameList, @Param("dictKey") String dictKey, @Param("keyId") Long keyId);
+
+    /**
+     * 根据字典键ID查询最大的排序号
+     *
+     * @param keyId 字典键ID
+     * @return 最大排序号
+     */
+    Integer findMaxOrderNumByKeyId(@Param("keyId") Long keyId);
+
+    /**
+     * 判断字典是否已经有默认值了，如果有则替换
+     *
+     * @param keyId 字典键ID
+     * @return 默认值标识
+     */
+    List<SysDictValuePo> findDefaultFlagByKeyId(@Param("keyId") Long keyId);
 }

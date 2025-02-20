@@ -1,15 +1,12 @@
 <configuration debug="false" scan="true" scanPeriod="10 seconds">
-    <!--<include resource="org/springframework/boot/logging/logback/base.xml"/>-->
-    <!--<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>-->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <contextName>logback</contextName>
 
     <!--输出sql语句-->
     <logger name="com.freesia" level="INFO"/>
-    <property name="log.path" value="./logs/"/>
+    <property name="logRecord.path" value="./logs/"/>
     <property name="maxHistory" value="7"/>
     <property name="maxFileSize" value="50MB"/>
-<!--    <property name="consolePattern" value="%date %level [%thread] %logger{36} [%file : %line] %msg%n"/>-->
     <property name="consolePattern"
               value="%red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) %yellow([%file : %line]%n) * %msg%n"/>
     <property name="logPattern" value="%date %level [%thread] %logger{36} [%file : %line] %msg%n"/>
@@ -26,10 +23,10 @@
     </appender>
 
     <appender name="info_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.path}/info.log</file>
+        <file>${logRecord.path}/info.logRecord</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 每天一归档 -->
-            <fileNamePattern>${log.path}/zip/logback_info.log.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
+            <fileNamePattern>${logRecord.path}/zip/logback_info.logRecord.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -47,10 +44,10 @@
     </appender>
 
     <appender name="warn_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.path}/warn.log</file>
+        <file>${logRecord.path}/warn.logRecord</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 每天一归档 -->
-            <fileNamePattern>${log.path}//zip/logback_warn.log.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
+            <fileNamePattern>${logRecord.path}//zip/logback_warn.logRecord.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -69,10 +66,10 @@
 
 
     <appender name="error_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.path}/error.log</file>
+        <file>${logRecord.path}/error.logRecord</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 每天一归档 -->
-            <fileNamePattern>${log.path}//zip/logback_error.log.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
+            <fileNamePattern>${logRecord.path}//zip/logback_error.logRecord.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">

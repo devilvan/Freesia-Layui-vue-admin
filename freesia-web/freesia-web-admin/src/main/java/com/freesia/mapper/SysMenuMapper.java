@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuType;
+import com.freesia.dto.SysMenuDto;
 import com.freesia.entity.FindMenuListByUserIdEntity;
 import com.freesia.entity.FindTreeMenuSelectEntity;
 import com.freesia.po.SysMenuPo;
@@ -91,4 +92,45 @@ public interface SysMenuMapper extends BaseMapper<SysMenuPo> {
      * @return 菜单树下拉框集合
      */
     List<FindTreeMenuSelectEntity> findTreeMenuSelect(@Param(Constants.WRAPPER) Wrapper<SysMenuPo> wrapper);
+
+    /**
+     * 查询菜单中对应path是否已经被使用
+     *
+     * @param sysMenuPo 菜单信息
+     * @return 菜单中对应path是否已经被使用
+     */
+    boolean findMenuPathExist(@Param("sysMenuPo") SysMenuPo sysMenuPo);
+
+    /**
+     * 根据组件路径、菜单名称查询是否使用
+     *
+     * @param component 组件路径
+     * @return true-已使用 false-未使用
+     */
+    boolean findByComponentExists(@Param("component") String component);
+
+    /**
+     * 查询菜单下所有的按钮
+     *
+     * @param sysMenuDto 查询入参
+     * @param adminFlag  是否管理员
+     * @return 菜单下所有的按钮
+     */
+    List<SysMenuPo> findAllSysButton(@Param("sysMenuDto") SysMenuDto sysMenuDto, boolean adminFlag);
+
+    /**
+     * 根据角色ID查询菜单下已分配的按钮ID
+     *
+     * @param wrapper 查询条件
+     * @return 菜单下已分配的按钮ID
+     */
+    List<Long> findAssignedSysButtonByRoleId(@Param(Constants.WRAPPER) Wrapper<SysMenuPo> wrapper);
+
+    /**
+     * 目录-查询最大排序号
+     *
+     * @param id 菜单ID（目录）
+     * @return 自增排序号
+     */
+    Long findMaxOrderNum(@Param("id") Long id);
 }

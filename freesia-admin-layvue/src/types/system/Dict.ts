@@ -18,6 +18,7 @@ export interface SysDictVo extends BaseVo {
     valueName?: string;
     value?: string;
     status?: string;
+    keyNameOrDictKey?: string
 }
 
 export interface SysDictKeyVo extends BaseVo {

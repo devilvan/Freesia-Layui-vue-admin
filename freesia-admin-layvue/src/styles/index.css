@@ -6,3 +6,12 @@
 .global-css {
     font-family: 'Courier New', Courier, monospace;
 }
+
+.affix-footer {
+    position: absolute;
+    right: 30px;
+}
+
+.layui-layer-content {
+    white-space: pre-wrap;
+}

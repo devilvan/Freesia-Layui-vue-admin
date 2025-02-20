@@ -15,7 +15,23 @@
         <module>freesia-common-framework</module>
         <module>freesia-common-api</module>
         <module>freesia-common-codegen</module>
-        <module>freesia-common-service</module>
+        <module>freesia-common-cache</module>
+        <module>freesia-common-oss</module>
+        <module>freesia-common-redis</module>
+        <module>freesia-common-json</module>
+        <module>freesia-common-excel</module>
+        <module>freesia-common-crypt</module>
+        <module>freesia-common-satoken</module>
+        <module>freesia-common-desensitization</module>
+        <module>freesia-common-log</module>
+        <module>freesia-common-tenant</module>
+        <module>freesia-common-validation</module>
+        <module>freesia-common-net</module>
+        <module>freesia-common-doc</module>
+        <module>freesia-common-jdbc</module>
+        <module>freesia-common-idempotent</module>
+        <module>freesia-common-sse</module>
+        <module>freesia-common-mail</module>
     </modules>
 
     <properties>
@@ -37,12 +53,72 @@
             </dependency>
             <dependency>
                 <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-service</artifactId>
+                <artifactId>freesia-common-oss</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.freesia</groupId>
-                <artifactId>freesia-common-codegen</artifactId>
+                <artifactId>freesia-common-redis</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-json</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-excel</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-crypt</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-satoken</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-desensitization</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-log</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-tenant</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-net</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-doc</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-jdbc</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-sse</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-mail</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>

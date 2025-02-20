@@ -1,17 +1,17 @@
 <template>
   <div>
-    <inner-link v-model:src="url"></inner-link>
+    <InnerLink :src="url" :iframeId="url"/>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import {useRoute} from "vue-router";
 
 const route = useRoute();
 const url = ref('/');
 onMounted(() => {
-  url.value = route.meta.link
+  url.value = route.meta.link as string
 })
 
 

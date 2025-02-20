@@ -9,6 +9,7 @@ import com.freesia.annotation.DataColumn;
 import com.freesia.annotation.DataPermission;
 import com.freesia.entity.FindPageSysRoleListEntity;
 import com.freesia.po.SysRolePo;
+import com.freesia.po.SysUserPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -39,6 +40,7 @@ public interface SysRoleMapper extends BaseMapper<SysRolePo> {
      */
     @DataPermission({
             @DataColumn(key = "deptName", value = "D.ID"),
+            @DataColumn(key = "userName", value = "U.ID"),
     })
     Page<FindPageSysRoleListEntity> findPageSysRoleList(@Param("page") Page<SysRolePo> page, @Param(Constants.WRAPPER) Wrapper<SysRolePo> wrapper);
 
@@ -48,4 +50,30 @@ public interface SysRoleMapper extends BaseMapper<SysRolePo> {
      * @param idList 菜单ID集合
      */
     void deleteRoleMenu(@Param("idList") List<Long> idList);
+
+    /**
+     * 已分配该角色的用户列表
+     *
+     * @param wrapper   查询条件SQL
+     * @param pageQuery 分页信息
+     * @return 分页数据
+     */
+    Page<SysRolePo> findPageUserByRoleId(@Param(Constants.WRAPPER) Wrapper<SysRolePo> wrapper, @Param("page") Page<SysRolePo> pageQuery);
+
+    /**
+     * 查询未分配该角色的用户列表
+     *
+     * @param sysRolePo 查询条件
+     * @param pageQuery 分页信息
+     * @return 分页数据
+     */
+    Page<SysUserPo> findPageAllowAssignUserByRoleId(@Param("sysRolePo") SysRolePo sysRolePo, @Param("page") Page<SysRolePo> pageQuery);
+
+    /**
+     * 根据角色ID，查询【分配按钮权限】功能，在角色-菜单表中需要清空的按钮ID
+     *
+     * @param roleId 角色ID
+     * @return 查询【分配按钮权限】功能，在角色-菜单表中需要清空的按钮ID
+     */
+    List<Long> findListButtonIdByRoleId(@Param("roleId") Long roleId);
 }

@@ -2,6 +2,7 @@ package com.freesia.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.constant.Constants;
+import com.freesia.mapper.SysRoleMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,7 +23,7 @@ public class FindPageSysRoleListEntity extends BaseEntity {
     private String roleName;
     @Schema(description = "角色权限字符串")
     private String roleKey;
-    @Schema(description = "角色状态（0正常 1停用）")
+    @Schema(description = "角色状态（0-停用，1-正常）")
     private String status;
     @Schema(description = "显示顺序")
     private Integer orderNum;

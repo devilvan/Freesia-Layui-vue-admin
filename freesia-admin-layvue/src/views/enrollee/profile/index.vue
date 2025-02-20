@@ -4,7 +4,8 @@
       <lay-col style="max-width: 400px" :xs="24">
         <lay-card shadow="hover" class="info-user">
           <div style="text-align: center">
-            <lay-avatar :src="$SRC_ASSETS + currentUserProfileTemplate.avatar" class="user-avatar"></lay-avatar>
+            <lay-avatar :src="resolveImgPath(currentUserProfileTemplate.avatar)" class="user-avatar"
+                        @click="toImport()"></lay-avatar>
             <div class="user-name">{{ currentUserProfileTemplate.nickName }}</div>
             <div class="user-briefing">{{ currentUserProfileTemplate.remark }}</div>
           </div>
@@ -39,22 +40,15 @@
               <lay-form
                   :model="sysUserVo"
                   ref="profileFormRef"
-                  label-width="60"
                   size="sm"
+                  label-position="left"
               >
-                <lay-form-item label="用户ID" prop="id" :hidden="true">
-                  <lay-input v-model="sysUserVo.id" :disabled="true"></lay-input>
+                <lay-form-item label="用户名" prop="userName">
+                  <lay-input v-model="sysUserVo.userName" :disabled="true"></lay-input>
                 </lay-form-item>
                 <lay-form-item label="昵称" prop="nickName" required>
                   <lay-input v-model="sysUserVo.nickName" allow-clear></lay-input>
                 </lay-form-item>
-                <!--                <lay-form-item label="密码" prop="password" required>-->
-                <!--                  <lay-input-->
-                <!--                      v-model="sysUserVo.password"-->
-                <!--                      type="password"-->
-                <!--                      allow-clear-->
-                <!--                  ></lay-input>-->
-                <!--                </lay-form-item>-->
                 <lay-form-item label="性别" prop="gender">
                   <lay-select
                       v-model="sysUserVo.gender"
@@ -122,9 +116,47 @@
         </lay-tab>
       </lay-col>
     </lay-row>
+    <lay-layer
+        v-model="visibleImport"
+        title="上传头像"
+        :area="['380px', '600px']"
+    >
+      <lay-upload
+          class="target"
+          :url="ossPath"
+          v-model="updateFileList"
+          field="file"
+          acceptMime="image/jpeg,image/png,image/gif,image/webp"
+          :auto="false"
+          :drag="true"
+          @on-change="uploadOnChange"
+      >
+        <template #preview>
+          <div style="width: 100%;text-align: center;">
+            只能上传小于10MB的文件
+          </div>
+          <div>
+            <img v-if="previewAvatar" :src="parseImgPath(previewAvatar)"
+                 style="width: 300px; height: 300px; object-fit: cover;"
+                 alt="#">
+          </div>
+        </template>
+      </lay-upload>
+      <div style="width: 100%;margin-top: 40px; text-align: center">
+        <lay-button size="sm" type="primary" @click="toUpload()">上传</lay-button>
+      </div>
+    </lay-layer>
   </lay-container>
 </template>
 
+<script lang="ts">
+/**
+ * 创建组件时要添加name，否则在使用keep-alive时就会失效
+ */
+export default {
+  name: "Profile",
+};
+</script>
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue'
 import {layer} from '@layui/layer-vue'
@@ -133,8 +165,12 @@ import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDi
 import {SysUserVo} from "../../../types/system/User";
 import {findDeptById} from "../../../api/system/Dept";
 import {SysDeptEntity} from "../../../types/system/Dept";
-import {findCurrentUserProfile, saveUserInfo} from "../../../api/system/User";
+import {avatarUpdate, findCurrentUserProfile, saveUserInfo, userImport} from "../../../api/system/User";
 import {refresh} from "../../../util/UCommon";
+import {useCryptStore} from "../../../store/crypt";
+import {parseImgPath} from "../../../util/UImage";
+import {upload, uploadTemp} from "../../../api/system/Oss";
+import {useUserStore} from "../../../store/user";
 
 /* INIT*/
 onMounted(async () => {
@@ -145,6 +181,9 @@ onMounted(async () => {
 /* INIT*/
 
 /* VAR */
+const ossPath = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
+const userStore = useUserStore();
+const $crypt = useCryptStore();
 const sysGenderList = ref<Array<SysDictValueEntity>>();
 const sysGenderListSelect = ref<Array<SysDictValueEntity>>();
 const activeTab = ref('baseInfo')
@@ -207,15 +246,25 @@ const bindingAccountList = ref([
     color: '#e6162d'
   }
 ])
+const visibleImport = ref(false)
+const fileList = ref([])
+const uploadAvatar = ref();
+const previewAvatar = ref<any>('')
+const updateFileList = ref([])
 /* VAR */
 
 /* FUNCTION*/
-const loadCurrentUserInfo = async () => {
-  const {data, code} = await findCurrentUserProfile()
-  if (code === 200) {
-    currentUserProfileTemplate.value = {...data};
-    sysUserVo.value = {...data};
-  }
+const loadCurrentUserInfo = () => {
+  findCurrentUserProfile().then((res: any) => {
+    if (res.code === 200) {
+      $crypt.decryptAes(res.data).then((decryptAes: any) => {
+        let decrypt = JSON.parse(decryptAes);
+        currentUserProfileTemplate.value = {...decrypt};
+        sysUserVo.value = {...decrypt};
+      });
+    }
+  })
+
 }
 
 const loadSysDeptEntity = async () => {
@@ -276,8 +325,46 @@ function profileFormClearValidate() {
 }
 
 function profileFormReset() {
-  sysUserVo.value = currentUserProfileTemplate.value;
+  sysUserVo.value = {...currentUserProfileTemplate.value};
   // profileFormRef.value.reset()
+}
+
+function toImport() {
+  visibleImport.value = true
+}
+
+function toUpload() {
+  if (updateFileList.value && updateFileList.value.length > 0) {
+    upload(updateFileList.value).then((res: any) => {
+      if (res.code === 200) {
+        let url = res.data[0].url;
+        if (res.data && res.data.length > 0 && url) {
+          avatarUpdate(url).then((avatarUpdateRes: any) => {
+            if (avatarUpdateRes.code === 200) {
+              layer.msg(avatarUpdateRes.msg, {icon: 1})
+              userStore.userInfo.avatar = url
+              currentUserProfileTemplate.value.avatar = url
+            }
+          })
+          visibleImport.value = false
+        }
+      }
+    })
+  }
+}
+
+function resolveImgPath(imgPath: string) {
+  return parseImgPath(imgPath)
+}
+
+function uploadOnChange(file: any) {
+  uploadTemp(file).then((res: any) => {
+    if (res.code === 200) {
+      if (res.data) {
+        previewAvatar.value = res.data.url
+      }
+    }
+  })
 }
 
 /* FUNCTION*/
@@ -301,6 +388,7 @@ function profileFormReset() {
   width: 200px;
   height: 200px;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 .user-name {
@@ -358,5 +446,14 @@ function profileFormReset() {
   width: 45px;
   display: inline-block;
   color: var(--global-primary-color);
+}
+
+.target {
+  width: 100%;
+  height: 440px;
+  display: flex;
+  /*justify-content: center;*/
+  flex-direction: column;
+  align-items: center;
 }
 </style>

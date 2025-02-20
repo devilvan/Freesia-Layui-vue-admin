@@ -1,6 +1,6 @@
 <template>
   <template v-for="(menu, index) in menus" :key="index">
-    <lay-menu-item :id="menu.id">
+    <lay-menu-item :id="menu.id + '-' + menu.title">
       <template #icon>
         <lay-icon :type="menu.icon"></lay-icon>
       </template>

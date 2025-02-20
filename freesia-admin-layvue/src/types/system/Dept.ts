@@ -62,3 +62,19 @@ export interface SysDeptEntity extends BaseEntity {
     createTimeFrom?: Date;
     createTimeTo?: Date;
 }
+
+export interface SysDeptSelectEntity extends Tree<SysDeptSelectEntity> {
+    title?: string;
+    field?: string;
+}
+
+export interface FindDeptRolesByDeptIdEntity extends BaseEntity {
+    deptId?: string,
+    deptName?: string,
+    selectedRoles?: string[]
+}
+
+export interface AssignRoleVo extends BaseVo {
+    deptId: string,
+    afterRoleIdSet: string[]
+}

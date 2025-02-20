@@ -1,11 +1,11 @@
 package com.freesia;
 
 import cn.hutool.core.util.StrUtil;
+import com.freesia.dto.ColumnFieldDto;
 import com.freesia.dto.DataBaseDto;
 import com.freesia.dto.TableDto;
-import com.freesia.dto.ColumnFieldDto;
 import com.freesia.exception.BaseException;
-import com.freesia.util.FreemarkerTemplateUtil;
+import com.freesia.handler.FreemarkerTemplateHandler;
 import com.freesia.util.UEmpty;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -55,15 +55,15 @@ public class CodeGenerator {
      */
     private static void generate(List<DataBaseDto> dataBaseDtoList) {
         for (DataBaseDto dataBaseDto : dataBaseDtoList) {
-//            generateVo(dbDto);
-//            generatePo(dbDto);
-//            generateDto(dbDto);
-            generateController(dataBaseDto);
-//            generateService(dbDto);
-//            generateServiceImpl(dbDto);
-//            generateRepository(dbDto);
-//            generateMapper(dbDto);
-//            generateMapperXml(dbDto);
+            generateVo(dataBaseDto);
+            generatePo(dataBaseDto);
+            generateDto(dataBaseDto);
+//            generateController(dataBaseDto);
+//            generateService(dataBaseDto);
+//            generateServiceImpl(dataBaseDto);
+//            generateRepository(dataBaseDto);
+//            generateMapper(dataBaseDto);
+//            generateMapperXml(dataBaseDto);
         }
     }
 
@@ -130,7 +130,7 @@ public class CodeGenerator {
     private static List<DataBaseDto> printTableStructure(TableDto tbDto) {
         List<DataBaseDto> dataBaseDtoList = new ArrayList<>();
         // 每张表默认的审计字段，在生成的Model中只显示业务字段，而通过继承一个BasePo管理这些审计字段
-        List<String> auditList = List.of("ID", "CREATOR", "CREATE_TIME", "MODIFIER", "MODIFY_TIME", "LOGIC_DEL", "REC_VER");
+        List<String> auditList = List.of("ID", "CREATOR", "CREATE_TIME", "MODIFIER", "MODIFY_TIME", "LOGIC_DEL", "REC_VER", "BUILD_IN", "TENANT_ID");
         try {
             // JDBC的过程了，加载MySQL驱动-连接-执行-结果集
             Class.forName(tbDto.getDriver());
@@ -258,11 +258,11 @@ public class CodeGenerator {
      */
     private static void generateFileByTemplate(String templateName, File file, Map<String, Object> basicMap) {
         try {
-            Template template = FreemarkerTemplateUtil.getTemplate(templateName);
+            Template template = FreemarkerTemplateHandler.getTemplate(templateName);
             FileOutputStream fos = new FileOutputStream(file);
             Writer out = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8), 10240);
             template.process(basicMap, out);
-            FreemarkerTemplateUtil.clearCache();
+            FreemarkerTemplateHandler.clearCache();
         } catch (IOException | TemplateException e) {
             e.printStackTrace();
         }
@@ -277,7 +277,7 @@ public class CodeGenerator {
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Vo" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 
@@ -290,7 +290,7 @@ public class CodeGenerator {
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Po" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 
@@ -303,7 +303,7 @@ public class CodeGenerator {
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Controller" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 
@@ -316,7 +316,7 @@ public class CodeGenerator {
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Dto" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 
@@ -329,7 +329,7 @@ public class CodeGenerator {
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Service" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 
@@ -342,7 +342,7 @@ public class CodeGenerator {
         }
         File path = new File(parentpPath + dataBaseDto.getClassName() + "ServiceImpl" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 
@@ -355,7 +355,7 @@ public class CodeGenerator {
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Mapper" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 
@@ -368,7 +368,7 @@ public class CodeGenerator {
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Mapper" + SUFFIX_XML);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 
@@ -381,7 +381,7 @@ public class CodeGenerator {
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Repository" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
-        map.put("dbDto", dataBaseDto);
+        map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);
     }
 }

@@ -6,20 +6,21 @@
           <lay-form style="margin-top: 20px">
             <lay-row>
               <lay-col :md="4">
-                <lay-form-item :label-width="0">
+                <lay-form-item>
                   <lay-input
-                    v-model="searchTitle"
-                    style="width: 100%"
+                      v-model="searchTitle"
+                      style="width: 100%"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
-                <lay-form-item label-width="0">
+                <lay-form-item>
                   <lay-button
-                    type="primary"
-                    style="margin-left: 10px"
-                    @click="toSearch"
-                    >查询</lay-button
+                      style="margin-left: 10px"
+                      type="primary"
+                      @click="toSearch"
+                  >查询
+                  </lay-button
                   >
                   <lay-button @click="toReset">重置</lay-button>
                 </lay-form-item>
@@ -31,10 +32,10 @@
       <lay-col :md="24">
         <!-- <lay-card> -->
         <lay-row :space="10">
-          <lay-col :md="6" v-for="(item, index) in dataSource" :key="index">
+          <lay-col v-for="(item, index) in dataSource" :key="index" :md="6">
             <lay-card class="card-list-item">
               <img
-                src="https://gw.alipayobjects.com/zos/rmsportal/iXjVmWVHbCJAyqvDxdtx.png"
+                  src="https://gw.alipayobjects.com/zos/rmsportal/iXjVmWVHbCJAyqvDxdtx.png"
               />
               <div class="button-list">
                 <div class="title">layui-vue</div>
@@ -47,25 +48,25 @@
                   <div style="flex: 1; text-align: right">
                     <lay-avatar-list>
                       <lay-tooltip
-                        :visible="visible"
-                        trigger="click"
-                        content="假装这里有文字提示"
+                          :visible="visible"
+                          content="假装这里有文字提示"
+                          trigger="click"
                       >
-                        <lay-avatar :src="src" size="sm" radius></lay-avatar>
+                        <lay-avatar :src="src" radius size="sm"></lay-avatar>
                       </lay-tooltip>
                       <lay-tooltip
-                        :visible="visible"
-                        trigger="click"
-                        content="假装这里有文字提示"
+                          :visible="visible"
+                          content="假装这里有文字提示"
+                          trigger="click"
                       >
-                        <lay-avatar :src="src" size="sm" radius></lay-avatar>
+                        <lay-avatar :src="src" radius size="sm"></lay-avatar>
                       </lay-tooltip>
                       <lay-tooltip
-                        :visible="visible"
-                        trigger="click"
-                        content="假装这里有文字提示"
+                          :visible="visible"
+                          content="假装这里有文字提示"
+                          trigger="click"
                       >
-                        <lay-avatar :src="src" size="sm" radius></lay-avatar>
+                        <lay-avatar :src="src" radius size="sm"></lay-avatar>
                       </lay-tooltip>
                     </lay-avatar-list>
                   </div>
@@ -75,10 +76,10 @@
           </lay-col>
         </lay-row>
         <lay-page
-          v-model="page.current"
-          :total="page.total"
-          :limit="page.limit"
-          :showPage="true"
+            v-model="page.current"
+            :limit="page.limit"
+            :showPage="true"
+            :total="page.total"
         >
         </lay-page>
         <!-- </lay-card> -->
@@ -88,12 +89,13 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
-import { layer } from '@layui/layer-vue'
+import {ref} from 'vue'
+import {layer} from '@layui/layer-vue'
 
 export default {
+  name: 'Project',
   setup() {
-    const page = ref({ total: 100, limit: 10, current: 2 })
+    const page = ref({total: 100, limit: 10, current: 2})
 
     const dataSource = [
       {
@@ -154,16 +156,19 @@ export default {
       }
     ]
     const src = ref(
-      'https://foruda.gitee.com/avatar/1677022544584087390/4835367_jmysy_1578975358.png'
+        'https://foruda.gitee.com/avatar/1677022544584087390/4835367_jmysy_1578975358.png'
     )
     const visible = ref(false)
     const searchTitle = ref('')
+
     function toSearch() {
-      layer.load(2, { time: 3000 })
+      layer.load(2, {time: 3000})
     }
+
     function toReset() {
       searchTitle.value = ''
     }
+
     return {
       dataSource,
       page,
@@ -185,9 +190,11 @@ export default {
 :deep(.card-list-item .layui-card-body) {
   padding: 0px !important;
 }
+
 .layui-card:last-child {
   border-radius: 4px;
 }
+
 .button-list {
   height: 140px;
   padding: 10px;
@@ -198,10 +205,12 @@ export default {
   color: #000000e0;
   margin: 15px 0px 5px;
 }
+
 .content {
   font-size: 14px;
   color: #ccc;
 }
+
 .time-avater {
   display: flex;
   justify-content: space-between;
@@ -210,6 +219,7 @@ export default {
   color: #ccc;
   margin-top: 15px;
 }
+
 .card-list-item:hover {
   box-shadow: 2px 2px 14px #ccc;
   cursor: pointer;

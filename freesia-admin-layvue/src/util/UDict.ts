@@ -1,5 +1,6 @@
 import {findCacheSysDictValueList} from "../api/system/Dict";
 import {MatchDictValueModel, SysDictValueEntity} from "../types/system/Dict";
+import {Flag} from "../types/Constants";
 
 /**
  * 可选数据字典
@@ -20,10 +21,26 @@ export enum Constants {
     /**
      * 数据范围
      */
-    SYS_DATA_SCOPE = "SYS_DATA_SCOPE"
+    SYS_DATA_SCOPE = "SYS_DATA_SCOPE",
+    /**
+     * 请求类型
+     */
+    REQUEST_TYPE = "REQUEST_TYPE",
+    /**
+     * 租户类型
+     */
+    SYS_TENANT_TYPE = "SYS_TENANT_TYPE",
+    /**
+     * 开支标识
+     */
+    PAYMENT_SIGN = "PAYMENT_SIGN",
+    /**
+     * 启用标识
+     */
+    ENABLED_STATUS = "ENABLED_STATUS",
 }
 
-export const loadSysDictValue = async (dictKey: string): Promise<SysDictValueEntity[]> => {
+export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {
     let {data} = await findCacheSysDictValueList({dictKey: dictKey});
     let sysMenuTypeArr: Array<SysDictValueEntity> = []
     if (data && data.length > 0) {
@@ -78,14 +95,15 @@ export function isMatchDictValue(list: Array<SysDictValueEntity>, value: string)
 }
 
 
-export const sysDictValueSelect = async (list: Array<SysDictValueEntity>) : Promise<any[]> => {
+export const sysDictValueSelect = async (list: Array<SysDictValueEntity>): Promise<any[]> => {
     let sysDictValueSelect: any[] = [];
     if (list && list.length > 0) {
-        list?.forEach(sysMenuType => {
+        list?.forEach(sysDictValueEntity => {
             let obj = {
-                label: sysMenuType.valueName,
-                value: sysMenuType.value,
-                disabled: sysMenuType.status === '1'
+                label: sysDictValueEntity.valueName,
+                value: sysDictValueEntity.value,
+                disabled: sysDictValueEntity.status === Flag.DISABLED,
+                isDefault: sysDictValueEntity.isDefault
             }
             sysDictValueSelect.push(obj)
         })

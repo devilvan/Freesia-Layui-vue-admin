@@ -63,6 +63,7 @@ import { ref } from 'vue'
 import { layer } from '@layui/layui-vue'
 
 export default {
+  name: 'Article',
   setup() {
     const page = ref({ total: 100, limit: 10, current: 2 })
 

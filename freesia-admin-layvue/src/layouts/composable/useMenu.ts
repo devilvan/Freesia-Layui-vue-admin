@@ -1,17 +1,18 @@
 import {computed, ComputedRef, ref, watch} from "vue";
-import {useRoute, useRouter} from "vue-router";
+import {useRoute} from "vue-router";
 import {diff} from "../../library/arrayUtil";
 import {getNode, getParents} from "../../library/treeUtil";
 import {useAppStore} from "../../store/app";
 import {useUserStore} from "../../store/user";
 import {layer} from "@layui/layui-vue";
+import {useTabStore} from "./useTabStore";
 
 export function useMenu() {
 
     const route = useRoute();
-    const router = useRouter();
     const userStore = useUserStore();
     const appStore = useAppStore();
+    const $tab = useTabStore();
     const selectedKey = ref(route.path);
     const openKeys = ref<string[]>([]);
     const isAccordion = computed(() => appStore.accordion);
@@ -56,10 +57,6 @@ export function useMenu() {
         {immediate: true}
     );
 
-    const to = (id: string) => {
-        router.push(id);
-    };
-
     function changeSelectedKey(key: string) {
         var node = getNode(userStore.menus, key);
         if (node && node.component == "modal") {
@@ -77,7 +74,7 @@ export function useMenu() {
             return;
         }
 
-        to(key);
+        $tab.to(key);
     }
 
     function changeOpenKeys(keys: string[]) {
@@ -93,7 +90,7 @@ export function useMenu() {
     }
 
     function changeMainSelectedKey(key: string) {
-        var node = getNode(userStore.sidebarRoutes, key);
+        var node = getNode(userStore.menus, key);
         if (node && node.component == "modal") {
             layer.open({
                 type: "iframe",

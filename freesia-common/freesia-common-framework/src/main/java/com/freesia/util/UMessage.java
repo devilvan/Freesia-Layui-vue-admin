@@ -22,6 +22,12 @@ public class UMessage {
      * @return 获取国际化翻译值
      */
     public static String message(String code, Object... args) {
-        return MESSAGE_SOURCE.getMessage(code, args, LocaleContextHolder.getLocale());
+        return MESSAGE_SOURCE.getMessage(replaceCodeFirstAndEnd(code), args, LocaleContextHolder.getLocale());
     }
+
+    private static String replaceCodeFirstAndEnd(String code) {
+        return code.replace("{", "").replace("}", "");
+    }
+
+
 }

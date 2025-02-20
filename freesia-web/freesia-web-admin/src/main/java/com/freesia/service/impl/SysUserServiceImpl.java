@@ -2,31 +2,44 @@ package com.freesia.service.impl;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.log.annotation.LogRecord;
+import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
+import com.freesia.constant.MenuModule;
+import com.freesia.constant.UserModule;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
 import com.freesia.entity.FindPageSysUserListEntity;
+import com.freesia.entity.FindUserRolesByUserIdEntity;
+import com.freesia.exception.UserException;
 import com.freesia.helper.DataBaseHelper;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.mapper.SysUserMapper;
-import com.freesia.po.SysDeptPo;
-import com.freesia.po.SysUserPo;
+import com.freesia.satoken.model.LoginUserModel;
+import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.properties.LoginPasswordProperties;
 import com.freesia.repository.SysUserRepository;
+import com.freesia.repository.SysUserRoleRepository;
+import com.freesia.satoken.util.USecurity;
+import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
-import com.freesia.util.UCopy;
-import com.freesia.util.USql;
-import com.freesia.util.UStream;
+import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -36,9 +49,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> implements SysUserService {
+    private final TransactionTemplate transactionTemplate;
+    private final LoginPasswordProperties loginPasswordProperties;
     private final SysUserRepository sysUserRepository;
     private final SysUserMapper sysUserMapper;
     private final SysDeptMapper sysDeptMapper;
+    private final SysTenantService sysTenantService;
+    private final SysUserRoleRepository sysUserRoleRepository;
 
     @Override
     public SysUserPo saveUpdate(SysUserDto sysUserDto) {
@@ -49,14 +66,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public List<SysUserPo> saveUpdateBatch(List<SysUserDto> list) {
-        List<SysUserPo> sysUserPoList = UCopy.fullCopyCollections(list, SysUserPo.class);
+        List<SysUserPo> sysUserPoList = UCopy.fullCopyList(list, SysUserPo.class);
         return sysUserRepository.saveAllAndFlush(sysUserPoList);
     }
 
     @Override
     public SysUserPo findOneByUsername(String username) {
         LambdaQueryWrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(SysUserPo::getUserName, SysUserPo::getAccountStatus);
+        queryWrapper.select(SysUserPo::getUserName, SysUserPo::getAccountStatus, SysUserPo::getLogicDel);
         queryWrapper.eq(SysUserPo::getUserName, username);
         return this.getOne(queryWrapper);
     }
@@ -92,8 +109,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserDto sysUserDto, PageQuery pageQuery) {
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
         Wrapper<SysUserPo> sysUserPoWrapper = USql.buildQueryWrapper(() -> Wrappers.<SysUserPo>query()
-                .eq("U.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("U.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
+                .eq("STU.TENANT_ID", USecurity.getTenantId())
                 .like(ObjectUtil.isNotNull(sysUserDto.getNickName()), "U.NICK_NAME", sysUserDto.getNickName())
                 .likeRight(ObjectUtil.isNotNull(sysUserDto.getUserName()), "U.USER_NAME", sysUserDto.getUserName())
                 .likeRight(ObjectUtil.isNotNull(sysUserDto.getEmail()), "U.EMAIL", sysUserDto.getEmail())
@@ -116,10 +134,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public TableResult<FindPageSysUserByDeptEntity> findPageSysUserByDept(SysUserDto sysUserDto, PageQuery pageQuery) {
         Page<FindPageSysUserByDeptEntity> page = sysUserMapper.findPageSysUserByDept(pageQuery.build(), Wrappers.<SysUserPo>query()
-                .eq("U.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("U.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
-                .eq("D.LOGIC_DEL", FlagConstant.ENABLED)
+                .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("D.DEPT_STATUS", FlagConstant.ENABLED)
+                .eq(UEmpty.isNotEmpty(sysUserDto.getTenantId()), "STU.TENANT_ID", sysUserDto.getTenantId())
                 .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
                     List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
                             .select(SysDeptPo::getId)
@@ -135,7 +154,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public SysUserDto findCurrentUserProfile(Long userId) {
         LambdaQueryWrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<SysUserPo>()
-                .eq(SysUserPo::getLogicDel, FlagConstant.ENABLED)
+                .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysUserPo::getId, userId);
         SysUserPo sysUserPo = sysUserMapper.findCurrentUserProfile(queryWrapper);
         return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
@@ -144,8 +163,168 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public void saveUserInfo(SysUserDto sysUserDto) {
         Long id = sysUserDto.getId();
-        SysUserPo sysUserPo = sysUserRepository.getById(id);
-        UCopy.halfCopy(sysUserDto, sysUserPo);
+        SysUserPo sysUserPo;
+        if (UEmpty.isNotNull(id)) {
+            sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed", new Object[] {}));
+            UCopy.halfCopy(sysUserDto, sysUserPo);
+            sysUserRepository.save(sysUserPo);
+        } else {
+            sysUserPo = buildInsertSysUserPo(sysUserDto);
+            sysUserPo = sysUserRepository.save(sysUserPo);
+            Long tenantId = USecurity.getTenantId();
+            sysTenantService.assignTenant2User(tenantId, Collections.singletonList(sysUserPo.getId()));
+        }
+    }
+
+    @Override
+    public FindUserRolesByUserIdEntity findUserRolesByUserId(Long userId) {
+        // 获取用户对象
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.query.failed", new Object[] {userId}));
+        // 获取角色
+        Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
+        return buildFindUserRolesByUserIdEntity(sysUserPo, sysRolePoSet);
+    }
+
+    @Override
+    public void assignRole(Long userId, Set<Long> afterRoleIdSet) {
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.not.exists", new Object[] {}));
+        // 获取并修改分配后的角色
+        Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
+        List<Long> beforeRoleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toList());
+        Set<SysUserRolePo> beforeSysUserRolePoSet = UCollection.optimizeInitialCapacitySet(afterRoleIdSet.size());
+        for (Long beforeRoleId : beforeRoleIdList) {
+            SysUserRolePo sysUserRolePo = new SysUserRolePo();
+            sysUserRolePo.setSysRoleMenuPk(new SysUserRolePk(userId, beforeRoleId));
+            beforeSysUserRolePoSet.add(sysUserRolePo);
+        }
+        Set<SysUserRolePo> afterSysUserRolePoSet = UCollection.optimizeInitialCapacitySet(afterRoleIdSet.size());
+        for (Long roleId : afterRoleIdSet) {
+            SysUserRolePo sysUserRolePo = new SysUserRolePo();
+            sysUserRolePo.setSysRoleMenuPk(new SysUserRolePk(userId, roleId));
+            afterSysUserRolePoSet.add(sysUserRolePo);
+        }
+        transactionTemplate.execute(status -> {
+            SysSensitiveLogBean sysSensitiveLogBean = null;
+            try {
+                if (UEmpty.isNotEmpty(beforeSysUserRolePoSet)) {
+                    sysUserRoleRepository.deleteAllInBatch(beforeSysUserRolePoSet);
+                }
+                if (UEmpty.isNotEmpty(afterSysUserRolePoSet)) {
+                    sysUserRoleRepository.saveAll(afterSysUserRolePoSet);
+                }
+                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                    sensitiveLog.setModule(UserModule.USER_MANAGEMENT);
+                    sensitiveLog.setSubModule(MenuModule.SubModule.ASSIGN_ROLE);
+                    sensitiveLog.setType(MenuModule.SubModule.ASSIGN_ROLE);
+                    sensitiveLog.setResult(FlagConstant.SUCCESS);
+                    sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(beforeRoleIdList));
+                    sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
+                    sensitiveLog.setRemark(UMessage.message("assign_role_permissions_success"));
+                    return sensitiveLog;
+                });
+            } catch (Exception e) {
+                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
+                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
+                    sensitiveLog.setModule(UserModule.USER_MANAGEMENT);
+                    sensitiveLog.setSubModule(MenuModule.SubModule.ASSIGN_ROLE);
+                    sensitiveLog.setType(MenuModule.SubModule.ASSIGN_ROLE);
+                    sensitiveLog.setResult(FlagConstant.FAILED);
+                    sensitiveLog.setRemark(UMessage.message("assign_role_permissions_failed"));
+                    return sensitiveLog;
+                });
+                throw e;
+            } finally {
+                if (UEmpty.isNotNull(sysSensitiveLogBean)) {
+                    USpring.context().publishEvent(sysSensitiveLogBean);
+                }
+            }
+            return status;
+        });
+    }
+
+    @Override
+    public TableResult<SysUserDto> findPageUserByTenantId(Long tenantId, PageQuery pageQuery) {
+        Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageUserByTenantId(tenantId, pageQuery.build());
+        return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
+    }
+
+    @Override
+    public TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantDto sysTenantDto, PageQuery pageQuery) {
+        SysTenantPo sysTenantPo = UCopy.copyDto2Po(sysTenantDto, SysTenantPo.class);
+        Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageAllowAssignUserByTenantId(sysTenantPo, pageQuery.build());
+        return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
+    }
+
+    @Override
+    public Boolean isAdmin(Long id) {
+        return sysUserMapper.isAdmin(id);
+    }
+
+    @Override
+    public List<SysUserDto> findDistinctUserNameList(List<String> distinctUserNameList) {
+        Wrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<SysUserPo>()
+                .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
+                .in(SysUserPo::getUserName, distinctUserNameList);
+        List<SysUserPo> sysUserPoList = this.list(queryWrapper);
+        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+    }
+
+    @Override
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.DELETE_USER, message = "user.delete")
+    public List<SysUserDto> deleteUser(List<Long> idList) {
+        List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(idList);
+        sysUserPoList = sysUserPoList.stream().peek(sysUserPo -> sysUserPo.setLogicDel(true)).collect(Collectors.toList());
+        sysUserRepository.saveAll(sysUserPoList);
+        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+    }
+
+    @Override
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.ASSIGN_DEPT, message = "user.assignDept")
+    public Map<String, Object> assignDept(List<Long> userIdList, Long deptId) {
+        List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(userIdList);
+        for (SysUserPo sysUserPo : sysUserPoList) {
+            sysUserPo.setDeptId(deptId);
+        }
+        sysUserRepository.saveAll(sysUserPoList);
+        return Map.of("deptId", deptId, "userIdList", userIdList);
+    }
+
+    @Override
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.AVATAR_UPDATE, message = "user.avatarUpdate")
+    public void avatarUpdate(String avatar) {
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
+        Long userId = loginUser.getUserId();
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
+        sysUserPo.setAvatar(avatar);
         sysUserRepository.save(sysUserPo);
+    }
+
+    /**
+     * 构建新增用户实体
+     *
+     * @param sysUserDto 前端采集的用户信息
+     * @return 构建后的新增用户实体
+     */
+    private SysUserPo buildInsertSysUserPo(SysUserDto sysUserDto) {
+        SysUserPo sysUserPo = UCopy.copyDto2Po(sysUserDto, SysUserPo.class);
+        sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
+        return sysUserPo;
+    }
+
+    /**
+     * 构建 {@link FindUserRolesByUserIdEntity} 对象
+     *
+     * @param sysUserPo    用户信息
+     * @param sysRolePoSet 角色信息
+     * @return 构建后的对象
+     */
+    private FindUserRolesByUserIdEntity buildFindUserRolesByUserIdEntity(SysUserPo sysUserPo, Set<SysRolePo> sysRolePoSet) {
+        FindUserRolesByUserIdEntity findUserRolesByUserIdEntity = new FindUserRolesByUserIdEntity();
+        findUserRolesByUserIdEntity.setUserId(sysUserPo.getId());
+        findUserRolesByUserIdEntity.setUserName(sysUserPo.getUserName());
+        Set<Long> sysRoleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toSet());
+        findUserRolesByUserIdEntity.setSelectedRoles(sysRoleIdList);
+        return findUserRolesByUserIdEntity;
     }
 }
