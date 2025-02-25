@@ -1,7 +1,6 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.RedissonPropertiesDto;
 import com.freesia.entity.FindRedisDashboardInfoEntity;

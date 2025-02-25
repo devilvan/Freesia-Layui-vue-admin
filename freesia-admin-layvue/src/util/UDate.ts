@@ -2,6 +2,25 @@ export const YMS = 'yyyy-MM-dd';
 export const YMS_HMS = 'yyyy-MM-dd HH:mm:ss';
 
 /**
+ * 根据日期获取星期
+ * @param date 日期
+ * @return 星期
+ */
+export function getWeekdayCn(date: Date|string): string {
+    if (!date) {
+        return '';
+    }
+    const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    let dayOfWeek = -1;
+    if (typeof(date) == "string") {
+        dayOfWeek = new Date(date).getDay();
+    } else if (date instanceof Date) {
+        dayOfWeek = date.getDay();
+    }
+    return days[dayOfWeek];
+}
+
+/**
  * 日期格式化为 yyyy-MM-dd HH:mm:ss
  * @param date
  */
@@ -58,7 +77,7 @@ export function within(text: string, days: number) {
         value: () => {
             const end = new Date()
             const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * days)
+            start.setTime(start.getTime() - 1000 * 60 * 24 * days)
             start.setHours(0, 0, 0)
             start.setDate(start.getDate() - days)
             end.setHours(23, 59, 59)
