@@ -3,7 +3,7 @@ package com.freesia.excel.listener;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import com.freesia.excel.pojo.BaseImportEntity;
 import lombok.extern.slf4j.Slf4j;
 

@@ -125,7 +125,7 @@
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form :ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
+        <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
               <lay-form-item label="开销描述" prop="costDesc" required>

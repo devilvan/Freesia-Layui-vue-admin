@@ -2,13 +2,12 @@ package com.freesia.service.impl;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.freesia.log.annotation.LogRecord;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
@@ -20,15 +19,18 @@ import com.freesia.entity.FindPageSysUserListEntity;
 import com.freesia.entity.FindUserRolesByUserIdEntity;
 import com.freesia.exception.UserException;
 import com.freesia.helper.DataBaseHelper;
+import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.mapper.SysUserMapper;
-import com.freesia.satoken.model.LoginUserModel;
+import com.freesia.oss.pojo.OssFactory;
+import com.freesia.oss.pojo.OssHandler;
 import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.properties.LoginPasswordProperties;
 import com.freesia.repository.SysUserRepository;
 import com.freesia.repository.SysUserRoleRepository;
+import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
@@ -56,6 +58,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     private final SysDeptMapper sysDeptMapper;
     private final SysTenantService sysTenantService;
     private final SysUserRoleRepository sysUserRoleRepository;
+    private final OssHandler ossHandler = OssFactory.getInstance();
 
     @Override
     public SysUserPo saveUpdate(SysUserDto sysUserDto) {
@@ -86,9 +89,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public SysUserDto findUserById(Long userId) {
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
-        SysUserDto sysUserDto = new SysUserDto();
-        UCopy.fullCopy(sysUserPo, sysUserDto);
-        return sysUserDto;
+        sysUserPo.setAvatar(ossHandler.convertEndpoint2Domain(sysUserPo.getAvatar()));
+        return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
     }
 
     @Override
@@ -128,6 +130,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                     m.in("U.DEPT_ID", deptIdList);
                 }));
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserList(pageQuery.build(), sysUserPoWrapper);
+        List<FindPageSysUserListEntity> findPageSysUserListEntityList = page.getRecords();
+        for (FindPageSysUserListEntity findPageSysUserListEntity : findPageSysUserListEntityList) {
+            findPageSysUserListEntity.setAvatar(ossHandler.convertEndpoint2Domain(findPageSysUserListEntity.getAvatar()));
+        }
+        page.setRecords(findPageSysUserListEntityList);
         return TableResult.build(page);
     }
 
@@ -157,6 +164,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                 .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysUserPo::getId, userId);
         SysUserPo sysUserPo = sysUserMapper.findCurrentUserProfile(queryWrapper);
+        sysUserPo.setAvatar(ossHandler.convertEndpoint2Domain(sysUserPo.getAvatar()));
         return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
     }
 
@@ -165,7 +173,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         Long id = sysUserDto.getId();
         SysUserPo sysUserPo;
         if (UEmpty.isNotNull(id)) {
-            sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed", new Object[] {}));
+            sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed", new Object[]{}));
             UCopy.halfCopy(sysUserDto, sysUserPo);
             sysUserRepository.save(sysUserPo);
         } else {
@@ -179,7 +187,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public FindUserRolesByUserIdEntity findUserRolesByUserId(Long userId) {
         // 获取用户对象
-        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.query.failed", new Object[] {userId}));
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.query.failed", new Object[]{userId}));
         // 获取角色
         Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
         return buildFindUserRolesByUserIdEntity(sysUserPo, sysRolePoSet);
@@ -187,7 +195,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public void assignRole(Long userId, Set<Long> afterRoleIdSet) {
-        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.not.exists", new Object[] {}));
+        SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         // 获取并修改分配后的角色
         Set<SysRolePo> sysRolePoSet = sysUserPo.getSysRolePoSet();
         List<Long> beforeRoleIdList = sysRolePoSet.stream().map(SysRolePo::getId).collect(Collectors.toList());
@@ -293,10 +301,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.AVATAR_UPDATE, message = "user.avatarUpdate")
     public void avatarUpdate(String avatar) {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         Long userId = loginUser.getUserId();
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
-        sysUserPo.setAvatar(avatar);
+        sysUserPo.setAvatar(ossHandler.convertDomain2Endpoint(avatar));
         sysUserRepository.save(sysUserPo);
     }
 

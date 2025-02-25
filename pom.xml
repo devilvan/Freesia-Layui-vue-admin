@@ -15,10 +15,10 @@
     </parent>
     <groupId>com.freesia</groupId>
     <artifactId>freesia</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     <properties>
-        <freesia.version>1.0.0</freesia.version>
+        <freesia.version>1.1.0</freesia.version>
         <springboot.version>2.7.0</springboot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>16</maven.compiler.source>
@@ -32,7 +32,7 @@
         <druid.version>1.1.16</druid.version>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <logback-core.version>1.2.3</logback-core.version>
-        <fastjson.version>2.0.40</fastjson.version>
+        <fastjson.version>2.0.50</fastjson.version>
         <hutool.version>5.8.18</hutool.version>
         <jsoup.verison>1.11.3</jsoup.verison>
         <redisson.version>3.17.3</redisson.version>
