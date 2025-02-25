@@ -1,6 +1,6 @@
 package com.freesia.excel.pojo;
 
-import com.alibaba.fastjson2.annotation.JSONField;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.constant.Constants;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

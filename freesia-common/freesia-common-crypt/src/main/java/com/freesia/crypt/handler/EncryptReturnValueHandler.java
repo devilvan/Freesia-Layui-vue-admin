@@ -2,6 +2,7 @@ package com.freesia.crypt.handler;
 
 import cn.hutool.http.ContentType;
 import com.alibaba.fastjson.JSONObject;
+import com.freesia.constant.Constants;
 import com.freesia.crypt.annotation.Encrypt;
 import com.freesia.crypt.constant.CryptModule;
 import com.freesia.crypt.util.UCrypt;
@@ -62,7 +63,7 @@ public class EncryptReturnValueHandler implements HandlerMethodReturnValueHandle
             HttpServletResponse httpServletResponse = Optional.of(webRequest)
                     .map(nativeWebRequest -> nativeWebRequest.getNativeResponse(HttpServletResponse.class))
                     .orElseThrow(() -> new CryptException("crypt.get.native.response.failed", new Object[][] {}));
-            httpServletResponse.setCharacterEncoding("UTF-8");
+            httpServletResponse.setCharacterEncoding(Constants.UTF_8);
             httpServletResponse.setHeader("Content-type", ContentType.TEXT_HTML.getValue());
             httpServletResponse.getWriter().write(responseBody);
             mavContainer.setRequestHandled(true);

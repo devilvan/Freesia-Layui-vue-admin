@@ -50,4 +50,13 @@ public final class Constants {
      * 加密
      */
     public static final String ENCRYPT = "encrypt";
+    /**
+     * UTF-8
+     */
+    public static final String UTF_8 = "UTF-8";
+    /**
+     * UTF8
+     */
+    public static final String UTF8 = "UTF8";
+
 }

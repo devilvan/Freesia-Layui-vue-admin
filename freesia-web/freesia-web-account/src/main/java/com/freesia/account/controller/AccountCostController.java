@@ -1,7 +1,10 @@
 package com.freesia.account.controller;
 
+import cn.hutool.poi.excel.ExcelUtil;
+import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
@@ -16,6 +19,7 @@ import com.freesia.controller.BaseController;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
+import com.freesia.excel.constant.ExcelCellWriteStyle;
 import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.handler.ExcelExportHandler;
 import com.freesia.excel.pojo.ExcelExportDto;
@@ -24,22 +28,24 @@ import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
 import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.oss.exception.OssException;
+import com.freesia.oss.util.UOssFile;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
-import com.freesia.util.UCopy;
-import com.freesia.util.UEmpty;
-import com.freesia.util.UMessage;
-import com.freesia.util.UString;
+import com.freesia.util.*;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,23 +61,6 @@ import java.util.Optional;
 @Tag(name = "AccountCostController", description = "开销表 控制器")
 public class AccountCostController extends BaseController {
     private final AccountCostService accountCostService;
-
-    private static void doAccountsExport(List<AccountCostExportEntity> accountCostExportEntityList, Date[] dates) {
-        ExcelExportDto<AccountCostExportEntity> excelExportDto = new ExcelExportDto<>();
-        excelExportDto.setExportPath("C:\\Mine\\");
-        excelExportDto.setFileName("export");
-        excelExportDto.setSuffix(ExcelTypeEnum.XLSX);
-        excelExportDto.setClassType(AccountCostExportEntity.class);
-        excelExportDto.setList(accountCostExportEntityList);
-        ExcelWriter excelWriter = ExcelExportHandler.buildExcelWriter(excelExportDto);
-        String dateFrom = Constants.SDF_YMD.format(dates[0]);
-        String dateTo = Constants.SDF_YMD.format(dates[1]);
-        try {
-            excelWriter.write(() -> accountCostExportEntityList, ExcelExportHandler.buildWriteSheet(0, dateFrom + "到" + dateTo + "记账合计"));
-        } finally {
-            excelWriter.finish();
-        }
-    }
 
     /**
      * 保存开销表信息
@@ -191,15 +180,32 @@ public class AccountCostController extends BaseController {
 //    @SaCheckPermission(value = MenuPermission.SYSTEM_USER_IMPORT_USER)
     @Operation(summary = "记账导出")
     @GetMapping(value = "accountsExport")
-    public R<Void> accountsExport(AccountCostVo accountsExportVo) {
+    public void accountsExport(AccountCostVo accountsExportVo, HttpServletResponse response) throws IOException {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountsExportVo, AccountCostDto.class);
         accountCostDto.setTenantId(USecurity.getTenantId());
         Date[] dates = parseDateRange(accountsExportVo.getPaymentTimeRange());
         accountCostDto.setPaymentTimeFrom(dates[0]);
         accountCostDto.setPaymentTimeTo(dates[1]);
         List<AccountCostExportEntity> accountCostExportEntityList = accountCostService.findBuildListAccountsExport(accountCostDto);
-        doAccountsExport(accountCostExportEntityList, dates);
-        return R.ok();
+        doAccountExport(response, dates, accountCostExportEntityList);
+    }
+
+    private static void doAccountExport(HttpServletResponse response, Date[] dates, List<AccountCostExportEntity> accountCostExportEntityList) throws IOException {
+        String dateFrom = Constants.SDF_YMD.format(dates[0]);
+        String dateTo = Constants.SDF_YMD.format(dates[1]);
+        String title = dateFrom + "到" + dateTo + "记账合计";
+        String fileName = URLEncoder.encode(title, Constants.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + "." + ExcelSuffix.XLS.getSuffix());
+        response.setHeader(UOssFile.DOWNLOAD_FILENAME, fileName + "." + ExcelSuffix.XLS.getSuffix());
+        response.setContentType(ExcelUtil.XLS_CONTENT_TYPE);
+        response.setCharacterEncoding(Constants.UTF_8);
+        EasyExcelFactory.write(response.getOutputStream())
+                .head(AccountCostExportEntity.class)
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .registerWriteHandler(ExcelExportHandler.getBasicWriteStrategy())
+                .registerWriteHandler(new ExcelCellWriteStyle<>())
+                .sheet(0, title)
+                .doWrite(accountCostExportEntityList);
     }
 
     @Operation(summary = "饼图-查询各类型开销比例")

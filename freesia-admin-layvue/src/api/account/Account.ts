@@ -8,6 +8,7 @@ import {
     FindCostSumCalendarNearYearVo,
     FindCostLineChartVo
 } from "../../types/account/Account";
+import {layer} from "@layui/layui-vue";
 
 export function saveUpdate(sysTenantVo: AccountCostVo) {
     return Http.post("/api/accountCostController/saveUpdate", sysTenantVo);
@@ -44,7 +45,9 @@ export const accountsImport = function (file: File) {
 
 export function accountsExport(accountsExportVo: AccountCostVo) {
     let params = buildUrlParam(accountsExportVo);
-    return Http.get("/api/accountCostController/accountsExport", params);
+    return Http.get("/api/accountCostController/accountsExport", params, {
+        responseType: 'blob'
+    });
 }
 
 export function findCostTypeRatePie(accountCostVo: AccountCostVo) {

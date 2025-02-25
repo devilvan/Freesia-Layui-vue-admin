@@ -5,7 +5,7 @@
     <parent>
         <artifactId>freesia-common</artifactId>
         <groupId>com.freesia</groupId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -62,8 +62,8 @@
         </dependency>
         <!-- MySQL-->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
         <!--Mybatis-plus-->
         <dependency>

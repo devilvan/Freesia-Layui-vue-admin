@@ -15,12 +15,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
-import com.freesia.oss.constant.AccessPolicy;
 import com.freesia.constant.Constants;
+import com.freesia.oss.constant.AccessPolicy;
 import com.freesia.oss.constant.OssConstant;
 import com.freesia.oss.constant.PolicyType;
 import com.freesia.oss.exception.OssException;
 import com.freesia.oss.properties.OssProperties;
+import com.freesia.util.UEmpty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,6 +35,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Evad.Wu
@@ -390,6 +393,50 @@ public class OssHandler {
         Date date = new Date();
         date.setTime(date.getTime() + millis);
         return date;
+    }
+
+    /**
+     * URL 容器名+端口转域名/IP+端口
+     *
+     * @param url 待转URL
+     * @return 转换后的URL
+     */
+    public String convertEndpoint2Domain(String url) {
+        String domain = properties.getDomain();
+        if (UEmpty.isEmpty(url) || UEmpty.isEmpty(domain)) {
+            return url;
+        }
+        // 正则表达式
+        String regex = "(http[s]?:\\/\\/)([^:\\/]+):(\\d+)\\/(.+)$";
+        // 替换模板
+        String replacement = "$1" + domain + "/$4";
+        // 创建 Pattern 对象
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(url);
+        // 进行替换
+        return matcher.replaceAll(replacement);
+    }
+
+    /**
+     * URL 域名/IP+端口转容器名+端口
+     *
+     * @param url 待转URL
+     * @return 转换后的URL
+     */
+    public String convertDomain2Endpoint(String url) {
+        String domain = properties.getDomain();
+        if (UEmpty.isEmpty(url) || UEmpty.isEmpty(domain)) {
+            return url;
+        }
+        // 正则表达式
+        String regex = "(http[s]?:\\/\\/)([^:\\/]+):(\\d+)\\/(.+)$";
+        // 替换模板
+        String replacement = "$1" + domain + "/$4";
+        // 创建 Pattern 对象
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(url);
+        // 进行替换
+        return matcher.replaceAll(replacement);
     }
 
     /**
