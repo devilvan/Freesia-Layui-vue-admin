@@ -290,7 +290,7 @@ public class RedissonPropertiesDto {
     private String rdbLastSaveTime;
     private String pubsub_patterns;
     private String slave_expires_tracked_keys;
-    private Date redis_git_sha1;
+    private String redis_git_sha1;
     @Schema(description = "从操作系统上显示已经分配的内存总量")
     @JSONField(alternateNames = "used_memory_rss")
     private String usedMemoryRss;

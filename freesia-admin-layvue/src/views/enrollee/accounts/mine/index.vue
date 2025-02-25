@@ -55,8 +55,13 @@
           :default-toolbar="true"
           :loading="loading"
           :page="pageQuery"
+          :height="'600px'"
+          :even="true"
           @change="change"
           @sortChange="sortChange">
+        <template #paymentTime="{ row }">
+          {{ row.paymentTime}} （{{ getWeekdayCn(row.paymentTime) }}）
+        </template>
         <template #remark="{ row }">
           <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
             <div class="oneRow">{{ row.remark }}</div>
@@ -258,7 +263,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
+import {computed, onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../../types/Common";
 import {TableResult} from "../../../../types/Result";
@@ -275,7 +280,7 @@ import {AccountCostEntity, AccountCostVo, PaymentSign} from "@/types/account/Acc
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {List} from "echarts";
-import {buildRange, defaultShortcuts, singleShortcuts} from "@/util/UDate";
+import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 
@@ -309,10 +314,11 @@ const pageQuery = reactive<PageQuery>({
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '开销描述', width: '130px', key: 'costDesc', fixed: 'left'},
-  {title: '开销金额', width: '130px', key: 'outlay'},
+  {title: '开销金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '开销标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
-  {title: '开支时间', width: '150px', key: 'paymentTime'},
+  {title: '开支时间', width: '180px', key: 'paymentTime', customSlot:  'paymentTime'},
+  {title: '修改时间', width: '150px', key: 'modifyTime', sort: 'desc' },
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -586,7 +592,7 @@ function queryFormReset() {
 .table-box {
   margin-top: 10px;
   padding: 10px;
-  height: 700px;
+  height: 600px;
   width: 100%;
   border-radius: 4px;
   box-sizing: border-box;
