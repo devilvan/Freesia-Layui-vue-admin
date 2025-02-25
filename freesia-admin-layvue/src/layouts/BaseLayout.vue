@@ -24,7 +24,7 @@
           :class="appStore.sideTheme == 'dark' ? 'dark changeBgc' : 'light'"
       >
         <lay-logo v-if="appStore.logo">
-          <lay-avatar :src="$SRC_ASSETS + '不要停下来啊.png'"></lay-avatar>
+          <lay-avatar :src="'/不要停下来啊.png'"></lay-avatar>
           <span style="padding-left: 20px; font-size: 18pt; font-family: 'Consolas'"
                 v-if="!appStore.collapse">Freesia</span>
         </lay-logo>

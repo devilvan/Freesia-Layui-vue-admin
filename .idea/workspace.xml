@@ -4,127 +4,157 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【修改】Evad 1. 部署准备">
-      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/Dockerfile" afterDir="false" />
+    <list default="true" id="e2c6d0f8-ce5a-4d64-8271-538fe39fc371" name="Default Changelist" comment="【修复】Evad 1. 异常类统一调整">
+      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/.dockerignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/.env.production" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/.env.production" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/assets/不要停下来啊.png" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/public/不要停下来啊.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/layouts/BaseLayout.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/layouts/BaseLayout.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/component/svg/AccountTypeIconPicker.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/component/svg/AccountTypeIconPicker.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CodeInsightWorkspaceSettings">
-    <option name="optimizeImportsOnTheFly" value="true" />
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
+        <option value="AnnotationType" />
+        <option value="package-info" />
+        <option value="Interface" />
         <option value="Class" />
-        <option value="TypeScript File" />
-        <option value="Dockerfile" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PATH_TO_GIT" value="D:\Environment\Git\bin\git.exe" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/20250203_Evad.Wu_代码优化" />
+        <entry key="$PROJECT_DIR$" value="develop" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="SOFT" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-core/1.12.540/aws-java-sdk-core-1.12.540-sources.jar!/com/amazonaws/AmazonWebServiceRequest.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/ObjectMetadata.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/AmazonS3.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/PutObjectRequest.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/freesia-admin-layvue/node_modules/@layui/layui-vue/lib/index.css" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/AbstractPutObjectRequest.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="JpbToolWindowState">
-    <option name="isToolWindowVisible" value="false" />
-  </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
+    <option name="myId2FirstActivated">
+      <map>
+        <entry key="JPA Structure" value="true" />
+      </map>
+    </option>
+    <option name="myId2Visible">
+      <map>
+        <entry key="JPA Structure" value="false" />
+      </map>
+    </option>
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
-        <option name="customMavenHome" value="C:\Environment\apache-maven-3.6.3" />
-        <option name="mavenHomeTypeForPersistence" value="CUSTOM" />
-        <option name="useMavenConfig" value="false" />
-        <option name="userSettingsFile" value="C:\Environment\apache-maven-3.6.3\conf\settings.xml" />
+        <option name="mavenHome" value="$PROJECT_DIR$/../../../Environment/Maven/apache-maven-3.6.3" />
+        <option name="userSettingsFile" value="D:\Environment\Maven\apache-maven-3.6.3\conf\settings.xml" />
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="MavenRunner">
-    <option name="skipTests" value="true" />
+  <component name="ProjectId" id="2ehtnuzyrLaXWLzuHhXqgPneljz" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 8
-}</component>
-  <component name="ProjectId" id="2qhySWDUkzbkz303ejcTZq9Jk59" />
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
-    <option name="showScratchesAndConsoles" value="false" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.freesia-admin-layvue/Dockerfile.executor": "Run",
-    "JUnit.FreesiaTest.testCalendar.executor": "Debug",
-    "JUnit.FreesiaTest.testLoopDirFiles.executor": "Debug",
-    "JUnit.FreesiaTest.testLoopFileName.executor": "Debug",
-    "JUnit.FreesiaTestApplication.testExport.executor": "Run",
-    "Maven.freesia [clean].executor": "Run",
-    "Maven.freesia [install].executor": "Run",
-    "Maven.freesia [site].executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.FreesiaAdminApplication.executor": "Debug",
-    "database.data.extractors.current.export.id": "HTML-JavaScript.html.js",
-    "database.data.extractors.current.id": "HTML-JavaScript.html.js",
-    "git-widget-placeholder": "feature/20250211__Evad.Wu__部署文件提交",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Project/freesia/freesia-web/freesia-web-app/src/main/resources",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
-    "nodejs_package_manager_path": "yarn",
-    "npm.run.executor": "Run",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.33908045",
-    "settings.editor.selected.configurable": "settings.nodejs",
-    "ts.external.directory.path": "C:\\Project\\freesia\\freesia-admin-layvue\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
-  },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "com.p6spy.engine.spy.P6SpyDriver",
-      "mysql"
-    ]
-  }
-}]]></component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ExpandSpringBootJavaOptionsPanel" value="true" />
+    <property name="Git.Branch.Popup.ShowAllLocals" value="false" />
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="ignore.preview.features.used" value="true" />
+    <property name="jdk.selected.JAVA_MODULE" value="16" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/freesia-admin-layvue/Dockerfile" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.stylelint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.stylelint" value="" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path" value="$PROJECT_DIR$/../../../Environment/Nodejs16/node" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.22444679" />
+    <property name="project.structure.side.proportion" value="0.21494102" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="File.Encoding" />
+    <property name="ts.external.directory.path" value="D:\Mine\Maven\freesia\freesia-admin-layvue\node_modules\typescript\lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
+  <component name="ReaderModeSettings">
+    <option name="showRenderedDocs" value="false" />
+  </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Project\freesia\freesia-web\freesia-web-app\src\main\resources" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\api\account" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\types\account" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\views\enrollee\accounts" />
+      <recent name="D:\Mine\Maven\freesia\freesia-common\freesia-common-cache\src\main\java\com\freesia\cache\manage" />
+      <recent name="D:\Mine\Maven\freesia\freesia-web\freesia-web-sse\src\main\resources\META-INF\spring" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Project\freesia\freesia-admin-layvue\src\assets\svg" />
-      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\accountsDashboard" />
-      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\dashboard" />
-      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\mine" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\public" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\dist\assets" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\assets" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\assets\header" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\assets\avatar" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.freesia.entity" />
-      <recent name="com.freesia.excel" />
       <recent name="com.freesia.account.entity" />
-      <recent name="com.freesia.account.listener" />
-      <recent name="com.freesia.exception" />
+      <recent name="com.freesia.entity" />
+      <recent name="com.freesia.account.vo" />
+      <recent name="com.freesia.pojo" />
+      <recent name="com.freesia.handler" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn release:prepare" />
+      <command value="mvn versions:set -DnewVersion=1.0.1" />
+      <command value="mvn versions:set -DnewVersion=1.0.1 clean install" />
+      <command value="mvn clean" />
+    </option>
   </component>
   <component name="RunDashboard">
     <option name="configurationTypes">
@@ -133,24 +163,32 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Docker.freesia-admin-layvue/Dockerfile">
-    <configuration name="FreesiaTestApplication.testExport" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="freesia-web-app" />
+  <component name="RunManager" selected="Spring Boot.FreesiaAdminApplication">
+    <configuration name="UCrypt" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.freesia.crypt.util.UCrypt" />
+      <module name="freesia-common-crypt" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.freesia.*" />
+          <option name="PATTERN" value="com.freesia.crypt.util.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.freesia" />
-      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTestApplication" />
-      <option name="METHOD_NAME" value="testExport" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FreesiaTest.testCalendar" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FreesiaTest.testParseJSON" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="freesia-web-app" />
       <extension name="coverage">
         <pattern>
@@ -160,69 +198,53 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.freesia" />
       <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
-      <option name="METHOD_NAME" value="testCalendar" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="FreesiaTest.testLoopDirFiles" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="freesia-web-app" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.freesia.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.freesia" />
-      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
-      <option name="METHOD_NAME" value="testLoopDirFiles" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="FreesiaTest.testLoopFileName" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="freesia-web-app" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.freesia.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.freesia" />
-      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
-      <option name="METHOD_NAME" value="testLoopFileName" />
+      <option name="METHOD_NAME" value="testParseJSON" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="JetRunConfigurationType">
-      <module name="freesia-common-tenant" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="freesia-common-tenant" />
       <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FreesiaAdminApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <configuration name="FreesiaAdminApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="freesia-web-app" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.freesia.FreesiaAdminApplication" />
+      <option name="VM_PARAMETERS" value="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED " />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="freesia-admin-layvue/Dockerfile" type="docker-deploy" factoryName="dockerfile" temporary="true" server-name="Docker">
+    <configuration default="true" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
       <deployment type="dockerfile">
         <settings>
           <option name="imageTag" value="freesia-web:latest" />
+          <option name="attachToContainerNeeded" value="true" />
+          <option name="buildKitEnabled" value="true" />
           <option name="containerName" value="freesia-web" />
+          <option name="publishAllPorts" value="true" />
+          <option name="sourceFilePath" value="freesia-admin-layvue/Dockerfile" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="freesia-admin-layvue/Dockerfile" type="docker-deploy" factoryName="dockerfile" singleton="false" temporary="true" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="freesia-web:1.0.1,freesia-web:latest" />
+          <option name="buildOnly" value="true" />
+          <option name="containerName" value="freesia-web" />
+          <option name="entrypoint" value="" />
           <option name="sourceFilePath" value="freesia-admin-layvue/Dockerfile" />
         </settings>
       </deployment>
@@ -239,84 +261,620 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Application.UCrypt" />
       <item itemvalue="Docker.freesia-admin-layvue/Dockerfile" />
-      <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
-      <item itemvalue="JUnit.FreesiaTest.testCalendar" />
-      <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
-      <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
+      <item itemvalue="JUnit.FreesiaTest.testParseJSON" />
       <item itemvalue="npm.dev" />
       <item itemvalue="Spring Boot.FreesiaAdminApplication" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Docker.freesia-admin-layvue/Dockerfile" />
-        <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
-        <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
-        <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
-        <item itemvalue="JUnit.FreesiaTest.testCalendar" />
+        <item itemvalue="Application.UCrypt" />
+        <item itemvalue="npm.dev" />
+        <item itemvalue="JUnit.FreesiaTest.testParseJSON" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【修改】Evad 1. 记账模块开发" />
-      <created>1735129102491</created>
+      <changelist id="e2c6d0f8-ce5a-4d64-8271-538fe39fc371" name="Default Changelist" comment="" />
+      <created>1712368810290</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1735129102491</updated>
-      <workItem from="1735129103848" duration="1133000" />
-      <workItem from="1735216008556" duration="4853000" />
-      <workItem from="1735295293350" duration="4660000" />
-      <workItem from="1735827285172" duration="7774000" />
-      <workItem from="1735899631858" duration="1529000" />
-      <workItem from="1735901173047" duration="73000" />
-      <workItem from="1735901253220" duration="168000" />
-      <workItem from="1735901428502" duration="4151000" />
-      <workItem from="1736137574098" duration="1424000" />
-      <workItem from="1736169435127" duration="11182000" />
-      <workItem from="1736245748671" duration="868000" />
-      <workItem from="1736340044728" duration="827000" />
-      <workItem from="1736340895225" duration="107000" />
-      <workItem from="1736431306814" duration="5139000" />
-      <workItem from="1736506674119" duration="2966000" />
-      <workItem from="1736686174003" duration="2406000" />
-      <workItem from="1736688593877" duration="3412000" />
-      <workItem from="1737186210216" duration="8225000" />
-      <workItem from="1737334343245" duration="22847000" />
-      <workItem from="1737363047463" duration="5303000" />
-      <workItem from="1737420733342" duration="19186000" />
-      <workItem from="1738829813282" duration="6089000" />
-      <workItem from="1738891300548" duration="2549000" />
-      <workItem from="1738909780145" duration="3427000" />
-      <workItem from="1739266565750" duration="13514000" />
+      <updated>1712368810290</updated>
+      <workItem from="1712368811711" duration="128000" />
+      <workItem from="1712455565485" duration="347000" />
+      <workItem from="1712477162741" duration="3724000" />
+      <workItem from="1712481149607" duration="1029000" />
+      <workItem from="1712494822015" duration="871000" />
+      <workItem from="1712495713477" duration="3520000" />
+      <workItem from="1712502354166" duration="1998000" />
+      <workItem from="1712504375320" duration="402000" />
+      <workItem from="1712537394626" duration="841000" />
+      <workItem from="1712566640015" duration="252000" />
+      <workItem from="1712566898707" duration="586000" />
+      <workItem from="1712567618349" duration="74000" />
+      <workItem from="1712567800651" duration="397000" />
+      <workItem from="1712568335687" duration="14000" />
+      <workItem from="1712568360294" duration="2398000" />
+      <workItem from="1712574693317" duration="672000" />
+      <workItem from="1712575383808" duration="406000" />
+      <workItem from="1712575808170" duration="8789000" />
+      <workItem from="1712623868675" duration="1855000" />
+      <workItem from="1712632370868" duration="14460000" />
+      <workItem from="1712669358534" duration="295000" />
+      <workItem from="1712673107521" duration="728000" />
+      <workItem from="1712709938506" duration="12000" />
+      <workItem from="1712753715530" duration="3473000" />
+      <workItem from="1712796546353" duration="703000" />
+      <workItem from="1712972868409" duration="4077000" />
+      <workItem from="1712978822927" duration="129000" />
+      <workItem from="1712978968974" duration="10101000" />
+      <workItem from="1712999381027" duration="3205000" />
+      <workItem from="1713141875959" duration="2462000" />
+      <workItem from="1713151462832" duration="46000" />
+      <workItem from="1713320139831" duration="173000" />
+      <workItem from="1713320329304" duration="1347000" />
+      <workItem from="1713968544225" duration="384000" />
+      <workItem from="1713968943256" duration="172000" />
+      <workItem from="1714012969884" duration="202000" />
+      <workItem from="1714116917611" duration="127000" />
+      <workItem from="1714117060864" duration="7258000" />
+      <workItem from="1715138830376" duration="22000" />
+      <workItem from="1715138858516" duration="80000" />
+      <workItem from="1715138945925" duration="241000" />
+      <workItem from="1715419157717" duration="81000" />
+      <workItem from="1715419253125" duration="1384000" />
+      <workItem from="1715561536999" duration="1572000" />
+      <workItem from="1715766532180" duration="705000" />
+      <workItem from="1715820505088" duration="4644000" />
+      <workItem from="1715923846362" duration="2567000" />
+      <workItem from="1715927456488" duration="9228000" />
+      <workItem from="1716185208129" duration="4811000" />
+      <workItem from="1716298141254" duration="1704000" />
+      <workItem from="1716346095501" duration="1096000" />
+      <workItem from="1717050937131" duration="2241000" />
+      <workItem from="1717053927078" duration="6058000" />
+      <workItem from="1717375930666" duration="14000" />
+      <workItem from="1717397698786" duration="8910000" />
+      <workItem from="1717462891507" duration="497000" />
+      <workItem from="1717655198179" duration="2867000" />
+      <workItem from="1717661928612" duration="5544000" />
+      <workItem from="1717736760182" duration="428000" />
+      <workItem from="1717746983665" duration="1203000" />
+      <workItem from="1718093454915" duration="6521000" />
+      <workItem from="1718153910557" duration="8430000" />
+      <workItem from="1718170365618" duration="8716000" />
+      <workItem from="1718185420877" duration="2204000" />
+      <workItem from="1718239563589" duration="1117000" />
+      <workItem from="1718953169005" duration="8676000" />
+      <workItem from="1719193063943" duration="664000" />
+      <workItem from="1719214824459" duration="1423000" />
+      <workItem from="1720071889237" duration="14467000" />
+      <workItem from="1720140744257" duration="11575000" />
+      <workItem from="1720165466272" duration="6828000" />
+      <workItem from="1720405151888" duration="66000" />
+      <workItem from="1720407418317" duration="3629000" />
+      <workItem from="1720492214740" duration="21135000" />
+      <workItem from="1720572425957" duration="943000" />
+      <workItem from="1720680582175" duration="19000" />
+      <workItem from="1720680609756" duration="9251000" />
+      <workItem from="1720767118480" duration="107000" />
+      <workItem from="1720767233811" duration="11009000" />
+      <workItem from="1721011390466" duration="9285000" />
+      <workItem from="1721118545199" duration="32000" />
+      <workItem from="1721118582674" duration="3431000" />
+      <workItem from="1721177359510" duration="18737000" />
+      <workItem from="1721269319664" duration="20058000" />
+      <workItem from="1721351010641" duration="1150000" />
+      <workItem from="1721352420637" duration="965000" />
+      <workItem from="1721354717298" duration="458000" />
+      <workItem from="1721355187375" duration="1269000" />
+      <workItem from="1721617047545" duration="4163000" />
+      <workItem from="1721638309758" duration="33000" />
+      <workItem from="1721640912229" duration="593000" />
+      <workItem from="1721958880496" duration="5669000" />
+      <workItem from="1721973205832" duration="6458000" />
+      <workItem from="1721987813888" duration="1154000" />
+      <workItem from="1722044089521" duration="16535000" />
+      <workItem from="1722333903108" duration="117000" />
+      <workItem from="1722568544968" duration="3767000" />
+      <workItem from="1722577354155" duration="2156000" />
+      <workItem from="1722579537412" duration="43000" />
+      <workItem from="1722579600696" duration="10999000" />
+      <workItem from="1722818590530" duration="868000" />
+      <workItem from="1722906054313" duration="23000" />
+      <workItem from="1722906083689" duration="1560000" />
+      <workItem from="1722921386619" duration="344000" />
+      <workItem from="1722925231560" duration="18418000" />
+      <workItem from="1722991685739" duration="2905000" />
+      <workItem from="1723096286531" duration="28000" />
+      <workItem from="1723096322948" duration="2767000" />
+      <workItem from="1723165692817" duration="9355000" />
+      <workItem from="1723424625012" duration="329000" />
+      <workItem from="1724058216561" duration="1047000" />
+      <workItem from="1724115705143" duration="186000" />
+      <workItem from="1724124795267" duration="784000" />
+      <workItem from="1725275138035" duration="1387000" />
+      <workItem from="1725325289804" duration="13000" />
+      <workItem from="1725348931089" duration="8000" />
+      <workItem from="1725523725522" duration="462000" />
+      <workItem from="1725587906871" duration="910000" />
+      <workItem from="1726190951288" duration="3502000" />
+      <workItem from="1726194500226" duration="20163000" />
+      <workItem from="1726277762577" duration="13000" />
+      <workItem from="1726277781410" duration="19038000" />
+      <workItem from="1726708239545" duration="594000" />
+      <workItem from="1727149937015" duration="9134000" />
+      <workItem from="1727166578673" duration="7326000" />
+      <workItem from="1727226238130" duration="16255000" />
+      <workItem from="1727313558424" duration="622000" />
+      <workItem from="1727314194031" duration="21907000" />
+      <workItem from="1727419530974" duration="13000" />
+      <workItem from="1727419551408" duration="7836000" />
+      <workItem from="1727504808220" duration="2001000" />
+      <workItem from="1727508889965" duration="6245000" />
+      <workItem from="1727574180286" duration="1907000" />
+      <workItem from="1727580609182" duration="62000" />
+      <workItem from="1727580723573" duration="12000" />
+      <workItem from="1727580754216" duration="1724000" />
+      <workItem from="1727590633449" duration="11607000" />
+      <workItem from="1727659932279" duration="8009000" />
+      <workItem from="1727684691456" duration="18000" />
+      <workItem from="1727684717203" duration="51000" />
+      <workItem from="1727684775435" duration="71000" />
+      <workItem from="1727684861849" duration="2245000" />
+      <workItem from="1728178495562" duration="3462000" />
+      <workItem from="1728288932211" duration="1517000" />
+      <workItem from="1728350582724" duration="2365000" />
+      <workItem from="1728374991468" duration="653000" />
+      <workItem from="1728469899840" duration="3586000" />
+      <workItem from="1728522581891" duration="20685000" />
+      <workItem from="1728625302510" duration="1440000" />
+      <workItem from="1728626767082" duration="3909000" />
+      <workItem from="1728630800205" duration="5909000" />
+      <workItem from="1728638615129" duration="1950000" />
+      <workItem from="1728645596087" duration="1160000" />
+      <workItem from="1728696575663" duration="104000" />
+      <workItem from="1728697174366" duration="1869000" />
+      <workItem from="1728867156641" duration="120000" />
+      <workItem from="1728997069089" duration="2333000" />
+      <workItem from="1729048378207" duration="6004000" />
+      <workItem from="1729127920462" duration="8872000" />
+      <workItem from="1729158223901" duration="1348000" />
+      <workItem from="1729215939105" duration="48000" />
+      <workItem from="1729216247028" duration="1714000" />
+      <workItem from="1729474653155" duration="15711000" />
+      <workItem from="1729511611057" duration="1781000" />
+      <workItem from="1729558456685" duration="16000" />
+      <workItem from="1729558478921" duration="27708000" />
+      <workItem from="1729644770746" duration="6185000" />
+      <workItem from="1729651036655" duration="1116000" />
+      <workItem from="1729652180765" duration="613000" />
+      <workItem from="1729652820028" duration="15000" />
+      <workItem from="1729652851149" duration="905000" />
+      <workItem from="1729653781602" duration="15837000" />
+      <workItem from="1729753956097" duration="751000" />
+      <workItem from="1729756357103" duration="6065000" />
+      <workItem from="1729836433203" duration="6297000" />
+      <workItem from="1730076790109" duration="5406000" />
+      <workItem from="1730094628313" duration="5793000" />
+      <workItem from="1730101693600" duration="1206000" />
+      <workItem from="1730280551640" duration="622000" />
+      <workItem from="1730281185933" duration="1522000" />
+      <workItem from="1730423813413" duration="26341000" />
+      <workItem from="1730714678410" duration="2351000" />
+      <workItem from="1730767371860" duration="907000" />
+      <workItem from="1730771949258" duration="4266000" />
+      <workItem from="1730793424893" duration="1179000" />
+      <workItem from="1731051981003" duration="15000" />
+      <workItem from="1731052003455" duration="6011000" />
+      <workItem from="1732100932928" duration="592000" />
+      <workItem from="1732243081565" duration="2154000" />
+      <workItem from="1733813841108" duration="1378000" />
+      <workItem from="1733819600117" duration="637000" />
+      <workItem from="1733878609950" duration="30000" />
+      <workItem from="1734080263411" duration="3697000" />
+      <workItem from="1734088425918" duration="1544000" />
+      <workItem from="1734135144647" duration="10631000" />
+      <workItem from="1734310630475" duration="34000" />
+      <workItem from="1734340648617" duration="3564000" />
+      <workItem from="1734354780221" duration="405000" />
+      <workItem from="1734396327148" duration="1023000" />
+      <workItem from="1735088134217" duration="743000" />
+      <workItem from="1735522534381" duration="371000" />
+      <workItem from="1735799472990" duration="1377000" />
+      <workItem from="1735802454344" duration="1091000" />
+      <workItem from="1736232278107" duration="339000" />
+      <workItem from="1736232639200" duration="8937000" />
+      <workItem from="1736319185119" duration="8016000" />
+      <workItem from="1736327408763" duration="5268000" />
+      <workItem from="1736383848101" duration="842000" />
+      <workItem from="1736494366434" duration="1050000" />
+      <workItem from="1736729779602" duration="221000" />
+      <workItem from="1737101919749" duration="1745000" />
+      <workItem from="1737106661927" duration="803000" />
+      <workItem from="1737545445081" duration="729000" />
+      <workItem from="1737546304758" duration="2123000" />
+      <workItem from="1737597384110" duration="54000" />
+      <workItem from="1737597451752" duration="36000" />
+      <workItem from="1737597500655" duration="16400000" />
+      <workItem from="1737645090642" duration="2383000" />
+      <workItem from="1737695100502" duration="25501000" />
+      <workItem from="1737785860707" duration="6370000" />
+      <workItem from="1737818446258" duration="1539000" />
+      <workItem from="1737859942134" duration="4314000" />
+      <workItem from="1737884125583" duration="4747000" />
+      <workItem from="1737909364707" duration="1407000" />
+      <workItem from="1737942319645" duration="2229000" />
+      <workItem from="1737951056973" duration="5030000" />
+      <workItem from="1737994010042" duration="2639000" />
+      <workItem from="1738037505512" duration="3968000" />
+      <workItem from="1738469196637" duration="1302000" />
+      <workItem from="1738581422181" duration="5842000" />
+      <workItem from="1738591091490" duration="2263000" />
+      <workItem from="1738642303956" duration="3874000" />
+      <workItem from="1739324004074" duration="17518000" />
+      <workItem from="1739408018928" duration="894000" />
+      <workItem from="1739514076134" duration="933000" />
+      <workItem from="1739523904804" duration="640000" />
+      <workItem from="1739754573491" duration="75000" />
+      <workItem from="1739844523998" duration="2180000" />
+      <workItem from="1739861260468" duration="749000" />
+      <workItem from="1739862025028" duration="10168000" />
     </task>
-    <task id="LOCAL-00001" summary="【新增】Evad 1. 记账模块开发">
-      <option name="closed" value="true" />
-      <created>1736170503957</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1736170503957</updated>
-    </task>
-    <task id="LOCAL-00002" summary="【新增】Evad 1. 记账模块-导出功能开发">
-      <option name="closed" value="true" />
-      <created>1737351122655</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1737351122655</updated>
-    </task>
-    <task id="LOCAL-00003" summary="【修改】Evad 1. 部署准备">
-      <option name="closed" value="true" />
-      <created>1739276903118</created>
+    <task id="LOCAL-00003" summary="【新增】Evad 1.结合SpringMVC对响应报文加密">
+      <created>1712576961186</created>
       <option name="number" value="00003" />
       <option name="presentableId" value="LOCAL-00003" />
       <option name="project" value="LOCAL" />
-      <updated>1739276903118</updated>
+      <updated>1712576961186</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="【修改】Evad 1. 解密请求报文修改">
+      <created>1712655680634</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1712655680634</updated>
+    </task>
+    <task id="LOCAL-00005" summary="【修改、新增】Evad 1. 部分接口转化为加密/解密接口 2. 手动数据校验时，部分注解根据额外参数赋值">
+      <created>1712993138041</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1712993138041</updated>
+    </task>
+    <task id="LOCAL-00006" summary="【修改】Evad 1. 完善手动数据校验">
+      <created>1714125535422</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1714125535422</updated>
+    </task>
+    <task id="LOCAL-00007" summary="【新增】Evad 1. 接入shardingjdbc实验">
+      <created>1715939453906</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1715939453906</updated>
+    </task>
+    <task id="LOCAL-00008" summary="【修改】Evad 1. 重写雪花算法">
+      <created>1717052424685</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1717052424685</updated>
+    </task>
+    <task id="LOCAL-00009" summary="【修复】Evad 1. 前端加密模块缺陷修复 2. 添加自定义雪花算法 2. 用户模块功能完善">
+      <created>1717063114886</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1717063114886</updated>
+    </task>
+    <task id="LOCAL-00010" summary="【修复】Evad 1. 前端加密模块完善 2. 响应报文加密返回中文乱码">
+      <created>1717400024272</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1717400024273</updated>
+    </task>
+    <task id="LOCAL-00011" summary="【修改】Evad 1. 用户模块完善">
+      <created>1717408897328</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1717408897328</updated>
+    </task>
+    <task id="LOCAL-00012" summary="【新增、修改】Evad 1. 上传临时文件到临时文件夹 2. 用户修改模块完善 3. layui版本更新4. 用户修改上传头像功能完善 5. 初始化删除临时文件夹的文件">
+      <created>1718172177236</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1718172177236</updated>
+    </task>
+    <task id="LOCAL-00013" summary="【新增、修改】Evad 1. OSS模块功能完善">
+      <created>1718172424031</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1718172424031</updated>
+    </task>
+    <task id="LOCAL-00014" summary="【修改】Evad 1. 用户、OSS模块功能完善">
+      <created>1718175060890</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1718175060890</updated>
+    </task>
+    <task id="LOCAL-00015" summary="【修改】Evad 1. 新增、修改用户功能完善">
+      <created>1720082407985</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1720082407985</updated>
+    </task>
+    <task id="LOCAL-00016" summary="【修改】Evad 1. 新增、修改用户功能完善">
+      <created>1720082626637</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1720082626637</updated>
+    </task>
+    <task id="LOCAL-00017" summary="【修改】Evad 1. 前后端数据加密功能完善">
+      <created>1720168952259</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1720168952259</updated>
+    </task>
+    <task id="LOCAL-00018" summary="【修改、修复】Evad 1. 添加新增角色默认密码 2. 修复启动项目后删除正常文件的缺陷">
+      <created>1720514658775</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1720514658776</updated>
+    </task>
+    <task id="LOCAL-00019" summary="【新增】Evad 1. 部门新增、修改、分配部门功能">
+      <created>1720776752241</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1720776752241</updated>
+    </task>
+    <task id="LOCAL-00020" summary="【新增】Evad 1. 部门管理-分配角色 2. 角色管理-分配部门">
+      <created>1721204566613</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1721204566613</updated>
+    </task>
+    <task id="LOCAL-00021" summary="【新增】Evad 1. 部门管理-删除">
+      <created>1721282527694</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1721282527694</updated>
+    </task>
+    <task id="LOCAL-00022" summary="【新增】Evad 1. 角色管理-新增、修改、删除 2. 增加关联表持久层组件处理关联信息">
+      <created>1722063470050</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1722063470050</updated>
+    </task>
+    <task id="LOCAL-00023" summary="【修改】Evad 1. 子页中返回按钮位置固定">
+      <created>1722070189713</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1722070189713</updated>
+    </task>
+    <task id="LOCAL-00024" summary="【修改】Evad 1. 对象关系重组">
+      <created>1722582426061</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1722582426061</updated>
+    </task>
+    <task id="LOCAL-00025" summary="【新增】Evad 1. 添加注解记录操作日志功能">
+      <created>1722593053050</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1722593053050</updated>
+    </task>
+    <task id="LOCAL-00026" summary="【修改】Evad 1. 修改中间表关系代码重构 2. 前端优化">
+      <created>1722948019535</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1722948019535</updated>
+    </task>
+    <task id="LOCAL-00027" summary="【修复】Evad 1. 处理普通用户查询部门管理数据失效问题">
+      <created>1726285877493</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1726285877494</updated>
+    </task>
+    <task id="LOCAL-00028" summary="【新增、修复】Evad 1. 部门信息查询调整 2. 用户头像上传">
+      <created>1727156874965</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1727156874965</updated>
+    </task>
+    <task id="LOCAL-00029" summary="【新增、修复】Evad 1. 添加日志记录注解 2. 处理注销再登录后内容页重复渲染的问题">
+      <created>1727249502542</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1727249502542</updated>
+    </task>
+    <task id="LOCAL-00030" summary="【新增】Evad 1. 添加幂等性处理功能 2. 添加日志记录注解">
+      <created>1727335572280</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1727335572280</updated>
+    </task>
+    <task id="LOCAL-00031" summary="【新增】Evad 1. 添加幂等性处理功能 2. 添加日志记录注解">
+      <created>1727339284965</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1727339284965</updated>
+    </task>
+    <task id="LOCAL-00032" summary="【修改】Evad 1. 脱敏规则支持处理多种脱敏规则">
+      <created>1727340792310</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1727340792310</updated>
+    </task>
+    <task id="LOCAL-00033" summary="【修复】Evad 1. 管理员部门查询功能异常问题处理">
+      <created>1727423230462</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1727423230462</updated>
+    </task>
+    <task id="LOCAL-00034" summary="【修改】Evad 1. OSS模块文件迁移">
+      <created>1727426389885</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1727426389885</updated>
+    </task>
+    <task id="LOCAL-00035" summary="【新增】Evad 1. SSE模块接入">
+      <created>1727428081366</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1727428081366</updated>
+    </task>
+    <task id="LOCAL-00036" summary="【新增】Evad 1. Caffeine模块接入 2. OSS模块迁移">
+      <created>1727508640874</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1727508640874</updated>
+    </task>
+    <task id="LOCAL-00037" summary="【修改】Evad 1. 还原UCache方法使用">
+      <created>1727666272837</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1727666272837</updated>
+    </task>
+    <task id="LOCAL-00038" summary="【新增】Evad 1. Cache文件提交">
+      <created>1727666355190</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1727666355190</updated>
+    </task>
+    <task id="LOCAL-00039" summary="【修改】Evad 1. 重构Jackson和Redisson">
+      <created>1728630580451</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1728630580451</updated>
+    </task>
+    <task id="LOCAL-00040" summary="【修改】Evad 1. 重构模块">
+      <created>1729061800683</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1729061800683</updated>
+    </task>
+    <task id="LOCAL-00041" summary="【修改】Evad 1. 重构模块">
+      <created>1729245607096</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1729245607096</updated>
+    </task>
+    <task id="LOCAL-00042" summary="【新增】Evad 1. 添加Spring EL工具类">
+      <created>1729498949592</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1729498949592</updated>
+    </task>
+    <task id="LOCAL-00043" summary="【新增】Evad 1. 新增SSE模块">
+      <created>1729674075260</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1729674075260</updated>
+    </task>
+    <task id="LOCAL-00044" summary="【新增】Evad 1. 新增邮件模块">
+      <created>1730282564674</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1730282564674</updated>
+    </task>
+    <task id="LOCAL-00045" summary="【修复】Evad 1. 处理测试类Redisson版本导致的出错问题">
+      <created>1730427132180</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1730427132180</updated>
+    </task>
+    <task id="LOCAL-00046" summary="【修改】Evad 1. 修改validation校验逻辑">
+      <created>1731058807524</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1731058807524</updated>
+    </task>
+    <task id="LOCAL-00047" summary="【新增】Evad 1. 添加记账功能">
+      <created>1734354895276</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1734354895276</updated>
+    </task>
+    <task id="LOCAL-00048" summary="【新增、修改】Evad 1. 添加增量同步功能 2. 改造用户导入功能">
+      <created>1736333155147</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1736333155147</updated>
+    </task>
+    <task id="LOCAL-00049" summary="【新增、修改】Evad 1. 记账看板-折线图开发">
+      <created>1737794425485</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1737794425485</updated>
+    </task>
+    <task id="LOCAL-00050" summary="【新增】Evad 1. 记账看板-日历图开发">
+      <created>1738469264164</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1738469264164</updated>
+    </task>
+    <task id="LOCAL-00051" summary="【修复】Evad 1. 异常类统一调整">
+      <created>1738593320067</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1738593320067</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
+  </component>
+  <component name="TerminalProjectNonSharedOptionsProvider">
+    <envs>
+      <env key="PATH" value="D:\Environment\Nodejs16;Path=C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Environment\Git\cmd;C:\Program Files\TortoiseSVN\bin;D:\Environment\JDK\jdk-16.0.1/bin;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;D:\Environment\Nodejs16\node_modules\npm;D:\Environment\Nodejs16\node_global\node_modules\yarn;D:\Environment\Nodejs16\node_global\node_modules\yarn\bin" />
+    </envs>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
@@ -328,21 +886,21 @@
         <option value="Default.Author" />
         <option value="Default.Date" />
         <option value="Default.Subject" />
-        <option value="Space.CommitStatus" />
       </list>
     </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="80a6e447-48bd-4c4e-b636-54e874eead87" value="TOOL_WINDOW" />
-      </map>
-    </option>
     <option name="TAB_STATES">
       <map>
-        <entry key="80a6e447-48bd-4c4e-b636-54e874eead87">
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="b5a88b40-c230-4ebe-a826-806877d9c95f">
           <value>
             <State>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
@@ -355,32 +913,79 @@
                   <entry key="structure">
                     <value>
                       <list>
-                        <option value="dir:C:/Project/freesia/freesia-common" />
+                        <option value="dir:D:/Mine/Maven/freesia/freesia-common/freesia-common-idempotent" />
                       </list>
                     </value>
                   </entry>
                 </map>
               </option>
-              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
             </State>
-          </value>
-        </entry>
-        <entry key="MAIN">
-          <value>
-            <State />
           </value>
         </entry>
       </map>
     </option>
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="b5a88b40-c230-4ebe-a826-806877d9c95f" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="【新增】Evad 1. 记账模块开发" />
-    <MESSAGE value="【新增】Evad 1. 记账模块-导出功能开发" />
-    <MESSAGE value="【修改】Evad 1. 部署准备" />
-    <option name="LAST_COMMIT_MESSAGE" value="【修改】Evad 1. 部署准备" />
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="【新增】Evad 1. 添加注解记录操作日志功能" />
+    <MESSAGE value="【修改】Evad 1. 修改中间表关系代码重构 2. 前端优化" />
+    <MESSAGE value="【修复】Evad 1. 处理普通用户查询部门管理数据失效问题" />
+    <MESSAGE value="【新增、修复】Evad 1. 部门信息查询调整 2. 用户头像上传" />
+    <MESSAGE value="【新增、修复】Evad 1. 添加日志记录注解 2. 处理注销再登录后内容页重复渲染的问题" />
+    <MESSAGE value="【新增】Evad 1. 添加幂等性处理功能 2. 添加日志记录注解" />
+    <MESSAGE value="【修改】Evad 1. 脱敏规则支持处理多种脱敏规则" />
+    <MESSAGE value="【修复】Evad 1. 管理员部门查询功能异常问题处理" />
+    <MESSAGE value="【修改】Evad 1. OSS模块文件迁移" />
+    <MESSAGE value="【新增】Evad 1. SSE模块接入" />
+    <MESSAGE value="【新增】Evad 1. Caffeine模块接入 2. OSS模块迁移" />
+    <MESSAGE value="【修改】Evad 1. 还原UCache方法使用" />
+    <MESSAGE value="【新增】Evad 1. Cache文件提交" />
+    <MESSAGE value="【修改】Evad 1. 重构Jackson和Redisson" />
+    <MESSAGE value="【修改】Evad 1. 重构模块" />
+    <MESSAGE value="【新增】Evad 1. 添加Spring EL工具类" />
+    <MESSAGE value="【新增】Evad 1. 新增SSE模块" />
+    <MESSAGE value="【新增】Evad 1. 新增邮件模块" />
+    <MESSAGE value="【修复】Evad 1. 处理测试类Redisson版本导致的出错问题" />
+    <MESSAGE value="【修改】Evad 1. 修改validation校验逻辑" />
+    <MESSAGE value="【新增】Evad 1. 添加记账功能" />
+    <MESSAGE value="【新增、修改】Evad 1. 添加增量同步功能 2. 改造用户导入功能" />
+    <MESSAGE value="【新增、修改】Evad 1. 记账看板-折线图开发" />
+    <MESSAGE value="【新增】Evad 1. 记账看板-日历图开发" />
+    <MESSAGE value="【修复】Evad 1. 异常类统一调整" />
+    <option name="LAST_COMMIT_MESSAGE" value="【修复】Evad 1. 异常类统一调整" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="SpringBootApplicationConfigurationType">
+        <watch expression="binder.getBindingResult().hasErrors()" />
+        <watch expression="isBindExceptionRequired(binder, parameter)" />
+        <watch expression="parameter.getNestedGenericParameterType()" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
+    <expand>
+      <path>
+        <item name="freesia" type="b2602c69:ProjectViewProjectNode" />
+        <item name="freesia" type="462c0819:PsiDirectoryNode" />
+      </path>
+      <path>
+        <item name="freesia" type="b2602c69:ProjectViewProjectNode" />
+        <item name="freesia" type="462c0819:PsiDirectoryNode" />
+        <item name="freesia-admin-layvue" type="462c0819:PsiDirectoryNode" />
+      </path>
+      <path>
+        <item name="freesia" type="b2602c69:ProjectViewProjectNode" />
+        <item name="freesia" type="462c0819:PsiDirectoryNode" />
+        <item name="freesia-web" type="462c0819:PsiDirectoryNode" />
+      </path>
+    </expand>
     <select />
   </component>
 </project>

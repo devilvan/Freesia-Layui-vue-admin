@@ -26,9 +26,9 @@ const props = defineProps({
 })
 const emit = defineEmits(['callBack']);
 
-const accountIconNameGlob = import.meta.glob("../../../assets/svgIcon/*.svg")
 const accountIconNameList = ref<string[]>([])
 onMounted(() => {
+  let accountIconNameGlob = import.meta.glob("@/assets/svgIcon/*.svg")
   for (let accountIconName in accountIconNameGlob) {
     accountIconNameList.value.push(accountIconName.substring(accountIconName.lastIndexOf("/") + 1, accountIconName.lastIndexOf(".")))
   }
