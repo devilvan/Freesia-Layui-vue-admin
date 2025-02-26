@@ -557,10 +557,8 @@ function toUpload() {
 
 function doExport() {
   accountsExport(accountsExportVo.value).then((res: any) => {
-    if (res.code === 200) {
-      layer.msg(res.msg, {icon: 1})
+      layer.msg('导出成功', {icon: 1})
       showAccountsExportModalFlag.value = !showAccountsExportModalFlag.value
-    }
   })
 }
 

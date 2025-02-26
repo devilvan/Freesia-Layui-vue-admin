@@ -1,5 +1,6 @@
 package com.freesia.handler;
 
+import com.freesia.constant.Constants;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.NullCacheStorage;
 import freemarker.template.Configuration;
@@ -23,7 +24,7 @@ public class FreemarkerTemplateHandler {
         //这里比较重要，用来指定加载模板所在的路径
         CONFIGURATION.setTemplateLoader(new ClassTemplateLoader(FreemarkerTemplateHandler.class,
                 "/static/ftl"));
-        CONFIGURATION.setDefaultEncoding("UTF-8");
+        CONFIGURATION.setDefaultEncoding(Constants.UTF_8);
         CONFIGURATION.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         CONFIGURATION.setCacheStorage(NullCacheStorage.INSTANCE);
     }

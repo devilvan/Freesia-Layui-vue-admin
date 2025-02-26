@@ -4,10 +4,12 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -24,6 +26,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Resource
     private FastJsonHttpMessageConverter fastJsonHttpMessageConverter;
 
+    /**
+     * 项目资源注册器
+     *
+     * @param registry 注册器
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
@@ -37,27 +44,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
      * 跨域设置
-     * 该设置跨域的方式，在自定义拦截器的情况下可能导致跨域失效
-     * 原因：当跨越请求在跨域请求拦截器之前的拦截器处理时就异常返回了，则响应的response报文头部关于跨域允许的信息就没有被正确设置，导致浏览器认为服务不允许跨域，而造成错误。
-     * 解决：自定义跨域过滤器解决跨域问题（该过滤器最好放在其他过滤器之前）
+     *
+     * @param registry 跨域注册器
      */
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        // 设置访问源地址
-        config.addAllowedOriginPattern("*");
-        // 设置访问源请求头
-        config.addAllowedHeader("*");
-        // 设置访问源请求方法
-        config.addAllowedMethod("*");
-        // 有效期 1800秒
-        config.setMaxAge(1800L);
-        // 添加映射路径，拦截一切请求
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        // 返回新的CorsFilter
-        return new CorsFilter(source);
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") // 允许所有路径
+                .allowedOrigins("*") // 允许所有域名
+                .allowedMethods(
+                        HttpMethod.GET.name(),
+                        HttpMethod.POST.name(),
+                        HttpMethod.PUT.name(),
+                        HttpMethod.DELETE.name()) // 允许的HTTP方法
+                .allowedHeaders("*") // 允许所有请求头
+                .exposedHeaders("Content-Disposition") // 暴露Content-Disposition头
+                .allowCredentials(false)
+                .maxAge(3600);
     }
 
     /**

@@ -39,17 +39,6 @@ class Http {
                 // 将编码后的查询参数赋值给原先的params
                 config.params = new URLSearchParams(config.params);
             }
-            // let downloadFilename = config.headers['download-filename'];
-            // if (downloadFilename) {
-            //     const blob = new Blob([data])
-            //     const fileLink = document.createElement('a') //创建一个a标签通过a标签的点击事件区下载文件
-            //     fileLink.download = data.headers['download-filename']
-            //     fileLink.href = URL.createObjectURL(blob) //使用blob创建一个指向类型数组的URL
-            //     document.body.appendChild(fileLink)
-            //     fileLink.click()
-            //     URL.revokeObjectURL(fileLink.href) // 释放URL 对象
-            //     document.body.removeChild(fileLink)
-            // }
             return config
         }, error => {
             return Promise.reject(error);
@@ -103,11 +92,19 @@ class Http {
                     break;
             }
             if ('blob' === response.config.responseType) {
-                let downloadFilename = response.headers['download-filename'];
+                let contentDisposition = response.headers['content-disposition'];
+                let fileName = 'file'; // 默认文件名
+                if (contentDisposition && contentDisposition.includes('filename=')) {
+                    let uriComponent = contentDisposition
+                        .split('filename=')[1]
+                        .split(';')[0]
+                        .replace(/['"]/g, '');
+                    fileName = decodeURIComponent(uriComponent);
+                }
                 let contentType = response.headers["content-type"] as string;
                 const blob = new Blob([responseData], {type: contentType})
                 const fileLink = document.createElement('a') //创建一个a标签通过a标签的点击事件区下载文件
-                fileLink.download = decodeURIComponent(downloadFilename)
+                fileLink.download = fileName
                 fileLink.href = window.URL.createObjectURL(blob) //使用blob创建一个指向类型数组的URL
                 document.body.appendChild(fileLink)
                 fileLink.style.display = "none"
