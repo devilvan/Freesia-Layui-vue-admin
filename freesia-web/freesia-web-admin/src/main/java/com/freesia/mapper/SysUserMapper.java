@@ -97,4 +97,13 @@ public interface SysUserMapper extends BaseMapper<SysUserPo> {
             @DataColumn(key = "userName", value = "U.ID")
     })
     Page<SysUserPo> findPageAllowAssignUserByTenantId(@Param("sysTenantPo") SysTenantPo sysTenantPo, @Param("page") Page<SysUserPo> page);
+
+    /**
+     * 查询用户列表分页数据（不过滤数据权限）
+     *
+     * @param page             分页条件
+     * @param sysUserPoWrapper 分页参数
+     * @return 用户列表的分页对象
+     */
+    Page<FindPageSysUserListEntity> findPageSysUserWithoutDataScope(@Param("page") Page<SysUserPo> page, @Param(Constants.WRAPPER) Wrapper<SysUserPo> sysUserPoWrapper);
 }

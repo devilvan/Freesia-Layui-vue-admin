@@ -34,9 +34,9 @@ import java.io.Serial;
 public class SysRoleDeptPo extends RelationPo {
     @Serial
     private static final long serialVersionUID = 3381942492949819568L;
-    @Id
+    @EmbeddedId
     @Schema(description = "角色-部门 联合主键")
-    private SysRoleDeptPk sysRoleDeptPk;
+    protected SysRoleDeptPk sysRoleDeptPk;
     @Schema(description = "部门-角色关系表对应的角色")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

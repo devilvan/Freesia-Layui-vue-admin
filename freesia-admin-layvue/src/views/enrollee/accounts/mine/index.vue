@@ -60,7 +60,7 @@
           @change="change"
           @sortChange="sortChange">
         <template #paymentTime="{ row }">
-          {{ row.paymentTime}} （{{ getWeekdayCn(row.paymentTime) }}）
+          {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）
         </template>
         <template #remark="{ row }">
           <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
@@ -80,12 +80,16 @@
               style="margin-left: 20px"
               type="normal"
               @click="toSearch"
+              v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_INDEX]"
           >
             查询
           </lay-button>
-          <lay-button size="sm" @click="queryFormReset()"> 重置</lay-button>
+          <lay-button size="sm" @click="queryFormReset()"
+                      v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_INDEX]"
+          > 重置
+          </lay-button>
           <lay-button
-              v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_ADD]"
+              v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_ADD]"
               size="sm"
               type="primary"
               @click="showExpenseModal(Operate.ADD, null)"
@@ -93,16 +97,16 @@
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
-          <lay-button v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]" size="sm" @click="toRemove">
+          <lay-button v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]" size="sm" @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
-          <lay-button type="warm" v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]" size="sm"
+          <lay-button type="warm" v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_IMPORT]" size="sm"
                       @click="showAccountsImportModal">
             <lay-icon class="layui-icon-down"></lay-icon>
             导入
           </lay-button>
-          <lay-button type="normal" v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]" size="sm"
+          <lay-button type="normal" v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EXPORT]" size="sm"
                       @click="showAccountsExportModal">
             <lay-icon class="layui-icon-up"></lay-icon>
             按时间导出
@@ -110,17 +114,25 @@
         </template>
         <template v-slot:operator="{ row }">
           <lay-button
-              v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_EDIT]"
+              v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]"
               border="green"
               border-style="dashed"
               size="xs"
               @click="showExpenseModal(Operate.EDIT, row)">编辑
           </lay-button>
+          <lay-button
+              v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]"
+              border="orange"
+              border-style="dashed"
+              size="xs"
+              @click="showExpenseModal(Operate.COPY, row)">复制
+          </lay-button>
           <lay-popconfirm
               content="确定要删除吗?"
               @cancel="cancel"
               @confirm="confirm(row)">
-            <lay-button v-permission="[$MENU_PERMISSION.SYSTEM_TENANT_DELETE]" border="red" border-style="dashed"
+            <lay-button v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_DELETE]" border="red"
+                        border-style="dashed"
                         size="xs">删除
             </lay-button>
           </lay-popconfirm>
@@ -130,11 +142,12 @@
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form :ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
+        <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
               <lay-form-item label="开销描述" prop="costDesc" required>
-                <lay-input v-model="accountCostVo.costDesc" :allow-clear="true"></lay-input>
+                <lay-input ref="addExpenseModalQuickSaveRef" v-model="accountCostVo.costDesc"
+                           :allow-clear="true"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
@@ -187,6 +200,17 @@
                 ></lay-textarea>
               </lay-form-item>
             </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="关联用户" prop="accountCostUserIdList">
+                <div style="display: inline-flex; text-align: left">
+                  <lay-button size="sm" type="primary" @click="changeShowUserModalFlag">选择</lay-button>
+                  <div style="padding-left: 10px">
+                    <lay-input v-model="accountCostVo.accountCostUserNameList" :allow-clear="true"
+                               :disabled="true"></lay-input>
+                  </div>
+                </div>
+              </lay-form-item>
+            </lay-col>
           </lay-row>
         </lay-form>
         <div style="width: 100%; text-align: right">
@@ -199,6 +223,43 @@
 
     <lay-layer v-model="showSelectTypeModalFlag" :area="['1200px']" :title="title">
       <AccountTypeIconPicker @callBack="callBackFun"></AccountTypeIconPicker>
+    </lay-layer>
+
+    <lay-layer v-model="showUserModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
+      <lay-table
+          ref="userModalTableRef"
+          class="table-box table-style"
+          :page="userModalPageQuery"
+          :columns="userModalColumns"
+          :loading="userModalLoading"
+          :data-source="userEntityList"
+          v-model:selected-keys="userModalSelectedKeys"
+          @change="userModalChange"
+      >
+        <template #accountStatus="{ row }">
+          <div v-show="row.accountStatus === '1'">
+            <lay-tag color="#2dc570" variant="light">启用</lay-tag>
+          </div>
+          <div v-show="row.accountStatus === '0'">
+            <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
+          </div>
+        </template>
+        <template #remark="{ row }">
+          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
+            <div class="oneRow">{{ row.remark }}</div>
+          </lay-tooltip>
+        </template>
+        <template v-slot:toolbar>
+          <lay-button size="sm" type="normal" @click="userModalChange">
+            <lay-icon class="layui-icon-addition"></lay-icon>
+            查询
+          </lay-button>
+          <lay-button size="sm" type="danger" @click="userModalConfirm">
+            <lay-icon class="layui-icon-addition"></lay-icon>
+            确认
+          </lay-button>
+        </template>
+      </lay-table>
     </lay-layer>
 
     <lay-layer
@@ -283,6 +344,8 @@ import {List} from "echarts";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
+import {SysUserEntity, SysUserVo} from "../../../../types/system/User";
+import {findPageSysUserList, findPageSysUserWithoutDataScope} from "../../../../api/system/User";
 
 /* INIT*/
 onMounted(async () => {
@@ -301,7 +364,9 @@ const searchQuery = ref<AccountCostVo>({})
 const loading = ref(false)
 const selectedKeys = ref<Array<string>>([])
 const accountCostVo = ref<AccountCostVo>({
-  status: true
+  status: true,
+  accountCostUserIdList: [],
+  accountCostUserNameList: [],
 })
 const addExpenseFormRef = ref(null)
 const addExpenseModalShowFlag = ref(false)
@@ -317,8 +382,9 @@ const columns = ref([
   {title: '开销金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '开销标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
-  {title: '开支时间', width: '180px', key: 'paymentTime', customSlot:  'paymentTime'},
-  {title: '修改时间', width: '150px', key: 'modifyTime', sort: 'desc' },
+  {title: '开支时间', width: '180px', key: 'paymentTime', customSlot: 'paymentTime'},
+  {title: '修改时间', width: '150px', key: 'modifyTime', sort: 'desc'},
+  {title: '记录人', width: '80px', key: 'userName'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -369,6 +435,25 @@ const accountsExportFromRules = ref({
   },
 })
 const sdf_YMDHMS = 'YYYY-MM-DD HH:mm:ss'
+const showUserModalFlag = ref<Boolean>(false)
+const addExpenseModalQuickSaveRef = ref()
+const userEntityList = ref<Array<SysUserEntity>>()
+const userModalLoading = ref(false)
+const userModalSelectedKeys = ref<Array<string>>([])
+const userModalPageQuery = reactive<PageQuery>({
+  current: 1,
+  limit: 10
+})
+const userModalColumns = ref([
+  {title: '选项', type: 'checkbox', fixed: 'left'},
+  {title: '用户名称', key: 'userName'},
+  {title: '用户昵称', key: 'nickName'},
+  {title: '用户类型', key: 'userType'},
+  {title: '状态', key: 'accountStatus', customSlot: 'accountStatus'},
+  {title: '备注', key: 'remark', customSlot: 'remark'},
+])
+const userModalSearchQuery = ref<SysUserVo>({})
+const userModalTableRef = ref();
 /* VAR*/
 
 /* FUNCTION*/
@@ -418,7 +503,10 @@ const showExpenseModal = (text: any, row: any) => {
       id: row.id
     }).then((res: any) => {
       if (res.code === 200) {
-        accountCostVo.value = res.data;
+        let data = res.data;
+        accountCostVo.value = data;
+        accountCostVo.value.accountCostUserIdList = data?.userList.map(v => v.id)
+        accountCostVo.value.accountCostUserNameList = data?.userList.map(v => v.nickName)
       }
     })
   } else if (Operate.ADD === text) {
@@ -430,6 +518,19 @@ const showExpenseModal = (text: any, row: any) => {
     if (isDefaultPaymentSignSelect) {
       accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
     }
+  } else if (Operate.COPY === text) {
+    findAccountCost({
+      id: row.id
+    }).then((res: any) => {
+      if (res.code === 200) {
+        let data = res.data;
+        accountCostVo.value = data;
+        accountCostVo.value.accountCostUserIdList = data?.userList.map(v => v.id)
+        accountCostVo.value.accountCostUserNameList = data?.userList.map(v => v.nickName)
+        accountCostVo.value.id = null;
+        accountCostVo.value.recVer = null;
+      }
+    })
   }
   addExpenseModalShowFlag.value = !addExpenseModalShowFlag.value
 }
@@ -486,6 +587,11 @@ function toSubmit(clickFlag: boolean) {
             if (isDefaultPaymentSignSelect) {
               accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
             }
+            // 如果是修改+回车，则关闭窗口
+            if (accountCostVo.id && accountCostVo.id != 0) {
+              addExpenseModalShowFlag.value = false
+            }
+            addExpenseModalQuickSaveRef.value.focus();
           }
         }
       })
@@ -557,14 +663,52 @@ function toUpload() {
 
 function doExport() {
   accountsExport(accountsExportVo.value).then((res: any) => {
-      layer.msg('导出成功', {icon: 1})
-      showAccountsExportModalFlag.value = !showAccountsExportModalFlag.value
+    layer.msg('导出成功', {icon: 1})
+    showAccountsExportModalFlag.value = !showAccountsExportModalFlag.value
   })
 }
 
 function queryFormReset() {
   searchQuery.value = {}
   searchQuery.value.paymentTimeRange = buildRange(7)
+}
+
+function showCopyModal() {
+  if (!row) {
+    return;
+  }
+
+  addExpenseModalShowFlag.value = !addExpenseModalShowFlag.value
+}
+
+function doFindPageUser() {
+  findPageSysUserWithoutDataScope(userModalSearchQuery.value, userModalPageQuery).then((res: any) => {
+    if (res.code == 200) {
+      userEntityList.value = res.rows;
+      userModalPageQuery.total = res.total;
+    }
+  })
+}
+
+function userModalChange() {
+  userModalLoading.value = true
+  setTimeout(() => {
+    doFindPageUser()
+    userModalLoading.value = false
+  }, 200)
+}
+
+function changeShowUserModalFlag() {
+  userModalChange()
+  showUserModalFlag.value = !showUserModalFlag.value
+}
+
+function userModalConfirm() {
+  let checkDataList = userModalTableRef.value.getCheckData();
+  accountCostVo.value.accountCostUserNameList = checkDataList?.map(v => v.nickName);
+  accountCostVo.value.accountCostUserIdList = userModalSelectedKeys.value
+  userModalSelectedKeys.value = []
+  showUserModalFlag.value = !showUserModalFlag.value
 }
 
 /* FUNCTION*/

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -38,6 +39,10 @@ public class AccountCostDto extends BaseDto {
     private String icon;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "用户ID")
+    private Long userId;
+    @Schema(description = "关联用户ID集合")
+    private List<Long> accountCostUserIdList;
     @Schema(description = "查询时间从")
     private Date paymentTimeFrom;
     @Schema(description = "查询时间到")

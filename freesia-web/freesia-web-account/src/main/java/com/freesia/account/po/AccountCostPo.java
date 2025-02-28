@@ -3,23 +3,23 @@ package com.freesia.account.po;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.freesia.po.BasePo;
+import com.freesia.po.SysUserPo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -69,4 +69,28 @@ public class AccountCostPo extends BasePo implements Serializable {
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(128) COMMENT '备注'")
     private String remark;
+    @Schema(description = "用户ID")
+    @TableField(value = "USER_ID")
+    @Column(name = "USER_ID", columnDefinition = "BIGINT(20) COMMENT '用户ID'")
+    private Long userId;
+    /**
+     * accountCost控制tenant-user关联
+     */
+    @Schema(description = "开销在开销-用户关系表中的数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = AccountCostUserPo.class, mappedBy = "accountCostPo", fetch = FetchType.LAZY)
+    private Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>(0);
+    @Schema(description = "开销对应的用户")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @ManyToMany(targetEntity = SysUserPo.class, cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @JoinTable(name = "ACCOUNT_COST_USER",
+            joinColumns = {@JoinColumn(name = "COST_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")})
+    @Fetch(value = FetchMode.SUBSELECT)
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    private Set<SysUserPo> sysUserPoSet;
 }

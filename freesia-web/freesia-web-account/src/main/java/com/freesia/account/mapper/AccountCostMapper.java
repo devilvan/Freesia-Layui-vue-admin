@@ -2,11 +2,9 @@ package com.freesia.account.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.entity.AccountCostExportEntity;
-import com.freesia.account.entity.FindCostLineChartEntity;
-import com.freesia.account.entity.FindCostSumCalendarNearYearEntity;
-import com.freesia.account.entity.FindCostTypeRatePieEntity;
+import com.freesia.account.entity.*;
 import com.freesia.account.po.AccountCostPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -67,4 +65,21 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @return 结果集
      */
     List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYear(@Param("accountCostDto") AccountCostDto accountCostDto);
+
+    /**
+     * 查询开销表分页信息
+     *
+     * @param accountCost 入参
+     * @param page        分页参数
+     * @return 分页数据
+     */
+    Page<FindPageAccountCostEntity> findPageAccountCost(@Param("accountCost") AccountCostDto accountCost, @Param("page") Page<AccountCostPo> page);
+
+    /**
+     * 条件查询开销表
+     *
+     * @param accountCost 入参
+     * @return 结果集
+     */
+    FindAccountCostEntity findAccountCost(@Param("accountCost") AccountCostDto accountCost);
 }

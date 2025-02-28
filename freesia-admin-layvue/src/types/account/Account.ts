@@ -1,4 +1,5 @@
 import {BaseEntity, BaseVo} from "../Common";
+import {SysUserEntity} from "../system/User";
 
 export interface AccountCostVo extends BaseVo {
     costDesc?: string;
@@ -9,6 +10,9 @@ export interface AccountCostVo extends BaseVo {
     paymentTimeRange?: string[];
     icon?: string;
     remark?: string;
+    accountCostUserIdList?: string[];
+    accountCostUserNameList?: string[];
+    userList: SysUserEntity[];
 }
 
 export interface AccountCostEntity extends BaseEntity {

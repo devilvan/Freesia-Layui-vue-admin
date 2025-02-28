@@ -8,7 +8,7 @@
             <lay-col>
               <lay-form :model="findCostTypeRatePieQueryVo" ref="findCostTypeRatePieQueryRef" label-position="left">
                 <lay-form-item label="按时间：" prop="paymentTimeRange">
-                  <lay-date-picker style="width: 100%" @change="doFind"
+                  <lay-date-picker style="width: 100%" @change="doChangeFindCostTypeRatePie"
                                    v-model="findCostTypeRatePieQueryVo.paymentTimeRange" allow-clear range
                                    type="datetime"
                                    :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" :shortcuts="defaultShortcuts"
@@ -491,6 +491,11 @@ const costCountCalendarLastYearTitle = "近一年支付"
 const findCostSumCalendarNearYearQueryVo = ref<FindCostSumCalendarNearYearVo>({});
 const costSumCalendarNearYearRef = ref(null);
 const findCostSumCalendarNearYearQueryRef = ref(null)
+let costTypeRatePieChart = null;
+let weekCostLineChart = null;
+let monthCostLineChart = null;
+let yearCostLineChart = null;
+let costSumCalendarNearYear = null;
 /* VAR*/
 
 /* FUNCTION*/
@@ -535,7 +540,7 @@ function doFindCostTypeRatePie() {
           }
         ]
       };
-      let costTypeRatePieChart = echarts.init(costTypeRatePieRef.value);
+      costTypeRatePieChart = echarts.init(costTypeRatePieRef.value);
       costTypeRatePieChart.setOption(costTypeRatePieOption)
     }
   })
@@ -618,7 +623,7 @@ function showWeekCostLineChart(data) {
       }
     ]
   }
-  let weekCostLineChart = echarts.init(weekCostLineChartRef.value)
+  weekCostLineChart = echarts.init(weekCostLineChartRef.value)
   weekCostLineChart.setOption(option)
 }
 
@@ -670,7 +675,7 @@ function showMonthCostLineChart(data) {
       }
     ]
   }
-  let monthCostLineChart = echarts.init(monthCostLineChartRef.value)
+  monthCostLineChart = echarts.init(monthCostLineChartRef.value)
   monthCostLineChart.setOption(option)
 }
 
@@ -722,7 +727,7 @@ function showYearCostLineChart(data) {
       }
     ]
   }
-  let yearCostLineChart = echarts.init(yearCostLineChartRef.value)
+  yearCostLineChart = echarts.init(yearCostLineChartRef.value)
   yearCostLineChart.setOption(option)
 }
 
@@ -772,12 +777,16 @@ function doFindCostSumCalendarNearYear() {
           },
         ]
       };
-      let costSumCalendarNearYear = echarts.init(costSumCalendarNearYearRef.value)
+      costSumCalendarNearYear = echarts.init(costSumCalendarNearYearRef.value)
       costSumCalendarNearYear.setOption(option)
     }
   })
 }
 
+function doChangeFindCostTypeRatePie() {
+  costTypeRatePieChart.dispose()
+  doFindCostTypeRatePie();
+}
 /* FUNCTION*/
 </script>
 

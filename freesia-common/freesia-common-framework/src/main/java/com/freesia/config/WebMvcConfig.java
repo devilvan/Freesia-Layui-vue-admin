@@ -14,6 +14,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,22 +46,32 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
      * 跨域设置
-     *
-     * @param registry 跨域注册器
+     * 该设置跨域的方式，在自定义拦截器的情况下可能导致跨域失效
+     * 原因：当跨越请求在跨域请求拦截器之前的拦截器处理时就异常返回了，则响应的response报文头部关于跨域允许的信息就没有被正确设置，导致浏览器认为服务不允许跨域，而造成错误。
+     * 解决：自定义跨域过滤器解决跨域问题（该过滤器最好放在其他过滤器之前）
      */
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // 允许所有路径
-                .allowedOrigins("*") // 允许所有域名
-                .allowedMethods(
-                        HttpMethod.GET.name(),
-                        HttpMethod.POST.name(),
-                        HttpMethod.PUT.name(),
-                        HttpMethod.DELETE.name()) // 允许的HTTP方法
-                .allowedHeaders("*") // 允许所有请求头
-                .exposedHeaders("Content-Disposition") // 暴露Content-Disposition头
-                .allowCredentials(false)
-                .maxAge(3600);
+    @Bean
+    public CorsFilter corsFilter() {
+        List<String> exposeHeaderList = Collections.singletonList("Content-Disposition");
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        // 设置访问源地址
+        config.addAllowedOriginPattern("*");
+        // 设置访问源请求头
+        config.addAllowedHeader("*");
+        // 设置访问源请求方法
+        config.addAllowedMethod(HttpMethod.GET);
+        config.addAllowedMethod(HttpMethod.POST);
+        config.addAllowedMethod(HttpMethod.PUT);
+        config.addAllowedMethod(HttpMethod.DELETE);
+        // 有效期 3600秒
+        config.setMaxAge(3600L);
+        config.setExposedHeaders(exposeHeaderList);
+        // 添加映射路径，拦截一切请求
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        // 返回新的CorsFilter
+        return new CorsFilter(source);
     }
 
     /**

@@ -1,14 +1,17 @@
 package com.freesia.account.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.excel.EasyExcelFactory;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.freesia.account.constant.DateScope;
+import com.freesia.account.constant.MenuPermission;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.AccountCostImportEntity;
+import com.freesia.account.entity.FindAccountCostEntity;
+import com.freesia.account.entity.FindPageAccountCostEntity;
 import com.freesia.account.listener.AccountsImportListener;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.vo.AccountCostVo;
@@ -22,7 +25,6 @@ import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.excel.constant.ExcelCellWriteStyle;
 import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.handler.ExcelExportHandler;
-import com.freesia.excel.pojo.ExcelExportDto;
 import com.freesia.excel.util.UExcel;
 import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
@@ -32,12 +34,14 @@ import com.freesia.oss.util.UOssFile;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
-import com.freesia.util.*;
+import com.freesia.util.UCopy;
+import com.freesia.util.UEmpty;
+import com.freesia.util.UMessage;
+import com.freesia.util.UString;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,10 +74,12 @@ public class AccountCostController extends BaseController {
      */
     @Operation(summary = "保存开销表信息")
     @PostMapping(value = "saveUpdate")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_ADD),
+            @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EDIT)
+    })
     public R<Void> saveUpdate(@RequestBody AccountCostVo accountCostVo) {
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
-        Long tenantId = USecurity.getTenantId();
-        accountCostDto.setTenantId(tenantId);
+        AccountCostDto accountCostDto = pre2Save(accountCostVo);
         accountCostService.saveUpdate(accountCostDto);
         return R.ok();
     }
@@ -86,9 +92,16 @@ public class AccountCostController extends BaseController {
      */
     @Operation(summary = "保存开销表信息")
     @PostMapping(value = "saveUpdateBatch")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_ADD),
+            @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EDIT)
+    })
     public R<Void> saveUpdateBatch(@RequestBody List<AccountCostVo> accountCostVoList) {
         List<AccountCostDto> accountCostDtoList = UCopy.fullCopyList(accountCostVoList, AccountCostDto.class);
         Long tenantId = USecurity.getTenantId();
+        if (tenantId == null || tenantId == 0) {
+            R.failed(UMessage.message("tenant.required"));
+        }
         for (AccountCostDto accountCostDto : accountCostDtoList) {
             accountCostDto.setTenantId(tenantId);
         }
@@ -105,11 +118,18 @@ public class AccountCostController extends BaseController {
      */
     @Operation(summary = "查询开销表分页信息")
     @GetMapping(value = "findPageAccountCost")
-    public TableResult<AccountCostDto> findPageAccountCost(AccountCostVo accountCostVo, PageQuery pageQuery) {
+    @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_INDEX)
+    public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostVo accountCostVo, PageQuery pageQuery) {
         Date[] dateRange = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS, UString.SEPARATOR);
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        Long tenantId = USecurity.getTenantId();
+        if (tenantId == null || tenantId == 0) {
+            R.failed(UMessage.message("tenant.required"));
+        }
+        accountCostDto.setTenantId(tenantId);
         accountCostDto.setPaymentTimeFrom(dateRange[0]);
         accountCostDto.setPaymentTimeTo(dateRange[1]);
+        accountCostDto.setUserId(USecurity.getUserId());
         return accountCostService.findPageAccountCost(accountCostDto, pageQuery);
     }
 
@@ -121,10 +141,11 @@ public class AccountCostController extends BaseController {
      */
     @Operation(summary = "条件查询开销表")
     @GetMapping(value = "findAccountCost")
-    public R<AccountCostDto> findAccountCost(AccountCostVo accountCostVo) {
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
-        AccountCostDto tableResult = accountCostService.findAccountCost(accountCostDto);
-        return R.ok(tableResult);
+    @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_INDEX)
+    public R<FindAccountCostEntity> findAccountCost(AccountCostVo accountCostVo) {
+        AccountCostDto accountCostDto = pre2Save(accountCostVo);
+        FindAccountCostEntity findAccountCostEntity = accountCostService.findAccountCost(accountCostDto);
+        return R.ok(findAccountCostEntity);
     }
 
     /**
@@ -135,6 +156,7 @@ public class AccountCostController extends BaseController {
      */
     @Operation(summary = "删除开销表")
     @PostMapping(value = "deleteAccountCost")
+    @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_DELETE)
     public R<Void> deleteAccountCost(@RequestBody List<Long> idList) {
         accountCostService.deleteAccountCost(idList);
         return R.ok();
@@ -147,9 +169,9 @@ public class AccountCostController extends BaseController {
      * @return
      */
     @Idempotent
-//    @SaCheckPermission(value = MenuPermission.SYSTEM_USER_IMPORT_USER)
     @Operation(summary = "导入开支数据")
     @PostMapping(value = "accountsImport")
+    @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_IMPORT)
     public R<Void> accountsImport(@RequestPart("file[]") MultipartFile file) {
         String suffix = Optional.of(file)
                 .map(MultipartFile::getOriginalFilename)
@@ -177,9 +199,9 @@ public class AccountCostController extends BaseController {
      * @return 形式返回
      */
     @Idempotent
-//    @SaCheckPermission(value = MenuPermission.SYSTEM_USER_IMPORT_USER)
     @Operation(summary = "记账导出")
     @GetMapping(value = "accountsExport")
+    @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EXPORT)
     public void accountsExport(AccountCostVo accountsExportVo, HttpServletResponse response) throws IOException {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountsExportVo, AccountCostDto.class);
         accountCostDto.setTenantId(USecurity.getTenantId());
@@ -188,24 +210,6 @@ public class AccountCostController extends BaseController {
         accountCostDto.setPaymentTimeTo(dates[1]);
         List<AccountCostExportEntity> accountCostExportEntityList = accountCostService.findBuildListAccountsExport(accountCostDto);
         doAccountExport(response, dates, accountCostExportEntityList);
-    }
-
-    private static void doAccountExport(HttpServletResponse response, Date[] dates, List<AccountCostExportEntity> accountCostExportEntityList) throws IOException {
-        String dateFrom = Constants.SDF_YMD.format(dates[0]);
-        String dateTo = Constants.SDF_YMD.format(dates[1]);
-        String title = dateFrom + "到" + dateTo + "记账合计";
-        String fileName = URLEncoder.encode(title, Constants.UTF_8).replaceAll("\\+", "%20");
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + "." + ExcelSuffix.XLS.getSuffix());
-        response.setHeader(UOssFile.DOWNLOAD_FILENAME, fileName + "." + ExcelSuffix.XLS.getSuffix());
-        response.setContentType(ExcelUtil.XLS_CONTENT_TYPE);
-        response.setCharacterEncoding(Constants.UTF_8);
-        EasyExcelFactory.write(response.getOutputStream())
-                .head(AccountCostExportEntity.class)
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .registerWriteHandler(ExcelExportHandler.getBasicWriteStrategy())
-                .registerWriteHandler(new ExcelCellWriteStyle<>())
-                .sheet(0, title)
-                .doWrite(accountCostExportEntityList);
     }
 
     @Operation(summary = "饼图-查询各类型开销比例")
@@ -277,5 +281,49 @@ public class AccountCostController extends BaseController {
         accountCostDto.setPaymentTimeTo(dates[1]);
         EchartCalendarOptionEntity echartCalendarOptionEntity = accountCostService.findCostSumCalendarNearYear(accountCostDto);
         return R.ok(echartCalendarOptionEntity);
+    }
+
+    /**
+     * excel数据流输出到响应体
+     *
+     * @param response                    HttpServlet响应体
+     * @param dates                       查询数据时间段
+     * @param accountCostExportEntityList 导出数据
+     * @throws IOException IO流异常
+     */
+    private void doAccountExport(HttpServletResponse response, Date[] dates, List<AccountCostExportEntity> accountCostExportEntityList) throws IOException {
+        String dateFrom = Constants.SDF_YMD.format(dates[0]);
+        String dateTo = Constants.SDF_YMD.format(dates[1]);
+        String title = dateFrom + "到" + dateTo + "记账合计";
+        String fileName = URLEncoder.encode(title, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + "." + ExcelSuffix.XLS.getSuffix());
+        response.setHeader(UOssFile.DOWNLOAD_FILENAME, fileName + "." + ExcelSuffix.XLS.getSuffix());
+        response.setContentType(ExcelUtil.XLS_CONTENT_TYPE);
+        response.setCharacterEncoding(Constants.UTF_8);
+        EasyExcelFactory.write(response.getOutputStream())
+                .head(AccountCostExportEntity.class)
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .registerWriteHandler(ExcelExportHandler.getBasicWriteStrategy())
+                .registerWriteHandler(new ExcelCellWriteStyle<>())
+                .sheet(0, title)
+                .doWrite(accountCostExportEntityList);
+    }
+
+    /**
+     * 保存记账数据前操作
+     *
+     * @param accountCostVo 前端入参
+     * @return 组装好的数据
+     */
+    private AccountCostDto pre2Save(AccountCostVo accountCostVo) {
+        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        Long tenantId = USecurity.getTenantId();
+        if (tenantId == null || tenantId == 0) {
+            R.failed(UMessage.message("tenant.required"));
+        }
+        accountCostDto.setTenantId(tenantId);
+        accountCostDto.setUserId(USecurity.getUserId());
+        accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
+        return accountCostDto;
     }
 }

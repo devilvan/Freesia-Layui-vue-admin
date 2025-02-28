@@ -110,25 +110,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserDto sysUserDto, PageQuery pageQuery) {
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
-        Wrapper<SysUserPo> sysUserPoWrapper = USql.buildQueryWrapper(() -> Wrappers.<SysUserPo>query()
-                .eq("U.LOGIC_DEL", FlagConstant.DISABLED)
-                .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
-                .eq("STU.TENANT_ID", USecurity.getTenantId())
-                .like(ObjectUtil.isNotNull(sysUserDto.getNickName()), "U.NICK_NAME", sysUserDto.getNickName())
-                .likeRight(ObjectUtil.isNotNull(sysUserDto.getUserName()), "U.USER_NAME", sysUserDto.getUserName())
-                .likeRight(ObjectUtil.isNotNull(sysUserDto.getEmail()), "U.EMAIL", sysUserDto.getEmail())
-                .likeRight(ObjectUtil.isNotNull(sysUserDto.getTelNo()), "U.TEL_NO", sysUserDto.getTelNo())
-                .between(ObjectUtil.isNotNull(sysUserDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysUserDto.getCreateTimeTo()),
-                        "U.CREATE_TIME", sysUserDto.getCreateTimeFrom(), sysUserDto.getCreateTimeTo())
-                .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
-                    List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
-                            .select(SysDeptPo::getId)
-                            .apply(DataBaseHelper.findInSet(sysUserDto.getDeptId(), "ancestors"))
-                    );
-                    List<Long> deptIdList = UStream.toList(sysDeptPoList, SysDeptPo::getId);
-                    deptIdList.add(sysUserDto.getDeptId());
-                    m.in("U.DEPT_ID", deptIdList);
-                }));
+        Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserList(pageQuery.build(), sysUserPoWrapper);
         List<FindPageSysUserListEntity> findPageSysUserListEntityList = page.getRecords();
         for (FindPageSysUserListEntity findPageSysUserListEntity : findPageSysUserListEntityList) {
@@ -306,6 +288,41 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
         sysUserPo.setAvatar(ossHandler.convertDomain2Endpoint(avatar));
         sysUserRepository.save(sysUserPo);
+    }
+
+    @Override
+    public TableResult<FindPageSysUserListEntity> findPageSysUserWithoutDataScope(SysUserDto sysUserDto, PageQuery pageQuery) {
+        // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
+        Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
+        Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserWithoutDataScope(pageQuery.build(), sysUserPoWrapper);
+        List<FindPageSysUserListEntity> findPageSysUserListEntityList = page.getRecords();
+        for (FindPageSysUserListEntity findPageSysUserListEntity : findPageSysUserListEntityList) {
+            findPageSysUserListEntity.setAvatar(ossHandler.convertEndpoint2Domain(findPageSysUserListEntity.getAvatar()));
+        }
+        page.setRecords(findPageSysUserListEntityList);
+        return TableResult.build(page);
+    }
+
+    private Wrapper<SysUserPo> buildFindPageSysUserWrapper(SysUserDto sysUserDto) {
+        return USql.buildQueryWrapper(() -> Wrappers.<SysUserPo>query()
+                .eq("U.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
+                .eq("STU.TENANT_ID", USecurity.getTenantId())
+                .like(ObjectUtil.isNotNull(sysUserDto.getNickName()), "U.NICK_NAME", sysUserDto.getNickName())
+                .likeRight(ObjectUtil.isNotNull(sysUserDto.getUserName()), "U.USER_NAME", sysUserDto.getUserName())
+                .likeRight(ObjectUtil.isNotNull(sysUserDto.getEmail()), "U.EMAIL", sysUserDto.getEmail())
+                .likeRight(ObjectUtil.isNotNull(sysUserDto.getTelNo()), "U.TEL_NO", sysUserDto.getTelNo())
+                .between(ObjectUtil.isNotNull(sysUserDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysUserDto.getCreateTimeTo()),
+                        "U.CREATE_TIME", sysUserDto.getCreateTimeFrom(), sysUserDto.getCreateTimeTo())
+                .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
+                    List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
+                            .select(SysDeptPo::getId)
+                            .apply(DataBaseHelper.findInSet(sysUserDto.getDeptId(), "ancestors"))
+                    );
+                    List<Long> deptIdList = UStream.toList(sysDeptPoList, SysDeptPo::getId);
+                    deptIdList.add(sysUserDto.getDeptId());
+                    m.in("U.DEPT_ID", deptIdList);
+                }));
     }
 
     /**

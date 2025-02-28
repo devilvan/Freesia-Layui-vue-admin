@@ -161,8 +161,8 @@ public class UCopy {
      */
     public static <ENTITY, DTO extends BaseDto> Page<DTO> convertPageEntity2Dto(Page<ENTITY> page, Class<DTO> dtoClass) {
         Page<DTO> pageDto = new Page<>();
-        List<DTO> sysUserDtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
-        pageDto.setRecords(sysUserDtoList);
+        List<DTO> dtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
+        pageDto.setRecords(dtoList);
         pageDto.setSize(page.getSize());
         pageDto.setCurrent(page.getCurrent());
         pageDto.setTotal(page.getTotal());
@@ -181,8 +181,8 @@ public class UCopy {
      */
     public static <PO extends BasePo, DTO extends BaseDto> Page<DTO> convertPagePo2Dto(Page<PO> page, Class<DTO> dtoClass) {
         Page<DTO> pageDto = new Page<>();
-        List<DTO> sysUserDtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
-        pageDto.setRecords(sysUserDtoList);
+        List<DTO> dtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
+        pageDto.setRecords(dtoList);
         pageDto.setSize(page.getSize());
         pageDto.setCurrent(page.getCurrent());
         pageDto.setTotal(page.getTotal());

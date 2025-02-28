@@ -10,5 +10,6 @@ export enum Flag {
 
 export enum Operate {
     ADD= "ADD",
-    EDIT = "EDIT"
+    EDIT = "EDIT",
+    COPY = "COPY"
 }

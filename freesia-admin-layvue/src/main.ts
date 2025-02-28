@@ -13,6 +13,7 @@ import {getPublicKey, wrapEncryptPub2} from "./api/Crypt";
 import {useCryptStore} from "./store/crypt";
 import 'virtual:svg-icons-register'
 import SvgIcon from "./views/component/svg/SvgIcon.vue";
+import {AccountMenuPermission} from "./types/account/AccountPermission";
 // 导入 svgIcon
 
 /**
@@ -23,6 +24,7 @@ app.config.globalProperties.$SRC_ASSETS = "/src/assets/";
 app.config.globalProperties.$ADMIN_PERMISSION = "*:*:*";
 app.config.globalProperties.$ADMIN_ROLE = "admin";
 app.config.globalProperties.$MENU_PERMISSION = MenuPermission
+app.config.globalProperties.$ACCOUNT_MENU_PERMISSION = AccountMenuPermission
 
 app.use(Store);
 app.use(Router);

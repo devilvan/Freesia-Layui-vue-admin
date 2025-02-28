@@ -39,10 +39,8 @@
         WHERE 1=1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
-        <if test="accountCostDto.paymentTimeFrom != null">
+        <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
-        </if>
-        <if test="accountCostDto.paymentTimeTo != null">
             AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
         </if>
         GROUP BY AC.COST_TYPE
@@ -95,4 +93,116 @@
           AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
         GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d')
     </select>
+    <select id="findPageAccountCost" resultType="com.freesia.account.entity.FindPageAccountCostEntity">
+        SELECT
+        AC.ID,
+        AC.CREATE_TIME,
+        AC.MODIFY_TIME,
+        AC.LOGIC_DEL,
+        AC.REC_VER,
+        AC.TENANT_ID,
+        AC.COST_DESC,
+        AC.OUTLAY,
+        AC.COST_TYPE,
+        AC.PAYMENT_SIGN,
+        AC.PAYMENT_TIME,
+        AC.ICON,
+        AC.REMARK,
+        su.NICK_NAME AS USER_NAME
+        FROM account_cost AC
+        LEFT JOIN sys_user su on ac.USER_ID = su.ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.USER_ID = #{accountCost.userId}
+        AND AC.TENANT_ID = #{accountCost.tenantId}
+        OR AC.ID IN (
+        SELECT ACU.COST_ID
+        FROM account_cost_user ACU
+        WHERE 1=1
+        AND ACU.USER_ID = #{accountCost.userId}
+        )
+        <if test="accountCost.id != null and accountCost.id != 0">
+            AND AC.ID = #{accountCost.id}
+        </if>
+        <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
+            AND AC.COST_DESC = #{accountCost.costDesc}
+        </if>
+        <if test="accountCost.remark != null and accountCost.remark != ''">
+            AND AC.REMARK = #{accountCost.remark}
+        </if>
+        <if test="accountCost.paymentSign != null and accountCost.paymentSign != ''">
+            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
+        </if>
+        <if test="accountCost.paymentTime != null and accountCost.paymentTime != ''">
+            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
+        </if>
+        <if test="accountCost.paymentTimeFrom != null and accountCost.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
+            AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
+        </if>
+        ORDER BY AC.PAYMENT_TIME DESC, AC.MODIFY_TIME DESC
+    </select>
+    <select id="findAccountCost" resultMap="findAccountCostResultMap">
+        SELECT AC.ID,
+        AC.CREATOR,
+        AC.CREATE_TIME,
+        AC.MODIFIER,
+        AC.MODIFY_TIME,
+        AC.LOGIC_DEL,
+        AC.REC_VER,
+        AC.BUILD_IN,
+        AC.TENANT_ID,
+        AC.COST_DESC,
+        AC.OUTLAY,
+        AC.COST_TYPE,
+        AC.PAYMENT_SIGN,
+        AC.PAYMENT_TIME,
+        AC.ICON,
+        AC.REMARK,
+        AC.USER_ID,
+        SU.ID AS SU_ID,
+        SU.USER_NAME AS USER_NAME,
+        SU.NICK_NAME AS NICK_NAME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.USER_ID = #{accountCost.userId}
+        OR SU.ID IN (
+        SELECT ACU.USER_ID
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        <if test="accountCost.id != null and accountCost.id != 0">
+            AND ACU.COST_ID = #{accountCost.id}
+        </if>
+        )
+        <if test="accountCost.id != null and accountCost.id != 0">
+            AND ac.ID = #{accountCost.id}
+        </if>
+    </select>
+    <resultMap id="findAccountCostResultMap" type="com.freesia.account.entity.FindAccountCostEntity">
+        <id property="id" column="ID"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifier" column="MODIFIER"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+        <result property="logicDel" column="LOGIC_DEL"/>
+        <result property="recVer" column="REC_VER"/>
+        <result property="buildIn" column="BUILD_IN"/>
+        <result property="tenantId" column="TENANT_ID"/>
+        <result property="costDesc" column="COST_DESC"/>
+        <result property="outlay" column="OUTLAY"/>
+        <result property="costType" column="COST_TYPE"/>
+        <result property="paymentSign" column="PAYMENT_SIGN"/>
+        <result property="paymentTime" column="PAYMENT_TIME"/>
+        <result property="icon" column="ICON"/>
+        <result property="remark" column="REMARK"/>
+        <result property="userId" column="USER_ID"/>
+        <collection property="userList" ofType="com.freesia.dto.SysUserDto">
+            <id property="id" column="SU_ID"/>
+            <result property="userName" column="USER_NAME"/>
+            <result property="nickName" column="NICK_NAME"/>
+        </collection>
+    </resultMap>
 </mapper>

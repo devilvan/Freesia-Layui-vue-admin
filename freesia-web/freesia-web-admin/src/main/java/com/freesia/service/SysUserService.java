@@ -183,4 +183,13 @@ public interface SysUserService {
      * @param avatar 头像地址
      */
     void avatarUpdate(String avatar);
+
+    /**
+     * 获取用户列表分页（不过滤数据权限）
+     *
+     * @param sysUserDto 查询条件
+     * @param pageQuery  分页参数
+     * @return 用户列表的分页对象
+     */
+    TableResult<FindPageSysUserListEntity> findPageSysUserWithoutDataScope(SysUserDto sysUserDto, PageQuery pageQuery);
 }

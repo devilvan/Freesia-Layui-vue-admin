@@ -124,6 +124,15 @@
             修改
           </lay-button>
           <lay-button
+              @click="showCopyModal(row)"
+              size="xs"
+              border="orange"
+              border-style="dashed"
+              v-permission="[$MENU_PERMISSION.SYSTEM_MENU_EDIT]"
+          >
+            复制
+          </lay-button>
+          <lay-button
               @click="toRemove(row)"
               size="xs"
               border="red"
@@ -163,7 +172,7 @@
 
     <lay-layer v-model="saveDirModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysDirVo" ref="saveDirFormRef" label-position="top" size="md">
+        <lay-form :model="sysDirVo" ref="saveDirFormRef" label-position="top" size="md" @keydown.esc.prevent="toCancel">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId">
@@ -228,7 +237,7 @@
 
     <lay-layer v-model="saveMenuModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules" label-position="top" size="md">
+        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules" label-position="top" size="md" @keydown.esc.prevent="toCancel">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -307,7 +316,7 @@
 
     <lay-layer v-model="saveButtonModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysMenuVoRules" label-position="top" size="md">
+        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysMenuVoRules" label-position="top" size="md" @keydown.esc.prevent="toCancel">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -370,7 +379,7 @@
 
     <lay-layer v-model="saveLinkModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules" label-position="top" size="md">
+        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules" label-position="top" size="md" @keydown.esc.prevent="toCancel">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -660,7 +669,8 @@ const initLinkTreeSelect = {
   title: "顶级目录",
   id: '-1'
 }
-const componentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
+const menuRuleComponentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
+const linkRuleComponentRegex = "(modal|blank)$|(([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$)"
 // const permsRegex = "([A-Za-z0-9$_])+(:[A-Za-z0-9$_]*)$"
 const permsRegex = "([A-Za-z0-9])+(:[A-Za-z0-9]*)$"
 const sysButtonVoRules = ref({
@@ -677,7 +687,7 @@ const sysButtonVoRules = ref({
 const sysMenuVoRules = ref({
   component: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
-      if (!value.match(componentRegex)) {
+      if (!value.match(menuRuleComponentRegex)) {
         callback(new Error("组件路径格式错误，允许'$'、'-'、'_'，例如：/iframe/inner/index"));
       } else {
         return true;
@@ -697,7 +707,7 @@ const sysMenuVoRules = ref({
 const sysLinkVoRules = ref({
   component: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
-      if (!value.match(componentRegex)) {
+      if (!value.match(linkRuleComponentRegex)) {
         callback(new Error("组件路径格式错误，允许'$'、'-'、'_'，例如：/iframe/inner/index"));
       } else {
         return true;
@@ -1039,6 +1049,47 @@ function changeLinkModalParentIdSelect(value: any) {
         sysLinkVo.value.orderNum = res.data
       }
     })
+  }
+}
+
+function showCopyModal(row: any) {
+  if (!row) {
+    return ;
+  }
+  let parentId = row.parentId;
+  if (MenuType.DIR === row.menuType) {
+    sysDirVo.value = {...row}
+    sysDirVo.value.id = null
+    sysDirVo.value.recVer = null
+    findIncrementOrderNum(parentId).then((res: any) => {
+      if (res.code === 200) {
+        sysDirVo.value.orderNum = res.data
+      }
+    })
+    saveDirModalFlag.value = true;
+  } else if (MenuType.MENU === row.menuType) {
+    sysMenuVo.value = {...row}
+    sysMenuVo.value.id = null
+    sysMenuVo.value.recVer = null
+    findIncrementOrderNum(parentId).then((res: any) => {
+      if (res.code === 200) {
+        sysMenuVo.value.orderNum = res.data
+      }
+    })
+    let recursionPath = getParentPath(dataSource.value, row.id)?.reverse()
+    recursionPath = recursionPath.filter((f: any) => f !== row.path)
+    parentPath.value = recursionPath.join("/");
+    saveMenuModalFlag.value = true;
+  } else if (MenuType.BUTTON === row.menuType) {
+    sysButtonVo.value = {...row}
+    sysButtonVo.value.id = null
+    sysButtonVo.value.recVer = null
+    findIncrementOrderNum(parentId).then((res: any) => {
+      if (res.code === 200) {
+        sysButtonVo.value.orderNum = res.data
+      }
+    })
+    saveButtonModalFlag.value = true;
   }
 }
 

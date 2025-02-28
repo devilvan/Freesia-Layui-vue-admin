@@ -89,12 +89,6 @@
                   <p class="text">Github</p>
                 </div>
               </li>
-              <li>
-                <div class="line-container">
-                  <SvgIcon name="068_买菜" size="2em"></SvgIcon>
-                  <!--                  <img style="color: #52c41a" class="icon" src="../../assets/svgIcon/068_买菜.svg"/>-->
-                </div>
-              </li>
             </ul>
           </div>
         </div>

@@ -2,6 +2,8 @@ package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
+import com.freesia.account.entity.FindAccountCostEntity;
+import com.freesia.account.entity.FindPageAccountCostEntity;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
@@ -39,7 +41,7 @@ public interface AccountCostService {
      * @param pageQuery      分页条件
      * @return 分页信息
      */
-    TableResult<AccountCostDto> findPageAccountCost(AccountCostDto accountCostDto, PageQuery pageQuery);
+    TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostDto accountCostDto, PageQuery pageQuery);
 
     /**
      * 条件查询开销表信息
@@ -47,7 +49,7 @@ public interface AccountCostService {
      * @param accountCostDto 查询条件
      * @return 开销表信息
      */
-    AccountCostDto findAccountCost(AccountCostDto accountCostDto);
+    FindAccountCostEntity findAccountCost(AccountCostDto accountCostDto);
 
     /**
      * 删除开销表信息

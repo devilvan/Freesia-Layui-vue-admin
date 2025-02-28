@@ -88,3 +88,8 @@ export function avatarUpdate(avatar: string) {
         }
     })
 }
+
+export const findPageSysUserWithoutDataScope = function (searchQuery: SysUserVo, pageQuery: PageQuery) {
+    const params = buildPageUrlParam(searchQuery, pageQuery);
+    return Http.get('/api/sysUserController/findPageSysUserWithoutDataScope', params)
+}

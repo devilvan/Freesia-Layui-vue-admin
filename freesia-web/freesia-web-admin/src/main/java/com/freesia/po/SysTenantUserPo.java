@@ -35,7 +35,7 @@ public class SysTenantUserPo extends RelationPo implements Serializable {
     private static final long serialVersionUID = 7783181614120038158L;
     @EmbeddedId
     @Schema(description = "租户-用户关联 联合主键")
-    private SysTenantUserPk sysTenantUserPk;
+    protected SysTenantUserPk sysTenantUserPk;
 
     @Schema(description = "租户-用户关系表对应的租户")
     @ToString.Exclude

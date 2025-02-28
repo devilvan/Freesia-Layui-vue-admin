@@ -1,32 +1,30 @@
 package com.freesia.account.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.entity.AccountCostExportEntity;
-import com.freesia.account.entity.FindCostLineChartEntity;
-import com.freesia.account.entity.FindCostSumCalendarNearYearEntity;
-import com.freesia.account.entity.FindCostTypeRatePieEntity;
+import com.freesia.account.entity.*;
 import com.freesia.account.mapper.AccountCostMapper;
 import com.freesia.account.po.AccountCostPo;
+import com.freesia.account.po.AccountCostUserPk;
+import com.freesia.account.po.AccountCostUserPo;
 import com.freesia.account.repository.AccountCostRepository;
+import com.freesia.account.repository.AccountCostUserRepository;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.constant.Constants;
-import com.freesia.constant.FlagConstant;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
@@ -46,6 +44,8 @@ import java.util.stream.Collectors;
 public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, AccountCostPo> implements AccountCostService {
     private final AccountCostRepository accountCostRepository;
     private final AccountCostMapper accountCostMapper;
+    private final AccountCostUserRepository accountCostUserRepository;
+    private final TransactionTemplate transactionTemplate;
 
     /**
      * 构建统计行
@@ -78,25 +78,37 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         }
     }
 
-    private static LambdaQueryWrapper<AccountCostPo> buildAccountCostPoLambdaQueryWrapper(AccountCostDto accountCost) {
-        return new LambdaQueryWrapper<AccountCostPo>()
-                .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId())
-                .like(UEmpty.isNotEmpty(accountCost.getCostDesc()), AccountCostPo::getCostDesc, accountCost.getCostDesc())
-                .like(UEmpty.isNotEmpty(accountCost.getRemark()), AccountCostPo::getRemark, accountCost.getRemark())
-                .eq(UEmpty.isNotEmpty(accountCost.getPaymentSign()), AccountCostPo::getPaymentSign, accountCost.getPaymentSign())
-                .between(UEmpty.isNotEmpty(accountCost.getPaymentTimeFrom()) && UEmpty.isNotEmpty(accountCost.getPaymentTimeTo()),
-                        AccountCostPo::getPaymentTime,
-                        accountCost.getPaymentTimeFrom(),
-                        accountCost.getPaymentTimeTo())
-                .orderByDesc(AccountCostPo::getPaymentTime);
-    }
-
     @Override
     public AccountCostDto saveUpdate(AccountCostDto accountCostDto) {
-        AccountCostPo accountCostPo = new AccountCostPo();
-        UCopy.fullCopy(accountCostDto, accountCostPo);
-        return UCopy.copyPo2Dto(accountCostRepository.saveAndFlush(accountCostPo), AccountCostDto.class);
+        Long costId = accountCostDto.getId();
+        AccountCostPo accountCostPo = UCopy.copyDto2Po(accountCostDto, AccountCostPo.class);
+        UCopy.halfCopy(accountCostDto, accountCostPo);
+        Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
+        List<Long> accountCostUserIdList = accountCostDto.getAccountCostUserIdList();
+        if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+            for (Long accountCostUserId : accountCostUserIdList) {
+                AccountCostUserPo accountCostUserPo = new AccountCostUserPo(new AccountCostUserPk(accountCostPo.getId(), accountCostUserId));
+                accountCostUserPoSet.add(accountCostUserPo);
+            }
+        }
+        // 新增
+        if (UEmpty.isNull(costId)) {
+            accountCostPo = accountCostRepository.save(accountCostPo);
+            accountCostUserRepository.saveAll(accountCostUserPoSet);
+            return UCopy.copyPo2Dto(accountCostPo, AccountCostDto.class);
+        } else {
+            // 独立事务更新
+            AccountCostPo finalAccountCostPo = accountCostPo;
+            AccountCostPo afterTransactionSaveAccountCostPo = transactionTemplate.execute(status -> {
+                // 修改
+                if (UEmpty.isNotNull(costId)) {
+                    accountCostUserRepository.deleteByCostId(costId);
+                }
+                accountCostUserRepository.saveAll(accountCostUserPoSet);
+                return accountCostRepository.save(finalAccountCostPo);
+            });
+            return UCopy.copyPo2Dto(afterTransactionSaveAccountCostPo, AccountCostDto.class);
+        }
     }
 
     @Override
@@ -106,20 +118,14 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     @Override
-    public TableResult<AccountCostDto> findPageAccountCost(AccountCostDto accountCost, PageQuery pageQuery) {
-        LambdaQueryWrapper<AccountCostPo> wrapper = buildAccountCostPoLambdaQueryWrapper(accountCost);
-        Page<AccountCostPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, AccountCostDto.class));
+    public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostDto accountCost, PageQuery pageQuery) {
+        Page<FindPageAccountCostEntity> pagePo = accountCostMapper.findPageAccountCost(accountCost, pageQuery.build());
+        return TableResult.build(pagePo);
     }
 
     @Override
-    public AccountCostDto findAccountCost(AccountCostDto accountCost) {
-        Long tenantId = USecurity.getTenantId();
-        LambdaQueryWrapper<AccountCostPo> wrapper = new LambdaQueryWrapper<AccountCostPo>()
-                .eq(AccountCostPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(accountCost.getId()), AccountCostPo::getId, accountCost.getId())
-                .eq(UEmpty.isNotEmpty(tenantId), AccountCostPo::getTenantId, tenantId);
-        return UCopy.copyPo2Dto(getOne(wrapper), AccountCostDto.class);
+    public FindAccountCostEntity findAccountCost(AccountCostDto accountCost) {
+        return accountCostMapper.findAccountCost(accountCost);
     }
 
     @Override

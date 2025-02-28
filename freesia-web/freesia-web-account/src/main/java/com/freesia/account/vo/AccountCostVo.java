@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -46,4 +47,7 @@ public class AccountCostVo extends BaseVo {
     @Schema(description = "备注")
     @JSONField(alternateNames = {"remark"})
     private String remark;
+    @Schema(description = "关联用户ID集合")
+    @JSONField(alternateNames = {"accountCostUserIdList"})
+    private List<Long> accountCostUserIdList;
 }
