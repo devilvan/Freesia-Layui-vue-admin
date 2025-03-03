@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b98337e3-6e2a-4250-977c-b741b8c5c766" name="Changes" comment="【修改】Evad 1. 我的记账-导出功能-转换为浏览器下载 2. 重新设置跨域处理规则">
+    <list default="true" id="b98337e3-6e2a-4250-977c-b741b8c5c766" name="Changes" comment="【修改、修复】Evad 1. 我的记账-展示图标功能优化 2. 饼图展示数据异常优化">
+      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/AccountBudget.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/auto-imports.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/auto-imports.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,13 +18,14 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Vue Composition API Component" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/20250224_Evad.Wu_系统优化" />
+        <entry key="$PROJECT_DIR$" value="develop" />
         <entry key="$PROJECT_DIR$" value="develop" />
       </map>
     </option>
@@ -73,7 +73,7 @@
     "Spring Boot.FreesiaAdminApplication.executor": "Debug",
     "database.data.extractors.current.export.id": "One-row.sql.groovy",
     "database.data.extractors.current.id": "One-row.sql.groovy",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "feature/20250224__Evad.Wu__系统优化",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Project/Freesia/freesia-web/freesia-web-app/src/test/java/comparable",
     "node.js.detected.package.eslint": "true",
@@ -87,6 +87,11 @@
     "settings.editor.selected.configurable": "MavenSettings",
     "ts.external.directory.path": "C:\\Project\\Freesia\\freesia-admin-layvue\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "vue.recent.templates": [
+      "Vue Composition API Component"
+    ]
   }
 }]]></component>
   <component name="ReactorSettings">
@@ -143,6 +148,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.FreesiaTest.createPassword" />
+        <item itemvalue="JUnit.FreesiaTest.createPassword" />
       </list>
     </recent_temporary>
   </component>
@@ -162,7 +168,7 @@
       <workItem from="1740394454237" duration="425000" />
       <workItem from="1740394893615" duration="178000" />
       <workItem from="1740485988467" duration="11294000" />
-      <workItem from="1741008045545" duration="2841000" />
+      <workItem from="1741008045545" duration="6275000" />
     </task>
     <task id="LOCAL-00001" summary="【修改】Evad 1. 我的记账-导出功能-转换为浏览器下载 2. 重新设置跨域处理规则">
       <option name="closed" value="true" />
@@ -172,7 +178,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740498751427</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="【修改、修复】Evad 1. 我的记账-展示图标功能优化 2. 饼图展示数据异常优化">
+      <option name="closed" value="true" />
+      <created>1741012229251</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1741012229251</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -202,7 +216,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="【修改】Evad 1. 我的记账-导出功能-转换为浏览器下载 2. 重新设置跨域处理规则" />
-    <option name="LAST_COMMIT_MESSAGE" value="【修改】Evad 1. 我的记账-导出功能-转换为浏览器下载 2. 重新设置跨域处理规则" />
+    <MESSAGE value="【修改、修复】Evad 1. 我的记账-展示图标功能优化 2. 饼图展示数据异常优化" />
+    <option name="LAST_COMMIT_MESSAGE" value="【修改、修复】Evad 1. 我的记账-展示图标功能优化 2. 饼图展示数据异常优化" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

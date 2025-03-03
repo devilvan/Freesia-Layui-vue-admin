@@ -17,10 +17,13 @@
               </lay-form>
             </lay-col>
           </lay-row>
-          <div ref="costTypeRatePieRef" style="height: 500px"></div>
+          <div ref="costTypeRatePieRef" style="height: 450px"></div>
         </lay-card>
       </lay-col>
-      <lay-col md="14" sm="8" xs="12">
+      <lay-col md="8">
+        <AccountBudget></AccountBudget>
+      </lay-col>
+      <lay-col md="6">
         <lay-card>
           <template #title>{{ costCountCalendarLastYearTitle }}</template>
           <lay-row :space="10">
@@ -156,6 +159,7 @@ import {
 } from "../../../../types/account/Account";
 import {buildRange, defaultShortcuts, getDaysInMonth} from "../../../../util/UDate";
 import {findCostLineChart, findCostSumCalendarNearYear} from "../../../../api/account/Account";
+import AccountBudget from "@/views/enrollee/accounts/accountsDashboard/AccountBudget.vue";
 
 const mainRef = ref()
 const currentIndex = ref('1')
@@ -766,13 +770,14 @@ function doFindCostSumCalendarNearYear() {
           min: 0,
           max: data.maxValue,
           calculable: true,
-          orient: 'horizontal',
+          orient: 'vertical',
           left: 'center',
           top: 'top',
           bottom: 20
         },
         calendar: [
           {
+            orient: 'vertical',
             top: 120,
             left: 20,
             range: data.range,
