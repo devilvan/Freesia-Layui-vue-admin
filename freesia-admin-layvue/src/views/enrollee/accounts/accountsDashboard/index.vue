@@ -25,7 +25,7 @@
           <template #title>{{ costCountCalendarLastYearTitle }}</template>
           <lay-row :space="10">
             <lay-col>
-              <lay-form :model="FindCostSumCalendarNearYearQueryVo" ref="findCostSumCalendarNearYearQueryRef"
+              <lay-form :model="findCostSumCalendarNearYearQueryVo" ref="findCostSumCalendarNearYearQueryRef"
                         label-position="left">
               </lay-form>
               <div ref="costSumCalendarNearYearRef" style="height: 500px"></div>
@@ -144,7 +144,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {computed, onMounted, ref} from 'vue'
+import {computed, onBeforeUnmount, onMounted, ref} from 'vue'
 import * as echarts from 'echarts'
 import router from "../../../../router";
 import {findCostTypeRatePie} from "@/api/account/Account";
@@ -408,6 +408,26 @@ onMounted(() => {
 })
 /* INIT*/
 
+/* DESTROY*/
+onBeforeUnmount(() => {
+  if (costTypeRatePieChart) {
+    costTypeRatePieChart.dispose();
+  }
+  if (weekCostLineChart) {
+    weekCostLineChart.dispose();
+  }
+  if (monthCostLineChart) {
+    monthCostLineChart.dispose();
+  }
+  if (yearCostLineChart) {
+    yearCostLineChart.dispose();
+  }
+  if (costSumCalendarNearYear) {
+    costSumCalendarNearYear.dispose();
+  }
+});
+/* DESTROY*/
+
 /* VAR*/
 const columns21 = [
   {
@@ -491,11 +511,11 @@ const costCountCalendarLastYearTitle = "近一年支付"
 const findCostSumCalendarNearYearQueryVo = ref<FindCostSumCalendarNearYearVo>({});
 const costSumCalendarNearYearRef = ref(null);
 const findCostSumCalendarNearYearQueryRef = ref(null)
-let costTypeRatePieChart = null;
-let weekCostLineChart = null;
-let monthCostLineChart = null;
-let yearCostLineChart = null;
-let costSumCalendarNearYear = null;
+let costTypeRatePieChart: echarts.ECharts | null = null;
+let weekCostLineChart: echarts.ECharts | null = null;
+let monthCostLineChart: echarts.ECharts | null = null;
+let yearCostLineChart: echarts.ECharts | null = null;
+let costSumCalendarNearYear: echarts.ECharts | null = null;
 /* VAR*/
 
 /* FUNCTION*/
@@ -570,11 +590,11 @@ function doFindCostLineChart() {
 
 function changeDateScope(dateScope: string) {
   findCostLineChartQueryVo.value.dateScope = dateScope;
-  findCostLineChartQueryVo.value.dateValue = null
+  findCostLineChartQueryVo.value.dateValue = ''
   doFindCostLineChart();
 }
 
-function showWeekCostLineChart(data) {
+function showWeekCostLineChart(data: any) {
   let option = {
     title: {
       text: costLineChartTitle,
@@ -627,7 +647,7 @@ function showWeekCostLineChart(data) {
   weekCostLineChart.setOption(option)
 }
 
-function showMonthCostLineChart(data) {
+function showMonthCostLineChart(data: any) {
   let option = {
     title: {
       text: costLineChartTitle,
@@ -679,7 +699,7 @@ function showMonthCostLineChart(data) {
   monthCostLineChart.setOption(option)
 }
 
-function showYearCostLineChart(data) {
+function showYearCostLineChart(data: any) {
   let option = {
     title: {
       text: costLineChartTitle,
@@ -738,7 +758,7 @@ function doFindCostSumCalendarNearYear() {
       let option = {
         tooltip: {
           position: 'left',
-          formatter: (item) => {
+          formatter: (item: any) => {
             return item.data[0] + '<br>' + item.data[1];
           }
         },
@@ -784,7 +804,7 @@ function doFindCostSumCalendarNearYear() {
 }
 
 function doChangeFindCostTypeRatePie() {
-  costTypeRatePieChart.dispose()
+  costTypeRatePieChart?.dispose()
   doFindCostTypeRatePie();
 }
 /* FUNCTION*/
