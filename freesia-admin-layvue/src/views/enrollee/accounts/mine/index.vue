@@ -324,7 +324,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {computed, onMounted, reactive, ref} from 'vue'
+import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../../types/Common";
 import {TableResult} from "../../../../types/Result";

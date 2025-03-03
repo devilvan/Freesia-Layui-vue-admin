@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【修改】Evad 1. 部署准备">
+      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Class" />
+        <option value="TypeScript File" />
+        <option value="Dockerfile" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feature/20250203_Evad.Wu_代码优化" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JpbToolWindowState">
+    <option name="isToolWindowVisible" value="false" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="customMavenHome" value="C:\Environment\apache-maven-3.6.3" />
+        <option name="mavenHomeTypeForPersistence" value="CUSTOM" />
+        <option name="useMavenConfig" value="false" />
+        <option name="userSettingsFile" value="C:\Environment\apache-maven-3.6.3\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenRunner">
+    <option name="skipTests" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2qhySWDUkzbkz303ejcTZq9Jk59" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+    <option name="showScratchesAndConsoles" value="false" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Docker.freesia-admin-layvue/Dockerfile.executor": "Run",
+    "JUnit.FreesiaTest.testCalendar.executor": "Debug",
+    "JUnit.FreesiaTest.testLoopDirFiles.executor": "Debug",
+    "JUnit.FreesiaTest.testLoopFileName.executor": "Debug",
+    "JUnit.FreesiaTestApplication.testExport.executor": "Run",
+    "Maven.freesia [clean].executor": "Run",
+    "Maven.freesia [install].executor": "Run",
+    "Maven.freesia [site].executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.FreesiaAdminApplication.executor": "Debug",
+    "database.data.extractors.current.export.id": "HTML-JavaScript.html.js",
+    "database.data.extractors.current.id": "HTML-JavaScript.html.js",
+    "git-widget-placeholder": "feature/20250211__Evad.Wu__部署文件提交",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Project/freesia/freesia-web/freesia-web-app/src/main/resources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "node",
+    "nodejs_package_manager_path": "yarn",
+    "npm.run.executor": "Run",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.33908045",
+    "settings.editor.selected.configurable": "settings.nodejs",
+    "ts.external.directory.path": "C:\\Project\\freesia\\freesia-admin-layvue\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "com.p6spy.engine.spy.P6SpyDriver",
+      "mysql"
+    ]
+  }
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Project\freesia\freesia-web\freesia-web-app\src\main\resources" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Project\freesia\freesia-admin-layvue\src\assets\svg" />
+      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\accountsDashboard" />
+      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\dashboard" />
+      <recent name="C:\Project\freesia\freesia-admin-layvue\src\views\enrollee\accounts\mine" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.freesia.entity" />
+      <recent name="com.freesia.excel" />
+      <recent name="com.freesia.account.entity" />
+      <recent name="com.freesia.account.listener" />
+      <recent name="com.freesia.exception" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Docker.freesia-admin-layvue/Dockerfile">
+    <configuration name="FreesiaTestApplication.testExport" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="freesia-web-app" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.freesia.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.freesia" />
+      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTestApplication" />
+      <option name="METHOD_NAME" value="testExport" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FreesiaTest.testCalendar" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="freesia-web-app" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.freesia.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.freesia" />
+      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
+      <option name="METHOD_NAME" value="testCalendar" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FreesiaTest.testLoopDirFiles" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="freesia-web-app" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.freesia.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.freesia" />
+      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
+      <option name="METHOD_NAME" value="testLoopDirFiles" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FreesiaTest.testLoopFileName" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="freesia-web-app" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.freesia.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.freesia" />
+      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
+      <option name="METHOD_NAME" value="testLoopFileName" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="freesia-common-tenant" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="freesia-common-tenant" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FreesiaAdminApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="freesia-web-app" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.freesia.FreesiaAdminApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="freesia-admin-layvue/Dockerfile" type="docker-deploy" factoryName="dockerfile" temporary="true" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="freesia-web:latest" />
+          <option name="containerName" value="freesia-web" />
+          <option name="sourceFilePath" value="freesia-admin-layvue/Dockerfile" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/freesia-admin-layvue/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Docker.freesia-admin-layvue/Dockerfile" />
+      <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
+      <item itemvalue="JUnit.FreesiaTest.testCalendar" />
+      <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
+      <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
+      <item itemvalue="npm.dev" />
+      <item itemvalue="Spring Boot.FreesiaAdminApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Docker.freesia-admin-layvue/Dockerfile" />
+        <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
+        <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
+        <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
+        <item itemvalue="JUnit.FreesiaTest.testCalendar" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【修改】Evad 1. 记账模块开发" />
+      <created>1735129102491</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1735129102491</updated>
+      <workItem from="1735129103848" duration="1133000" />
+      <workItem from="1735216008556" duration="4853000" />
+      <workItem from="1735295293350" duration="4660000" />
+      <workItem from="1735827285172" duration="7774000" />
+      <workItem from="1735899631858" duration="1529000" />
+      <workItem from="1735901173047" duration="73000" />
+      <workItem from="1735901253220" duration="168000" />
+      <workItem from="1735901428502" duration="4151000" />
+      <workItem from="1736137574098" duration="1424000" />
+      <workItem from="1736169435127" duration="11182000" />
+      <workItem from="1736245748671" duration="868000" />
+      <workItem from="1736340044728" duration="827000" />
+      <workItem from="1736340895225" duration="107000" />
+      <workItem from="1736431306814" duration="5139000" />
+      <workItem from="1736506674119" duration="2966000" />
+      <workItem from="1736686174003" duration="2406000" />
+      <workItem from="1736688593877" duration="3412000" />
+      <workItem from="1737186210216" duration="8225000" />
+      <workItem from="1737334343245" duration="22847000" />
+      <workItem from="1737363047463" duration="5303000" />
+      <workItem from="1737420733342" duration="19186000" />
+      <workItem from="1738829813282" duration="6089000" />
+      <workItem from="1738891300548" duration="2549000" />
+      <workItem from="1738909780145" duration="3427000" />
+      <workItem from="1739266565750" duration="13514000" />
+    </task>
+    <task id="LOCAL-00001" summary="【新增】Evad 1. 记账模块开发">
+      <option name="closed" value="true" />
+      <created>1736170503957</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1736170503957</updated>
+    </task>
+    <task id="LOCAL-00002" summary="【新增】Evad 1. 记账模块-导出功能开发">
+      <option name="closed" value="true" />
+      <created>1737351122655</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1737351122655</updated>
+    </task>
+    <task id="LOCAL-00003" summary="【修改】Evad 1. 部署准备">
+      <option name="closed" value="true" />
+      <created>1739276903118</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1739276903118</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="80a6e447-48bd-4c4e-b636-54e874eead87" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="80a6e447-48bd-4c4e-b636-54e874eead87">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="structure">
+                    <value>
+                      <list>
+                        <option value="dir:C:/Project/freesia/freesia-common" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+            </State>
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="【新增】Evad 1. 记账模块开发" />
+    <MESSAGE value="【新增】Evad 1. 记账模块-导出功能开发" />
+    <MESSAGE value="【修改】Evad 1. 部署准备" />
+    <option name="LAST_COMMIT_MESSAGE" value="【修改】Evad 1. 部署准备" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
