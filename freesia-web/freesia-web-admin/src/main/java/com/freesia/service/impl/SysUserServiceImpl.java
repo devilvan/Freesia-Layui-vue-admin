@@ -58,7 +58,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     private final SysDeptMapper sysDeptMapper;
     private final SysTenantService sysTenantService;
     private final SysUserRoleRepository sysUserRoleRepository;
-    private final OssHandler ossHandler = OssFactory.getInstance();
 
     @Override
     public SysUserPo saveUpdate(SysUserDto sysUserDto) {
@@ -89,6 +88,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public SysUserDto findUserById(Long userId) {
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
+        OssHandler ossHandler = OssFactory.getInstance();
         sysUserPo.setAvatar(ossHandler.convertEndpoint2Domain(sysUserPo.getAvatar()));
         return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
     }
@@ -109,6 +109,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserDto sysUserDto, PageQuery pageQuery) {
+        OssHandler ossHandler = OssFactory.getInstance();
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
         Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserList(pageQuery.build(), sysUserPoWrapper);
@@ -142,6 +143,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public SysUserDto findCurrentUserProfile(Long userId) {
+        OssHandler ossHandler = OssFactory.getInstance();
         LambdaQueryWrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<SysUserPo>()
                 .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysUserPo::getId, userId);
@@ -283,6 +285,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.AVATAR_UPDATE, message = "user.avatarUpdate")
     public void avatarUpdate(String avatar) {
+        OssHandler ossHandler = OssFactory.getInstance();
         LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         Long userId = loginUser.getUserId();
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
@@ -292,6 +295,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public TableResult<FindPageSysUserListEntity> findPageSysUserWithoutDataScope(SysUserDto sysUserDto, PageQuery pageQuery) {
+        OssHandler ossHandler = OssFactory.getInstance();
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
         Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserWithoutDataScope(pageQuery.build(), sysUserPoWrapper);

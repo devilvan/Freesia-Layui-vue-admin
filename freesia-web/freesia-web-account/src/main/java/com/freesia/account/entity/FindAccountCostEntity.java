@@ -21,4 +21,9 @@ public class FindAccountCostEntity extends AccountCostDto {
      */
     @Schema(description = "关联用户集合")
     private List<SysUserPo> userList;
+    /**
+     * 用户昵称
+     */
+    @Schema(description = "用户昵称")
+    private String acNickName;
 }

@@ -216,6 +216,7 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findCostTypeRatePie")
     public R<EchartPieOptionEntity> findCostTypeRatePie(AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        accountCostDto.setUserId(USecurity.getUserId());
         if (UEmpty.isEmpty(accountCostVo.getPaymentTimeRange())) {
             Date[] dates = defaultDateRange(7);
             accountCostDto.setPaymentTimeFrom(dates[0]);
@@ -240,6 +241,7 @@ public class AccountCostController extends BaseController {
         String code = dateScope.getCode();
         findCostLineChartVo.setDateScope(code);
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostLineChartVo, AccountCostDto.class);
+        accountCostDto.setUserId(USecurity.getUserId());
         String dateValue = findCostLineChartVo.getDateValue();
         if (DateScope.MONTH.getCode().equals(code) || DateScope.YEAR.getCode().equals(code)) {
             if (UEmpty.isEmpty(dateValue)) {
@@ -276,6 +278,7 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findCostSumCalendarNearYear")
     public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNeaerYearVo findCostSumCalendarNeaerYearVo) {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostSumCalendarNeaerYearVo, AccountCostDto.class);
+        accountCostDto.setUserId(USecurity.getUserId());
         Date[] dates = defaultDateRange(365);
         accountCostDto.setPaymentTimeFrom(dates[0]);
         accountCostDto.setPaymentTimeTo(dates[1]);

@@ -69,7 +69,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     }
 
     @Override
-    @Cacheable(cacheNames = CacheConstant.SYS_CONFIG, key = "#configKey", unless = "#configKey==null")
+    @Cacheable(cacheNames = CacheConstant.SYS_CONFIG, key = "#configKey")
     public String findConfigByKey(String configKey) {
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
                 .select(SysConfigPo::getConfigKey)

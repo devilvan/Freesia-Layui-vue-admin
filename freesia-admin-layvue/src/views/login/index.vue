@@ -168,7 +168,6 @@ const loginSubmit = async () => {
             layer.msg(res.msg, {icon: 1}, async () => {
               userStore.token = res.data.token
               await userStore.getInfo()
-              // await userStore.getRouters();
               await router.push('/')
             })
           } else {

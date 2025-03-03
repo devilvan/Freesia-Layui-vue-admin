@@ -33,7 +33,7 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
     private final UrlConfigRepository urlConfigRepository;
 
     @Override
-    @CachePut(cacheNames = URL_CONFIG, key = "#urlConfigDto.code", unless = "#urlConfigDto.code==null")
+    @CachePut(cacheNames = URL_CONFIG, key = "#urlConfigDto.code")
     public UrlConfigDto saveUpdate(UrlConfigDto urlConfigDto) {
         UrlConfigPo urlConfigPo = new UrlConfigPo();
         UCopy.fullCopy(urlConfigDto, urlConfigPo);

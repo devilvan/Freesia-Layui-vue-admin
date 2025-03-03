@@ -12,6 +12,7 @@ export interface AccountCostVo extends BaseVo {
     remark?: string;
     accountCostUserIdList?: string[];
     accountCostUserNameList?: string[];
+    acNickName?: string;
     userList: SysUserEntity[];
 }
 

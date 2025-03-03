@@ -78,6 +78,13 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
                 .eq(SysOssPo::getTempFlag, false)
                 .orderByDesc(SysOssPo::getCreateTime);
         Page<SysOssPo> pagePo = page(pageQuery.build(), wrapper);
+        pagePo = Optional.ofNullable(pagePo).orElseGet(pageQuery::build);
+        Optional.of(pagePo).map(Page::getRecords).ifPresent(records -> {
+            for (SysOssPo record : records) {
+                OssHandler ossHandler = OssFactory.getInstance(record.getService());
+                record.setUrl(ossHandler.convertEndpoint2Domain(record.getUrl()));
+            }
+        });
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysOssDto.class));
     }
 

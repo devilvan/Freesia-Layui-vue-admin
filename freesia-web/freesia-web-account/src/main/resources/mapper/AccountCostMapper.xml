@@ -29,101 +29,231 @@
         GROUP BY AC.PAYMENT_TIME, AC.CREATE_TIME
         ORDER BY AC.PAYMENT_TIME DESC, AC.CREATE_TIME ASC
     </select>
+    <sql id="findCostTypeRatePieRef">
+        SELECT SDV.VALUE AS COST_TYPE,
+               AC.OUTLAY AS OUTLAY
+        FROM account_cost AC
+                 LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+                 LEFT JOIN SYS_DICT_VALUE SDV ON SDV.DICT_KEY = 'ACCOUNT_COST_TYPE'
+            AND SDV.VALUE_NAME = AC.COST_TYPE
+    </sql>
     <select id="findCostTypeRatePie" resultType="com.freesia.account.entity.FindCostTypeRatePieEntity">
         SELECT
-        SDV.VALUE AS COST_TYPE,
-        SUM(AC.OUTLAY) AS OUTLAY
-        FROM account_cost AC
-        LEFT JOIN SYS_DICT_VALUE SDV ON SDV.DICT_KEY = 'ACCOUNT_COST_TYPE'
-        AND SDV.VALUE_NAME = AC.COST_TYPE
+        T.COST_TYPE,
+        SUM(T.OUTLAY) AS OUTLAY
+        FROM
+        (
+        (
+        <include refid="findCostTypeRatePieRef"/>
         WHERE 1=1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
             AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
         </if>
         GROUP BY AC.COST_TYPE
+        )
+
+        UNION
+
+        (
+        <include refid="findCostTypeRatePieRef"/>
+        WHERE 1=1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+            AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
+        </if>
+        )
+        ) T
+        GROUP BY T.COST_TYPE
+
     </select>
-    <select id="findWeekCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
-        SELECT SUM(AC.OUTLAY)                           AS OUTLAY,
+    <sql id="findWeekCostLineChartRef">
+        SELECT AC.OUTLAY                                AS OUTLAY,
                DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
                SDV.VALUE_NAME                           AS X_AXIS
         FROM account_cost AC
+                 LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
                  LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'
             AND SDV.VALUE = WEEKDAY(STR_TO_DATE(AC.PAYMENT_TIME, '%Y-%m-%d')) + 1
+    </sql>
+    <select id="findWeekCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
+        SELECT
+        SUM(T.OUTLAY) AS OUTLAY,
+        T.PAYMENT_TIME,
+        T.X_AXIS
+        FROM (
+        (
+        <include refid="findWeekCostLineChartRef"/>
         WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
-          AND AC.PAYMENT_SIGN = 'EXPENSES'
-          AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
-          AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
-        GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d')
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.USER_ID = #{accountCostDto.userId}
+        AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        )
+
+        UNION
+
+        (
+        <include refid="findWeekCostLineChartRef"/>
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        )
+        ) T
+        GROUP BY DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d')
     </select>
-    <select id="findMonthCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
-        SELECT SUM(AC.OUTLAY)                           AS OUTLAY,
+    <sql id="findMonthCostLineChartRef">
+        SELECT AC.OUTLAY                                AS OUTLAY,
                DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
                DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS X_AXIS
         FROM account_cost AC
+                 LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+    </sql>
+    <select id="findMonthCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
+        SELECT
+        SUM(T.OUTLAY) AS OUTLAY,
+        T.PAYMENT_TIME,
+        T.X_AXIS
+        FROM
+        (
+        (
+        <include refid="findMonthCostLineChartRef"/>
         WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
-          AND AC.PAYMENT_SIGN = 'EXPENSES'
-          AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
-          AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
-        GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d')
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.USER_ID = #{accountCostDto.userId}
+        AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
+        )
+
+        UNION
+
+        (
+        <include refid="findMonthCostLineChartRef"/>
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
+        )
+        ) T
+        GROUP BY DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d')
     </select>
-    <select id="findYearCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
-        SELECT SUM(AC.OUTLAY)                        AS OUTLAY,
+    <sql id="findYearCostLineChartRef">
+        SELECT AC.OUTLAY                             AS OUTLAY,
                DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m') AS PAYMENT_TIME,
                DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m') AS X_AXIS
         FROM account_cost AC
+                 LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+    </sql>
+    <select id="findYearCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
+        SELECT
+        SUM(T.OUTLAY) AS OUTLAY,
+        T.PAYMENT_TIME,
+        T.X_AXIS
+        FROM
+        (
+        (
+        <include refid="findYearCostLineChartRef"/>
         WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
-          AND AC.PAYMENT_SIGN = 'EXPENSES'
-          AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
-        GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m')
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.USER_ID = #{accountCostDto.userId}
+        AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        )
+
+        UNION
+
+        (
+        <include refid="findYearCostLineChartRef"/>
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        )
+
+        ) T
+        GROUP BY DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m')
     </select>
-    <select id="findCostSumCalendarNearYear"
-            resultType="com.freesia.account.entity.FindCostSumCalendarNearYearEntity">
-        SELECT SUM(AC.OUTLAY)                           AS OUTLAY,
+    <sql id="findCostSumCalendarNearYearRef">
+        SELECT AC.OUTLAY                                AS OUTLAY,
                DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
                DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS X_AXIS
         FROM account_cost AC
-        WHERE 1 = 1
-          AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
-          AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
-        GROUP BY DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d')
-    </select>
-    <select id="findPageAccountCost" resultType="com.freesia.account.entity.FindPageAccountCostEntity">
+                 LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+    </sql>
+    <select id="findCostSumCalendarNearYear"
+            resultType="com.freesia.account.entity.FindCostSumCalendarNearYearEntity">
         SELECT
-        AC.ID,
-        AC.CREATE_TIME,
-        AC.MODIFY_TIME,
-        AC.LOGIC_DEL,
-        AC.REC_VER,
-        AC.TENANT_ID,
-        AC.COST_DESC,
-        AC.OUTLAY,
-        AC.COST_TYPE,
-        AC.PAYMENT_SIGN,
-        AC.PAYMENT_TIME,
-        AC.ICON,
-        AC.REMARK,
-        su.NICK_NAME AS USER_NAME
+        SUM(T.OUTLAY) AS OUTLAY,
+        T.PAYMENT_TIME,
+        T.X_AXIS
+        FROM (
+        (
+        <include refid="findCostSumCalendarNearYearRef"/>
+        WHERE 1 = 1
+        AND AC.USER_ID = #{accountCostDto.userId}
+        AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        )
+
+        UNION
+
+        (
+        <include refid="findCostSumCalendarNearYearRef"/>
+        WHERE 1 = 1
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        )
+        ) T
+        GROUP BY DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d')
+    </select>
+    <sql id="findPageAccountCostRef">
+        SELECT AC.ID,
+               AC.CREATE_TIME,
+               AC.MODIFY_TIME,
+               AC.LOGIC_DEL,
+               AC.REC_VER,
+               AC.TENANT_ID,
+               AC.COST_DESC,
+               AC.OUTLAY,
+               AC.COST_TYPE,
+               AC.PAYMENT_SIGN,
+               AC.PAYMENT_TIME,
+               AC.ICON,
+               AC.REMARK,
+               AC.USER_ID,
+               (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+               SU.ID                                                  AS SU_ID,
+               SU.NICK_NAME                                           AS NICK_NAME
         FROM account_cost AC
-        LEFT JOIN sys_user su on ac.USER_ID = su.ID
+                 LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+                 LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+    </sql>
+    <select id="findPageAccountCost" resultMap="findAccountCostResultMap">
+        (
+        <include refid="findPageAccountCostRef"/>
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCost.userId}
-        AND AC.TENANT_ID = #{accountCost.tenantId}
-        OR AC.ID IN (
-        SELECT ACU.COST_ID
-        FROM account_cost_user ACU
-        WHERE 1=1
-        AND ACU.USER_ID = #{accountCost.userId}
-        )
-        <if test="accountCost.id != null and accountCost.id != 0">
-            AND AC.ID = #{accountCost.id}
-        </if>
         <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
             AND AC.COST_DESC = #{accountCost.costDesc}
         </if>
@@ -140,46 +270,58 @@
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
             AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
         </if>
-        ORDER BY AC.PAYMENT_TIME DESC, AC.MODIFY_TIME DESC
+        )
+
+        UNION
+
+        (
+        <include refid="findPageAccountCostRef"/>
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND ACU.USER_ID = #{accountCost.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
+        <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
+            AND AC.COST_DESC = #{accountCost.costDesc}
+        </if>
+        <if test="accountCost.remark != null and accountCost.remark != ''">
+            AND AC.REMARK = #{accountCost.remark}
+        </if>
+        <if test="accountCost.paymentSign != null and accountCost.paymentSign != ''">
+            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
+        </if>
+        <if test="accountCost.paymentTime != null and accountCost.paymentTime != ''">
+            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
+        </if>
+        <if test="accountCost.paymentTimeFrom != null and accountCost.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
+            AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
+        </if>
+        )
+        ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
     </select>
     <select id="findAccountCost" resultMap="findAccountCostResultMap">
-        SELECT AC.ID,
-        AC.CREATOR,
-        AC.CREATE_TIME,
-        AC.MODIFIER,
-        AC.MODIFY_TIME,
-        AC.LOGIC_DEL,
-        AC.REC_VER,
-        AC.BUILD_IN,
-        AC.TENANT_ID,
-        AC.COST_DESC,
-        AC.OUTLAY,
-        AC.COST_TYPE,
-        AC.PAYMENT_SIGN,
-        AC.PAYMENT_TIME,
-        AC.ICON,
-        AC.REMARK,
-        AC.USER_ID,
-        SU.ID AS SU_ID,
-        SU.USER_NAME AS USER_NAME,
-        SU.NICK_NAME AS NICK_NAME
-        FROM account_cost AC
-        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-        LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        (
+        <include refid="findPageAccountCostRef"/>
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCost.userId}
-        OR SU.ID IN (
-        SELECT ACU.USER_ID
-        FROM account_cost_user ACU
-        WHERE 1 = 1
         <if test="accountCost.id != null and accountCost.id != 0">
             AND ACU.COST_ID = #{accountCost.id}
         </if>
         )
+
+        UNION
+
+        (
+        <include refid="findPageAccountCostRef"/>
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND ACU.USER_ID = #{accountCost.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
         <if test="accountCost.id != null and accountCost.id != 0">
-            AND ac.ID = #{accountCost.id}
+            AND ACU.COST_ID = #{accountCost.id}
         </if>
+        )
     </select>
     <resultMap id="findAccountCostResultMap" type="com.freesia.account.entity.FindAccountCostEntity">
         <id property="id" column="ID"/>
@@ -199,9 +341,9 @@
         <result property="icon" column="ICON"/>
         <result property="remark" column="REMARK"/>
         <result property="userId" column="USER_ID"/>
+        <result property="acNickName" column="AC_NICK_NAME"/>
         <collection property="userList" ofType="com.freesia.dto.SysUserDto">
             <id property="id" column="SU_ID"/>
-            <result property="userName" column="USER_NAME"/>
             <result property="nickName" column="NICK_NAME"/>
         </collection>
     </resultMap>

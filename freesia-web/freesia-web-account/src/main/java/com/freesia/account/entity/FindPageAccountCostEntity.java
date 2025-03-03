@@ -1,9 +1,12 @@
 package com.freesia.account.entity;
 
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.po.SysUserPo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -14,8 +17,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class FindPageAccountCostEntity extends AccountCostDto {
     /**
-     * 记录人名称
+     * 关联用户集合
      */
-    @Schema(description = "记录人名称")
-    private String userName;
+    @Schema(description = "关联用户集合")
+    private List<SysUserPo> userList;
 }

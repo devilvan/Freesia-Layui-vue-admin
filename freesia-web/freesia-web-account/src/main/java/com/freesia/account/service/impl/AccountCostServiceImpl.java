@@ -85,27 +85,32 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         UCopy.halfCopy(accountCostDto, accountCostPo);
         Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
         List<Long> accountCostUserIdList = accountCostDto.getAccountCostUserIdList();
-        if (UEmpty.isNotEmpty(accountCostUserIdList)) {
-            for (Long accountCostUserId : accountCostUserIdList) {
-                AccountCostUserPo accountCostUserPo = new AccountCostUserPo(new AccountCostUserPk(accountCostPo.getId(), accountCostUserId));
-                accountCostUserPoSet.add(accountCostUserPo);
-            }
-        }
         // 新增
         if (UEmpty.isNull(costId)) {
-            accountCostPo = accountCostRepository.save(accountCostPo);
+            AccountCostPo afterInsertAccountCostPo = accountCostRepository.save(accountCostPo);
+            if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+                for (Long accountCostUserId : accountCostUserIdList) {
+                    AccountCostUserPo accountCostUserPo = new AccountCostUserPo(new AccountCostUserPk(afterInsertAccountCostPo.getId(), accountCostUserId));
+                    accountCostUserPoSet.add(accountCostUserPo);
+                }
+            }
             accountCostUserRepository.saveAll(accountCostUserPoSet);
-            return UCopy.copyPo2Dto(accountCostPo, AccountCostDto.class);
+            return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
         } else {
             // 独立事务更新
-            AccountCostPo finalAccountCostPo = accountCostPo;
             AccountCostPo afterTransactionSaveAccountCostPo = transactionTemplate.execute(status -> {
                 // 修改
                 if (UEmpty.isNotNull(costId)) {
                     accountCostUserRepository.deleteByCostId(costId);
                 }
+                if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+                    for (Long accountCostUserId : accountCostUserIdList) {
+                        AccountCostUserPo accountCostUserPo = new AccountCostUserPo(new AccountCostUserPk(accountCostPo.getId(), accountCostUserId));
+                        accountCostUserPoSet.add(accountCostUserPo);
+                    }
+                }
                 accountCostUserRepository.saveAll(accountCostUserPoSet);
-                return accountCostRepository.save(finalAccountCostPo);
+                return accountCostRepository.save(accountCostPo);
             });
             return UCopy.copyPo2Dto(afterTransactionSaveAccountCostPo, AccountCostDto.class);
         }
@@ -131,7 +136,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Override
     @Transactional
     public void deleteAccountCost(List<Long> idList) {
-        removeBatchByIds(idList);
+        List<AccountCostPo> accountCostPoList = accountCostRepository.findAllById(idList);
+        Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
+        for (AccountCostPo accountCostPo : accountCostPoList) {
+            accountCostUserPoSet.addAll(accountCostPo.getAccountCostUserPoSet());
+        }
+        accountCostUserRepository.deleteAllInBatch(accountCostUserPoSet);
+        accountCostRepository.deleteAllByIdInBatch(idList);
     }
 
     @Override

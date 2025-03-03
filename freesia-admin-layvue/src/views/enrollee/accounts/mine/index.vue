@@ -59,12 +59,22 @@
           :even="true"
           @change="change"
           @sortChange="sortChange">
+        <template #nickNameList="{ row }">
+          <lay-tooltip :visible="false" trigger="hover" :content='row.userList?.map(v => v.nickName).join(",")'>
+            <div class="oneRow">{{ row.userList?.map(v => v.nickName).join(",")}}</div>
+          </lay-tooltip>
+        </template>
         <template #paymentTime="{ row }">
           {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）
         </template>
         <template #remark="{ row }">
           <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
             <div class="oneRow">{{ row.remark }}</div>
+          </lay-tooltip>
+        </template>
+        <template #acNickName="{ row }">
+          <lay-tooltip :visible="false" trigger="hover" :content="row.acNickName">
+            <div class="oneRow">{{ row.acNickName }}</div>
           </lay-tooltip>
         </template>
         <template #paymentSign="{ row }">
@@ -324,7 +334,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
+import {computed, onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../../types/Common";
 import {TableResult} from "../../../../types/Result";
@@ -382,9 +392,10 @@ const columns = ref([
   {title: '开销金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '开销标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
-  {title: '开支时间', width: '180px', key: 'paymentTime', customSlot: 'paymentTime'},
+  {title: '开支时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime'},
   {title: '修改时间', width: '150px', key: 'modifyTime', sort: 'desc'},
-  {title: '记录人', width: '80px', key: 'userName'},
+  {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
+  {title: '关联用户', width: '150px', key: 'nickNameList', customSlot: 'nickNameList'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -454,6 +465,9 @@ const userModalColumns = ref([
 ])
 const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
+const nickNameJoins = computed(() => {
+  return accountCostVo.value?.userList?.map(v => v.nickName).join(",");
+});
 /* VAR*/
 
 /* FUNCTION*/
@@ -700,6 +714,7 @@ function userModalChange() {
 
 function changeShowUserModalFlag() {
   userModalChange()
+  userModalSelectedKeys.value = accountCostVo.value.accountCostUserIdList
   showUserModalFlag.value = !showUserModalFlag.value
 }
 

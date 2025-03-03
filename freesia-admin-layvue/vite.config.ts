@@ -6,7 +6,7 @@ import {LayuiVueResolver} from 'unplugin-vue-components/resolvers'
 import {createSvgIconsPlugin} from "vite-plugin-svg-icons";
 import path = require("path");
 
-const excludeComponents = ['LightIcon', 'DarkIcon']
+const excludeComponents = ['LightIcon', 'DarkIcon', 'LayJsonSchemaForm']
 
 export default defineConfig(({mode, command}) => {
     // loadEnv 则是在构建时加载环境变量，适用于打包时（构建时）需要引用环境变量的场合

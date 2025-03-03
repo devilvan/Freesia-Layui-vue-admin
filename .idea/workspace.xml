@@ -5,8 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【修改】Evad 1. 部署准备">
-      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/component/poplayer/PopLayer.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/api/Http.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/Http.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/types/account/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/types/account/Account.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/component/chart/PieChart.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/mine/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/login/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/login/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-oss/src/main/java/com/freesia/oss/pojo/OssHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-oss/src/main/java/com/freesia/oss/pojo/OssHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/FindAccountCostEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/FindAccountCostEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/FindPageAccountCostEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/entity/FindPageAccountCostEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysConfigServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysConfigServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictValueServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysDictValueServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysOssServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysOssServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysUserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysUserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/UrlConfigServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/UrlConfigServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +42,7 @@
         <option value="Class" />
         <option value="TypeScript File" />
         <option value="Dockerfile" />
+        <option value="Vue Single File Component" />
       </list>
     </option>
   </component>
@@ -34,6 +54,25 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-core/1.12.540/aws-java-sdk-core-1.12.540-sources.jar!/com/amazonaws/AmazonWebServiceRequest.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/ObjectMetadata.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/freesia-web/freesia-web-app/src/main/resources/application-prod.yml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/PutObjectRequest.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/freesia-admin-layvue/node_modules/@layui/layui-vue/lib/index.css" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/freesia-common/freesia-common-oss/src/main/java/com/freesia/oss/pojo/OssFactory.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/model/AbstractPutObjectRequest.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/freesia-common/freesia-common-oss/src/main/java/com/freesia/oss/pojo/OssHandler.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysUserServiceImpl.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/freesia-common/freesia-common-oss/src/main/java/com/freesia/oss/properties/OssProperties.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/excel/UserImportListener.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/freesia-admin-layvue/src/views/component/svg/SvgIcon.vue" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/controller/SysUserController.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="jar://$PROJECT_DIR$/../../../mvnrep/com/amazonaws/aws-java-sdk-s3/1.12.540/aws-java-sdk-s3-1.12.540-sources.jar!/com/amazonaws/services/s3/AmazonS3.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/freesia-common/freesia-common-api/src/main/java/com/freesia/constant/Constants.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysOssServiceImpl.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/freesia-common/freesia-common-satoken/src/main/java/com/freesia/satoken/constant/UserType.java" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="JpbToolWindowState">
     <option name="isToolWindowVisible" value="false" />
   </component>
@@ -43,9 +82,6 @@
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
-        <option name="customMavenHome" value="C:\Environment\apache-maven-3.6.3" />
-        <option name="mavenHomeTypeForPersistence" value="CUSTOM" />
-        <option name="useMavenConfig" value="false" />
         <option name="userSettingsFile" value="C:\Environment\apache-maven-3.6.3\conf\settings.xml" />
       </MavenGeneralSettings>
     </option>
@@ -53,58 +89,20 @@
   <component name="MavenRunner">
     <option name="skipTests" value="true" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 8
-}</component>
   <component name="ProjectId" id="2qhySWDUkzbkz303ejcTZq9Jk59" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
-    <option name="showScratchesAndConsoles" value="false" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.freesia-admin-layvue/Dockerfile.executor": "Run",
-    "JUnit.FreesiaTest.testCalendar.executor": "Debug",
-    "JUnit.FreesiaTest.testLoopDirFiles.executor": "Debug",
-    "JUnit.FreesiaTest.testLoopFileName.executor": "Debug",
-    "JUnit.FreesiaTestApplication.testExport.executor": "Run",
-    "Maven.freesia [clean].executor": "Run",
-    "Maven.freesia [install].executor": "Run",
-    "Maven.freesia [site].executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.FreesiaAdminApplication.executor": "Debug",
-    "database.data.extractors.current.export.id": "HTML-JavaScript.html.js",
-    "database.data.extractors.current.id": "HTML-JavaScript.html.js",
-    "git-widget-placeholder": "feature/20250211__Evad.Wu__部署文件提交",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Project/freesia/freesia-web/freesia-web-app/src/main/resources",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
-    "nodejs_package_manager_path": "yarn",
-    "npm.run.executor": "Run",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.33908045",
-    "settings.editor.selected.configurable": "settings.nodejs",
-    "ts.external.directory.path": "C:\\Project\\freesia\\freesia-admin-layvue\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
-  },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "com.p6spy.engine.spy.P6SpyDriver",
-      "mysql"
-    ]
-  }
-}]]></component>
+  <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="ts.external.directory.path" value="D:\Mine\Maven\freesia\freesia-admin-layvue\node_modules\typescript\lib" />
+  </component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -133,7 +131,18 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Docker.freesia-admin-layvue/Dockerfile">
+  <component name="RunManager" selected="Spring Boot.FreesiaAdminApplication">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="FreesiaTestApplication.testExport" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="freesia-web-app" />
       <extension name="coverage">
@@ -333,16 +342,12 @@
     </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="80a6e447-48bd-4c4e-b636-54e874eead87" value="TOOL_WINDOW" />
-      </map>
-    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="80a6e447-48bd-4c4e-b636-54e874eead87">
           <value>
             <State>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
@@ -361,7 +366,6 @@
                   </entry>
                 </map>
               </option>
-              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
             </State>
           </value>
         </entry>
@@ -372,12 +376,39 @@
         </entry>
       </map>
     </option>
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="80a6e447-48bd-4c4e-b636-54e874eead87" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="【新增】Evad 1. 记账模块开发" />
     <MESSAGE value="【新增】Evad 1. 记账模块-导出功能开发" />
     <MESSAGE value="【修改】Evad 1. 部署准备" />
     <option name="LAST_COMMIT_MESSAGE" value="【修改】Evad 1. 部署准备" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java</url>
+          <line>103</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java</url>
+          <line>88</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java</url>
+          <line>89</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

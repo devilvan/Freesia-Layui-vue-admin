@@ -424,14 +424,14 @@ public class OssHandler {
      * @return 转换后的URL
      */
     public String convertDomain2Endpoint(String url) {
-        String domain = properties.getDomain();
-        if (UEmpty.isEmpty(url) || UEmpty.isEmpty(domain)) {
+        String endpoint = properties.getEndpoint();
+        if (UEmpty.isEmpty(url) || UEmpty.isEmpty(endpoint)) {
             return url;
         }
         // 正则表达式
         String regex = "(http[s]?:\\/\\/)([^:\\/]+):(\\d+)\\/(.+)$";
         // 替换模板
-        String replacement = "$1" + domain + "/$4";
+        String replacement = "$1" + endpoint + "/$4";
         // 创建 Pattern 对象
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(url);
