@@ -74,9 +74,9 @@
 
     </select>
     <sql id="findWeekCostLineChartRef">
-        SELECT AC.OUTLAY                                AS OUTLAY,
-               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
-               SDV.VALUE_NAME                           AS X_AXIS
+        SELECT AC.OUTLAY                                                                  AS OUTLAY,
+               DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d')                                   AS PAYMENT_TIME,
+               CONCAT(STR_TO_DATE(AC.PAYMENT_TIME, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')') AS X_AXIS
         FROM account_cost AC
                  LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
                  LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'

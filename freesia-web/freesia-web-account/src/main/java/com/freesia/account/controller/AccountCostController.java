@@ -34,6 +34,7 @@ import com.freesia.oss.util.UOssFile;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.tenant.exception.TenantException;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
@@ -216,7 +217,10 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findCostTypeRatePie")
     public R<EchartPieOptionEntity> findCostTypeRatePie(AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
-        accountCostDto.setUserId(USecurity.getUserId());
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        accountCostDto.setUserId(userId);
+        accountCostDto.setTenantId(tenantId);
         if (UEmpty.isEmpty(accountCostVo.getPaymentTimeRange())) {
             Date[] dates = defaultDateRange(7);
             accountCostDto.setPaymentTimeFrom(dates[0]);
@@ -234,6 +238,8 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "折线图-根据时间查询")
     @GetMapping(value = "findCostLineChart")
     public R<EchartLineOptionEntity> findCostLineChart(FindCostLineChartVo findCostLineChartVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         findCostLineChartVo = Optional.ofNullable(findCostLineChartVo).orElseGet(FindCostLineChartVo::new);
         DateScope dateScope = Optional.of(findCostLineChartVo)
                 .map(m -> DateScope.getInstanceByCode(m.getDateScope()))
@@ -241,7 +247,8 @@ public class AccountCostController extends BaseController {
         String code = dateScope.getCode();
         findCostLineChartVo.setDateScope(code);
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostLineChartVo, AccountCostDto.class);
-        accountCostDto.setUserId(USecurity.getUserId());
+        accountCostDto.setUserId(userId);
+        accountCostDto.setTenantId(tenantId);
         String dateValue = findCostLineChartVo.getDateValue();
         if (DateScope.MONTH.getCode().equals(code) || DateScope.YEAR.getCode().equals(code)) {
             if (UEmpty.isEmpty(dateValue)) {
@@ -277,8 +284,11 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "日历-查询近一年支出")
     @GetMapping(value = "findCostSumCalendarNearYear")
     public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNeaerYearVo findCostSumCalendarNeaerYearVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostSumCalendarNeaerYearVo, AccountCostDto.class);
-        accountCostDto.setUserId(USecurity.getUserId());
+        accountCostDto.setUserId(userId);
+        accountCostDto.setTenantId(tenantId);
         Date[] dates = defaultDateRange(365);
         accountCostDto.setPaymentTimeFrom(dates[0]);
         accountCostDto.setPaymentTimeTo(dates[1]);

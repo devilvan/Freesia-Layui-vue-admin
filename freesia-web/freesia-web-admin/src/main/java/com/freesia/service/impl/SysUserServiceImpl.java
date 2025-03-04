@@ -101,9 +101,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     }
 
     @Override
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.REGISTER, message = "user.register")
     public boolean register(SysUserDto sysUserDto) {
-        SysUserPo sysUserPo = new SysUserPo();
-        UCopy.fullCopy(sysUserDto, sysUserPo);
+        SysUserPo sysUserPo = UCopy.copyDto2Po(sysUserDto, SysUserPo.class);
         return Convert.toBool(sysUserRepository.save(sysUserPo), false);
     }
 

@@ -1,7 +1,7 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
     <lay-row space="10">
-      <lay-col md="10">
+      <lay-col md="12">
         <lay-card>
           <template #title>{{ costTypeRatePieTitle }}</template>
           <lay-row :space="10">
@@ -17,13 +17,15 @@
               </lay-form>
             </lay-col>
           </lay-row>
-          <div ref="costTypeRatePieRef" style="height: 450px"></div>
+          <div ref="costTypeRatePieRef" style="height: 440px"></div>
         </lay-card>
       </lay-col>
-      <lay-col md="8">
+      <lay-col md="12">
         <AccountBudget></AccountBudget>
       </lay-col>
-      <lay-col md="6">
+    </lay-row>
+    <lay-row :space="10">
+      <lay-col md="24">
         <lay-card>
           <template #title>{{ costCountCalendarLastYearTitle }}</template>
           <lay-row :space="10">
@@ -31,11 +33,13 @@
               <lay-form :model="findCostSumCalendarNearYearQueryVo" ref="findCostSumCalendarNearYearQueryRef"
                         label-position="left">
               </lay-form>
-              <div ref="costSumCalendarNearYearRef" style="height: 500px"></div>
+              <div ref="costSumCalendarNearYearRef" style="height: 300px"></div>
             </lay-col>
           </lay-row>
         </lay-card>
       </lay-col>
+    </lay-row>
+    <lay-row :space="10">
       <lay-col md="16" sm="16" xs="24">
         <lay-row :space="10">
           <lay-col :md="24">
@@ -621,7 +625,7 @@ function showWeekCostLineChart(data: any) {
     },
     xAxis: {
       type: 'category',
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      data: data.xAxis || []
     },
     yAxis: {
       type: 'value'
@@ -770,14 +774,13 @@ function doFindCostSumCalendarNearYear() {
           min: 0,
           max: data.maxValue,
           calculable: true,
-          orient: 'vertical',
+          orient: 'horizontal',
           left: 'center',
           top: 'top',
           bottom: 20
         },
         calendar: [
           {
-            orient: 'vertical',
             top: 120,
             left: 20,
             range: data.range,
