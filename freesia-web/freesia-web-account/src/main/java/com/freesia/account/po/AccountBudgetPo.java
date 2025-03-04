@@ -52,9 +52,9 @@ public class AccountBudgetPo extends BasePo implements Serializable {
     @TableField(value = "DURATION_TO")
     @Column(name = "DURATION_TO", columnDefinition = "DATETIME NOT NULL COMMENT '时间范围到'")
     private Date durationTo;
-    @Schema(description = "预算类型（ACCOUNT_BUDGET_TYPE）")
+    @Schema(description = "预算日期类型（ACCOUNT_BUDGET_DURATION_TYPE）")
     @TableField(value = "BUDGET_TYPE")
-    @Column(name = "BUDGET_TYPE", columnDefinition = "VARCHAR(32) COMMENT '预算类型（ACCOUNT_BUDGET_TYPE）'")
+    @Column(name = "BUDGET_TYPE", columnDefinition = "VARCHAR(32) COMMENT '预算日期类型（ACCOUNT_BUDGET_DURATION_TYPE）'")
     private String budgetType;
     @Schema(description = "备注")
     @TableField(value = "REMARK")

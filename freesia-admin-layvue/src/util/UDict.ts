@@ -38,6 +38,10 @@ export enum Constants {
      * 启用标识
      */
     ENABLED_STATUS = "ENABLED_STATUS",
+    /**
+     * 预算日期类型
+     */
+    ACCOUNT_BUDGET_DURATION_TYPE = "ACCOUNT_BUDGET_DURATION_TYPE"
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {

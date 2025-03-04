@@ -32,7 +32,7 @@ public class AccountBudgetVo extends BaseVo {
     @Schema(description = "时间范围到")
     @JSONField(alternateNames = {"durationTo"})
     private Date durationTo;
-    @Schema(description = "预算类型（ACCOUNT_BUDGET_TYPE）")
+    @Schema(description = "预算日期类型（ACCOUNT_BUDGET_DURATION_TYPE）")
     @JSONField(alternateNames = {"budgetType"})
     private String budgetType;
     @Schema(description = "备注")

@@ -26,7 +26,7 @@ public class AccountBudgetDto extends BaseDto {
     private Date durationFrom;
     @Schema(description = "时间范围到")
     private Date durationTo;
-    @Schema(description = "预算类型（ACCOUNT_BUDGET_TYPE）")
+    @Schema(description = "预算日期类型（ACCOUNT_BUDGET_DURATION_TYPE）")
     private String budgetType;
     @Schema(description = "备注")
     private String remark;

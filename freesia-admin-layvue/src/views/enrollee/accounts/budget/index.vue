@@ -1,13 +1,45 @@
 <template>
   <lay-container class="role-box" fluid="true">
-    <lay-collapse v-model="openKeys">
-      <lay-card>
-        <lay-collapse-item title="标题" id="1">
-          <lay-json-schema-form ref="queryFormRef" :model="queryAccountBudgetVo" :labelPosition="'left'"
-                                :schema="queryFormSchema" id="1"></lay-json-schema-form>
-        </lay-collapse-item>
-      </lay-card>
-    </lay-collapse>
+    <lay-card>
+      <lay-form ref="queryFormRef" :model="searchQuery" label-position="left">
+        <lay-row :space="10">
+          <lay-col :md="6">
+            <lay-form-item label="预算描述" prop="budgetDesc">
+              <lay-input
+                  v-model="searchQuery.budgetDesc"
+                  :allow-clear="true"
+                  placeholder="请输入"
+                  size="sm"
+              ></lay-input>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="6">
+            <lay-form-item label="预算日期类型" prop="budgetType">
+              <lay-select
+                  size="sm"
+                  style="width: 100%"
+                  v-model="searchQuery.budgetType"
+                  :options="accountBudgetDurationTypeSelectList"
+                  :items="accountBudgetDurationTypeSelectList"
+                  :allow-clear="true"
+              ></lay-select>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="6">
+            <lay-form-item label="时间范围从" prop="durationFrom">
+              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationFrom"
+                               allow-clear></lay-date-picker>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="6">
+            <lay-form-item label="时间范围到" prop="durationTo">
+              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationTo"
+                               allow-clear></lay-date-picker>
+            </lay-form-item>
+          </lay-col>
+        </lay-row>
+      </lay-form>
+    </lay-card>
     <!-- table -->
     <div>
       <lay-table
@@ -79,8 +111,61 @@
 
     <lay-layer v-model="showModalFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-json-schema-form ref="saveFormRef" :model="saveAccountBudgetVo" :labelPosition="'top'"
-                              :schema="saveFormSchema"></lay-json-schema-form>
+        <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" label-position="top">
+          <lay-row :space="10">
+            <lay-col :md="6">
+              <lay-form-item label="预算描述" prop="budgetDesc" required>
+                <lay-input
+                    v-model="saveAccountBudgetVo.budgetDesc"
+                    :allow-clear="true"
+                    size="sm"
+                ></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="预算金额" prop="budgetDesc" required>
+                <lay-input
+                    v-model="saveAccountBudgetVo.outlay"
+                    :allow-clear="true"
+                    type="number"
+                    size="sm"
+                ></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="预算日期类型" prop="budgetType" required>
+                <lay-select
+                    size="sm"
+                    style="width: 100%"
+                    v-model="saveAccountBudgetVo.budgetType"
+                    :options="accountBudgetDurationTypeSelectList"
+                    :items="accountBudgetDurationTypeSelectList"
+                    :allow-clear="true"
+                ></lay-select>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="时间范围从" prop="durationFrom" required>
+                <lay-date-picker style="width: 100%" simple type="date" v-model="saveAccountBudgetVo.durationFrom"
+                                 allow-clear></lay-date-picker>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="时间范围到" prop="durationTo" required>
+                <lay-date-picker style="width: 100%" simple type="date" v-model="saveAccountBudgetVo.durationTo"
+                                 allow-clear></lay-date-picker>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="备注" prop="remark">
+                <lay-textarea
+                    v-model="saveAccountBudgetVo.remark"
+                    allow-clear
+                ></lay-textarea>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+        </lay-form>
         <div style="width: 100%; text-align: right">
           <lay-button size="sm" type="primary" @click="toSubmit(true)">保存</lay-button>
           <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
@@ -107,15 +192,19 @@ import {deleteAccountBudget, findPageAccountBudget} from "@/api/account/AccountB
 import {AccountBudgetEntity, AccountBudgetVo} from "@/types/account/AccountBudget";
 import {Operate} from "@/types/Constants";
 import {deleteAccountCost, saveUpdate} from "@/api/account/Account";
+import {defaultShortcuts} from "@/util/UDate";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {SysDictValueEntity} from "@/types/system/Dict";
 
 /* INIT*/
 onMounted(async () => {
+  accountBudgetDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
+  accountBudgetDurationTypeSelectList.value = await sysDictValueSelect(accountBudgetDurationTypeSelect.value)
   loadDataSource()
 })
 /* INIT*/
 
 /* VAR*/
-const openKeys = ref([])
 const searchQuery = ref<AccountBudgetVo>({})
 const pageQuery = reactive<PageQuery>({
   current: 1,
@@ -209,77 +298,14 @@ const saveFormSchema = ref({
     props: {},
     colProps: {
       md: 12
-    }
+    },
   },
 })
 const accountBudgetSaveVo = ref<AccountBudgetVo>({})
 const queryFormRef = ref(null)
 const queryAccountBudgetVo = ref<AccountBudgetVo>({})
-const queryFormSchema = ref({
-  budgetDesc: {
-    label: '预算描述',
-    type: 'input',
-    props: {
-      type: 'text',
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  outlay: {
-    label: '预算金额',
-    type: 'input',
-    props: {
-      type: 'number',
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  durationFrom: {
-    label: '时间范围从',
-    type: 'date',
-    props: {
-      type: 'datetime',
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  durationTo: {
-    label: '时间范围到',
-    type: 'date',
-    props: {
-      type: 'datetime',
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  budgetType: {
-    label: '预算类型',
-    type: 'select',
-    props: {
-      options: [
-        {label: '唱', value: '1'},
-        {label: '跳', value: '2'},
-        {label: 'rap', value: '3'},
-        {label: '篮球', value: '4'}
-      ],
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  remark: {
-    label: '备注',
-    type: 'textarea',
-    props: {},
-    colProps: {
-      md: 12
-    }
-  },
-})
+const accountBudgetDurationTypeSelect = ref<Array<SysDictValueEntity>>();
+const accountBudgetDurationTypeSelectList = ref();
 /* VAR*/
 
 /* FUNCTION*/

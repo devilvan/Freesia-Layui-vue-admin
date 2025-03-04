@@ -515,7 +515,7 @@ function flushCache() {
 
 function toSearch() {
   if (!selectedNode.value.id) {
-    layer.msg('清先选择字典键', {icon: 3})
+    layer.msg('请先选择字典键', {icon: 3})
     return;
   }
   sysDictValueSearchQuery.value.keyId = selectedNode.value.id
@@ -572,6 +572,10 @@ const remove = () => {
   layer.msg(selectedKeys.value, {area: '50%'})
 }
 const showSysDictValueSaveModal = (text: any, row: SysDictValueEntity) => {
+  if (!selectedNode.value.id) {
+    layer.msg('请先选择字典键', {icon: 3})
+    return;
+  }
   if (selectedNode.value.id) {
     title.value = text
     if (row) {
@@ -664,6 +668,7 @@ function toRemove() {
 function toEnable() {
   if (selectedKeys.value.length == 0) {
     layer.msg('您未选择数据，请先选择要启用/禁用的字典项', {icon: 3, time: 2000})
+    return ;
   }
   layer.confirm('您将启用/禁用所有选中的字典项？', {
     title: '提示',
