@@ -11,10 +11,10 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
-* @author ${author}
-* @Description ${dataBaseDto.comment} 值对象
-* @date ${date}
-*/
+ * @author ${author}
+ * @Description ${dataBaseDto.comment} 值对象
+ * @date ${date}
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,9 +22,9 @@ import java.math.BigDecimal;
 public class ${dataBaseDto.className}Vo extends BaseVo {
 <#if dataBaseDto.fieldList ??>
     <#list dataBaseDto.fieldList as field>
-        @Schema(description = "${field.remark ! ''}")
-        @JSONField(alternateNames = {"${field.fieldName}"})
-        private <#if field.columnType == 'BIT'>Boolean<#else>${field.javaType}</#if> ${field.fieldName};
+    @Schema(description = "${field.remark ! ''}")
+    @JSONField(alternateNames = {"${field.fieldName}"})
+    private <#if field.columnType == 'BIT'>Boolean<#else>${field.javaType}</#if> ${field.fieldName};
     </#list>
 </#if>
 }

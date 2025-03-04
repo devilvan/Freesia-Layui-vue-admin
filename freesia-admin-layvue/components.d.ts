@@ -20,6 +20,8 @@ declare module '@vue/runtime-core' {
     LayCard: typeof import('@layui/layui-vue')['LayCard']
     LayCascader: typeof import('@layui/layui-vue')['LayCascader']
     LayCol: typeof import('@layui/layui-vue')['LayCol']
+    LayCollapse: typeof import('@layui/layui-vue')['LayCollapse']
+    LayCollapseItem: typeof import('@layui/layui-vue')['LayCollapseItem']
     LayConfigProvider: typeof import('@layui/layui-vue')['LayConfigProvider']
     LayContainer: typeof import('@layui/layui-vue')['LayContainer']
     LayCountUp: typeof import('@layui/layui-vue')['LayCountUp']
@@ -76,5 +78,6 @@ declare module '@vue/runtime-core' {
     LayWatermark: typeof import('@layui/layui-vue')['LayWatermark']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SvgIcon: typeof import('@layui/icons-vue')['SvgIcon']
   }
 }

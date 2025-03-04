@@ -4,46 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【新增】Evad 1. 我的记账-关联用户记账 2. 其他缺陷修复">
+    <list default="true" id="22cfe916-d368-4f3e-811c-6d174a458458" name="Changes" comment="【修改】Evad 1. 记账面板-修改页面布局">
+      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/AccountBudget.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/types/account/AccountBudget.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/budget/index.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountBudgetController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/dto/AccountBudgetDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/mapper/AccountBudgetMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/po/AccountBudgetPo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/repository/AccountBudgetRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/AccountBudgetService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountBudgetServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/vo/AccountBudgetVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountBudgetMapper.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/AccountBudget.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/AccountBudget.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/views/enrollee/accounts/accountsDashboard/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-api/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-cache/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-cache/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-crypt/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-crypt/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-desensitization/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-desensitization/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-doc/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-doc/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-excel/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-excel/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-framework/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-framework/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-idempotent/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-idempotent/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-jdbc/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-jdbc/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-json/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-json/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-log/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-log/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-mail/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-mail/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-net/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-net/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-oss/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-oss/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-redis/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-redis/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-satoken/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-satoken/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-sse/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-sse/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-tenant/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-tenant/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-validation/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-validation/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/controller/AccountCostController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/java/com/freesia/account/service/impl/AccountCostServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-account/src/main/resources/mapper/AccountCostMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysRegisterServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysRegisterServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysUserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-admin/src/main/java/com/freesia/service/impl/SysUserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_en_US.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_en_US.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_zh_CN.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-api/src/main/resources/i18n/messages_zh_CN.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-app/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-app/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/freesia-web-framework/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/freesia-web-framework/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/freesia-web/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-web/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/components.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/api/account/Account.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/src/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-admin-layvue/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-admin-layvue/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/src/main/java/com/freesia/CodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/src/main/java/com/freesia/CodeGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/src/main/resources/basic.properties" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/src/main/resources/basic.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/src/main/resources/static/ftl/vo.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/freesia-common/freesia-common-codegen/src/main/resources/static/ftl/vo.ftl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +48,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/20250203_Evad.Wu_代码优化" />
+        <entry key="$PROJECT_DIR$" value="feature/20250224_Evad.Wu_系统优化" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -130,8 +111,11 @@
     <property name="RequestMappingsPanelWidth1" value="75" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/freesia-admin-layvue/src/types/account" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="yarn" />
-    <property name="settings.editor.selected.configurable" value="MavenSettings" />
+    <property name="settings.editor.selected.configurable" value="settings.typescriptcompiler" />
     <property name="ts.external.directory.path" value="D:\Mine\Maven\freesia\freesia-admin-layvue\node_modules\typescript\lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -140,6 +124,9 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\types\account" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\api\account" />
+      <recent name="D:\Mine\Maven\freesia\freesia-admin-layvue\src\views\enrollee\accounts\budget" />
       <recent name="C:\Project\freesia\freesia-web\freesia-web-app\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -164,6 +151,19 @@
     </option>
   </component>
   <component name="RunManager" selected="Spring Boot.FreesiaAdminApplication">
+    <configuration name="CodeGenerator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.freesia.CodeGenerator" />
+      <module name="freesia-common-codegen" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.freesia.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -209,22 +209,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FreesiaTest.testLoopDirFiles" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="freesia-web-app" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.freesia.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.freesia" />
-      <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaTest" />
-      <option name="METHOD_NAME" value="testLoopDirFiles" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="FreesiaTest.testLoopFileName" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="freesia-web-app" />
       <extension name="coverage">
@@ -261,16 +245,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="freesia-admin-layvue/Dockerfile" type="docker-deploy" factoryName="dockerfile" temporary="true" server-name="Docker">
-      <deployment type="dockerfile">
-        <settings>
-          <option name="imageTag" value="freesia-web:latest" />
-          <option name="containerName" value="freesia-web" />
-          <option name="sourceFilePath" value="freesia-admin-layvue/Dockerfile" />
-        </settings>
-      </deployment>
-      <method v="2" />
-    </configuration>
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/freesia-admin-layvue/package.json" />
       <command value="run" />
@@ -282,18 +256,17 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Docker.freesia-admin-layvue/Dockerfile" />
-      <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
+      <item itemvalue="Spring Boot.FreesiaAdminApplication" />
       <item itemvalue="JUnit.FreesiaTest.testCalendar" />
       <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
       <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
       <item itemvalue="npm.dev" />
-      <item itemvalue="Spring Boot.FreesiaAdminApplication" />
+      <item itemvalue="Application.CodeGenerator" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Docker.freesia-admin-layvue/Dockerfile" />
-        <item itemvalue="JUnit.FreesiaTest.testLoopDirFiles" />
+        <item itemvalue="Application.CodeGenerator" />
+        <item itemvalue="npm.dev" />
         <item itemvalue="JUnit.FreesiaTestApplication.testExport" />
         <item itemvalue="JUnit.FreesiaTest.testLoopFileName" />
         <item itemvalue="JUnit.FreesiaTest.testCalendar" />

@@ -7,6 +7,8 @@ import DictTag from './views/component/DictTag.vue'
 import DictScan from './views/component/DictScan.vue'
 import InnerLink from './layouts/InnerLink.vue'
 import {MenuPermission} from "./types/Permission";
+import LayJsonSchemaForm from "@layui/json-schema-form";
+import "@layui/json-schema-form/lib/index.css";
 // @ts-ignore
 import {JSEncrypt} from "encryptlong";
 import {getPublicKey, wrapEncryptPub2} from "./api/Crypt";
@@ -26,6 +28,7 @@ app.config.globalProperties.$ADMIN_ROLE = "admin";
 app.config.globalProperties.$MENU_PERMISSION = MenuPermission
 app.config.globalProperties.$ACCOUNT_MENU_PERMISSION = AccountMenuPermission
 
+app.use(LayJsonSchemaForm)
 app.use(Store);
 app.use(Router);
 app.component("DictTag", DictTag)
