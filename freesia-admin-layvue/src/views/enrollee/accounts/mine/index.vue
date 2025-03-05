@@ -60,8 +60,8 @@
           @change="change"
           @sortChange="sortChange">
         <template #nickNameList="{ row }">
-          <lay-tooltip :visible="false" trigger="hover" :content='row.userList?.map(v => v.nickName).join(",")'>
-            <div class="oneRow">{{ row.userList?.map(v => v.nickName).join(",")}}</div>
+          <lay-tooltip :visible="false" trigger="hover" :content='row.accountCostUserName'>
+            <div class="oneRow">{{ row.accountCostUserName}}</div>
           </lay-tooltip>
         </template>
         <template #paymentTime="{ row }">
@@ -334,7 +334,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {computed, onMounted, reactive, ref} from 'vue'
+import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../../types/Common";
 import {TableResult} from "../../../../types/Result";
@@ -465,9 +465,6 @@ const userModalColumns = ref([
 ])
 const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
-const nickNameJoins = computed(() => {
-  return accountCostVo.value?.userList?.map(v => v.nickName).join(",");
-});
 /* VAR*/
 
 /* FUNCTION*/
@@ -519,8 +516,8 @@ const showExpenseModal = (text: any, row: any) => {
       if (res.code === 200) {
         let data = res.data;
         accountCostVo.value = data;
-        accountCostVo.value.accountCostUserIdList = data?.userList.map(v => v.id)
-        accountCostVo.value.accountCostUserNameList = data?.userList.map(v => v.nickName)
+        accountCostVo.value.accountCostUserIdList = data?.accountCostUserId?.split(',')
+        accountCostVo.value.accountCostUserNameList = data?.accountCostUserName?.split(',')
       }
     })
   } else if (Operate.ADD === text) {
@@ -539,8 +536,8 @@ const showExpenseModal = (text: any, row: any) => {
       if (res.code === 200) {
         let data = res.data;
         accountCostVo.value = data;
-        accountCostVo.value.accountCostUserIdList = data?.userList.map(v => v.id)
-        accountCostVo.value.accountCostUserNameList = data?.userList.map(v => v.nickName)
+        accountCostVo.value.accountCostUserIdList = data?.accountCostUserId?.split(',')
+        accountCostVo.value.accountCostUserNameList = data?.accountCostUserName?.split(',')
         accountCostVo.value.id = null;
         accountCostVo.value.recVer = null;
       }

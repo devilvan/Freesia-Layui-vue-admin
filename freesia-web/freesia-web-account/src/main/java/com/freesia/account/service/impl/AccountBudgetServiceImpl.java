@@ -3,20 +3,19 @@ package com.freesia.account.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.account.dto.AccountBudgetDto;
+import com.freesia.account.mapper.AccountBudgetMapper;
+import com.freesia.account.po.AccountBudgetPo;
+import com.freesia.account.repository.AccountBudgetRepository;
+import com.freesia.account.service.AccountBudgetService;
 import com.freesia.constant.FlagConstant;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.account.dto.AccountBudgetDto;
-import com.freesia.account.po.AccountBudgetPo;
-import com.freesia.account.service.AccountBudgetService;
-import com.freesia.account.mapper.AccountBudgetMapper;
-import com.freesia.account.repository.AccountBudgetRepository;
-import org.springframework.stereotype.Service;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -28,14 +27,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, AccountBudgetPo> implements AccountBudgetService {
     private final AccountBudgetRepository accountBudgetRepository;
+    private final AccountBudgetMapper accountBudgetMapper;
 
     @Override
     public AccountBudgetDto saveUpdate(AccountBudgetDto accountBudgetDto) {
-        AccountBudgetPo accountBudgetPo = new AccountBudgetPo();
-        UCopy.fullCopy(accountBudgetDto, accountBudgetPo);
-        AccountBudgetDto resultDto = new AccountBudgetDto();
-        UCopy.fullCopy(accountBudgetRepository.saveAndFlush(accountBudgetPo), resultDto);
-        return resultDto;
+        AccountBudgetPo accountBudgetPo = UCopy.copyDto2Po(accountBudgetDto, AccountBudgetPo.class);
+        accountBudgetPo = accountBudgetRepository.saveAndFlush(accountBudgetPo);
+        return UCopy.copyPo2Dto(accountBudgetPo, AccountBudgetDto.class);
     }
 
     @Override
@@ -56,8 +54,8 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
     @Override
     public AccountBudgetDto findAccountBudget(AccountBudgetDto accountBudget) {
         LambdaQueryWrapper<AccountBudgetPo> wrapper = new LambdaQueryWrapper<AccountBudgetPo>()
-            .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(accountBudget.getId()), AccountBudgetPo::getId, accountBudget.getId());
+                .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(accountBudget.getId()), AccountBudgetPo::getId, accountBudget.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), AccountBudgetDto.class);
     }
 

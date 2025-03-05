@@ -208,7 +208,7 @@
               <lay-form-item label="字典值" prop="value">
                 <lay-input v-model="insertSysDictValueVo.value"></lay-input>
               </lay-form-item>
-              <lay-form-item label="是否默认" prop="isDefault" :required="proceedCode === PROCEED_CODE.UPDATE"
+              <lay-form-item label="是否默认" prop="isDefault"
                              :hidden="proceedCode === PROCEED_CODE.ADD"
                              :style="proceedCode === PROCEED_CODE.ADD ? 'display: none' : ''">
                 <lay-switch v-model="insertSysDictValueVo.isDefault" onswitch-value="1" unswitch-value="0"></lay-switch>

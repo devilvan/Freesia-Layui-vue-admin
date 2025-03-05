@@ -3,8 +3,12 @@ package com.freesia.account.controller;
 import com.freesia.account.dto.AccountBudgetDto;
 import com.freesia.account.service.AccountBudgetService;
 import com.freesia.account.vo.AccountBudgetVo;
+import com.freesia.controller.BaseController;
+import com.freesia.exception.UserException;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
+import com.freesia.tenant.exception.TenantException;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -23,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/accountBudgetController")
 @Tag(name = "AccountBudgetController", description = "开销-预算表 控制器")
-public class AccountBudgetController {
+public class AccountBudgetController extends BaseController {
     private final AccountBudgetService accountBudgetService;
 
     /**
@@ -35,7 +40,11 @@ public class AccountBudgetController {
     @Operation(summary = "保存开销-预算表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody AccountBudgetVo accountBudgetVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
+        accountBudgetDto.setTenantId(tenantId);
+        accountBudgetDto.setUserId(userId);
         accountBudgetService.saveUpdate(accountBudgetDto);
         return R.ok();
     }

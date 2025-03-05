@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    LayAffix: typeof import('@layui/layui-vue')['LayAffix']
     LayAvatar: typeof import('@layui/layui-vue')['LayAvatar']
     LayBody: typeof import('@layui/layui-vue')['LayBody']
     LayBreadcrumb: typeof import('@layui/layui-vue')['LayBreadcrumb']
@@ -14,8 +15,6 @@ declare module '@vue/runtime-core' {
     LayButton: typeof import('@layui/layui-vue')['LayButton']
     LayCard: typeof import('@layui/layui-vue')['LayCard']
     LayCol: typeof import('@layui/layui-vue')['LayCol']
-    LayCollapse: typeof import('@layui/layui-vue')['LayCollapse']
-    LayCollapseItem: typeof import('@layui/layui-vue')['LayCollapseItem']
     LayConfigProvider: typeof import('@layui/layui-vue')['LayConfigProvider']
     LayContainer: typeof import('@layui/layui-vue')['LayContainer']
     LayDatePicker: typeof import('@layui/layui-vue')['LayDatePicker']

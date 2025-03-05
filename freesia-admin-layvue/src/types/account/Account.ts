@@ -24,6 +24,8 @@ export interface AccountCostEntity extends BaseEntity {
     paymentTime?: Date;
     icon?: string;
     remark?: string;
+    accountCostUserId?: string
+    accountCostUserName?: string
 }
 
 export enum PaymentSign {

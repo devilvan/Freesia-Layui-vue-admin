@@ -4,6 +4,7 @@ package com.freesia.account.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.*;
 import com.freesia.account.po.AccountCostPo;
 import org.apache.ibatis.annotations.Mapper;
@@ -82,4 +83,36 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @return 结果集
      */
     FindAccountCostEntity findAccountCost(@Param("accountCost") AccountCostDto accountCost);
+
+    /**
+     * 容量图-查询日预算数据
+     *
+     * @param findBudgetCapacityDto 查询条件
+     * @return 容量图数据
+     */
+    List<FindBudgetCapacityEntity> findDayBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
+
+    /**
+     * 容量图-查询月预算数据
+     *
+     * @param findBudgetCapacityDto 查询条件
+     * @return 容量图数据
+     */
+    List<FindBudgetCapacityEntity> findMonthBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
+
+    /**
+     * 容量图-查询年预算数据
+     *
+     * @param findBudgetCapacityDto 查询条件
+     * @return 容量图数据
+     */
+    List<FindBudgetCapacityEntity> findYearBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
+
+    /**
+     * 容量图-查询自定义预算数据
+     *
+     * @param findBudgetCapacityDto 查询条件
+     * @return 容量图数据
+     */
+    List<FindBudgetCapacityEntity> findCustomBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
 }

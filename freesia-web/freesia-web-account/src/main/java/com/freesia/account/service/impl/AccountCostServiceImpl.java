@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.*;
 import com.freesia.account.mapper.AccountCostMapper;
 import com.freesia.account.po.AccountCostPo;
@@ -15,6 +16,7 @@ import com.freesia.account.repository.AccountCostUserRepository;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.constant.Constants;
 import com.freesia.entity.EchartCalendarOptionEntity;
+import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.pojo.PageQuery;
@@ -204,6 +206,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto) {
         List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList = accountCostMapper.findCostSumCalendarNearYear(accountCostDto);
         return buildEchartCalendarOptionEntity(findCostSumCalendarNearYearEntityList, accountCostDto);
+    }
+
+    @Override
+    public EchartCapacityOptionEntity findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto) {
+        List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountCostMapper.findDayBudgetCapacity(findBudgetCapacityDto);
+        EchartCapacityOptionEntity echartCapacityOptionEntity = new EchartCapacityOptionEntity();
+        return echartCapacityOptionEntity;
     }
 
     private EchartCalendarOptionEntity buildEchartCalendarOptionEntity(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList, AccountCostDto accountCostDto) {

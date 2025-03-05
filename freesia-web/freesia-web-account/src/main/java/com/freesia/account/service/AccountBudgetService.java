@@ -1,8 +1,8 @@
 package com.freesia.account.service;
 
+import com.freesia.account.dto.AccountBudgetDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.account.dto.AccountBudgetDto;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public interface AccountBudgetService {
      * 查询开销-预算表信息
      *
      * @param accountBudgetDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery        分页条件
      * @return 分页信息
      */
     TableResult<AccountBudgetDto> findPageAccountBudget(AccountBudgetDto accountBudgetDto, PageQuery pageQuery);

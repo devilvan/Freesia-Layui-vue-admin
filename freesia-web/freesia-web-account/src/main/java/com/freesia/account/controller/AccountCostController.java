@@ -8,6 +8,7 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.constant.MenuPermission;
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.AccountCostImportEntity;
 import com.freesia.account.entity.FindAccountCostEntity;
@@ -15,11 +16,13 @@ import com.freesia.account.entity.FindPageAccountCostEntity;
 import com.freesia.account.listener.AccountsImportListener;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.vo.AccountCostVo;
+import com.freesia.account.vo.FindBudgetCapacityVo;
 import com.freesia.account.vo.FindCostLineChartVo;
 import com.freesia.account.vo.FindCostSumCalendarNeaerYearVo;
 import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
 import com.freesia.entity.EchartCalendarOptionEntity;
+import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.excel.constant.ExcelCellWriteStyle;
@@ -51,6 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -98,14 +102,7 @@ public class AccountCostController extends BaseController {
             @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EDIT)
     })
     public R<Void> saveUpdateBatch(@RequestBody List<AccountCostVo> accountCostVoList) {
-        List<AccountCostDto> accountCostDtoList = UCopy.fullCopyList(accountCostVoList, AccountCostDto.class);
-        Long tenantId = USecurity.getTenantId();
-        if (tenantId == null || tenantId == 0) {
-            R.failed(UMessage.message("tenant.required"));
-        }
-        for (AccountCostDto accountCostDto : accountCostDtoList) {
-            accountCostDto.setTenantId(tenantId);
-        }
+        List<AccountCostDto> accountCostDtoList = pre2Save(accountCostVoList);
         accountCostService.saveUpdateBatch(accountCostDtoList);
         return R.ok();
     }
@@ -296,6 +293,20 @@ public class AccountCostController extends BaseController {
         return R.ok(echartCalendarOptionEntity);
     }
 
+
+    @Operation(summary = "容量图-根据预算日期类型查询")
+    @GetMapping(value = "findBudgetCapacity")
+    public R<EchartCapacityOptionEntity> findBudgetCapacity(FindBudgetCapacityVo findBudgetCapacityVo) {
+        FindBudgetCapacityDto findBudgetCapacityDto = new FindBudgetCapacityDto();
+        UCopy.fullCopy(findBudgetCapacityVo, findBudgetCapacityDto);
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        findBudgetCapacityDto.setUserId(userId);
+        findBudgetCapacityDto.setTenantId(tenantId);
+        EchartCapacityOptionEntity echartPieOptionEntity = accountCostService.findBudgetCapacity(findBudgetCapacityDto);
+        return R.ok(echartPieOptionEntity);
+    }
+
     /**
      * excel数据流输出到响应体
      *
@@ -325,17 +336,36 @@ public class AccountCostController extends BaseController {
     /**
      * 保存记账数据前操作
      *
+     * @param accountCostVoList 前端入参
+     * @return 组装好的数据
+     */
+    private List<AccountCostDto> pre2Save(List<AccountCostVo> accountCostVoList) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        List<AccountCostDto> accountCostDtoList = new ArrayList<>();
+        accountCostVoList.forEach(accountCostVo -> {
+            AccountCostDto accountCostDto = new AccountCostDto();
+            UCopy.fullCopy(accountCostVo, accountCostDto);
+            accountCostDto.setTenantId(tenantId);
+            accountCostDto.setUserId(userId);
+            accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
+            accountCostDtoList.add(accountCostDto);
+        });
+        return accountCostDtoList;
+    }
+
+    /**
+     * 保存记账数据前操作
+     *
      * @param accountCostVo 前端入参
      * @return 组装好的数据
      */
     private AccountCostDto pre2Save(AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
-        Long tenantId = USecurity.getTenantId();
-        if (tenantId == null || tenantId == 0) {
-            R.failed(UMessage.message("tenant.required"));
-        }
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         accountCostDto.setTenantId(tenantId);
-        accountCostDto.setUserId(USecurity.getUserId());
+        accountCostDto.setUserId(userId);
         accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
         return accountCostDto;
     }

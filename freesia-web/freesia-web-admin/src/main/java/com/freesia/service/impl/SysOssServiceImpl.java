@@ -108,7 +108,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
             List<SysOssPo> sysOssPoList = this.list(queryWrapper);
             for (SysOssPo sysOssPo : sysOssPoList) {
                 OssHandler ossHandler = OssFactory.getInstance(sysOssPo.getService());
-                ossHandler.delete(sysOssPo.getUrl());
+                ossHandler.delete(ossHandler.convertEndpoint2Domain(sysOssPo.getUrl()));
             }
             removeBatchByIds(idList);
         }
@@ -133,7 +133,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
             // 保存文件信息
             SysOssDto sysOssDto = new SysOssDto();
             String filename = uploadResultEntity.getFilename();
-            String url = ossHandler.convertEndpoint2Domain(uploadResultEntity.getUrl());
+            String url = ossHandler.convertDomain2Endpoint(uploadResultEntity.getUrl());
             filename = filename.substring(filename.lastIndexOf("/") + 1);
             sysOssDto.setFileName(filename);
             sysOssDto.setOriginalName(originalFilename);
@@ -177,7 +177,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         // 保存文件信息
         SysOssDto sysOssDto = new SysOssDto();
         String filename = uploadResultEntity.getFilename();
-        String url = ossHandler.convertEndpoint2Domain(uploadResultEntity.getUrl());
+        String url = ossHandler.convertDomain2Endpoint(uploadResultEntity.getUrl());
         filename = filename.substring(filename.lastIndexOf("/") + 1);
         sysOssDto.setFileName(filename);
         sysOssDto.setOriginalName(originalFilename);

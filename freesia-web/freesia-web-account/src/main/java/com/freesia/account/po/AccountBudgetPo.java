@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 开销-预算表 映射
- * @date 2025-03-04
+ * @date 2025-03-05
  */
 @Setter
 @Getter
@@ -46,16 +46,24 @@ public class AccountBudgetPo extends BasePo implements Serializable {
     private BigDecimal outlay;
     @Schema(description = "时间范围从")
     @TableField(value = "DURATION_FROM")
-    @Column(name = "DURATION_FROM", columnDefinition = "DATETIME NOT NULL COMMENT '时间范围从'")
+    @Column(name = "DURATION_FROM", columnDefinition = "DATETIME COMMENT '时间范围从'")
     private Date durationFrom;
     @Schema(description = "时间范围到")
     @TableField(value = "DURATION_TO")
-    @Column(name = "DURATION_TO", columnDefinition = "DATETIME NOT NULL COMMENT '时间范围到'")
+    @Column(name = "DURATION_TO", columnDefinition = "DATETIME COMMENT '时间范围到'")
     private Date durationTo;
-    @Schema(description = "预算日期类型（ACCOUNT_BUDGET_DURATION_TYPE）")
+    @Schema(description = "预算类型（ACCOUNT_BUDGET_DURATION_TYPE）")
     @TableField(value = "BUDGET_TYPE")
-    @Column(name = "BUDGET_TYPE", columnDefinition = "VARCHAR(32) COMMENT '预算日期类型（ACCOUNT_BUDGET_DURATION_TYPE）'")
+    @Column(name = "BUDGET_TYPE", columnDefinition = "VARCHAR(32) COMMENT '预算类型（ACCOUNT_BUDGET_DURATION_TYPE）'")
     private String budgetType;
+    @Schema(description = "用户ID")
+    @TableField(value = "USER_ID")
+    @Column(name = "USER_ID", columnDefinition = "BIGINT(19) COMMENT '用户ID'")
+    private Long userId;
+    @Schema(description = "适用策略ID")
+    @TableField(value = "STRATEGY_ID")
+    @Column(name = "STRATEGY_ID", columnDefinition = "BIGINT(19) COMMENT '适用策略ID'")
+    private Long strategyId;
     @Schema(description = "备注")
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(128) COMMENT '备注'")

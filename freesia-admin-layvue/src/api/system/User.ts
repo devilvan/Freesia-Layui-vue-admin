@@ -53,17 +53,6 @@ export const userImport = function (file: File, avatar: string) {
         }
     })
 }
-export const uploadAvatar = function (file: File, id: string) {
-    let params = {
-        file: file,
-        id: id
-    }
-    return Http.post('/api/sysUserController/uploadAvatar', params, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    })
-}
 
 export function findEditUserById(id: string): Promise<String> {
     let params = {id: id}

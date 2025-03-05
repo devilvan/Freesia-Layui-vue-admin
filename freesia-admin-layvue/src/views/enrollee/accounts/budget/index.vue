@@ -1,7 +1,8 @@
 <template>
   <lay-container class="role-box" fluid="true">
     <lay-card>
-      <lay-form ref="queryFormRef" :model="searchQuery" label-position="left">
+      <lay-form style="margin-top: 10px" ref="queryFormRef" :model="searchQuery"
+                label-position="left">
         <lay-row :space="10">
           <lay-col :md="6">
             <lay-form-item label="预算描述" prop="budgetDesc">
@@ -47,7 +48,7 @@
           :columns="columns"
           :data-source="dataSource"
           :default-toolbar="defaultToolbarFlag"
-          :loading="loading"
+          :loading="loading.value"
           :page="pageQuery"
           :height="'600px'"
           :even="evenFlag"
@@ -57,6 +58,9 @@
           <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
             <div class="oneRow">{{ row.remark }}</div>
           </lay-tooltip>
+        </template>
+        <template #budgetType="{ row }">
+          <dict-scan :options="accountBudgetDurationTypeSelect" :value="row.budgetType"/>
         </template>
         <template v-slot:toolbar>
           <lay-button
@@ -111,7 +115,7 @@
 
     <lay-layer v-model="showModalFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" label-position="top">
+        <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" :rules="saveFromRules" label-position="top">
           <lay-row :space="10">
             <lay-col :md="6">
               <lay-form-item label="预算描述" prop="budgetDesc" required>
@@ -123,7 +127,7 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="预算金额" prop="budgetDesc" required>
+              <lay-form-item label="预算金额" prop="outlay" required>
                 <lay-input
                     v-model="saveAccountBudgetVo.outlay"
                     :allow-clear="true"
@@ -141,19 +145,26 @@
                     :options="accountBudgetDurationTypeSelectList"
                     :items="accountBudgetDurationTypeSelectList"
                     :allow-clear="true"
+                    @change="saveBudgetTypeChange(value)"
                 ></lay-select>
               </lay-form-item>
             </lay-col>
+          </lay-row>
+          <lay-row :space="10">
             <lay-col :md="6">
-              <lay-form-item label="时间范围从" prop="durationFrom" required>
-                <lay-date-picker style="width: 100%" simple type="date" v-model="saveAccountBudgetVo.durationFrom"
-                                 allow-clear></lay-date-picker>
+              <lay-form-item label="时间范围从" :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
+                             prop="durationFrom" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
+                             :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
+                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationFrom"
+                                 allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="时间范围到" prop="durationTo" required>
-                <lay-date-picker style="width: 100%" simple type="date" v-model="saveAccountBudgetVo.durationTo"
-                                 allow-clear></lay-date-picker>
+              <lay-form-item label="时间范围到" :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
+                             prop="durationTo" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
+                             :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
+                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
+                                 allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
@@ -184,17 +195,16 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {computed, onMounted, reactive, ref} from 'vue'
+import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
 import {TableResult} from "@/types/Result";
 import {deleteAccountBudget, findPageAccountBudget} from "@/api/account/AccountBudget";
 import {AccountBudgetEntity, AccountBudgetVo} from "@/types/account/AccountBudget";
 import {Operate} from "@/types/Constants";
-import {deleteAccountCost, saveUpdate} from "@/api/account/Account";
-import {defaultShortcuts} from "@/util/UDate";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
+import {findAccountBudget, saveUpdate} from "@/api/account/AccountBudget";
 
 /* INIT*/
 onMounted(async () => {
@@ -216,9 +226,9 @@ const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '预算描述', width: '130px', key: 'budgetDesc', fixed: 'left'},
   {title: '预算金额', width: '130px', key: 'outlay', sort: 'desc'},
+  {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
   {title: '时间范围从', width: '130px', key: 'durationFrom'},
   {title: '时间范围到', width: '130px', key: 'durationTo'},
-  {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -231,81 +241,25 @@ const columns = ref([
 const loading = ref(true)
 const defaultToolbarFlag = ref(true)
 const evenFlag = ref(true)
-const saveVo = ref<AccountBudgetVo>({})
 const showModalFlag = ref(false)
 const saveModalTitle = ref('');
 const saveFormRef = ref(null)
 const saveAccountBudgetVo = ref<AccountBudgetVo>({})
-const saveFormSchema = ref({
-  budgetDesc: {
-    label: '预算描述',
-    type: 'input',
-    props: {
-      type: 'text',
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  outlay: {
-    label: '预算金额',
-    type: 'input',
-    props: {
-      type: 'number',
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  durationFrom: {
-    label: '时间范围从',
-    type: 'date',
-    props: {
-      type: 'datetime',
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  durationTo: {
-    label: '时间范围到',
-    type: 'date',
-    props: {
-      type: 'datetime',
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  budgetType: {
-    label: '预算类型',
-    type: 'select',
-    props: {
-      options: [
-        {label: '唱', value: '1'},
-        {label: '跳', value: '2'},
-        {label: 'rap', value: '3'},
-        {label: '篮球', value: '4'}
-      ],
-    },
-    colProps: {
-      md: 6
-    }
-  },
-  remark: {
-    label: '备注',
-    type: 'textarea',
-    props: {},
-    colProps: {
-      md: 12
-    },
-  },
-})
-const accountBudgetSaveVo = ref<AccountBudgetVo>({})
 const queryFormRef = ref(null)
 const queryAccountBudgetVo = ref<AccountBudgetVo>({})
 const accountBudgetDurationTypeSelect = ref<Array<SysDictValueEntity>>();
 const accountBudgetDurationTypeSelectList = ref();
+const saveFromRules = ref({
+  outlay: {
+    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+      if (value <= 0) {
+        callback(new Error("金额不能为0"));
+      } else {
+        return true;
+      }
+    }
+  },
+})
 /* VAR*/
 
 /* FUNCTION*/
@@ -365,7 +319,17 @@ function queryFormReset() {
  */
 const showSaveModal = (text: any, row: any) => {
   saveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
+  if (row != null) {
+    saveAccountBudgetVo.value = {...row}
+  }
   if (Operate.EDIT === text) {
+    findAccountBudget({
+      id: row.id
+    }).then((res: any) => {
+      if (res.code === 200) {
+        saveAccountBudgetVo.value = res.data;
+      }
+    })
   } else if (Operate.ADD === text) {
   } else if (Operate.COPY === text) {
   }
@@ -413,6 +377,22 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   saveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
+      saveUpdate(saveAccountBudgetVo.value).then((res: any) => {
+        if (res.code === 200) {
+          loadDataSource();
+          layer.msg('保存成功！', {icon: 1, time: 1000})
+          saveAccountBudgetVo.value = {};
+          if (clickFlag) {
+            showModalFlag.value = false
+          } else {
+            // 如果是修改+回车，则关闭窗口
+            if (saveAccountBudgetVo.id && saveAccountBudgetVo.id != 0) {
+              showModalFlag.value = false
+            }
+          }
+          showModalFlag.value = false
+        }
+      })
     }
   })
 }
@@ -431,5 +411,42 @@ function toCancel() {
   showModalFlag.value = false
 }
 
+function saveBudgetTypeChange(value: any) {
+  if (!value || value !== 'CUSTOM') {
+    // 如果不是自定义则时间范围置空
+    saveAccountBudgetVo.value.durationFrom = null;
+    saveAccountBudgetVo.value.durationTo = null;
+  }
+}
+
+function confirm(row: any) {
+  if (row) {
+    deleteAccountBudget([row.id]).then((res: any) => {
+      if (res.code === 200) {
+        layer.msg('删除成功')
+      }
+      loadDataSource();
+    }).catch(e => {
+      layer.confirm(e.msg, {icon: 2})
+    })
+  }
+}
+
 /* FUNCTION*/
 </script>
+
+<style scoped>
+.role-box {
+  width: calc(100vw - 220px);
+  height: calc(100vh - 110px);
+  margin-top: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.search-input {
+  display: inline-block;
+  width: 98%;
+  margin-right: 10px;
+}
+</style>
