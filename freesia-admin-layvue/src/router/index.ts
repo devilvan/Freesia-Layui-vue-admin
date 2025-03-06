@@ -5,6 +5,7 @@ import {constantRoutes} from "./module/base-routes";
 import {useUserStore} from "../store/user";
 import {RouterComponent} from "../types/Menu";
 import {loginPath} from "../api/Http";
+import {useTabStore} from "../layouts/composable/useTabStore";
 
 NProgress.configure({showSpinner: false})
 

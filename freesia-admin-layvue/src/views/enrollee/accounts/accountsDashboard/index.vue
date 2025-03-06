@@ -782,7 +782,7 @@ function doFindCostSumCalendarNearYear() {
         calendar: [
           {
             top: 120,
-            left: 20,
+            left: 30,
             range: data.range,
             cellSize: ['auto', 20],
             dayLabel: {

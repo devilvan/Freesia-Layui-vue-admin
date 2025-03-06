@@ -1,9 +1,12 @@
 package com.freesia.account.controller;
 
 import com.freesia.account.dto.AccountBudgetDto;
+import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.service.AccountBudgetService;
 import com.freesia.account.vo.AccountBudgetVo;
+import com.freesia.account.vo.FindBudgetCapacityVo;
 import com.freesia.controller.BaseController;
+import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.exception.UserException;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -103,5 +106,18 @@ public class AccountBudgetController extends BaseController {
     public R<Void> deleteAccountBudget(@RequestBody List<Long> idList) {
         accountBudgetService.deleteAccountBudget(idList);
         return R.ok();
+    }
+
+    @Operation(summary = "容量图-根据预算日期类型查询")
+    @GetMapping(value = "findBudgetCapacity")
+    public R<List<EchartCapacityOptionEntity>> findBudgetCapacity(FindBudgetCapacityVo findBudgetCapacityVo) {
+        FindBudgetCapacityDto findBudgetCapacityDto = new FindBudgetCapacityDto();
+        UCopy.fullCopy(findBudgetCapacityVo, findBudgetCapacityDto);
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        findBudgetCapacityDto.setUserId(userId);
+        findBudgetCapacityDto.setTenantId(tenantId);
+        List<EchartCapacityOptionEntity> echartCapacityOptionEntityList = accountBudgetService.findBudgetCapacity(findBudgetCapacityDto);
+        return R.ok(echartCapacityOptionEntityList);
     }
 }

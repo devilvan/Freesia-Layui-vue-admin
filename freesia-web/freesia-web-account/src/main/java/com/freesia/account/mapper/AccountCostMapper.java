@@ -83,44 +83,4 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @return 结果集
      */
     FindAccountCostEntity findAccountCost(@Param("accountCost") AccountCostDto accountCost);
-
-    /**
-     * 容量图-查询日预算数据
-     *
-     * @param findBudgetCapacityDto 查询条件
-     * @return 容量图数据
-     */
-    List<FindBudgetCapacityEntity> findDayBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
-
-    /**
-     * 容量图-查询周预算数据
-     *
-     * @param findBudgetCapacityDto 查询条件
-     * @return 容量图数据
-     */
-    List<FindBudgetCapacityEntity> findWeekBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
-
-    /**
-     * 容量图-查询月预算数据
-     *
-     * @param findBudgetCapacityDto 查询条件
-     * @return 容量图数据
-     */
-    List<FindBudgetCapacityEntity> findMonthBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
-
-    /**
-     * 容量图-查询年预算数据
-     *
-     * @param findBudgetCapacityDto 查询条件
-     * @return 容量图数据
-     */
-    List<FindBudgetCapacityEntity> findYearBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
-
-    /**
-     * 容量图-查询自定义预算数据
-     *
-     * @param findBudgetCapacityDto 查询条件
-     * @return 容量图数据
-     */
-    List<FindBudgetCapacityEntity> findCustomBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
 }

@@ -25,3 +25,8 @@ export function findAccountBudget(accountBudgetVo: AccountBudgetVo): Promise<Acc
 export function deleteAccountBudget(idList: Array<string>) {
     return Http.post("/api/accountBudgetController/deleteAccountBudget", idList);
 }
+
+export function findBudgetCapacity(accountBudgetVo: AccountBudgetVo) {
+    let params = buildUrlParam(accountBudgetVo);
+    return Http.get("/api/accountBudgetController/findBudgetCapacity", params);
+}

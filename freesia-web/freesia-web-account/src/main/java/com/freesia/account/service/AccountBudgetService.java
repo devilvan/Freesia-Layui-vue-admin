@@ -1,6 +1,8 @@
 package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountBudgetDto;
+import com.freesia.account.dto.FindBudgetCapacityDto;
+import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -51,4 +53,12 @@ public interface AccountBudgetService {
      * @param idList 主键
      */
     void deleteAccountBudget(List<Long> idList);
+
+    /**
+     * 容量图-根据预算日期类型查询
+     *
+     * @param findBudgetCapacityDto 查询条件
+     * @return 容量图数据
+     */
+    List<EchartCapacityOptionEntity> findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto);
 }

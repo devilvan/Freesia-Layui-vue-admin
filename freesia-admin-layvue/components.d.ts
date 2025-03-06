@@ -7,8 +7,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    LayAffix: typeof import('@layui/layui-vue')['LayAffix']
     LayAvatar: typeof import('@layui/layui-vue')['LayAvatar']
+    LayBadge: typeof import('@layui/layui-vue')['LayBadge']
     LayBody: typeof import('@layui/layui-vue')['LayBody']
     LayBreadcrumb: typeof import('@layui/layui-vue')['LayBreadcrumb']
     LayBreadcrumbItem: typeof import('@layui/layui-vue')['LayBreadcrumbItem']
@@ -17,6 +17,7 @@ declare module '@vue/runtime-core' {
     LayCol: typeof import('@layui/layui-vue')['LayCol']
     LayConfigProvider: typeof import('@layui/layui-vue')['LayConfigProvider']
     LayContainer: typeof import('@layui/layui-vue')['LayContainer']
+    LayCountUp: typeof import('@layui/layui-vue')['LayCountUp']
     LayDatePicker: typeof import('@layui/layui-vue')['LayDatePicker']
     LayDropdown: typeof import('@layui/layui-vue')['LayDropdown']
     LayDropdownMenu: typeof import('@layui/layui-vue')['LayDropdownMenu']
@@ -28,7 +29,6 @@ declare module '@vue/runtime-core' {
     LayFullscreen: typeof import('@layui/layui-vue')['LayFullscreen']
     LayHeader: typeof import('@layui/layui-vue')['LayHeader']
     LayIcon: typeof import('@layui/icons-vue')['LayIcon']
-    LayIconPicker: typeof import('@layui/layui-vue')['LayIconPicker']
     LayInput: typeof import('@layui/layui-vue')['LayInput']
     LayInputNumber: typeof import('@layui/layui-vue')['LayInputNumber']
     LayLayer: typeof import('@layui/layer-vue')['LayLayer']
@@ -55,9 +55,10 @@ declare module '@vue/runtime-core' {
     LayTable: typeof import('@layui/layui-vue')['LayTable']
     LayTag: typeof import('@layui/layui-vue')['LayTag']
     LayTextarea: typeof import('@layui/layui-vue')['LayTextarea']
+    LayTimeline: typeof import('@layui/layui-vue')['LayTimeline']
+    LayTimelineItem: typeof import('@layui/layui-vue')['LayTimelineItem']
     LayTooltip: typeof import('@layui/layui-vue')['LayTooltip']
     LayTree: typeof import('@layui/layui-vue')['LayTree']
-    LayTreeSelect: typeof import('@layui/layui-vue')['LayTreeSelect']
     LayUpload: typeof import('@layui/layui-vue')['LayUpload']
     LayWatermark: typeof import('@layui/layui-vue')['LayWatermark']
     RouterLink: typeof import('vue-router')['RouterLink']

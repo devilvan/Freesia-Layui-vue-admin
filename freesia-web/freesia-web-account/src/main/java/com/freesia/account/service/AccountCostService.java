@@ -91,12 +91,4 @@ public interface AccountCostService {
      * @return 结果集
      */
     EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto);
-
-    /**
-     * 容量图-根据预算日期类型查询
-     *
-     * @param findBudgetCapacityDto 查询条件
-     * @return 容量图数据
-     */
-    List<EchartCapacityOptionEntity> findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto);
 }

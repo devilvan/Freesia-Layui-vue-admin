@@ -18,8 +18,8 @@ export default {
 import {onMounted, ref} from "vue";
 import * as echarts from "echarts";
 import {AccountBudgetVo} from "@/types/account/AccountBudget";
-import {findBudgetCapacity} from "@/api/account/Account";
 import {EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
+import {findBudgetCapacity} from "@/api/account/AccountBudget";
 
 onMounted(() => {
   findBudgetCapacity(accountBudgetVo.value).then((res: any) => {

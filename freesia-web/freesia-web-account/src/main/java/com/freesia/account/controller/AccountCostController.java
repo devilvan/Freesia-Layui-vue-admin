@@ -294,19 +294,6 @@ public class AccountCostController extends BaseController {
     }
 
 
-    @Operation(summary = "容量图-根据预算日期类型查询")
-    @GetMapping(value = "findBudgetCapacity")
-    public R<List<EchartCapacityOptionEntity>> findBudgetCapacity(FindBudgetCapacityVo findBudgetCapacityVo) {
-        FindBudgetCapacityDto findBudgetCapacityDto = new FindBudgetCapacityDto();
-        UCopy.fullCopy(findBudgetCapacityVo, findBudgetCapacityDto);
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
-        findBudgetCapacityDto.setUserId(userId);
-        findBudgetCapacityDto.setTenantId(tenantId);
-        List<EchartCapacityOptionEntity> echartCapacityOptionEntityList = accountCostService.findBudgetCapacity(findBudgetCapacityDto);
-        return R.ok(echartCapacityOptionEntityList);
-    }
-
     /**
      * excel数据流输出到响应体
      *
