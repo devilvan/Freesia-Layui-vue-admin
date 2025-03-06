@@ -15,50 +15,61 @@ export default {
 </script>
 <script setup lang="ts">
 /*INIT*/
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import * as echarts from "echarts";
+import {AccountBudgetVo} from "@/types/account/AccountBudget";
+import {findBudgetCapacity} from "@/api/account/Account";
+import {EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
 
-const gaugeData = [
-  {
-    value: 20,
-    name: 'Perfect',
-    title: {
-      offsetCenter: ['0%', '-30%']
-    },
-    detail: {
-      valueAnimation: true,
-      offsetCenter: ['0%', '-20%']
+onMounted(() => {
+  findBudgetCapacity(accountBudgetVo.value).then((res: any) => {
+    if (res.code === 200) {
+      let data = res.data;
+      if (data) {
+        let offset = -125
+        for (let i = 0; i < data.length; i++) {
+          let tmp = data[i]
+          gaugeData.value.push({
+            value: tmp.value,
+            // name: `${tmp.name}\n（${tmp.durationFrom}-${tmp.durationTo}）`,
+            name: `${tmp.name}`,
+            title: {
+              offsetCenter: ['-160%', `${offset}%`]
+            },
+            detail: {
+              valueAnimation: true,
+              offsetCenter: ['-160%', `${offset + 15}%`]
+            },
+          })
+          offset += 40
+        }
+        budgetCapacityEchart = echarts.init(budgetCapacityEchartRef.value)
+        budgetCapacityEchart.setOption(option.value)
+      }
     }
+  })
+
+})
+/*INIT*/
+
+
+/*VAR*/
+const budgetTitle = '我的预算';
+const myChart = ref();
+let budgetCapacityEchart: echarts.ECharts | null = null;
+const budgetCapacityEchartRef = ref(null)
+const accountBudgetVo = ref<AccountBudgetVo>({});
+let gaugeData = ref<Array<EchartCapacityOptionEntity>>([])
+let option = ref({
+  tooltip: {
+    show: true,
+    formatter: `{b}: {c}% <br/>`
   },
-  {
-    value: 40,
-    name: 'Good',
-    title: {
-      offsetCenter: ['0%', '0%']
-    },
-    detail: {
-      valueAnimation: true,
-      offsetCenter: ['0%', '10%']
-    }
-  },
-  {
-    value: 60,
-    name: 'Commonly',
-    title: {
-      offsetCenter: ['0%', '30%']
-    },
-    detail: {
-      valueAnimation: true,
-      offsetCenter: ['0%', '40%']
-    }
-  }
-];
-let option = {
   series: [
     {
       type: 'gauge',
-      startAngle: 90,
-      endAngle: -270,
+      startAngle: 0,
+      endAngle: -360,
       pointer: {
         show: false
       },
@@ -74,8 +85,8 @@ let option = {
       },
       axisLine: {
         lineStyle: {
-          width: 40
-        }
+          width: 80
+        },
       },
       splitLine: {
         show: false,
@@ -89,7 +100,7 @@ let option = {
         show: false,
         distance: 50
       },
-      data: gaugeData,
+      data: gaugeData.value,
       title: {
         fontSize: 14
       },
@@ -105,28 +116,13 @@ let option = {
       }
     },
     {
-      data: gaugeData,
+      data: gaugeData.value,
       pointer: {
         show: false
       }
     }
   ]
-};
-setInterval(function () {
-  gaugeData[0].value = +(Math.random() * 100).toFixed(2);
-  gaugeData[1].value = +(Math.random() * 100).toFixed(2);
-  gaugeData[2].value = +(Math.random() * 100).toFixed(2);
-  budgetCapacityEchart = echarts.init(budgetCapacityEchartRef.value)
-  budgetCapacityEchart.setOption(option)
-}, 2000);
-/*INIT*/
-
-
-/*VAR*/
-const budgetTitle = '我的预算';
-const myChart = ref();
-let budgetCapacityEchart: echarts.ECharts | null = null;
-const budgetCapacityEchartRef = ref(null)
+});
 /*VAR*/
 
 /*FUNCTION*/

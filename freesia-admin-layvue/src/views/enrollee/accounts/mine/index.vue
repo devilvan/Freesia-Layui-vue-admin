@@ -232,7 +232,7 @@
     </lay-layer>
 
     <lay-layer v-model="showSelectTypeModalFlag" :area="['1200px']" :title="title">
-      <AccountTypeIconPicker @callBack="callBackFun"></AccountTypeIconPicker>
+      <AccountTypeIconPicker @callBack="callBackFun" :size="'3.5em'"></AccountTypeIconPicker>
     </lay-layer>
 
     <lay-layer v-model="showUserModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
@@ -582,6 +582,7 @@ function toSubmit(clickFlag: boolean) {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
       accountCostVo.value.costType = accountCostVo.value.icon?.split("_")[0];
+      let id = accountCostVo.value.id;
       saveUpdate(accountCostVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
@@ -599,10 +600,11 @@ function toSubmit(clickFlag: boolean) {
               accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
             }
             // 如果是修改+回车，则关闭窗口
-            if (accountCostVo.id && accountCostVo.id != 0) {
+            if (id) {
               addExpenseModalShowFlag.value = false
+            } else {
+              addExpenseModalQuickSaveRef.value.focus();
             }
-            addExpenseModalQuickSaveRef.value.focus();
           }
         }
       })

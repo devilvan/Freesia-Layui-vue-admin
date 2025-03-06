@@ -17,3 +17,10 @@ export interface AccountBudgetEntity extends BaseEntity {
     budgetType?: string;
     remark?: string;
 }
+
+export interface EchartCapacityOptionEntity {
+    name?: string;
+    value?: number;
+    durationFrom?: string;
+    durationTo?: string;
+}

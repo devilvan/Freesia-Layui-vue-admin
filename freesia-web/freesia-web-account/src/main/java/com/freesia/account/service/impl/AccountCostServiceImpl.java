@@ -2,12 +2,15 @@ package com.freesia.account.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.account.constant.BudgetType;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.*;
+import com.freesia.account.mapper.AccountBudgetMapper;
 import com.freesia.account.mapper.AccountCostMapper;
+import com.freesia.account.po.AccountBudgetPo;
 import com.freesia.account.po.AccountCostPo;
 import com.freesia.account.po.AccountCostUserPk;
 import com.freesia.account.po.AccountCostUserPo;
@@ -33,6 +36,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +51,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     private final AccountCostRepository accountCostRepository;
     private final AccountCostMapper accountCostMapper;
     private final AccountCostUserRepository accountCostUserRepository;
+    private final AccountBudgetMapper accountBudgetMapper;
     private final TransactionTemplate transactionTemplate;
 
     /**
@@ -209,9 +214,90 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     @Override
-    public EchartCapacityOptionEntity findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto) {
-        List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountCostMapper.findDayBudgetCapacity(findBudgetCapacityDto);
+    public List<EchartCapacityOptionEntity> findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto) {
+        List<EchartCapacityOptionEntity> echartCapacityOptionEntityList = new ArrayList<>();
+        List<AccountBudgetPo> accountCostPoList = accountBudgetMapper.findListBudget(findBudgetCapacityDto);
+        if (UEmpty.isEmpty(accountCostPoList)) {
+            return echartCapacityOptionEntityList;
+        }
+        for (AccountBudgetPo accountBudgetPo : accountCostPoList) {
+            String budgetType = accountBudgetPo.getBudgetType();
+            if (BudgetType.DAY.getCode().equals(budgetType)) {
+                List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountCostMapper.findDayBudgetCapacity(findBudgetCapacityDto);
+                if (UEmpty.isNotEmpty(findBudgetCapacityEntityList)) {
+                    EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                    echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
+                }
+            } else if (BudgetType.WEEK.getCode().equals(budgetType)) {
+                List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountCostMapper.findWeekBudgetCapacity(findBudgetCapacityDto);
+                if (UEmpty.isNotEmpty(findBudgetCapacityEntityList)) {
+                    EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                    echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
+                }
+            } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
+                List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountCostMapper.findMonthBudgetCapacity(findBudgetCapacityDto);
+                if (UEmpty.isNotEmpty(findBudgetCapacityEntityList)) {
+                    EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                    echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
+                }
+            } else if (BudgetType.YEAR.getCode().equals(budgetType)) {
+                List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountCostMapper.findYearBudgetCapacity(findBudgetCapacityDto);
+                if (UEmpty.isNotEmpty(findBudgetCapacityEntityList)) {
+                    EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                    echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
+                }
+            } else if (BudgetType.CUSTOM.getCode().equals(budgetType)) {
+                findBudgetCapacityDto.setDurationFrom(accountBudgetPo.getDurationFrom());
+                findBudgetCapacityDto.setDurationTo(accountBudgetPo.getDurationTo());
+                List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountCostMapper.findCustomBudgetCapacity(findBudgetCapacityDto);
+                if (UEmpty.isNotEmpty(findBudgetCapacityEntityList)) {
+                    EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                    echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
+                }
+            }
+        }
+        if (UEmpty.isNotEmpty(echartCapacityOptionEntityList)) {
+            echartCapacityOptionEntityList.sort(Comparator.comparingInt(e -> {
+                String budgetType = e.getBudgetType();
+                if (BudgetType.DAY.getCode().equals(budgetType)) {
+                    return 0;
+                } else if (BudgetType.WEEK.getCode().equals(budgetType)) {
+                    return 1;
+                } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
+                    return 2;
+                } else if (BudgetType.YEAR.getCode().equals(budgetType)) {
+                    return 3;
+                } else if (BudgetType.CUSTOM.getCode().equals(budgetType)) {
+                    return 4;
+                } else {
+                    return -1;
+                }
+            }));
+        }
+        return echartCapacityOptionEntityList;
+    }
+
+    private EchartCapacityOptionEntity buildEchartCapacityOptionEntity(List<FindBudgetCapacityEntity> findBudgetCapacityEntityList, AccountBudgetPo accountBudgetPo) {
         EchartCapacityOptionEntity echartCapacityOptionEntity = new EchartCapacityOptionEntity();
+        SimpleDateFormat sdfYmd = Constants.SDF_YMD;
+        FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
+        double sumOutlay = findBudgetCapacityEntityList.stream().mapToDouble(item -> item.getOutlay().doubleValue()).sum();
+        BigDecimal rate = new BigDecimal(sumOutlay)
+                .divide(accountBudgetPo.getOutlay(), RoundingMode.HALF_UP)
+                .setScale(2, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal(100));
+        echartCapacityOptionEntity.setName(accountBudgetPo.getBudgetDesc());
+        echartCapacityOptionEntity.setValue(rate);
+        echartCapacityOptionEntity.setBudget(accountBudgetPo.getOutlay());
+        echartCapacityOptionEntity.setOutlay(new BigDecimal(sumOutlay).setScale(2, RoundingMode.HALF_UP));
+        // 如果是自定义类型，则赋值自定义的时间范围
+        if (BudgetType.CUSTOM.getCode().equals(accountBudgetPo.getBudgetType())) {
+            echartCapacityOptionEntity.setDurationFrom(accountBudgetPo.getDurationFrom());
+            echartCapacityOptionEntity.setDurationTo(accountBudgetPo.getDurationTo());
+        } else {
+            echartCapacityOptionEntity.setDurationFrom(findBudgetCapacityEntity.getDurationFrom());
+            echartCapacityOptionEntity.setDurationTo(findBudgetCapacityEntity.getDurationTo());
+        }
         return echartCapacityOptionEntity;
     }
 

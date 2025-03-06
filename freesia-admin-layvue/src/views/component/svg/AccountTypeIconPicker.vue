@@ -2,7 +2,7 @@
   <ul class="site-doc-icon">
     <li v-for="(layIcon, index) of accountIconNameList">
       <div @click="selectIcon(layIcon)">
-        <SvgIcon :color="props.color" :name="layIcon" :size="props.size"></SvgIcon>
+        <SvgIcon class="svgIcon" :color="props.color" :name="layIcon" :size="props.size"></SvgIcon>
         <div class="doc-icon-name">{{ layIcon.split("_")[1] }}</div>
       </div>
     </li>
@@ -62,10 +62,15 @@ function selectIcon(layIcon: any) {
   transition: all 0.3s;
   -webkit-transition: all 0.3s;
 }
+.site-doc-icon li div .svgIcon{
+  margin-top: -10px;
+}
 
 .site-doc-icon li .doc-icon-name,
 .site-doc-icon li .doc-icon-code {
-  color: #c2c2c2;
+  color: #000;
+  font-weight: bold;
+  font-size: 16pt;
 }
 
 .site-doc-icon li:hover {

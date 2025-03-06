@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.account.mapper.AccountBudgetMapper">
+    <select id="findListBudget" resultType="com.freesia.account.po.AccountBudgetPo">
+        SELECT
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        BUDGET_DESC,
+        OUTLAY,
+        DURATION_FROM,
+        DURATION_TO,
+        BUDGET_TYPE,
+        USER_ID,
+        STRATEGY_ID,
+        REMARK
+        FROM account_budget AB
+        WHERE 1=1
+        AND AB.LOGIC_DEL = 0
+        <if test="accountBudgetDto.userId != null and accountBudgetDto.userId != 0">
+            AND AB.USER_ID = #{accountBudgetDto.userId}
+        </if>
+    </select>
 </mapper>

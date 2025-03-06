@@ -98,5 +98,5 @@ public interface AccountCostService {
      * @param findBudgetCapacityDto 查询条件
      * @return 容量图数据
      */
-    EchartCapacityOptionEntity findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto);
+    List<EchartCapacityOptionEntity> findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto);
 }

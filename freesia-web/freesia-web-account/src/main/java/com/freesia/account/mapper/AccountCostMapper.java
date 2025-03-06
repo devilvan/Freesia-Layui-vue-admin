@@ -93,6 +93,14 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
     List<FindBudgetCapacityEntity> findDayBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
 
     /**
+     * 容量图-查询周预算数据
+     *
+     * @param findBudgetCapacityDto 查询条件
+     * @return 容量图数据
+     */
+    List<FindBudgetCapacityEntity> findWeekBudgetCapacity(@Param("findBudgetCapacityDto") FindBudgetCapacityDto findBudgetCapacityDto);
+
+    /**
      * 容量图-查询月预算数据
      *
      * @param findBudgetCapacityDto 查询条件

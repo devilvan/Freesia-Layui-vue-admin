@@ -8,22 +8,23 @@ import {
     FindCostLineChartVo,
     FindCostSumCalendarNearYearVo
 } from "../../types/account/Account";
+import {AccountBudgetVo} from "../../types/account/AccountBudget";
 
-export function saveUpdate(sysTenantVo: AccountCostVo) {
-    return Http.post("/api/accountCostController/saveUpdate", sysTenantVo);
+export function saveUpdate(accountCostVo: AccountCostVo) {
+    return Http.post("/api/accountCostController/saveUpdate", accountCostVo);
 }
 
-export function saveUpdateBatch(sysTenantVoList: Array<AccountCostVo>) {
-    return Http.post("/api/accountCostController/saveUpdateBatch", sysTenantVoList);
+export function saveUpdateBatch(accountCostVoList: Array<AccountCostVo>) {
+    return Http.post("/api/accountCostController/saveUpdateBatch", accountCostVoList);
 }
 
-export function findPageAccountCost(sysTenantVo: AccountCostVo, pageQuery: PageQuery): Promise<TableResult<AccountCostEntity>> {
-    let params = buildPageUrlParam(sysTenantVo, pageQuery);
+export function findPageAccountCost(accountCostVo: AccountCostVo, pageQuery: PageQuery): Promise<TableResult<AccountCostEntity>> {
+    let params = buildPageUrlParam(accountCostVo, pageQuery);
     return Http.get("/api/accountCostController/findPageAccountCost", params);
 }
 
-export function findAccountCost(sysTenantVo: AccountCostVo): Promise<AccountCostEntity> {
-    let params = buildUrlParam(sysTenantVo);
+export function findAccountCost(accountCostVo: AccountCostVo): Promise<AccountCostEntity> {
+    let params = buildUrlParam(accountCostVo);
     return Http.get("/api/accountCostController/findAccountCost", params);
 }
 
@@ -62,4 +63,9 @@ export function findCostLineChart(findCostLineChartVo: FindCostLineChartVo) {
 export function findCostSumCalendarNearYear(findCostSumCalendarNearYearVo: FindCostSumCalendarNearYearVo) {
     let params = buildUrlParam(findCostSumCalendarNearYearVo);
     return Http.get("/api/accountCostController/findCostSumCalendarNearYear", params);
+}
+
+export function findBudgetCapacity(accountBudgetVo: AccountBudgetVo) {
+    let params = buildUrlParam(accountBudgetVo);
+    return Http.get("/api/accountCostController/findBudgetCapacity", params);
 }

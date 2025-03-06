@@ -3,7 +3,9 @@ package com.freesia.account.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.account.constant.BudgetType;
 import com.freesia.account.dto.AccountBudgetDto;
+import com.freesia.account.exception.AccountException;
 import com.freesia.account.mapper.AccountBudgetMapper;
 import com.freesia.account.po.AccountBudgetPo;
 import com.freesia.account.repository.AccountBudgetRepository;
@@ -31,6 +33,23 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
 
     @Override
     public AccountBudgetDto saveUpdate(AccountBudgetDto accountBudgetDto) {
+        Long id = accountBudgetDto.getId();
+        // 新增则需要校验是否已经设置了该预算类型的数据
+        if (UEmpty.isNull(accountBudgetDto.getId())) {
+            Long userId = accountBudgetDto.getUserId();
+            String budgetType = accountBudgetDto.getBudgetType();
+            if (!BudgetType.CUSTOM.getCode().equals(budgetType)) {
+                LambdaQueryWrapper<AccountBudgetPo> wrapper = new LambdaQueryWrapper<AccountBudgetPo>()
+                        .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
+                        .eq(AccountBudgetPo::getBudgetType, budgetType)
+                        .eq(AccountBudgetPo::getUserId, userId);
+                List<AccountBudgetPo> accountBudgetPoList = accountBudgetMapper.selectList(wrapper);
+                if (UEmpty.isNotEmpty(accountBudgetPoList)) {
+                    throw new AccountException("account.budget.exists", new Object[]{});
+                }
+            }
+
+        }
         AccountBudgetPo accountBudgetPo = UCopy.copyDto2Po(accountBudgetDto, AccountBudgetPo.class);
         accountBudgetPo = accountBudgetRepository.saveAndFlush(accountBudgetPo);
         return UCopy.copyPo2Dto(accountBudgetPo, AccountBudgetDto.class);

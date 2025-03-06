@@ -16,6 +16,4 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class FindBudgetCapacityEntity extends AccountBudgetDto {
-    @Schema(description = "使用金额")
-    private BigDecimal sumOutlay;
 }

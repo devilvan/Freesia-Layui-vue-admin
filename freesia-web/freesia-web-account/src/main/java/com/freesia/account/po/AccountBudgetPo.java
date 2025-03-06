@@ -12,16 +12,19 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Evad.Wu
  * @Description 开销-预算表 映射
- * @date 2025-03-05
+ * @date 2025-03-06
  */
 @Setter
 @Getter
@@ -36,6 +39,8 @@ import java.math.BigDecimal;
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "开销-预算表 映射")
 public class AccountBudgetPo extends BasePo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -8420535266956532294L;
     @Schema(description = "预算描述")
     @TableField(value = "BUDGET_DESC")
     @Column(name = "BUDGET_DESC", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '预算描述'")
@@ -54,11 +59,11 @@ public class AccountBudgetPo extends BasePo implements Serializable {
     private Date durationTo;
     @Schema(description = "预算类型（ACCOUNT_BUDGET_DURATION_TYPE）")
     @TableField(value = "BUDGET_TYPE")
-    @Column(name = "BUDGET_TYPE", columnDefinition = "VARCHAR(32) COMMENT '预算类型（ACCOUNT_BUDGET_DURATION_TYPE）'")
+    @Column(name = "BUDGET_TYPE", columnDefinition = "VARCHAR(32) NOT NULL COMMENT '预算类型（ACCOUNT_BUDGET_DURATION_TYPE）'")
     private String budgetType;
     @Schema(description = "用户ID")
     @TableField(value = "USER_ID")
-    @Column(name = "USER_ID", columnDefinition = "BIGINT(19) COMMENT '用户ID'")
+    @Column(name = "USER_ID", columnDefinition = "BIGINT(19) NOT NULL COMMENT '用户ID'")
     private Long userId;
     @Schema(description = "适用策略ID")
     @TableField(value = "STRATEGY_ID")
