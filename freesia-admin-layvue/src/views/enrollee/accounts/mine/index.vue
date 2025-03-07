@@ -47,108 +47,106 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <div>
-      <lay-table
-          v-model:selected-keys="selectedKeys"
-          :columns="columns"
-          :data-source="dataSource"
-          :default-toolbar="true"
-          :loading="loading"
-          :page="pageQuery"
-          :height="'600px'"
-          :even="true"
-          @change="change"
-          @sortChange="sortChange">
-        <template #nickNameList="{ row }">
-          <lay-tooltip :visible="false" trigger="hover" :content='row.accountCostUserName'>
-            <div class="oneRow">{{ row.accountCostUserName}}</div>
-          </lay-tooltip>
-        </template>
-        <template #paymentTime="{ row }">
-          {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）
-        </template>
-        <template #remark="{ row }">
-          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
-            <div class="oneRow">{{ row.remark }}</div>
-          </lay-tooltip>
-        </template>
-        <template #acNickName="{ row }">
-          <lay-tooltip :visible="false" trigger="hover" :content="row.acNickName">
-            <div class="oneRow">{{ row.acNickName }}</div>
-          </lay-tooltip>
-        </template>
-        <template #paymentSign="{ row }">
-          <dict-scan :options="paymentSignSelect" :value="row.paymentSign"/>
-        </template>
-        <template #iconType="{ row }">
-          <SvgIcon :name="row.icon" size="2em"></SvgIcon>
-          {{ row.icon }}
-        </template>
-        <template v-slot:toolbar>
-          <lay-button
-              size="sm"
-              style="margin-left: 20px"
-              type="normal"
-              @click="toSearch"
-              v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_INDEX]"
-          >
-            查询
+    <lay-table
+        v-model:selected-keys="selectedKeys"
+        :columns="columns"
+        :data-source="dataSource"
+        :default-toolbar="true"
+        :loading="loading"
+        :page="pageQuery"
+        :height="'550px'"
+        :even="true"
+        @change="change"
+        @sortChange="sortChange">
+      <template #nickNameList="{ row }">
+        <lay-tooltip :visible="false" trigger="hover" :content='row.accountCostUserName'>
+          <div class="oneRow">{{ row.accountCostUserName}}</div>
+        </lay-tooltip>
+      </template>
+      <template #paymentTime="{ row }">
+        {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）
+      </template>
+      <template #remark="{ row }">
+        <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
+          <div class="oneRow">{{ row.remark }}</div>
+        </lay-tooltip>
+      </template>
+      <template #acNickName="{ row }">
+        <lay-tooltip :visible="false" trigger="hover" :content="row.acNickName">
+          <div class="oneRow">{{ row.acNickName }}</div>
+        </lay-tooltip>
+      </template>
+      <template #paymentSign="{ row }">
+        <dict-scan :options="paymentSignSelect" :value="row.paymentSign"/>
+      </template>
+      <template #iconType="{ row }">
+        <SvgIcon :name="row.icon" size="2em"></SvgIcon>
+        {{ row.icon }}
+      </template>
+      <template v-slot:toolbar>
+        <lay-button
+            size="sm"
+            style="margin-left: 20px"
+            type="normal"
+            @click="toSearch"
+            v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_INDEX]"
+        >
+          查询
+        </lay-button>
+        <lay-button size="sm" @click="queryFormReset()"
+                    v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_INDEX]"
+        > 重置
+        </lay-button>
+        <lay-button
+            v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_ADD]"
+            size="sm"
+            type="primary"
+            @click="showExpenseModal(Operate.ADD, null)"
+        >
+          <lay-icon class="layui-icon-addition"></lay-icon>
+          新增
+        </lay-button>
+        <lay-button v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]" size="sm" @click="toRemove">
+          <lay-icon class="layui-icon-delete"></lay-icon>
+          删除
+        </lay-button>
+        <lay-button type="warm" v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_IMPORT]" size="sm"
+                    @click="showAccountsImportModal">
+          <lay-icon class="layui-icon-down"></lay-icon>
+          导入
+        </lay-button>
+        <lay-button type="normal" v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EXPORT]" size="sm"
+                    @click="showAccountsExportModal">
+          <lay-icon class="layui-icon-up"></lay-icon>
+          按时间导出
+        </lay-button>
+      </template>
+      <template v-slot:operator="{ row }">
+        <lay-button
+            v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]"
+            border="green"
+            border-style="dashed"
+            size="xs"
+            @click="showExpenseModal(Operate.EDIT, row)">编辑
+        </lay-button>
+        <lay-button
+            v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]"
+            border="orange"
+            border-style="dashed"
+            size="xs"
+            @click="showExpenseModal(Operate.COPY, row)">复制
+        </lay-button>
+        <lay-popconfirm
+            content="确定要删除吗?"
+            @cancel="cancel"
+            @confirm="confirm(row)">
+          <lay-button v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_DELETE]" border="red"
+                      border-style="dashed"
+                      size="xs">删除
           </lay-button>
-          <lay-button size="sm" @click="queryFormReset()"
-                      v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_INDEX]"
-          > 重置
-          </lay-button>
-          <lay-button
-              v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_ADD]"
-              size="sm"
-              type="primary"
-              @click="showExpenseModal(Operate.ADD, null)"
-          >
-            <lay-icon class="layui-icon-addition"></lay-icon>
-            新增
-          </lay-button>
-          <lay-button v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]" size="sm" @click="toRemove">
-            <lay-icon class="layui-icon-delete"></lay-icon>
-            删除
-          </lay-button>
-          <lay-button type="warm" v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_IMPORT]" size="sm"
-                      @click="showAccountsImportModal">
-            <lay-icon class="layui-icon-down"></lay-icon>
-            导入
-          </lay-button>
-          <lay-button type="normal" v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EXPORT]" size="sm"
-                      @click="showAccountsExportModal">
-            <lay-icon class="layui-icon-up"></lay-icon>
-            按时间导出
-          </lay-button>
-        </template>
-        <template v-slot:operator="{ row }">
-          <lay-button
-              v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]"
-              border="green"
-              border-style="dashed"
-              size="xs"
-              @click="showExpenseModal(Operate.EDIT, row)">编辑
-          </lay-button>
-          <lay-button
-              v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_EDIT]"
-              border="orange"
-              border-style="dashed"
-              size="xs"
-              @click="showExpenseModal(Operate.COPY, row)">复制
-          </lay-button>
-          <lay-popconfirm
-              content="确定要删除吗?"
-              @cancel="cancel"
-              @confirm="confirm(row)">
-            <lay-button v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_DELETE]" border="red"
-                        border-style="dashed"
-                        size="xs">删除
-            </lay-button>
-          </lay-popconfirm>
-        </template>
-      </lay-table>
-    </div>
+        </lay-popconfirm>
+      </template>
+    </lay-table>
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
@@ -243,6 +241,7 @@
           :columns="userModalColumns"
           :loading="userModalLoading"
           :data-source="userEntityList"
+          :height="'550px'"
           v-model:selected-keys="userModalSelectedKeys"
           @change="userModalChange"
       >

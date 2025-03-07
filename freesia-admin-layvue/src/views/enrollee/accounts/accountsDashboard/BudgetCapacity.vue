@@ -10,7 +10,7 @@
 </template>
 <script lang="ts">
 export default {
-  name: "AccountBudget",
+  name: "BudgetCapacity",
 };
 </script>
 <script setup lang="ts">
@@ -22,33 +22,7 @@ import {EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
 import {findBudgetCapacity} from "@/api/account/AccountBudget";
 
 onMounted(() => {
-  findBudgetCapacity(accountBudgetVo.value).then((res: any) => {
-    if (res.code === 200) {
-      let data = res.data;
-      if (data) {
-        let offset = -125
-        for (let i = 0; i < data.length; i++) {
-          let tmp = data[i]
-          gaugeData.value.push({
-            value: tmp.value,
-            // name: `${tmp.name}\n（${tmp.durationFrom}-${tmp.durationTo}）`,
-            name: `${tmp.name}`,
-            title: {
-              offsetCenter: ['-160%', `${offset}%`]
-            },
-            detail: {
-              valueAnimation: true,
-              offsetCenter: ['-160%', `${offset + 15}%`]
-            },
-          })
-          offset += 40
-        }
-        budgetCapacityEchart = echarts.init(budgetCapacityEchartRef.value)
-        budgetCapacityEchart.setOption(option.value)
-      }
-    }
-  })
-
+  doFindBudgetCapacity();
 })
 /*INIT*/
 
@@ -126,6 +100,38 @@ let option = ref({
 /*VAR*/
 
 /*FUNCTION*/
+/**
+ * 查询预算容量图
+ */
+function doFindBudgetCapacity() {
+  findBudgetCapacity(accountBudgetVo.value).then((res: any) => {
+    if (res.code === 200) {
+      let data = res.data;
+      if (data) {
+        let offset = -125
+        for (let i = 0; i < data.length; i++) {
+          let tmp = data[i]
+          gaugeData.value.push({
+            value: tmp.value,
+            // name: `${tmp.name}\n（${tmp.durationFrom}-${tmp.durationTo}）`,
+            name: `${tmp.name}`,
+            title: {
+              offsetCenter: ['-160%', `${offset}%`]
+            },
+            detail: {
+              valueAnimation: true,
+              offsetCenter: ['-160%', `${offset + 15}%`]
+            },
+          })
+          offset += 40
+        }
+        budgetCapacityEchart = echarts.init(budgetCapacityEchartRef.value)
+        budgetCapacityEchart.setOption(option.value)
+      }
+    }
+  })
+}
+
 /*FUNCTION*/
 </script>
 
