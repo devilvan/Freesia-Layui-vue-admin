@@ -2,7 +2,7 @@
   <div style="display: inline-flex; text-align: left">
     <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
     <div style="padding-left: 10px">
-      <lay-input v-model="selectKeys" :allow-clear="true"
+      <lay-input v-model="selectLabels" :allow-clear="true"
                  :disabled="true"></lay-input>
     </div>
   </div>
@@ -16,7 +16,7 @@
         :loading="loading"
         :data-source="dataSource"
         :height="'550px'"
-        v-model:selected-keys="props.selectedKeys"
+        v-model:selected-keys="selectKeys"
         @change="changeShowModalFlag"
     >
       <template v-slot:toolbar>
@@ -24,7 +24,7 @@
           <lay-icon class="layui-icon-addition"></lay-icon>
           查询
         </lay-button>
-        <lay-button size="sm" type="danger" @click="modalConfirm">
+        <lay-button size="sm" type="danger" @click="confirm">
           <lay-icon class="layui-icon-addition"></lay-icon>
           确认
         </lay-button>
@@ -69,25 +69,25 @@ const props = defineProps({
     type: Array,
     default: []
   },
+  selectedLables: {
+    type: Array,
+    default: []
+  },
 });
+watch(
+    () => props.selectedLables,
+    (val) => {
+      selectLabels.value = val;
+    },
+);
+watch(
+    () => props.selectedKeys,
+    (val) => {
+      selectKeys.value = val;
+    },
+);
+
 // 监听 props.modelValue 的变化
-// watch(
-//     () => props.selectedKeys,
-//     (val) => {
-//       selectLabels.value = dataSource.value.find(f => {
-//         if (props.selectedKeys?.includes(f.id)) {
-//           return f.nickName;
-//         }
-//       });
-//     },
-// );
-onMounted(() => {
-  selectLabels.value = props.selectedKeys.map(v => {
-    if (props.selectedKeys?.includes(v.id)) {
-      return f.nickName;
-    }
-  });
-})
 const emit = defineEmits<{
   (e: 'callback', selectKeys: string[], rows: [], tableRef: object): void; // 更新 v-model
   (e: 'update:modelValue', rows: Array): void; // 更新 v-model
@@ -106,6 +106,7 @@ const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
+const modalTableRef = ref();
 /*VAR*/
 
 /*FUNCTION*/
@@ -124,16 +125,17 @@ function changeShowModalFlag() {
     doFindPageUser()
     loading.value = false
   }, 200)
-  selectKeys.value = props.selectedKeys || []
   showModalFlag.value = !showModalFlag.value
 }
 
 
-function handleConfirm(keys: string[], rows: [], tableRef: object) {
-  selectKeys.value = keys;
-  selectLabels.value = rows.map(v => v.nickName)
-  emit('update:modelValue', rows.map(v => v.id));
-  emit('callback', selectKeys.value, rows, tableRef);
+function confirm() {
+  selectKeys.value = selectKeys;
+  let checkData = modalTableRef.value.getCheckData();
+  selectLabels.value = checkData.map(v => v.nickName)
+  showModalFlag.value = !showModalFlag.value
+  emit('confirm', selectKeys.value, checkData, modalTableRef);
+  emit('update:modelValue', checkData.map(v => v.id));
 }
 
 /*FUNCTION*/

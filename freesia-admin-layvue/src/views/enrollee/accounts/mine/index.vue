@@ -216,7 +216,8 @@
                              :columns="userModalColumns"
                              :modalChange="userModalChange"
                              :selectedKeys="accountCostVo.accountCostUserIdList"
-                             @callback="handleCallback"
+                             :selectedLables="accountCostVo.accountCostUserNameList"
+                             @confirm="handleConfirm"
                 ></PopFormItem>
               </lay-form-item>
             </lay-col>
@@ -686,7 +687,7 @@ function changeShowUserModalFlag() {
 /**
  * 处理确定事件
  */
-const handleCallback = (selectKeys: string[], rows: [], tableRef: object) => {
+const handleConfirm = (selectKeys: string[], rows: [], tableRef: object) => {
   accountCostVo.value.accountCostUserNameList = rows?.map(v => v.nickName);
   accountCostVo.value.accountCostUserIdList = selectKeys
   userModalSelectedKeys.value = []
