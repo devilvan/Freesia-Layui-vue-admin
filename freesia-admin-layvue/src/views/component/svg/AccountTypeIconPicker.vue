@@ -36,7 +36,6 @@ onMounted(() => {
 
 function selectIcon(layIcon: any) {
   emit('callBack', layIcon);
-  console.log("传值给父组件");
 }
 </script>
 

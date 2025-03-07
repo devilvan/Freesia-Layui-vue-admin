@@ -1,30 +1,18 @@
 <template>
-  <lay-layer v-model="showModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
+  <lay-layer v-model="showModalFlag" :title="props.title" :area="props.area">
     <lay-table
         ref="modalTableRef"
         class="table-box table-style"
         :page="pageQuery"
-        :columns="columns"
+        :columns="props.columns"
         :loading="loading"
-        :data-source="dataSource"
+        :data-source="props.dataSource"
+        :height="'550px'"
         v-model:selected-keys="selectKeys"
-        @change="modalChange"
+        @change="doModalChange"
     >
-      <template #accountStatus="{ row }">
-        <div v-show="row.accountStatus === '1'">
-          <lay-tag color="#2dc570" variant="light">启用</lay-tag>
-        </div>
-        <div v-show="row.accountStatus === '0'">
-          <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
-        </div>
-      </template>
-      <template #remark="{ row }">
-        <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
-          <div class="oneRow">{{ row.remark }}</div>
-        </lay-tooltip>
-      </template>
       <template v-slot:toolbar>
-        <lay-button size="sm" type="normal" @click="modalChange">
+        <lay-button size="sm" type="normal" @click="doModalChange">
           <lay-icon class="layui-icon-addition"></lay-icon>
           查询
         </lay-button>
@@ -44,57 +32,102 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {reactive, ref} from "vue";
-import {SysUserEntity, SysUserVo} from "../../../types/system/User";
-import {PageQuery} from "../../../types/Common";
+import {onMounted, reactive, ref, watch} from "vue";
+import {PageQuery} from "@/types/Common";
 
 /*INIT*/
 const props = defineProps({
-  // 使用 v-model 绑定的值
   modelValue: {
-    type: Array as () => [],
-    required: true,
-  },
-  columns: {
-    type: Array as () => [],
+    type: Boolean,
     required: true
-  }
+  },
+  // 标题
+  title: {
+    type: String,
+    default: "放大镜弹层",
+  },
+  // 窗口大小
+  area: {
+    type: Array,
+    default: ['1200px', '700px']
+  },
+  // 列表列
+  columns: {
+    type: Array,
+    required: true
+  },
+  // 链表值
+  dataSource: {
+    type: Array,
+    required: true
+  },
+  // 链表值
+  dataSource: {
+    type: Array,
+    required: true
+  },
+  // 查询方法
+  modalChange: {
+    type: Function,
+  },
+  selectedKeys: {
+    type: Array,
+    default: []
+  },
 });
+onMounted(() => {
+  if (props.modalChange) {
+    props.modalChange()
+  }
+  selectKeys.value = props.selectedKeys
+})
+// 监听 props.modelValue 的变化
+watch(
+    () => props.modelValue,
+    (val) => {
+      showModalFlag.value = val;
+    },
+);
+const emit = defineEmits<{
+  (e: 'confirm', selectKeys: string[], rows: [], tableRef: object): void; // 更新 v-model
+  (e: 'update:modelValue', value: boolean): void; // 更新 v-model
+}>();
 /*INIT*/
 
 /*VAR*/
-const showModalFlag = ref<Boolean>(false)
-const dataSource = ref<Array>()
+const showModalFlag = ref(false);
 const loading = ref(false)
 const selectKeys = ref<Array<string>>([])
 const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const modalSearchQuery = ref<SysUserVo>({})
+const modalSearchQuery = ref({})
 const modalTableRef = ref();
 /*VAR*/
 
 /*FUNCTION*/
-function modalChange() {
+function doModalChange() {
   loading.value = true
   setTimeout(() => {
+    if (props.modalChange) {
+      props.modalChange()
+    }
     loading.value = false
   }, 200)
 }
 
-function changeShowUserModalFlag() {
-  modalChange()
-  showModalFlag.value = !showModalFlag.value
-}
-
 function modalConfirm() {
   let checkDataList = modalTableRef.value.getCheckData();
-  accountCostVo.value.accountCostUserNameList = checkDataList?.map(v => v.nickName);
-  accountCostVo.value.accountCostUserIdList = selectKeys.value
-  selectKeys.value = []
-  showModalFlag.value = !showModalFlag.value
+  modalClose();
+  emit('confirm', selectKeys.value, checkDataList, modalTableRef.value);
 }
+
+function modalClose() {
+  showModalFlag.value = false
+  emit('update:modelValue', false);
+}
+
 /*FUNCTION*/
 
 </script>

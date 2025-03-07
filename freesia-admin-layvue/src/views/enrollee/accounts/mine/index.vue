@@ -60,7 +60,7 @@
         @sortChange="sortChange">
       <template #nickNameList="{ row }">
         <lay-tooltip :visible="false" trigger="hover" :content='row.accountCostUserName'>
-          <div class="oneRow">{{ row.accountCostUserName}}</div>
+          <div class="oneRow">{{ row.accountCostUserName }}</div>
         </lay-tooltip>
       </template>
       <template #paymentTime="{ row }">
@@ -210,13 +210,14 @@
             </lay-col>
             <lay-col :md="6">
               <lay-form-item label="关联用户" prop="accountCostUserIdList">
-                <div style="display: inline-flex; text-align: left">
-                  <lay-button size="sm" type="primary" @click="changeShowUserModalFlag">选择</lay-button>
-                  <div style="padding-left: 10px">
-                    <lay-input v-model="accountCostVo.accountCostUserNameList" :allow-clear="true"
-                               :disabled="true"></lay-input>
-                  </div>
-                </div>
+                <PopFormItem :title="'关联用户'"
+                             v-model="accountCostVo.accountCostUserIdList"
+                             :area="['1200px', '700px']"
+                             :columns="userModalColumns"
+                             :modalChange="userModalChange"
+                             :selectedKeys="accountCostVo.accountCostUserIdList"
+                             @callback="handleCallback"
+                ></PopFormItem>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -231,44 +232,6 @@
 
     <lay-layer v-model="showSelectTypeModalFlag" :area="['1200px']" :title="title">
       <AccountTypeIconPicker @callBack="callBackFun" :size="'3.5em'"></AccountTypeIconPicker>
-    </lay-layer>
-
-    <lay-layer v-model="showUserModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
-      <lay-table
-          ref="userModalTableRef"
-          class="table-box table-style"
-          :page="userModalPageQuery"
-          :columns="userModalColumns"
-          :loading="userModalLoading"
-          :data-source="userEntityList"
-          :height="'550px'"
-          v-model:selected-keys="userModalSelectedKeys"
-          @change="userModalChange"
-      >
-        <template #accountStatus="{ row }">
-          <div v-show="row.accountStatus === '1'">
-            <lay-tag color="#2dc570" variant="light">启用</lay-tag>
-          </div>
-          <div v-show="row.accountStatus === '0'">
-            <lay-tag color="#F5319D" variant="light">禁用</lay-tag>
-          </div>
-        </template>
-        <template #remark="{ row }">
-          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
-            <div class="oneRow">{{ row.remark }}</div>
-          </lay-tooltip>
-        </template>
-        <template v-slot:toolbar>
-          <lay-button size="sm" type="normal" @click="userModalChange">
-            <lay-icon class="layui-icon-addition"></lay-icon>
-            查询
-          </lay-button>
-          <lay-button size="sm" type="danger" @click="userModalConfirm">
-            <lay-icon class="layui-icon-addition"></lay-icon>
-            确认
-          </lay-button>
-        </template>
-      </lay-table>
     </lay-layer>
 
     <lay-layer
@@ -325,11 +288,15 @@
   </lay-container>
 </template>
 <script lang="ts">
+import PopLayer from "../../../component/poplayer/PopLayer.vue";
+import PopFormItem from "../../../component/poplayer/PopFormItem.vue";
+
 /**
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
   name: "MineAccounts",
+  components: {PopFormItem, PopLayer},
 };
 </script>
 <script lang="ts" setup>
@@ -713,17 +680,17 @@ function userModalChange() {
 function changeShowUserModalFlag() {
   userModalChange()
   userModalSelectedKeys.value = accountCostVo.value.accountCostUserIdList
-  showUserModalFlag.value = !showUserModalFlag.value
+  showUserModalFlag.value = true
 }
 
-function userModalConfirm() {
-  let checkDataList = userModalTableRef.value.getCheckData();
-  accountCostVo.value.accountCostUserNameList = checkDataList?.map(v => v.nickName);
-  accountCostVo.value.accountCostUserIdList = userModalSelectedKeys.value
+/**
+ * 处理确定事件
+ */
+const handleCallback = (selectKeys: string[], rows: [], tableRef: object) => {
+  accountCostVo.value.accountCostUserNameList = rows?.map(v => v.nickName);
+  accountCostVo.value.accountCostUserIdList = selectKeys
   userModalSelectedKeys.value = []
-  showUserModalFlag.value = !showUserModalFlag.value
-}
-
+};
 /* FUNCTION*/
 </script>
 
