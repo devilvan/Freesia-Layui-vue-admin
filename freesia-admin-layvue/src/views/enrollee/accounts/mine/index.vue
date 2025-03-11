@@ -216,7 +216,7 @@
                              :columns="userModalColumns"
                              :modalChange="userModalChange"
                              :selectedKeys="accountCostVo.accountCostUserIdList"
-                             :selectedLables="accountCostVo.accountCostUserNameList"
+                             :selectedLabels="accountCostVo.accountCostUserNameList"
                              @confirm="handleConfirm"
                 ></PopFormItem>
               </lay-form-item>

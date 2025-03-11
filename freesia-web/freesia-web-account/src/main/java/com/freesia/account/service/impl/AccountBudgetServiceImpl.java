@@ -183,7 +183,7 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
         FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
         double sumOutlay = findBudgetCapacityEntityList.stream().mapToDouble(item -> item.getOutlay().doubleValue()).sum();
         BigDecimal rate = new BigDecimal(sumOutlay)
-                .divide(accountBudgetPo.getOutlay(), RoundingMode.HALF_UP)
+                .divide(accountBudgetPo.getOutlay(), 2, RoundingMode.HALF_UP)
                 .setScale(2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(100));
         echartCapacityOptionEntity.setName(accountBudgetPo.getBudgetDesc());
