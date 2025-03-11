@@ -166,6 +166,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 toExportList.addAll(accountCostExportEntityList);
             }
         }
+        toExportList.sort(Comparator.comparing(AccountCostExportEntity::getPaymentTime));
         return UCopy.fullCopyList(toExportList, AccountCostExportEntity.class);
     }
 

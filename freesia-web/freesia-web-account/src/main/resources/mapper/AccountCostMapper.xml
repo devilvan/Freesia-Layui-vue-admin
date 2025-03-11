@@ -1,33 +1,248 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.account.mapper.AccountCostMapper">
-    <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
-        SELECT
+    <select id="findPageAccountCost" resultMap="findAccountCostResultMap">
+        SELECT AC.ID,
+        AC.CREATE_TIME,
+        AC.MODIFY_TIME,
+        AC.LOGIC_DEL,
+        AC.REC_VER,
+        AC.TENANT_ID,
         AC.COST_DESC,
         AC.OUTLAY,
         AC.COST_TYPE,
         AC.PAYMENT_SIGN,
-        SDV.VALUE_NAME AS PAYMENT_SIGN_NAME,
         AC.PAYMENT_TIME,
         AC.ICON,
         AC.REMARK,
-        DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME_GROUPING_KEY
+        AC.USER_ID,
+        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+        GROUP_CONCAT(SU.ID) AS SU_ID,
+        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
-        LEFT JOIN SYS_DICT_VALUE SDV
-        ON SDV.DICT_KEY = 'PAYMENT_SIGN'
-        WHERE 1=1
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
-        <if test="accountCostDto.tenantId != null and accountCostDto.tenantId != ''">
-            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND AC.USER_ID = #{accountCost.userId}
+        <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
+            AND AC.COST_DESC = #{accountCost.costDesc}
         </if>
-        <if test="accountCostDto.paymentTimeFrom != null">
-            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        <if test="accountCost.remark != null and accountCost.remark != ''">
+            AND AC.REMARK = #{accountCost.remark}
         </if>
-        <if test="accountCostDto.paymentTimeTo != null">
-            AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
+        <if test="accountCost.paymentSign != null and accountCost.paymentSign != ''">
+            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
         </if>
-        GROUP BY AC.PAYMENT_TIME, AC.CREATE_TIME
-        ORDER BY AC.PAYMENT_TIME DESC, AC.CREATE_TIME ASC
+        <if test="accountCost.paymentTimeFrom != null and accountCost.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
+            AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
+        </if>
+        GROUP BY AC.ID
+
+        UNION ALL
+
+        SELECT AC.ID,
+        AC.CREATE_TIME,
+        AC.MODIFY_TIME,
+        AC.LOGIC_DEL,
+        AC.REC_VER,
+        AC.TENANT_ID,
+        AC.COST_DESC,
+        AC.OUTLAY,
+        AC.COST_TYPE,
+        AC.PAYMENT_SIGN,
+        AC.PAYMENT_TIME,
+        AC.ICON,
+        AC.REMARK,
+        AC.USER_ID,
+        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+        GROUP_CONCAT(SU.ID) AS SU_ID,
+        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
+        <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
+            AND AC.COST_DESC = #{accountCost.costDesc}
+        </if>
+        <if test="accountCost.remark != null and accountCost.remark != ''">
+            AND AC.REMARK = #{accountCost.remark}
+        </if>
+        <if test="accountCost.paymentSign != null and accountCost.paymentSign != ''">
+            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
+        </if>
+        <if test="accountCost.paymentTime != null and accountCost.paymentTime != ''">
+            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
+        </if>
+        <if test="accountCost.paymentTimeFrom != null and accountCost.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
+            AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
+        </if>
+        GROUP BY AC.ID
+        ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
+    </select>
+    <select id="findAccountCost" resultMap="findAccountCostResultMap">
+        SELECT AC.ID,
+        AC.CREATE_TIME,
+        AC.MODIFY_TIME,
+        AC.LOGIC_DEL,
+        AC.REC_VER,
+        AC.TENANT_ID,
+        AC.COST_DESC,
+        AC.OUTLAY,
+        AC.COST_TYPE,
+        AC.PAYMENT_SIGN,
+        AC.PAYMENT_TIME,
+        AC.ICON,
+        AC.REMARK,
+        AC.USER_ID,
+        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+        GROUP_CONCAT(SU.ID) AS SU_ID,
+        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.USER_ID = #{accountCost.userId}
+        <if test="accountCost.id != null and accountCost.id != 0">
+            AND AC.ID = #{accountCost.id}
+        </if>
+        GROUP BY AC.ID
+
+        UNION ALL
+
+        SELECT AC.ID,
+        AC.CREATE_TIME,
+        AC.MODIFY_TIME,
+        AC.LOGIC_DEL,
+        AC.REC_VER,
+        AC.TENANT_ID,
+        AC.COST_DESC,
+        AC.OUTLAY,
+        AC.COST_TYPE,
+        AC.PAYMENT_SIGN,
+        AC.PAYMENT_TIME,
+        AC.ICON,
+        AC.REMARK,
+        AC.USER_ID,
+        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+        GROUP_CONCAT(SU.ID) AS SU_ID,
+        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
+        <if test="accountCost.id != null and accountCost.id != 0">
+            AND ACU.COST_ID = #{accountCost.id}
+        </if>
+        GROUP BY AC.ID
+    </select>
+    <resultMap id="findAccountCostResultMap" type="com.freesia.account.entity.FindAccountCostEntity">
+        <id property="id" column="ID"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifier" column="MODIFIER"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+        <result property="logicDel" column="LOGIC_DEL"/>
+        <result property="recVer" column="REC_VER"/>
+        <result property="buildIn" column="BUILD_IN"/>
+        <result property="tenantId" column="TENANT_ID"/>
+        <result property="costDesc" column="COST_DESC"/>
+        <result property="outlay" column="OUTLAY"/>
+        <result property="costType" column="COST_TYPE"/>
+        <result property="paymentSign" column="PAYMENT_SIGN"/>
+        <result property="paymentTime" column="PAYMENT_TIME"/>
+        <result property="icon" column="ICON"/>
+        <result property="remark" column="REMARK"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="acNickName" column="AC_NICK_NAME"/>
+        <result property="accountCostUserId" column="SU_ID"/>
+        <result property="accountCostUserName" column="NICK_NAME"/>
+    </resultMap>
+    <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
+        SELECT T.COST_DESC,
+               T.OUTLAY,
+               T.COST_TYPE,
+               T.PAYMENT_SIGN,
+               T.PAYMENT_SIGN_NAME,
+               T.PAYMENT_TIME,
+               T.ICON,
+               T.REMARK,
+               T.CREATE_TIME,
+               T.PAYMENT_TIME_GROUPING_KEY
+        FROM (SELECT AC.COST_DESC,
+                     ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+
+                                                      WHEN (SELECT COUNT(1)
+                                                            FROM account_cost_user ACU
+                                                            WHERE 1 = 1
+                                                              AND ACU.COST_ID = AC.ID) = 0 THEN
+                                                          1
+                                                      ELSE (SELECT COUNT(1)
+                                                            FROM account_cost_user ACU
+                                                            WHERE 1 = 1
+                                                              AND ACU.COST_ID = AC.ID) END
+                         , 2)                                 AS OUTLAY,
+                     AC.COST_TYPE,
+                     AC.PAYMENT_SIGN,
+                     SDV.VALUE_NAME                           AS PAYMENT_SIGN_NAME,
+                     AC.PAYMENT_TIME,
+                     AC.ICON,
+                     AC.REMARK,
+                     AC.CREATE_TIME,
+                     DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME_GROUPING_KEY
+              FROM account_cost AC
+                       LEFT JOIN SYS_DICT_VALUE SDV
+                                 ON SDV.DICT_KEY = 'PAYMENT_SIGN'
+              WHERE 1 = 1
+                AND AC.LOGIC_DEL = 0
+                AND AC.USER_ID = #{accountCostDto.userId}
+                AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+                AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+              GROUP BY AC.ID
+
+              UNION ALL
+
+              SELECT AC.COST_DESC,
+                     ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+
+                                                      WHEN (SELECT COUNT(1)
+                                                            FROM account_cost_user ACU
+                                                            WHERE 1 = 1
+                                                              AND ACU.COST_ID = AC.ID) = 0 THEN
+                                                          1
+                                                      ELSE (SELECT COUNT(1)
+                                                            FROM account_cost_user ACU
+                                                            WHERE 1 = 1
+                                                              AND ACU.COST_ID = AC.ID) END
+                         , 2)                                 AS OUTLAY,
+                     AC.COST_TYPE,
+                     AC.PAYMENT_SIGN,
+                     SDV.VALUE_NAME                           AS PAYMENT_SIGN_NAME,
+                     AC.PAYMENT_TIME,
+                     AC.ICON,
+                     AC.REMARK,
+                     AC.CREATE_TIME,
+                     DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME_GROUPING_KEY
+              FROM account_cost AC
+                       LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+                       LEFT JOIN SYS_DICT_VALUE SDV
+                                 ON SDV.DICT_KEY = 'PAYMENT_SIGN'
+              WHERE 1 = 1
+                AND AC.LOGIC_DEL = 0
+                AND ACU.USER_ID = #{accountCostDto.userId}
+                AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+                AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+                AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+              GROUP BY AC.ID) T
+        GROUP BY T.PAYMENT_TIME, T.CREATE_TIME
+        ORDER BY T.PAYMENT_TIME, T.CREATE_TIME
     </select>
     <select id="findCostTypeRatePie" resultType="com.freesia.account.entity.FindCostTypeRatePieEntity">
         SELECT
@@ -369,180 +584,5 @@
               GROUP BY AC.ID) T
         GROUP BY DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d')
     </select>
-    <select id="findPageAccountCost" resultMap="findAccountCostResultMap">
-        (
-        SELECT AC.ID,
-        AC.CREATE_TIME,
-        AC.MODIFY_TIME,
-        AC.LOGIC_DEL,
-        AC.REC_VER,
-        AC.TENANT_ID,
-        AC.COST_DESC,
-        AC.OUTLAY,
-        AC.COST_TYPE,
-        AC.PAYMENT_SIGN,
-        AC.PAYMENT_TIME,
-        AC.ICON,
-        AC.REMARK,
-        AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
-        GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
-        FROM account_cost AC
-        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-        LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
-        WHERE 1 = 1
-        AND AC.LOGIC_DEL = 0
-        AND AC.USER_ID = #{accountCost.userId}
-        <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
-            AND AC.COST_DESC = #{accountCost.costDesc}
-        </if>
-        <if test="accountCost.remark != null and accountCost.remark != ''">
-            AND AC.REMARK = #{accountCost.remark}
-        </if>
-        <if test="accountCost.paymentSign != null and accountCost.paymentSign != ''">
-            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
-        </if>
-        <if test="accountCost.paymentTime != null and accountCost.paymentTime != ''">
-            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
-        </if>
-        <if test="accountCost.paymentTimeFrom != null and accountCost.paymentTimeTo != null">
-            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
-            AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
-        </if>
-        GROUP BY AC.ID
-        )
-
-        UNION ALL
-
-        (
-        SELECT AC.ID,
-        AC.CREATE_TIME,
-        AC.MODIFY_TIME,
-        AC.LOGIC_DEL,
-        AC.REC_VER,
-        AC.TENANT_ID,
-        AC.COST_DESC,
-        AC.OUTLAY,
-        AC.COST_TYPE,
-        AC.PAYMENT_SIGN,
-        AC.PAYMENT_TIME,
-        AC.ICON,
-        AC.REMARK,
-        AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
-        GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
-        FROM account_cost AC
-        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-        INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
-        WHERE 1 = 1
-        AND AC.LOGIC_DEL = 0
-        AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
-        <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
-            AND AC.COST_DESC = #{accountCost.costDesc}
-        </if>
-        <if test="accountCost.remark != null and accountCost.remark != ''">
-            AND AC.REMARK = #{accountCost.remark}
-        </if>
-        <if test="accountCost.paymentSign != null and accountCost.paymentSign != ''">
-            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
-        </if>
-        <if test="accountCost.paymentTime != null and accountCost.paymentTime != ''">
-            AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
-        </if>
-        <if test="accountCost.paymentTimeFrom != null and accountCost.paymentTimeTo != null">
-            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
-            AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
-        </if>
-        GROUP BY AC.ID
-        )
-        ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
-    </select>
-    <select id="findAccountCost" resultMap="findAccountCostResultMap">
-        (
-        SELECT AC.ID,
-        AC.CREATE_TIME,
-        AC.MODIFY_TIME,
-        AC.LOGIC_DEL,
-        AC.REC_VER,
-        AC.TENANT_ID,
-        AC.COST_DESC,
-        AC.OUTLAY,
-        AC.COST_TYPE,
-        AC.PAYMENT_SIGN,
-        AC.PAYMENT_TIME,
-        AC.ICON,
-        AC.REMARK,
-        AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
-        GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
-        FROM account_cost AC
-        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-        LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
-        WHERE 1 = 1
-        AND AC.LOGIC_DEL = 0
-        AND AC.USER_ID = #{accountCost.userId}
-        <if test="accountCost.id != null and accountCost.id != 0">
-            AND AC.ID = #{accountCost.id}
-        </if>
-        GROUP BY AC.ID
-        )
-
-        UNION ALL
-
-        (
-        SELECT AC.ID,
-        AC.CREATE_TIME,
-        AC.MODIFY_TIME,
-        AC.LOGIC_DEL,
-        AC.REC_VER,
-        AC.TENANT_ID,
-        AC.COST_DESC,
-        AC.OUTLAY,
-        AC.COST_TYPE,
-        AC.PAYMENT_SIGN,
-        AC.PAYMENT_TIME,
-        AC.ICON,
-        AC.REMARK,
-        AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
-        GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
-        FROM account_cost AC
-        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-        INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
-        WHERE 1 = 1
-        AND AC.LOGIC_DEL = 0
-        AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
-        <if test="accountCost.id != null and accountCost.id != 0">
-            AND ACU.COST_ID = #{accountCost.id}
-        </if>
-        GROUP BY AC.ID
-        )
-    </select>
-    <resultMap id="findAccountCostResultMap" type="com.freesia.account.entity.FindAccountCostEntity">
-        <id property="id" column="ID"/>
-        <result property="creator" column="CREATOR"/>
-        <result property="createTime" column="CREATE_TIME"/>
-        <result property="modifier" column="MODIFIER"/>
-        <result property="modifyTime" column="MODIFY_TIME"/>
-        <result property="logicDel" column="LOGIC_DEL"/>
-        <result property="recVer" column="REC_VER"/>
-        <result property="buildIn" column="BUILD_IN"/>
-        <result property="tenantId" column="TENANT_ID"/>
-        <result property="costDesc" column="COST_DESC"/>
-        <result property="outlay" column="OUTLAY"/>
-        <result property="costType" column="COST_TYPE"/>
-        <result property="paymentSign" column="PAYMENT_SIGN"/>
-        <result property="paymentTime" column="PAYMENT_TIME"/>
-        <result property="icon" column="ICON"/>
-        <result property="remark" column="REMARK"/>
-        <result property="userId" column="USER_ID"/>
-        <result property="acNickName" column="AC_NICK_NAME"/>
-        <result property="accountCostUserId" column="SU_ID"/>
-        <result property="accountCostUserName" column="NICK_NAME"/>
-    </resultMap>
 
 </mapper>

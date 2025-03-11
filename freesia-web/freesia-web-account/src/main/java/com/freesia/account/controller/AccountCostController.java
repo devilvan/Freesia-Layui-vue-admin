@@ -201,8 +201,11 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "accountsExport")
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EXPORT)
     public void accountsExport(AccountCostVo accountsExportVo, HttpServletResponse response) throws IOException {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountsExportVo, AccountCostDto.class);
-        accountCostDto.setTenantId(USecurity.getTenantId());
+        accountCostDto.setTenantId(tenantId);
+        accountCostDto.setUserId(userId);
         Date[] dates = parseDateRange(accountsExportVo.getPaymentTimeRange());
         accountCostDto.setPaymentTimeFrom(dates[0]);
         accountCostDto.setPaymentTimeTo(dates[1]);
