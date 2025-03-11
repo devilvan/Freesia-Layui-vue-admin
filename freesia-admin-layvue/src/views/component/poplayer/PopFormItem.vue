@@ -69,13 +69,13 @@ const props = defineProps({
     type: Array,
     default: []
   },
-  selectedLables: {
+  selectedLabels: {
     type: Array,
     default: []
   },
 });
 watch(
-    () => props.selectedLables,
+    () => props.selectedLabels,
     (val) => {
       selectLabels.value = val;
     },
@@ -97,9 +97,9 @@ const emit = defineEmits<{
 /*VAR*/
 const showModalFlag = ref(false);
 const loading = ref(false)
-const selectKeys = ref<Array<string>>([])
-const selectRows = ref<Array>([])
-const selectLabels = ref<Array>([])
+const selectKeys = ref<Array<string>>()
+const selectRows = ref<Array<object>>([])
+const selectLabels = ref<Array<string>>([])
 const dataSource = ref([])
 const modalSearchQuery = ref({});
 const pageQuery = reactive<PageQuery>({

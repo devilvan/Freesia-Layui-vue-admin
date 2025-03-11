@@ -74,6 +74,7 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
     public TableResult<AccountBudgetDto> findPageAccountBudget(AccountBudgetDto accountBudget, PageQuery pageQuery) {
         LambdaQueryWrapper<AccountBudgetPo> wrapper = new LambdaQueryWrapper<AccountBudgetPo>()
                 .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(AccountBudgetPo::getUserId, accountBudget.getUserId())
                 .eq(UEmpty.isNotEmpty(accountBudget.getId()), AccountBudgetPo::getId, accountBudget.getId());
         Page<AccountBudgetPo> pagePo = page(pageQuery.build(), wrapper);
         if (pagePo != null) {
@@ -81,17 +82,17 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
             records.sort(Comparator.comparingInt(e -> {
                 String budgetType = e.getBudgetType();
                 if (BudgetType.CUSTOM.getCode().equals(budgetType)) {
-                    return 0;
+                    return 5;
                 } else if (BudgetType.YEAR.getCode().equals(budgetType)) {
-                    return 1;
-                } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
-                    return 2;
-                } else if (BudgetType.WEEK.getCode().equals(budgetType)) {
-                    return 3;
-                } else if (BudgetType.DAY.getCode().equals(budgetType)) {
                     return 4;
+                } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
+                    return 3;
+                } else if (BudgetType.WEEK.getCode().equals(budgetType)) {
+                    return 2;
+                } else if (BudgetType.DAY.getCode().equals(budgetType)) {
+                    return 1;
                 } else {
-                    return -1;
+                    return Integer.MAX_VALUE;
                 }
             }));
         }
@@ -102,6 +103,7 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
     public AccountBudgetDto findAccountBudget(AccountBudgetDto accountBudget) {
         LambdaQueryWrapper<AccountBudgetPo> wrapper = new LambdaQueryWrapper<AccountBudgetPo>()
                 .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(AccountBudgetPo::getUserId, accountBudget.getUserId())
                 .eq(UEmpty.isNotEmpty(accountBudget.getId()), AccountBudgetPo::getId, accountBudget.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), AccountBudgetDto.class);
     }
@@ -158,7 +160,7 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
             echartCapacityOptionEntityList.sort(Comparator.comparingInt(e -> {
                 String budgetType = e.getBudgetType();
                 if (BudgetType.CUSTOM.getCode().equals(budgetType)) {
-                    return 0;
+                    return 5;
                 } else if (BudgetType.YEAR.getCode().equals(budgetType)) {
                     return 1;
                 } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
@@ -168,7 +170,7 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
                 } else if (BudgetType.DAY.getCode().equals(budgetType)) {
                     return 4;
                 } else {
-                    return -1;
+                    return Integer.MAX_VALUE;
                 }
             }));
         }

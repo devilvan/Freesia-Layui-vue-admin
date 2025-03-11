@@ -78,6 +78,8 @@ public class AccountBudgetController extends BaseController {
     @GetMapping(value = "findPageAccountBudget")
     public TableResult<AccountBudgetDto> findPageAccountBudget(AccountBudgetVo accountBudgetVo, PageQuery pageQuery) {
         AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        accountBudgetDto.setUserId(userId);
         return accountBudgetService.findPageAccountBudget(accountBudgetDto, pageQuery);
     }
 
@@ -91,6 +93,8 @@ public class AccountBudgetController extends BaseController {
     @GetMapping(value = "findAccountBudget")
     public R<AccountBudgetDto> findAccountBudget(AccountBudgetVo accountBudgetVo) {
         AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        accountBudgetDto.setUserId(userId);
         AccountBudgetDto tableResult = accountBudgetService.findAccountBudget(accountBudgetDto);
         return R.ok(tableResult);
     }

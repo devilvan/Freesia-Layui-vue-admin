@@ -296,7 +296,7 @@ import PopFormItem from "../../../component/poplayer/PopFormItem.vue";
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
-  name: "MineAccounts",
+  name: "Accounts",
   components: {PopFormItem, PopLayer},
 };
 </script>
