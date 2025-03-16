@@ -21,6 +21,8 @@ export interface AccountBudgetEntity extends BaseEntity {
 export interface EchartCapacityOptionEntity {
     name?: string;
     value?: number;
+    outlay?: number;
+    budget?: number
     durationFrom?: string;
     durationTo?: string;
 }

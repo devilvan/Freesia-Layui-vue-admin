@@ -25,6 +25,7 @@
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCost.userId}
+        AND AC.TENANT_ID = #{accountCost.tenantId}
         <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
             AND AC.COST_DESC = #{accountCost.costDesc}
         </if>
@@ -64,6 +65,7 @@
         INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
+        AND AC.TENANT_ID = #{accountCost.tenantId}
         AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
         <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
             AND AC.COST_DESC = #{accountCost.costDesc}
@@ -108,6 +110,7 @@
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCost.userId}
+        AND AC.TENANT_ID = #{accountCost.tenantId}
         <if test="accountCost.id != null and accountCost.id != 0">
             AND AC.ID = #{accountCost.id}
         </if>
@@ -137,6 +140,7 @@
         INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
+        AND AC.TENANT_ID = #{accountCost.tenantId}
         AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
         <if test="accountCost.id != null and accountCost.id != 0">
             AND ACU.COST_ID = #{accountCost.id}
@@ -202,6 +206,7 @@
                                  ON SDV.DICT_KEY = 'PAYMENT_SIGN'
               WHERE 1 = 1
                 AND AC.LOGIC_DEL = 0
+                AND AC.TENANT_ID = #{accountCostDto.tenantId}
                 AND AC.USER_ID = #{accountCostDto.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
                 AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
@@ -236,6 +241,7 @@
                                  ON SDV.DICT_KEY = 'PAYMENT_SIGN'
               WHERE 1 = 1
                 AND AC.LOGIC_DEL = 0
+                AND AC.TENANT_ID = #{accountCostDto.tenantId}
                 AND ACU.USER_ID = #{accountCostDto.userId}
                 AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
@@ -271,6 +277,7 @@
         WHERE 1=1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.TENANT_ID = #{accountCostDto.tenantId}
         AND AC.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
@@ -302,6 +309,7 @@
         WHERE 1=1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.TENANT_ID = #{accountCostDto.tenantId}
         AND ACU.USER_ID = #{accountCostDto.userId}
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
         <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
@@ -344,6 +352,7 @@
                             WHERE 1 = 1
                               AND AC.LOGIC_DEL = 0
                               AND AC.PAYMENT_SIGN = 'EXPENSES'
+                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
                               AND AC.USER_ID = #{accountCostDto.userId}
                               AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
                               AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
@@ -367,6 +376,7 @@
                             WHERE 1 = 1
                               AND AC.LOGIC_DEL = 0
                               AND AC.PAYMENT_SIGN = 'EXPENSES'
+                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
                               AND ACU.USER_ID = #{accountCostDto.userId}
                               AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
                               AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
@@ -424,6 +434,7 @@
                             WHERE 1 = 1
                               AND AC.LOGIC_DEL = 0
                               AND AC.PAYMENT_SIGN = 'EXPENSES'
+                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
                               AND AC.USER_ID = #{accountCostDto.userId}
                               AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
                               AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
@@ -449,6 +460,7 @@
                             WHERE 1 = 1
                               AND AC.LOGIC_DEL = 0
                               AND AC.PAYMENT_SIGN = 'EXPENSES'
+                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
                               AND ACU.USER_ID = #{accountCostDto.userId}
                               AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
                               AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
@@ -495,6 +507,7 @@
                             WHERE 1 = 1
                               AND AC.LOGIC_DEL = 0
                               AND AC.PAYMENT_SIGN = 'EXPENSES'
+                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
                               AND AC.USER_ID = #{accountCostDto.userId}
                               AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
                             GROUP BY AC.ID
@@ -519,6 +532,7 @@
                             WHERE 1 = 1
                               AND AC.LOGIC_DEL = 0
                               AND AC.PAYMENT_SIGN = 'EXPENSES'
+                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
                               AND ACU.USER_ID = #{accountCostDto.userId}
                               AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
                               AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
@@ -552,6 +566,7 @@
                        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
               WHERE 1 = 1
                 AND AC.PAYMENT_SIGN = 'EXPENSES'
+                AND AC.TENANT_ID = #{accountCostDto.tenantId}
                 AND AC.USER_ID = #{accountCostDto.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
                 AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
@@ -577,6 +592,7 @@
                        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
               WHERE 1 = 1
                 AND AC.PAYMENT_SIGN = 'EXPENSES'
+                AND AC.TENANT_ID = #{accountCostDto.tenantId}
                 AND ACU.USER_ID = #{accountCostDto.userId}
                 AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}

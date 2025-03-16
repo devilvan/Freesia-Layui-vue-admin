@@ -47,11 +47,10 @@ public class TenantHandler implements TenantLineHandler {
         if (UEmpty.isEmpty(tenantId)) {
             return true;
         }
-        String ignoreTable = tenantProperties.getIgnoreTable();
+        List<String> ignoreTableList = tenantProperties.getIgnoreTable();
         boolean flag;
-        String[] sp = ignoreTable.split(",");
-        for (String s : sp) {
-            flag = tableName.equalsIgnoreCase(s.trim());
+        for (String ignoreTable : ignoreTableList) {
+            flag = tableName.equalsIgnoreCase(ignoreTable.trim());
             if (flag) {
                 return true;
             }

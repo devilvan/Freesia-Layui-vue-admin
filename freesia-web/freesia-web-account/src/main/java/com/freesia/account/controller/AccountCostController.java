@@ -118,16 +118,14 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findPageAccountCost")
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_INDEX)
     public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostVo accountCostVo, PageQuery pageQuery) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         Date[] dateRange = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS, UString.SEPARATOR);
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
-        Long tenantId = USecurity.getTenantId();
-        if (tenantId == null || tenantId == 0) {
-            R.failed(UMessage.message("tenant.required"));
-        }
+        accountCostDto.setUserId(userId);
         accountCostDto.setTenantId(tenantId);
         accountCostDto.setPaymentTimeFrom(dateRange[0]);
         accountCostDto.setPaymentTimeTo(dateRange[1]);
-        accountCostDto.setUserId(USecurity.getUserId());
         return accountCostService.findPageAccountCost(accountCostDto, pageQuery);
     }
 

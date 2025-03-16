@@ -27,7 +27,7 @@
             <lay-form-item label="开销时间">
               <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
                                :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
-                               :shortcuts="defaultShortcuts" simple></lay-date-picker>
+                               :shortcuts="defaultShortcuts" simple @change="changePaymentTimeDoSelect"></lay-date-picker>
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
@@ -692,6 +692,10 @@ const handleConfirm = (selectKeys: string[], rows: [], tableRef: object) => {
   accountCostVo.value.accountCostUserIdList = selectKeys
   userModalSelectedKeys.value = []
 };
+
+function changePaymentTimeDoSelect(value: any) {
+  change()
+}
 /* FUNCTION*/
 </script>
 
