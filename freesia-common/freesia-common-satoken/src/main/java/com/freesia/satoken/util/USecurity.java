@@ -37,6 +37,22 @@ public class USecurity {
     public static final String USER_KEY = "userId";
 
     /**
+     * 修改器
+     *
+     * @param <T> 入参泛型
+     */
+    @FunctionalInterface
+    public interface Modifier<T extends SysSensitiveLogBean> {
+        /**
+         * 修改器实现
+         *
+         * @param obj 待修改的对象
+         * @return 执行修改方法后的对象
+         */
+        T modify(T obj);
+    }
+
+    /**
      * 获取当前用户的token信息
      *
      * @return token
@@ -48,14 +64,14 @@ public class USecurity {
     /**
      * 构建敏感信息bean的函数接口，方便到行级别的自定义敏感数据
      *
-     * @param supplier 接收敏感信息的生产者
+     * @param modifier 接收敏感信息的修改器
      * @param <T>      敏感信息bean的类型
      * @return 敏感信息bean
      */
-    public static <T extends SysSensitiveLogBean> T recordSensitiveLog(Supplier<T> supplier) {
-        T sysSensitiveLogBean = supplier.get();
+    public static <T extends SysSensitiveLogBean> T recordSensitiveLog(Modifier<T> modifier) {
         String ip = UServlet.getInitiatedRequestIp();
         LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
+        SysSensitiveLogBean sysSensitiveLogBean = new SysSensitiveLogBean();
         sysSensitiveLogBean.setOperatorId(loginUser.getUserId());
         sysSensitiveLogBean.setOperatorName(loginUser.getUsername());
         sysSensitiveLogBean.setDeptId(loginUser.getDeptId());
@@ -71,7 +87,7 @@ public class USecurity {
         sysSensitiveLogBean.setOs(UServlet.getOs());
         sysSensitiveLogBean.setSign(loginUser.getUsername());
         sysSensitiveLogBean.setTenantId(USecurity.getTenantId());
-        return sysSensitiveLogBean;
+        return modifier.modify((T) sysSensitiveLogBean);
     }
 
     /**

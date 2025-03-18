@@ -72,7 +72,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     @Override
     public List<FindPageSysDeptListEntity> findListSysDept(SysDeptDto sysDeptDto) {
         // 是否管理员
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         boolean isAdmin = Convert.toBool(sysUserService.isAdmin(userId), false);
         if (isAdmin) {
             return sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
@@ -179,7 +179,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
             afterSysRoleDeptPoSet.add(sysRoleDeptPo);
         }
         transactionTemplate.execute(status -> {
-            SysSensitiveLogBean sysSensitiveLogBean = null;
+            SysSensitiveLogBean saveSysSensitiveLogBean = null;
             try {
                 if (UEmpty.isNotEmpty(beforeSysRoleDeptPoSet)) {
                     sysRoleDeptRepository.deleteAllInBatch(beforeSysRoleDeptPoSet);
@@ -187,31 +187,29 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
                 if (UEmpty.isNotEmpty(afterSysRoleDeptPoSet)) {
                     sysRoleDeptRepository.saveAll(afterSysRoleDeptPoSet);
                 }
-                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                    sensitiveLog.setModule(DeptModule.DEPT_MANAGEMENT);
-                    sensitiveLog.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
-                    sensitiveLog.setType(DeptModule.SubModule.ASSIGN_ROLE);
-                    sensitiveLog.setResult(FlagConstant.SUCCESS);
-                    sensitiveLog.setContextOld("分配前角色ID：" + JSONObject.toJSONString(beforeRoleIdList));
-                    sensitiveLog.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
-                    sensitiveLog.setRemark(UMessage.message("assign_role_permissions_success"));
-                    return sensitiveLog;
+                saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                    sysSensitiveLogBean.setModule(DeptModule.DEPT_MANAGEMENT);
+                    sysSensitiveLogBean.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
+                    sysSensitiveLogBean.setType(DeptModule.SubModule.ASSIGN_ROLE);
+                    sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+                    sysSensitiveLogBean.setContextOld("分配前角色ID：" + JSONObject.toJSONString(beforeRoleIdList));
+                    sysSensitiveLogBean.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
+                    sysSensitiveLogBean.setRemark(UMessage.message("assign_role_permissions_success"));
+                    return sysSensitiveLogBean;
                 });
             } catch (Exception e) {
-                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                    sensitiveLog.setModule(DeptModule.DEPT_MANAGEMENT);
-                    sensitiveLog.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
-                    sensitiveLog.setType(DeptModule.SubModule.ASSIGN_ROLE);
-                    sensitiveLog.setResult(FlagConstant.FAILED);
-                    sensitiveLog.setRemark(UMessage.message("assign_role_permissions_failed"));
-                    return sensitiveLog;
+                saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                    sysSensitiveLogBean.setModule(DeptModule.DEPT_MANAGEMENT);
+                    sysSensitiveLogBean.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
+                    sysSensitiveLogBean.setType(DeptModule.SubModule.ASSIGN_ROLE);
+                    sysSensitiveLogBean.setResult(FlagConstant.FAILED);
+                    sysSensitiveLogBean.setRemark(UMessage.message("assign_role_permissions_failed"));
+                    return sysSensitiveLogBean;
                 });
                 throw e;
             } finally {
-                if (UEmpty.isNotNull(sysSensitiveLogBean)) {
-                    USpring.context().publishEvent(sysSensitiveLogBean);
+                if (UEmpty.isNotNull(saveSysSensitiveLogBean)) {
+                    USpring.context().publishEvent(saveSysSensitiveLogBean);
                 }
             }
             return status;
@@ -221,7 +219,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     @Override
     public FindDeptRolesByDeptIdEntity findDeptRolesByDeptId(Long deptId) {
         // 获取部门对象
-        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new UserException("dept.query.failed", new Object[] {deptId}));
+        SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new UserException("dept.query.failed", new Object[]{deptId}));
         // 获取角色
         Set<SysRolePo> sysRolePoSet = sysDeptPo.getSysRolePoSet();
         return buildFindDeptRolesByDeptIdEntity(sysDeptPo, sysRolePoSet);

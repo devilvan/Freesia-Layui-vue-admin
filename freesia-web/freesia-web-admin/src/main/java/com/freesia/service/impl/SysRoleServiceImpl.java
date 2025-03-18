@@ -107,18 +107,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
         // 记录操作日志
         Set<SysMenuPo> newSysMenuPoSet = saveSysRolePo.getSysMenuPoSet();
         List<Long> newMenuIdList = UStream.toList(newSysMenuPoSet, SysMenuPo::getId);
-        SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-            SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-            sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
-            sensitiveLog.setSubModule(MenuModule.SubModule.ASSIGN_MENU_PERMISSIONS);
-            sensitiveLog.setType(MenuModule.SubModule.ASSIGN_MENU_PERMISSIONS);
-            sensitiveLog.setResult(FlagConstant.SUCCESS);
-            sensitiveLog.setContextOld(JSONObject.toJSONString(oldMenuIdList));
-            sensitiveLog.setContext(JSONObject.toJSONString(newMenuIdList));
-            sensitiveLog.setRemark(UMessage.message("assigned_menu_permissions_success"));
-            return sensitiveLog;
+        SysSensitiveLogBean saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+            sysSensitiveLogBean.setModule(RoleModule.ROLE_MANAGEMENT);
+            sysSensitiveLogBean.setSubModule(MenuModule.SubModule.ASSIGN_MENU_PERMISSIONS);
+            sysSensitiveLogBean.setType(MenuModule.SubModule.ASSIGN_MENU_PERMISSIONS);
+            sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+            sysSensitiveLogBean.setContextOld(JSONObject.toJSONString(oldMenuIdList));
+            sysSensitiveLogBean.setContext(JSONObject.toJSONString(newMenuIdList));
+            sysSensitiveLogBean.setRemark(UMessage.message("assigned_menu_permissions_success"));
+            return sysSensitiveLogBean;
         });
-        USpring.context().publishEvent(sysSensitiveLogBean);
+        USpring.context().publishEvent(saveSysSensitiveLogBean);
     }
 
     @Override
@@ -208,7 +207,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
             afterSysRoleDeptPoSet.add(sysRoleDeptPo);
         }
         transactionTemplate.execute(status -> {
-            SysSensitiveLogBean sysSensitiveLogBean = null;
+            SysSensitiveLogBean saveSysSensitiveLogBean = null;
             try {
                 if (UEmpty.isNotEmpty(beforeSysRoleDeptPoSet)) {
                     sysRoleDeptRepository.deleteAllInBatch(beforeSysRoleDeptPoSet);
@@ -216,31 +215,29 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
                 if (UEmpty.isNotEmpty(afterSysRoleDeptPoSet)) {
                     sysRoleDeptRepository.saveAll(afterSysRoleDeptPoSet);
                 }
-                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                    sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
-                    sensitiveLog.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
-                    sensitiveLog.setType(RoleModule.SubModule.ASSIGN_DEPT);
-                    sensitiveLog.setResult(FlagConstant.SUCCESS);
-                    sensitiveLog.setContextOld("分配前部门ID：" + JSONObject.toJSONString(beforeDeptIdList));
-                    sensitiveLog.setContext("分配后部门ID：" + JSONObject.toJSONString(deptIdSet));
-                    sensitiveLog.setRemark(UMessage.message("assign_dept_permissions_success"));
-                    return sensitiveLog;
+                saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                    sysSensitiveLogBean.setModule(RoleModule.ROLE_MANAGEMENT);
+                    sysSensitiveLogBean.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
+                    sysSensitiveLogBean.setType(RoleModule.SubModule.ASSIGN_DEPT);
+                    sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+                    sysSensitiveLogBean.setContextOld("分配前部门ID：" + JSONObject.toJSONString(beforeDeptIdList));
+                    sysSensitiveLogBean.setContext("分配后部门ID：" + JSONObject.toJSONString(deptIdSet));
+                    sysSensitiveLogBean.setRemark(UMessage.message("assign_dept_permissions_success"));
+                    return sysSensitiveLogBean;
                 });
             } catch (Exception e) {
-                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                    SysSensitiveLogBean sensitiveLog = new SysSensitiveLogBean();
-                    sensitiveLog.setModule(RoleModule.ROLE_MANAGEMENT);
-                    sensitiveLog.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
-                    sensitiveLog.setType(RoleModule.SubModule.ASSIGN_DEPT);
-                    sensitiveLog.setResult(FlagConstant.FAILED);
-                    sensitiveLog.setRemark(UMessage.message("assign_dept_permissions_failed"));
-                    return sensitiveLog;
+                saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                    sysSensitiveLogBean.setModule(RoleModule.ROLE_MANAGEMENT);
+                    sysSensitiveLogBean.setSubModule(RoleModule.SubModule.ASSIGN_DEPT);
+                    sysSensitiveLogBean.setType(RoleModule.SubModule.ASSIGN_DEPT);
+                    sysSensitiveLogBean.setResult(FlagConstant.FAILED);
+                    sysSensitiveLogBean.setRemark(UMessage.message("assign_dept_permissions_failed"));
+                    return sysSensitiveLogBean;
                 });
                 throw e;
             } finally {
-                if (UEmpty.isNotNull(sysSensitiveLogBean)) {
-                    USpring.context().publishEvent(sysSensitiveLogBean);
+                if (UEmpty.isNotNull(saveSysSensitiveLogBean)) {
+                    USpring.context().publishEvent(saveSysSensitiveLogBean);
                 }
             }
             return status;

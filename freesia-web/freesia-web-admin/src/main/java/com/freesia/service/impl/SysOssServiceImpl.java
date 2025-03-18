@@ -144,18 +144,17 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
             SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
             resultSysOssDtoList.add(resultSysOssDto);
             // 保存操作日志
-            SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
-                assignButtonLogBean.setModule(OssModule.OSS_MANAGEMENT);
-                assignButtonLogBean.setSubModule(OssModule.SubModule.OSS_UPLOAD);
-                assignButtonLogBean.setType(OssModule.SubModule.OSS_UPLOAD);
-                assignButtonLogBean.setResult(FlagConstant.SUCCESS);
-                assignButtonLogBean.setContextOld(null);
-                assignButtonLogBean.setContext(null);
-                assignButtonLogBean.setRemark(UMessage.message("oss.upload.success", originalFilename));
-                return assignButtonLogBean;
+            SysSensitiveLogBean saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                sysSensitiveLogBean.setModule(OssModule.OSS_MANAGEMENT);
+                sysSensitiveLogBean.setSubModule(OssModule.SubModule.OSS_UPLOAD);
+                sysSensitiveLogBean.setType(OssModule.SubModule.OSS_UPLOAD);
+                sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+                sysSensitiveLogBean.setContextOld(null);
+                sysSensitiveLogBean.setContext(null);
+                sysSensitiveLogBean.setRemark(UMessage.message("oss.upload.success", originalFilename));
+                return sysSensitiveLogBean;
             });
-            USpring.context().publishEvent(sysSensitiveLogBean);
+            USpring.context().publishEvent(saveSysSensitiveLogBean);
         }
         return resultSysOssDtoList;
     }
@@ -189,18 +188,17 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
         SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
         // 保存操作日志
-        SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-            SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
-            assignButtonLogBean.setModule(OssModule.OSS_MANAGEMENT);
-            assignButtonLogBean.setSubModule(OssModule.SubModule.OSS_UPLOAD);
-            assignButtonLogBean.setType(OssModule.SubModule.OSS_UPLOAD);
-            assignButtonLogBean.setResult(FlagConstant.SUCCESS);
-            assignButtonLogBean.setContextOld(null);
-            assignButtonLogBean.setContext(null);
-            assignButtonLogBean.setRemark(UMessage.message("oss.upload.success", originalFilename));
-            return assignButtonLogBean;
+        SysSensitiveLogBean saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+            sysSensitiveLogBean.setModule(OssModule.OSS_MANAGEMENT);
+            sysSensitiveLogBean.setSubModule(OssModule.SubModule.OSS_UPLOAD);
+            sysSensitiveLogBean.setType(OssModule.SubModule.OSS_UPLOAD);
+            sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+            sysSensitiveLogBean.setContextOld(null);
+            sysSensitiveLogBean.setContext(null);
+            sysSensitiveLogBean.setRemark(UMessage.message("oss.upload.success", originalFilename));
+            return sysSensitiveLogBean;
         });
-        USpring.context().publishEvent(sysSensitiveLogBean);
+        USpring.context().publishEvent(saveSysSensitiveLogBean);
         return resultSysOssDto;
     }
 
@@ -213,36 +211,34 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
         UOssFile.setAttachmentResponseHeader(response, originalName);
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE + ";charset=UTF-8");
         OssHandler ossHandler = OssFactory.getInstance(sysOssDto.getService());
-        InputStream inputStream = ossHandler.getObjectContent(sysOssDto.getUrl());
+        InputStream inputStream = ossHandler.getObjectContent(ossHandler.convertEndpoint2Domain(sysOssDto.getUrl()));
         try {
             int available = inputStream.available();
             IoUtil.copy(inputStream, response.getOutputStream(), available);
             // 保存操作日志
-            SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
-                assignButtonLogBean.setModule(OssModule.OSS_MANAGEMENT);
-                assignButtonLogBean.setSubModule(OssModule.SubModule.OSS_DOWNLOAD);
-                assignButtonLogBean.setType(OssModule.SubModule.OSS_DOWNLOAD);
-                assignButtonLogBean.setResult(FlagConstant.SUCCESS);
-                assignButtonLogBean.setContextOld(null);
-                assignButtonLogBean.setContext(null);
-                assignButtonLogBean.setRemark(UMessage.message("oss.download.success", originalName));
-                return assignButtonLogBean;
+            SysSensitiveLogBean saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                sysSensitiveLogBean.setModule(OssModule.OSS_MANAGEMENT);
+                sysSensitiveLogBean.setSubModule(OssModule.SubModule.OSS_DOWNLOAD);
+                sysSensitiveLogBean.setType(OssModule.SubModule.OSS_DOWNLOAD);
+                sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+                sysSensitiveLogBean.setContextOld(null);
+                sysSensitiveLogBean.setContext(null);
+                sysSensitiveLogBean.setRemark(UMessage.message("oss.download.success", originalName));
+                return sysSensitiveLogBean;
             });
-            USpring.context().publishEvent(sysSensitiveLogBean);
+            USpring.context().publishEvent(saveSysSensitiveLogBean);
         } catch (IOException e) {
-            SysSensitiveLogBean sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
-                assignButtonLogBean.setModule(OssModule.OSS_MANAGEMENT);
-                assignButtonLogBean.setSubModule(OssModule.SubModule.OSS_DOWNLOAD);
-                assignButtonLogBean.setType(OssModule.SubModule.OSS_DOWNLOAD);
-                assignButtonLogBean.setResult(FlagConstant.FAILED);
-                assignButtonLogBean.setContextOld(null);
-                assignButtonLogBean.setContext(null);
-                assignButtonLogBean.setRemark(e.getMessage());
-                return assignButtonLogBean;
+            SysSensitiveLogBean saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                sysSensitiveLogBean.setModule(OssModule.OSS_MANAGEMENT);
+                sysSensitiveLogBean.setSubModule(OssModule.SubModule.OSS_DOWNLOAD);
+                sysSensitiveLogBean.setType(OssModule.SubModule.OSS_DOWNLOAD);
+                sysSensitiveLogBean.setResult(FlagConstant.FAILED);
+                sysSensitiveLogBean.setContextOld(null);
+                sysSensitiveLogBean.setContext(null);
+                sysSensitiveLogBean.setRemark(e.getMessage());
+                return sysSensitiveLogBean;
             });
-            USpring.context().publishEvent(sysSensitiveLogBean);
+            USpring.context().publishEvent(saveSysSensitiveLogBean);
             throw new OssException(e.getMessage());
         }
     }

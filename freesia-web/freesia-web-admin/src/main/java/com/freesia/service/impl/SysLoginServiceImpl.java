@@ -62,17 +62,16 @@ public class SysLoginServiceImpl implements SysLoginService {
         // 登录系统，基于不同设备类型，用于不同的客户端
         USecurity.loginByDevice(loginUserModel, DeviceType.PC);
         // 登录成功后记录操作日志
-        SysSensitiveLogBean loginLogEvent = USecurity.recordSensitiveLog(() -> {
-            SysSensitiveLogBean loginLog = new SysSensitiveLogBean();
+        SysSensitiveLogBean loginLogEvent = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
             LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
-            loginLog.setBeOperatedId(loginUser.getUserId());
-            loginLog.setBeOperatedName(username);
-            loginLog.setModule(UserModule.USER_MANAGEMENT);
-            loginLog.setSubModule(UserModule.SubModule.LOGIN);
-            loginLog.setType(UserModule.SubModule.LOGIN);
-            loginLog.setResult(FlagConstant.SUCCESS);
-            loginLog.setRemark(UMessage.message("user.login.success"));
-            return loginLog;
+            sysSensitiveLogBean.setBeOperatedId(loginUser.getUserId());
+            sysSensitiveLogBean.setBeOperatedName(username);
+            sysSensitiveLogBean.setModule(UserModule.USER_MANAGEMENT);
+            sysSensitiveLogBean.setSubModule(UserModule.SubModule.LOGIN);
+            sysSensitiveLogBean.setType(UserModule.SubModule.LOGIN);
+            sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+            sysSensitiveLogBean.setRemark(UMessage.message("user.login.success"));
+            return sysSensitiveLogBean;
         });
         USpring.context().publishEvent(loginLogEvent);
         Long userId = USecurity.getUserId();

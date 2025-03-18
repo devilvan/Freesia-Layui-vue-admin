@@ -393,7 +393,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
             afterSysRoleMenuPoSet.add(sysRoleMenuPo);
         }
         transactionTemplate.execute(status -> {
-            SysSensitiveLogBean sysSensitiveLogBean = null;
+            SysSensitiveLogBean saveSysSensitiveLogBean = null;
             try {
                 if (UEmpty.isNotEmpty(beforeSysRoleMenuPoSet)) {
                     sysRoleMenuRepository.deleteAllInBatch(beforeSysRoleMenuPoSet);
@@ -401,32 +401,30 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 if (UEmpty.isNotEmpty(afterSysRoleMenuPoSet)) {
                     sysRoleMenuRepository.saveAll(afterSysRoleMenuPoSet);
                 }
-                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                    SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
-                    assignButtonLogBean.setModule(MenuModule.MENU_MANAGEMENT);
-                    assignButtonLogBean.setSubModule(MenuModule.SubModule.ASSIGN_BUTTON);
-                    assignButtonLogBean.setType(MenuModule.SubModule.ASSIGN_BUTTON);
-                    assignButtonLogBean.setResult(FlagConstant.SUCCESS);
-                    assignButtonLogBean.setContextOld("分配前菜单ID：" + JSONObject.toJSONString(beforeAssignButtonIdList));
-                    assignButtonLogBean.setContext("分配后菜单ID：" + JSONObject.toJSONString(assignButtonIdList));
-                    assignButtonLogBean.setRemark(UMessage.message("assigned_menu_permissions_success"));
-                    return assignButtonLogBean;
+                saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                    sysSensitiveLogBean.setModule(MenuModule.MENU_MANAGEMENT);
+                    sysSensitiveLogBean.setSubModule(MenuModule.SubModule.ASSIGN_BUTTON);
+                    sysSensitiveLogBean.setType(MenuModule.SubModule.ASSIGN_BUTTON);
+                    sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+                    sysSensitiveLogBean.setContextOld("分配前菜单ID：" + JSONObject.toJSONString(beforeAssignButtonIdList));
+                    sysSensitiveLogBean.setContext("分配后菜单ID：" + JSONObject.toJSONString(assignButtonIdList));
+                    sysSensitiveLogBean.setRemark(UMessage.message("assigned_menu_permissions_success"));
+                    return sysSensitiveLogBean;
                 });
             } catch (Exception e) {
-                sysSensitiveLogBean = USecurity.recordSensitiveLog(() -> {
-                    SysSensitiveLogBean assignButtonLogBean = new SysSensitiveLogBean();
-                    assignButtonLogBean.setModule(MenuModule.MENU_MANAGEMENT);
-                    assignButtonLogBean.setSubModule(MenuModule.SubModule.ASSIGN_BUTTON);
-                    assignButtonLogBean.setType(MenuModule.SubModule.ASSIGN_BUTTON);
-                    assignButtonLogBean.setResult(FlagConstant.FAILED);
-                    assignButtonLogBean.setContextOld("分配前菜单ID：" + JSONObject.toJSONString(beforeAssignButtonIdList));
-                    assignButtonLogBean.setRemark(UMessage.message("assigned_menu_permissions_failed"));
-                    return assignButtonLogBean;
+                saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+                    sysSensitiveLogBean.setModule(MenuModule.MENU_MANAGEMENT);
+                    sysSensitiveLogBean.setSubModule(MenuModule.SubModule.ASSIGN_BUTTON);
+                    sysSensitiveLogBean.setType(MenuModule.SubModule.ASSIGN_BUTTON);
+                    sysSensitiveLogBean.setResult(FlagConstant.FAILED);
+                    sysSensitiveLogBean.setContextOld("分配前菜单ID：" + JSONObject.toJSONString(beforeAssignButtonIdList));
+                    sysSensitiveLogBean.setRemark(UMessage.message("assigned_menu_permissions_failed"));
+                    return sysSensitiveLogBean;
                 });
                 throw e;
             } finally {
-                if (UEmpty.isNotNull(sysSensitiveLogBean)) {
-                    USpring.context().publishEvent(sysSensitiveLogBean);
+                if (UEmpty.isNotNull(saveSysSensitiveLogBean)) {
+                    USpring.context().publishEvent(saveSysSensitiveLogBean);
                 }
             }
             return status;

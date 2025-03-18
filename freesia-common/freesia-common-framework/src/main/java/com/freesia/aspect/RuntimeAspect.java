@@ -22,7 +22,7 @@ import java.util.Date;
 @Aspect
 @Component
 public class RuntimeAspect {
-    @Around(value = "@annotation(runTime))")
+    @Around(value = "@annotation(runTime)")
     protected Object around(ProceedingJoinPoint proceedingJoinPoint, RunTime runTime) {
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
         Method method = methodSignature.getMethod();

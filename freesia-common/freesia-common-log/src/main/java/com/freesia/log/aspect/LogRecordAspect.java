@@ -32,7 +32,7 @@ import java.util.UUID;
 public class LogRecordAspect {
     private final String clzName = LogRecordAspect.class.getName();
 
-    @Around(value = "@annotation(logRecord))")
+    @Around(value = "@annotation(logRecord)")
     protected Object around(ProceedingJoinPoint proceedingJoinPoint, LogRecord logRecord) {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         Object proceed = null;
@@ -40,8 +40,7 @@ public class LogRecordAspect {
         try {
             proceed = proceedingJoinPoint.proceed();
             String response = logRecordAfter(proceedingJoinPoint, proceed, uuid);
-            SysSensitiveLogBean logBean = USecurity.recordSensitiveLog(() -> {
-                SysSensitiveLogBean sysSensitiveLogBean = new SysSensitiveLogBean();
+            SysSensitiveLogBean logBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
                 sysSensitiveLogBean.setModule(logRecord.module());
                 sysSensitiveLogBean.setSubModule(logRecord.subModule());
                 sysSensitiveLogBean.setType(logRecord.type());

@@ -39,7 +39,7 @@ import java.util.*;
 public class IdempotentAspect {
     public static final ThreadLocal<String> submitKeyThreadLocal = new ThreadLocal<>();
 
-    @Around(value = "@annotation(idempotent))")
+    @Around(value = "@annotation(idempotent)")
     protected Object around(ProceedingJoinPoint proceedingJoinPoint, Idempotent idempotent) {
         Object proceed = null;
         this.idempotentBeforeHandler(proceedingJoinPoint, idempotent);
