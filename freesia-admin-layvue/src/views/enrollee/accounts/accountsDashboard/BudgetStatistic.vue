@@ -2,17 +2,32 @@
   <lay-card>
     <template #title>{{ props.title }}</template>
     <lay-row space="10">
-      <lay-col v-for="(item, index) in accountBudgetEntityList" :key="index" :md="6">
-        <lay-row :space="20">
-          <lay-col :md="24" style="font-size: 24pt">
+      <lay-col v-for="(item, index) in accountBudgetEntityList" :key="index" :md="8">
+        <div style="margin-top: 20px">
+          <div style="font-size: 12pt;text-align: center;height: 50px">
             {{ item.name }}
-          </lay-col>
-        </lay-row>
-        <lay-row :space="100">
-          <lay-col :md="24" style="font-size: 32pt">
-            {{ item.outlay }}/{{ item.budget }}
-          </lay-col>
-        </lay-row>
+          </div>
+          <div style="font-size: 32pt">
+            <div style="display: flex;justify-content: center" :style="
+                    item.value >= 0 && item.value <= 50 ?
+                    'color: #36b368' :
+                    item.value > 50 && item.value <= 80 ?
+                    'color: #FFB800' :
+                    item.value > 80 && item.value <= 100 ?
+                    'color: #FF9B2D' :
+                    item.value > 100 ?
+                    'color: #FF5722' : 'color: #393D49'">
+              <div>
+                <lay-count-up :end-val="item.outlay" prefix="¥" decimalPlaces="2"></lay-count-up>
+                /
+                <lay-count-up :end-val="item.budget"></lay-count-up>
+              </div>
+              <div style="margin-left: 30px">
+                {{ item.value }}%
+              </div>
+            </div>
+          </div>
+        </div>
       </lay-col>
     </lay-row>
   </lay-card>
