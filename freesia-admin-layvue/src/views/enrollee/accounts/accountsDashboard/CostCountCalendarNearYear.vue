@@ -1,5 +1,5 @@
 <template>
-  <lay-card>
+  <lay-card shadow="hover">
     <template #title>{{ costCountCalendarNearYearTitle }}</template>
     <lay-row :space="10">
       <lay-col>

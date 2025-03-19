@@ -1,8 +1,6 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
-    <lay-card>
-      <BudgetStatistic></BudgetStatistic>
-    </lay-card>
+    <BudgetStatistic></BudgetStatistic>
     <lay-row space="10">
       <lay-col md="12">
         <CostTypeRatePie></CostTypeRatePie>
@@ -101,7 +99,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {ref} from 'vue'
-import BudgetStatistic from "@/views/enrollee/accounts/accountsDashboard/BudgetStatistic.vue";
+import BudgetStatistic from "./BudgetStatistic.vue";
 
 const mainRef = ref()
 const currentIndex = ref('1')

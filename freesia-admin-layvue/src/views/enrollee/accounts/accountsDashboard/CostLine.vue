@@ -1,5 +1,5 @@
 <template>
-  <lay-card>
+  <lay-card shadow="hover">
     <template #title>{{ costLineChartTitle }}</template>
     <lay-form :model="findCostLineChartQueryVo" ref="findCostLineChartQueryRef" label-position="left">
       <lay-row :space="10">

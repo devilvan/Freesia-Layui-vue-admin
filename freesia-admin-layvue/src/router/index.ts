@@ -45,17 +45,29 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             next()
         }
     }
-    if (token) {
-        if (!isGetRouter) {
+    if (!isGetRouter) {
+        if (token) {
             isGetRouter = true;
             await userStore.getRouters()
             next(to.fullPath)
         } else {
-            next()
+            next({path: loginPath})
         }
     } else {
-        next({path: loginPath})
+        next()
     }
+
+    // if (token) {
+    //     if (!isGetRouter) {
+    //         isGetRouter = true;
+    //         await userStore.getRouters()
+    //         next(to.fullPath)
+    //     } else {
+    //         next()
+    //     }
+    // } else {
+    //     next({path: loginPath})
+    // }
 })
 
 router.afterEach(() => {

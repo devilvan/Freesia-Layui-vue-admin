@@ -162,13 +162,13 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
                 if (BudgetType.CUSTOM.getCode().equals(budgetType)) {
                     return 5;
                 } else if (BudgetType.YEAR.getCode().equals(budgetType)) {
-                    return 1;
-                } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
-                    return 2;
-                } else if (BudgetType.WEEK.getCode().equals(budgetType)) {
-                    return 3;
-                } else if (BudgetType.DAY.getCode().equals(budgetType)) {
                     return 4;
+                } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
+                    return 3;
+                } else if (BudgetType.WEEK.getCode().equals(budgetType)) {
+                    return 2;
+                } else if (BudgetType.DAY.getCode().equals(budgetType)) {
+                    return 1;
                 } else {
                     return Integer.MAX_VALUE;
                 }

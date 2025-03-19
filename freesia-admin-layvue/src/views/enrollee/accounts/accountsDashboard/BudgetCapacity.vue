@@ -1,5 +1,5 @@
 <template>
-  <lay-card>
+  <lay-card shadow="hover">
     <template #title>{{ budgetTitle }}</template>
     <lay-row :space="10">
       <lay-col>
@@ -116,11 +116,11 @@ function doFindBudgetCapacity() {
             // name: `${tmp.name}\n（${tmp.durationFrom}-${tmp.durationTo}）`,
             name: `${tmp.name}`,
             title: {
-              offsetCenter: ['-160%', `${offset}%`]
+              offsetCenter: ['-130%', `${offset}%`]
             },
             detail: {
               valueAnimation: true,
-              offsetCenter: ['-160%', `${offset + 15}%`]
+              offsetCenter: ['-130%', `${offset + 15}%`]
             },
           })
           offset += 40
