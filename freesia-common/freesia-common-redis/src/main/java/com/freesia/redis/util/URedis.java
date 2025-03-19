@@ -159,8 +159,8 @@ public class URedis {
      * @param name Hash键
      * @param key  map键
      */
-    public static void hashExist(String name, Object key) {
-        REDIS_TEMPLATE.opsForHash().hasKey(name, key);
+    public static boolean hashExist(String name, Object key) {
+        return Convert.toBool(REDIS_TEMPLATE.opsForHash().hasKey(name, key), false);
     }
 
     /**
@@ -193,6 +193,17 @@ public class URedis {
      */
     public static void put(String hashKey, String key, Object value) {
         REDIS_TEMPLATE.opsForHash().put(hashKey, key, value);
+    }
+
+    /**
+     * Hash 不存在则添加键值对
+     *
+     * @param hashKey Hash键
+     * @param key     map键
+     * @param value   值
+     */
+    public static void putIfAbsent(String hashKey, String key, Object value) {
+        REDIS_TEMPLATE.opsForHash().putIfAbsent(hashKey, key, value);
     }
 
     /**

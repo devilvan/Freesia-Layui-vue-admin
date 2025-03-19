@@ -43,20 +43,27 @@ export default {
 <script lang="ts" setup>
 
 /*INIT*/
-import {onMounted, ref} from "vue";
-import {findBudgetCapacity} from "@/api/account/AccountBudget";
+import {ref, watch} from "vue";
 import {AccountBudgetVo, EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
 
 const props = defineProps({
   title: {
     required: false,
     default: '开支预算统计'
+  },
+  dataSource: {
+    required: true,
+    type: Array<EchartCapacityOptionEntity>
   }
 })
 
-onMounted(() => {
-  doFindBudgetCapacity();
-})
+watch(
+    () => props.dataSource,
+    (val) => {
+      accountBudgetEntityList.value = val;
+    },
+);
+
 /*INIT*/
 
 /*VAR*/
@@ -65,14 +72,6 @@ const accountBudgetEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
 /*VAR*/
 
 /*FUNCTION*/
-function doFindBudgetCapacity() {
-  findBudgetCapacity(accountBudgetVo.value).then((res: any) => {
-    if (res.code === 200) {
-      accountBudgetEntityList.value = res.data;
-    }
-  })
-}
-
 /*FUNCTION*/
 </script>
 

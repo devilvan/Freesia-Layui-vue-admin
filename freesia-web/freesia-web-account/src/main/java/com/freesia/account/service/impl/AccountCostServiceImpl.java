@@ -2,15 +2,11 @@ package com.freesia.account.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.freesia.account.constant.BudgetType;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.*;
-import com.freesia.account.mapper.AccountBudgetMapper;
 import com.freesia.account.mapper.AccountCostMapper;
-import com.freesia.account.po.AccountBudgetPo;
 import com.freesia.account.po.AccountCostPo;
 import com.freesia.account.po.AccountCostUserPk;
 import com.freesia.account.po.AccountCostUserPo;
@@ -19,24 +15,24 @@ import com.freesia.account.repository.AccountCostUserRepository;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.constant.Constants;
 import com.freesia.entity.EchartCalendarOptionEntity;
-import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.redis.util.URedis;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,7 +47,6 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     private final AccountCostRepository accountCostRepository;
     private final AccountCostMapper accountCostMapper;
     private final AccountCostUserRepository accountCostUserRepository;
-    private final AccountBudgetMapper accountBudgetMapper;
     private final TransactionTemplate transactionTemplate;
 
     /**
@@ -141,7 +136,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteAccountCost(List<Long> idList) {
         List<AccountCostPo> accountCostPoList = accountCostRepository.findAllById(idList);
         Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
@@ -172,6 +167,15 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
 
     @Override
     public EchartPieOptionEntity findCostTypeRatePie(AccountCostDto accountCostDto) {
+        String cacheKey = "findCostTypeRatePie:" +
+                accountCostDto.getUserId() + "@" +
+                accountCostDto.getTenantId() + "@" +
+                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" +
+                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
+        EchartPieOptionEntity echartPieOptionEntityCache = URedis.get(cacheKey);
+        if (UEmpty.isNotNull(echartPieOptionEntityCache)) {
+            return echartPieOptionEntityCache;
+        }
         List<FindCostTypeRatePieEntity> accountCostPoList = accountCostMapper.findCostTypeRatePie(accountCostDto);
         EchartPieOptionEntity echartPieOptionEntity = new EchartPieOptionEntity();
         if (UEmpty.isNotEmpty(accountCostPoList)) {
@@ -185,6 +189,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 series.add(tmp);
             }
             echartPieOptionEntity.setSeries(series);
+            URedis.set(cacheKey, echartPieOptionEntity, Duration.ofSeconds(30));
             return echartPieOptionEntity;
         }
         return null;
@@ -193,6 +198,16 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Override
     public EchartLineOptionEntity findCostLineChart(AccountCostDto accountCostDto) {
         String dateScope = accountCostDto.getDateScope();
+        String cacheKey = "findCostLineChart:" +
+                accountCostDto.getUserId() + "@" +
+                accountCostDto.getTenantId() + "@" +
+                dateScope + "@" +
+                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" +
+                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
+        EchartLineOptionEntity echartLineOptionCache = URedis.get(cacheKey);
+        if (UEmpty.isNotNull(echartLineOptionCache)) {
+            return echartLineOptionCache;
+        }
         List<FindCostLineChartEntity> findCostLineChartEntityList;
         EchartLineOptionEntity echartLineOptionEntity = new EchartLineOptionEntity();
         if (DateScope.WEEK.getCode().equals(dateScope)) {
@@ -205,25 +220,33 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             findCostLineChartEntityList = accountCostMapper.findYearCostLineChart(accountCostDto);
             echartLineOptionEntity = buildEchartLineOptionEntity(findCostLineChartEntityList);
         }
+        URedis.set(cacheKey, echartLineOptionEntity, Duration.ofSeconds(30));
         return echartLineOptionEntity;
     }
 
     @Override
     public EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto) {
+        String cacheKey = "findCostSumCalendarNearYear:" +
+                accountCostDto.getUserId() + "@" +
+                accountCostDto.getTenantId() + "@" +
+                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" +
+                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
+        EchartCalendarOptionEntity echartCalendarOptionEntityCache = URedis.get(cacheKey);
+        if (UEmpty.isNotNull(echartCalendarOptionEntityCache)) {
+            return echartCalendarOptionEntityCache;
+        }
         List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList = accountCostMapper.findCostSumCalendarNearYear(accountCostDto);
-        return buildEchartCalendarOptionEntity(findCostSumCalendarNearYearEntityList, accountCostDto);
+        EchartCalendarOptionEntity echartCalendarOptionEntity = buildEchartCalendarOptionEntity(findCostSumCalendarNearYearEntityList, accountCostDto);
+        if (UEmpty.isNotNull(echartCalendarOptionEntity)) {
+            URedis.set(cacheKey, echartCalendarOptionEntity, Duration.ofSeconds(60));
+        }
+        return echartCalendarOptionEntity;
     }
 
     private EchartCalendarOptionEntity buildEchartCalendarOptionEntity(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList, AccountCostDto accountCostDto) {
         EchartCalendarOptionEntity echartCalendarOptionEntity = new EchartCalendarOptionEntity();
         if (UEmpty.isNotEmpty(findCostSumCalendarNearYearEntityList)) {
-            List<List<String>> series = new ArrayList<>();
-            for (FindCostSumCalendarNearYearEntity findCostSumCalendarNearYearEntity : findCostSumCalendarNearYearEntityList) {
-                BigDecimal outlay = findCostSumCalendarNearYearEntity.getOutlay().setScale(2, RoundingMode.HALF_UP);
-                String paymentTime = findCostSumCalendarNearYearEntity.getPaymentTime();
-                List<String> seriesList = Arrays.asList(paymentTime, outlay.toString());
-                series.add(seriesList);
-            }
+            List<List<String>> series = buildSeries(findCostSumCalendarNearYearEntityList);
             BigDecimal maxValue = findCostSumCalendarNearYearEntityList.stream()
                     .map(FindCostSumCalendarNearYearEntity::getOutlay)
                     .max(BigDecimal::compareTo)
@@ -235,6 +258,17 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             echartCalendarOptionEntity.setSeries(series);
         }
         return echartCalendarOptionEntity;
+    }
+
+    private static List<List<String>> buildSeries(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList) {
+        List<List<String>> series = new ArrayList<>();
+        for (FindCostSumCalendarNearYearEntity findCostSumCalendarNearYearEntity : findCostSumCalendarNearYearEntityList) {
+            BigDecimal outlay = findCostSumCalendarNearYearEntity.getOutlay().setScale(2, RoundingMode.HALF_UP);
+            String paymentTime = findCostSumCalendarNearYearEntity.getPaymentTime();
+            List<String> seriesList = Arrays.asList(paymentTime, outlay.toString());
+            series.add(seriesList);
+        }
+        return series;
     }
 
     private EchartLineOptionEntity buildEchartLineOptionEntity(List<FindCostLineChartEntity> findCostLineChartEntityList) {

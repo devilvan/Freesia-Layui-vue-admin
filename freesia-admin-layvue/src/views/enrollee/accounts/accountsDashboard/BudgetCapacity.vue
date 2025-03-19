@@ -1,6 +1,6 @@
 <template>
   <lay-card shadow="hover">
-    <template #title>{{ budgetTitle }}</template>
+    <template #title>{{ props.title }}</template>
     <lay-row :space="10">
       <lay-col>
         <div ref="budgetCapacityEchartRef" style="height: 500px"></div>
@@ -15,24 +15,37 @@ export default {
 </script>
 <script setup lang="ts">
 /*INIT*/
-import {onMounted, ref} from "vue";
+import {ref, watch} from "vue";
 import * as echarts from "echarts";
 import {AccountBudgetVo} from "@/types/account/AccountBudget";
 import {EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
-import {findBudgetCapacity} from "@/api/account/AccountBudget";
 
-onMounted(() => {
-  doFindBudgetCapacity();
+const props = defineProps({
+  title: {
+    required: false,
+    default: '我的预算'
+  },
+  dataSource: {
+    required: true,
+    type: Array<EchartCapacityOptionEntity>
+  }
 })
+
+watch(
+    () => props.dataSource,
+    (val) => {
+      accountBudgetEntityList.value = val;
+      doBuildBudgetCapacity();
+    },
+);
 /*INIT*/
 
 
 /*VAR*/
-const budgetTitle = '我的预算';
-const myChart = ref();
 let budgetCapacityEchart: echarts.ECharts | null = null;
 const budgetCapacityEchartRef = ref(null)
 const accountBudgetVo = ref<AccountBudgetVo>({});
+const accountBudgetEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
 let gaugeData = ref<Array<EchartCapacityOptionEntity>>([])
 let option = ref({
   tooltip: {
@@ -103,33 +116,30 @@ let option = ref({
 /**
  * 查询预算容量图
  */
-function doFindBudgetCapacity() {
-  findBudgetCapacity(accountBudgetVo.value).then((res: any) => {
-    if (res.code === 200) {
-      let data = res.data;
-      if (data) {
-        let offset = -125
-        for (let i = 0; i < data.length; i++) {
-          let tmp = data[i]
-          gaugeData.value.push({
-            value: tmp.value,
-            // name: `${tmp.name}\n（${tmp.durationFrom}-${tmp.durationTo}）`,
-            name: `${tmp.name}`,
-            title: {
-              offsetCenter: ['-130%', `${offset}%`]
-            },
-            detail: {
-              valueAnimation: true,
-              offsetCenter: ['-130%', `${offset + 15}%`]
-            },
-          })
-          offset += 40
-        }
-        budgetCapacityEchart = echarts.init(budgetCapacityEchartRef.value)
-        budgetCapacityEchart.setOption(option.value)
-      }
+function doBuildBudgetCapacity() {
+  let data = props.dataSource;
+  // let data = accountBudgetEntityList.value || props.dataSource;
+  if (data) {
+    let offset = -125
+    for (let i = 0; i < data.length; i++) {
+      let tmp = data[i]
+      gaugeData.value.push({
+        value: tmp.value,
+        // name: `${tmp.name}\n（${tmp.durationFrom}-${tmp.durationTo}）`,
+        name: `${tmp.name}`,
+        title: {
+          offsetCenter: ['-130%', `${offset}%`]
+        },
+        detail: {
+          valueAnimation: true,
+          offsetCenter: ['-130%', `${offset + 15}%`]
+        },
+      })
+      offset += 40
     }
-  })
+    budgetCapacityEchart = echarts.init(budgetCapacityEchartRef.value)
+    budgetCapacityEchart.setOption(option.value)
+  }
 }
 
 /*FUNCTION*/

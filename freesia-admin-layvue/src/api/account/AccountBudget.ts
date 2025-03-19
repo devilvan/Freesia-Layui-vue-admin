@@ -2,7 +2,7 @@ import Http from "../Http";
 import {PageQuery} from "../../types/Common";
 import {TableResult} from "../../types/Result";
 import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
-import {AccountBudgetEntity, AccountBudgetVo} from "../../types/account/AccountBudget";
+import {AccountBudgetEntity, AccountBudgetVo, EchartCapacityOptionEntity} from "../../types/account/AccountBudget";
 
 export function saveUpdate(accountBudgetVo: AccountBudgetVo) {
     return Http.post("/api/accountBudgetController/saveUpdate", accountBudgetVo);
@@ -26,7 +26,7 @@ export function deleteAccountBudget(idList: Array<string>) {
     return Http.post("/api/accountBudgetController/deleteAccountBudget", idList);
 }
 
-export function findBudgetCapacity(accountBudgetVo: AccountBudgetVo) {
+export function findBudgetCapacity(accountBudgetVo: AccountBudgetVo): Promise<Array<EchartCapacityOptionEntity>> {
     let params = buildUrlParam(accountBudgetVo);
     return Http.get("/api/accountBudgetController/findBudgetCapacity", params);
 }

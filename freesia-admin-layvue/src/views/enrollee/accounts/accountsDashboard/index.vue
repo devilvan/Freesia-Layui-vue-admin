@@ -1,12 +1,12 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
-    <BudgetStatistic></BudgetStatistic>
+    <BudgetStatistic :dataSource="echartCapacityOptionEntityList"></BudgetStatistic>
     <lay-row space="10">
       <lay-col md="12">
         <CostTypeRatePie></CostTypeRatePie>
       </lay-col>
       <lay-col md="12">
-        <AccountBudget></AccountBudget>
+        <AccountBudget :dataSource="echartCapacityOptionEntityList"></AccountBudget>
       </lay-col>
     </lay-row>
     <lay-row :space="10">
@@ -98,13 +98,23 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import BudgetStatistic from "./BudgetStatistic.vue";
+import {findBudgetCapacity} from "../../../../api/account/AccountBudget";
+import {AccountBudgetVo, EchartCapacityOptionEntity} from "../../../../types/account/AccountBudget";
 
-const mainRef = ref()
-const currentIndex = ref('1')
+/*INIT*/
+onMounted(() => {
+  findBudgetCapacity(accountBudgetVo.value).then((res: any) => {
+    if (res.code === 200) {
+      echartCapacityOptionEntityList.value = res.data
+    }
+  })
+})
+/*INIT*/
 
 /* VAR*/
+const currentIndex = ref('1')
 const columns21 = [
   {
     type: 'number'
@@ -168,6 +178,9 @@ const dataSource21 = [
     remark: 'layui - vue（谐音：类 UI) '
   }
 ]
+const accountBudgetVo = ref<AccountBudgetVo>({});
+const echartCapacityOptionEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
+
 /* VAR*/
 
 </script>

@@ -12,19 +12,20 @@ import com.freesia.account.mapper.AccountBudgetMapper;
 import com.freesia.account.po.AccountBudgetPo;
 import com.freesia.account.repository.AccountBudgetRepository;
 import com.freesia.account.service.AccountBudgetService;
-import com.freesia.constant.Constants;
 import com.freesia.constant.FlagConstant;
 import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.redis.util.URedis;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +43,6 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
 
     @Override
     public AccountBudgetDto saveUpdate(AccountBudgetDto accountBudgetDto) {
-        Long id = accountBudgetDto.getId();
         // 新增则需要校验是否已经设置了该预算类型的数据
         if (UEmpty.isNull(accountBudgetDto.getId())) {
             Long userId = accountBudgetDto.getUserId();
@@ -95,8 +95,9 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
                     return Integer.MAX_VALUE;
                 }
             }));
+            return TableResult.build(UCopy.convertPagePo2Dto(pagePo, AccountBudgetDto.class));
         }
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, AccountBudgetDto.class));
+        return TableResult.build();
     }
 
     @Override
@@ -109,6 +110,7 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteAccountBudget(List<Long> idList) {
         removeBatchByIds(idList);
     }
@@ -119,6 +121,13 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
         List<AccountBudgetPo> accountCostPoList = accountBudgetMapper.findListBudget(findBudgetCapacityDto);
         if (UEmpty.isEmpty(accountCostPoList)) {
             return echartCapacityOptionEntityList;
+        }
+        String cacheKey = "findBudgetCapacity:" +
+                findBudgetCapacityDto.getUserId() + "@" +
+                findBudgetCapacityDto.getTenantId() + "@";
+        List<EchartCapacityOptionEntity> echartCapacityOptionEntityListCache = URedis.get(cacheKey);
+        if (UEmpty.isNotNull(echartCapacityOptionEntityListCache)) {
+            return echartCapacityOptionEntityListCache;
         }
         for (AccountBudgetPo accountBudgetPo : accountCostPoList) {
             String budgetType = accountBudgetPo.getBudgetType();
@@ -173,13 +182,13 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
                     return Integer.MAX_VALUE;
                 }
             }));
+            URedis.set(cacheKey, echartCapacityOptionEntityList, Duration.ofSeconds(30));
         }
         return echartCapacityOptionEntityList;
     }
 
     private EchartCapacityOptionEntity buildEchartCapacityOptionEntity(List<FindBudgetCapacityEntity> findBudgetCapacityEntityList, AccountBudgetPo accountBudgetPo) {
         EchartCapacityOptionEntity echartCapacityOptionEntity = new EchartCapacityOptionEntity();
-        SimpleDateFormat sdfYmd = Constants.SDF_YMD;
         FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
         double sumOutlay = findBudgetCapacityEntityList.stream().mapToDouble(item -> item.getOutlay().doubleValue()).sum();
         BigDecimal rate = new BigDecimal(sumOutlay)
