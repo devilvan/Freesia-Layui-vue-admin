@@ -53,10 +53,10 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <div class="table-box" style="width: 1457px">
+    <div class="table-box" style="width: 100%">
       <lay-table
           ref="tableRef"
-          :height="`600px`"
+          :height="`500px`"
           :loading="loading"
           :columns="columns"
           children-column-name="children"
@@ -316,7 +316,7 @@
 
     <lay-layer v-model="saveButtonModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysMenuVoRules" label-position="top" size="md" @keydown.esc.prevent="toCancel">
+        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysButtonVoRules" label-position="top" size="md" @keydown.esc.prevent="toCancel">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -670,13 +670,14 @@ const initLinkTreeSelect = {
   id: '-1'
 }
 const menuRuleComponentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
+const buttonRuleComponentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
 const linkRuleComponentRegex = "(modal|blank)$|(([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$)"
 // const permsRegex = "([A-Za-z0-9$_])+(:[A-Za-z0-9$_]*)$"
 const permsRegex = "([A-Za-z0-9])+(:[A-Za-z0-9]*)$"
 const sysButtonVoRules = ref({
   perms: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
-      if (!value.match(permsRegex)) {
+      if (!value.match(buttonRuleComponentRegex)) {
         callback(new Error("权限标识格式错误，允许'$'、'-'、'_'，例如：iframe:inner:index"));
       } else {
         return true;
