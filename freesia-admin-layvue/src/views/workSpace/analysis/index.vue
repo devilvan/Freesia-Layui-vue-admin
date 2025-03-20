@@ -1,6 +1,6 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col :md="6" :sm="6" :xs="12">
         <lay-card class="statistics">
           <template #title>今日访问</template>

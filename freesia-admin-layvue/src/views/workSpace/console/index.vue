@@ -1,10 +1,10 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
-    <lay-row space="10">
+    <lay-row space="20">
       <lay-col md="8" sm="8" xs="12">
         <lay-card>
           <template #title> 快捷方式</template>
-          <lay-row :space="10">
+          <lay-row :space="20">
             <lay-col :md="6">
               <router-link to="/workspace/workbench" class="shortcut">
                 <i class="layui-icon layui-icon-console"></i>
@@ -59,7 +59,7 @@
       <lay-col md="8" sm="8" xs="12">
         <lay-card>
           <template #title> 代办事项</template>
-          <lay-row :space="10">
+          <lay-row :space="20">
             <lay-col :md="12">
               <a class="agency">
                 <h3>待审评论</h3>
@@ -115,7 +115,7 @@
         </lay-card>
       </lay-col>
       <lay-col md="16" sm="16" xs="24">
-        <lay-row :space="10">
+        <lay-row :space="20">
           <lay-col :md="24">
             <lay-card>
               <template #title> 数据概览</template>
@@ -143,7 +143,7 @@
         </lay-row>
       </lay-col>
       <lay-col md="8" sm="8" xs="12">
-        <lay-row :space="10">
+        <lay-row :space="20">
           <lay-col :md="24">
             <lay-card>
               <template #title>效果报告</template>

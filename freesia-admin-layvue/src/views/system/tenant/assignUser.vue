@@ -2,9 +2,9 @@
   <div style="height: 100%; width: 100%">
     <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
       <lay-container :fluid="true">
-        <lay-form style="margin-top: 10px">
+        <lay-form label-position="top">
           <lay-card title="租户信息">
-            <lay-row>
+            <lay-row :space="20">
               <lay-col :md="6">
                 <lay-form-item label="租户ID" label-width="80">
                   <lay-input

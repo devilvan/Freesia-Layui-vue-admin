@@ -1,8 +1,8 @@
 <template>
   <lay-container :fluid="true">
-    <lay-card>
-      <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
-        <lay-row>
+    <lay-card shadow="hover">
+      <lay-form label-position="top" @keyup.enter.prevent="toSearch">
+        <lay-row :space="20">
           <lay-col :md="6">
             <lay-form-item label="租户编码" label-width="80">
               <lay-input
@@ -23,19 +23,6 @@
                   :allow-clear="true"
                   class="width-resize"
               ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label-width="20">
-              <lay-button
-                  style="margin-left: 20px"
-                  type="normal"
-                  size="sm"
-                  @click="toSearch"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -62,6 +49,8 @@
           <dict-tag :options="sysTenantTypeList" :value="row.type" :showValue="true"/>
         </template>
         <template v-slot:toolbar>
+          <lay-button type="normal" size="sm" @click="toSearch">查询</lay-button>
+          <lay-button size="sm" @click="toReset"> 重置</lay-button>
           <lay-button
               size="sm"
               type="primary"

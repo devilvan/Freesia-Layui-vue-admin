@@ -1,7 +1,7 @@
 <template>
   <lay-card shadow="hover">
     <template #title>{{ costCountCalendarNearYearTitle }}</template>
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col>
         <lay-form :model="findCostSumCalendarNearYearQueryVo" ref="findCostSumCalendarNearYearQueryRef"
                   label-position="left">

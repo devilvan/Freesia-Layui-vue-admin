@@ -59,12 +59,12 @@
           <lay-icon v-else class="layui-icon-right"></lay-icon>
         </div>
       </div>
-      <div style="flex: 1; padding: 10px; over-flow: auto">
+      <div style="flex: 1; padding: 10px; overflow: visible">
         <!-- table -->
-        <lay-card>
-          <lay-form>
-            <lay-row>
-              <lay-col :md="5">
+        <lay-card shadow="hover">
+          <lay-form label-position="top">
+            <lay-row :space="20">
+              <lay-col :md="6">
                 <lay-form-item label="用户账号" label-width="80">
                   <lay-input
                       v-model="searchQuery.userAccount"
@@ -75,7 +75,7 @@
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
-              <lay-col :md="5">
+              <lay-col :md="6">
                 <lay-form-item label="用户名" label-width="80">
                   <lay-input
                       v-model="searchQuery.userName"
@@ -86,7 +86,7 @@
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
-              <lay-col :md="5">
+              <lay-col :md="6">
                 <lay-form-item label="性别" label-width="80">
                   <lay-select
                       class="width-resize"
@@ -104,19 +104,6 @@
                         label="女"
                     ></lay-select-option>
                   </lay-select>
-                </lay-form-item>
-              </lay-col>
-              <lay-col :md="5">
-                <lay-form-item label-width="20">
-                  <lay-button
-                      style="margin-left: 20px"
-                      type="normal"
-                      size="sm"
-                      @click="toSearch"
-                  >
-                    查询
-                  </lay-button>
-                  <lay-button size="sm" @click="toReset"> 重置</lay-button>
                 </lay-form-item>
               </lay-col>
             </lay-row>
@@ -146,6 +133,8 @@
             <dict-tag :options="sysGenderList" :value="row.gender" :showValue="true"/>
           </template>
           <template v-slot:toolbar>
+            <lay-button type="normal" size="sm" @click="toSearch">查询</lay-button>
+            <lay-button size="sm" @click="toReset">重置</lay-button>
             <lay-button
                 size="sm"
                 type="primary"

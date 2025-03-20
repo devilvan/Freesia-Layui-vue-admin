@@ -1,8 +1,8 @@
 <template>
   <lay-container :fluid="true">
     <lay-card>
-      <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
-        <lay-row>
+      <lay-form label-position="top" @keyup.enter.prevent="toSearch">
+        <lay-row :space="20">
           <lay-col :md="6">
             <lay-form-item label="主键ID" label-width="80">
               <lay-input
@@ -23,20 +23,6 @@
                   :allow-clear="true"
                   class="width-resize"
               ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label-width="20">
-              <lay-button
-                  style="margin-left: 20px"
-                  type="normal"
-                  size="sm"
-                  @click="toSearch"
-                  v-permission="[$MENU_PERMISSION.COMMON_URL_INDEX]"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -63,6 +49,10 @@
           <dict-tag :options="requestTypeList" :value="row.requestType" :showValue="true"/>
         </template>
         <template v-slot:toolbar>
+          <lay-button type="normal" size="sm" @click="toSearch" v-permission="[$MENU_PERMISSION.COMMON_URL_INDEX]">
+            查询
+          </lay-button>
+          <lay-button size="sm" @click="toReset"> 重置</lay-button>
           <lay-button
               size="sm"
               type="primary"

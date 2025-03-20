@@ -2,7 +2,7 @@
   <lay-card shadow="hover">
     <template #title>{{ costLineChartTitle }}</template>
     <lay-form :model="findCostLineChartQueryVo" ref="findCostLineChartQueryRef" label-position="left">
-      <lay-row :space="10">
+      <lay-row :space="20">
         <lay-col :md="12">
           <lay-form-item label="时间范围：" prop="dateScope">
             <lay-radio v-model="findCostLineChartQueryVo.dateScope" name="action" :value="DateScope.WEEK"

@@ -1,6 +1,6 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col :md="24">
         <lay-card>
           <lay-form style="margin-top: 20px">
@@ -32,7 +32,7 @@
       </lay-col>
       <lay-col :md="24">
         <lay-card>
-          <lay-row :space="10">
+          <lay-row :space="20">
             <lay-col v-for="(item, index) in dataSource" :key="index" :md="6">
               <lay-card class="card-list-item">
                 <img

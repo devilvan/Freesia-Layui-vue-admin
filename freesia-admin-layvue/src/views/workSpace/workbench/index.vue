@@ -1,8 +1,8 @@
 <template>
   <lay-container fluid="true" style="padding: 10px">
-    <lay-row space="10">
+    <lay-row space="20">
       <lay-col md="18" sm="18" xs="24">
-        <lay-row :space="10">
+        <lay-row :space="20">
           <lay-col :md="24">
             <lay-card class="project-grids">
               <template v-slot:title> 最近更新 </template>
@@ -207,7 +207,7 @@
         </lay-row>
       </lay-col>
       <lay-col md="6" sm="6" xs="24">
-        <lay-row :space="10">
+        <lay-row :space="20">
           <lay-col :md="24">
             <lay-card>
               <template v-slot:title> 便捷导航 </template>

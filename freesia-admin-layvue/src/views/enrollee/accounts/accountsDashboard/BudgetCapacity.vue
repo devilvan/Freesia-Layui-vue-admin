@@ -1,7 +1,7 @@
 <template>
   <lay-card shadow="hover">
     <template #title>{{ props.title }}</template>
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col>
         <div ref="budgetCapacityEchartRef" style="height: 500px"></div>
       </lay-col>

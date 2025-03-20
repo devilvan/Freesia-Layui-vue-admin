@@ -39,7 +39,7 @@
           <lay-col :md="5">
             <lay-form-item label-width="20">
               <lay-button
-                  style="margin-left: 20px"
+
                   type="normal"
                   size="sm"
                   @click="toSearch"

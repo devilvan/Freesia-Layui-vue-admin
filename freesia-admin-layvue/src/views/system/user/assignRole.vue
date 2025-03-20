@@ -5,7 +5,7 @@
         <lay-card>
           <lay-form label-position="top">
             <lay-card title="用户信息">
-              <lay-row>
+              <lay-row :space="20">
                 <lay-col :md="8">
                   <lay-form-item label="用户ID" label-width="80">
                     <lay-input
@@ -68,7 +68,7 @@
       </lay-container>
     </div>
   </div>
-  <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom" v-if="target">
+  <lay-affix class="affix-footer" :target="target" :offset="30" position="bottom">
     <lay-button type="primary" @click="$tab.closeOpen('/system/user/index')">返回</lay-button>
   </lay-affix>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <lay-card shadow="hover">
     <template #title>{{ costTypeRatePieTitle }}</template>
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col>
         <lay-form :model="findCostTypeRatePieQueryVo" ref="findCostTypeRatePieQueryRef" label-position="left">
           <lay-form-item label="按时间：" prop="paymentTimeRange">

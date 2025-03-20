@@ -1,7 +1,7 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
     <BudgetStatistic :dataSource="echartCapacityOptionEntityList"></BudgetStatistic>
-    <lay-row space="10">
+    <lay-row space="20">
       <lay-col md="12">
         <CostTypeRatePie></CostTypeRatePie>
       </lay-col>
@@ -9,14 +9,14 @@
         <AccountBudget :dataSource="echartCapacityOptionEntityList"></AccountBudget>
       </lay-col>
     </lay-row>
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col md="24">
         <CostCountCalendarNearYear></CostCountCalendarNearYear>
       </lay-col>
     </lay-row>
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col md="16" sm="16" xs="24">
-        <lay-row :space="10">
+        <lay-row :space="20">
           <lay-col :md="24">
             <CostLine></CostLine>
           </lay-col>
@@ -41,7 +41,7 @@
         </lay-row>
       </lay-col>
       <lay-col md="8" sm="8" xs="12">
-        <lay-row :space="10">
+        <lay-row :space="20">
           <lay-col :md="24">
             <lay-card>
               <template #title>效果报告</template>

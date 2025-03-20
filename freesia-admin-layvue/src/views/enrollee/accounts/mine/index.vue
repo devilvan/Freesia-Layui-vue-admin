@@ -87,7 +87,7 @@
       <template v-slot:toolbar>
         <lay-button
             size="sm"
-            style="margin-left: 20px"
+
             type="normal"
             @click="toSearch"
             v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_INDEX]"

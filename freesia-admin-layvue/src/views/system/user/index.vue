@@ -1,10 +1,10 @@
 <template>
   <lay-container :fluid="true">
     <lay-card shadow="hover">
-      <lay-form style="margin-top: 10px" label-position="top">
-        <lay-row>
-          <lay-col :md="5">
-            <lay-form-item label="用户名" label-width="80">
+      <lay-form label-position="top">
+        <lay-row :space="20">
+          <lay-col :md="6">
+            <lay-form-item label="用户名">
               <lay-input
                   v-model="searchQuery.userName"
                   placeholder="请输入"
@@ -14,8 +14,8 @@
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label="用户昵称" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="用户昵称">
               <lay-input
                   v-model="searchQuery.nickName"
                   placeholder="请输入"
@@ -25,8 +25,8 @@
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label="性别" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="性别">
               <lay-select
                   class="width-resize"
                   size="sm"
@@ -77,7 +77,8 @@
 
         <template v-slot:toolbar>
           <lay-button type="primary" size="sm" @click="toSearch"
-              v-permission="[$MENU_PERMISSION.SYSTEM_USER_INDEX]">查询</lay-button>
+                      v-permission="[$MENU_PERMISSION.SYSTEM_USER_INDEX]">查询
+          </lay-button>
           <lay-button size="sm" @click="toReset"> 重置</lay-button>
           <lay-button size="sm" type="primary" @click="changeAddModalShowFlag(Operate.ADD)"
                       v-permission="[$MENU_PERMISSION.SYSTEM_USER_ADD]">
@@ -346,15 +347,16 @@ function toReset() {
 
 function toSearch() {
   pageQuery.current = 1
+  dataSource.value = []
   change()
 }
 
 const change = () => {
   loading.value = true
-  // setTimeout(() => {
-  loadDataSource()
-  loading.value = false
-  // }, 1000)
+  setTimeout(() => {
+    loadDataSource()
+    loading.value = false
+  }, 200)
 }
 const sortChange = (key: any, sort: number) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
@@ -521,7 +523,7 @@ function cancel() {
 function toUpload() {
   if (!fileList.value || fileList.value.length < 1) {
     layer.confirm('清选择文件', {icon: 3})
-    return ;
+    return;
   }
   uploadAvatar.value = randomUserAvatar();
   userImport(fileList.value, uploadAvatar.value).then((res: any) => {

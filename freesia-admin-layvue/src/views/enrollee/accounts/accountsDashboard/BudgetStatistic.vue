@@ -1,7 +1,7 @@
 <template>
   <lay-card shadow="hover">
     <template #title>{{ props.title }}</template>
-    <lay-row space="10">
+    <lay-row space="20">
       <lay-col v-for="(item, index) in accountBudgetEntityList" :key="index" :md="8">
         <lay-panel shadow="hover">
           <div>

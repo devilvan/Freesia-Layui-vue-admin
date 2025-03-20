@@ -1,6 +1,6 @@
 <template>
   <lay-container fluid="true" style="padding: 10px">
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col :md="24">
         <lay-card>
           <lay-form style="margin-top: 20px">

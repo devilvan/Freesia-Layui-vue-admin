@@ -55,7 +55,7 @@
             </lay-row>
           </div>
         </lay-card>
-        <lay-row space="10">
+        <lay-row space="20">
           <lay-col :sm="12">
             <lay-card title="命令统计">
               <div>

@@ -3,7 +3,7 @@
     <lay-card>
       <lay-form style="margin-top: 10px" ref="queryFormRef" :model="searchQuery"
                 label-position="left">
-        <lay-row :space="10">
+        <lay-row :space="20">
           <lay-col :md="6">
             <lay-form-item label="预算描述" prop="budgetDesc">
               <lay-input
@@ -65,7 +65,7 @@
         <template v-slot:toolbar>
           <lay-button
               size="sm"
-              style="margin-left: 20px"
+
               type="normal"
               @click="toSearch"
           >
@@ -116,7 +116,7 @@
     <lay-layer v-model="showModalFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
         <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" :rules="saveFromRules" label-position="top">
-          <lay-row :space="10">
+          <lay-row :space="20">
             <lay-col :md="6">
               <lay-form-item label="预算描述" prop="budgetDesc" required>
                 <lay-input
@@ -150,7 +150,7 @@
               </lay-form-item>
             </lay-col>
           </lay-row>
-          <lay-row :space="10">
+          <lay-row :space="20">
             <lay-col :md="6">
               <lay-form-item label="时间范围从"
                              :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"

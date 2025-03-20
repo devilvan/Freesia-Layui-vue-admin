@@ -1,10 +1,10 @@
 <template>
   <lay-container :fluid="true">
-    <lay-card>
-      <lay-form style="margin-top: 10px">
-        <lay-row :space="10">
+    <lay-card shadow="hover">
+      <lay-form label-position="top">
+        <lay-row :space="20">
           <lay-col :md="6">
-            <lay-form-item label="角色名称" label-width="80">
+            <lay-form-item label="角色名称">
               <lay-input
                   v-model="searchQuery.roleName"
                   placeholder="请输入"
@@ -15,7 +15,7 @@
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
-            <lay-form-item label="角色标识" label-width="80">
+            <lay-form-item label="角色标识">
               <lay-input
                   v-model="searchQuery.identifying"
                   placeholder="请输入"
@@ -26,7 +26,7 @@
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
-            <lay-form-item label="备注" label-width="80">
+            <lay-form-item label="备注">
               <lay-input
                   v-model="searchQuery.mark"
                   placeholder="请输入"
@@ -458,7 +458,7 @@ const change = () => {
   setTimeout(() => {
     loadDataSource()
     loading.value = false
-  }, 1000)
+  }, 200)
 }
 const sortChange = (key: any, sort: number) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)

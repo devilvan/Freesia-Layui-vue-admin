@@ -1,6 +1,6 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col :md="18" :sm="18" :xs="24">
         <lay-card>
           <template #title>用户分布</template>
@@ -42,7 +42,7 @@
         </lay-card>
       </lay-col>
     </lay-row>
-    <lay-row :space="10">
+    <lay-row :space="20">
       <lay-col :md="12" :sm="12" :xs="18">
         <lay-card>
           <template #title>用户评价</template>
