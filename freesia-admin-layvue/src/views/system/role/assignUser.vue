@@ -1,68 +1,66 @@
 <template>
   <div style="height: 100%; width: 100%">
     <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
-      <lay-container fluid="true" class="user-box">
-        <lay-form style="margin-top: 10px">
+      <lay-container :fluid="true">
+        <lay-form label-position="top">
           <lay-card title="角色信息">
-            <lay-row>
+            <lay-row :space="20">
               <lay-col :md="6">
-                <lay-form-item label="角色ID" label-width="80">
+                <lay-form-item label="角色ID">
                   <lay-input
+                      class="width-resize"
                       v-model="sysRoleEntity.id"
                       size="sm"
-                      style="width: 98%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
-                <lay-form-item label="角色权限字符串" label-width="200">
+                <lay-form-item label="角色权限字符串">
                   <lay-input
+                      class="width-resize"
                       v-model="sysRoleEntity.roleKey"
                       size="sm"
-                      style="width: 98%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
-                <lay-form-item label="数据范围" label-width="200">
+                <lay-form-item label="数据范围">
                   <lay-input
+                      class="width-resize"
                       v-model="sysRoleEntity.dataScope"
                       size="sm"
-                      style="width: 98%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
-            </lay-row>
-            <lay-row>
               <lay-col :md="6">
-                <lay-form-item label="角色名称" label-width="80">
+                <lay-form-item label="角色名称">
                   <lay-input
+                      class="width-resize"
                       v-model="sysRoleEntity.roleName"
                       size="sm"
-                      style="width: 98%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
-                <lay-form-item label="状态" label-width="200">
+                <lay-form-item label="状态">
                   <lay-input
+                      class="width-resize"
                       v-model="roleStatus"
                       size="sm"
-                      style="width: 98%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
-                <lay-form-item label="备注" label-width="200">
+                <lay-form-item label="备注">
                   <lay-input
+                      class="width-resize"
                       v-model="sysRoleEntity.remark"
                       size="sm"
-                      style="width: 98%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>
@@ -73,7 +71,8 @@
         <lay-card title="已分配角色用户信息">
           <!-- table -->
           <lay-table
-              class="table-box table-style"
+              class="table-box"
+              height="550px"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"
@@ -111,7 +110,7 @@
     <lay-layer v-model="openAssignUserModalFlag" title="已分配角色的用户" :area="['1000px', '500px']">
       <!-- table -->
       <lay-table
-          class="table-box table-style"
+          class="table-box"
           :page="assignUserModalPageQuery"
           :columns="assignUserModalColumns"
           :loading="assignUserModalLoading"
@@ -234,6 +233,7 @@ const target = ref()
 nextTick(() => {
   target.value = document.querySelector(".layui-body");
 })
+
 /* VAR*/
 
 function toReset() {
@@ -342,54 +342,3 @@ function assignUserModalChange() {
   }, 1000)
 }
 </script>
-
-<style scoped>
-.user-box {
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-
-.oneRow {
-  width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-}
-</style>

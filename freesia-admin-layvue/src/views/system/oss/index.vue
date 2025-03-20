@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%; width: 100%">
     <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
-      <lay-container fluid="true" class="file-box">
+      <lay-container :fluid="true">
         <lay-form style="margin-top: 10px">
           <lay-card>
             <lay-row>
@@ -12,7 +12,7 @@
                       placeholder="请输入"
                       size="sm"
                       :allow-clear="true"
-                      style="width: 98%"
+                      class="width-resize"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
@@ -23,7 +23,7 @@
                       placeholder="请输入"
                       size="sm"
                       :allow-clear="true"
-                      style="width: 98%"
+                      class="width-resize"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
@@ -34,7 +34,7 @@
                       placeholder="请输入"
                       size="sm"
                       :allow-clear="true"
-                      style="width: 98%"
+                      class="width-resize"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
@@ -59,8 +59,8 @@
         <!-- table -->
         <div>
           <lay-table
-              class="table-box table-style"
-              :height="`700px`"
+              class="table-box"
+              :height="'550px'"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"
@@ -335,7 +335,7 @@ function preview(row) {
 function toUpload() {
   if (!fileList.value || fileList.value.length < 1) {
     layer.confirm('清选择文件', {icon: 3})
-    return ;
+    return;
   }
   upload(fileList.value).then((res: any) => {
     if (res.code === 200) {
@@ -349,47 +349,3 @@ function toUpload() {
 /* FUNCTION*/
 
 </script>
-
-<style scoped>
-.file-box {
-  width: calc(100vw - 220px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: visible;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-</style>

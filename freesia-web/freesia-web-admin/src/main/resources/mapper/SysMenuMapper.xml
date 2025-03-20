@@ -55,21 +55,21 @@
             ${ew.getCustomSqlSegment}
     </select>
     <select id="findSelectedMenuListByRoleId" resultType="java.lang.Long">
-        SELECT RM.MENU_ID
+        SELECT DISTINCT M.ID
         FROM sys_menu M
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
-          AND M.LOGIC_DEL = '0'
+          AND M.LOGIC_DEL = 0
           AND M.STATUS = '1'
           AND M.MENU_TYPE IN ('D', 'M', 'B')
           AND RM.ROLE_ID = #{roleId}
     </select>
     <select id="findAdminMenuList" resultType="java.lang.Long">
-        SELECT M.ID
+        SELECT DISTINCT M.ID
         FROM sys_menu M
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
-          AND M.LOGIC_DEL = '0'
+          AND M.LOGIC_DEL = 0
           AND M.STATUS = '1'
           AND M.MENU_TYPE IN ('D', 'M', 'B')
     </select>

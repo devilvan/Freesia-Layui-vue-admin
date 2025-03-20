@@ -21,7 +21,7 @@ export function getWeekdayCn(date: Date|string): string {
 }
 
 /**
- * 日期格式化为 yyyy-MM-dd HH:mm:ss
+ * 日期格式化 例如：yyyy-MM-dd HH:mm:ss
  * @param date
  */
 export function formatDateTime(date: Date, format: string) {

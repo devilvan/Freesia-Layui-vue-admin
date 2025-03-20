@@ -2,7 +2,7 @@
   <lay-layer v-model="showModalFlag" :title="props.title" :area="props.area">
     <lay-table
         ref="modalTableRef"
-        class="table-box table-style"
+        class="table-box"
         :page="pageQuery"
         :columns="props.columns"
         :loading="loading"

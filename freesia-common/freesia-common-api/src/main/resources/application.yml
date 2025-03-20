@@ -79,9 +79,6 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-#    host: 43.139.239.186
-#    port: 6379
-#    password: Wjw@1005338848#jjkkll*Dete$ntion
     lettuce:
       pool:
         # 最大活动数量

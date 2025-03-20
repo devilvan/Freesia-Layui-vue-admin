@@ -1,98 +1,87 @@
 <template>
-  <lay-container :fluid="true" style="padding: 10px">
+  <lay-container :fluid="true">
     <lay-card>
-      <lay-form>
-        <lay-row>
-          <lay-col :md="5">
-            <lay-form-item label="用户名" label-width="80">
+      <lay-form label-position="top">
+        <lay-row :space="20">
+          <lay-col :md="6">
+            <lay-form-item label="用户名">
               <lay-input
+                  class="width-resize"
                   v-model="searchQuery.operatorName"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label="部门名称" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="部门名称">
               <lay-input
+                  class="width-resize"
                   v-model="searchQuery.deptName"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="8">
-            <lay-form-item label="登录时间" label-width="80">
+          <lay-col :md="12">
+            <lay-form-item label="登录时间">
               <lay-date-picker
+                  class="width-resize"
                   size="sm"
                   v-model="operateTimeRange"
-                  range
+                  allow-clear
                   type="datetime"
+                  range
+                  simple
+                  :shortcuts="defaultShortcuts" :inputFormat="'YYYY-MM-DD HH:mm:ss'"
                   :placeholder="['开始日期', '结束日期']"
               ></lay-date-picker
               >
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label-width="20">
-              <lay-button
-                  style="margin-left: 20px"
-                  type="normal"
-                  size="sm"
-                  @click="toSearch"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
-            </lay-form-item>
-          </lay-col>
-        </lay-row>
-        <lay-row>
-          <lay-col :md="5">
-            <lay-form-item label="所属模块" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="所属模块">
               <lay-input
+                  style="width: 100%;"
                   v-model="searchQuery.module"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label="子模块" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="子模块">
               <lay-input
+                  class="width-resize"
                   v-model="searchQuery.subModule"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label="操作类型" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="操作类型">
               <lay-input
+                  class="width-resize"
                   v-model="searchQuery.type"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label="操作结果" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="操作结果">
               <lay-input
+                  class="width-resize"
                   v-model="searchQuery.result"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -102,7 +91,7 @@
     <!-- table -->
     <div>
       <lay-table
-          class="table-box table-style"
+          class="table-box"
           :height="tableHeight"
           :resize="true"
           :autoColsWidth="true"
@@ -140,7 +129,10 @@
             <div class="oneRow">{{ row.remark }}</div>
           </lay-tooltip>
         </template>
-        <template v-slot:toolbar></template>
+        <template v-slot:toolbar>
+          <lay-button type="normal" size="sm" @click="toSearch">查询</lay-button>
+          <lay-button size="sm" @click="toReset">重置</lay-button>
+        </template>
         <template v-slot:operator="{ row }">
           <lay-popconfirm
               content="确定要删除此条登录记录吗?"
@@ -173,6 +165,7 @@ import {Constants, loadSysDictValue} from "../../../../util/UDict";
 import {findPageLoginLog} from "../../../../api/system/SensitiveLog";
 import {PageQuery} from "../../../../types/Common";
 import {SysDictValueEntity} from "../../../../types/system/Dict";
+import {defaultShortcuts} from "../../../../util/UDate";
 
 onMounted(async () => {
   sysOperateResultList.value = await loadSysDictValue(Constants.SYS_OPERATE_RESULT);
@@ -190,7 +183,7 @@ function toSearch() {
   change()
 }
 
-const tableHeight = '530px'
+const tableHeight = '550px'
 const loading = ref(false)
 const selectedKeys = ref()
 const pageQuery = reactive<PageQuery>({
@@ -269,54 +262,3 @@ function cancel() {
   layer.msg('您已取消操作')
 }
 </script>
-
-<style scoped>
-.login-box {
-  width: calc(100vw - 220px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-
-.oneRow {
-  width: 220px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>

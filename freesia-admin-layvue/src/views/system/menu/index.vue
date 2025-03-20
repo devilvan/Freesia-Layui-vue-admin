@@ -1,5 +1,5 @@
 <template>
-  <lay-container fluid="true" class="menu-box">
+  <lay-container :fluid="true">
     <lay-card>
       <lay-form style="margin-top: 10px">
         <lay-row>
@@ -10,7 +10,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -21,7 +21,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -32,7 +32,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -53,7 +53,7 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <div class="table-box" style="width: 100%">
+    <div class="table-box width-resize">
       <lay-table
           ref="tableRef"
           :height="`500px`"
@@ -195,7 +195,7 @@
             <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysDirVo.status" :options="isShowOptions" :items="sysDirVo.status"
-                            style="width: 100%">
+                            class="width-resize">
                 </lay-select>
               </lay-form-item>
             </lay-col>
@@ -208,7 +208,7 @@
               <lay-col md="6">
                 <lay-form-item label="排序" prop="orderNum" required>
                   <lay-input-number
-                      style="width: 100%"
+                      class="width-resize"
                       v-model="sysDirVo.orderNum"
                       position="right"
                       :min="0"
@@ -237,12 +237,13 @@
 
     <lay-layer v-model="saveMenuModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules" label-position="top" size="md" @keydown.esc.prevent="toCancel">
+        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules" label-position="top" size="md"
+                  @keydown.esc.prevent="toCancel">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select
-                    class="widthResize"
+                    class="width-resize"
                     v-model="sysMenuVo.parentId" :data="treeMenuSelectList"
                     @change="changeMenuModalParentIdSelect"
                     :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
@@ -268,7 +269,7 @@
             <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysMenuVo.status" :options="isShowOptions" :items="isShowOptions"
-                            style="width: 100%">
+                            class="width-resize">
                 </lay-select>
               </lay-form-item>
             </lay-col>
@@ -287,7 +288,7 @@
               <lay-col md="6">
                 <lay-form-item label="排序" prop="orderNum" required>
                   <lay-input-number
-                      style="width: 100%"
+                      class="width-resize"
                       v-model="sysMenuVo.orderNum"
                       position="right"
                       :min="0"
@@ -316,12 +317,13 @@
 
     <lay-layer v-model="saveButtonModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysButtonVoRules" label-position="top" size="md" @keydown.esc.prevent="toCancel">
+        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysButtonVoRules" label-position="top" size="md"
+                  @keydown.esc.prevent="toCancel">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select
-                    class="widthResize"
+                    class="width-resize"
                     v-model="sysButtonVo.parentId" :data="saveButtonTreeMenuSelectList"
                     @change="changeButtonModalParentIdSelect"
                     :allow-clear="true"></lay-tree-select>
@@ -340,7 +342,7 @@
             <lay-col md="6">
               <lay-form-item label="排序" prop="orderNum" required>
                 <lay-input-number
-                    style="width: 100%"
+                    class="width-resize"
                     v-model="sysButtonVo.orderNum"
                     position="right"
                     :min="0"
@@ -351,7 +353,7 @@
             <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysButtonVo.status" :options="isShowOptions" :items="isShowOptions"
-                            style="width: 100%">
+                            class="width-resize">
                 </lay-select>
               </lay-form-item>
             </lay-col>
@@ -360,7 +362,7 @@
             <lay-col md="6">
               <lay-form-item label="备注" prop="remark" required>
                 <lay-textarea
-                    class="widthResize"
+                    class="width-resize"
                     v-model="sysButtonVo.remark" :allow-clear="true" show-count
                     :maxlength="127"></lay-textarea>
               </lay-form-item>
@@ -379,12 +381,13 @@
 
     <lay-layer v-model="saveLinkModalFlag" :title="title">
       <div style="padding: 20px">
-        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules" label-position="top" size="md" @keydown.esc.prevent="toCancel">
+        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules" label-position="top" size="md"
+                  @keydown.esc.prevent="toCancel">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select
-                    class="widthResize"
+                    class="width-resize"
                     v-model="sysLinkVo.parentId"
                     :data="saveLinkTreeMenuSelectList"
                     @change="changeLinkModalParentIdSelect"
@@ -410,7 +413,7 @@
             </lay-col>
             <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
-                <lay-select class="widthResize"
+                <lay-select class="width-resize"
                             v-model="sysLinkVo.status" :options="isShowOptions" :items="isShowOptions">
                 </lay-select>
               </lay-form-item>
@@ -419,7 +422,7 @@
               <lay-form-item label="组件类型" prop="componentType" required>
                 <lay-select v-model="sysLinkVo.componentType" :options="linkComponentOptions"
                             :items="linkComponentOptions"
-                            style="width: 100%"></lay-select>
+                            class="width-resize"></lay-select>
               </lay-form-item>
             </lay-col>
             <lay-col md="6">
@@ -430,13 +433,13 @@
             <lay-row space="20">
               <lay-col md="6">
                 <lay-form-item label="图标" prop="icon">
-                  <lay-icon-picker class="widthResize" v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
+                  <lay-icon-picker class="width-resize" v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
                 </lay-form-item>
               </lay-col>
               <lay-col md="6">
                 <lay-form-item label="排序" prop="orderNum" required>
                   <lay-input-number
-                      class="widthResize"
+                      class="width-resize"
                       v-model="sysLinkVo.orderNum"
                       position="right"
                       :min="0"
@@ -1055,7 +1058,7 @@ function changeLinkModalParentIdSelect(value: any) {
 
 function showCopyModal(row: any) {
   if (!row) {
-    return ;
+    return;
   }
   let parentId = row.parentId;
   if (MenuType.DIR === row.menuType) {
@@ -1097,51 +1100,3 @@ function showCopyModal(row: any) {
 /* FUNCTION*/
 
 </script>
-
-<style scoped>
-.menu-box {
-  width: calc(100vw - 220px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 1000px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-
-.widthResize {
-  width: 100%
-}
-</style>

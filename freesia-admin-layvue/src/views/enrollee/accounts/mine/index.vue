@@ -1,7 +1,7 @@
 <template>
-  <lay-container class="role-box" fluid="true">
+  <lay-container fluid="true">
     <lay-card>
-      <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch" :model="searchQuery">
+      <lay-form @keyup.enter.prevent="toSearch" :model="searchQuery">
         <lay-row>
           <lay-col :md="6">
             <lay-form-item label="开销描述">
@@ -25,15 +25,16 @@
           </lay-col>
           <lay-col :md="12">
             <lay-form-item label="开销时间">
-              <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
+              <lay-date-picker class="width-resize" v-model="searchQuery.paymentTimeRange" allow-clear range
                                :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
-                               :shortcuts="defaultShortcuts" simple @change="changePaymentTimeDoSelect"></lay-date-picker>
+                               :shortcuts="defaultShortcuts" simple
+                               @change="changePaymentTimeDoSelect"></lay-date-picker>
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
             <lay-form-item label="开销标识">
               <lay-select
-                  class="search-input"
+                  class="width-resize"
                   size="sm"
                   v-model="searchQuery.paymentSign"
                   :options="paymentSignSelectList"
@@ -181,7 +182,7 @@
               <lay-form-item label="开销标识" prop="paymentSign" required>
                 <lay-select
                     size="sm"
-                    style="width: 100%"
+                    class="width-resize"
                     v-model="accountCostVo.paymentSign"
                     :options="paymentSignSelectList"
                     :items="paymentSignSelectList"
@@ -196,7 +197,7 @@
               <lay-form-item label="开销时间" prop="paymentTime">
                 <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
                                  :shortcuts="singleShortcuts" :inputFormat="'YYYY-MM-DD HH:mm'"
-                                 style="width: 100%" simple></lay-date-picker>
+                                 class="width-resize" simple></lay-date-picker>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
@@ -273,7 +274,7 @@
           <lay-row space="20">
             <lay-col :md="24">
               <lay-form-item label="导出时间" prop="paymentTime" required>
-                <lay-date-picker style="width: 100%" v-model="accountsExportVo.paymentTimeRange" allow-clear range
+                <lay-date-picker class="width-resize" v-model="accountsExportVo.paymentTimeRange" allow-clear range
                                  type="datetime"
                                  :shortcuts="defaultShortcuts" simple></lay-date-picker>
               </lay-form-item>
@@ -359,7 +360,7 @@ const columns = ref([
   {title: '开销金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '开销标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
-  {title: '开支时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime'},
+  {title: '开支时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
   {title: '修改时间', width: '150px', key: 'modifyTime', sort: 'desc'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
   {title: '关联用户', width: '150px', key: 'nickNameList', customSlot: 'nickNameList'},
@@ -696,49 +697,6 @@ const handleConfirm = (selectKeys: string[], rows: [], tableRef: object) => {
 function changePaymentTimeDoSelect(value: any) {
   change()
 }
+
 /* FUNCTION*/
 </script>
-
-<style scoped>
-.role-box {
-  width: calc(100vw - 220px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 600px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-</style>

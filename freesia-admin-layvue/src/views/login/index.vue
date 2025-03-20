@@ -40,7 +40,7 @@
                                    v-model="loginForm.code"></lay-input>
                       </div>
                       <div class="login-captcha" @click="toRefreshImg">
-                        <img style="width: 100%" :src="captchaImg" alt="获取验证码"/>
+                        <img class="width-resize" :src="captchaImg" alt="获取验证码"/>
                       </div>
                     </lay-form-item>
                     <!--                    <lay-checkbox value="" name="like" v-model="remember" skin="primary" label="1">记住密码</lay-checkbox>-->

@@ -1,53 +1,44 @@
 <template>
-  <lay-container fluid="true" class="option-box">
+  <lay-container :fluid="true">
     <lay-card>
-      <lay-form style="margin-top: 10px">
-        <lay-row>
-          <lay-col :md="5">
-            <lay-form-item label="用户账号" label-width="80">
+      <lay-form label-position="top">
+        <lay-row :space="20">
+          <lay-col :md="6">
+            <lay-form-item label="用户账号">
               <lay-input
                   v-model="searchQuery.userAccount"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label="用户名" label-width="80">
+          <lay-col :md="6">
+            <lay-form-item label="用户名">
               <lay-input
                   v-model="searchQuery.userName"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="8">
-            <lay-form-item label="登录时间" label-width="80">
+          <lay-col :md="12">
+            <lay-form-item label="登录时间">
               <lay-date-picker
+                  class="width-resize"
                   size="sm"
                   v-model="searchQuery.rangeTime"
-                  range
+                  allow-clear
                   type="datetime"
+                  range
+                  simple
+                  :shortcuts="defaultShortcuts" :inputFormat="'YYYY-MM-DD HH:mm:ss'"
                   :placeholder="['开始日期', '结束日期']"
               ></lay-date-picker
               >
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label-width="20">
-              <lay-button
-                  style="margin-left: 20px"
-                  type="normal"
-                  size="sm"
-                  @click="toSearch"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -56,7 +47,7 @@
     <!-- table -->
     <div>
       <lay-table
-          class="table-box table-style"
+          class="table-box"
           :height="tableHeight"
           :resize="true"
           :autoColsWidth="true"
@@ -91,7 +82,10 @@
         <template #operateTime="{ row }">
           <div>{{ row.operateTime }}</div>
         </template>
-        <template v-slot:toolbar></template>
+        <template v-slot:toolbar>
+          <lay-button type="normal" size="sm" @click="toSearch">查询</lay-button>
+          <lay-button size="sm" @click="toReset"> 重置</lay-button>
+        </template>
         <template v-slot:operator="{ row }">
           <lay-button
               size="xs"
@@ -213,6 +207,7 @@ import {layer} from '@layui/layui-vue'
 import {PageQuery} from "../../../../types/Common";
 import {findPageOptionLog} from "../../../../api/system/SensitiveLog";
 import {SysSensitiveLogVo} from "../../../../types/system/SensitiveLog";
+import {defaultShortcuts} from "../../../../util/UDate";
 
 onMounted(async () => {
   await loadDataSource();
@@ -308,56 +303,6 @@ function showDetail(row: any) {
 </script>
 
 <style scoped>
-.option-box {
-  width: calc(100vw - 220px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-
-.oneRow {
-  width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-}
-
 .title {
   height: 40px;
   line-height: 40px;

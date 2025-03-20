@@ -1,52 +1,39 @@
 <template>
-  <lay-container fluid="true" class="role-box">
+  <lay-container :fluid="true">
     <lay-card>
       <lay-form style="margin-top: 10px">
-        <lay-row>
-          <lay-col :md="5">
+        <lay-row :space="10">
+          <lay-col :md="6">
             <lay-form-item label="角色名称" label-width="80">
               <lay-input
                   v-model="searchQuery.roleName"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
+          <lay-col :md="6">
             <lay-form-item label="角色标识" label-width="80">
               <lay-input
                   v-model="searchQuery.identifying"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
+          <lay-col :md="6">
             <lay-form-item label="备注" label-width="80">
               <lay-input
                   v-model="searchQuery.mark"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label-width="20">
-              <lay-button
-                  style="margin-left: 20px"
-                  type="normal"
-                  size="sm"
-                  @click="toSearch"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -55,7 +42,7 @@
     <!-- table -->
     <div>
       <lay-table
-          class="table-box table-style"
+          class="table-box"
           ref="dataSourceTableRef"
           :page="pageQuery"
           :columns="columns"
@@ -73,6 +60,8 @@
           <dict-scan :options="sysDataScope" :value="row.dataScope"/>
         </template>
         <template v-slot:toolbar>
+          <lay-button size="sm" type="normal" @click="toSearch">查询</lay-button>
+          <lay-button size="sm" @click="toReset">重置</lay-button>
           <lay-button size="sm" type="primary" @click="toAdd" v-permission="[$MENU_PERMISSION.SYSTEM_ROLE_ADD]">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
@@ -154,9 +143,8 @@
               <lay-form-item label="数据范围" prop="dataScope" required>
                 <lay-select
                     :disabled="!isAdmin()"
-                    class="search-input"
+                    class="width-resize"
                     size="sm"
-                    style="width: 100%"
                     v-model="addRoleVo.dataScope"
                     :options="sysDataScopeSelect"
                     :items="sysDataScopeSelect"
@@ -175,7 +163,7 @@
             <lay-col md="6">
               <lay-form-item label="排序号" prop="orderNum">
                 <lay-input-number
-                    style="width: 100%"
+                    class="width-resize"
                     v-model="addRoleVo.orderNum"
                     position="right"
                     :min="0"
@@ -221,9 +209,8 @@
               <lay-form-item label="数据范围" prop="dataScope" required>
                 <lay-select
                     :disabled="!isAdmin()"
-                    class="search-input"
                     size="sm"
-                    style="width: 100%"
+                    class="width-resize"
                     v-model="editRoleVo.dataScope"
                     :options="sysDataScopeSelect"
                     :items="sysDataScopeSelect"
@@ -242,7 +229,7 @@
             <lay-col md="6">
               <lay-form-item label="排序号" prop="orderNum">
                 <lay-input-number
-                    style="width: 100%"
+                    class="width-resize"
                     v-model="editRoleVo.orderNum"
                     position="right"
                     :min="0"
@@ -282,9 +269,8 @@
           <lay-form-item label="数据范围" prop="dataScope">
             <lay-select
                 :disabled="!isAdmin()"
-                class="search-input"
                 size="sm"
-                style="width: 100%"
+                class="width-resize"
                 v-model="saveRoleMenuPrivilegeModel.dataScope"
                 :options="sysDataScopeSelect"
                 :items="sysDataScopeSelect"
@@ -716,7 +702,7 @@ function toAssignButton() {
   selectRowRoleId.value = selectKeys[0];
   if (row.roleKey === $ADMIN_ROLE) {
     layer.msg("超级管理员无需分配按钮权限", {icon: 3})
-    return ;
+    return;
   }
   $router.push('/system/role/assignButton/' + row.id);
 }
@@ -733,7 +719,7 @@ function assignDeptModalChange() {
   let row = dataSourceTableRef.value.getCheckData()[0]
   if (row.roleKey === $ADMIN_ROLE) {
     layer.msg("超级管理员无需分配部门权限", {icon: 3})
-    return ;
+    return;
   }
   findDeptRolesByRoleId(row.id).then((res: any) => {
     if (res.code === 200) {
@@ -773,48 +759,6 @@ function toEdit(row: any) {
 </script>
 
 <style scoped>
-.role-box {
-  width: calc(100vw - 220px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-
 .layTreeContainer {
   width: 100%;
   height: 280px;

@@ -1,5 +1,5 @@
 <template>
-  <lay-container fluid="true" class="role-box">
+  <lay-container :fluid="true">
     <lay-card>
       <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
         <lay-row>
@@ -10,7 +10,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -21,7 +21,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -45,7 +45,7 @@
     <!-- table -->
     <div>
       <lay-table
-          class="table-box table-style"
+          class="table-box"
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
@@ -88,7 +88,9 @@
               content="确定要删除此配置吗?"
               @confirm="confirm(row)"
               @cancel="cancel">
-            <lay-button size="xs" border="red" border-style="dashed" v-permission="[$MENU_PERMISSION.COMMON_URL_DELETE]">删除</lay-button>
+            <lay-button size="xs" border="red" border-style="dashed"
+                        v-permission="[$MENU_PERMISSION.COMMON_URL_DELETE]">删除
+            </lay-button>
           </lay-popconfirm>
         </template>
       </lay-table>
@@ -105,7 +107,7 @@
           </lay-form-item>
           <lay-form-item label="请求方式" prop="requestType" required>
             <lay-select
-                class="search-input"
+                class="width-resize"
                 size="sm"
                 v-model="urlConfigVo.requestType"
                 placeholder="请选择"
@@ -362,47 +364,3 @@ function cancel() {
 
 /* FUNCTION*/
 </script>
-
-<style scoped>
-.role-box {
-  width: calc(100vw - 220px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-</style>

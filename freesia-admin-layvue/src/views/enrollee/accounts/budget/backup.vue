@@ -1,5 +1,5 @@
 <template>
-  <lay-container class="role-box" fluid="true">
+  <lay-container :fluid="true">
     <lay-card>
       <lay-form style="margin-top: 10px" ref="queryFormRef" :model="searchQuery"
                 label-position="left">
@@ -18,7 +18,7 @@
             <lay-form-item label="预算日期类型" prop="budgetType">
               <lay-select
                   size="sm"
-                  style="width: 100%"
+                  class="width-resize"
                   v-model="searchQuery.budgetType"
                   :options="accountBudgetDurationTypeSelectList"
                   :items="accountBudgetDurationTypeSelectList"
@@ -28,13 +28,13 @@
           </lay-col>
           <lay-col :md="6">
             <lay-form-item label="时间范围从" prop="durationFrom">
-              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationFrom"
+              <lay-date-picker class="width-resize" simple type="date" v-model="searchQuery.durationFrom"
                                allow-clear></lay-date-picker>
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
             <lay-form-item label="时间范围到" prop="durationTo">
-              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationTo"
+              <lay-date-picker class="width-resize" simple type="date" v-model="searchQuery.durationTo"
                                allow-clear></lay-date-picker>
             </lay-form-item>
           </lay-col>
@@ -140,7 +140,7 @@
               <lay-form-item label="预算日期类型" prop="budgetType" required>
                 <lay-select
                     size="sm"
-                    style="width: 100%"
+                    class="width-resize"
                     v-model="saveAccountBudgetVo.budgetType"
                     :options="accountBudgetDurationTypeSelectList"
                     :items="accountBudgetDurationTypeSelectList"
@@ -152,18 +152,20 @@
           </lay-row>
           <lay-row :space="10">
             <lay-col :md="6">
-              <lay-form-item label="时间范围从" :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
+              <lay-form-item label="时间范围从"
+                             :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
                              prop="durationFrom" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
                              :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationFrom"
+                <lay-date-picker class="width-resize" simple type="datetime" v-model="saveAccountBudgetVo.durationFrom"
                                  allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="时间范围到" :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
+              <lay-form-item label="时间范围到"
+                             :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
                              prop="durationTo" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
                              :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
+                <lay-date-picker class="width-resize" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
                                  allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
               </lay-form-item>
             </lay-col>
@@ -434,19 +436,3 @@ function confirm(row: any) {
 
 /* FUNCTION*/
 </script>
-
-<style scoped>
-.role-box {
-  width: calc(100vw - 220px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-</style>

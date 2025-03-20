@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%; width: 100%">
     <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
-      <lay-container fluid="true" class="dept-box">
+      <lay-container :fluid="true">
         <lay-card>
           <lay-form style="margin-top: 10px">
             <lay-card title="部门信息">
@@ -11,7 +11,7 @@
                     <lay-input
                         v-model="findDeptRolesByDeptIdEntity.deptId"
                         size="sm"
-                        style="width: 98%"
+                        class="width-resize"
                         :disabled="true"
                     ></lay-input>
                   </lay-form-item>
@@ -21,7 +21,7 @@
                     <lay-input
                         v-model="findDeptRolesByDeptIdEntity.deptName"
                         size="sm"
-                        style="width: 98%"
+                        class="width-resize"
                         :disabled="true"
                     ></lay-input>
                   </lay-form-item>
@@ -33,7 +33,7 @@
         <lay-card title="角色信息">
           <!-- table -->
           <lay-table
-              class="table-box table-style"
+              class="table-box"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"
@@ -179,54 +179,3 @@ function assign() {
   })
 }
 </script>
-
-<style scoped>
-.dept-box {
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-
-.oneRow {
-  width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-}
-</style>

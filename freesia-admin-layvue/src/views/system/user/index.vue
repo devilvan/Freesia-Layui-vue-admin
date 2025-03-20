@@ -1,7 +1,7 @@
 <template>
-  <lay-container fluid="true" class="user-box">
-    <lay-card>
-      <lay-form style="margin-top: 10px">
+  <lay-container :fluid="true">
+    <lay-card shadow="hover">
+      <lay-form style="margin-top: 10px" label-position="top">
         <lay-row>
           <lay-col :md="5">
             <lay-form-item label="用户名" label-width="80">
@@ -10,7 +10,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -21,14 +21,14 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  style="width: 98%"
+                  class="width-resize"
               ></lay-input>
             </lay-form-item>
           </lay-col>
           <lay-col :md="5">
             <lay-form-item label="性别" label-width="80">
               <lay-select
-                  class="search-input"
+                  class="width-resize"
                   size="sm"
                   v-model="searchQuery.gender"
                   :allow-clear="true"
@@ -40,27 +40,13 @@
               </lay-select>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label-width="20">
-              <lay-button
-                  style="margin-left: 20px"
-                  type="primary"
-                  size="sm"
-                  @click="toSearch"
-                  v-permission="[$MENU_PERMISSION.SYSTEM_USER_INDEX]"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
-            </lay-form-item>
-          </lay-col>
         </lay-row>
       </lay-form>
     </lay-card>
     <!-- table -->
     <div>
       <lay-table
-          class="table-box table-style"
+          class="table-box"
           ref="dataSourceTableRef"
           :page="pageQuery"
           :columns="columns"
@@ -90,6 +76,9 @@
         </template>
 
         <template v-slot:toolbar>
+          <lay-button type="primary" size="sm" @click="toSearch"
+              v-permission="[$MENU_PERMISSION.SYSTEM_USER_INDEX]">查询</lay-button>
+          <lay-button size="sm" @click="toReset"> 重置</lay-button>
           <lay-button size="sm" type="primary" @click="changeAddModalShowFlag(Operate.ADD)"
                       v-permission="[$MENU_PERMISSION.SYSTEM_USER_ADD]">
             <lay-icon class="layui-icon-addition"></lay-icon>
@@ -129,7 +118,7 @@
     </div>
     <lay-layer v-model="addModalShowFlag" :title="title" :area="['500px', '600px']">
       <div style="padding: 20px">
-        <lay-form :model="sysUserVo" ref="sysUserVoFormRef">
+        <lay-form :model="sysUserVo" ref="sysUserVoFormRef" label-position="top">
           <lay-form-item label="用户名" prop="userName" required>
             <lay-input v-model="sysUserVo.userName" :disabled="userNameDisabled"></lay-input>
           </lay-form-item>
@@ -140,7 +129,7 @@
           <lay-form-item label="性别" prop="gender">
             <lay-select
                 v-model="sysUserVo.gender"
-                style="width: 100%"
+                class="width-resize"
                 placeholder="请选择性别"
                 :options="sysGenderListSelect"
                 :items="sysGenderListSelect"
@@ -619,55 +608,6 @@ function resolveImgPath(imgPath: string) {
 </script>
 
 <style scoped>
-.user-box {
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-
-.oneRow {
-  width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-}
-
 .layTreeContainer {
   width: 100%;
   height: 100%;

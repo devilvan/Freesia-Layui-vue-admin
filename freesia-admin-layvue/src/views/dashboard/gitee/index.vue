@@ -4,7 +4,8 @@
       <lay-container style="margin-top: 20px">
         <lay-panel>
           <div style="margin-top: 10px; margin-bottom: 30px">
-            <lay-line contentPosition="left" style="font-size: 16pt; font-weight: lighter" borderWidth="2px" theme="cyan">Gitee 提交更新记录
+            <lay-line contentPosition="left" style="font-size: 16pt; font-weight: lighter" borderWidth="2px"
+                      theme="cyan">Gitee 提交更新记录
             </lay-line>
           </div>
           <lay-timeline v-for="(list, key) in giteeCommitsResponseDtoMapList" :key="key">
@@ -80,46 +81,3 @@ function preview(path: any) {
   layer.photos(option)
 }
 </script>
-
-<style scoped>
-.user-box {
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.top-search {
-  margin-top: 10px;
-  padding: 10px;
-  height: 40px;
-  border-radius: 4px;
-  background-color: #fff;
-}
-
-.table-box {
-  margin-top: 10px;
-  padding: 10px;
-  height: 700px;
-  width: 100%;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
-}
-</style>

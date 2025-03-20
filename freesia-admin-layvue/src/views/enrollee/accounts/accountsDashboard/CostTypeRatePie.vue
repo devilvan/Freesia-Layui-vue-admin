@@ -5,7 +5,7 @@
       <lay-col>
         <lay-form :model="findCostTypeRatePieQueryVo" ref="findCostTypeRatePieQueryRef" label-position="left">
           <lay-form-item label="按时间：" prop="paymentTimeRange">
-            <lay-date-picker style="width: 100%" @change="doChangeFindCostTypeRatePie"
+            <lay-date-picker class="width-resize" @change="doChangeFindCostTypeRatePie"
                              v-model="findCostTypeRatePieQueryVo.paymentTimeRange" allow-clear range
                              type="datetime"
                              :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" :shortcuts="defaultShortcuts"

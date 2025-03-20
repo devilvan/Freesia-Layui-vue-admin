@@ -49,7 +49,7 @@
                           v-model="sysRoleEntity.roleKey"
                           size="sm"
                           :allow-clear="true"
-                          style="width: 98%"
+                          class="width-resize"
                           :disabled="true"
                       ></lay-input>
                     </lay-form-item>
@@ -60,7 +60,7 @@
                           v-model="sysRoleEntity.roleName"
                           size="sm"
                           :allow-clear="true"
-                          style="width: 98%"
+                          class="width-resize"
                           :disabled="true"
                       ></lay-input>
                     </lay-form-item>
@@ -74,7 +74,7 @@
                           placeholder="请输入"
                           size="sm"
                           :allow-clear="true"
-                          style="width: 98%"
+                          class="width-resize"
                       ></lay-input>
                     </lay-form-item>
                   </lay-col>
@@ -95,7 +95,7 @@
               </lay-form>
             </lay-card>
             <lay-table
-                class="table-box table-style"
+                class="table-box"
                 :columns="columns"
                 :loading="loading"
                 :default-toolbar="true"
@@ -367,21 +367,5 @@ function assignButtonHandler() {
   background-color: #fff;
   border: 1px solid #e6e6e6;
   cursor: pointer;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
 }
 </style>

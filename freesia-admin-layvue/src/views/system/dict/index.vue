@@ -1,5 +1,5 @@
 <template>
-  <lay-container fluid="true" class="dictionary-box">
+  <lay-container :fluid="true">
     <div style="display: flex">
       <div :style="{ width: isFold ? `0px` : `300px` }" class="left-tree">
         <!-- tree -->
@@ -81,7 +81,7 @@
               <lay-col :md="6">
                 <lay-form-item label="状态">
                   <lay-select
-                      class="search-input"
+                      class="width-resize"
                       size="sm"
                       v-model="sysDictValueSearchQuery.status"
                       :options="enabledStatusSelectList"
@@ -96,7 +96,7 @@
           </lay-form>
         </lay-card>
         <lay-table
-            class="table-box table-style"
+            class="table-box"
             :columns="columns"
             :loading="loading"
             :default-toolbar="true"
@@ -668,7 +668,7 @@ function toRemove() {
 function toEnable() {
   if (selectedKeys.value.length == 0) {
     layer.msg('您未选择数据，请先选择要启用/禁用的字典项', {icon: 3, time: 2000})
-    return ;
+    return;
   }
   layer.confirm('您将启用/禁用所有选中的字典项？', {
     title: '提示',
@@ -790,15 +790,6 @@ function confirmImportSysDictValue() {
 </script>
 
 <style scoped>
-.dictionary-box {
-  width: calc(100vw - 240px);
-  height: calc(100vh - 110px);
-  margin-top: 10px;
-  box-sizing: border-box;
-  background-color: #fff;
-  overflow: hidden;
-}
-
 .left-tree {
   display: inline-block;
   padding: 20px 15px 0 5px;
@@ -828,21 +819,5 @@ function confirmImportSysDictValue() {
   background-color: #fff;
   border: 1px solid #e6e6e6;
   cursor: pointer;
-}
-
-.search-input {
-  display: inline-block;
-  width: 98%;
-  margin-right: 10px;
-}
-
-.table-style {
-  margin-top: 10px;
-}
-
-.isChecked {
-  display: inline-block;
-  background-color: #e8f1ff;
-  color: red;
 }
 </style>
