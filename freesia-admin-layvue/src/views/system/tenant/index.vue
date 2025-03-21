@@ -10,7 +10,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -21,7 +21,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -122,7 +122,7 @@
             <lay-col :md="6">
               <lay-form-item label="租户类型" prop="type" required>
                 <lay-select
-                    class="width-resize"
+                    style="width: 100%"
                     size="sm"
                     v-model="sysTenantVo.type"
                     placeholder="请选择"

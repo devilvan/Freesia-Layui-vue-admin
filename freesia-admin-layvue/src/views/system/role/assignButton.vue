@@ -49,7 +49,7 @@
                           v-model="sysRoleEntity.roleKey"
                           size="sm"
                           :allow-clear="true"
-                          class="width-resize"
+                          style="width: 100%"
                           :disabled="true"
                       ></lay-input>
                     </lay-form-item>
@@ -60,7 +60,7 @@
                           v-model="sysRoleEntity.roleName"
                           size="sm"
                           :allow-clear="true"
-                          class="width-resize"
+                          style="width: 100%"
                           :disabled="true"
                       ></lay-input>
                     </lay-form-item>
@@ -74,7 +74,7 @@
                           placeholder="请输入"
                           size="sm"
                           :allow-clear="true"
-                          class="width-resize"
+                          style="width: 100%"
                       ></lay-input>
                     </lay-form-item>
                   </lay-col>

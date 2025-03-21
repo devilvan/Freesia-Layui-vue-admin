@@ -8,7 +8,7 @@
               <lay-col :md="6">
                 <lay-form-item label="角色ID">
                   <lay-input
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="sysRoleEntity.id"
                       size="sm"
                       :disabled="true"
@@ -18,7 +18,7 @@
               <lay-col :md="6">
                 <lay-form-item label="角色权限字符串">
                   <lay-input
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="sysRoleEntity.roleKey"
                       size="sm"
                       :disabled="true"
@@ -28,7 +28,7 @@
               <lay-col :md="6">
                 <lay-form-item label="数据范围">
                   <lay-input
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="sysRoleEntity.dataScope"
                       size="sm"
                       :disabled="true"
@@ -38,7 +38,7 @@
               <lay-col :md="6">
                 <lay-form-item label="角色名称">
                   <lay-input
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="sysRoleEntity.roleName"
                       size="sm"
                       :disabled="true"
@@ -48,7 +48,7 @@
               <lay-col :md="6">
                 <lay-form-item label="状态">
                   <lay-input
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="roleStatus"
                       size="sm"
                       :disabled="true"
@@ -58,7 +58,7 @@
               <lay-col :md="6">
                 <lay-form-item label="备注">
                   <lay-input
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="sysRoleEntity.remark"
                       size="sm"
                       :disabled="true"

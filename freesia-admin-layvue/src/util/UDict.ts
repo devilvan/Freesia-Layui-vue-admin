@@ -41,7 +41,11 @@ export enum Constants {
     /**
      * 预算日期类型
      */
-    ACCOUNT_BUDGET_DURATION_TYPE = "ACCOUNT_BUDGET_DURATION_TYPE"
+    ACCOUNT_BUDGET_DURATION_TYPE = "ACCOUNT_BUDGET_DURATION_TYPE",
+    /**
+     * 通用图标所属分区
+     */
+    COMMON_ICON_PARTITION = "COMMON_ICON_PARTITION"
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {

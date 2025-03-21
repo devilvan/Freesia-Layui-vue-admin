@@ -1,8 +1,8 @@
 <template>
   <lay-container fluid="true">
-    <lay-card>
-      <lay-form @keyup.enter.prevent="toSearch" :model="searchQuery">
-        <lay-row>
+    <lay-card shadow="hover">
+      <lay-form @keyup.enter.prevent="toSearch" :model="searchQuery" label-position="top">
+        <lay-row :space="20">
           <lay-col :md="6">
             <lay-form-item label="开销描述">
               <lay-input
@@ -25,7 +25,7 @@
           </lay-col>
           <lay-col :md="12">
             <lay-form-item label="开销时间">
-              <lay-date-picker class="width-resize" v-model="searchQuery.paymentTimeRange" allow-clear range
+              <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
                                :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
                                :shortcuts="defaultShortcuts" simple
                                @change="changePaymentTimeDoSelect"></lay-date-picker>
@@ -34,7 +34,7 @@
           <lay-col :md="6">
             <lay-form-item label="开销标识">
               <lay-select
-                  class="width-resize"
+                  style="width: 100%"
                   size="sm"
                   v-model="searchQuery.paymentSign"
                   :options="paymentSignSelectList"
@@ -182,7 +182,7 @@
               <lay-form-item label="开销标识" prop="paymentSign" required>
                 <lay-select
                     size="sm"
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="accountCostVo.paymentSign"
                     :options="paymentSignSelectList"
                     :items="paymentSignSelectList"
@@ -197,7 +197,7 @@
               <lay-form-item label="开销时间" prop="paymentTime">
                 <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
                                  :shortcuts="singleShortcuts" :inputFormat="'YYYY-MM-DD HH:mm'"
-                                 class="width-resize" simple></lay-date-picker>
+                                 style="width: 100%" simple></lay-date-picker>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
@@ -274,7 +274,7 @@
           <lay-row space="20">
             <lay-col :md="24">
               <lay-form-item label="导出时间" prop="paymentTime" required>
-                <lay-date-picker class="width-resize" v-model="accountsExportVo.paymentTimeRange" allow-clear range
+                <lay-date-picker style="width: 100%" v-model="accountsExportVo.paymentTimeRange" allow-clear range
                                  type="datetime"
                                  :shortcuts="defaultShortcuts" simple></lay-date-picker>
               </lay-form-item>

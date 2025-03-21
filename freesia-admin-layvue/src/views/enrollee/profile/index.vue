@@ -52,7 +52,7 @@
                 <lay-form-item label="性别" prop="gender">
                   <lay-select
                       v-model="sysUserVo.gender"
-                      class="width-resize"
+                      style="width: 100%"
                       placeholder="请选择性别"
                       :options="sysGenderListSelect"
                       :items="sysGenderListSelect"

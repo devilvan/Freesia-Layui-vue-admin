@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>com.freesia</groupId>
+            <artifactId>freesia-web-icon</artifactId>
+            <version>${freesia.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
             <artifactId>freesia-web-admin</artifactId>
             <version>${freesia.version}</version>
         </dependency>

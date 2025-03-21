@@ -11,7 +11,7 @@
                     <lay-input
                         v-model="findUserRolesByUserIdEntity.userId"
                         size="sm"
-                        class="width-resize"
+                        style="width: 100%"
                         :disabled="true"
                     ></lay-input>
                   </lay-form-item>
@@ -21,7 +21,7 @@
                     <lay-input
                         v-model="findUserRolesByUserIdEntity.userName"
                         size="sm"
-                        class="width-resize"
+                        style="width: 100%"
                         :disabled="true"
                     ></lay-input>
                   </lay-form-item>

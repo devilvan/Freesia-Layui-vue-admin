@@ -1,52 +1,39 @@
 <template>
   <lay-container :fluid="true">
     <lay-card>
-      <lay-form style="margin-top: 10px">
-        <lay-row>
-          <lay-col :md="5">
+      <lay-form label-position="top">
+        <lay-row :space="20">
+          <lay-col :md="6">
             <lay-form-item label="菜单名称" label-width="80">
               <lay-input
                   v-model="searchQuery.name"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
+          <lay-col :md="6">
             <lay-form-item label="菜单地址" label-width="80">
               <lay-input
                   v-model="searchQuery.address"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
+          <lay-col :md="6">
             <lay-form-item label="权限标识" label-width="80">
               <lay-input
                   v-model="searchQuery.identifying"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label-width="20">
-              <lay-button
-
-                  type="normal"
-                  size="sm"
-                  @click="toSearch"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -67,6 +54,8 @@
           :resize="true"
       >
         <template #toolbar>
+          <lay-button type="normal" size="sm" @click="toSearch" v-permission="[$MENU_PERMISSION.SYSTEM_MENU_INDEX]">查询</lay-button>
+          <lay-button size="sm" @click="toReset" v-permission="[$MENU_PERMISSION.SYSTEM_MENU_INDEX]">重置</lay-button>
           <lay-button size="sm" type="primary" @click="changeSaveMenuVoModalFlag(MenuType.DIR)"
                       v-permission="[$MENU_PERMISSION.SYSTEM_MENU_ADD_DIR]">新建目录
           </lay-button>
@@ -195,7 +184,7 @@
             <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysDirVo.status" :options="isShowOptions" :items="sysDirVo.status"
-                            class="width-resize">
+                            style="width: 100%">
                 </lay-select>
               </lay-form-item>
             </lay-col>
@@ -208,7 +197,7 @@
               <lay-col md="6">
                 <lay-form-item label="排序" prop="orderNum" required>
                   <lay-input-number
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="sysDirVo.orderNum"
                       position="right"
                       :min="0"
@@ -243,7 +232,7 @@
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="sysMenuVo.parentId" :data="treeMenuSelectList"
                     @change="changeMenuModalParentIdSelect"
                     :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
@@ -269,7 +258,7 @@
             <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysMenuVo.status" :options="isShowOptions" :items="isShowOptions"
-                            class="width-resize">
+                            style="width: 100%">
                 </lay-select>
               </lay-form-item>
             </lay-col>
@@ -288,7 +277,7 @@
               <lay-col md="6">
                 <lay-form-item label="排序" prop="orderNum" required>
                   <lay-input-number
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="sysMenuVo.orderNum"
                       position="right"
                       :min="0"
@@ -323,7 +312,7 @@
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="sysButtonVo.parentId" :data="saveButtonTreeMenuSelectList"
                     @change="changeButtonModalParentIdSelect"
                     :allow-clear="true"></lay-tree-select>
@@ -342,7 +331,7 @@
             <lay-col md="6">
               <lay-form-item label="排序" prop="orderNum" required>
                 <lay-input-number
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="sysButtonVo.orderNum"
                     position="right"
                     :min="0"
@@ -353,7 +342,7 @@
             <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
                 <lay-select v-model="sysButtonVo.status" :options="isShowOptions" :items="isShowOptions"
-                            class="width-resize">
+                            style="width: 100%">
                 </lay-select>
               </lay-form-item>
             </lay-col>
@@ -362,7 +351,7 @@
             <lay-col md="6">
               <lay-form-item label="备注" prop="remark" required>
                 <lay-textarea
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="sysButtonVo.remark" :allow-clear="true" show-count
                     :maxlength="127"></lay-textarea>
               </lay-form-item>
@@ -387,7 +376,7 @@
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
                 <lay-tree-select
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="sysLinkVo.parentId"
                     :data="saveLinkTreeMenuSelectList"
                     @change="changeLinkModalParentIdSelect"
@@ -413,7 +402,7 @@
             </lay-col>
             <lay-col md="6">
               <lay-form-item label="是否显示" prop="status" required>
-                <lay-select class="width-resize"
+                <lay-select style="width: 100%"
                             v-model="sysLinkVo.status" :options="isShowOptions" :items="isShowOptions">
                 </lay-select>
               </lay-form-item>
@@ -422,7 +411,7 @@
               <lay-form-item label="组件类型" prop="componentType" required>
                 <lay-select v-model="sysLinkVo.componentType" :options="linkComponentOptions"
                             :items="linkComponentOptions"
-                            class="width-resize"></lay-select>
+                            style="width: 100%"></lay-select>
               </lay-form-item>
             </lay-col>
             <lay-col md="6">
@@ -433,13 +422,13 @@
             <lay-row space="20">
               <lay-col md="6">
                 <lay-form-item label="图标" prop="icon">
-                  <lay-icon-picker class="width-resize" v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
+                  <lay-icon-picker style="width: 100%" v-model="sysLinkVo.icon" allow-clear></lay-icon-picker>
                 </lay-form-item>
               </lay-col>
               <lay-col md="6">
                 <lay-form-item label="排序" prop="orderNum" required>
                   <lay-input-number
-                      class="width-resize"
+                      style="width: 100%"
                       v-model="sysLinkVo.orderNum"
                       position="right"
                       :min="0"
@@ -484,13 +473,13 @@ import {
   findMenuListByUserId,
   findTreeMenuSelect,
   saveMenu
-} from "../../../api/system/Menu";
-import {FindMenuListByUserIdEntity, SysMenuVo} from "../../../types/system/Menu";
-import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
-import {FindTreeMenuSelectEntity, MenuType, SysDictValueEntity} from "../../../types/system/Dict";
-import {LinkComponentType, RouterComponent} from "../../../types/Menu";
-import {Flag, PROCEED_CODE} from "../../../types/Constants";
-import {getParentPath} from "../../../library/treeUtil";
+} from "@/api/system/Menu";
+import {FindMenuListByUserIdEntity, SysMenuVo} from "@/types/system/Menu";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {FindTreeMenuSelectEntity, MenuType, SysDictValueEntity} from "@/types/system/Dict";
+import {LinkComponentType, RouterComponent} from "@/types/Menu";
+import {Flag, PROCEED_CODE} from "@/types/Constants";
+import {getParentPath} from "@/library/treeUtil";
 /* INIT*/
 onMounted(async () => {
   sysMenuTypeList.value = await loadSysDictValue(Constants.SYS_MENU_TYPE);

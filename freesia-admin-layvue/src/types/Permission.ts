@@ -9,6 +9,7 @@ export enum MenuPermission {
     SYSTEM_USER_IMPORT_USER = "system:user:importUser",
 
     /* 菜单管理*/
+    SYSTEM_MENU_INDEX = "system:menu:index",
     SYSTEM_MENU_ADD_DIR = "system:menu_addDir",
     SYSTEM_MENU_ADD_MENU = "system:menu_addMenu",
     SYSTEM_MENU_ADD_BUTTON = "system:menu_addButton",

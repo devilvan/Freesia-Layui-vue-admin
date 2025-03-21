@@ -10,7 +10,7 @@
                   <lay-input
                       v-model="sysTenantEntity.id"
                       size="sm"
-                      class="width-resize"
+                      style="width: 100%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>
@@ -20,7 +20,7 @@
                   <lay-input
                       v-model="sysTenantEntity.code"
                       size="sm"
-                      class="width-resize"
+                      style="width: 100%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>
@@ -30,7 +30,7 @@
                   <lay-input
                       v-model="sysTenantEntity.name"
                       size="sm"
-                      class="width-resize"
+                      style="width: 100%"
                       :disabled="true"
                   ></lay-input>
                 </lay-form-item>

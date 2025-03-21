@@ -15,11 +15,11 @@
         </lay-col>
         <lay-col :md="12">
           <lay-form-item label="选择时间：" prop="month">
-            <lay-date-picker v-if="findCostLineChartQueryVo.dateScope === DateScope.MONTH" class="width-resize"
+            <lay-date-picker v-if="findCostLineChartQueryVo.dateScope === DateScope.MONTH" style="width: 100%"
                              @change="doFindCostLineChart"
                              v-model="findCostLineChartQueryVo.dateValue" type="yearmonth" allow-clear
                              :format="sdf_YM" :inputFormat="sdf_YM" simple></lay-date-picker>
-            <lay-date-picker v-if="findCostLineChartQueryVo.dateScope === DateScope.YEAR" class="width-resize"
+            <lay-date-picker v-if="findCostLineChartQueryVo.dateScope === DateScope.YEAR" style="width: 100%"
                              @change="doFindCostLineChart"
                              v-model="findCostLineChartQueryVo.dateValue" type="year" allow-clear
                              :format="sdf_Y" :inputFormat="sdf_Y" simple></lay-date-picker>

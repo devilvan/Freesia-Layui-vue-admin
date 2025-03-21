@@ -8,7 +8,6 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.constant.MenuPermission;
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.AccountCostImportEntity;
 import com.freesia.account.entity.FindAccountCostEntity;
@@ -16,13 +15,11 @@ import com.freesia.account.entity.FindPageAccountCostEntity;
 import com.freesia.account.listener.AccountsImportListener;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.vo.AccountCostVo;
-import com.freesia.account.vo.FindBudgetCapacityVo;
 import com.freesia.account.vo.FindCostLineChartVo;
 import com.freesia.account.vo.FindCostSumCalendarNeaerYearVo;
 import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
 import com.freesia.entity.EchartCalendarOptionEntity;
-import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.excel.constant.ExcelCellWriteStyle;
@@ -77,6 +74,7 @@ public class AccountCostController extends BaseController {
      * @param accountCostVo 待保存对象
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "保存开销表信息")
     @PostMapping(value = "saveUpdate")
     @SaCheckOr(permission = {
@@ -95,6 +93,7 @@ public class AccountCostController extends BaseController {
      * @param accountCostVoList 待保存对象
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "保存开销表信息")
     @PostMapping(value = "saveUpdateBatch")
     @SaCheckOr(permission = {
@@ -150,6 +149,7 @@ public class AccountCostController extends BaseController {
      * @param idList 主键
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "删除开销表")
     @PostMapping(value = "deleteAccountCost")
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_DELETE)
@@ -162,7 +162,7 @@ public class AccountCostController extends BaseController {
      * 导入开支数据
      *
      * @param file 文件
-     * @return
+     * @return 形式返回
      */
     @Idempotent
     @Operation(summary = "导入开支数据")

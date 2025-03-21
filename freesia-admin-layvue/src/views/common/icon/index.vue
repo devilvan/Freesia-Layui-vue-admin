@@ -1,13 +1,13 @@
 <template>
   <lay-container :fluid="true">
     <lay-card>
-      <lay-form style="margin-top: 10px" ref="queryFormRef" :model="searchQuery"
-                label-position="left">
+      <lay-form ref="queryFormRef" :model="searchQuery"
+                label-position="top">
         <lay-row :space="20">
           <lay-col :md="6">
-            <lay-form-item label="预算描述" prop="budgetDesc">
+            <lay-form-item label="图标名称" prop="name">
               <lay-input
-                  v-model="searchQuery.budgetDesc"
+                  v-model="searchQuery.name"
                   :allow-clear="true"
                   placeholder="请输入"
                   size="sm"
@@ -15,27 +15,15 @@
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
-            <lay-form-item label="预算日期类型" prop="budgetType">
+            <lay-form-item label="图标所属分区" prop="iconPartition">
               <lay-select
                   size="sm"
-                  class="width-resize"
-                  v-model="searchQuery.budgetType"
-                  :options="accountBudgetDurationTypeSelectList"
-                  :items="accountBudgetDurationTypeSelectList"
+                  style="width: 100%"
+                  v-model="searchQuery.iconPartition"
+                  :options="commonIconPartitionSelectList"
+                  :items="commonIconPartitionSelectList"
                   :allow-clear="true"
               ></lay-select>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="时间范围从" prop="durationFrom">
-              <lay-date-picker class="width-resize" simple type="date" v-model="searchQuery.durationFrom"
-                               allow-clear></lay-date-picker>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="时间范围到" prop="durationTo">
-              <lay-date-picker class="width-resize" simple type="date" v-model="searchQuery.durationTo"
-                               allow-clear></lay-date-picker>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -59,8 +47,8 @@
             <div class="oneRow">{{ row.remark }}</div>
           </lay-tooltip>
         </template>
-        <template #budgetType="{ row }">
-          <dict-scan :options="accountBudgetDurationTypeSelect" :value="row.budgetType"/>
+        <template #iconPartition="{ row }">
+          <dict-scan :options="commonIconPartitionSelect" :value="row.iconPartition"/>
         </template>
         <template v-slot:toolbar>
           <lay-button
@@ -113,66 +101,58 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="showModalFlag" :area="['1200px']" :title="title">
+    <lay-layer v-model="showModalFlag" :area="['1200px']" :title="saveModalTitle">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" :rules="saveFromRules" label-position="top">
+        <lay-form ref="saveFormRef" :model="saveCommonIconVo" :rules="saveFromRules" label-position="top">
           <lay-row :space="20">
             <lay-col :md="6">
-              <lay-form-item label="预算描述" prop="budgetDesc" required>
+              <lay-form-item label="图标名称" prop="name" required>
                 <lay-input
-                    v-model="saveAccountBudgetVo.budgetDesc"
+                    v-model="saveCommonIconVo.name"
                     :allow-clear="true"
                     size="sm"
                 ></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="预算金额" prop="outlay" required>
-                <lay-input
-                    v-model="saveAccountBudgetVo.outlay"
-                    :allow-clear="true"
-                    type="number"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="预算日期类型" prop="budgetType" required>
+              <lay-form-item label="图标所属分区" prop="iconPartition" required>
                 <lay-select
                     size="sm"
-                    class="width-resize"
-                    v-model="saveAccountBudgetVo.budgetType"
-                    :options="accountBudgetDurationTypeSelectList"
-                    :items="accountBudgetDurationTypeSelectList"
+                    style="width: 100%"
+                    v-model="saveCommonIconVo.iconPartition"
+                    :options="commonIconPartitionSelectList"
+                    :items="commonIconPartitionSelectList"
                     :allow-clear="true"
-                    @change="saveBudgetTypeChange(value)"
+                    @change="saveIconPartitionChange"
                 ></lay-select>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="头像" prop="avatar">
+                <lay-upload
+                    :url="ossPath"
+                    v-model="updateFileList"
+                    field="file"
+                    acceptMime="image/jpeg,image/png,image/gif,image/webp"
+                    :auto="false"
+                    @on-change="uploadOnChange"
+                >
+                  <template #preview>
+                    <div>
+                      <img v-if="previewAvatar" :src="parseImgPath(previewAvatar)"
+                           style="width: 300px; height: 300px; object-fit: cover;"
+                           alt="#">
+                    </div>
+                  </template>
+                </lay-upload>
               </lay-form-item>
             </lay-col>
           </lay-row>
           <lay-row :space="20">
             <lay-col :md="6">
-              <lay-form-item label="时间范围从"
-                             :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
-                             prop="durationFrom" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
-                             :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker class="width-resize" simple type="datetime" v-model="saveAccountBudgetVo.durationFrom"
-                                 allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="时间范围到"
-                             :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
-                             prop="durationTo" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
-                             :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker class="width-resize" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
-                                 allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
               <lay-form-item label="备注" prop="remark">
                 <lay-textarea
-                    v-model="saveAccountBudgetVo.remark"
+                    v-model="saveCommonIconVo.remark"
                     allow-clear
                 ></lay-textarea>
               </lay-form-item>
@@ -193,7 +173,7 @@
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
-  name: "Budget",
+  name: "CommonIcon",
 };
 </script>
 <script lang="ts" setup>
@@ -204,28 +184,31 @@ import {TableResult} from "@/types/Result";
 import {Operate} from "@/types/Constants";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
+import {CommonIconEntity, CommonIconVo} from "@/types/common/Icon";
+import {deleteCommonIcon, findCommonIcon, findPageCommonIcon, saveUpdate} from "@/api/common/Icon";
+import {parseImgPath} from "@/util/UImage";
 
 /* INIT*/
 onMounted(async () => {
-  accountBudgetDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
-  accountBudgetDurationTypeSelectList.value = await sysDictValueSelect(accountBudgetDurationTypeSelect.value)
+  commonIconPartitionSelect.value = await loadSysDictValue(Constants.COMMON_ICON_PARTITION)
+  commonIconPartitionSelectList.value = await sysDictValueSelect(commonIconPartitionSelect.value)
   loadDataSource()
 })
 /* INIT*/
 
 /* VAR*/
-const searchQuery = ref<AccountBudgetVo>({})
+const searchQuery = ref<CommonIconVo>(<CommonIconVo>{})
 const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const dataSource = ref<Array<AccountBudgetEntity>>()
+const dataSource = ref<Array<CommonIconEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '预算描述', width: '130px', key: 'budgetDesc', fixed: 'left'},
   {title: '预算金额', width: '130px', key: 'outlay', sort: 'desc'},
-  {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
+  {title: '预算类型', width: '130px', key: 'iconPartition', customSlot: 'iconPartition'},
   {title: '时间范围从', width: '130px', key: 'durationFrom'},
   {title: '时间范围到', width: '130px', key: 'durationTo'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
@@ -243,11 +226,10 @@ const evenFlag = ref(true)
 const showModalFlag = ref(false)
 const saveModalTitle = ref('');
 const saveFormRef = ref(null)
-const saveAccountBudgetVo = ref<AccountBudgetVo>({})
+const saveCommonIconVo = ref<CommonIconVo>(<CommonIconVo>{})
 const queryFormRef = ref(null)
-const queryAccountBudgetVo = ref<AccountBudgetVo>({})
-const accountBudgetDurationTypeSelect = ref<Array<SysDictValueEntity>>();
-const accountBudgetDurationTypeSelectList = ref();
+const commonIconPartitionSelect = ref<Array<SysDictValueEntity>>(<Array<SysDictValueEntity>>[]);
+const commonIconPartitionSelectList = ref();
 const saveFromRules = ref({
   outlay: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
@@ -266,7 +248,7 @@ const saveFromRules = ref({
  * 初始化表格
  */
 const loadDataSource = () => {
-  findPageAccountBudget(searchQuery.value, pageQuery).then((res: TableResult<AccountBudgetEntity>) => {
+  findPageCommonIcon(searchQuery.value, pageQuery).then((res: TableResult<CommonIconEntity>) => {
     if (res.code == 200) {
       pageQuery.total = res.total;
       dataSource.value = res.rows
@@ -319,14 +301,14 @@ function queryFormReset() {
 const showSaveModal = (text: any, row: any) => {
   saveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
   if (row != null) {
-    saveAccountBudgetVo.value = {...row}
+    saveCommonIconVo.value = {...row}
   }
   if (Operate.EDIT === text) {
-    findAccountBudget({
+    findCommonIcon({
       id: row.id
     }).then((res: any) => {
       if (res.code === 200) {
-        saveAccountBudgetVo.value = res.data;
+        saveCommonIconVo.value = res.data;
       }
     })
   } else if (Operate.ADD === text) {
@@ -349,7 +331,7 @@ function toRemove() {
       {
         text: '确定',
         callback: (id: any) => {
-          deleteAccountBudget(selectedKeys.value).then((res: any) => {
+          deleteCommonIcon(selectedKeys.value).then((res: any) => {
             if (res.code === 200) {
               layer.msg('删除成功')
             }
@@ -376,16 +358,16 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   saveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      saveUpdate(saveAccountBudgetVo.value).then((res: any) => {
+      saveUpdate(saveCommonIconVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
-          saveAccountBudgetVo.value = {};
+          saveCommonIconVo.value = {};
           if (clickFlag) {
             showModalFlag.value = false
           } else {
             // 如果是修改+回车，则关闭窗口
-            if (saveAccountBudgetVo.id && saveAccountBudgetVo.id != 0) {
+            if (saveCommonIconVo.id && saveCommonIconVo.id != 0) {
               showModalFlag.value = false
             }
           }
@@ -410,17 +392,17 @@ function toCancel() {
   showModalFlag.value = false
 }
 
-function saveBudgetTypeChange(value: any) {
+function saveIconPartitionChange(value: any) {
   if (!value || value !== 'CUSTOM') {
     // 如果不是自定义则时间范围置空
-    saveAccountBudgetVo.value.durationFrom = null;
-    saveAccountBudgetVo.value.durationTo = null;
+    saveCommonIconVo.value.durationFrom = null;
+    saveCommonIconVo.value.durationTo = null;
   }
 }
 
 function confirm(row: any) {
   if (row) {
-    deleteAccountBudget([row.id]).then((res: any) => {
+    deleteCommonIcon([row.id]).then((res: any) => {
       if (res.code === 200) {
         layer.msg('删除成功')
       }
@@ -429,6 +411,10 @@ function confirm(row: any) {
       layer.confirm(e.msg, {icon: 2})
     })
   }
+}
+
+function cancel() {
+  layer.msg('您已取消操作')
 }
 
 /* FUNCTION*/

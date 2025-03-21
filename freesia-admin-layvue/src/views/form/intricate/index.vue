@@ -68,7 +68,7 @@
                 <lay-form-item label="生效日期" prop="effectiveDate">
                   <lay-date-picker
                       v-model="formData.effectiveDate"
-                      class="width-resize"
+                      style="width: 100%"
                       range
                       placeholder="type : date"
                   ></lay-date-picker>

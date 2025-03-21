@@ -6,7 +6,7 @@
           <lay-col :md="6">
             <lay-form-item label="用户名">
               <lay-input
-                  class="width-resize"
+                  style="width: 100%"
                   v-model="searchQuery.operatorName"
                   placeholder="请输入"
                   size="sm"
@@ -17,7 +17,7 @@
           <lay-col :md="6">
             <lay-form-item label="部门名称">
               <lay-input
-                  class="width-resize"
+                  style="width: 100%"
                   v-model="searchQuery.deptName"
                   placeholder="请输入"
                   size="sm"
@@ -28,7 +28,7 @@
           <lay-col :md="12">
             <lay-form-item label="登录时间">
               <lay-date-picker
-                  class="width-resize"
+                  style="width: 100%"
                   size="sm"
                   v-model="operateTimeRange"
                   allow-clear
@@ -55,7 +55,7 @@
           <lay-col :md="6">
             <lay-form-item label="子模块">
               <lay-input
-                  class="width-resize"
+                  style="width: 100%"
                   v-model="searchQuery.subModule"
                   placeholder="请输入"
                   size="sm"
@@ -66,7 +66,7 @@
           <lay-col :md="6">
             <lay-form-item label="操作类型">
               <lay-input
-                  class="width-resize"
+                  style="width: 100%"
                   v-model="searchQuery.type"
                   placeholder="请输入"
                   size="sm"
@@ -77,7 +77,7 @@
           <lay-col :md="6">
             <lay-form-item label="操作结果">
               <lay-input
-                  class="width-resize"
+                  style="width: 100%"
                   v-model="searchQuery.result"
                   placeholder="请输入"
                   size="sm"

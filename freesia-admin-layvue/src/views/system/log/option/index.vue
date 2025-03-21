@@ -10,7 +10,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -21,14 +21,14 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
           <lay-col :md="12">
             <lay-form-item label="登录时间">
               <lay-date-picker
-                  class="width-resize"
+                  style="width: 100%"
                   size="sm"
                   v-model="searchQuery.rangeTime"
                   allow-clear

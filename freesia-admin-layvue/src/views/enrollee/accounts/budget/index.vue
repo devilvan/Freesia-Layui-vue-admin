@@ -1,8 +1,8 @@
 <template>
   <lay-container :fluid="true">
     <lay-card>
-      <lay-form style="margin-top: 10px" ref="queryFormRef" :model="searchQuery"
-                label-position="left">
+      <lay-form ref="queryFormRef" :model="searchQuery"
+                label-position="top">
         <lay-row :space="20">
           <lay-col :md="6">
             <lay-form-item label="预算描述" prop="budgetDesc">
@@ -18,7 +18,8 @@
             <lay-form-item label="预算日期类型" prop="budgetType">
               <lay-select
                   size="sm"
-                  class="width-resize"
+                  style="width: 100%"
+                  placeholder="请选择"
                   v-model="searchQuery.budgetType"
                   :options="accountBudgetDurationTypeSelectList"
                   :items="accountBudgetDurationTypeSelectList"
@@ -28,13 +29,13 @@
           </lay-col>
           <lay-col :md="6">
             <lay-form-item label="时间范围从" prop="durationFrom">
-              <lay-date-picker class="width-resize" simple type="date" v-model="searchQuery.durationFrom"
+              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationFrom"
                                allow-clear></lay-date-picker>
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
             <lay-form-item label="时间范围到" prop="durationTo">
-              <lay-date-picker class="width-resize" simple type="date" v-model="searchQuery.durationTo"
+              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationTo"
                                allow-clear></lay-date-picker>
             </lay-form-item>
           </lay-col>
@@ -113,7 +114,7 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="showModalFlag" :area="['1200px']" :title="title">
+    <lay-layer v-model="showModalFlag" :area="['1200px']" :title="saveModalTitle">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
         <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" :rules="saveFromRules" label-position="top">
           <lay-row :space="20">
@@ -139,33 +140,33 @@
             <lay-col :md="6">
               <lay-form-item label="预算日期类型" prop="budgetType" required>
                 <lay-select
+                    style="width: 100%"
                     size="sm"
-                    class="width-resize"
                     v-model="saveAccountBudgetVo.budgetType"
                     :options="accountBudgetDurationTypeSelectList"
                     :items="accountBudgetDurationTypeSelectList"
                     :allow-clear="true"
-                    @change="saveBudgetTypeChange(value)"
+                    @change="saveBudgetTypeChange"
                 ></lay-select>
               </lay-form-item>
             </lay-col>
           </lay-row>
           <lay-row :space="20">
             <lay-col :md="6">
-              <lay-form-item label="时间范围从"
+              <lay-form-item label="时间范围从" style="width: 100%"
                              :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
                              prop="durationFrom" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
                              :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker class="width-resize" simple type="datetime" v-model="saveAccountBudgetVo.durationFrom"
+                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationFrom"
                                  allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="时间范围到"
+              <lay-form-item label="时间范围到" style="width: 100%"
                              :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
                              prop="durationTo" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
                              :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker class="width-resize" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
+                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
                                  allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
               </lay-form-item>
             </lay-col>
@@ -246,9 +247,9 @@ const evenFlag = ref(true)
 const showModalFlag = ref(false)
 const saveModalTitle = ref('');
 const saveFormRef = ref(null)
-const saveAccountBudgetVo = ref<AccountBudgetVo>({})
+const saveAccountBudgetVo = ref<AccountBudgetVo>(<AccountBudgetVo>{})
 const queryFormRef = ref(null)
-const queryAccountBudgetVo = ref<AccountBudgetVo>({})
+const queryAccountBudgetVo = ref<AccountBudgetVo>(<AccountBudgetVo>{})
 const accountBudgetDurationTypeSelect = ref<Array<SysDictValueEntity>>();
 const accountBudgetDurationTypeSelectList = ref();
 const saveFromRules = ref({
@@ -434,5 +435,8 @@ function confirm(row: any) {
   }
 }
 
+function cancel() {
+  layer.msg('您已取消操作')
+}
 /* FUNCTION*/
 </script>

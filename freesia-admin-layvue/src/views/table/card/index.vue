@@ -9,7 +9,7 @@
                 <lay-form-item>
                   <lay-input
                       v-model="searchTitle"
-                      class="width-resize"
+                      style="width: 100%"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>

@@ -10,7 +10,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -21,14 +21,14 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
             <lay-form-item label="性别">
               <lay-select
-                  class="width-resize"
+                  style="width: 100%"
                   size="sm"
                   v-model="searchQuery.gender"
                   :allow-clear="true"
@@ -130,7 +130,7 @@
           <lay-form-item label="性别" prop="gender">
             <lay-select
                 v-model="sysUserVo.gender"
-                class="width-resize"
+                style="width: 100%"
                 placeholder="请选择性别"
                 :options="sysGenderListSelect"
                 :items="sysGenderListSelect"

@@ -1,52 +1,39 @@
 <template>
   <lay-container :fluid="true">
     <lay-card>
-      <lay-form style="margin-top: 10px">
-        <lay-row>
-          <lay-col :md="5">
+      <lay-form label-position="top">
+        <lay-row :space="20">
+          <lay-col :md="6">
             <lay-form-item label="角色名称" label-width="80">
               <lay-input
                   v-model="searchQuery.roleName"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
+          <lay-col :md="6">
             <lay-form-item label="角色标识" label-width="80">
               <lay-input
                   v-model="searchQuery.identifying"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="5">
+          <lay-col :md="6">
             <lay-form-item label="备注" label-width="80">
               <lay-input
                   v-model="searchQuery.mark"
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="5">
-            <lay-form-item label-width="20">
-              <lay-button
-
-                  type="normal"
-                  size="sm"
-                  @click="toSearch"
-              >
-                查询
-              </lay-button>
-              <lay-button size="sm" @click="toReset"> 重置</lay-button>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -71,6 +58,8 @@
           ></lay-switch>
         </template>
         <template v-slot:toolbar>
+          <lay-button type="normal" size="sm" @click="toSearch">查询</lay-button>
+          <lay-button size="sm" @click="toReset">重置</lay-button>
           <lay-button
               size="sm"
               type="primary"

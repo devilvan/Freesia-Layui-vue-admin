@@ -10,7 +10,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -21,7 +21,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -97,7 +97,7 @@
           </lay-form-item>
           <lay-form-item label="请求方式" prop="requestType" required>
             <lay-select
-                class="width-resize"
+                style="width: 100%"
                 size="sm"
                 v-model="urlConfigVo.requestType"
                 placeholder="请选择"

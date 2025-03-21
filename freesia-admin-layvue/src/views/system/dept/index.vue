@@ -71,7 +71,7 @@
                       placeholder="请输入"
                       size="sm"
                       :allow-clear="true"
-                      class="width-resize"
+                      style="width: 100%"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
@@ -82,14 +82,14 @@
                       placeholder="请输入"
                       size="sm"
                       :allow-clear="true"
-                      class="width-resize"
+                      style="width: 100%"
                   ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
                 <lay-form-item label="性别" label-width="80">
                   <lay-select
-                      class="width-resize"
+                      style="width: 100%"
                       size="sm"
                       v-model="searchQuery.sex"
                       :allow-clear="true"
@@ -177,7 +177,7 @@
             <lay-input v-model="model11.name"></lay-input>
           </lay-form-item>
           <lay-form-item label="性别" prop="sex">
-            <lay-select v-model="model11.sex" class="width-resize">
+            <lay-select v-model="model11.sex" style="width: 100%">
               <lay-select-option value="男" label="男"></lay-select-option>
               <lay-select-option value="女" label="女"></lay-select-option>
             </lay-select>
@@ -206,7 +206,7 @@
             <lay-col md="6">
               <lay-form-item label="上级部门" prop="parentId" required>
                 <!-- :onlyLastLevel="true" 不能与:changeOnSelect="true" 一起使用-->
-                <lay-cascader class="width-resize"
+                <lay-cascader style="width: 100%"
                               :options="deptTreeSelect"
                               v-model="addSysDeptVo.ancestors"
                               :replaceFields="replaceFields"
@@ -219,7 +219,7 @@
             </lay-col>
             <lay-col md="6">
               <lay-form-item label="部门名称" prop="deptName" required>
-                <lay-input v-model="addSysDeptVo.deptName" class="width-resize"></lay-input>
+                <lay-input v-model="addSysDeptVo.deptName" style="width: 100%"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col md="6">
@@ -240,7 +240,7 @@
             <lay-col md="6">
               <lay-form-item label="排序号" prop="orderNum">
                 <lay-input-number
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="addSysDeptVo.orderNum"
                     position="right"
                 ></lay-input-number>
@@ -274,7 +274,7 @@
             <lay-col md="6">
               <lay-form-item label="上级部门" prop="parentId" required>
                 <!-- :onlyLastLevel="true" 不能与:changeOnSelect="true" 一起使用-->
-                <lay-cascader class="width-resize"
+                <lay-cascader style="width: 100%"
                               :options="deptTreeSelect"
                               v-model="editSysDeptVo.ancestors"
                               :replaceFields="replaceFields"
@@ -287,7 +287,7 @@
             </lay-col>
             <lay-col md="6">
               <lay-form-item label="部门名称" prop="deptName" required>
-                <lay-input v-model="editSysDeptVo.deptName" class="width-resize"></lay-input>
+                <lay-input v-model="editSysDeptVo.deptName" style="width: 100%"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col md="6">
@@ -308,7 +308,7 @@
             <lay-col md="6">
               <lay-form-item label="排序号" prop="orderNum">
                 <lay-input-number
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="editSysDeptVo.orderNum"
                     position="right"
                 ></lay-input-number>

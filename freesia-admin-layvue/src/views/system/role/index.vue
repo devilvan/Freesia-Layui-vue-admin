@@ -10,7 +10,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -21,7 +21,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -32,7 +32,7 @@
                   placeholder="请输入"
                   size="sm"
                   :allow-clear="true"
-                  class="width-resize"
+                  style="width: 100%"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -143,7 +143,7 @@
               <lay-form-item label="数据范围" prop="dataScope" required>
                 <lay-select
                     :disabled="!isAdmin()"
-                    class="width-resize"
+                    style="width: 100%"
                     size="sm"
                     v-model="addRoleVo.dataScope"
                     :options="sysDataScopeSelect"
@@ -163,7 +163,7 @@
             <lay-col md="6">
               <lay-form-item label="排序号" prop="orderNum">
                 <lay-input-number
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="addRoleVo.orderNum"
                     position="right"
                     :min="0"
@@ -210,7 +210,7 @@
                 <lay-select
                     :disabled="!isAdmin()"
                     size="sm"
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="editRoleVo.dataScope"
                     :options="sysDataScopeSelect"
                     :items="sysDataScopeSelect"
@@ -229,7 +229,7 @@
             <lay-col md="6">
               <lay-form-item label="排序号" prop="orderNum">
                 <lay-input-number
-                    class="width-resize"
+                    style="width: 100%"
                     v-model="editRoleVo.orderNum"
                     position="right"
                     :min="0"
@@ -270,7 +270,7 @@
             <lay-select
                 :disabled="!isAdmin()"
                 size="sm"
-                class="width-resize"
+                style="width: 100%"
                 v-model="saveRoleMenuPrivilegeModel.dataScope"
                 :options="sysDataScopeSelect"
                 :items="sysDataScopeSelect"

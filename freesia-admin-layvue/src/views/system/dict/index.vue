@@ -81,7 +81,7 @@
               <lay-col :md="6">
                 <lay-form-item label="状态">
                   <lay-select
-                      class="width-resize"
+                      style="width: 100%"
                       size="sm"
                       v-model="sysDictValueSearchQuery.status"
                       :options="enabledStatusSelectList"
