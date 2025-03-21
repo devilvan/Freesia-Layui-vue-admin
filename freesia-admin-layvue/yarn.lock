@@ -2543,6 +2543,11 @@ pngjs@^5.0.0:
   resolved "https://registry.npmmirror.com/pngjs/-/pngjs-5.0.0.tgz"
   integrity sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==
 
+pnpm@^10.6.5:
+  version "10.6.5"
+  resolved "https://registry.yarnpkg.com/pnpm/-/pnpm-10.6.5.tgz#da220e966c2db3275efb5928cf8f3592681b106b"
+  integrity sha512-zfko/KIIMs1Z7FOCZJK33CXcUk1DcLa0rb9lgD0y76psHIgUfArk6NV5psnuxxV1e1DU+jXuoXnYaOraTtBDrw==
+
 posix-character-classes@^0.1.0:
   version "0.1.1"
   resolved "https://registry.npmmirror.com/posix-character-classes/-/posix-character-classes-0.1.1.tgz#01eac0fe3b5af71a2a6c02feabb8c1fef7e00eab"

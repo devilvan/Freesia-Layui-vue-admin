@@ -25,11 +25,11 @@
                 <div style="height: 400px">
                   <lay-form :model="loginForm" label-position="top" ref="loginFormRef" :rules="loginFormRules"
                             @keyup.enter.prevent="loginSubmit">
-                    <lay-form-item label="用户名" prop="username">
+                    <lay-form-item label="用户名" prop="username" required>
                       <lay-input :allow-clear="true" prefix-icon="layui-icon-username" placeholder="用户名"
                                  v-model="loginForm.username"></lay-input>
                     </lay-form-item>
-                    <lay-form-item label="密码" prop="password">
+                    <lay-form-item label="密码" prop="password" required>
                       <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="密码" password
                                  type="password" v-model="loginForm.password"></lay-input>
                     </lay-form-item>

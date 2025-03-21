@@ -9,6 +9,7 @@ import InnerLink from './layouts/InnerLink.vue'
 import {MenuPermission} from "./types/Permission";
 import LayJsonSchemaForm from "@layui/json-schema-form";
 import "@layui/json-schema-form/lib/index.css";
+import {preview, parseImgPath} from "./util/UImage";
 // @ts-ignore
 import {JSEncrypt} from "encryptlong";
 import {getPublicKey, wrapEncryptPub2} from "./api/Crypt";

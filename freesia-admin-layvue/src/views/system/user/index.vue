@@ -253,7 +253,7 @@ import app from "../../../main";
 import {Operate} from "../../../types/Constants";
 import {useCryptStore} from "../../../store/crypt";
 import {upload, uploadTemp} from "../../../api/system/Oss";
-import {parseImgPath} from "../../../util/UImage";
+import {parseImgPath, preview} from "../../../util/UImage";
 import {SysDeptEntity, SysDeptSelectEntity} from "../../../types/system/Dept";
 import {findTreeAssignDeptSelect} from "../../../api/system/Dept";
 
@@ -535,15 +535,6 @@ function toUpload() {
   })
 }
 
-/**
- * 预览图片
- */
-function preview(path: any) {
-  let option = {
-    imgList: [{src: path, alt: 'Do you like what you see?'}]
-  };
-  layer.photos(option)
-}
 
 function assignRole() {
   if (!selectedKeys.value || selectedKeys.value.length === 0 || selectedKeys.value.length > 1) {

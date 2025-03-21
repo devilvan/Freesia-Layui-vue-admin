@@ -24,7 +24,7 @@
           :class="appStore.sideTheme == 'dark' ? 'dark changeBgc' : 'light'"
       >
         <lay-logo v-if="appStore.logo">
-          <lay-avatar :src="'/不要停下来啊.png'"></lay-avatar>
+          <lay-avatar :src="bootstrapImageUrl" @click="preview(bootstrapImageUrl)"></lay-avatar>
           <span style="padding-left: 20px; font-size: 18pt; font-family: 'Consolas'"
                 v-if="!appStore.collapse">Freesia</span>
         </lay-logo>
@@ -229,7 +229,7 @@ import router from "../router";
 import {useTabStore} from "./composable/useTabStore";
 import app from "../main";
 import {layer} from "@layui/layui-vue";
-import { EventSourcePolyfill } from "event-source-polyfill";
+import {EventSourcePolyfill} from "event-source-polyfill";
 import {sseDisconnect} from "../api/Login";
 
 export default {
@@ -253,10 +253,11 @@ export default {
         appStore.collapse
             ? '60px'
             : appStore.subfield && appStore.subfieldPosition == 'side'
-            ? '280px'
-            : '220px'
+                ? '280px'
+                : '220px'
     )
     const sseConnectUrl = import.meta.env.VITE_SSE_CONNECT_URL
+    const bootstrapImageUrl = '/不要停下来啊.png';
     const {
       selectedKey,
       openKeys,
@@ -352,11 +353,18 @@ export default {
       })
       eventSource.addEventListener("message", (e: { data: string }) => {
         layer.notify({
-          title:"消息",
+          title: "消息",
           content: e.data
         })
         // layer.confirm(e.data, {icon: 1})
       })
+    }
+
+    function preview(path: any) {
+      let option = {
+        imgList: [{src: path, alt: '不要停下来啊'}]
+      };
+      layer.photos(option)
     }
 
     return {
@@ -387,7 +395,9 @@ export default {
       toDoc,
       toGitee,
       resolveImgPath,
-      initSse
+      initSse,
+      bootstrapImageUrl,
+      preview
     }
   }
 }
