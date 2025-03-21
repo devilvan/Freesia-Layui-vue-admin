@@ -280,9 +280,9 @@ const loadDictValue = async () => {
 }
 
 function profileForm() {
-  profileFormRef.value.validate((isValidate: boolean, model: any, errors: any) => {
+  profileFormRef.value.validate(async (isValidate: boolean, model: any, errors: any) => {
         if (isValidate) {
-          saveUserInfo(model).then(async (res: any) => {
+          saveUserInfo(await $crypt.encryptAes(model)).then(async (res: any) => {
             if (res.code === 200) {
               refresh()
               layer.msg(res.msg, {icon: 1})

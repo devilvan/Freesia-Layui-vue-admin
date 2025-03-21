@@ -44,7 +44,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     /**
      * 批量保存${dataBaseDto.comment}信息
      *
-     * ${dataBaseDto.className?uncap_first}VoList    待保存对象
+     * @param ${dataBaseDto.className?uncap_first}VoList    待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存${dataBaseDto.comment}信息")

@@ -48,9 +48,9 @@
           :columns="columns"
           :data-source="dataSource"
           :default-toolbar="defaultToolbarFlag"
-          :loading="loading.value"
+          :loading="loading"
           :page="pageQuery"
-          :height="'600px'"
+          :height="'550px'"
           :even="evenFlag"
           @change="change"
           @sortChange="sortChange">
