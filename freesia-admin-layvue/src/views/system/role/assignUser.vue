@@ -154,21 +154,21 @@ export default {
 </script>
 <script setup lang="ts">
 import {computed, nextTick, onMounted, reactive, ref} from 'vue'
-import {PageQuery} from "../../../types/Common";
-import {SysUserEntity, SysUserVo} from "../../../types/system/User";
-import {SysDictValueEntity} from "../../../types/system/Dict";
+import {PageQuery} from "@/types/Common";
+import {SysUserEntity, SysUserVo} from "@/types/system/User";
+import {SysDictValueEntity} from "@/types/system/Dict";
 import {useRoute} from "vue-router";
-import {AssignUserVo, SysRoleEntity} from "../../../types/system/Role";
-import {useTabStore} from "../../../layouts/composable/useTabStore";
+import {AssignUserVo, SysRoleEntity} from "@/types/system/Role";
+import {useTabStore} from "@/layouts/composable/useTabStore";
 import {
   assignUser,
   cancelAssignUser,
   findPageAllowAssignUserByRoleId,
   findPageUserByRoleId,
   findRoleById
-} from "../../../api/system/Role";
+} from "@/api/system/Role";
 import {layer} from "@layui/layui-vue";
-import router from "../../../router";
+import router from "@/router";
 
 /* INIT*/
 const $route = useRoute();

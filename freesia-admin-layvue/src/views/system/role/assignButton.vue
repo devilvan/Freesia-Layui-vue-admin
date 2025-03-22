@@ -167,20 +167,20 @@ export default {
 <script setup lang="ts">
 import {nextTick, onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {FindPageSysDeptListEntity, FindPageSysUserByDeptEntity} from "../../../types/system/Dept";
-import {PageQuery} from "../../../types/Common";
-import {findPageSysUserByDept} from "../../../api/system/User";
-import {SysUserVo} from "../../../types/system/User";
-import {Constants, loadSysDictValue, matchDictValue} from "../../../util/UDict";
-import {MatchDictValueModel, SysDictValueEntity} from "../../../types/system/Dict";
+import {FindPageSysDeptListEntity, FindPageSysUserByDeptEntity} from "@/types/system/Dept";
+import {PageQuery} from "@/types/Common";
+import {findPageSysUserByDept} from "@/api/system/User";
+import {SysUserVo} from "@/types/system/User";
+import {Constants, loadSysDictValue, matchDictValue} from "@/util/UDict";
+import {MatchDictValueModel, SysDictValueEntity} from "@/types/system/Dict";
 import DictTag from "../../component/DictTag.vue";
 import {useRoute} from "vue-router";
-import {assignButton, findAllMenuTree, findAllSysButton, findAssignedSysButtonByRoleId} from "../../../api/system/Menu";
-import {AssignButtonVo, SysMenuEntity, SysMenuVo} from "../../../types/system/Menu";
-import {role} from "../../../directives/permission";
-import {findRoleById} from "../../../api/system/Role";
-import {SysRoleEntity} from "../../../types/system/Role";
-import {useTabStore} from "../../../layouts/composable/useTabStore";
+import {assignButton, findAllMenuTree, findAllSysButton, findAssignedSysButtonByRoleId} from "@/api/system/Menu";
+import {AssignButtonVo, SysMenuEntity, SysMenuVo} from "@/types/system/Menu";
+import {role} from "@/directives/permission";
+import {findRoleById} from "@/api/system/Role";
+import {SysRoleEntity} from "@/types/system/Role";
+import {useTabStore} from "@/layouts/composable/useTabStore";
 /* INIT*/
 onMounted(async () => {
   sysMenuTypeList.value = await loadSysDictValue(Constants.SYS_MENU_TYPE);

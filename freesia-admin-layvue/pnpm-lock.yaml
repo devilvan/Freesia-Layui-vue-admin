@@ -44,6 +44,9 @@ importers:
       pinia-plugin-persistedstate:
         specifier: ^3.1.0
         version: 3.2.3(pinia@2.3.1(typescript@4.9.5)(vue@3.5.13(typescript@4.9.5)))
+      pnpm:
+        specifier: ^10.6.5
+        version: 10.6.5
       qs:
         specifier: ^6.11.2
         version: 6.14.0
@@ -1585,6 +1588,11 @@ packages:
   pngjs@5.0.0:
     resolution: {integrity: sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==}
     engines: {node: '>=10.13.0'}
+
+  pnpm@10.6.5:
+    resolution: {integrity: sha512-zfko/KIIMs1Z7FOCZJK33CXcUk1DcLa0rb9lgD0y76psHIgUfArk6NV5psnuxxV1e1DU+jXuoXnYaOraTtBDrw==}
+    engines: {node: '>=18.12'}
+    hasBin: true
 
   posix-character-classes@0.1.1:
     resolution: {integrity: sha512-xTgYBc3fuo7Yt7JbiuFxSYGToMoz8fLoE6TC9Wx1P/u+LfeThMOAqmuyECnlBaaJb+u1m9hHiXUEtwW4OzfUJg==}
@@ -3646,6 +3654,8 @@ snapshots:
       pathe: 2.0.3
 
   pngjs@5.0.0: {}
+
+  pnpm@10.6.5: {}
 
   posix-character-classes@0.1.1: {}
 

@@ -82,16 +82,16 @@ export default {
 <script setup lang="ts">
 import {nextTick, onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "../../../types/Common";
-import {FindDeptRolesByDeptIdEntity, SysDeptVo} from "../../../types/system/Dept";
-import {assignRole, findDeptRolesByDeptId} from "../../../api/system/Dept";
-import {SysDictValueEntity} from "../../../types/system/Dict";
+import {PageQuery} from "@/types/Common";
+import {FindDeptRolesByDeptIdEntity, SysDeptVo} from "@/types/system/Dept";
+import {assignRole, findDeptRolesByDeptId} from "@/api/system/Dept";
+import {SysDictValueEntity} from "@/types/system/Dict";
 import {useRoute} from "vue-router";
-import {Constants, loadSysDictValue} from "../../../util/UDict";
-import {SysRoleEntity} from "../../../types/system/Role";
-import {useTabStore} from "../../../layouts/composable/useTabStore";
-import {findAllRoles} from "../../../api/system/Role";
-import router from "../../../router";
+import {Constants, loadSysDictValue} from "@/util/UDict";
+import {SysRoleEntity} from "@/types/system/Role";
+import {useTabStore} from "@/layouts/composable/useTabStore";
+import {findAllRoles} from "@/api/system/Role";
+import router from "@/router";
 
 /* INIT*/
 const $route = useRoute();

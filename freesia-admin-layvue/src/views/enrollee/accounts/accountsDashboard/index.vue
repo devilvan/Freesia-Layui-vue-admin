@@ -100,8 +100,8 @@ export default {
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue'
 import BudgetStatistic from "./BudgetStatistic.vue";
-import {findBudgetCapacity} from "../../../../api/account/AccountBudget";
-import {AccountBudgetVo, EchartCapacityOptionEntity} from "../../../../types/account/AccountBudget";
+import {findBudgetCapacity} from "@/api/account/AccountBudget";
+import {AccountBudgetVo, EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
 
 /*INIT*/
 onMounted(() => {

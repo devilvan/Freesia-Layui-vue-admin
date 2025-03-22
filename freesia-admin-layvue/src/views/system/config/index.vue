@@ -127,9 +127,9 @@ export default {
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "../../../types/Common";
-import {deleteConfig, findPageSysConfig, saveConfig} from "../../../api/system/Config";
-import {SysConfigEntity, SysConfigVo} from "../../../types/system/Config";
+import {PageQuery} from "@/types/Common";
+import {deleteConfig, findPageSysConfig, saveConfig} from "@/api/system/Config";
+import {SysConfigEntity, SysConfigVo} from "@/types/system/Config";
 
 /* INIT*/
 onMounted(() => {

@@ -123,17 +123,17 @@ export default {
 </script>
 <script setup lang="ts">
 import {computed, nextTick, onMounted, reactive, ref} from 'vue'
-import {PageQuery} from "../../../types/Common";
-import {SysUserEntity} from "../../../types/system/User";
-import {SysDictValueEntity} from "../../../types/system/Dict";
+import {PageQuery} from "@/types/Common";
+import {SysUserEntity} from "@/types/system/User";
+import {SysDictValueEntity} from "@/types/system/Dict";
 import {useRoute} from "vue-router";
-import {useTabStore} from "../../../layouts/composable/useTabStore";
+import {useTabStore} from "@/layouts/composable/useTabStore";
 import {layer} from "@layui/layui-vue";
-import router from "../../../router";
-import {findPageAllowAssignUserByTenantId, findPageUserByTenantId} from "../../../api/system/User";
-import {SysTenantEntity} from "../../../types/system/Tenant";
-import {assignTenant, cancelTenantAssignUser, findSysTenant, reloadSysTenant} from "../../../api/system/Tenant";
-import {useUserStore} from "../../../store/user";
+import router from "@/router";
+import {findPageAllowAssignUserByTenantId, findPageUserByTenantId} from "@/api/system/User";
+import {SysTenantEntity} from "@/types/system/Tenant";
+import {assignTenant, cancelTenantAssignUser, findSysTenant, reloadSysTenant} from "@/api/system/Tenant";
+import {useUserStore} from "@/store/user";
 
 /* INIT*/
 const $route = useRoute();

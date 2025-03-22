@@ -342,25 +342,25 @@ import {
   FindPageSysRoleListEntity,
   SaveRoleMenuPrivilegeVo,
   SysRoleVo
-} from "../../../types/system/Role";
+} from "@/types/system/Role";
 import {
   assignDept, deleteRole,
   findDeptRolesByRoleId,
   findPageSysRoleList,
   saveRole,
   saveRoleMenuPrivilege
-} from "../../../api/system/Role";
-import {PageQuery} from "../../../types/Common";
-import {FindAllMenuTreeEntity} from "../../../types/system/Menu";
-import {findAllMenuTree, findSelectedMenuListByRoleId} from "../../../api/system/Menu";
-import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
-import {SysDictValueEntity} from "../../../types/system/Dict";
-import {useAppStore} from "../../../store/app";
-import {useUserStore} from "../../../store/user";
-import app from "../../../main";
-import router from "../../../router";
-import {SysDeptSelectEntity} from "../../../types/system/Dept";
-import {findTreeAssignDeptSelect} from "../../../api/system/Dept";
+} from "@/api/system/Role";
+import {PageQuery} from "@/types/Common";
+import {FindAllMenuTreeEntity} from "@/types/system/Menu";
+import {findAllMenuTree, findSelectedMenuListByRoleId} from "@/api/system/Menu";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {SysDictValueEntity} from "@/types/system/Dict";
+import {useAppStore} from "@/store/app";
+import {useUserStore} from "@/store/user";
+import app from "@/main";
+import router from "@/router";
+import {SysDeptSelectEntity} from "@/types/system/Dept";
+import {findTreeAssignDeptSelect} from "@/api/system/Dept";
 /* INIT*/
 const $ADMIN_ROLE = app.config.globalProperties.$ADMIN_ROLE
 onMounted(async () => {

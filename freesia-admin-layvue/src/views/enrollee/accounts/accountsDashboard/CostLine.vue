@@ -43,9 +43,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import {onBeforeUnmount, onMounted, ref} from "vue";
-import {DateScope, FindCostLineChartVo} from "../../../../types/account/Account";
+import {DateScope, FindCostLineChartVo} from "@/types/account/Account";
 import * as echarts from "echarts";
-import {findCostLineChart} from "../../../../api/account/Account";
+import {findCostLineChart} from "@/api/account/Account";
 
 /*INIT*/
 const props = defineProps({

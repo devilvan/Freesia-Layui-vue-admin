@@ -147,12 +147,12 @@ export default {
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "../../../types/Common";
-import {deleteUrlConfig, findPageUrlConfig, saveUpdate} from "../../../api/common/Url";
-import {UrlConfigEntity, UrlConfigVo} from "../../../types/common/Url";
-import {TableResult} from "../../../types/Result";
-import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
-import {SysDictValueEntity} from "../../../types/system/Dict";
+import {PageQuery} from "@/types/Common";
+import {deleteUrlConfig, findPageUrlConfig, saveUpdate} from "@/api/common/Url";
+import {UrlConfigEntity, UrlConfigVo} from "@/types/common/Url";
+import {TableResult} from "@/types/Result";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {SysDictValueEntity} from "@/types/system/Dict";
 
 /* INIT*/
 onMounted(async () => {

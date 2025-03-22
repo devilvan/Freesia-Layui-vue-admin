@@ -237,25 +237,25 @@ export default {
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "../../../types/Common";
-import {FindPageSysUserListEntity, AssignDeptVo, SysUserVo} from "../../../types/system/User";
+import {PageQuery} from "@/types/Common";
+import {FindPageSysUserListEntity, AssignDeptVo, SysUserVo} from "@/types/system/User";
 import {
   assignDept, deleteUser,
   findEditUserById,
   findPageSysUserList,
   saveUserInfo,
   userImport
-} from "../../../api/system/User";
-import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
-import {SysDictValueEntity} from "../../../types/system/Dict";
-import router from "../../../router";
-import app from "../../../main";
-import {Operate} from "../../../types/Constants";
-import {useCryptStore} from "../../../store/crypt";
-import {upload, uploadTemp} from "../../../api/system/Oss";
-import {parseImgPath, preview} from "../../../util/UImage";
-import {SysDeptEntity, SysDeptSelectEntity} from "../../../types/system/Dept";
-import {findTreeAssignDeptSelect} from "../../../api/system/Dept";
+} from "@/api/system/User";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {SysDictValueEntity} from "@/types/system/Dict";
+import router from "@/router";
+import app from "@/main";
+import {Operate} from "@/types/Constants";
+import {useCryptStore} from "@/store/crypt";
+import {upload, uploadTemp} from "@/api/system/Oss";
+import {parseImgPath, preview} from "@/util/UImage";
+import {SysDeptEntity, SysDeptSelectEntity} from "@/types/system/Dept";
+import {findTreeAssignDeptSelect} from "@/api/system/Dept";
 
 /* INIT*/
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH

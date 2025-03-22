@@ -290,8 +290,8 @@
   </lay-container>
 </template>
 <script lang="ts">
-import PopLayer from "../../../component/poplayer/PopLayer.vue";
-import PopFormItem from "../../../component/poplayer/PopFormItem.vue";
+import PopLayer from "@/component/poplayer/PopLayer.vue";
+import PopFormItem from "@/component/poplayer/PopFormItem.vue";
 
 /**
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
@@ -304,17 +304,17 @@ export default {
 <script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "../../../../types/Common";
-import {TableResult} from "../../../../types/Result";
+import {PageQuery} from "@/types/Common";
+import {TableResult} from "@/types/Result";
 import {
   deleteAccountCost,
   findPageAccountCost,
   findAccountCost,
   saveUpdate,
   accountsImport, accountsExport
-} from "../../../../api/account/Account";
-import router from "../../../../router";
-import {Operate} from "../../../../types/Constants";
+} from "@/api/account/Account";
+import router from "@/router";
+import {Operate} from "@/types/Constants";
 import {AccountCostEntity, AccountCostVo, PaymentSign} from "@/types/account/Account";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
@@ -322,8 +322,8 @@ import {List} from "echarts";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
-import {SysUserEntity, SysUserVo} from "../../../../types/system/User";
-import {findPageSysUserList, findPageSysUserWithoutDataScope} from "../../../../api/system/User";
+import {SysUserEntity, SysUserVo} from "@/types/system/User";
+import {findPageSysUserList, findPageSysUserWithoutDataScope} from "@/api/system/User";
 
 /* INIT*/
 onMounted(async () => {

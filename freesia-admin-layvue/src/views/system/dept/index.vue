@@ -352,22 +352,22 @@ import {
   FindPageSysUserByDeptEntity,
   SysDeptSelectEntity,
   SysDeptVo
-} from "../../../types/system/Dept";
-import {PageQuery} from "../../../types/Common";
+} from "@/types/system/Dept";
+import {PageQuery} from "@/types/Common";
 import {
   deleteDept,
   findDeptTreeList,
   findIncrementOrderNum,
   findTreeDeptSelect,
   saveDept
-} from "../../../api/system/Dept";
-import {findPageSysUserByDept} from "../../../api/system/User";
-import {SysUserVo} from "../../../types/system/User";
-import {Constants, loadSysDictValue, matchDictValue} from "../../../util/UDict";
-import {MatchDictValueModel, SysDictValueEntity} from "../../../types/system/Dict";
+} from "@/api/system/Dept";
+import {findPageSysUserByDept} from "@/api/system/User";
+import {SysUserVo} from "@/types/system/User";
+import {Constants, loadSysDictValue, matchDictValue} from "@/util/UDict";
+import {MatchDictValueModel, SysDictValueEntity} from "@/types/system/Dict";
 import DictTag from "../../component/DictTag.vue";
-import {useCryptStore} from "../../../store/crypt";
-import router from "../../../router";
+import {useCryptStore} from "@/store/crypt";
+import router from "@/router";
 
 /* INIT*/
 const $router = router

@@ -160,17 +160,17 @@ export default {
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue'
 import {layer} from '@layui/layer-vue'
-import {SysDictValueEntity} from "../../../types/system/Dict";
-import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
-import {SysUserVo} from "../../../types/system/User";
-import {findDeptById} from "../../../api/system/Dept";
-import {SysDeptEntity} from "../../../types/system/Dept";
-import {avatarUpdate, findCurrentUserProfile, saveUserInfo, userImport} from "../../../api/system/User";
-import {refresh} from "../../../util/UCommon";
-import {useCryptStore} from "../../../store/crypt";
-import {parseImgPath} from "../../../util/UImage";
-import {upload, uploadTemp} from "../../../api/system/Oss";
-import {useUserStore} from "../../../store/user";
+import {SysDictValueEntity} from "@/types/system/Dict";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {SysUserVo} from "@/types/system/User";
+import {findDeptById} from "@/api/system/Dept";
+import {SysDeptEntity} from "@/types/system/Dept";
+import {avatarUpdate, findCurrentUserProfile, saveUserInfo, userImport} from "@/api/system/User";
+import {refresh} from "@/util/UCommon";
+import {useCryptStore} from "@/store/crypt";
+import {parseImgPath} from "@/util/UImage";
+import {upload, uploadTemp} from "@/api/system/Oss";
+import {useUserStore} from "@/store/user";
 
 /* INIT*/
 onMounted(async () => {

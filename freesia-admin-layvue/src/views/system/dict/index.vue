@@ -357,8 +357,8 @@ import {
   SysDictValueEntity,
   SysDictValueVo,
   SysDictVo
-} from "../../../types/system/Dict";
-import {PageQuery} from "../../../types/Common";
+} from "@/types/system/Dict";
+import {PageQuery} from "@/types/Common";
 import {
   deleteSysDictValueList,
   enableSysDictValueList, findMaxOrderNumByKeyId,
@@ -367,7 +367,7 @@ import {
   flushCacheSysDictValue, importSysDictValue,
   saveSysDictKey,
   saveSysDictValue
-} from "../../../api/system/Dict";
+} from "@/api/system/Dict";
 import {PROCEED_CODE} from "@/types/Constants";
 import {defaultShortcuts} from "@/util/UDate";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";

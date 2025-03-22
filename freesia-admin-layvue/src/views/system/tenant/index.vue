@@ -182,14 +182,14 @@ export default {
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "../../../types/Common";
-import {TableResult} from "../../../types/Result";
-import {Constants, loadSysDictValue, sysDictValueSelect} from "../../../util/UDict";
-import {SysDictValueEntity} from "../../../types/system/Dict";
-import {SysTenantEntity, SysTenantVo} from "../../../types/system/Tenant";
-import {deleteSysTenant, findPageSysTenant, findSysTenant, saveUpdate} from "../../../api/system/Tenant";
-import router from "../../../router";
-import {Operate} from "../../../types/Constants";
+import {PageQuery} from "@/types/Common";
+import {TableResult} from "@/types/Result";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {SysDictValueEntity} from "@/types/system/Dict";
+import {SysTenantEntity, SysTenantVo} from "@/types/system/Tenant";
+import {deleteSysTenant, findPageSysTenant, findSysTenant, saveUpdate} from "@/api/system/Tenant";
+import router from "@/router";
+import {Operate} from "@/types/Constants";
 
 /* INIT*/
 onMounted(async () => {

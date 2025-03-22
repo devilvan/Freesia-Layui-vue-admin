@@ -159,12 +159,12 @@ export default {
 <script setup lang="ts">
 import {ref, reactive, onMounted} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {TableResult} from "../../../types/Result";
-import {SysOssEntity} from "../../../types/system/Oss";
-import {deleteSysOss, findPageSysOss, upload} from "../../../api/system/Oss";
-import {PageQuery} from "../../../types/Common";
-import Http from "../../../api/Http";
-import app from "../../../main";
+import {TableResult} from "@/types/Result";
+import {SysOssEntity} from "@/types/system/Oss";
+import {deleteSysOss, findPageSysOss, upload} from "@/api/system/Oss";
+import {PageQuery} from "@/types/Common";
+import Http from "@/api/Http";
+import app from "@/main";
 
 /* INIT*/
 onMounted(() => {
