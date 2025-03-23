@@ -290,8 +290,8 @@
   </lay-container>
 </template>
 <script lang="ts">
-import PopLayer from "@/component/poplayer/PopLayer.vue";
-import PopFormItem from "@/component/poplayer/PopFormItem.vue";
+import PopLayer from "@/views/component/poplayer/PopLayer.vue";
+import PopFormItem from "@/views/component/poplayer/PopFormItem.vue";
 
 /**
  * 创建组件时要添加name，否则在使用keep-alive时就会失效

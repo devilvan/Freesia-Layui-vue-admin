@@ -1,11 +1,19 @@
 import Http from "../Http";
-import {PageQuery} from "../../types/Common";
-import {R, TableResult} from "../../types/Result";
-import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
-import {CommonIconEntity, CommonIconVo} from "../../types/common/Icon";
+import {PageQuery} from "@/types/Common";
+import {R, TableResult} from "@/types/Result";
+import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
+import {CommonIconEntity, CommonIconVo} from "@/types/common/Icon";
 
-export function saveUpdate(commonIconVo: CommonIconVo): Promise<R<void>> {
-    return Http.post("/common/commonIconController/saveUpdate", commonIconVo);
+export function saveUpdate(fileList: File[], commonIconVo: CommonIconVo): Promise<R<void>> {
+    let param = {
+        fileList: fileList,
+        commonIconVo: commonIconVo
+    }
+    return Http.post("/common/commonIconController/saveUpdate", param, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 }
 
 export function saveUpdateBatch(commonIconVoList: Array<CommonIconVo>): Promise<R<void>> {

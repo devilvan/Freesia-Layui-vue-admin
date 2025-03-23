@@ -67,25 +67,25 @@
             <ul class="other-ways">
               <li>
                 <div class="line-container">
-                  <img class="icon" src="../../assets/login/w.svg"/>
+                  <img class="icon" src="@/assets/login/w.svg"/>
                   <p class="text">微信</p>
                 </div>
               </li>
               <li>
                 <div class="line-container">
-                  <img class="icon" src="../../assets/login/q.svg"/>
+                  <img class="icon" src="@/assets/login/q.svg"/>
                   <p class="text">钉钉</p>
                 </div>
               </li>
               <li>
                 <div class="line-container">
-                  <img class="icon" src="../../assets/login/a.svg"/>
+                  <img class="icon" src="@/assets/login/a.svg"/>
                   <p class="text">Gitee</p>
                 </div>
               </li>
               <li>
                 <div class="line-container">
-                  <img class="icon" src="../../assets/login/f.svg"/>
+                  <img class="icon" src="@/assets/login/f.svg"/>
                   <p class="text">Github</p>
                 </div>
               </li>
@@ -100,15 +100,15 @@
 
 <script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
-import {useUserStore} from '../../store/user'
+import {useUserStore} from '@/store/user'
 import {layer} from '@layui/layer-vue'
-import {LoginVo} from "../../types/login/LoginForm";
-import {login} from "../../api/Login";
-import {findCaptchaEnabled} from "../../api/system/Config";
-import {getCaptchaCode} from "../../api/captcha/Captcha";
-import {loginQrcode} from "../../api/module/commone";
-import router from "../../router";
-import {useCryptStore} from "../../store/crypt";
+import {LoginVo} from "@/types/login/LoginForm";
+import {login} from "@/api/Login";
+import {findCaptchaEnabled} from "@/api/system/Config";
+import {getCaptchaCode} from "@/api/captcha/Captcha";
+import {loginQrcode} from "@/api/module/commone";
+import router from "@/router";
+import {useCryptStore} from "@/store/crypt";
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 
@@ -173,7 +173,7 @@ const loginSubmit = async () => {
           } else {
             toRefreshImg()
           }
-        }, 1000)
+        }, 100)
       }).catch(e => {
         layer.confirm(e, {icon: 2})
       })
@@ -316,7 +316,7 @@ const toRefreshQrcode = async () => {
   height: 84%;
   color: #fff;
   text-align: center;
-  background-image: url('../../assets/login/login-bg.svg');
+  background-image: url('@/assets/login/login-bg.svg');
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: contain;

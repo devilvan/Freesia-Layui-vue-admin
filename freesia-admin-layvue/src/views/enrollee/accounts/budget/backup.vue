@@ -433,5 +433,9 @@ function confirm(row: any) {
   }
 }
 
+function cancel() {
+  layer.msg('您已取消操作')
+}
+
 /* FUNCTION*/
 </script>

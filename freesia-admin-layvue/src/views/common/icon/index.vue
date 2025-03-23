@@ -128,23 +128,28 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="头像" prop="avatar">
+              <lay-form-item label="图标" prop="avatar">
                 <lay-upload
                     :url="ossPath"
-                    v-model="updateFileList"
+                    v-model="fileList"
                     field="file"
-                    acceptMime="image/jpeg,image/png,image/gif,image/webp"
+                    :acceptMime="iconMime"
                     :auto="false"
-                    @on-change="uploadOnChange"
-                >
-                  <template #preview>
-                    <div>
-                      <img v-if="previewAvatar" :src="parseImgPath(previewAvatar)"
-                           style="width: 300px; height: 300px; object-fit: cover;"
-                           alt="#">
-                    </div>
-                  </template>
+                    @on-change="uploadOnChange">
                 </lay-upload>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="图标" prop="avatar">
+                <div style="display: inline-flex">
+                  <div style="width: 60px;justify-content: center;">
+                    <object v-if="previewIcon.url" :data="previewIcon.url" type="image/svg+xml" width="30"
+                            height="30"></object>
+                  </div>
+                  <div style="justify-content: center; align-items: center;line-height: 30px">
+                    文件名：{{ previewIcon.originalName }}
+                  </div>
+                </div>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -187,6 +192,8 @@ import {SysDictValueEntity} from "@/types/system/Dict";
 import {CommonIconEntity, CommonIconVo} from "@/types/common/Icon";
 import {deleteCommonIcon, findCommonIcon, findPageCommonIcon, saveUpdate} from "@/api/common/Icon";
 import {parseImgPath} from "@/util/UImage";
+import {uploadTemp} from "@/api/system/Oss";
+import {SysOssEntity} from "@/types/system/Oss";
 
 /* INIT*/
 onMounted(async () => {
@@ -241,6 +248,10 @@ const saveFromRules = ref({
     }
   },
 })
+const iconMime = "image/apng,image/bmp,image/gif,image/jpeg,image/pjpeg,image/png,image/svg+xml,image/tiff,image/webp,image/x-icon"
+const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
+const fileList = ref([])
+const previewIcon = ref<SysOssEntity>(<SysOssEntity>{})
 /* VAR*/
 
 /* FUNCTION*/
@@ -415,6 +426,16 @@ function confirm(row: any) {
 
 function cancel() {
   layer.msg('您已取消操作')
+}
+
+function uploadOnChange(file: any) {
+  uploadTemp(file).then((res: any) => {
+    if (res.code === 200) {
+      if (res.data) {
+        previewIcon.value = res.data
+      }
+    }
+  })
 }
 
 /* FUNCTION*/

@@ -29,10 +29,3 @@ const props = defineProps({
 // const symbolId = computed(() => `#${props.prefix}-${props.name}`)
 const symbolId = computed(() => `#icon-${props.name}`)
 </script>
-<!--<style scoped>-->
-<!--.svg-icon {-->
-<!--  position: relative;-->
-<!--  fill: currentColor;-->
-<!--  vertical-align: -2px;-->
-<!--}-->
-<!--</style>-->

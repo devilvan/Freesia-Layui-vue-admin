@@ -1,6 +1,6 @@
 import Http from "../Http";
 import {PageQuery} from "../../types/Common";
-import {TableResult} from "../../types/Result";
+import {R, TableResult} from "../../types/Result";
 import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
 import {SysOssEntity, SysOssVo} from "../../types/system/Oss";
 
@@ -37,7 +37,7 @@ export function upload(file: File[]) {
     })
 }
 
-export function uploadTemp(file: File[]) {
+export function uploadTemp(file: File[]): Promise<R<SysOssEntity>> {
     let params = {
         file: file,
     }
