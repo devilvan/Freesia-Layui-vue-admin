@@ -44,8 +44,6 @@
         <!-- table -->
         <div>
           <lay-table
-              class="table-box"
-              :height="'550px'"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"

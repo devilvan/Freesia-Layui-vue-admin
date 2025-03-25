@@ -110,7 +110,6 @@
           </lay-form>
         </lay-card>
         <lay-table
-            class="table-box"
             :page="pageQuery"
             :columns="columns"
             :loading="loading"

@@ -51,9 +51,9 @@
           <dict-scan :options="commonIconPartitionSelect" :value="row.iconPartition"/>
         </template>
         <template v-slot:toolbar>
+<!--          style="border-radius: 40%"-->
           <lay-button
               size="sm"
-
               type="normal"
               @click="toSearch"
           >
@@ -70,7 +70,8 @@
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
-          <lay-button size="sm" @click="toRemove">
+          <lay-button size="sm"
+                      @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
@@ -150,6 +151,7 @@
                     文件名：{{ previewIcon.originalName }}
                   </div>
                 </div>
+                cd
               </lay-form-item>
             </lay-col>
           </lay-row>

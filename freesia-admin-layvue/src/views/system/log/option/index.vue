@@ -47,8 +47,6 @@
     <!-- table -->
     <div>
       <lay-table
-          class="table-box"
-          :height="tableHeight"
           :resize="true"
           :autoColsWidth="true"
           :page="pageQuery"
@@ -204,10 +202,10 @@ export default {
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "@/../types/Common";
-import {findPageOptionLog} from "@/../api/system/SensitiveLog";
-import {SysSensitiveLogVo} from "@/../types/system/SensitiveLog";
-import {defaultShortcuts} from "@/../util/UDate";
+import {PageQuery} from "@/types/Common";
+import {findPageOptionLog} from "@/api/system/SensitiveLog";
+import {SysSensitiveLogVo} from "@/types/system/SensitiveLog";
+import {defaultShortcuts} from "@/util/UDate";
 
 onMounted(async () => {
   await loadDataSource();

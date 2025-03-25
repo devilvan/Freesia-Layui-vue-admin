@@ -96,7 +96,6 @@
           </lay-form>
         </lay-card>
         <lay-table
-            class="table-box"
             :columns="columns"
             :loading="loading"
             :default-toolbar="true"

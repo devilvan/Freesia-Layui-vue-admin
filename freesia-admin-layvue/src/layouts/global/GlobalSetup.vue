@@ -1,21 +1,21 @@
 <template>
   <lay-layer
-    :title="false"
-    :closeBtn="false"
-    type="drawer"
-    area="300px"
-    v-model="visible"
+      :title="false"
+      :closeBtn="false"
+      type="drawer"
+      area="300px"
+      v-model="visible"
   >
     <div class="global-setup">
       <div class="global-setup-title">布局样式</div>
       <global-setup-theme v-model="appStore.sideTheme"></global-setup-theme>
       <global-setup-theme
-        v-model="appStore.subfieldPosition"
-        :options="groupOptions"
-        :disabled="!appStore.subfield"
+          v-model="appStore.subfieldPosition"
+          :options="groupOptions"
+          :disabled="!appStore.subfield"
       ></global-setup-theme>
       <global-color
-        v-model="appStore.themeVariable['--global-primary-color']"
+          v-model="appStore.themeVariable['--global-primary-color']"
       ></global-color>
       <lay-line></lay-line>
       <global-setup-item label="多选项卡">
@@ -35,10 +35,10 @@
       </global-setup-item>
       <global-setup-item label="夜间模式">
         <lay-switch
-          v-model="appStore.theme"
-          onswitch-value="dark"
-          unswitch-value="light"
-          size="xs"
+            v-model="appStore.theme"
+            onswitch-value="dark"
+            unswitch-value="light"
+            size="xs"
         ></lay-switch>
       </global-setup-item>
       <global-setup-item label="侧边标题">
@@ -53,10 +53,23 @@
       <global-setup-item label="菜单分栏">
         <lay-switch v-model="appStore.subfield" size="xs"></lay-switch>
       </global-setup-item>
+      <global-setup-item label="圆角">
+        <lay-radio-group
+            name="action"
+            v-model="appStore.themeVariable['--global-border-radius']"
+        >
+          <lay-radio-button size="xs" value="0px">0%</lay-radio-button>
+          <lay-radio-button size="xs" value="5px">
+            50%
+          </lay-radio-button>
+          <lay-radio-button size="xs" value="10px">75%</lay-radio-button>
+          <lay-radio-button size="xs" value="20px">100%</lay-radio-button>
+        </lay-radio-group>
+      </global-setup-item>
       <global-setup-item label="选项卡风格">
         <lay-radio-group
-          name="action"
-          v-model="appStore.tagsTheme"
+            name="action"
+            v-model="appStore.tagsTheme"
         >
           <lay-radio-button size="xs" value="concise">样式一</lay-radio-button>
           <lay-radio-button size="xs" value="underpainting">
@@ -67,7 +80,8 @@
       </global-setup-item>
       <div style="padding: 15px">
         <lay-button border="green" border-style="dashed" :fluid="true"
-          >重置配置</lay-button
+        >重置配置
+        </lay-button
         >
       </div>
     </div>
@@ -84,8 +98,8 @@ export default {
 import globalSetupItem from './GlobalSetupItem.vue'
 import globalSetupTheme from './GlobalSetupTheme.vue'
 import globalColor from './GlobalColor.vue'
-import { useAppStore } from '../../store/app'
-import { ref, watch } from 'vue'
+import {useAppStore} from '@/store/app'
+import {ref, watch} from 'vue'
 
 const appStore = useAppStore()
 const emits = defineEmits(['update:modelValue'])
@@ -122,19 +136,25 @@ watch(visible, (val) => {
 })
 
 watch(
-  appStore.themeVariable,
-  () => {
-    appStore.themeVariable['--global-checked-color'] =
-      appStore.themeVariable['--global-primary-color']
-  },
-  { immediate: true, deep: true }
+    appStore.themeVariable,
+    () => {
+      appStore.themeVariable['--global-checked-color'] =
+          appStore.themeVariable['--global-primary-color']
+    },
+    {immediate: true, deep: true}
 )
 
 watch(
-  () => props.modelValue,
-  (val) => {
-    visible.value = val
-  }
+    () => props.modelValue,
+    (val) => {
+      visible.value = val
+    }
+)
+
+watch(
+    () => appStore.radius, (val) => {
+      appStore.themeVariable['--global-border-radius'] = val
+    }
 )
 </script>
 
@@ -148,6 +168,7 @@ watch(
   margin-bottom: 10px;
   padding: 10px 10px 0px 10px;
 }
+
 .global-setup .layui-colorpicker {
   margin-right: 10px;
 }

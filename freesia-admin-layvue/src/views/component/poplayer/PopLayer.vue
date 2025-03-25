@@ -2,12 +2,10 @@
   <lay-layer v-model="showModalFlag" :title="props.title" :area="props.area">
     <lay-table
         ref="modalTableRef"
-        class="table-box"
         :page="pageQuery"
         :columns="props.columns"
         :loading="loading"
         :data-source="props.dataSource"
-        :height="'550px'"
         v-model:selected-keys="selectKeys"
         @change="doModalChange"
     >

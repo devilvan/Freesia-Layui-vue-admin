@@ -46,7 +46,6 @@
     <!-- table -->
     <div>
       <lay-table
-          class="table-box"
           ref="dataSourceTableRef"
           :page="pageQuery"
           :columns="columns"

@@ -33,8 +33,6 @@
         <lay-card title="角色信息" shadow="hover">
           <!-- table -->
           <lay-table
-              class="table-box"
-              :height="'450px'"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"

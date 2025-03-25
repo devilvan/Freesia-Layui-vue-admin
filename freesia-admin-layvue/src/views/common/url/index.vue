@@ -31,7 +31,6 @@
     <!-- table -->
     <div>
       <lay-table
-          class="table-box"
           :page="pageQuery"
           :columns="columns"
           :loading="loading"

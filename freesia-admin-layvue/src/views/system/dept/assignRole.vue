@@ -33,7 +33,6 @@
         <lay-card title="角色信息">
           <!-- table -->
           <lay-table
-              class="table-box"
               :page="pageQuery"
               :columns="columns"
               :loading="loading"
