@@ -1,22 +1,37 @@
 <template>
   <div class="global-tab" v-if="appStore.tab">
-    <lay-tab
-        :modelValue="currentPath"
-        :allowClose="true"
-        :activeBarTransition="true"
-        @change="to"
-        @close="close"
-        @contextmenu.prevent="rightClickShowMenu()"
-    >
-      <template :key="tab" v-for="tab in $tab.tabs">
-        <lay-tab-item :id="tab.id" :title="tab?.meta?.title" :closable="tab?.meta?.closable" :icon="tab.meta?.icon">
-          <template #title>
-            <span v-if="!tab.meta || !tab.meta?.icon || tab.meta?.icon === ''" class="dot"></span>
-            {{ tab.meta.title }}
-          </template>
-        </lay-tab-item>
+    <lay-dropdown :trigger="triggerType" alignPoint>
+      <lay-tab
+          :modelValue="currentPath"
+          :allowClose="true"
+          :activeBarTransition="true"
+          @change="to"
+          @close="close"
+      >
+        <template :key="tab" v-for="tab in $tab.tabs">
+          <lay-tab-item :id="tab.id" :title="tab?.meta?.title" :closable="tab?.meta?.closable" :icon="tab.meta?.icon">
+            <template #title>
+              <span v-if="!tab.meta || !tab.meta?.icon || tab.meta?.icon === ''" class="dot"></span>
+              {{ tab.meta.title }}
+            </template>
+          </lay-tab-item>
+        </template>
+      </lay-tab>
+      <template #content>
+        <lay-dropdown-menu>
+          <lay-dropdown-menu-item @click="closeCurrent">关闭当前</lay-dropdown-menu-item>
+        </lay-dropdown-menu>
+        <lay-dropdown-menu>
+          <lay-dropdown-menu-item @click="closeRight">关闭右侧标签</lay-dropdown-menu-item>
+        </lay-dropdown-menu>
+        <lay-dropdown-menu>
+          <lay-dropdown-menu-item @click="closeOther">关闭其他</lay-dropdown-menu-item>
+        </lay-dropdown-menu>
+        <lay-dropdown-menu>
+          <lay-dropdown-menu-item @click="closeAll">关闭全部</lay-dropdown-menu-item>
+        </lay-dropdown-menu>
       </template>
-    </lay-tab>
+    </lay-dropdown>
     <lay-dropdown>
       <lay-icon type="layui-icon-down"
                 :class=" appStore.tagsTheme == 'designer' ? 'designer-last-icon' : ''"></lay-icon>
@@ -35,14 +50,16 @@
         </lay-dropdown-menu>
       </template>
     </lay-dropdown>
+
+
   </div>
 </template>
 
 <script lang="ts" setup>
-import {useAppStore} from '../../store/app'
-import {useTabStore} from '../composable/useTabStore'
+import {useAppStore} from '@/store/app'
+import {useTabStore} from '@/layouts/composable/useTabStore'
 import {computed, onMounted, ref, watch} from "vue";
-import router from "../../router";
+import router from "@/router";
 import {useRoute} from "vue-router";
 
 const appStore = useAppStore()
@@ -53,6 +70,7 @@ const routes = router.getRoutes()
 const defaultTabsName = ['Workbench']
 const currentPath = computed(() => route.path);
 const stat = ref('关闭')
+const triggerType = ['contextMenu']
 
 onMounted(() => {
   if (routes) {
@@ -145,6 +163,7 @@ function rightClickShowMenu() {
   }
   console.log("右键点击", stat.value)
 }
+
 </script>
 
 <style lang="less">

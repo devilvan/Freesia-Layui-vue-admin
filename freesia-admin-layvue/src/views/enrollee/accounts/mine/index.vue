@@ -31,21 +31,33 @@
                                @change="changePaymentTimeDoSelect"></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="开销标识">
-              <lay-select
-                  style="width: 100%"
-                  size="sm"
-                  v-model="searchQuery.paymentSign"
-                  :options="paymentSignSelectList"
-                  :items="paymentSignSelectList"
-                  :allow-clear="true"
-                  placeholder="请选择"
-              ></lay-select>
-            </lay-form-item>
-          </lay-col>
+          <lay-transition type="fade">
+            <lay-row :space="20" v-if="expandCollapseFlag">
+              <lay-col :md="6">
+                <lay-form-item label="开销标识">
+                  <lay-select
+                      style="width: 100%"
+                      size="sm"
+                      v-model="searchQuery.paymentSign"
+                      :options="paymentSignSelectList"
+                      :items="paymentSignSelectList"
+                      :allow-clear="true"
+                      placeholder="请选择"
+                  ></lay-select>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
+          </lay-transition>
         </lay-row>
       </lay-form>
+      <lay-line contentPosition="right" offset="8%">
+        <span v-if="expandCollapseFlag === true" @click="changeExpandCollapseFlag">
+          <lay-button type="primary" size="sm">收起<lay-icon class="layui-icon-up"></lay-icon></lay-button>
+        </span>
+        <span v-else @click="changeExpandCollapseFlag">
+          <lay-button type="primary" size="sm">展开<lay-icon class="layui-icon-down"></lay-icon></lay-button>
+        </span>
+      </lay-line>
     </lay-card>
     <!-- table -->
     <lay-table
@@ -434,6 +446,7 @@ const userModalColumns = ref([
 const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
+const expandCollapseFlag = ref<boolean>(false);
 /* VAR*/
 
 /* FUNCTION*/
@@ -682,6 +695,10 @@ const handleConfirm = (selectKeys: string[], rows: [], tableRef: object) => {
 
 function changePaymentTimeDoSelect(value: any) {
   change()
+}
+
+function changeExpandCollapseFlag() {
+  expandCollapseFlag.value = !expandCollapseFlag.value
 }
 
 /* FUNCTION*/
