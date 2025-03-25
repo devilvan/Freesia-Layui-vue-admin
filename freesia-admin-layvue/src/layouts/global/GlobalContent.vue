@@ -11,19 +11,21 @@
           </keep-alive>
         </lay-scroll>
       </div>
+      <lay-backtop :showHeight="700" :color="backTopColor" :bgcolor="'#F6F6F6'" :circle="true"></lay-backtop>
     </router-view>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {useAppStore} from '../../store/app'
+import {useAppStore} from '@/store/app'
 import {useTabStore} from "../composable/useTabStore";
-import {useUserStore} from "../../store/user";
-import {formatDateTime} from '../../util/UDate'
+import {useUserStore} from "@/store/user";
+import {formatDateTime} from '@/util/UDate'
 
 const appStore = useAppStore()
 const $tab = useTabStore()
 const $userInfo = useUserStore().userInfo;
+const backTopColor = appStore.themeVariable['--global-checked-color']
 
 function getContent() {
   return $userInfo.userName + ' ' + formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss')

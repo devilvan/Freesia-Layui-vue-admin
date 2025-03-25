@@ -70,4 +70,20 @@ public class CommonExceptionAspect {
         log.error("请求地址：【{}】，错误信息：{}", request.getRequestURL(), message);
         return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, message);
     }
+
+    /**
+     * 参数错误异常
+     *
+     * @param request 异常的请求
+     * @param e       捕获的异常
+     * @return 形式返回
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public R<Object> illegalArgumentException(HttpServletRequest request, IllegalArgumentException e) {
+        String message = e.getMessage();
+        log.error("请求地址：【{}】，错误信息：{}", request.getRequestURL(), message);
+        return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, message);
+    }
+
+
 }

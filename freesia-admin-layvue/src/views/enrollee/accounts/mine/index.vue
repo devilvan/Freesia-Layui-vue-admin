@@ -27,7 +27,7 @@
             <lay-form-item label="开销时间">
               <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
                                :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
-                               :shortcuts="defaultShortcuts" simple
+                               :shortcuts="defaultShortcuts" simple :default-time="dateRangeDefaultTime"
                                @change="changePaymentTimeDoSelect"></lay-date-picker>
             </lay-form-item>
           </lay-col>
@@ -87,7 +87,6 @@
       <template v-slot:toolbar>
         <lay-button
             size="sm"
-
             type="normal"
             @click="toSearch"
             v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_INDEX]"
@@ -196,7 +195,7 @@
             <lay-col :md="6">
               <lay-form-item label="开销时间" prop="paymentTime">
                 <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
-                                 :shortcuts="singleShortcuts" :inputFormat="'YYYY-MM-DD HH:mm'"
+                                 :shortcuts="singleShortcuts" :inputFormat="sdf_YMDHM"
                                  style="width: 100%" simple></lay-date-picker>
               </lay-form-item>
             </lay-col>
@@ -275,7 +274,7 @@
             <lay-col :md="24">
               <lay-form-item label="导出时间" prop="paymentTime" required>
                 <lay-date-picker style="width: 100%" v-model="accountsExportVo.paymentTimeRange" allow-clear range
-                                 type="datetime"
+                                 type="datetime" :default-time="dateRangeDefaultTime"
                                  :shortcuts="defaultShortcuts" simple></lay-date-picker>
               </lay-form-item>
             </lay-col>
@@ -414,6 +413,7 @@ const accountsExportFromRules = ref({
   },
 })
 const sdf_YMDHMS = 'YYYY-MM-DD HH:mm:ss'
+const sdf_YMDHM = 'YYYY-MM-DD HH:mm'
 const showUserModalFlag = ref<Boolean>(false)
 const addExpenseModalQuickSaveRef = ref()
 const userEntityList = ref<Array<SysUserEntity>>()
@@ -433,21 +433,15 @@ const userModalColumns = ref([
 ])
 const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
+const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 /* VAR*/
 
 /* FUNCTION*/
 const loadDataSource = () => {
   findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<AccountCostEntity>) => {
-    if (res.code == 200) {
-      pageQuery.total = res.total;
-      dataSource.value = res.rows
-    } else {
-      layer.msg(res.msg)
-      return;
-    }
-  }).catch(e => {
-    layer.msg(e.msg)
-  });
+    pageQuery.total = res.total;
+    dataSource.value = res.rows
+  })
 }
 
 function toReset() {
@@ -467,7 +461,7 @@ const change = () => {
   setTimeout(() => {
     loadDataSource()
     loading.value = false
-  }, 1000)
+  }, 200)
 }
 const sortChange = (key: any, sort: number) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
@@ -652,14 +646,6 @@ function doExport() {
 function queryFormReset() {
   searchQuery.value = {}
   searchQuery.value.paymentTimeRange = buildRange(7)
-}
-
-function showCopyModal() {
-  if (!row) {
-    return;
-  }
-
-  addExpenseModalShowFlag.value = !addExpenseModalShowFlag.value
 }
 
 function doFindPageUser() {

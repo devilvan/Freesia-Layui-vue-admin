@@ -3,7 +3,7 @@
     <lay-card>
       <lay-form label-position="top">
         <lay-row :space="20">
-          <lay-col :md="6">
+          <lay-col :md="6" :sm="6" :xs="12">
             <lay-form-item label="用户名">
               <lay-input
                   style="width: 100%"
@@ -14,7 +14,7 @@
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="6" :sm="6" :xs="12">
             <lay-form-item label="部门名称">
               <lay-input
                   style="width: 100%"
@@ -25,7 +25,7 @@
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="12">
+          <lay-col :md="12" :sm="12" ::xs="12">
             <lay-form-item label="登录时间">
               <lay-date-picker
                   style="width: 100%"
@@ -41,52 +41,64 @@
               >
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="所属模块">
-              <lay-input
-                  style="width: 100%;"
-                  v-model="searchQuery.module"
-                  placeholder="请输入"
-                  size="sm"
-                  :allow-clear="true"
-              ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="子模块">
-              <lay-input
-                  style="width: 100%"
-                  v-model="searchQuery.subModule"
-                  placeholder="请输入"
-                  size="sm"
-                  :allow-clear="true"
-              ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="操作类型">
-              <lay-input
-                  style="width: 100%"
-                  v-model="searchQuery.type"
-                  placeholder="请输入"
-                  size="sm"
-                  :allow-clear="true"
-              ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="操作结果">
-              <lay-input
-                  style="width: 100%"
-                  v-model="searchQuery.result"
-                  placeholder="请输入"
-                  size="sm"
-                  :allow-clear="true"
-              ></lay-input>
-            </lay-form-item>
-          </lay-col>
+          <lay-transition type="fade">
+            <lay-row :space="20" v-if="expandCollapseFlag">
+              <lay-col :md="6" :sm="6" :xs="12">
+                <lay-form-item label="所属模块">
+                  <lay-input
+                      style="width: 100%;"
+                      v-model="searchQuery.module"
+                      placeholder="请输入"
+                      size="sm"
+                      :allow-clear="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="子模块">
+                  <lay-input
+                      style="width: 100%"
+                      v-model="searchQuery.subModule"
+                      placeholder="请输入"
+                      size="sm"
+                      :allow-clear="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="操作类型">
+                  <lay-input
+                      style="width: 100%"
+                      v-model="searchQuery.type"
+                      placeholder="请输入"
+                      size="sm"
+                      :allow-clear="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="操作结果">
+                  <lay-input
+                      style="width: 100%"
+                      v-model="searchQuery.result"
+                      placeholder="请输入"
+                      size="sm"
+                      :allow-clear="true"
+                  ></lay-input>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
+          </lay-transition>
         </lay-row>
       </lay-form>
+      <lay-line contentPosition="right" offset="8%">
+        <span v-if="expandCollapseFlag === true" @click="changeExpandCollapseFlag">
+          <lay-button type="primary" size="sm">收起<lay-icon class="layui-icon-up"></lay-icon></lay-button>
+        </span>
+        <span v-else @click="changeExpandCollapseFlag">
+          <lay-button type="primary" size="sm">展开<lay-icon class="layui-icon-down"></lay-icon></lay-button>
+        </span>
+      </lay-line>
     </lay-card>
     <!-- table -->
     <div>
@@ -165,22 +177,15 @@ import {PageQuery} from "@/types/Common";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {defaultShortcuts} from "@/util/UDate";
 
+/*INIT*/
 onMounted(async () => {
   sysOperateResultList.value = await loadSysDictValue(Constants.SYS_OPERATE_RESULT);
   await loadDataSource();
 })
+/*INIT*/
 
+/*VAR*/
 const searchQuery = ref<SysSensitiveLogVo>({})
-
-function toReset() {
-  searchQuery.value = {}
-}
-
-function toSearch() {
-  pageQuery.current = 1
-  change()
-}
-
 const tableHeight = '550px'
 const loading = ref(false)
 const selectedKeys = ref()
@@ -219,6 +224,20 @@ const columns = ref([
   {title: '地点', key: 'location', width: '100px'},
   {title: '备注', key: 'remark', customSlot: 'remark', width: '200px'},
 ])
+const expandCollapseFlag = ref<boolean>(false);
+/*VAR*/
+
+/*FUNCTION*/
+
+function toReset() {
+  searchQuery.value = {}
+}
+
+function toSearch() {
+  pageQuery.current = 1
+  change()
+}
+
 const change = () => {
   loading.value = true
   setTimeout(() => {
@@ -259,4 +278,10 @@ function confirm(row: any) {
 function cancel() {
   layer.msg('您已取消操作')
 }
+
+function changeExpandCollapseFlag() {
+  expandCollapseFlag.value = !expandCollapseFlag.value
+}
+
+/*FUNCTION*/
 </script>
