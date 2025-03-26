@@ -32,11 +32,10 @@
                   size="sm"
                   v-model="searchQuery.gender"
                   :allow-clear="true"
+                  :options="sysGenderListSelect"
+                  :items="sysGenderListSelect"
                   placeholder="请选择"
               >
-                <template v-for="(sysMenuType, index) in sysGenderList" :key="index">
-                  <lay-select-option :value="sysMenuType.value" :label="sysMenuType.label"></lay-select-option>
-                </template>
               </lay-select>
             </lay-form-item>
           </lay-col>
@@ -318,20 +317,6 @@ const columns = ref([
 ])
 const updateFileList = ref([])
 const changeAssignDeptModalFlag = ref(false)
-const assignDeptModalPageQuery: PageQuery = reactive<PageQuery>({
-  current: 1,
-  limit: 10
-})
-const assignDeptModalColumns = ref([
-  {title: '选项', type: 'checkbox', fixed: 'left'},
-  {title: '部门名称', key: 'userName'},
-  {title: '负责人', key: 'nickName'},
-  {title: '状态', key: 'deptStatus', customSlot: 'accountStatus'},
-  {title: '备注', key: 'remark', customSlot: 'remark'},
-])
-const assignDeptModalLoading = ref(false)
-const assignDeptModalEntityList = ref<Array<SysDeptEntity>>();
-const assignDeptModalSelectedKeys = ref([])
 const dataSourceTableRef = ref()
 /* VAR*/
 

@@ -1,10 +1,9 @@
-import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
-import Http from "../Http";
-import {SysDictKeyVo, SysDictValueEntity, SysDictValueVo, SysDictVo} from "../../types/system/Dict";
-import {PageQuery} from "../../types/Common";
-import {TableResult} from "../../types/Result";
+import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
+import Http from "@/api/Http";
+import {SysDictKeyVo, SysDictValueEntity, SysDictValueVo, SysDictVo} from "@/types/system/Dict";
+import {PageQuery} from "@/types/Common";
+import {TableResult} from "@/types/Result";
 import {layer} from "@layui/layui-vue";
-import {k} from "vite/dist/node/types.d-aGj9QkWt";
 
 export function findSysDictKeyList(searchQuery: SysDictVo) {
     let params = buildUrlParam(searchQuery);

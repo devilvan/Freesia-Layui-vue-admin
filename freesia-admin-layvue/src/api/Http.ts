@@ -1,8 +1,8 @@
 import axios, {AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
-import {useUserStore} from "../store/user";
+import {useUserStore} from "@/store/user";
 import {layer} from '@layui/layui-vue';
-import router from '../router'
-import {useAppStore} from "../store/app";
+import router from '@/router'
+import {useAppStore} from "@/store/app";
 
 export let loginPath: string = '/login'
 const downloadPath = import.meta.env.VITE_APP_DOWNLOAD_PATH;
