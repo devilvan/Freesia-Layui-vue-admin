@@ -12,6 +12,7 @@ import ${packageName}.service.${dataBaseDto.className}Service;
 import ${packageName}.mapper.${dataBaseDto.className}Mapper;
 import ${packageName}.repository.${dataBaseDto.className}Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class ${dataBaseDto.className}ServiceImpl extends ServiceImpl<${dataBaseD
     }
 
     @Override
-    public TableResult<${dataBaseDto.className}Dto> findPage${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}, PageQuery pageQuery) {
+    public TableResult<${dataBaseDto.className}Dto> findPage${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto, PageQuery pageQuery) {
         LambdaQueryWrapper<${dataBaseDto.className}Po> wrapper = new LambdaQueryWrapper<${dataBaseDto.className}Po>()
                 .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}.getId());
@@ -54,14 +55,15 @@ public class ${dataBaseDto.className}ServiceImpl extends ServiceImpl<${dataBaseD
     }
 
     @Override
-    public ${dataBaseDto.className}Dto find${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}) {
+    public ${dataBaseDto.className}Dto find${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto) {
         LambdaQueryWrapper<${dataBaseDto.className}Po> wrapper = new LambdaQueryWrapper<${dataBaseDto.className}Po>()
             .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}.getId());
+            .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}Dto.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}Dto.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), ${dataBaseDto.className}Dto.class);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete${dataBaseDto.className}(List<Long> idList) {
         removeBatchByIds(idList);
     }

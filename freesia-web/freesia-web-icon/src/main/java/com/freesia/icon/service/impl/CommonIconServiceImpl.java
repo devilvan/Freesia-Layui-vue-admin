@@ -4,30 +4,32 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
+import com.freesia.icon.dto.CommonIconDto;
+import com.freesia.icon.entity.FindPageCommonIconEntity;
+import com.freesia.icon.mapper.CommonIconMapper;
+import com.freesia.icon.po.CommonIconPo;
+import com.freesia.icon.repository.CommonIconRepository;
+import com.freesia.icon.service.CommonIconService;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.icon.dto.CommonIconDto;
-import com.freesia.icon.po.CommonIconPo;
-import com.freesia.icon.service.CommonIconService;
-import com.freesia.icon.mapper.CommonIconMapper;
-import com.freesia.icon.repository.CommonIconRepository;
-import org.springframework.stereotype.Service;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * @author Evad.Wu
  * @Description 通用图标表 业务逻辑类
- * @date 2025-03-21
+ * @date 2025-03-26
  */
 @Service
 @RequiredArgsConstructor
 public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonIconPo> implements CommonIconService {
     private final CommonIconRepository commonIconRepository;
+    private final CommonIconMapper commonIconMapper;
 
     @Override
     public CommonIconDto saveUpdate(CommonIconDto commonIconDto) {
@@ -45,23 +47,21 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
     }
 
     @Override
-    public TableResult<CommonIconDto> findPageCommonIcon(CommonIconDto commonIcon, PageQuery pageQuery) {
-        LambdaQueryWrapper<CommonIconPo> wrapper = new LambdaQueryWrapper<CommonIconPo>()
-                .eq(CommonIconPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(commonIcon.getId()), CommonIconPo::getId, commonIcon.getId());
-        Page<CommonIconPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, CommonIconDto.class));
+    public TableResult<FindPageCommonIconEntity> findPageCommonIcon(CommonIconDto commonIconDto, PageQuery pageQuery) {
+        Page<FindPageCommonIconEntity> findPageCommonIconEntityPage = commonIconMapper.findPageCommonIcon(commonIconDto, pageQuery.build());
+        return TableResult.build(findPageCommonIconEntityPage);
     }
 
     @Override
-    public CommonIconDto findCommonIcon(CommonIconDto commonIcon) {
+    public CommonIconDto findCommonIcon(CommonIconDto commonIconDto) {
         LambdaQueryWrapper<CommonIconPo> wrapper = new LambdaQueryWrapper<CommonIconPo>()
-            .eq(CommonIconPo::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(commonIcon.getId()), CommonIconPo::getId, commonIcon.getId());
+                .eq(CommonIconPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(commonIconDto.getId()), CommonIconPo::getId, commonIconDto.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), CommonIconDto.class);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteCommonIcon(List<Long> idList) {
         removeBatchByIds(idList);
     }

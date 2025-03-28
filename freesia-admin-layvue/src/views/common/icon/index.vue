@@ -42,6 +42,15 @@
           :even="evenFlag"
           @change="change"
           @sortChange="sortChange">
+        <template #icon="{ row }">
+          <lay-avatar :src="row.icon" :preview="preview(row.icon)"></lay-avatar>
+        </template>
+        <template #createTime="{ row }">
+          {{ row.createTime }} （{{ getWeekdayCn(row.createTime) }}）
+        </template>
+        <template #modifyTime="{ row }">
+          {{ row.modifyTime }} （{{ getWeekdayCn(row.modifyTime) }}）
+        </template>
         <template #remark="{ row }">
           <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
             <div class="oneRow">{{ row.remark }}</div>
@@ -51,7 +60,7 @@
           <dict-scan :options="commonIconPartitionSelect" :value="row.iconPartition"/>
         </template>
         <template v-slot:toolbar>
-<!--          style="border-radius: 40%"-->
+          <!--          style="border-radius: 40%"-->
           <lay-button
               size="sm"
               type="normal"
@@ -124,7 +133,6 @@
                     :options="commonIconPartitionSelectList"
                     :items="commonIconPartitionSelectList"
                     :allow-clear="true"
-                    @change="saveIconPartitionChange"
                 ></lay-select>
               </lay-form-item>
             </lay-col>
@@ -143,15 +151,12 @@
             <lay-col :md="6">
               <lay-form-item label="图标" prop="avatar">
                 <div style="display: inline-flex">
-                  <div style="width: 60px;justify-content: center;">
-                    <object v-if="previewIcon.url" :data="previewIcon.url" type="image/svg+xml" width="30"
-                            height="30"></object>
-                  </div>
-                  <div style="justify-content: center; align-items: center;line-height: 30px">
+                  <lay-avatar :style="previewIcon.url ? '' : 'display: none'"
+                              :src="previewIcon.url"></lay-avatar>
+                  <div style="align-items: center;line-height: 30px">
                     文件名：{{ previewIcon.originalName }}
                   </div>
                 </div>
-                cd
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -191,11 +196,14 @@ import {TableResult} from "@/types/Result";
 import {Operate} from "@/types/Constants";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {CommonIconEntity, CommonIconVo} from "@/types/common/Icon";
+import {CommonIconEntity, CommonIconVo, SaveUpdateVo} from "@/types/common/Icon";
 import {deleteCommonIcon, findCommonIcon, findPageCommonIcon, saveUpdate} from "@/api/common/Icon";
-import {parseImgPath} from "@/util/UImage";
+import {parseImgPath, preview} from "@/util/UImage";
 import {uploadTemp} from "@/api/system/Oss";
 import {SysOssEntity} from "@/types/system/Oss";
+import SvgIcon from "@/views/component/svg/SvgIcon.vue";
+import {getWeekdayCn} from "@/util/UDate";
+import GoodTest from "@/views/common/icon/test.vue";
 
 /* INIT*/
 onMounted(async () => {
@@ -215,11 +223,11 @@ const dataSource = ref<Array<CommonIconEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '预算描述', width: '130px', key: 'budgetDesc', fixed: 'left'},
-  {title: '预算金额', width: '130px', key: 'outlay', sort: 'desc'},
-  {title: '预算类型', width: '130px', key: 'iconPartition', customSlot: 'iconPartition'},
-  {title: '时间范围从', width: '130px', key: 'durationFrom'},
-  {title: '时间范围到', width: '130px', key: 'durationTo'},
+  {title: '图标名称', width: '130px', key: 'name', fixed: 'left'},
+  {title: '图标', width: '50px', key: 'icon', fixed: 'left', customSlot: 'icon'},
+  {title: '所属分区', width: '130px', key: 'iconPartition', customSlot: 'iconPartition'},
+  {title: '创建时间', width: '180px', key: 'createTime', customSlot: 'createTime', sort: 'desc'},
+  {title: '修改时间', width: '180px', key: 'modifyTime', customSlot: 'modifyTime', sort: 'desc'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -250,7 +258,7 @@ const saveFromRules = ref({
     }
   },
 })
-const iconMime = "image/apng,image/bmp,image/gif,image/jpeg,image/pjpeg,image/png,image/svg+xml,image/tiff,image/webp,image/x-icon"
+const iconMime = "image/svg+xml"
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
 const fileList = ref([])
 const previewIcon = ref<SysOssEntity>(<SysOssEntity>{})
@@ -325,7 +333,16 @@ const showSaveModal = (text: any, row: any) => {
       }
     })
   } else if (Operate.ADD === text) {
+    saveCommonIconVo.value = {}
+    previewIcon.value = {}
   } else if (Operate.COPY === text) {
+    findCommonIcon({
+      id: row.id
+    }).then((res: any) => {
+      if (res.code === 200) {
+        saveCommonIconVo.value = res.data;
+      }
+    })
   }
   showModalFlag.value = !showModalFlag.value
 }
@@ -371,7 +388,7 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   saveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      saveUpdate(saveCommonIconVo.value).then((res: any) => {
+      saveUpdate(fileList.value, saveCommonIconVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
@@ -403,14 +420,6 @@ function toReset() {
  */
 function toCancel() {
   showModalFlag.value = false
-}
-
-function saveIconPartitionChange(value: any) {
-  if (!value || value !== 'CUSTOM') {
-    // 如果不是自定义则时间范围置空
-    saveCommonIconVo.value.durationFrom = null;
-    saveCommonIconVo.value.durationTo = null;
-  }
 }
 
 function confirm(row: any) {

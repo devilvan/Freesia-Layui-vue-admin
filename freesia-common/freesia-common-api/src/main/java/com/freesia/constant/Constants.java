@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -21,6 +19,7 @@ public final class Constants {
     /**
      * 反序列化时才有用
      */
+    public static final String Y = "yyyy";
     public static final String YM = "yyyy-MM";
     public static final String YMD = "yyyy-MM-dd";
     public static final String YMD_PATH = "yyyy/MM/dd";

@@ -34,6 +34,7 @@ freesia:
         - SYS_OSS
         - SYS_OSS_CONFIG
         - ACCOUNT_COST_USER
+        - COMMON_ICON
         - DATESERIES
 ---
 login.password:

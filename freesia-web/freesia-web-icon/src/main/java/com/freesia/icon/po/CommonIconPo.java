@@ -12,11 +12,11 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.io.Serial;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu

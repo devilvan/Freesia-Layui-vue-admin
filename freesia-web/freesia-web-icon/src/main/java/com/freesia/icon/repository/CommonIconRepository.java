@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 通用图标表 持久层
- * @date 2025-03-21
+ * @date 2025-03-26
  */
 @Repository
 public interface CommonIconRepository extends JpaRepository<CommonIconPo, Long> {

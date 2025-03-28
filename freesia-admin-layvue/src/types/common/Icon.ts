@@ -1,3 +1,6 @@
+import {saveUpdate} from "@/api/common/Icon";
+import {SysOssEntity} from "@/types/system/Oss";
+
 export interface CommonIconVo {
     name: string;
     fileId: string;
@@ -12,4 +15,9 @@ export interface CommonIconEntity {
     iconPartition: string;
     orderNum: number;
     remark: string;
+}
+
+export interface CommonIconSaveUpdateEntity {
+    sysOssList?: SysOssEntity[];
+    commonIconDto: CommonIconEntity;
 }

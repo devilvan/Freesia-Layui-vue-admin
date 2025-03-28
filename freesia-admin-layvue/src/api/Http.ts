@@ -70,31 +70,31 @@ class Http {
                     router.push(loginPath);
                     layer.closeAll()
                     return responseData;
-                case 403:
-                    router.replace('/error/403').then(r => r)
-                    layer.confirm(
-                        '没有权限访问网站',
-                        {
-                            icon: 2, yes: function () {
-                                router.push('/').then(r => r);
-                                layer.closeAll()
-                            }
-                        });
-                    return responseData;
-                case 404:
-                    router.replace('/error/404').then(r => r)
-                    layer.confirm(
-                        '找不到该页面',
-                        {
-                            icon: 2, yes: function () {
-                                userInfoStore.token = ''
-                                layer.closeAll()
-                            }
-                        });
-                    return responseData;
-                case 500:
-                    layer.confirm(responseData.msg, {icon: 2})
-                    return responseData;
+                // case 403:
+                //     router.replace('/error/403').then(r => r)
+                //     layer.confirm(
+                //         '没有权限访问网站',
+                //         {
+                //             icon: 2, yes: function () {
+                //                 router.push('/').then(r => r);
+                //                 layer.closeAll()
+                //             }
+                //         });
+                //     return responseData;
+                // case 404:
+                //     router.replace('/error/404').then(r => r)
+                //     layer.confirm(
+                //         '找不到该页面',
+                //         {
+                //             icon: 2, yes: function () {
+                //                 userInfoStore.token = ''
+                //                 layer.closeAll()
+                //             }
+                //         });
+                //     return responseData;
+                // case 500:
+                //     layer.confirm(responseData.msg, {icon: 2})
+                //     return responseData;
                 default:
                     break;
             }

@@ -2,12 +2,12 @@ import Http from "../Http";
 import {PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
-import {CommonIconEntity, CommonIconVo} from "@/types/common/Icon";
+import {CommonIconEntity, CommonIconSaveUpdateEntity, CommonIconVo} from "@/types/common/Icon";
 
-export function saveUpdate(fileList: File[], commonIconVo: CommonIconVo): Promise<R<void>> {
+export function saveUpdate(fileList: File[], commonIconVo: CommonIconVo): Promise<R<CommonIconSaveUpdateEntity>> {
     let param = {
-        fileList: fileList,
-        commonIconVo: commonIconVo
+        file: fileList,
+        commonIconVo: JSON.stringify(commonIconVo)
     }
     return Http.post("/common/commonIconController/saveUpdate", param, {
         headers: {

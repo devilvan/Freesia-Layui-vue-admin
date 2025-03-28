@@ -83,6 +83,7 @@ public class SysLoginController extends BaseController {
         return R.ok(sysUserInfoEntity);
     }
 
+    @SaIgnore
     @Operation(summary = "获取路由信息")
     @GetMapping("getRouters")
     public R<List<RouterDto>> getRouters() {

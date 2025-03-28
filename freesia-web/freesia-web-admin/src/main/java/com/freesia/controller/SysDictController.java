@@ -207,7 +207,7 @@ public class SysDictController extends BaseController {
         } catch (IOException e) {
             e.printStackTrace();
             R<Void> failed = R.failed();
-            failed.setMsg(UMessage.message("upload.failed"));
+            failed.setMsg(UMessage.message("file.upload.failed"));
             return failed;
         }
         return R.ok();

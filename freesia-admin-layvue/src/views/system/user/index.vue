@@ -252,7 +252,7 @@ import {Operate} from "@/types/Constants";
 import {useCryptStore} from "@/store/crypt";
 import {upload, uploadTemp} from "@/api/system/Oss";
 import {parseImgPath, preview} from "@/util/UImage";
-import {SysDeptEntity, SysDeptSelectEntity} from "@/types/system/Dept";
+import {SysDeptSelectEntity} from "@/types/system/Dept";
 import {findTreeAssignDeptSelect} from "@/api/system/Dept";
 
 /* INIT*/

@@ -31,22 +31,24 @@
                                @change="changePaymentTimeDoSelect"></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-transition type="fade">
-            <lay-row :space="20" v-if="expandCollapseFlag">
-              <lay-col :md="6">
-                <lay-form-item label="开销标识">
-                  <lay-select
-                      style="width: 100%"
-                      size="sm"
-                      v-model="searchQuery.paymentSign"
-                      :options="paymentSignSelectList"
-                      :items="paymentSignSelectList"
-                      :allow-clear="true"
-                      placeholder="请选择"
-                  ></lay-select>
-                </lay-form-item>
-              </lay-col>
-            </lay-row>
+          <lay-transition>
+            <lay-card v-if="expandCollapseFlag">
+              <lay-row :space="20">
+                <lay-col :md="6">
+                  <lay-form-item label="开销标识">
+                    <lay-select
+                        style="width: 100%"
+                        size="sm"
+                        v-model="searchQuery.paymentSign"
+                        :options="paymentSignSelectList"
+                        :items="paymentSignSelectList"
+                        :allow-clear="true"
+                        placeholder="请选择"
+                    ></lay-select>
+                  </lay-form-item>
+                </lay-col>
+              </lay-row>
+            </lay-card>
           </lay-transition>
         </lay-row>
       </lay-form>
@@ -335,6 +337,7 @@ import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.v
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 import {SysUserEntity, SysUserVo} from "@/types/system/User";
 import {findPageSysUserList, findPageSysUserWithoutDataScope} from "@/api/system/User";
+import app from "@/main";
 
 /* INIT*/
 onMounted(async () => {
@@ -346,6 +349,7 @@ onMounted(async () => {
 /* INIT*/
 
 /* VAR*/
+const $ACCOUNT_MENU_PERMISSION = app.config.globalProperties.$ACCOUNT_MENU_PERMISSION
 const $router = router;
 const paymentSignSelect = ref();
 const paymentSignSelectList = ref();

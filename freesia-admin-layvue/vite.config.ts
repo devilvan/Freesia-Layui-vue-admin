@@ -25,7 +25,7 @@ export default defineConfig(({mode, command}) => {
                 '~': path.resolve(__dirname, './'),
                 // 设置别名
                 '@': path.resolve(__dirname, './src'),
-                // 'lay-vue': path.resolve(__dirname, './node_modules/@layui/layui-vue/types')
+                'lay-vue': path.resolve(__dirname, './node_modules/@layui')
             },
             // https://cn.vitejs.dev/config/#resolve-extensions
             extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']

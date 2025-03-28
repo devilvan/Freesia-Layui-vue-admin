@@ -12,8 +12,11 @@ importers:
         specifier: ^1.0.15
         version: 1.0.15
       '@layui/layui-vue':
-        specifier: 2.21.2
+        specifier: 2.21 .2
         version: 2.21.2(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))
+      '@layui/unplugin-vue-components':
+        specifier: 0.0.3
+        version: 0.0.3(@babel/parser@7.26.10)(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))
       axios:
         specifier: ^1.3.4
         version: 1.8.4
@@ -336,6 +339,19 @@ packages:
 
   '@layui/layui-vue@2.21.2':
     resolution: {integrity: sha512-Clku63VkvUJHv+aeeOvNnSFgGrYH4RScINyfq67XRsU0E2owrU21c3z8qI2B7GT6GdS01ducSZkVf0cbK93g4g==}
+
+  '@layui/unplugin-vue-components@0.0.3':
+    resolution: {integrity: sha512-s9TLwh9jRUb2ntEqsFy8yy+ZyQTlRx/FFCcP1sXIlxkvHYf4N5VrwcJV91eKCYRaufq8AO9+YMfeHvSh2kfhgw==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@babel/parser': ^7.15.8
+      '@nuxt/kit': ^3.2.2
+      vue: 2 || 3
+    peerDependenciesMeta:
+      '@babel/parser':
+        optional: true
+      '@nuxt/kit':
+        optional: true
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1367,6 +1383,10 @@ packages:
     resolution: {integrity: sha512-SFppqq5p42fe2qcZQqqEOiVRXl+WCP1MdT6k7BDEW1j++sp5fIY+/fdRQitvKgB5BrBcmrs5m/L0v2FrU5MY1g==}
     engines: {node: '>=14'}
 
+  local-pkg@0.5.1:
+    resolution: {integrity: sha512-9rrA30MRRP3gBD3HTGnC6cDFpaE1kVDWxWgqWJUN0RvDNAo+Nz/9GxB+nHOH0ifbVFy0hSA1V6vFDvnx54lTEQ==}
+    engines: {node: '>=14'}
+
   locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
     engines: {node: '>=8'}
@@ -2320,6 +2340,25 @@ snapshots:
       - '@vue/composition-api'
       - rollup
       - vue
+
+  '@layui/unplugin-vue-components@0.0.3(@babel/parser@7.26.10)(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))':
+    dependencies:
+      '@antfu/utils': 0.7.10
+      '@rollup/pluginutils': 5.1.4(rollup@4.36.0)
+      chokidar: 3.6.0
+      debug: 4.4.0
+      fast-glob: 3.3.3
+      local-pkg: 0.5.1
+      magic-string: 0.30.17
+      minimatch: 9.0.5
+      mlly: 1.7.4
+      unplugin: 1.16.1
+      vue: 3.5.13(typescript@4.9.5)
+    optionalDependencies:
+      '@babel/parser': 7.26.10
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -3443,6 +3482,11 @@ snapshots:
       json5: 1.0.2
 
   local-pkg@0.4.3: {}
+
+  local-pkg@0.5.1:
+    dependencies:
+      mlly: 1.7.4
+      pkg-types: 1.3.1
 
   locate-path@5.0.0:
     dependencies:

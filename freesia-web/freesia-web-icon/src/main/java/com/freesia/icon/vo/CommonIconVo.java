@@ -1,14 +1,12 @@
 package com.freesia.icon.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
@@ -18,6 +16,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "通用图标表 值对象")
 public class CommonIconVo extends BaseVo {
     @Schema(description = "图标名称")

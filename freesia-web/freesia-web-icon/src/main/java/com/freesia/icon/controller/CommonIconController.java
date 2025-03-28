@@ -1,21 +1,28 @@
 package com.freesia.icon.controller;
 
+import cn.hutool.http.HttpStatus;
+import com.alibaba.fastjson2.JSONObject;
+import com.freesia.controller.BaseController;
 import com.freesia.dto.SysOssDto;
+import com.freesia.icon.dto.CommonIconDto;
+import com.freesia.icon.entity.CommonIconSaveUpdateEntity;
+import com.freesia.icon.entity.FindPageCommonIconEntity;
+import com.freesia.icon.service.CommonIconService;
+import com.freesia.icon.vo.CommonIconVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.icon.vo.CommonIconVo;
-import com.freesia.icon.dto.CommonIconDto;
-import com.freesia.icon.service.CommonIconService;
-import com.freesia.controller.BaseController;
 import com.freesia.service.SysOssService;
 import com.freesia.util.UCopy;
+import com.freesia.util.UEmpty;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -34,16 +41,29 @@ public class CommonIconController extends BaseController {
     /**
      * 保存通用图标表信息
      *
-     * @param commonIconVo 待保存对象
+     * @param fileList 上传的文件
+     * @param request  待保存对象（JSON串）
      * @return 形式返回
      */
     @Operation(summary = "保存通用图标表信息")
-    @PostMapping(value = "saveUpdate")
-    public R<Void> saveUpdate(@RequestParam("file[]") List<MultipartFile> files, @RequestBody CommonIconVo commonIconVo) {
+    @PostMapping(value = "saveUpdate", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public R<CommonIconSaveUpdateEntity> saveUpdate(@NotNull @RequestPart("file[]") List<MultipartFile> fileList,
+                                                    @RequestPart("commonIconVo") String request) {
+        if (fileList.size() > 1) {
+            return R.failed(HttpStatus.HTTP_BAD_REQUEST, "file.upload.only.one");
+        }
+        CommonIconVo commonIconVo = JSONObject.parseObject(request, CommonIconVo.class);
         CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
-        List<SysOssDto> sysOssDtoList = sysOssService.upload(files);
-        commonIconService.saveUpdate(commonIconDto);
-        return R.ok();
+        List<SysOssDto> sysOssDtoList = sysOssService.upload(fileList);
+        if (UEmpty.isNotEmpty(sysOssDtoList)) {
+            SysOssDto sysOssDto = sysOssDtoList.get(0);
+            commonIconDto.setFileId(sysOssDto.getId());
+        } else {
+            return R.failed(HttpStatus.HTTP_BAD_REQUEST, "file.upload.failed");
+        }
+        commonIconDto = commonIconService.saveUpdate(commonIconDto);
+        CommonIconSaveUpdateEntity commonIconSaveUpdateEntity = new CommonIconSaveUpdateEntity(sysOssDtoList, commonIconDto);
+        return R.ok(commonIconSaveUpdateEntity);
     }
 
     /**
@@ -69,7 +89,7 @@ public class CommonIconController extends BaseController {
      */
     @Operation(summary = "查询通用图标表分页信息")
     @GetMapping(value = "findPageCommonIcon")
-    public TableResult<CommonIconDto> findPageCommonIcon(CommonIconVo commonIconVo, PageQuery pageQuery) {
+    public TableResult<FindPageCommonIconEntity> findPageCommonIcon(CommonIconVo commonIconVo, PageQuery pageQuery) {
         CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
         return commonIconService.findPageCommonIcon(commonIconDto, pageQuery);
     }
