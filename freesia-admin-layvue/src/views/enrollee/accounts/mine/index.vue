@@ -70,7 +70,8 @@
         :loading="loading"
         :page="pageQuery"
         :height="'550px'"
-        :even="true"
+        :even="false"
+        :rowStyle="getRowStyle"
         @change="change"
         @sortChange="sortChange">
       <template #nickNameList="{ row }">
@@ -79,6 +80,9 @@
         </lay-tooltip>
       </template>
       <template #paymentTime="{ row }">
+        <!--        <div :style="'color:' + getDayColor(row.paymentTime)">-->
+        <!--          {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）-->
+        <!--        </div>-->
         {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）
       </template>
       <template #remark="{ row }">
@@ -703,6 +707,32 @@ function changePaymentTimeDoSelect(value: any) {
 
 function changeExpandCollapseFlag() {
   expandCollapseFlag.value = !expandCollapseFlag.value
+}
+
+function getDayColor(date: Date) {
+  const day = new Date(date).getDay();
+  if (day === 0) {
+    return '#ff9a9e';
+  }
+  if (day === 1) return '#FF5722';
+  if (day === 2) return '#FFB800';
+  if (day === 3) return '#36b368';
+  if (day === 4) return '#2d8cf0';
+  if (day === 5) return '#3963bc';
+  if (day === 6) return '#998adb';
+  return '#000000'
+}
+
+function getRowStyle(row: any, rowIndex: number) {
+  const day = new Date(row.paymentTime).getDay();
+  if (day === 0) return 'background-color:' + 'rgba(255, 154, 158, 0.4)';
+  if (day === 1) return 'background-color:' + 'rgba(255, 87, 34, 0.4)';
+  if (day === 2) return 'background-color:' + 'rgba(255, 184, 0, 0.4)';
+  if (day === 3) return 'background-color:' + 'rgba(54, 179, 104, 0.4)';
+  if (day === 4) return 'background-color:' + 'rgba(45, 140, 240, 0.4)';
+  if (day === 5) return 'background-color:' + 'rgba(57, 99, 188, 0.4)';
+  if (day === 6) return 'background-color:' + 'rgba(153, 138, 219, 0.4)';
+  return ''
 }
 
 /* FUNCTION*/
