@@ -52,16 +52,16 @@ class Http {
                 case 200:
                     return responseData;
                 case 401:
-                    // router.replace('/error/401').then(r => r)
-                    // layer.confirm(
-                    //     '会话认证失败, 请重新登录1',
-                    //     {
-                    //         icon: 2, yes: function () {
-                    //             userInfoStore.token = ''
-                    //             router.push(loginPath);
-                    //             layer.closeAll()
-                    //         }
-                    //     });
+                    router.replace('/error/401').then(r => r)
+                    layer.confirm(
+                        '会话认证失败, 请重新登录1',
+                        {
+                            icon: 2, yes: function () {
+                                userInfoStore.token = ''
+                                router.push(loginPath);
+                                layer.closeAll()
+                            }
+                        });
                     layer.notify({
                         title:"提示",
                         content:"会话认证失败, 请重新登录"
@@ -70,31 +70,31 @@ class Http {
                     router.push(loginPath);
                     layer.closeAll()
                     return responseData;
-                // case 403:
-                //     router.replace('/error/403').then(r => r)
-                //     layer.confirm(
-                //         '没有权限访问网站',
-                //         {
-                //             icon: 2, yes: function () {
-                //                 router.push('/').then(r => r);
-                //                 layer.closeAll()
-                //             }
-                //         });
-                //     return responseData;
-                // case 404:
-                //     router.replace('/error/404').then(r => r)
-                //     layer.confirm(
-                //         '找不到该页面',
-                //         {
-                //             icon: 2, yes: function () {
-                //                 userInfoStore.token = ''
-                //                 layer.closeAll()
-                //             }
-                //         });
-                //     return responseData;
-                // case 500:
-                //     layer.confirm(responseData.msg, {icon: 2})
-                //     return responseData;
+                case 403:
+                    router.replace('/error/403').then(r => r)
+                    layer.confirm(
+                        '没有权限访问网站',
+                        {
+                            icon: 2, yes: function () {
+                                router.push('/').then(r => r);
+                                layer.closeAll()
+                            }
+                        });
+                    return responseData;
+                case 404:
+                    router.replace('/error/404').then(r => r)
+                    layer.confirm(
+                        '找不到该页面',
+                        {
+                            icon: 2, yes: function () {
+                                userInfoStore.token = ''
+                                layer.closeAll()
+                            }
+                        });
+                    return responseData;
+                case 500:
+                    layer.confirm(responseData.msg, {icon: 2})
+                    return responseData;
                 default:
                     break;
             }

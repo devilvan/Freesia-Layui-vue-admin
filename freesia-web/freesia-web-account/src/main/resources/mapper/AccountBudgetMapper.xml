@@ -28,7 +28,17 @@
         </if>
     </select>
     <select id="findDayBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IFNULL(AC.OUTLAY, 0) AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                              AS OUTLAY,
                CONCAT(CURDATE(), ' 00:00:00') AS DURATION_FROM,
                CONCAT(CURDATE(), ' 23:59:59') AS DURATION_TO
         FROM account_cost AC
@@ -42,7 +52,17 @@
 
         UNION ALL
 
-        SELECT IFNULL(AC.OUTLAY, 0) AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                              AS OUTLAY,
                CONCAT(CURDATE(), ' 00:00:00') AS DURATION_FROM,
                CONCAT(CURDATE(), ' 23:59:59') AS DURATION_TO
         FROM account_cost AC
@@ -56,7 +76,17 @@
         GROUP BY AC.ID
     </select>
     <select id="findWeekBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IFNULL(AC.OUTLAY, 0)                                                           AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                                                                              AS OUTLAY,
                DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)                           AS DURATION_FROM,
                DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AS DURATION_TO
         FROM account_cost AC
@@ -72,7 +102,17 @@
 
         UNION ALL
 
-        SELECT IFNULL(AC.OUTLAY, 0) AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                              AS OUTLAY,
                DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)                           AS DURATION_FROM,
                DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AS DURATION_TO
         FROM account_cost AC
@@ -87,7 +127,17 @@
         GROUP BY AC.ID
     </select>
     <select id="findMonthBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IFNULL(AC.OUTLAY, 0) AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                              AS OUTLAY,
                DATE_FORMAT(CURDATE(), '%Y-%m-01') AS DURATION_FROM,
                LAST_DAY(CURDATE())                AS DURATION_TO
         FROM account_cost AC
@@ -101,7 +151,17 @@
 
         UNION ALL
 
-        SELECT IFNULL(AC.OUTLAY, 0) AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                              AS OUTLAY,
                DATE_FORMAT(CURDATE(), '%Y-%m-01') AS DURATION_FROM,
                LAST_DAY(CURDATE())                AS DURATION_TO
         FROM account_cost AC
@@ -115,7 +175,17 @@
         GROUP BY AC.ID
     </select>
     <select id="findYearBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IFNULL(AC.OUTLAY, 0) AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                              AS OUTLAY,
                DATE_FORMAT(CURDATE(), '%Y-01-01') AS DURATION_FROM,
                DATE_FORMAT(CURDATE(), '%Y-12-31') AS DURATION_TO
         FROM account_cost AC
@@ -129,7 +199,17 @@
 
         UNION ALL
 
-        SELECT IFNULL(AC.OUTLAY, 0) AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                              AS OUTLAY,
                DATE_FORMAT(CURDATE(), '%Y-01-01') AS DURATION_FROM,
                DATE_FORMAT(CURDATE(), '%Y-12-31') AS DURATION_TO
         FROM account_cost AC
@@ -143,7 +223,17 @@
         GROUP BY AC.ID
     </select>
     <select id="findCustomBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IFNULL(AC.OUTLAY, 0)                  AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                                     AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -157,7 +247,17 @@
 
         UNION ALL
 
-        SELECT IFNULL(AC.OUTLAY, 0)                  AS OUTLAY,
+        SELECT ROUND(
+                       IFNULL(AC.OUTLAY, 0) /
+                       CASE
+
+                           WHEN (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0
+                               THEN
+                               1
+                           ELSE (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID)
+                           END,
+                       2
+               )                                     AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
