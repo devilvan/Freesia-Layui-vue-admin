@@ -16,7 +16,7 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class FindPageCommonIconEntity extends BaseDto {
+public class FindCommonIconEntity extends BaseDto {
     @Schema(description = "图标名称")
     private String name;
     @Schema(description = "文件ID")

@@ -124,17 +124,17 @@ public class SysOssController extends BaseController {
     }
 
     /**
-     * 上传临时文件
+     * 批量上传临时文件
      *
-     * @param file 上传的文件
+     * @param fileList 上传的文件
      * @return 形式返回
      */
     @Idempotent
-    @Operation(summary = "上传文件")
+    @Operation(summary = "批量上传文件")
     @PostMapping(value = "uploadTemp", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public R<SysOssDto> uploadTemp(@RequestPart("file[]") MultipartFile file) {
-        SysOssDto sysOssDto = sysOssService.uploadTemp(file);
-        return R.ok(sysOssDto);
+    public R<List<SysOssDto>> uploadTemp(@RequestPart("file[]") List<MultipartFile> fileList) {
+        List<SysOssDto> sysOssDtoList = sysOssService.uploadTemp(fileList);
+        return R.ok(sysOssDtoList);
     }
 
     /**

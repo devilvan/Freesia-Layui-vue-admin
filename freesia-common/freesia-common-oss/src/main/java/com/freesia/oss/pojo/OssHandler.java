@@ -108,8 +108,10 @@ public class OssHandler {
         }
         builder.append("{\n\"Action\": ");
         switch (policyType) {
-            case WRITE -> builder.append("[\n\"s3:AbortMultipartUpload\",\n\"s3:DeleteObject\",\n\"s3:ListMultipartUploadParts\",\n\"s3:PutObject\"\n],\n");
-            case READ_WRITE -> builder.append("[\n\"s3:AbortMultipartUpload\",\n\"s3:DeleteObject\",\n\"s3:GetObject\",\n\"s3:ListMultipartUploadParts\",\n\"s3:PutObject\"\n],\n");
+            case WRITE ->
+                    builder.append("[\n\"s3:AbortMultipartUpload\",\n\"s3:DeleteObject\",\n\"s3:ListMultipartUploadParts\",\n\"s3:PutObject\"\n],\n");
+            case READ_WRITE ->
+                    builder.append("[\n\"s3:AbortMultipartUpload\",\n\"s3:DeleteObject\",\n\"s3:GetObject\",\n\"s3:ListMultipartUploadParts\",\n\"s3:PutObject\"\n],\n");
             default -> builder.append("\"s3:GetObject\",\n");
         }
         builder.append("\"Effect\": \"Allow\",\n\"Principal\": \"*\",\n\"Resource\": \"arn:aws:s3:::");
@@ -203,8 +205,8 @@ public class OssHandler {
      * @param contentType 请求头数据类型
      * @return 上传后响应实体
      */
-    public UploadResultEntity uploadSuffix(byte[] data, String suffix, String contentType) {
-        return upload(data, getPath(properties.getPrefix(), suffix), contentType);
+    public UploadResultEntity uploadSuffix(byte[] data, String dir, String suffix, String contentType) {
+        return upload(data, getPath(properties.getPrefix(), dir, suffix), contentType);
     }
 
 
@@ -216,8 +218,8 @@ public class OssHandler {
      * @param contentType 请求头数据类型
      * @return 上传后响应实体
      */
-    public UploadResultEntity uploadSuffix(InputStream inputStream, String suffix, String contentType) {
-        return upload(inputStream, getPath(properties.getPrefix(), suffix), contentType);
+    public UploadResultEntity uploadSuffix(InputStream inputStream, String dir, String suffix, String contentType) {
+        return upload(inputStream, getPath(properties.getPrefix(), dir, suffix), contentType);
     }
 
     /**
@@ -228,20 +230,8 @@ public class OssHandler {
      * @param contentType 请求头数据类型
      * @return 上传后响应实体
      */
-    public UploadResultEntity uploadSuffix(File file, String suffix, String contentType) {
-        return upload(file, getPath(properties.getPrefix(), suffix), contentType);
-    }
-
-    /**
-     * 根据文件后缀上传临时文件
-     *
-     * @param data        数据流的字节数组
-     * @param suffix      后缀
-     * @param contentType 请求头数据类型
-     * @return 上传后响应实体
-     */
-    public UploadResultEntity uploadTemp(byte[] data, String suffix, String contentType) {
-        return upload(data, getTempPath(properties.getPrefix(), suffix), contentType);
+    public UploadResultEntity uploadSuffix(File file, String dir, String suffix, String contentType) {
+        return upload(file, getPath(properties.getPrefix(), dir, suffix), contentType);
     }
 
     /**
@@ -306,29 +296,11 @@ public class OssHandler {
      * @param suffix 文件后缀
      * @return 文件路径
      */
-    public String getPath(String prefix, String suffix) {
+    public String getPath(String prefix, String dir, String suffix) {
         // 生成uuid
         String uuid = IdUtil.fastSimpleUUID();
         // 文件路径
-        String path = Constants.SDF_YMD_PATH.format(new Date()) + "/" + uuid;
-        if (StringUtils.isNotBlank(prefix)) {
-            path = prefix + "/" + path;
-        }
-        return path + suffix;
-    }
-
-    /**
-     * 构造存储临时文件的文件路径
-     *
-     * @param prefix 服务器信息等前缀
-     * @param suffix 文件后缀
-     * @return 文件路径
-     */
-    public String getTempPath(String prefix, String suffix) {
-        // 生成uuid
-        String uuid = IdUtil.fastSimpleUUID();
-        // 文件路径
-        String path = "temp/" + uuid;
+        String path = UEmpty.isEmpty(dir) ? "" : dir + "/" + Constants.SDF_YMD_PATH.format(new Date()) + "/" + uuid;
         if (StringUtils.isNotBlank(prefix)) {
             path = prefix + "/" + path;
         }

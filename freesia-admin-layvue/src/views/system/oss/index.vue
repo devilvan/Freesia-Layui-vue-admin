@@ -71,6 +71,15 @@
                 <div>{{ row.fileName }}</div>
               </lay-tooltip>
             </template>
+            <template #fileSize="{ row }">
+              <lay-tooltip
+                  :visible="false"
+                  trigger="hover"
+                  :content="row.fileSize"
+              >
+                <div>{{ formatFileSize(row.fileSize) }}</div>
+              </lay-tooltip>
+            </template>
             <template #url="{ row }">
               <lay-avatar v-if="pictureType.includes(row.fileSuffix)" :src="row.url" @click="preview(row)"
                           size="lg"></lay-avatar>
@@ -163,6 +172,7 @@ import {deleteSysOss, findPageSysOss, upload} from "@/api/system/Oss";
 import {PageQuery} from "@/types/Common";
 import Http from "@/api/Http";
 import app from "@/main";
+import {formatFileSize} from "../../../util/UFile";
 
 /* INIT*/
 onMounted(() => {
@@ -186,6 +196,7 @@ const columns = ref([
   {title: '原名', key: 'originalName', customSlot: 'originalName'},
   {title: '预览', width: '50px', key: 'url', customSlot: 'url'},
   {title: '文件类型', width: '120px', key: 'fileSuffix'},
+  {title: '文件大小', width: '120px', key: 'fileSize', customSlot: 'fileSize'},
   {title: '服务商', width: '120px', key: 'service'},
   {title: '上传人', width: '120px', key: 'creator'},
   {title: '上传时间', width: '220px', key: 'createTime', sort: 'desc'},

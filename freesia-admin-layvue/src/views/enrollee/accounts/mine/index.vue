@@ -96,7 +96,7 @@
         </lay-tooltip>
       </template>
       <template #paymentSign="{ row }">
-        <dict-scan :options="paymentSignSelect" :value="row.paymentSign"/>
+        <dict-tag :options="paymentSignSelect" :value="row.paymentSign"/>
       </template>
       <template #iconType="{ row }">
         <SvgIcon :name="row.icon" size="2em"></SvgIcon>
@@ -342,6 +342,7 @@ import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 import {SysUserEntity, SysUserVo} from "@/types/system/User";
 import {findPageSysUserList, findPageSysUserWithoutDataScope} from "@/api/system/User";
 import app from "@/main";
+import DictScan from "@/views/component/DictScan.vue";
 
 /* INIT*/
 onMounted(async () => {
@@ -355,8 +356,8 @@ onMounted(async () => {
 /* VAR*/
 const $ACCOUNT_MENU_PERMISSION = app.config.globalProperties.$ACCOUNT_MENU_PERMISSION
 const $router = router;
-const paymentSignSelect = ref();
-const paymentSignSelectList = ref();
+const paymentSignSelect = ref<Array<SysDictValueEntity>>();
+const paymentSignSelectList = ref<any[]>();
 const searchQuery = ref<AccountCostVo>({})
 const loading = ref(false)
 const selectedKeys = ref<Array<string>>([])

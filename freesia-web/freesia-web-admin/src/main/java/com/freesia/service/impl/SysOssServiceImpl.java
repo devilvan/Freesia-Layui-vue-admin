@@ -116,6 +116,11 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
 
     @Override
     public List<SysOssDto> upload(List<MultipartFile> files) {
+        return upload(files, null);
+    }
+
+    @Override
+    public List<SysOssDto> upload(List<MultipartFile> files, String dir) {
         List<SysOssDto> resultSysOssDtoList = new ArrayList<>();
         for (MultipartFile file : files) {
             String originalFilename = file.getOriginalFilename();
@@ -124,11 +129,12 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
                     .map(m -> m.substring(m.lastIndexOf('.') + 1))
                     .orElseThrow(() -> new OssException("oss.file.required"));
             OssHandler ossHandler = OssFactory.getInstance();
-            OssHandler.UploadResultEntity uploadResultEntity = new OssHandler.UploadResultEntity();
+            new OssHandler.UploadResultEntity();
+            OssHandler.UploadResultEntity uploadResultEntity;
             try {
-                uploadResultEntity = ossHandler.uploadSuffix(file.getBytes(), "." + suffix, file.getContentType());
+                uploadResultEntity = ossHandler.uploadSuffix(file.getBytes(), dir, "." + suffix, file.getContentType());
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
             // 保存文件信息
             SysOssDto sysOssDto = new SysOssDto();
@@ -140,6 +146,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
             sysOssDto.setFileSuffix(suffix);
             sysOssDto.setUrl(url);
             sysOssDto.setService(ossHandler.getConfigKey());
+            sysOssDto.setFileSize(file.getSize());
             SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
             SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
             resultSysOssDtoList.add(resultSysOssDto);
@@ -160,33 +167,39 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     }
 
     @Override
-    public SysOssDto uploadTemp(MultipartFile file) {
-        String originalFilename = file.getOriginalFilename();
-        String suffix = Optional.of(file)
-                .map(MultipartFile::getOriginalFilename)
-                .map(m -> m.substring(m.lastIndexOf('.') + 1))
-                .orElseThrow(() -> new OssException("oss.file.required"));
-        OssHandler ossHandler = OssFactory.getInstance();
-        OssHandler.UploadResultEntity uploadResultEntity = new OssHandler.UploadResultEntity();
-        try {
-            uploadResultEntity = ossHandler.uploadTemp(file.getBytes(), "." + suffix, file.getContentType());
-        } catch (IOException e) {
-            e.printStackTrace();
+    public List<SysOssDto> uploadTemp(List<MultipartFile> fileList) {
+        List<SysOssPo> sysOssPoList = new ArrayList<>();
+        for (MultipartFile file : fileList) {
+            String originalFilename = file.getOriginalFilename();
+            String suffix = Optional.of(file)
+                    .map(MultipartFile::getOriginalFilename)
+                    .map(m -> m.substring(m.lastIndexOf('.') + 1))
+                    .orElseThrow(() -> new OssException("oss.file.required"));
+            OssHandler ossHandler = OssFactory.getInstance();
+            OssHandler.UploadResultEntity uploadResultEntity = new OssHandler.UploadResultEntity();
+            try {
+                uploadResultEntity = ossHandler.uploadSuffix(file.getBytes(), "temp", "." + suffix, file.getContentType());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            // 保存文件信息
+            SysOssDto sysOssDto = new SysOssDto();
+            String filename = uploadResultEntity.getFilename();
+            String url = ossHandler.convertDomain2Endpoint(uploadResultEntity.getUrl());
+            filename = filename.substring(filename.lastIndexOf("/") + 1);
+            sysOssDto.setFileName(filename);
+            sysOssDto.setOriginalName(originalFilename);
+            sysOssDto.setFileSuffix(suffix);
+            sysOssDto.setUrl(url);
+            sysOssDto.setService(ossHandler.getConfigKey());
+            sysOssDto.setTempFlag(true);
+            sysOssDto.setFileSize(file.getSize());
+            setPrivateBucketExpirationUrl(sysOssDto);
+            SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
+            sysOssPoList.add(sysOssPo);
         }
-        // 保存文件信息
-        SysOssDto sysOssDto = new SysOssDto();
-        String filename = uploadResultEntity.getFilename();
-        String url = ossHandler.convertDomain2Endpoint(uploadResultEntity.getUrl());
-        filename = filename.substring(filename.lastIndexOf("/") + 1);
-        sysOssDto.setFileName(filename);
-        sysOssDto.setOriginalName(originalFilename);
-        sysOssDto.setFileSuffix(suffix);
-        sysOssDto.setUrl(url);
-        sysOssDto.setService(ossHandler.getConfigKey());
-        sysOssDto.setTempFlag(true);
-        setPrivateBucketExpirationUrl(sysOssDto);
-        SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
-        SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
+        List<SysOssDto> resultSysOssDtoList = UCopy.fullCopyList(sysOssRepository.saveAll(sysOssPoList), SysOssDto.class);
+        List<String> originalFilenameList = resultSysOssDtoList.stream().map(SysOssDto::getOriginalName).collect(Collectors.toList());
         // 保存操作日志
         SysSensitiveLogBean saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
             sysSensitiveLogBean.setModule(OssModule.OSS_MANAGEMENT);
@@ -195,11 +208,11 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
             sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
             sysSensitiveLogBean.setContextOld(null);
             sysSensitiveLogBean.setContext(null);
-            sysSensitiveLogBean.setRemark(UMessage.message("oss.upload.success", originalFilename));
+            sysSensitiveLogBean.setRemark(UMessage.message("oss.upload.success", String.join(",", originalFilenameList)));
             return sysSensitiveLogBean;
         });
         USpring.context().publishEvent(saveSysSensitiveLogBean);
-        return resultSysOssDto;
+        return resultSysOssDtoList;
     }
 
     @Override

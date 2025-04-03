@@ -64,18 +64,28 @@ public interface SysOssService {
     List<SysOssDto> upload(List<MultipartFile> files);
 
     /**
-     * 上传临时文件
+     * 上传文件到桶下指定目录
      *
-     * @param file 文件对象
+     * @param files 文件对象
+     * @param dir   目录
      * @return OSS对象存储实体
      */
-    SysOssDto uploadTemp(MultipartFile file);
+    List<SysOssDto> upload(List<MultipartFile> files, String dir);
+
+    /**
+     * 批量上传临时文件
+     *
+     * @param fileList 文件对象
+     * @return OSS对象存储实体
+     */
+    List<SysOssDto> uploadTemp(List<MultipartFile> fileList);
 
     /**
      * 下载文件
      *
      * @param id       文件ID
      * @param response 响应体
+     * @throws IOException IO异常
      */
     void download(Long id, HttpServletResponse response) throws IOException;
 

@@ -29,4 +29,6 @@ public class SysOssDto extends BaseDto {
     private String service;
     @Schema(description = "是否为临时文件（0-否 1-是）")
     private Boolean tempFlag;
+    @Schema(description = "文件大小")
+    private Long fileSize;
 }

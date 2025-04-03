@@ -23,7 +23,7 @@ export function parseImgPath(imgPath: string) {
  */
 export function preview(path: any) {
     let option = {
-        imgList: [{src: path, alt: 'Do you like what you see?'}]
+        imgList: [{src: path, alt: path.originalName}]
     };
     layer.photos(option)
 }

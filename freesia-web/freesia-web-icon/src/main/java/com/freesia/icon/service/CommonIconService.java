@@ -1,9 +1,10 @@
 package com.freesia.icon.service;
 
+import com.freesia.icon.dto.CommonIconDto;
+import com.freesia.icon.entity.FindCommonIconEntity;
 import com.freesia.icon.entity.FindPageCommonIconEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.icon.dto.CommonIconDto;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public interface CommonIconService {
      * @param commonIconDto 查询条件
      * @return 通用图标表信息
      */
-    CommonIconDto findCommonIcon(CommonIconDto commonIconDto);
+    FindCommonIconEntity findCommonIcon(CommonIconDto commonIconDto);
 
     /**
      * 删除通用图标表信息
@@ -52,4 +53,12 @@ public interface CommonIconService {
      * @param idList 主键
      */
     void deleteCommonIcon(List<Long> idList);
+
+    /**
+     * 根据图标所属分区查询当前最大的排序号
+     *
+     * @param iconPartition 所属分区
+     * @return 当前最大的排序号
+     */
+    int findMaxOrderNumByIconPartition(String iconPartition);
 }

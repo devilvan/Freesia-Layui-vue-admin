@@ -1,5 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.icon.mapper.CommonIconMapper">
-    <select id="findPageCommonIcon" resultType="com.freesia.icon.entity.FindPageCommonIconEntity"></select>
+    <sql id="findCommonIconSqlRef">
+        SELECT
+        distinct CI.ID,
+        CI.CREATE_TIME,
+        CI.MODIFY_TIME,
+        CI.REC_VER,
+        CI.LOGIC_DEL,
+        CI.BUILD_IN,
+        CI.NAME,
+        CI.FILE_ID,
+        CI.ICON_PARTITION,
+        CI.ORDER_NUM,
+        CI.REMARK,
+        SO.ORIGINAL_NAME AS FILE_NAME,
+        SO.URL
+        FROM common_icon CI
+        LEFT JOIN sys_oss so on so.id = ci.FILE_ID
+        WHERE 1 = 1
+        AND CI.LOGIC_DEL = 0
+        <if test="commonIconDto.id != null and commonIconDto.id != 0">
+            AND CI.ID = #{commonIconDto.id}
+        </if>
+        <if test="commonIconDto.fileId != null and commonIconDto.fileId != 0">
+            AND SO.ID = #{commonIconDto.fileId}
+        </if>
+        ORDER BY CI.CREATE_TIME DESC, CI.MODIFY_TIME DESC
+    </sql>
+    <select id="findPageCommonIcon" resultType="com.freesia.icon.entity.FindPageCommonIconEntity">
+        <include refid="findCommonIconSqlRef"/>
+    </select>
+    <select id="findCommonIcon" resultType="com.freesia.icon.entity.FindCommonIconEntity">
+        <include refid="findCommonIconSqlRef"/>
+    </select>
+    <select id="findMaxOrderNumByIconPartition" resultType="java.lang.Integer">
+        SELECT MAX(CI.ORDER_NUM)
+        FROM common_icon CI
+        WHERE CI.ICON_PARTITION = #{iconPartition}
+    </select>
+
 </mapper>

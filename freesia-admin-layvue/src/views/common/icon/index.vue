@@ -43,7 +43,7 @@
           @change="change"
           @sortChange="sortChange">
         <template #icon="{ row }">
-          <lay-avatar :src="row.icon" :preview="preview(row.icon)"></lay-avatar>
+          <lay-avatar :src="row.url" @click="preview(row.url)"></lay-avatar>
         </template>
         <template #createTime="{ row }">
           {{ row.createTime }} （{{ getWeekdayCn(row.createTime) }}）
@@ -79,6 +79,14 @@
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
+          <lay-button
+              size="sm"
+              type="normal"
+              @click="showBatchSaveModal(Operate.ADD, null)"
+          >
+            <lay-icon class="layui-icon"></lay-icon>
+            批量上传
+          </lay-button>
           <lay-button size="sm"
                       @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
@@ -111,11 +119,11 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="showModalFlag" :area="['1200px']" :title="saveModalTitle">
+    <lay-layer v-model="showModalFlag" :area="['400px', '700px']" :title="saveModalTitle">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form ref="saveFormRef" :model="saveCommonIconVo" :rules="saveFromRules" label-position="top">
-          <lay-row :space="20">
-            <lay-col :md="6">
+        <lay-form ref="saveFormRef" :model="saveCommonIconVo" label-position="top">
+          <lay-col :md="24">
+            <lay-row>
               <lay-form-item label="图标名称" prop="name" required>
                 <lay-input
                     v-model="saveCommonIconVo.name"
@@ -123,8 +131,8 @@
                     size="sm"
                 ></lay-input>
               </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
+            </lay-row>
+            <lay-row>
               <lay-form-item label="图标所属分区" prop="iconPartition" required>
                 <lay-select
                     size="sm"
@@ -135,44 +143,87 @@
                     :allow-clear="true"
                 ></lay-select>
               </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="图标" prop="avatar">
-                <lay-upload
-                    :url="ossPath"
-                    v-model="fileList"
-                    field="file"
-                    :acceptMime="iconMime"
-                    :auto="false"
-                    @on-change="uploadOnChange">
-                </lay-upload>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="图标" prop="avatar">
-                <div style="display: inline-flex">
-                  <lay-avatar :style="previewIcon.url ? '' : 'display: none'"
-                              :src="previewIcon.url"></lay-avatar>
-                  <div style="align-items: center;line-height: 30px">
-                    文件名：{{ previewIcon.originalName }}
-                  </div>
-                </div>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
-          <lay-row :space="20">
-            <lay-col :md="6">
+            </lay-row>
+            <lay-row>
               <lay-form-item label="备注" prop="remark">
                 <lay-textarea
                     v-model="saveCommonIconVo.remark"
                     allow-clear
                 ></lay-textarea>
               </lay-form-item>
-            </lay-col>
-          </lay-row>
+            </lay-row>
+            <lay-row>
+              <lay-form-item label="图标" prop="avatar">
+                <lay-upload
+                    :url="ossPath"
+                    v-model="saveFileList"
+                    field="file[]"
+                    :acceptMime="iconMime"
+                    :auto="false"
+                    @on-change="uploadOnChange">
+                  <template #preview>
+                    <div style="align-items: center;line-height: 30px">
+                      文件名：{{ previewIconList[0]?.originalName }}
+                    </div>
+                    <lay-avatar :style="previewIconList[0]?.url ? '' : 'display: none'"
+                                :src="previewIconList[0]?.url" @click="preview(previewIconList[0]?.url)"></lay-avatar>
+                  </template>
+                </lay-upload>
+              </lay-form-item>
+            </lay-row>
+          </lay-col>
         </lay-form>
         <div style="width: 100%; text-align: right">
           <lay-button size="sm" type="primary" @click="toSubmit(true)">保存</lay-button>
+          <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
+          <lay-button size="sm" @click="toCancel">取消</lay-button>
+        </div>
+      </div>
+    </lay-layer>
+
+    <lay-layer v-model="showBatchSaveModalFlag" :area="['400px', '500px']" :title="batchSaveModalTitle">
+      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
+        <lay-form ref="batchSaveFormRef" :model="batchSaveCommonIconVo" label-position="top">
+          <lay-col :md="24">
+            <lay-row>
+              <lay-form-item label="图标所属分区" prop="iconPartition" required>
+                <lay-select
+                    size="sm"
+                    style="width: 100%"
+                    v-model="batchSaveCommonIconVo.iconPartition"
+                    :options="commonIconPartitionSelectList"
+                    :items="commonIconPartitionSelectList"
+                    :allow-clear="true"
+                ></lay-select>
+              </lay-form-item>
+            </lay-row>
+            <lay-row>
+              <lay-form-item label="图标" prop="file">
+                <lay-upload
+                    :url="ossPath"
+                    v-model="saveBatchFileList"
+                    field="file[]"
+                    :acceptMime="iconMime"
+                    :auto="false"
+                    :multiple="true"
+                    @on-change="uploadOnChange">
+                  <template #preview>
+                    <div class="easy-wrap">
+                      <lay-avatar v-for="(item,index) in previewIconList"
+                                  :key="index"
+                                  :style="item.url ? '' : 'display: none'"
+                                  :src="item.url"
+                                  @click="preview(item.url)"
+                      ></lay-avatar>
+                    </div>
+                  </template>
+                </lay-upload>
+              </lay-form-item>
+            </lay-row>
+          </lay-col>
+        </lay-form>
+        <div style="width: 100%; text-align: right">
+          <lay-button size="sm" type="primary" @click="batchSaveToSubmit(true)">保存</lay-button>
           <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
@@ -192,24 +243,22 @@ export default {
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
-import {TableResult} from "@/types/Result";
+import {R, TableResult} from "@/types/Result";
 import {Operate} from "@/types/Constants";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {CommonIconEntity, CommonIconVo, SaveUpdateVo} from "@/types/common/Icon";
-import {deleteCommonIcon, findCommonIcon, findPageCommonIcon, saveUpdate} from "@/api/common/Icon";
-import {parseImgPath, preview} from "@/util/UImage";
+import {CommonIconEntity, CommonIconVo, FindCommonIconEntity, FindPageCommonIconEntity} from "@/types/common/Icon";
+import {deleteCommonIcon, findCommonIcon, findPageCommonIcon, saveUpdate, saveUpdateBatch} from "@/api/common/Icon";
 import {uploadTemp} from "@/api/system/Oss";
 import {SysOssEntity} from "@/types/system/Oss";
-import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 import {getWeekdayCn} from "@/util/UDate";
-import GoodTest from "@/views/common/icon/test.vue";
+import {preview} from "@/util/UImage";
 
 /* INIT*/
 onMounted(async () => {
   commonIconPartitionSelect.value = await loadSysDictValue(Constants.COMMON_ICON_PARTITION)
   commonIconPartitionSelectList.value = await sysDictValueSelect(commonIconPartitionSelect.value)
-  loadDataSource()
+  change()
 })
 /* INIT*/
 
@@ -219,7 +268,7 @@ const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const dataSource = ref<Array<CommonIconEntity>>()
+const dataSource = ref<Array<FindPageCommonIconEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
@@ -241,27 +290,21 @@ const loading = ref(true)
 const defaultToolbarFlag = ref(true)
 const evenFlag = ref(true)
 const showModalFlag = ref(false)
+const showBatchSaveModalFlag = ref(false)
 const saveModalTitle = ref('');
-const saveFormRef = ref(null)
+const batchSaveModalTitle = ref('新增');
+const saveFormRef = ref()
 const saveCommonIconVo = ref<CommonIconVo>(<CommonIconVo>{})
+const batchSaveFormRef = ref()
+const batchSaveCommonIconVo = ref<CommonIconVo>(<CommonIconVo>{})
 const queryFormRef = ref(null)
 const commonIconPartitionSelect = ref<Array<SysDictValueEntity>>(<Array<SysDictValueEntity>>[]);
 const commonIconPartitionSelectList = ref();
-const saveFromRules = ref({
-  outlay: {
-    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
-      if (value <= 0) {
-        callback(new Error("金额不能为0"));
-      } else {
-        return true;
-      }
-    }
-  },
-})
 const iconMime = "image/svg+xml"
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
-const fileList = ref([])
-const previewIcon = ref<SysOssEntity>(<SysOssEntity>{})
+const saveFileList = ref<File[]>(<File[]>[])
+const saveBatchFileList = ref<File[]>(<File[]>[])
+const previewIconList = ref<Array<SysOssEntity>>(<SysOssEntity[]>[])
 /* VAR*/
 
 /* FUNCTION*/
@@ -269,7 +312,7 @@ const previewIcon = ref<SysOssEntity>(<SysOssEntity>{})
  * 初始化表格
  */
 const loadDataSource = () => {
-  findPageCommonIcon(searchQuery.value, pageQuery).then((res: TableResult<CommonIconEntity>) => {
+  findPageCommonIcon(searchQuery.value, pageQuery).then((res: TableResult<FindPageCommonIconEntity>) => {
     if (res.code == 200) {
       pageQuery.total = res.total;
       dataSource.value = res.rows
@@ -327,14 +370,30 @@ const showSaveModal = (text: any, row: any) => {
   if (Operate.EDIT === text) {
     findCommonIcon({
       id: row.id
-    }).then((res: any) => {
+    }).then((res: R<FindCommonIconEntity>) => {
       if (res.code === 200) {
-        saveCommonIconVo.value = res.data;
+        let data = res.data;
+        saveCommonIconVo.value = {
+          id: data?.id,
+          recVer: data?.recVer,
+          logicDel: data?.logicDel,
+          buildIn: data?.buildIn,
+          name: data?.name,
+          fileId: data?.fileId,
+          iconPartition: data?.iconPartition,
+          orderNum: data?.orderNum,
+          remark: data?.remark,
+        };
+        previewIconList.value = []
+        previewIconList.value.push({
+          originalName: data?.fileName,
+          url: data?.url
+        })
       }
     })
   } else if (Operate.ADD === text) {
     saveCommonIconVo.value = {}
-    previewIcon.value = {}
+    previewIconList.value = {}
   } else if (Operate.COPY === text) {
     findCommonIcon({
       id: row.id
@@ -345,6 +404,12 @@ const showSaveModal = (text: any, row: any) => {
     })
   }
   showModalFlag.value = !showModalFlag.value
+}
+
+function showBatchSaveModal(text: any) {
+  batchSaveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
+  previewIconList.value = {}
+  showBatchSaveModalFlag.value = !showBatchSaveModalFlag.value
 }
 
 /**
@@ -388,7 +453,7 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   saveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      saveUpdate(fileList.value, saveCommonIconVo.value).then((res: any) => {
+      saveUpdate(saveFileList.value, saveCommonIconVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
@@ -401,7 +466,37 @@ function toSubmit(clickFlag: boolean) {
               showModalFlag.value = false
             }
           }
+          previewIconList.value = [];
+          saveFileList.value = []
           showModalFlag.value = false
+        }
+      })
+    }
+  })
+}
+
+/**
+ * 批量上传-保存
+ */
+function batchSaveToSubmit(clickFlag: boolean) {
+  batchSaveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      saveUpdateBatch(saveBatchFileList.value, batchSaveCommonIconVo.value).then((res: any) => {
+        if (res.code === 200) {
+          loadDataSource();
+          layer.msg('保存成功！', {icon: 1, time: 1000})
+          batchSaveCommonIconVo.value = {};
+          if (clickFlag) {
+            showBatchSaveModalFlag.value = false
+          } else {
+            // 如果是修改+回车，则关闭窗口
+            if (batchSaveCommonIconVo.id && batchSaveCommonIconVo.id != 0) {
+              showBatchSaveModalFlag.value = false
+            }
+          }
+          previewIconList.value = [];
+          saveBatchFileList.value = []
+          showBatchSaveModalFlag.value = false
         }
       })
     }
@@ -413,6 +508,9 @@ function toSubmit(clickFlag: boolean) {
  */
 function toReset() {
   saveFormRef.value.reset();
+  batchSaveFormRef.value.reset();
+  previewIconList.value = []
+
 }
 
 /**
@@ -420,6 +518,7 @@ function toReset() {
  */
 function toCancel() {
   showModalFlag.value = false
+  showBatchSaveModalFlag.value = false
 }
 
 function confirm(row: any) {
@@ -443,7 +542,7 @@ function uploadOnChange(file: any) {
   uploadTemp(file).then((res: any) => {
     if (res.code === 200) {
       if (res.data) {
-        previewIcon.value = res.data
+        previewIconList.value = res.data
       }
     }
   })
