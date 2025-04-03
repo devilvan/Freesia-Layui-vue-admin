@@ -1,6 +1,6 @@
 {
   "name": "freesia",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "scripts": {
     "dev": "vite --mode development",
     "prod": "vite --mode production",

@@ -81,7 +81,7 @@ public class CommonIconController extends BaseController {
      */
     @Idempotent
     @Operation(summary = "批量保存通用图标表信息")
-    @PostMapping(value = "saveUpdateBatch")
+    @PostMapping(value = "saveUpdateBatch", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public R<Void> saveUpdateBatch(@NotNull @RequestPart("file[]") List<MultipartFile> fileList,
                                    @RequestPart("commonIconVo") String request) {
         CommonIconVo commonIconVo = JSONObject.parseObject(request, CommonIconVo.class);

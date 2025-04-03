@@ -15,7 +15,7 @@
     </parent>
     <groupId>com.freesia</groupId>
     <artifactId>freesia</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.0</version>
     <packaging>pom</packaging>
     <properties>
         <freesia.version>1.2.1</freesia.version>
