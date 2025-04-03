@@ -2,8 +2,8 @@
   <lay-card class="error-page">
     <lay-exception status="401" title="401" describe="抱歉，你无权访问该页面">
       <template #extra>
-        <lay-button>刷新</lay-button>
-        <lay-button type="primary">返回</lay-button>
+        <lay-button @click="refresh()">刷新</lay-button>
+        <lay-button type="primary" @click="back()">返回</lay-button>
       </template>
     </lay-exception>
   </lay-card>
@@ -16,3 +16,14 @@
   margin: 10px;
 }
 </style>
+<script setup lang="ts">
+import router from "@/router";
+
+function refresh() {
+  window.location.reload()
+}
+
+function back() {
+  router.back()
+}
+</script>
