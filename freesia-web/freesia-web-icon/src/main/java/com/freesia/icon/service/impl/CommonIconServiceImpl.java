@@ -88,7 +88,7 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
     }
 
     @Override
-    public int findMaxOrderNumByIconPartition(String iconPartition) {
+    public Integer findMaxOrderNumByIconPartition(String iconPartition) {
         return commonIconMapper.findMaxOrderNumByIconPartition(iconPartition);
     }
 }

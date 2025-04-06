@@ -60,5 +60,5 @@ public interface CommonIconService {
      * @param iconPartition 所属分区
      * @return 当前最大的排序号
      */
-    int findMaxOrderNumByIconPartition(String iconPartition);
+    Integer findMaxOrderNumByIconPartition(String iconPartition);
 }

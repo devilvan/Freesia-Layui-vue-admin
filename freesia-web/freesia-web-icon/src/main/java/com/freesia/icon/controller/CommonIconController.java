@@ -1,5 +1,6 @@
 package com.freesia.icon.controller;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson2.JSONObject;
 import com.freesia.controller.BaseController;
@@ -22,6 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +43,7 @@ import java.util.List;
 public class CommonIconController extends BaseController {
     private final CommonIconService commonIconService;
     private final SysOssService sysOssService;
+    private final TransactionTemplate transactionTemplate;
 
     /**
      * 保存通用图标表信息
@@ -52,21 +55,40 @@ public class CommonIconController extends BaseController {
     @Idempotent
     @Operation(summary = "保存通用图标表信息")
     @PostMapping(value = "saveUpdate", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public R<CommonIconSaveUpdateEntity> saveUpdate(@NotNull @RequestPart("file[]") List<MultipartFile> fileList,
+    public R<CommonIconSaveUpdateEntity> saveUpdate(@RequestPart(value = "file[]", required = false) List<MultipartFile> fileList,
                                                     @RequestPart("commonIconVo") String request) {
-        if (fileList.size() > 1) {
-            return R.failed(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("file.upload.only.one"));
-        }
         CommonIconVo commonIconVo = JSONObject.parseObject(request, CommonIconVo.class);
-        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
-        List<SysOssDto> sysOssDtoList;
-        sysOssDtoList = sysOssService.upload(fileList, "icon");
-        if (UEmpty.isNotEmpty(sysOssDtoList)) {
-            SysOssDto sysOssDto = sysOssDtoList.get(0);
-            commonIconDto.setFileId(sysOssDto.getId());
-        } else {
-            return R.failed(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("file.upload.failed"));
+        // 如果是修改，但未上传新的图片，则允许为空
+        if (UEmpty.isEmpty(fileList) && UEmpty.isNull(commonIconVo.getId())) {
+            return R.failed(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("oss.file.required"));
         }
+        if (UEmpty.isNotEmpty(fileList) && fileList.size() > 1) {
+            return R.failed(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("oss.upload.only.one"));
+        }
+        List<SysOssDto> sysOssDtoList = new ArrayList<>();
+        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        // 文件新增
+        if (UEmpty.isNull(commonIconVo.getId())) {
+            sysOssDtoList = sysOssService.upload(fileList, "icon");
+            if (UEmpty.isNotEmpty(sysOssDtoList)) {
+                SysOssDto sysOssDto = sysOssDtoList.get(0);
+                commonIconDto.setFileId(sysOssDto.getId());
+            } else {
+                return R.failed(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("file.upload.failed"));
+            }
+        } else {
+            // 如果编辑文件
+            if (UEmpty.isNotEmpty(fileList)) {
+                sysOssDtoList = sysOssService.upload(fileList, "icon");
+                if (UEmpty.isNotEmpty(sysOssDtoList)) {
+                    SysOssDto sysOssDto = sysOssDtoList.get(0);
+                    commonIconDto.setFileId(sysOssDto.getId());
+                } else {
+                    return R.failed(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("file.upload.failed"));
+                }
+            }
+        }
+        // 保存
         commonIconDto = commonIconService.saveUpdate(commonIconDto);
         CommonIconSaveUpdateEntity commonIconSaveUpdateEntity = new CommonIconSaveUpdateEntity(sysOssDtoList, commonIconDto);
         return R.ok(commonIconSaveUpdateEntity);
@@ -86,14 +108,16 @@ public class CommonIconController extends BaseController {
                                    @RequestPart("commonIconVo") String request) {
         CommonIconVo commonIconVo = JSONObject.parseObject(request, CommonIconVo.class);
         CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
-        List<SysOssDto> sysOssDtoList = sysOssService.upload(fileList, "icon");
-        if (UEmpty.isNotEmpty(sysOssDtoList)) {
-            List<CommonIconDto> toSaveCommonIconDtoList = buildCommonIconDtoList(sysOssDtoList, commonIconDto);
-            commonIconService.saveUpdateBatch(toSaveCommonIconDtoList);
-        } else {
-            return R.failed();
-        }
-        return R.ok();
+        return transactionTemplate.execute(status -> {
+            List<SysOssDto> sysOssDtoList = sysOssService.upload(fileList, "icon");
+            if (UEmpty.isNotEmpty(sysOssDtoList)) {
+                List<CommonIconDto> toSaveCommonIconDtoList = buildCommonIconDtoList(sysOssDtoList, commonIconDto);
+                commonIconService.saveUpdateBatch(toSaveCommonIconDtoList);
+            } else {
+                return R.failed();
+            }
+            return R.ok();
+        });
     }
 
     /**
@@ -139,24 +163,27 @@ public class CommonIconController extends BaseController {
 
     private List<CommonIconDto> buildCommonIconDtoList(List<SysOssDto> sysOssDtoList, CommonIconDto dto) {
         List<CommonIconDto> commonIconDtoList = new ArrayList<>();
-        int maxOrderNum = commonIconService.findMaxOrderNumByIconPartition(dto.getIconPartition());
-        if (maxOrderNum == 0) {
-            maxOrderNum = 10;
-        }
+        Integer maxOrderNum = commonIconService.findMaxOrderNumByIconPartition(dto.getIconPartition());
+        maxOrderNum = Convert.toInt(10);
         for (SysOssDto sysOssDto : sysOssDtoList) {
-            CommonIconDto commonIconDto = new CommonIconDto();
-            String originalName = sysOssDto.getOriginalName();
-            int idx = originalName.lastIndexOf("/");
-            int startIndex = idx > 0 ? idx + 1 : 0;
-            String name = originalName.substring(startIndex, originalName.lastIndexOf("."));
-            commonIconDto.setName(name);
-            commonIconDto.setFileId(sysOssDto.getId());
-            commonIconDto.setIconPartition(dto.getIconPartition());
-            commonIconDto.setOrderNum(maxOrderNum);
-            commonIconDto.setRemark(name);
+            CommonIconDto commonIconDto = buildCommonIconDto(dto, sysOssDto, maxOrderNum);
             commonIconDtoList.add(commonIconDto);
             maxOrderNum += 10;
         }
         return commonIconDtoList;
+    }
+
+    private static CommonIconDto buildCommonIconDto(CommonIconDto dto, SysOssDto sysOssDto, Integer maxOrderNum) {
+        CommonIconDto commonIconDto = new CommonIconDto();
+        String originalName = sysOssDto.getOriginalName();
+        int idx = originalName.lastIndexOf("/");
+        int startIndex = idx > 0 ? idx + 1 : 0;
+        String name = originalName.substring(startIndex, originalName.lastIndexOf("."));
+        commonIconDto.setName(name);
+        commonIconDto.setFileId(sysOssDto.getId());
+        commonIconDto.setIconPartition(dto.getIconPartition());
+        commonIconDto.setOrderNum(maxOrderNum);
+        commonIconDto.setRemark(name);
+        return commonIconDto;
     }
 }

@@ -33,7 +33,7 @@ public interface CommonIconMapper extends BaseMapper<CommonIconPo> {
      * @param iconPartition 图标所属分区
      * @return 当前最大的排序号
      */
-    int findMaxOrderNumByIconPartition(@Param("iconPartition") String iconPartition);
+    Integer findMaxOrderNumByIconPartition(@Param("iconPartition") String iconPartition);
 
     /**
      * 查询通用图标数据
