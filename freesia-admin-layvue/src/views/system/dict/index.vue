@@ -56,7 +56,7 @@
 
       <div style="width: 1200px">
         <lay-card>
-          <lay-form style="margin-top: 10px" @keyup.enter.prevent="toSearch">
+          <lay-form style="margin-top: 10px" @keydown.enter.prevent="toSearch">
             <lay-row>
               <lay-col :md="6">
                 <lay-form-item label="字典值名称">

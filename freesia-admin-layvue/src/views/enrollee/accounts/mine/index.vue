@@ -1,7 +1,7 @@
 <template>
   <lay-container fluid="true">
     <lay-card shadow="hover">
-      <lay-form @keyup.enter.prevent="toSearch" :model="searchQuery" label-position="top">
+      <lay-form @keydown.enter.prevent="toSearch" :model="searchQuery" label-position="top">
         <lay-row :space="20">
           <lay-col :md="6">
             <lay-form-item label="开销描述">

@@ -41,7 +41,7 @@
           <div style="flex: 1; padding: 10px; overflow: visible">
             <!-- table -->
             <lay-card>
-              <lay-form @keyup.enter.prevent="toSearch">
+              <lay-form @keydown.enter.prevent="toSearch">
                 <lay-row>
                   <lay-col :md="6">
                     <lay-form-item label="角色编码" label-width="80">

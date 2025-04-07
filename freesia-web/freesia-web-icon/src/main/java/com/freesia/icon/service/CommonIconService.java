@@ -53,12 +53,4 @@ public interface CommonIconService {
      * @param idList 主键
      */
     void deleteCommonIcon(List<Long> idList);
-
-    /**
-     * 根据图标所属分区查询当前最大的排序号
-     *
-     * @param iconPartition 所属分区
-     * @return 当前最大的排序号
-     */
-    Integer findMaxOrderNumByIconPartition(String iconPartition);
 }

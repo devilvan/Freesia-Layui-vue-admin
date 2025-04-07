@@ -86,9 +86,4 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
         }
         removeBatchByIds(idList);
     }
-
-    @Override
-    public Integer findMaxOrderNumByIconPartition(String iconPartition) {
-        return commonIconMapper.findMaxOrderNumByIconPartition(iconPartition);
-    }
 }

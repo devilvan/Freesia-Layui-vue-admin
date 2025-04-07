@@ -35,6 +35,8 @@ freesia:
         - SYS_OSS_CONFIG
         - ACCOUNT_COST_USER
         - COMMON_ICON
+        - COMMON_ICON_TEMPLATE_HEADER
+        - COMMON_ICON_TEMPLATE_DETAIL
         - DATESERIES
 ---
 login.password:
@@ -165,7 +167,7 @@ springdoc:
     - group: 11. 记账模块
       paths-to-match: /api/accountCostController/**
     - group: 12. 通用图标模块
-      paths-to-match: /common/commonIconController/**
+      paths-to-match: /common/commonIcon*/**
 # knife4j的增强配置，不需要增强可以不配
 #knife4j:
 #  enable: true

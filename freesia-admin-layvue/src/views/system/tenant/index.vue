@@ -1,7 +1,7 @@
 <template>
   <lay-container :fluid="true">
     <lay-card shadow="hover">
-      <lay-form label-position="top" @keyup.enter.prevent="toSearch">
+      <lay-form label-position="top" @keydown.enter.prevent="toSearch">
         <lay-row :space="20">
           <lay-col :md="6">
             <lay-form-item label="租户编码" label-width="80">

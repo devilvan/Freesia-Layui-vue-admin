@@ -12,7 +12,6 @@
         CI.NAME,
         CI.FILE_ID,
         CI.ICON_PARTITION,
-        CI.ORDER_NUM,
         CI.REMARK,
         SO.ORIGINAL_NAME AS FILE_NAME,
         SO.URL
@@ -26,6 +25,12 @@
         <if test="commonIconDto.fileId != null and commonIconDto.fileId != 0">
             AND SO.ID = #{commonIconDto.fileId}
         </if>
+        <if test="commonIconDto.name != null and commonIconDto.name != ''">
+            AND CI.NAME LIKE CONCAT('%', #{commonIconDto.name}, '%')
+        </if>
+        <if test="commonIconDto.iconPartition != null and commonIconDto.iconPartition != ''">
+            AND CI.ICON_PARTITION = #{commonIconDto.iconPartition}
+        </if>
         ORDER BY CI.CREATE_TIME DESC, CI.MODIFY_TIME DESC
     </sql>
     <select id="findPageCommonIcon" resultType="com.freesia.icon.entity.FindPageCommonIconEntity">
@@ -34,10 +39,4 @@
     <select id="findCommonIcon" resultType="com.freesia.icon.entity.FindCommonIconEntity">
         <include refid="findCommonIconSqlRef"/>
     </select>
-    <select id="findMaxOrderNumByIconPartition" resultType="java.lang.Integer">
-        SELECT MAX(CI.ORDER_NUM)
-        FROM common_icon CI
-        WHERE CI.ICON_PARTITION = #{iconPartition}
-    </select>
-
 </mapper>

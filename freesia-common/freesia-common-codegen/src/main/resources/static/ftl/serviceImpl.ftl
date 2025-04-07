@@ -49,7 +49,7 @@ public class ${dataBaseDto.className}ServiceImpl extends ServiceImpl<${dataBaseD
     public TableResult<${dataBaseDto.className}Dto> findPage${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto, PageQuery pageQuery) {
         LambdaQueryWrapper<${dataBaseDto.className}Po> wrapper = new LambdaQueryWrapper<${dataBaseDto.className}Po>()
                 .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}.getId());
+                .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}Dto.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}Dto.getId());
         Page<${dataBaseDto.className}Po> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, ${dataBaseDto.className}Dto.class));
     }

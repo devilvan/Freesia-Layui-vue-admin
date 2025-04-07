@@ -28,14 +28,6 @@ public interface CommonIconMapper extends BaseMapper<CommonIconPo> {
                                                       @Param(value = "page") Page<CommonIconPo> page);
 
     /**
-     * 根据图标所属分区查询当前最大的排序号
-     *
-     * @param iconPartition 图标所属分区
-     * @return 当前最大的排序号
-     */
-    Integer findMaxOrderNumByIconPartition(@Param("iconPartition") String iconPartition);
-
-    /**
      * 查询通用图标数据
      *
      * @param commonIconDto 查询入参

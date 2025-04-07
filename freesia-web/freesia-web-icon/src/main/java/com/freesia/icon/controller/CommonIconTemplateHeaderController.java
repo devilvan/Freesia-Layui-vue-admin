@@ -1,0 +1,98 @@
+package com.freesia.icon.controller;
+
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
+import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
+import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
+import com.freesia.icon.service.CommonIconTemplateHeaderService;
+import com.freesia.controller.BaseController;
+import com.freesia.util.UCopy;
+import com.freesia.vo.R;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+/**
+ * @author Evad.Wu
+ * @Description 通用图标模板头表 控制器
+ * @date 2025-04-07
+ */
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(value = "/common/commonIconTemplateHeaderController")
+@Tag(name = "CommonIconTemplateHeaderController", description = "通用图标模板头表 控制器")
+public class CommonIconTemplateHeaderController extends BaseController {
+    private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
+
+    /**
+     * 保存通用图标模板头表信息
+     *
+     * @param commonIconTemplateHeaderVo    待保存对象
+     * @return 形式返回
+     */
+    @Operation(summary = "保存通用图标模板头表信息")
+    @PostMapping(value = "saveUpdate")
+    public R<Void> saveUpdate(@RequestBody CommonIconTemplateHeaderVo commonIconTemplateHeaderVo) {
+        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
+        commonIconTemplateHeaderService.saveUpdate(commonIconTemplateHeaderDto);
+        return R.ok();
+    }
+
+    /**
+     * 批量保存通用图标模板头表信息
+     *
+     * @param commonIconTemplateHeaderVoList    待保存对象
+     * @return 形式返回
+     */
+    @Operation(summary = "保存通用图标模板头表信息")
+    @PostMapping(value = "saveUpdateBatch")
+    public R<Void> saveUpdateBatch(@RequestBody List<CommonIconTemplateHeaderVo> commonIconTemplateHeaderVoList) {
+        List<CommonIconTemplateHeaderDto> commonIconTemplateHeaderDtoList = UCopy.fullCopyList(commonIconTemplateHeaderVoList, CommonIconTemplateHeaderDto.class);
+        commonIconTemplateHeaderService.saveUpdateBatch(commonIconTemplateHeaderDtoList);
+        return R.ok();
+    }
+
+    /**
+     * 查询通用图标模板头表分页信息
+     *
+     * @param commonIconTemplateHeaderVo 查询条件
+     * @param pageQuery   分页条件
+     * @return 形式返回
+     */
+    @Operation(summary = "查询通用图标模板头表分页信息")
+    @GetMapping(value = "findPageCommonIconTemplateHeader")
+    public TableResult<CommonIconTemplateHeaderDto> findPageCommonIconTemplateHeader(CommonIconTemplateHeaderVo commonIconTemplateHeaderVo, PageQuery pageQuery) {
+        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
+        return commonIconTemplateHeaderService.findPageCommonIconTemplateHeader(commonIconTemplateHeaderDto, pageQuery);
+    }
+
+    /**
+     * 条件查询通用图标模板头表
+     *
+     * @param commonIconTemplateHeaderVo 查询条件
+     * @return 形式返回
+     */
+    @Operation(summary = "条件查询通用图标模板头表")
+    @GetMapping(value = "findCommonIconTemplateHeader")
+    public R<CommonIconTemplateHeaderDto> findCommonIconTemplateHeader(CommonIconTemplateHeaderVo commonIconTemplateHeaderVo) {
+        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
+        CommonIconTemplateHeaderDto tableResult = commonIconTemplateHeaderService.findCommonIconTemplateHeader(commonIconTemplateHeaderDto);
+        return R.ok(tableResult);
+    }
+
+    /**
+     * 删除通用图标模板头表
+     *
+     * @param idList 主键
+     * @return 形式返回
+     */
+    @Operation(summary = "删除通用图标模板头表")
+    @PostMapping(value = "deleteCommonIconTemplateHeader")
+    public R<Void> deleteCommonIconTemplateHeader(@RequestBody List<Long> idList) {
+        commonIconTemplateHeaderService.deleteCommonIconTemplateHeader(idList);
+        return R.ok();
+    }
+}

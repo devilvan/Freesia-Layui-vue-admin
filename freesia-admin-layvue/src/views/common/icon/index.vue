@@ -2,7 +2,7 @@
   <lay-container :fluid="true">
     <lay-card>
       <lay-form ref="queryFormRef" :model="searchQuery"
-                label-position="top">
+                label-position="top" @keydown.enter.prevent="toSearch">
         <lay-row :space="20">
           <lay-col :md="6">
             <lay-form-item label="图标名称" prop="name">
@@ -22,6 +22,7 @@
                   v-model="searchQuery.iconPartition"
                   :options="commonIconPartitionSelectList"
                   :items="commonIconPartitionSelectList"
+                  :placeholder="'请选择'"
                   :allow-clear="true"
               ></lay-select>
             </lay-form-item>
@@ -119,7 +120,7 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="showModalFlag" :area="['400px', '700px']" :title="saveModalTitle">
+    <lay-layer v-model="showModalFlag" :area="['400px', '700px']" :title="saveModalTitle" @success="modalStore.openModal" @end="modalStore.closeModal">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
         <lay-form ref="saveFormRef" :model="saveCommonIconVo" label-position="top">
           <lay-col :md="24">
@@ -175,14 +176,14 @@
         </lay-form>
         <div style="width: 100%; text-align: right">
           <lay-button size="sm" type="primary" @click="toSubmit(true)">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="saveToReset">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
     </lay-layer>
 
     <lay-layer v-model="showBatchSaveModalFlag" :area="['400px', '500px']" :title="batchSaveModalTitle">
-      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" @keydown.enter="toSubmit(false)" @keydown.esc="toCancel">
         <lay-form ref="batchSaveFormRef" :model="batchSaveCommonIconVo" label-position="top">
           <lay-col :md="24">
             <lay-row>
@@ -224,7 +225,7 @@
         </lay-form>
         <div style="width: 100%; text-align: right">
           <lay-button size="sm" type="primary" @click="batchSaveToSubmit(true)">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="saveBatchToReset">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -253,6 +254,7 @@ import {uploadTemp} from "@/api/system/Oss";
 import {SysOssEntity} from "@/types/system/Oss";
 import {getWeekdayCn} from "@/util/UDate";
 import {preview} from "@/util/UImage";
+import {useModalStore} from "@/layouts/composable/useModalStore";
 
 /* INIT*/
 onMounted(async () => {
@@ -263,6 +265,7 @@ onMounted(async () => {
 /* INIT*/
 
 /* VAR*/
+const modalStore = useModalStore()
 const searchQuery = ref<CommonIconVo>(<CommonIconVo>{})
 const pageQuery = reactive<PageQuery>({
   current: 1,
@@ -333,7 +336,7 @@ const change = () => {
   setTimeout(() => {
     loadDataSource()
     loading.value = false
-  }, 1000)
+  }, 200)
 }
 
 /**
@@ -505,11 +508,14 @@ function batchSaveToSubmit(clickFlag: boolean) {
 /**
  * 保存弹出框-重置
  */
-function toReset() {
-  saveFormRef.value.reset();
-  batchSaveFormRef.value.reset();
+function saveToReset() {
+  saveFormRef?.value.reset();
   previewIconList.value = []
+}
 
+function saveBatchToReset() {
+  batchSaveFormRef?.value.reset();
+  previewIconList.value = []
 }
 
 /**
