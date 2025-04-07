@@ -28,9 +28,6 @@ public class CommonIconVo extends BaseVo {
     @Schema(description = "图标所属分区")
     @JSONField(alternateNames = {"iconPartition"})
     private String iconPartition;
-    @Schema(description = "排序")
-    @JSONField(alternateNames = {"orderNum"})
-    private Integer orderNum;
     @Schema(description = "备注")
     @JSONField(alternateNames = {"remark"})
     private String remark;

@@ -24,8 +24,6 @@ public class CommonIconDto extends BaseDto {
     private Long fileId;
     @Schema(description = "图标所属分区")
     private String iconPartition;
-    @Schema(description = "排序")
-    private Integer orderNum;
     @Schema(description = "备注")
     private String remark;
 }

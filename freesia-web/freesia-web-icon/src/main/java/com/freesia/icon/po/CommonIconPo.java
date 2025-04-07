@@ -48,10 +48,6 @@ public class CommonIconPo extends BasePo implements Serializable {
     @TableField(value = "ICON_PARTITION")
     @Column(name = "ICON_PARTITION", columnDefinition = "VARCHAR(32) COMMENT '图标所属分区'")
     private String iconPartition;
-    @Schema(description = "排序")
-    @TableField(value = "ORDER_NUM")
-    @Column(name = "ORDER_NUM", columnDefinition = "INT(10) COMMENT '排序'")
-    private Integer orderNum;
     @Schema(description = "备注")
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(128) COMMENT '备注'")

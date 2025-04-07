@@ -1,6 +1,5 @@
 package com.freesia.icon.controller;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson2.JSONObject;
 import com.freesia.controller.BaseController;
@@ -163,17 +162,14 @@ public class CommonIconController extends BaseController {
 
     private List<CommonIconDto> buildCommonIconDtoList(List<SysOssDto> sysOssDtoList, CommonIconDto dto) {
         List<CommonIconDto> commonIconDtoList = new ArrayList<>();
-        Integer maxOrderNum = commonIconService.findMaxOrderNumByIconPartition(dto.getIconPartition());
-        maxOrderNum = Convert.toInt(10);
         for (SysOssDto sysOssDto : sysOssDtoList) {
-            CommonIconDto commonIconDto = buildCommonIconDto(dto, sysOssDto, maxOrderNum);
+            CommonIconDto commonIconDto = buildCommonIconDto(dto, sysOssDto);
             commonIconDtoList.add(commonIconDto);
-            maxOrderNum += 10;
         }
         return commonIconDtoList;
     }
 
-    private static CommonIconDto buildCommonIconDto(CommonIconDto dto, SysOssDto sysOssDto, Integer maxOrderNum) {
+    private static CommonIconDto buildCommonIconDto(CommonIconDto dto, SysOssDto sysOssDto) {
         CommonIconDto commonIconDto = new CommonIconDto();
         String originalName = sysOssDto.getOriginalName();
         int idx = originalName.lastIndexOf("/");
@@ -182,7 +178,6 @@ public class CommonIconController extends BaseController {
         commonIconDto.setName(name);
         commonIconDto.setFileId(sysOssDto.getId());
         commonIconDto.setIconPartition(dto.getIconPartition());
-        commonIconDto.setOrderNum(maxOrderNum);
         commonIconDto.setRemark(name);
         return commonIconDto;
     }

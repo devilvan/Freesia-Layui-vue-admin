@@ -381,7 +381,6 @@ const showSaveModal = (text: any, row: any) => {
           name: data?.name,
           fileId: data?.fileId,
           iconPartition: data?.iconPartition,
-          orderNum: data?.orderNum,
           remark: data?.remark,
         };
         previewIconList.value = []

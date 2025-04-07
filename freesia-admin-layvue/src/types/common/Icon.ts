@@ -6,7 +6,6 @@ export interface CommonIconVo extends BaseVo {
     name?: string;
     fileId?: string;
     iconPartition?: string;
-    orderNum?: number;
     remark?: string;
 }
 
@@ -14,7 +13,6 @@ export interface CommonIconEntity extends BaseEntity {
     name?: string;
     fileId?: string;
     iconPartition?: string;
-    orderNum?: number;
     remark?: string;
 
 }
@@ -29,7 +27,6 @@ export interface FindPageCommonIconEntity extends BaseEntity {
     fileId?: string;
     fileName?: string;
     iconPartition?: string;
-    orderNum?: number;
     remark?: string;
     url?: string;
 }
@@ -39,7 +36,6 @@ export interface FindCommonIconEntity extends BaseEntity {
     fileId?: string;
     fileName?: string;
     iconPartition?: string;
-    orderNum?: number;
     remark?: string;
     url?: string;
 }
