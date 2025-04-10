@@ -1,7 +1,10 @@
 package com.freesia.icon.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson2.JSONObject;
+import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
 import com.freesia.dto.SysOssDto;
 import com.freesia.icon.dto.CommonIconDto;
@@ -53,6 +56,10 @@ public class CommonIconController extends BaseController {
      */
     @Idempotent
     @Operation(summary = "保存通用图标表信息")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.COMMON_ICON_ADD),
+            @SaCheckPermission(value = MenuPermission.COMMON_ICON_EDIT),
+    })
     @PostMapping(value = "saveUpdate", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public R<CommonIconSaveUpdateEntity> saveUpdate(@RequestPart(value = "file[]", required = false) List<MultipartFile> fileList,
                                                     @RequestPart("commonIconVo") String request) {
@@ -102,6 +109,10 @@ public class CommonIconController extends BaseController {
      */
     @Idempotent
     @Operation(summary = "批量保存通用图标表信息")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.COMMON_ICON_ADD),
+            @SaCheckPermission(value = MenuPermission.COMMON_ICON_EDIT),
+    })
     @PostMapping(value = "saveUpdateBatch", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public R<Void> saveUpdateBatch(@NotNull @RequestPart("file[]") List<MultipartFile> fileList,
                                    @RequestPart("commonIconVo") String request) {
@@ -128,6 +139,7 @@ public class CommonIconController extends BaseController {
      */
     @Operation(summary = "查询通用图标表分页信息")
     @GetMapping(value = "findPageCommonIcon")
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
     public TableResult<FindPageCommonIconEntity> findPageCommonIcon(CommonIconVo commonIconVo, PageQuery pageQuery) {
         CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
         return commonIconService.findPageCommonIcon(commonIconDto, pageQuery);
@@ -141,6 +153,7 @@ public class CommonIconController extends BaseController {
      */
     @Operation(summary = "条件查询通用图标表")
     @GetMapping(value = "findCommonIcon")
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
     public R<FindCommonIconEntity> findCommonIcon(CommonIconVo commonIconVo) {
         CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
         FindCommonIconEntity tableResult = commonIconService.findCommonIcon(commonIconDto);
@@ -155,6 +168,7 @@ public class CommonIconController extends BaseController {
      */
     @Operation(summary = "删除通用图标表")
     @PostMapping(value = "deleteCommonIcon")
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_DELETE})
     public R<Void> deleteCommonIcon(@RequestBody List<Long> idList) {
         commonIconService.deleteCommonIcon(idList);
         return R.ok();

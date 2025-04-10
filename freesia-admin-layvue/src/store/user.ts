@@ -156,7 +156,6 @@ function filterChildren(childrenMap: any, lastRouter = false) {
             if (el.component === RouterComponent.BLANK_LAYOUT && !lastRouter) {
                 el.children.forEach(c => {
                     c.path = el.path + '/' + c.path
-                    // c.path = '/' + c.path
                     if (c.children && c.children.length) {
                         children = children.concat(filterChildren(c.children, c))
                         return

@@ -60,4 +60,16 @@ export enum MenuPermission {
     COMMON_URL_ADD = "common:url:add",
     COMMON_URL_EDIT = "common:url:edit",
     COMMON_URL_DELETE = "common:url:delete",
+
+    /* 通用图标管理*/
+    COMMON_ICON_INDEX = "common:icon:index",
+    COMMON_ICON_ADD = "common:icon:add",
+    COMMON_ICON_EDIT = "common:icon:edit",
+    COMMON_ICON_DELETE = "common:icon:delete",
+    COMMON_ICON_UPLOAD_BATCH = "common:icon:uploadBatch",
+    COMMON_ICON_TEMPLATE_HEADER_INDEX = "common:iconTemplate:index",
+    COMMON_ICON_TEMPLATE_HEADER_ADD = "common:iconTemplate:add",
+    COMMON_ICON_TEMPLATE_HEADER_EDIT = "common:iconTemplate:edit",
+    COMMON_ICON_TEMPLATE_HEADER_DELETE = "common:iconTemplate:delete",
+    COMMON_ICON_TEMPLATE_HEADER_SETUP_DETAIL = "common:iconTemplate:setupDetail",
 }

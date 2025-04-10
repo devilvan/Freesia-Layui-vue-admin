@@ -662,7 +662,7 @@ const initLinkTreeSelect = {
   id: '-1'
 }
 const menuRuleComponentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
-const buttonRuleComponentRegex = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$"
+const buttonRuleComponentRegex = "^([A-Za-z0-9])+(:[A-Za-z0-9]*)+([A-Za-z0-9])$"
 const linkRuleComponentRegex = "(modal|blank)$|(([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$)"
 // const permsRegex = "([A-Za-z0-9$_])+(:[A-Za-z0-9$_]*)$"
 const permsRegex = "([A-Za-z0-9])+(:[A-Za-z0-9]*)$"

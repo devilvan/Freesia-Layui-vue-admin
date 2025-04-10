@@ -1,10 +1,14 @@
 package com.freesia.icon.controller;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.convert.Convert;
+import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
@@ -32,11 +36,16 @@ public class CommonIconTemplateHeaderController extends BaseController {
     /**
      * 保存通用图标模板头表信息
      *
-     * @param commonIconTemplateHeaderVo    待保存对象
+     * @param commonIconTemplateHeaderVo 待保存对象
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "保存通用图标模板头表信息")
     @PostMapping(value = "saveUpdate")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_HEADER_ADD),
+            @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_HEADER_EDIT),
+    })
     public R<Void> saveUpdate(@RequestBody CommonIconTemplateHeaderVo commonIconTemplateHeaderVo) {
         CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
         commonIconTemplateHeaderService.saveUpdate(commonIconTemplateHeaderDto);
@@ -46,11 +55,16 @@ public class CommonIconTemplateHeaderController extends BaseController {
     /**
      * 批量保存通用图标模板头表信息
      *
-     * @param commonIconTemplateHeaderVoList    待保存对象
+     * @param commonIconTemplateHeaderVoList 待保存对象
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "保存通用图标模板头表信息")
     @PostMapping(value = "saveUpdateBatch")
+    @SaCheckOr(permission = {
+            @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_HEADER_ADD),
+            @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_HEADER_EDIT),
+    })
     public R<Void> saveUpdateBatch(@RequestBody List<CommonIconTemplateHeaderVo> commonIconTemplateHeaderVoList) {
         List<CommonIconTemplateHeaderDto> commonIconTemplateHeaderDtoList = UCopy.fullCopyList(commonIconTemplateHeaderVoList, CommonIconTemplateHeaderDto.class);
         commonIconTemplateHeaderService.saveUpdateBatch(commonIconTemplateHeaderDtoList);
@@ -61,11 +75,12 @@ public class CommonIconTemplateHeaderController extends BaseController {
      * 查询通用图标模板头表分页信息
      *
      * @param commonIconTemplateHeaderVo 查询条件
-     * @param pageQuery   分页条件
+     * @param pageQuery                  分页条件
      * @return 形式返回
      */
     @Operation(summary = "查询通用图标模板头表分页信息")
     @GetMapping(value = "findPageCommonIconTemplateHeader")
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_INDEX})
     public TableResult<CommonIconTemplateHeaderDto> findPageCommonIconTemplateHeader(CommonIconTemplateHeaderVo commonIconTemplateHeaderVo, PageQuery pageQuery) {
         CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
         return commonIconTemplateHeaderService.findPageCommonIconTemplateHeader(commonIconTemplateHeaderDto, pageQuery);
@@ -79,6 +94,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
      */
     @Operation(summary = "条件查询通用图标模板头表")
     @GetMapping(value = "findCommonIconTemplateHeader")
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_INDEX})
     public R<CommonIconTemplateHeaderDto> findCommonIconTemplateHeader(CommonIconTemplateHeaderVo commonIconTemplateHeaderVo) {
         CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
         CommonIconTemplateHeaderDto tableResult = commonIconTemplateHeaderService.findCommonIconTemplateHeader(commonIconTemplateHeaderDto);
@@ -93,6 +109,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
      */
     @Operation(summary = "删除通用图标模板头表")
     @PostMapping(value = "deleteCommonIconTemplateHeader")
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_DELETE})
     public R<Void> deleteCommonIconTemplateHeader(@RequestBody List<Long> idList) {
         commonIconTemplateHeaderService.deleteCommonIconTemplateHeader(idList);
         return R.ok();

@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 通用图标模板头表 映射
- * @date 2025-04-07
+ * @date 2025-04-10
  */
 @Setter
 @Getter
@@ -48,4 +48,8 @@ public class CommonIconTemplateHeaderPo extends BasePo implements Serializable {
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(128) COMMENT '备注'")
     private String remark;
+    @Schema(description = "所属用户ID")
+    @TableField(value = "USER_ID")
+    @Column(name = "USER_ID", columnDefinition = "BIGINT(19) NOT NULL COMMENT '所属用户ID'")
+    private Long userId;
 }

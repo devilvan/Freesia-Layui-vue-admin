@@ -3,18 +3,14 @@
     <lay-card>
       <lay-form ref="queryFormRef" :model="searchQuery"
                 label-position="top" @keydown.enter.prevent="toSearch">
-        <lay-row :space="20">
-          <lay-col :md="6">
-            <lay-form-item label="模板名称" prop="name">
-              <lay-input
-                  v-model="searchQuery.name"
-                  :allow-clear="true"
-                  placeholder="请输入"
-                  size="sm"
-              ></lay-input>
-            </lay-form-item>
-          </lay-col>
-        </lay-row>
+        <lay-form-item label="模板名称" prop="name">
+          <lay-input
+              v-model="searchQuery.name"
+              :allow-clear="true"
+              placeholder="请输入"
+              size="sm"
+          ></lay-input>
+        </lay-form-item>
       </lay-form>
     </lay-card>
     <!-- table -->
@@ -41,18 +37,13 @@
           </lay-tooltip>
         </template>
         <template v-slot:toolbar>
-          <lay-button size="sm" type="normal" @click="toSearch"
-                      v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_INDEX]">查询
-          </lay-button>
-          <lay-button size="sm" @click="queryFormReset"
-                      v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_INDEX]">重置
-          </lay-button>
-          <lay-button size="sm" type="primary" @click="showSaveModal(Operate.ADD, null)"
-                      v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_ADD]">
+          <lay-button size="sm" type="normal" @click="toSearch">查询</lay-button>
+          <lay-button size="sm" @click="queryFormReset">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="showSaveModal(Operate.ADD, null)">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
-          <lay-button size="sm" @click="toRemove" v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_DELETE]">
+          <lay-button size="sm" @click="toRemove">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
@@ -62,30 +53,18 @@
               border="green"
               border-style="dashed"
               size="xs"
-              @click="showSaveModal(Operate.EDIT, row)"
-              v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_EDIT]">编辑
-          </lay-button>
-          <lay-button
-              border="blue"
-              border-style="dashed"
-              size="xs"
-              @click="setupDetail(row.id)"
-              v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_SETUP_DETAIL]">
-            设置模板
+              @click="showSaveModal(Operate.EDIT, row)">编辑
           </lay-button>
           <lay-button
               border="orange"
               border-style="dashed"
               size="xs"
-              @click="showSaveModal(Operate.COPY, row)"
-              v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_ADD, $MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_EDIT]">
-            复制
+              @click="showSaveModal(Operate.COPY, row)">复制
           </lay-button>
           <lay-popconfirm
               content="确定要删除吗?"
               @cancel="cancel"
-              @confirm="confirm(row)"
-              v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_HEADER_DELETE]">
+              @confirm="confirm(row)">
             <lay-button border="red"
                         border-style="dashed"
                         size="xs">删除
@@ -134,7 +113,7 @@
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
-  name: "IconTemplate",
+  name: "IconTemplateDetail",
 };
 </script>
 <script lang="ts" setup>
@@ -153,17 +132,18 @@ import {
   findPageCommonIconTemplateHeader, saveUpdate
 } from "@/api/common/icon/template/IconTemplateHeader";
 import {getWeekdayCn} from "@/util/UDate";
-import router from "@/router";
-import app from "@/main";
+import {useRoute} from "vue-router";
 
 /* INIT*/
 onMounted(async () => {
+  iconId.value = $route.params && $route.params.roleId as string;
   change()
 })
 /* INIT*/
 
 /* VAR*/
-const $MENU_PERMISSION = app.config.globalProperties.$MENU_PERMISSION
+const $route = useRoute();
+const iconId = ref<string>('');
 const searchQuery = ref<CommonIconTemplateHeaderVo>({})
 const pageQuery = reactive<PageQuery>({
   current: 1,
@@ -371,10 +351,6 @@ function confirm(row: any) {
 
 function cancel() {
   layer.msg('您已取消操作')
-}
-
-function setupDetail(id: any) {
-  router.push("/common/iconTemplate/iconTemplateDetail/" + id)
 }
 
 /* FUNCTION*/

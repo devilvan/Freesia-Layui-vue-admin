@@ -66,16 +66,17 @@
               size="sm"
               type="normal"
               @click="toSearch"
+              v-permission="[$MENU_PERMISSION.COMMON_ICON_INDEX]"
           >
             查询
           </lay-button>
-          <lay-button size="sm" @click="queryFormReset"
-          > 重置
+          <lay-button size="sm" @click="queryFormReset" v-permission="[$MENU_PERMISSION.COMMON_ICON_INDEX]"> 重置
           </lay-button>
           <lay-button
               size="sm"
               type="primary"
               @click="showSaveModal(Operate.ADD, null)"
+              v-permission="[$MENU_PERMISSION.COMMON_ICON_ADD]"
           >
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
@@ -83,13 +84,15 @@
           <lay-button
               size="sm"
               type="normal"
-              @click="showBatchSaveModal(Operate.ADD, null)"
+              @click="showBatchSaveModal(Operate.ADD)"
+              v-permission="[$MENU_PERMISSION.COMMON_ICON_UPLOAD_BATCH]"
           >
             <lay-icon class="layui-icon"></lay-icon>
             批量上传
           </lay-button>
           <lay-button size="sm"
-                      @click="toRemove">
+                      @click="toRemove"
+                      v-permission="[$MENU_PERMISSION.COMMON_ICON_DELETE]">
             <lay-icon class="layui-icon-delete"></lay-icon>
             删除
           </lay-button>
@@ -99,13 +102,16 @@
               border="green"
               border-style="dashed"
               size="xs"
-              @click="showSaveModal(Operate.EDIT, row)">编辑
+              @click="showSaveModal(Operate.EDIT, row)"
+              v-permission="[$MENU_PERMISSION.COMMON_ICON_EDIT]">
+            编辑
           </lay-button>
           <lay-button
               border="orange"
               border-style="dashed"
               size="xs"
-              @click="showSaveModal(Operate.COPY, row)">复制
+              @click="showSaveModal(Operate.COPY, row)"
+              v-permission="[$MENU_PERMISSION.COMMON_ICON_ADD,$MENU_PERMISSION.COMMON_ICON_EDIT]">复制
           </lay-button>
           <lay-popconfirm
               content="确定要删除吗?"
@@ -113,14 +119,17 @@
               @confirm="confirm(row)">
             <lay-button border="red"
                         border-style="dashed"
-                        size="xs">删除
+                        size="xs"
+                        v-permission="[$MENU_PERMISSION.COMMON_ICON_DELETE]">
+              删除
             </lay-button>
           </lay-popconfirm>
         </template>
       </lay-table>
     </div>
 
-    <lay-layer v-model="showModalFlag" :area="['400px', '700px']" :title="saveModalTitle" @success="modalStore.openModal" @end="modalStore.closeModal">
+    <lay-layer v-model="showModalFlag" :area="['400px', '700px']" :title="saveModalTitle"
+               @success="modalStore.openModal" @end="modalStore.closeModal">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
         <lay-form ref="saveFormRef" :model="saveCommonIconVo" label-position="top">
           <lay-col :md="24">
@@ -249,12 +258,19 @@ import {Operate} from "@/types/Constants";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {CommonIconEntity, CommonIconVo, FindCommonIconEntity, FindPageCommonIconEntity} from "@/types/common/icon/Icon";
-import {deleteCommonIcon, findCommonIcon, findPageCommonIcon, saveUpdate, saveUpdateBatch} from "@/api/common/icon/Icon";
+import {
+  deleteCommonIcon,
+  findCommonIcon,
+  findPageCommonIcon,
+  saveUpdate,
+  saveUpdateBatch
+} from "@/api/common/icon/Icon";
 import {uploadTemp} from "@/api/system/Oss";
 import {SysOssEntity} from "@/types/system/Oss";
 import {getWeekdayCn} from "@/util/UDate";
 import {preview} from "@/util/UImage";
 import {useModalStore} from "@/layouts/composable/useModalStore";
+import app from "@/main";
 
 /* INIT*/
 onMounted(async () => {
@@ -265,6 +281,7 @@ onMounted(async () => {
 /* INIT*/
 
 /* VAR*/
+const $MENU_PERMISSION = app.config.globalProperties.$MENU_PERMISSION
 const modalStore = useModalStore()
 const searchQuery = ref<CommonIconVo>(<CommonIconVo>{})
 const pageQuery = reactive<PageQuery>({

@@ -1,9 +1,7 @@
-import Login from '../../views/login/index.vue'
-import BaseLayout from "../../layouts/BaseLayout.vue";
-import ErrorCode from "../../views/error/ErrorCode.vue";
-import {MenuPermission} from "../../types/Permission";
-
-// const modules = import.meta.glob('./../../views/**/*.vue')
+import Login from '@/views/login/index.vue'
+import BaseLayout from "@/layouts/BaseLayout.vue";
+import ErrorCode from "@/views/error/ErrorCode.vue";
+import {MenuPermission} from "@/types/Permission";
 
 export const constantRoutes = [
     {
@@ -102,6 +100,20 @@ export const dynamicRoutes = [
                 component: () => import('@/views/system/dept/assignRole.vue'),
                 name: 'DeptAssignRole',
                 meta: {title: '分配用户', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
+    {
+        path: '/common/iconTemplate',
+        component: BaseLayout,
+        hidden: true,
+        // permissions: [MenuPermission.COMMON_ICON_TEMPLATE_HEADER_INDEX],
+        children: [
+            {
+                path: 'iconTemplateDetail/:iconId(\\d+)',
+                component: () => import('@/views/common/iconTemplate/iconTemplateDetail.vue'),
+                name: 'IconTemplateDetail',
+                meta: {title: '图标模板明细', affix: false, cache: false, closable: true}
             }
         ]
     },

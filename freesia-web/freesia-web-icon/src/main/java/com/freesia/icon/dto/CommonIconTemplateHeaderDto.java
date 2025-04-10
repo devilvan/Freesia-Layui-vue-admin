@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 通用图标模板头表 数据传输对象
- * @date 2025-04-07
+ * @date 2025-04-10
  */
 @Data
 @NoArgsConstructor
@@ -24,4 +24,6 @@ public class CommonIconTemplateHeaderDto extends BaseDto {
     private Integer orderNum;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "所属用户ID")
+    private Long userId;
 }
