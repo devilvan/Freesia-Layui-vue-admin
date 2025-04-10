@@ -32,7 +32,7 @@ public interface CommonIconTemplateHeaderService {
      * 查询通用图标模板头表信息
      *
      * @param commonIconTemplateHeaderDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery                   分页条件
      * @return 分页信息
      */
     TableResult<CommonIconTemplateHeaderDto> findPageCommonIconTemplateHeader(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto, PageQuery pageQuery);
@@ -51,4 +51,11 @@ public interface CommonIconTemplateHeaderService {
      * @param idList 主键
      */
     void deleteCommonIconTemplateHeader(List<Long> idList);
+
+    /**
+     * 查询最大排序号
+     *
+     * @return 最大排序号
+     */
+    Integer findMaxOrderNum();
 }

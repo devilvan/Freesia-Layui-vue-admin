@@ -12,5 +12,10 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface CommonIconTemplateHeaderMapper extends BaseMapper<CommonIconTemplateHeaderPo> {
-
+    /**
+     * 查询最大排序号
+     *
+     * @return 最大排序号
+     */
+    Integer findMaxOrderNum();
 }

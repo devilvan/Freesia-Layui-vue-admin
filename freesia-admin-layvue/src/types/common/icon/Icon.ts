@@ -1,4 +1,4 @@
-import {saveUpdate} from "@/api/common/Icon";
+import {saveUpdate} from "@/api/common/icon/Icon";
 import {SysOssEntity} from "@/types/system/Oss";
 import {BaseEntity, BaseVo} from "@/types/Common";
 

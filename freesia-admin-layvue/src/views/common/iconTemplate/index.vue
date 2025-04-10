@@ -3,42 +3,14 @@
     <lay-card>
       <lay-form ref="queryFormRef" :model="searchQuery"
                 label-position="top" @keydown.enter.prevent="toSearch">
-        <lay-row :space="20">
-          <lay-col :md="6">
-            <lay-form-item label="预算描述" prop="budgetDesc">
-              <lay-input
-                  v-model="searchQuery.budgetDesc"
-                  :allow-clear="true"
-                  placeholder="请输入"
-                  size="sm"
-              ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="预算日期类型" prop="budgetType">
-              <lay-select
-                  size="sm"
-                  style="width: 100%"
-                  v-model="searchQuery.budgetType"
-                  :options="accountBudgetDurationTypeSelectList"
-                  :items="accountBudgetDurationTypeSelectList"
-                  :allow-clear="true"
-              ></lay-select>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="时间范围从" prop="durationFrom">
-              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationFrom"
-                               allow-clear></lay-date-picker>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="时间范围到" prop="durationTo">
-              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationTo"
-                               allow-clear></lay-date-picker>
-            </lay-form-item>
-          </lay-col>
-        </lay-row>
+        <lay-form-item label="模板名称" prop="name">
+          <lay-input
+              v-model="searchQuery.name"
+              :allow-clear="true"
+              placeholder="请输入"
+              size="sm"
+          ></lay-input>
+        </lay-form-item>
       </lay-form>
     </lay-card>
     <!-- table -->
@@ -50,35 +22,24 @@
           :default-toolbar="defaultToolbarFlag"
           :loading="loading"
           :page="pageQuery"
-          :height="'550px'"
           :even="evenFlag"
           @change="change"
           @sortChange="sortChange">
+        <template #createTime="{ row }">
+          {{ row.createTime }} （{{ getWeekdayCn(row.createTime) }}）
+        </template>
+        <template #modifyTime="{ row }">
+          {{ row.modifyTime }} （{{ getWeekdayCn(row.modifyTime) }}）
+        </template>
         <template #remark="{ row }">
           <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
             <div class="oneRow">{{ row.remark }}</div>
           </lay-tooltip>
         </template>
-        <template #budgetType="{ row }">
-          <dict-scan :options="accountBudgetDurationTypeSelect" :value="row.budgetType"/>
-        </template>
         <template v-slot:toolbar>
-          <lay-button
-              size="sm"
-
-              type="normal"
-              @click="toSearch"
-          >
-            查询
-          </lay-button>
-          <lay-button size="sm" @click="queryFormReset"
-          > 重置
-          </lay-button>
-          <lay-button
-              size="sm"
-              type="primary"
-              @click="showSaveModal(Operate.ADD, null)"
-          >
+          <lay-button size="sm" type="normal" @click="toSearch">查询</lay-button>
+          <lay-button size="sm" @click="queryFormReset">重置</lay-button>
+          <lay-button size="sm" type="primary" @click="showSaveModal(Operate.ADD, null)">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
@@ -113,71 +74,30 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="showModalFlag" :area="['1200px']" :title="saveModalTitle">
+    <lay-layer v-model="showSaveModalFlag" :area="['300px']" :title="saveModalTitle">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" :rules="saveFromRules" label-position="top">
-          <lay-row :space="20">
-            <lay-col :md="6">
-              <lay-form-item label="预算描述" prop="budgetDesc" required>
-                <lay-input
-                    v-model="saveAccountBudgetVo.budgetDesc"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="预算金额" prop="outlay" required>
-                <lay-input
-                    v-model="saveAccountBudgetVo.outlay"
-                    :allow-clear="true"
-                    type="number"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="预算日期类型" prop="budgetType" required>
-                <lay-select
-                    size="sm"
-                    style="width: 100%"
-                    v-model="saveAccountBudgetVo.budgetType"
-                    :options="accountBudgetDurationTypeSelectList"
-                    :items="accountBudgetDurationTypeSelectList"
-                    :allow-clear="true"
-                    @change="saveBudgetTypeChange"
-                ></lay-select>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
-          <lay-row :space="20">
-            <lay-col :md="6">
-              <lay-form-item label="时间范围从"
-                             :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
-                             prop="durationFrom" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
-                             :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationFrom"
-                                 allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="时间范围到"
-                             :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
-                             prop="durationTo" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
-                             :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
-                                 allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="备注" prop="remark">
-                <lay-textarea
-                    v-model="saveAccountBudgetVo.remark"
-                    allow-clear
-                ></lay-textarea>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
+        <lay-form ref="saveFormRef" :model="saveVo" label-position="top">
+          <lay-form-item label="模板名称" prop="name">
+            <lay-input
+                v-model="saveVo.name"
+                :allow-clear="true"
+                placeholder="请输入"
+                size="sm"
+            ></lay-input>
+          </lay-form-item>
+          <lay-form-item label="排序号" prop="orderNum">
+            <lay-input-number
+                style="width: 100%"
+                v-model="saveVo.orderNum"
+                position="right"
+            ></lay-input-number>
+          </lay-form-item>
+          <lay-form-item label="备注" prop="remark">
+            <lay-textarea
+                v-model="saveVo.remark"
+                allow-clear
+            ></lay-textarea>
+          </lay-form-item>
         </lay-form>
         <div style="width: 100%; text-align: right">
           <lay-button size="sm" type="primary" @click="toSubmit(true)">保存</lay-button>
@@ -200,37 +120,39 @@ export default {
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
-import {TableResult} from "@/types/Result";
-import {deleteAccountBudget, findPageAccountBudget} from "@/api/account/AccountBudget";
-import {AccountBudgetEntity, AccountBudgetVo} from "@/types/account/AccountBudget";
+import {R, TableResult} from "@/types/Result";
 import {Operate} from "@/types/Constants";
-import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
-import {SysDictValueEntity} from "@/types/system/Dict";
-import {findAccountBudget, saveUpdate} from "@/api/account/AccountBudget";
+import {
+  CommonIconTemplateHeaderEntity,
+  CommonIconTemplateHeaderVo
+} from "@/types/common/icon/template/IconTemplateHeader";
+import {
+  deleteCommonIconTemplateHeader,
+  findCommonIconTemplateHeader, findMaxOrderNum,
+  findPageCommonIconTemplateHeader, saveUpdate
+} from "@/api/common/icon/template/IconTemplateHeader";
+import {getWeekdayCn} from "@/util/UDate";
 
 /* INIT*/
 onMounted(async () => {
-  accountBudgetDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
-  accountBudgetDurationTypeSelectList.value = await sysDictValueSelect(accountBudgetDurationTypeSelect.value)
-  loadDataSource()
+  change()
 })
 /* INIT*/
 
 /* VAR*/
-const searchQuery = ref<AccountBudgetVo>({})
+const searchQuery = ref<CommonIconTemplateHeaderVo>({})
 const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const dataSource = ref<Array<AccountBudgetEntity>>()
+const dataSource = ref<Array<CommonIconTemplateHeaderEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '预算描述', width: '130px', key: 'budgetDesc', fixed: 'left'},
-  {title: '预算金额', width: '130px', key: 'outlay', sort: 'desc'},
-  {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
-  {title: '时间范围从', width: '130px', key: 'durationFrom'},
-  {title: '时间范围到', width: '130px', key: 'durationTo'},
+  {title: '模板名称', width: '130px', key: 'name', fixed: 'left'},
+  {title: '排序', width: '80px', key: 'orderNum', sort: 'asc'},
+  {title: '创建时间', width: '180px', key: 'createTime', customSlot: 'createTime', sort: 'desc'},
+  {title: '修改时间', width: '180px', key: 'modifyTime', customSlot: 'modifyTime', sort: 'desc'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -243,24 +165,11 @@ const columns = ref([
 const loading = ref(true)
 const defaultToolbarFlag = ref(true)
 const evenFlag = ref(true)
-const showModalFlag = ref(false)
+const showSaveModalFlag = ref(false)
 const saveModalTitle = ref('');
 const saveFormRef = ref(null)
-const saveAccountBudgetVo = ref<AccountBudgetVo>(<AccountBudgetVo>{})
+const saveVo = ref<CommonIconTemplateHeaderVo>(<CommonIconTemplateHeaderVo>{})
 const queryFormRef = ref(null)
-const accountBudgetDurationTypeSelect = ref<Array<SysDictValueEntity>>(<Array<SysDictValueEntity>>[]);
-const accountBudgetDurationTypeSelectList = ref();
-const saveFromRules = ref({
-  outlay: {
-    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
-      if (value <= 0) {
-        callback(new Error("金额不能为0"));
-      } else {
-        return true;
-      }
-    }
-  },
-})
 /* VAR*/
 
 /* FUNCTION*/
@@ -268,7 +177,7 @@ const saveFromRules = ref({
  * 初始化表格
  */
 const loadDataSource = () => {
-  findPageAccountBudget(searchQuery.value, pageQuery).then((res: TableResult<AccountBudgetEntity>) => {
+  findPageCommonIconTemplateHeader(searchQuery.value, pageQuery).then((res: TableResult<CommonIconTemplateHeaderEntity>) => {
     if (res.code == 200) {
       pageQuery.total = res.total;
       dataSource.value = res.rows
@@ -321,20 +230,31 @@ function queryFormReset() {
 const showSaveModal = (text: any, row: any) => {
   saveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
   if (row != null) {
-    saveAccountBudgetVo.value = {...row}
+    saveVo.value = {...row}
   }
   if (Operate.EDIT === text) {
-    findAccountBudget({
+    findCommonIconTemplateHeader({
       id: row.id
     }).then((res: any) => {
       if (res.code === 200) {
-        saveAccountBudgetVo.value = res.data;
+        saveVo.value = res.data;
       }
     })
   } else if (Operate.ADD === text) {
+    findMaxOrderNum().then((res: R<number>) => {
+      saveVo.value.orderNum = res.data
+    })
   } else if (Operate.COPY === text) {
+    findCommonIconTemplateHeader({
+      id: row.id
+    }).then((res: any) => {
+      saveVo.value = res.data;
+      findMaxOrderNum().then((res: R<number>) => {
+        saveVo.value.orderNum = res.data
+      })
+    })
   }
-  showModalFlag.value = !showModalFlag.value
+  showSaveModalFlag.value = !showSaveModalFlag.value
 }
 
 /**
@@ -351,7 +271,7 @@ function toRemove() {
       {
         text: '确定',
         callback: (id: any) => {
-          deleteAccountBudget(selectedKeys.value).then((res: any) => {
+          deleteCommonIconTemplateHeader(selectedKeys.value).then((res: any) => {
             if (res.code === 200) {
               layer.msg('删除成功')
             }
@@ -378,20 +298,20 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   saveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      saveUpdate(saveAccountBudgetVo.value).then((res: any) => {
+      saveUpdate(saveVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
-          saveAccountBudgetVo.value = {};
+          saveVo.value = {};
           if (clickFlag) {
-            showModalFlag.value = false
+            showSaveModalFlag.value = false
           } else {
             // 如果是修改+回车，则关闭窗口
-            if (saveAccountBudgetVo.id && saveAccountBudgetVo.id != 0) {
-              showModalFlag.value = false
+            if (saveVo.id && saveVo.id != 0) {
+              showSaveModalFlag.value = false
             }
           }
-          showModalFlag.value = false
+          showSaveModalFlag.value = false
         }
       })
     }
@@ -409,20 +329,12 @@ function toReset() {
  * 保存弹出框-取消
  */
 function toCancel() {
-  showModalFlag.value = false
-}
-
-function saveBudgetTypeChange(value: any) {
-  if (!value || value !== 'CUSTOM') {
-    // 如果不是自定义则时间范围置空
-    saveAccountBudgetVo.value.durationFrom = null;
-    saveAccountBudgetVo.value.durationTo = null;
-  }
+  showSaveModalFlag.value = false
 }
 
 function confirm(row: any) {
   if (row) {
-    deleteAccountBudget([row.id]).then((res: any) => {
+    deleteCommonIconTemplateHeader([row.id]).then((res: any) => {
       if (res.code === 200) {
         layer.msg('删除成功')
       }

@@ -1,4 +1,4 @@
-import Http from "../Http";
+import Http from "../../Http";
 import {PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
@@ -8,7 +8,7 @@ import {
     CommonIconVo,
     FindCommonIconEntity,
     FindPageCommonIconEntity
-} from "@/types/common/Icon";
+} from "@/types/common/icon/Icon";
 
 export function saveUpdate(fileList: File[], commonIconVo: CommonIconVo): Promise<R<CommonIconSaveUpdateEntity>> {
     let param = {

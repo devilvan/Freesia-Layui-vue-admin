@@ -1,17 +1,19 @@
 package com.freesia.icon.controller;
 
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
-import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
+import cn.hutool.core.convert.Convert;
+import com.freesia.controller.BaseController;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
-import com.freesia.controller.BaseController;
+import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -94,5 +96,14 @@ public class CommonIconTemplateHeaderController extends BaseController {
     public R<Void> deleteCommonIconTemplateHeader(@RequestBody List<Long> idList) {
         commonIconTemplateHeaderService.deleteCommonIconTemplateHeader(idList);
         return R.ok();
+    }
+
+    @Validated
+    @Operation(summary = "查询自增排序号")
+    @GetMapping(value = "findMaxOrderNum")
+    public R<Integer> findMaxOrderNum() {
+        int maxOrderNum = Convert.toInt(commonIconTemplateHeaderService.findMaxOrderNum(), 0);
+        maxOrderNum = (maxOrderNum / 10) * 10 + 10;
+        return R.ok(maxOrderNum);
     }
 }

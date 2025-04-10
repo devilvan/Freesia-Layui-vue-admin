@@ -4,20 +4,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
+import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
+import com.freesia.icon.mapper.CommonIconTemplateHeaderMapper;
+import com.freesia.icon.po.CommonIconTemplateHeaderPo;
+import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
+import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
-import com.freesia.icon.po.CommonIconTemplateHeaderPo;
-import com.freesia.icon.service.CommonIconTemplateHeaderService;
-import com.freesia.icon.mapper.CommonIconTemplateHeaderMapper;
-import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -29,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconTemplateHeaderMapper, CommonIconTemplateHeaderPo> implements CommonIconTemplateHeaderService {
     private final CommonIconTemplateHeaderRepository commonIconTemplateHeaderRepository;
+    private final CommonIconTemplateHeaderMapper commonIconTemplateHeaderMapper;
 
     @Override
     public CommonIconTemplateHeaderDto saveUpdate(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto) {
@@ -66,5 +66,10 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
     @Transactional(rollbackFor = Exception.class)
     public void deleteCommonIconTemplateHeader(List<Long> idList) {
         removeBatchByIds(idList);
+    }
+
+    @Override
+    public Integer findMaxOrderNum() {
+        return commonIconTemplateHeaderMapper.findMaxOrderNum();
     }
 }
