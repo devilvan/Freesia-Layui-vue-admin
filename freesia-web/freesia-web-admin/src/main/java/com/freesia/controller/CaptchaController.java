@@ -7,6 +7,7 @@ import cn.hutool.core.util.IdUtil;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.CaptchaType;
 import com.freesia.constant.Constants;
+import com.freesia.constant.SysConfigConstant;
 import com.freesia.dto.CaptchaCodeDto;
 import com.freesia.properties.CaptchaProperties;
 import com.freesia.service.SysConfigService;
@@ -43,7 +44,8 @@ public class CaptchaController extends BaseController {
     @GetMapping("getCaptchaCode")
     public R<CaptchaCodeDto> getCaptchaCode() {
         CaptchaCodeDto captchaCodeDto = new CaptchaCodeDto();
-        boolean captchaEnabled = sysConfigService.findCaptchaEnabled();
+        String configValue = sysConfigService.findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        boolean captchaEnabled = Boolean.parseBoolean(configValue);
         captchaCodeDto.setEnabled(captchaEnabled);
         if (!captchaEnabled) {
             return R.ok(captchaCodeDto);

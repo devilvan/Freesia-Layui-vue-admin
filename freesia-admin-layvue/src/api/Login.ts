@@ -1,4 +1,5 @@
 import Http from "./Http";
+import {R} from "@/types/Result";
 
 const sseDisconnectUrl = import.meta.env.VITE_SSE_DISCONNECT_URL
 
@@ -33,4 +34,8 @@ export const logout = function () {
 
 export const sseDisconnect = function () {
     return Http.get(sseDisconnectUrl)
+}
+
+export function findCaptchaEnabled(): Promise<R<boolean>> {
+    return Http.get("/api/sysLoginController/findCaptchaEnabled");
 }

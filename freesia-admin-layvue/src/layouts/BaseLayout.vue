@@ -231,6 +231,9 @@ import app from "../main";
 import {layer} from "@layui/layui-vue";
 import {EventSourcePolyfill} from "event-source-polyfill";
 import {sseDisconnect} from "../api/Login";
+import {findConfigByKey} from "@/api/system/Config";
+import {SysConfigKey} from "@/types/system/Config";
+import {R} from "@/types/Result";
 
 export default {
   components: {
@@ -257,7 +260,7 @@ export default {
                 : '220px'
     )
     const sseConnectUrl = import.meta.env.VITE_SSE_CONNECT_URL
-    const bootstrapImageUrl = '/不要停下来啊.png';
+    const bootstrapImageUrl = ref<string | undefined>(<string>'/不要停下来啊.png');
     const {
       selectedKey,
       openKeys,
@@ -275,6 +278,9 @@ export default {
         appStore.collapse = true
       }
       userInfoStore.getMenu()
+      findConfigByKey(SysConfigKey.HOME_ICON_URL).then((res: R<string>) => {
+        bootstrapImageUrl.value = res.data
+      })
     })
 
     const changeVisible = () => {

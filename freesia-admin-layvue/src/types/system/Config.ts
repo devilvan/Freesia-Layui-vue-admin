@@ -1,5 +1,15 @@
 import {BaseEntity, BaseVo} from "../Common";
 
+/**
+ * 系统配置项 枚举类
+ */
+export enum SysConfigKey {
+    /**
+     * 首页图标URL
+     */
+    HOME_ICON_URL = "home.icon.url"
+}
+
 export interface SysConfigVo extends BaseVo {
     configName?: string;
     configKey?: string;

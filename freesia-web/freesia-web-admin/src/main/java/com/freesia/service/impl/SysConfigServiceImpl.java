@@ -60,15 +60,6 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     }
 
     @Override
-    public boolean findCaptchaEnabled() {
-        String captchaEnabled = USpring.getAopProxy(this).findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
-        if (UEmpty.isEmpty(captchaEnabled)) {
-            return true;
-        }
-        return Convert.toBool(captchaEnabled, false);
-    }
-
-    @Override
     @Cacheable(cacheNames = CacheConstant.SYS_CONFIG, key = "#configKey")
     public String findConfigByKey(String configKey) {
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
@@ -84,7 +75,9 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public void validateCaptcha(String username, String code, String captchaKey) {
-        if (findCaptchaEnabled()) {
+        String captchaEnabled = USpring.getAopProxy(this).findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        boolean flag = Convert.toBool(captchaEnabled, false);
+        if (flag) {
             checkCaptcha(username, code, captchaKey);
         }
     }

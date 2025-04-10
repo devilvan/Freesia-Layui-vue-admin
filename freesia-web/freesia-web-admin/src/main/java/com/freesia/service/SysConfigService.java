@@ -31,14 +31,6 @@ public interface SysConfigService {
     List<SysConfigPo> saveUpdateBatch(List<SysConfigDto> list);
 
     /**
-     * 查询验证码开关，并保存到缓存中
-     * 编码：{@link com.freesia.constant.SysConfigConstant#SYS_ACCOUNT_CAPTCHA_ENABLED}
-     *
-     * @return 开启/关闭
-     */
-    boolean findCaptchaEnabled();
-
-    /**
      * 查询全局配置表中是否启用注册功能
      *
      * @param configKey config键，{@link com.freesia.constant.SysConfigConstant#SYS_ACCOUNT_REGISTER_USER}

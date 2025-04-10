@@ -2,11 +2,10 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.util.ObjectUtil;
-import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysConfigDto;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysConfigService;
@@ -34,20 +33,20 @@ import javax.validation.Valid;
 public class SysConfigController extends BaseController {
     private final SysConfigService sysConfigService;
 
-    @SaIgnore
-    @Operation(summary = "查询验证码启用状态")
-    @GetMapping(value = "findCaptchaEnabled")
-    public R<Boolean> findCaptchaEnabled() {
-        boolean captchaEnabled = sysConfigService.findCaptchaEnabled();
-        return R.ok(captchaEnabled);
-    }
-
     @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_INDEX)
     @Operation(summary = "获取参数配置分页")
     @GetMapping(value = "findPageSysConfig")
     public TableResult<SysConfigDto> findPageSysConfig(SysConfigVo sysConfigVo, PageQuery pageQuery) {
         SysConfigDto sysConfigDto = UCopy.copyVo2Dto(sysConfigVo, SysConfigDto.class);
         return sysConfigService.findPageSysConfig(sysConfigDto, pageQuery);
+    }
+
+    @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_INDEX)
+    @Operation(summary = "根据系统配置键获取配置值")
+    @GetMapping(value = "findConfigByKey")
+    public R<String> findPageSysConfig(@RequestParam String configKey) {
+        String configByKey = sysConfigService.findConfigByKey(configKey);
+        return R.ok(configByKey);
     }
 
     @Idempotent

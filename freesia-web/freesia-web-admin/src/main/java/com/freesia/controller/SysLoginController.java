@@ -1,9 +1,11 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
 import com.freesia.constant.Constants;
+import com.freesia.constant.SysConfigConstant;
 import com.freesia.crypt.util.UCrypt;
 import com.freesia.dto.RouterDto;
 import com.freesia.dto.SysMenuDto;
@@ -14,13 +16,8 @@ import com.freesia.entity.SysUserEntity;
 import com.freesia.entity.SysUserInfoEntity;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
-import com.freesia.service.SysLoginService;
-import com.freesia.service.SysMenuService;
-import com.freesia.service.SysTenantService;
-import com.freesia.service.SysUserService;
-import com.freesia.util.UCollection;
-import com.freesia.util.UCopy;
-import com.freesia.util.UMessage;
+import com.freesia.service.*;
+import com.freesia.util.*;
 import com.freesia.vo.LoginVo;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,6 +45,7 @@ public class SysLoginController extends BaseController {
     private final SysUserService sysUserService;
     private final SysMenuService sysMenuService;
     private final SysTenantService sysTenantService;
+    private final SysConfigService sysConfigService;
 
     @SaIgnore
     @Operation(summary = "客户端登录")
@@ -100,6 +98,15 @@ public class SysLoginController extends BaseController {
         List<SysMenuDto> sysMenuDtoList = sysMenuService.findMenuTreeByUserId(userId);
         List<RouterEntity> routerEntityList = sysMenuService.buildMenus(sysMenuDtoList);
         return R.ok(routerEntityList);
+    }
+
+    @SaIgnore
+    @Operation(summary = "查询验证码启用状态")
+    @GetMapping(value = "findCaptchaEnabled")
+    public R<Boolean> findCaptchaEnabled() {
+        String captchaEnabled = sysConfigService.findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        boolean captchaEnabledFlag = Convert.toBool(captchaEnabled, false);
+        return R.ok(captchaEnabledFlag);
     }
 
     /**

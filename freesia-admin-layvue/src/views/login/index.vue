@@ -33,8 +33,8 @@
                       <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="密码" password
                                  type="password" v-model="loginForm.password"></lay-input>
                     </lay-form-item>
-                    <lay-form-item label="验证码" prop="code" :hidden="!captchaEnabled"
-                                   :required="!captchaEnabled">
+                    <lay-form-item label="验证码" prop="code" :style="captchaEnabled ? '' : 'display: none'"
+                                   :required="captchaEnabled">
                       <div style="width: 60%; display: inline-block">
                         <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="验证码"
                                    v-model="loginForm.code"></lay-input>
@@ -104,7 +104,7 @@ import {useUserStore} from '@/store/user'
 import {layer} from '@layui/layer-vue'
 import {LoginVo} from "@/types/login/LoginForm";
 import {login} from "@/api/Login";
-import {findCaptchaEnabled} from "@/api/system/Config";
+import {findCaptchaEnabled} from "@/api/Login";
 import {getCaptchaCode} from "@/api/captcha/Captcha";
 import {loginQrcode} from "@/api/module/commone";
 import router from "@/router";

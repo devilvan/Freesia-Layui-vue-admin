@@ -11,11 +11,26 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum DateScope {
+    /**
+     * 周
+     */
     WEEK("WEEK", "周"),
+    /**
+     * 月
+     */
     MONTH("MONTH", "月"),
+    /**
+     * 年
+     */
     YEAR("YEAR", "年");
 
+    /**
+     * 日期范围编码
+     */
     private final String code;
+    /**
+     * 描述
+     */
     private final String desc;
 
     /**
