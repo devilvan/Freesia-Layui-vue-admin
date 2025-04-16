@@ -96,7 +96,7 @@
     </div>
 
     <lay-layer v-model="showSaveModalFlag" :area="['300px']" :title="saveModalTitle">
-      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" v-esc-close="toCancel">
         <lay-form ref="saveFormRef" :model="saveVo" label-position="top">
           <lay-form-item label="模板名称" prop="name">
             <lay-input

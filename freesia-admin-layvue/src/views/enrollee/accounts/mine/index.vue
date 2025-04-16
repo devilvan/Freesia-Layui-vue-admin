@@ -167,7 +167,7 @@
     </lay-table>
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
-      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" v-esc-close="expenseModalClose">
         <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
@@ -250,7 +250,9 @@
     </lay-layer>
 
     <lay-layer v-model="showSelectTypeModalFlag" :area="['1200px']" :title="title">
-      <AccountTypeIconPicker @callBack="callBackFun" :size="'3.5em'"></AccountTypeIconPicker>
+      <div v-esc-close="selectTypeModalClose">
+        <AccountTypeIconPicker @callBack="callBackFun" :size="'3.5em'"></AccountTypeIconPicker>
+      </div>
     </lay-layer>
 
     <lay-layer
@@ -285,7 +287,7 @@
     </lay-layer>
 
     <lay-layer v-model="showAccountsExportModalFlag" :area="['600px']" :title="title">
-      <div style="padding: 20px" @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" v-esc-close="toCancel">
         <lay-form ref="accountsExportFormRef" :model="accountsExportVo" :rules="accountsExportFromRules"
                   label-position="top">
           <lay-row space="20">
@@ -601,6 +603,15 @@ function toCancel() {
   accountCostVo.value = {}
   addExpenseModalShowFlag.value = false
   showAccountsExportModalFlag.value = false;
+}
+
+function expenseModalClose() {
+  accountCostVo.value = {}
+  addExpenseModalShowFlag.value = false
+}
+
+function selectTypeModalClose() {
+  showSelectTypeModalFlag.value = false
 }
 
 function confirm(row: any) {

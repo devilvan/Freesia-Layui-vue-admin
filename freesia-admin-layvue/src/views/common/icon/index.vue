@@ -128,9 +128,8 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="showModalFlag" :area="['400px', '700px']" :title="saveModalTitle"
-               @success="modalStore.openModal" @end="modalStore.closeModal">
-      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
+    <lay-layer v-model="showSaveModalFlag" :area="['400px', '700px']" :title="saveModalTitle">
+      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" v-esc-close="toCancel">
         <lay-form ref="saveFormRef" :model="saveCommonIconVo" label-position="top">
           <lay-col :md="24">
             <lay-row>
@@ -192,7 +191,7 @@
     </lay-layer>
 
     <lay-layer v-model="showBatchSaveModalFlag" :area="['400px', '500px']" :title="batchSaveModalTitle">
-      <div style="padding: 20px" @keydown.enter="toSubmit(false)" @keydown.esc="toCancel">
+      <div style="padding: 20px" @keydown.enter="toSubmit(false)"  v-esc-close="toCancel">
         <lay-form ref="batchSaveFormRef" :model="batchSaveCommonIconVo" label-position="top">
           <lay-col :md="24">
             <lay-row>
@@ -309,7 +308,7 @@ const columns = ref([
 const loading = ref(true)
 const defaultToolbarFlag = ref(true)
 const evenFlag = ref(true)
-const showModalFlag = ref(false)
+const showSaveModalFlag = ref(false)
 const showBatchSaveModalFlag = ref(false)
 const saveModalTitle = ref('');
 const batchSaveModalTitle = ref('新增');
@@ -422,7 +421,7 @@ const showSaveModal = (text: any, row: any) => {
       }
     })
   }
-  showModalFlag.value = !showModalFlag.value
+  showSaveModalFlag.value = !showSaveModalFlag.value
 }
 
 function showBatchSaveModal(text: any) {
@@ -478,16 +477,16 @@ function toSubmit(clickFlag: boolean) {
           layer.msg('保存成功！', {icon: 1, time: 1000})
           saveCommonIconVo.value = {};
           if (clickFlag) {
-            showModalFlag.value = false
+            showSaveModalFlag.value = false
           } else {
             // 如果是修改+回车，则关闭窗口
             if (saveCommonIconVo.id && saveCommonIconVo.id != 0) {
-              showModalFlag.value = false
+              showSaveModalFlag.value = false
             }
           }
           previewIconList.value = [];
           saveFileList.value = []
-          showModalFlag.value = false
+          showSaveModalFlag.value = false
         }
       })
     }
@@ -539,7 +538,7 @@ function saveBatchToReset() {
  * 保存弹出框-取消
  */
 function toCancel() {
-  showModalFlag.value = false
+  showSaveModalFlag.value = false
   showBatchSaveModalFlag.value = false
 }
 

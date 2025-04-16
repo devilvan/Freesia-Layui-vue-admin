@@ -140,7 +140,7 @@ springdoc:
       tenantId:
         type: APIKEY
         in: HEADER
-        name: X-Tenent-Id
+        name: X-Tenant-Id
   group-configs:
     - group: 01. 登录、注册模块
       paths-to-match:

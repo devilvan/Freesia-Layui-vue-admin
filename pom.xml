@@ -39,7 +39,7 @@
         <easyexcel.version>3.2.1</easyexcel.version>
         <ip2region.version>2.7.0</ip2region.version>
         <querydsl-jpa.version>5.0.0</querydsl-jpa.version>
-        <springdoc-openapi.version>1.7.0</springdoc-openapi.version>
+        <springdoc-openapi.version>1.8.0</springdoc-openapi.version>
         <knife.version>3.0.3</knife.version>
         <p6spy.version>3.9.1</p6spy.version>
         <satoken.version>1.35.0.RC</satoken.version>

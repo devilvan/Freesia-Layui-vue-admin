@@ -16,6 +16,7 @@ import {useCryptStore} from "./store/crypt";
 import 'virtual:svg-icons-register'
 import SvgIcon from "./views/component/svg/SvgIcon.vue";
 import {AccountMenuPermission} from "./types/account/AccountPermission";
+import escClose from "@/directives/escClose";
 // 导入 svgIcon
 
 /**
@@ -39,6 +40,14 @@ app.component('SvgIcon', SvgIcon);
 
 app.directive("permission", permission);
 app.directive("role", role);
+app.directive("esc-close", escClose)
+// Optional: Provide cleanup function
+app.config.globalProperties.$cleanupEscListener = () => {
+    if (document.__escLayerListener) {
+        document.removeEventListener('keydown', document.__escLayerListener);
+        delete document.__escLayerListener;
+    }
+};
 app.mount('#app');
 
 /**

@@ -16,7 +16,6 @@ import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -107,6 +106,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
      * @param idList 主键
      * @return 形式返回
      */
+    @Idempotent
     @Operation(summary = "删除通用图标模板头表")
     @PostMapping(value = "deleteCommonIconTemplateHeader")
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_DELETE})
@@ -115,7 +115,6 @@ public class CommonIconTemplateHeaderController extends BaseController {
         return R.ok();
     }
 
-    @Validated
     @Operation(summary = "查询自增排序号")
     @GetMapping(value = "findMaxOrderNum")
     public R<Integer> findMaxOrderNum() {
