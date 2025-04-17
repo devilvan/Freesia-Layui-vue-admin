@@ -271,6 +271,7 @@
           application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           :auto="false"
           :drag="true"
+          v-esc-close="hideAccountsImportModal"
       >
         <template #preview>
           <div v-if="fileList.length > 0" v-for="(file, index) in fileList">
@@ -647,6 +648,10 @@ const callBackFun = (icon: any) => {
 
 function showAccountsImportModal() {
   visibleImport.value = true
+}
+
+function hideAccountsImportModal() {
+  visibleImport.value = false
 }
 
 function showAccountsExportModal() {
