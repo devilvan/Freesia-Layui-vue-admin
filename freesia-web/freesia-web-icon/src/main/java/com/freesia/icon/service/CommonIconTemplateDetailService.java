@@ -1,5 +1,7 @@
 package com.freesia.icon.service;
 
+import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
+import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
@@ -32,7 +34,7 @@ public interface CommonIconTemplateDetailService {
      * 查询通用图标模板表信息
      *
      * @param commonIconTemplateDetailDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery                   分页条件
      * @return 分页信息
      */
     TableResult<CommonIconTemplateDetailDto> findPageCommonIconTemplateDetail(CommonIconTemplateDetailDto commonIconTemplateDetailDto, PageQuery pageQuery);
@@ -43,7 +45,7 @@ public interface CommonIconTemplateDetailService {
      * @param commonIconTemplateDetailDto 查询条件
      * @return 通用图标模板表信息
      */
-    CommonIconTemplateDetailDto findCommonIconTemplateDetail(CommonIconTemplateDetailDto commonIconTemplateDetailDto);
+    FindCommonIconTemplateDetailEntity findCommonIconTemplateDetail(CommonIconTemplateDetailDto commonIconTemplateDetailDto);
 
     /**
      * 删除通用图标模板表信息
@@ -51,4 +53,12 @@ public interface CommonIconTemplateDetailService {
      * @param idList 主键
      */
     void deleteCommonIconTemplateDetail(List<Long> idList);
+
+    /**
+     * 查询通用图标模板明细的节点数据
+     *
+     * @param commonIconTemplateDetailDto 查询入参
+     * @return 通用图标模板明细的节点数据
+     */
+    List<FindTreeIconTreeTypeEntity> findTreeIconTreeType(CommonIconTemplateDetailDto commonIconTemplateDetailDto);
 }

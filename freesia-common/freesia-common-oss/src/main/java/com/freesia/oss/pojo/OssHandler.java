@@ -25,6 +25,7 @@ import com.freesia.util.UEmpty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +46,10 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class OssHandler {
+    /**
+     * 获取所用文件系统的配置KEY
+     */
+    @Getter
     private final String configKey;
     private final OssProperties properties;
     private final AmazonS3 client;
@@ -305,15 +310,6 @@ public class OssHandler {
             path = prefix + "/" + path;
         }
         return path + suffix;
-    }
-
-    /**
-     * 获取所用文件系统的配置KEY
-     *
-     * @return 所用文件系统的配置KEY
-     */
-    public String getConfigKey() {
-        return configKey;
     }
 
     /**

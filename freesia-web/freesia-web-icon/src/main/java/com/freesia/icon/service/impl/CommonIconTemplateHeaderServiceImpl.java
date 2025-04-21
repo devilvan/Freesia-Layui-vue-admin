@@ -11,6 +11,7 @@ import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,8 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
 
     @Override
     public CommonIconTemplateHeaderDto saveUpdate(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto) {
-        CommonIconTemplateHeaderPo commonIconTemplateHeaderPo = new CommonIconTemplateHeaderPo();
-        UCopy.fullCopy(commonIconTemplateHeaderDto, commonIconTemplateHeaderPo);
+        CommonIconTemplateHeaderPo commonIconTemplateHeaderPo = UCopy.copyDto2Po(commonIconTemplateHeaderDto, CommonIconTemplateHeaderPo.class);
+        commonIconTemplateHeaderPo.setUserId(USecurity.getUserId());
         CommonIconTemplateHeaderDto resultDto = new CommonIconTemplateHeaderDto();
         UCopy.fullCopy(commonIconTemplateHeaderRepository.saveAndFlush(commonIconTemplateHeaderPo), resultDto);
         return resultDto;
@@ -49,6 +50,7 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
     public TableResult<CommonIconTemplateHeaderDto> findPageCommonIconTemplateHeader(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto, PageQuery pageQuery) {
         LambdaQueryWrapper<CommonIconTemplateHeaderPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()
                 .eq(CommonIconTemplateHeaderPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(CommonIconTemplateHeaderPo::getUserId, USecurity.getUserId())
                 .eq(UEmpty.isNotEmpty(commonIconTemplateHeaderDto.getId()), CommonIconTemplateHeaderPo::getId, commonIconTemplateHeaderDto.getId());
         Page<CommonIconTemplateHeaderPo> pagePo = page(pageQuery.build(), wrapper);
         return TableResult.build(UCopy.convertPagePo2Dto(pagePo, CommonIconTemplateHeaderDto.class));
@@ -57,8 +59,9 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
     @Override
     public CommonIconTemplateHeaderDto findCommonIconTemplateHeader(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto) {
         LambdaQueryWrapper<CommonIconTemplateHeaderPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()
-            .eq(CommonIconTemplateHeaderPo::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(commonIconTemplateHeaderDto.getId()), CommonIconTemplateHeaderPo::getId, commonIconTemplateHeaderDto.getId());
+                .eq(CommonIconTemplateHeaderPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(CommonIconTemplateHeaderPo::getUserId, USecurity.getUserId())
+                .eq(UEmpty.isNotEmpty(commonIconTemplateHeaderDto.getId()), CommonIconTemplateHeaderPo::getId, commonIconTemplateHeaderDto.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), CommonIconTemplateHeaderDto.class);
     }
 

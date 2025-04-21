@@ -160,8 +160,8 @@
     </div>
 
     <lay-layer v-model="saveDirModalFlag" :title="title">
-      <div style="padding: 20px">
-        <lay-form :model="sysDirVo" ref="saveDirFormRef" label-position="top" size="md" @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" v-esc-close="hideSaveDirModal">
+        <lay-form :model="sysDirVo" ref="saveDirFormRef" label-position="top" size="md">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId">
@@ -219,15 +219,14 @@
           <lay-button size="sm" type="primary" @click="resetModal(MenuType.DIR)"
                       :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
           </lay-button>
-          <lay-button size="sm" @click="toCancel">取消</lay-button>
+          <lay-button size="sm" @click="hideSaveDirModal">取消</lay-button>
         </div>
       </div>
     </lay-layer>
 
     <lay-layer v-model="saveMenuModalFlag" :title="title">
-      <div style="padding: 20px">
-        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules" label-position="top" size="md"
-                  @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" v-esc-close="hideSaveMenuModal">
+        <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules" label-position="top" size="md">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -299,15 +298,14 @@
           <lay-button size="sm" type="primary" @click="resetModal(MenuType.MENU)"
                       :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
           </lay-button>
-          <lay-button size="sm" @click="toCancel">取消</lay-button>
+          <lay-button size="sm" @click="hideSaveMenuModal">取消</lay-button>
         </div>
       </div>
     </lay-layer>
 
     <lay-layer v-model="saveButtonModalFlag" :title="title">
-      <div style="padding: 20px">
-        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysButtonVoRules" label-position="top" size="md"
-                  @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" v-esc-close="hideSaveButtonModal">
+        <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysButtonVoRules" label-position="top" size="md">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -363,15 +361,14 @@
           <lay-button size="sm" type="primary" @click="resetModal(MenuType.BUTTON)"
                       :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
           </lay-button>
-          <lay-button size="sm" @click="toCancel">取消</lay-button>
+          <lay-button size="sm" @click="hideSaveButtonModal">取消</lay-button>
         </div>
       </div>
     </lay-layer>
 
     <lay-layer v-model="saveLinkModalFlag" :title="title">
-      <div style="padding: 20px">
-        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules" label-position="top" size="md"
-                  @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" v-esc-close="hideSaveLinkModal">
+        <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules" label-position="top" size="md">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId" required>
@@ -450,7 +447,7 @@
           <lay-button size="sm" type="primary" @click="resetModal(MenuType.LINK)"
                       :style="proceedCode === PROCEED_CODE.UPDATE ? 'display: none' : ''">重置
           </lay-button>
-          <lay-button size="sm" @click="toCancel">取消</lay-button>
+          <lay-button size="sm" @click="hideSaveLinkModal">取消</lay-button>
         </div>
       </div>
     </lay-layer>
@@ -736,10 +733,19 @@ function toReset() {
   searchQuery.value = {}
 }
 
-function toCancel() {
+function hideSaveDirModal() {
   saveDirModalFlag.value = false
+}
+
+function hideSaveMenuModal() {
   saveMenuModalFlag.value = false
+}
+
+function hideSaveButtonModal() {
   saveButtonModalFlag.value = false
+}
+
+function hideSaveLinkModal() {
   saveLinkModalFlag.value = false
 }
 
@@ -905,7 +911,10 @@ function saveMenuSubmit(menuType: any) {
       saveMenu(model).then((res: any) => {
         if (res.code === 200) {
           layer.msg(res.msg, {icon: 1})
-          toCancel()
+          hideSaveDirModal()
+          hideSaveMenuModal()
+          hideSaveButtonModal()
+          hideSaveLinkModal()
           resetModal(menuType)
           loadDataSource()
           // window.location.reload()

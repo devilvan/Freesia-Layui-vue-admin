@@ -1,17 +1,19 @@
 package com.freesia.icon.controller;
 
+import com.freesia.controller.BaseController;
+import com.freesia.icon.dto.CommonIconTemplateDetailDto;
+import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
+import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
+import com.freesia.icon.service.CommonIconTemplateDetailService;
+import com.freesia.icon.vo.CommonIconTemplateDetailVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.icon.vo.CommonIconTemplateDetailVo;
-import com.freesia.icon.dto.CommonIconTemplateDetailDto;
-import com.freesia.icon.service.CommonIconTemplateDetailService;
-import com.freesia.controller.BaseController;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -77,9 +79,9 @@ public class CommonIconTemplateDetailController extends BaseController {
      */
     @Operation(summary = "条件查询通用图标模板表")
     @GetMapping(value = "findCommonIconTemplateDetail")
-    public R<CommonIconTemplateDetailDto> findCommonIconTemplateDetail(CommonIconTemplateDetailVo commonIconTemplateDetailVo) {
+    public R<FindCommonIconTemplateDetailEntity> findCommonIconTemplateDetail(CommonIconTemplateDetailVo commonIconTemplateDetailVo) {
         CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
-        CommonIconTemplateDetailDto tableResult = commonIconTemplateDetailService.findCommonIconTemplateDetail(commonIconTemplateDetailDto);
+        FindCommonIconTemplateDetailEntity tableResult = commonIconTemplateDetailService.findCommonIconTemplateDetail(commonIconTemplateDetailDto);
         return R.ok(tableResult);
     }
 
@@ -94,5 +96,19 @@ public class CommonIconTemplateDetailController extends BaseController {
     public R<Void> deleteCommonIconTemplateDetail(@RequestBody List<Long> idList) {
         commonIconTemplateDetailService.deleteCommonIconTemplateDetail(idList);
         return R.ok();
+    }
+
+    /**
+     * 查询通用图标模板明细的节点数据
+     *
+     * @param commonIconTemplateDetailVo 查询条件
+     * @return 形式返回
+     */
+    @Operation(summary = "查询通用图标模板明细的节点数据")
+    @GetMapping(value = "findTreeIconTreeType")
+    public R<List<FindTreeIconTreeTypeEntity>> findTreeIconTreeType(CommonIconTemplateDetailVo commonIconTemplateDetailVo) {
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
+        List<FindTreeIconTreeTypeEntity> resultEntiytList = commonIconTemplateDetailService.findTreeIconTreeType(commonIconTemplateDetailDto);
+        return R.ok(resultEntiytList);
     }
 }

@@ -1,112 +1,74 @@
 <template>
-  <lay-container :fluid="true">
-    <lay-card>
-      <lay-form ref="queryFormRef" :model="searchQuery"
-                label-position="top" @keydown.enter.prevent="toSearch">
-        <lay-form-item label="模板名称" prop="name">
-          <lay-input
-              v-model="searchQuery.name"
-              :allow-clear="true"
-              placeholder="请输入"
-              size="sm"
-          ></lay-input>
-        </lay-form-item>
-      </lay-form>
-    </lay-card>
-    <!-- table -->
-    <div>
-      <lay-table
-          v-model:selected-keys="selectedKeys"
-          :columns="columns"
-          :data-source="dataSource"
-          :default-toolbar="defaultToolbarFlag"
-          :loading="loading"
-          :page="pageQuery"
-          :even="evenFlag"
-          @change="change"
-          @sortChange="sortChange">
-        <template #createTime="{ row }">
-          {{ row.createTime }} （{{ getWeekdayCn(row.createTime) }}）
-        </template>
-        <template #modifyTime="{ row }">
-          {{ row.modifyTime }} （{{ getWeekdayCn(row.modifyTime) }}）
-        </template>
-        <template #remark="{ row }">
-          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
-            <div class="oneRow">{{ row.remark }}</div>
-          </lay-tooltip>
-        </template>
-        <template v-slot:toolbar>
-          <lay-button size="sm" type="normal" @click="toSearch">查询</lay-button>
-          <lay-button size="sm" @click="queryFormReset">重置</lay-button>
-          <lay-button size="sm" type="primary" @click="showSaveModal(Operate.ADD, null)">
-            <lay-icon class="layui-icon-addition"></lay-icon>
-            新增
-          </lay-button>
-          <lay-button size="sm" @click="toRemove">
-            <lay-icon class="layui-icon-delete"></lay-icon>
-            删除
-          </lay-button>
-        </template>
-        <template v-slot:operator="{ row }">
-          <lay-button
-              border="green"
-              border-style="dashed"
-              size="xs"
-              @click="showSaveModal(Operate.EDIT, row)">编辑
-          </lay-button>
-          <lay-button
-              border="orange"
-              border-style="dashed"
-              size="xs"
-              @click="showSaveModal(Operate.COPY, row)">复制
-          </lay-button>
-          <lay-popconfirm
-              content="确定要删除吗?"
-              @cancel="cancel"
-              @confirm="confirm(row)">
-            <lay-button border="red"
-                        border-style="dashed"
-                        size="xs">删除
-            </lay-button>
-          </lay-popconfirm>
-        </template>
-      </lay-table>
+  <lay-panel style="margin: 10px" :shadow="'hover'">
+    <lay-button type="normal" size="sm" @click="showSaveGroupingModal">
+      <lay-icon type="layui-icon-addition"></lay-icon>
+      新建图标分组
+    </lay-button>
+    <lay-button type="primary" size="sm" @click="showSaveIconModal">
+      <lay-icon type="layui-icon-addition"></lay-icon>
+      添加图标
+    </lay-button>
+  </lay-panel>
+  <lay-collapse v-model="openKeys">
+    <div v-for="[key, value] in dataSource" :key="key">
+      <lay-collapse-item :title="key" :id="key">
+        <ul class="site-doc-icon">
+          <li v-for="(item, index) of value" :key="index">
+            <SvgIcon class="svgIcon" :color="'green'" :name="item" :size="'3em'"></SvgIcon>
+          </li>
+        </ul>
+      </lay-collapse-item>
     </div>
+  </lay-collapse>
 
-    <lay-layer v-model="showSaveModalFlag" :area="['300px']" :title="saveModalTitle">
-      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form ref="saveFormRef" :model="saveVo" label-position="top">
-          <lay-form-item label="模板名称" prop="name">
-            <lay-input
-                v-model="saveVo.name"
-                :allow-clear="true"
-                placeholder="请输入"
-                size="sm"
-            ></lay-input>
-          </lay-form-item>
-          <lay-form-item label="排序号" prop="orderNum">
-            <lay-input-number
-                style="width: 100%"
-                v-model="saveVo.orderNum"
-                position="right"
-            ></lay-input-number>
-          </lay-form-item>
-          <lay-form-item label="备注" prop="remark">
-            <lay-textarea
-                v-model="saveVo.remark"
-                allow-clear
-            ></lay-textarea>
-          </lay-form-item>
-        </lay-form>
-        <div style="width: 100%; text-align: right">
-          <lay-button size="sm" type="primary" @click="toSubmit(true)">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
-          <lay-button size="sm" @click="toCancel">取消</lay-button>
-        </div>
+  <lay-layer v-model="saveGroupModalFlag" :area="['1200px']">
+    <div style="padding: 20px" v-esc-close="hideSaveGroupingModal">
+      <lay-form :model="saveGroupVo" ref="saveGroupFormRef" label-position="top" size="md">
+        <lay-row space="20">
+          <lay-col md="6">
+            <lay-form-item label="分区名称" prop="name" required>
+              <lay-input v-model="saveGroupVo.name"></lay-input>
+            </lay-form-item>
+          </lay-col>
+          <lay-col md="6">
+            <lay-form-item label="分区名称" prop="name" required>
+              <lay-input v-model="saveGroupVo.name"></lay-input>
+            </lay-form-item>
+          </lay-col>
+          <lay-col md="6">
+            <lay-form-item label="排序" prop="orderNum" required>
+              <lay-input-number
+                  style="width: 100%"
+                  v-model="saveGroupVo.orderNum"
+                  position="right"
+                  :min="0"
+                  :step="10"
+              ></lay-input-number>
+            </lay-form-item>
+          </lay-col>
+        </lay-row>
+        <lay-row :space="20">
+          <lay-col md="6">
+            <lay-form-item label="备注" prop="remark">
+              <lay-textarea v-model="saveGroupVo.remark" :allow-clear="true" show-count
+                            :maxlength="127"></lay-textarea>
+            </lay-form-item>
+          </lay-col>
+        </lay-row>
+      </lay-form>
+      <div style="width: 97%; text-align: right">
+        <lay-button size="sm" type="primary" @click="saveGroup">保存</lay-button>
+        <lay-button size="sm" type="primary" @click="resetGroupModal">重置
+        </lay-button>
+        <lay-button size="sm" @click="hideSaveGroupingModal">取消</lay-button>
       </div>
-    </lay-layer>
-  </lay-container>
+    </div>
+  </lay-layer>
+  <lay-layer>
+    <div v-esc-close="hideSaveIconModal">
+
+    </div>
+  </lay-layer>
 </template>
 <script lang="ts">
 /**
@@ -117,85 +79,53 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
-import {layer} from '@layui/layui-vue'
-import {PageQuery} from "@/types/Common";
-import {R, TableResult} from "@/types/Result";
-import {Operate} from "@/types/Constants";
-import {
-  CommonIconTemplateHeaderEntity,
-  CommonIconTemplateHeaderVo
-} from "@/types/common/icon/template/IconTemplateHeader";
-import {
-  deleteCommonIconTemplateHeader,
-  findCommonIconTemplateHeader, findMaxOrderNum,
-  findPageCommonIconTemplateHeader, saveUpdate
-} from "@/api/common/icon/template/IconTemplateHeader";
-import {getWeekdayCn} from "@/util/UDate";
+import {onMounted, ref} from 'vue'
 import {useRoute} from "vue-router";
+import {
+  CommonIconTemplateDetailEntity,
+  CommonIconTemplateDetailVo, FindTreeIconTreeTypeEntity, IconTreeType
+} from "@/types/common/icon/template/IconTemplateDetail";
+import {
+  findCommonIconTemplateDetail,
+  findTreeIconTreeType,
+  saveUpdate
+} from "@/api/common/icon/template/IconTemplateDetail";
+import {R} from "@/types/Result";
+import {layer} from "@layui/layui-vue";
+import SvgIcon from "@/views/component/svg/SvgIcon.vue";
+import {PROCEED_CODE} from "@/types/Constants";
+import {MenuType, SysDictValueEntity} from "@/types/system/Dict";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 
 /* INIT*/
 onMounted(async () => {
-  iconId.value = $route.params && $route.params.roleId as string;
+  headerId.value = $route.params && $route.params.headerId as string;
+  iconTreeTypeList.value = await loadSysDictValue(Constants.ICON_TREE_TYPE);
+  iconTreeTypeListSelect.value = await sysDictValueSelect(iconTreeTypeList.value);
+  doFindTreeIconTreeType()
   change()
 })
 /* INIT*/
 
 /* VAR*/
 const $route = useRoute();
-const iconId = ref<string>('');
-const searchQuery = ref<CommonIconTemplateHeaderVo>({})
-const pageQuery = reactive<PageQuery>({
-  current: 1,
-  limit: 10
-})
-const dataSource = ref<Array<CommonIconTemplateHeaderEntity>>()
-const selectedKeys = ref<Array<string>>([])
-const columns = ref([
-  {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '模板名称', width: '130px', key: 'name', fixed: 'left'},
-  {title: '排序', width: '80px', key: 'orderNum', sort: 'asc'},
-  {title: '创建时间', width: '180px', key: 'createTime', customSlot: 'createTime', sort: 'desc'},
-  {title: '修改时间', width: '180px', key: 'modifyTime', customSlot: 'modifyTime', sort: 'desc'},
-  {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+const headerId = ref<string>('');
+const dataSource = ref<Map<String, CommonIconTemplateDetailEntity>>()
 const loading = ref(true)
-const defaultToolbarFlag = ref(true)
-const evenFlag = ref(true)
-const showSaveModalFlag = ref(false)
-const saveModalTitle = ref('');
-const saveFormRef = ref(null)
-const saveVo = ref<CommonIconTemplateHeaderVo>(<CommonIconTemplateHeaderVo>{})
-const queryFormRef = ref(null)
+const openKeys = ref<Array<string>>(<Array<string>>[]);
+const saveGroupModalFlag = ref<boolean>(false)
+const saveIconModalFlag = ref<boolean>(false)
+const saveGroupVo = ref<CommonIconTemplateDetailVo>(<CommonIconTemplateDetailVo>{});
+const iconTreeTypeList = ref<Array<SysDictValueEntity>>();
+const iconTreeTypeListSelect = ref<any[]>();
+const treeIconTreeTypeEntityList = ref<Array<FindTreeIconTreeTypeEntity>>([])
+const saveGroupFormRef = ref();
+const saveIconFormRef = ref();
 /* VAR*/
 
 /* FUNCTION*/
 /**
- * 初始化表格
- */
-const loadDataSource = () => {
-  findPageCommonIconTemplateHeader(searchQuery.value, pageQuery).then((res: TableResult<CommonIconTemplateHeaderEntity>) => {
-    if (res.code == 200) {
-      pageQuery.total = res.total;
-      dataSource.value = res.rows
-    } else {
-      layer.msg(res.msg)
-      return;
-    }
-  }).catch(e => {
-    layer.msg(e.msg)
-  });
-}
-
-/**
- * 刷新表格
+ * 刷新
  */
 const change = () => {
   loading.value = true
@@ -206,152 +136,158 @@ const change = () => {
 }
 
 /**
- * 触发列表字段排序
+ * 初始化
  */
-const sortChange = (key: any, sort: number) => {
-  layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
-}
-
-/**
- * 查询按钮
- */
-function toSearch() {
-  pageQuery.current = 1
-  dataSource.value = []
-  change()
-}
-
-/**
- * 查询条件重置
- */
-function queryFormReset() {
-  searchQuery.value = {}
-}
-
-/**
- * 显示新增/修改/复制弹窗
- */
-const showSaveModal = (text: any, row: any) => {
-  saveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
-  if (row != null) {
-    saveVo.value = {...row}
+const loadDataSource = () => {
+  let param: CommonIconTemplateDetailVo = {
+    headerId: headerId.value
   }
-  if (Operate.EDIT === text) {
-    findCommonIconTemplateHeader({
-      id: row.id
-    }).then((res: any) => {
-      if (res.code === 200) {
-        saveVo.value = res.data;
-      }
-    })
-  } else if (Operate.ADD === text) {
-    findMaxOrderNum().then((res: R<number>) => {
-      saveVo.value.orderNum = res.data
-    })
-  } else if (Operate.COPY === text) {
-    findCommonIconTemplateHeader({
-      id: row.id
-    }).then((res: any) => {
-      saveVo.value = res.data;
-      findMaxOrderNum().then((res: R<number>) => {
-        saveVo.value.orderNum = res.data
-      })
-    })
-  }
-  showSaveModalFlag.value = !showSaveModalFlag.value
+  findCommonIconTemplateDetail(param).then((res: R<Map<String, CommonIconTemplateDetailEntity>>) => {
+    dataSource.value = res.data
+    openKeys.value = res.data?.keys();
+    console.log(openKeys.value)
+  }).catch(e => {
+    layer.msg(e.msg)
+  });
 }
 
-/**
- * 删除按钮
- */
-function toRemove() {
-  if (selectedKeys.value.length == 0) {
-    layer.msg('您未选择数据，请先选择要删除的数据', {icon: 3, time: 2000})
-    return
-  }
-  layer.confirm('您将删除所有选中的数据？', {
-    title: '提示',
-    btn: [
-      {
-        text: '确定',
-        callback: (id: any) => {
-          deleteCommonIconTemplateHeader(selectedKeys.value).then((res: any) => {
-            if (res.code === 200) {
-              layer.msg('删除成功')
-            }
-            loadDataSource();
-          }).catch(e => {
-            layer.confirm(e.msg, {icon: 2})
-          })
-          layer.close(id)
-        }
-      },
-      {
-        text: '取消',
-        callback: (id: any) => {
-          layer.close(id)
-        }
-      }
-    ]
+function showSaveGroupingModal() {
+  saveGroupModalFlag.value = true
+}
+
+function showSaveIconModal() {
+  saveIconModalFlag.value = true
+}
+
+function hideSaveGroupingModal() {
+  saveGroupModalFlag.value = false
+}
+
+function hideSaveIconModal() {
+  saveIconModalFlag.value = false
+}
+
+function saveGrouping() {
+  saveUpdate(saveGroupVo.value).then((res: R<void>) => {
+    hideSaveGroupingModal();
   })
 }
 
-/**
- * 保存弹出框-保存
- */
-function toSubmit(clickFlag: boolean) {
-  saveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
-    if (isValidate) {
-      saveUpdate(saveVo.value).then((res: any) => {
-        if (res.code === 200) {
-          loadDataSource();
-          layer.msg('保存成功！', {icon: 1, time: 1000})
-          saveVo.value = {};
-          if (clickFlag) {
-            showSaveModalFlag.value = false
-          } else {
-            // 如果是修改+回车，则关闭窗口
-            if (saveVo.id && saveVo.id != 0) {
-              showSaveModalFlag.value = false
-            }
-          }
-          showSaveModalFlag.value = false
-        }
-      })
-    }
+function doFindTreeIconTreeType() {
+  let param: CommonIconTemplateDetailVo = {
+    headerId: headerId.value
+  }
+  findTreeIconTreeType(param).then((res: R<Array<FindTreeIconTreeTypeEntity>>) => {
+    res.data?.forEach(item => {
+      treeIconTreeTypeEntityList.value.push(item)
+    })
   })
 }
 
-/**
- * 保存弹出框-重置
- */
-function toReset() {
-  saveFormRef.value.reset();
+function changeIconTreeTypeList(value: any) {
+
 }
 
-/**
- * 保存弹出框-取消
- */
-function toCancel() {
-  showSaveModalFlag.value = false
+function saveGroup() {
+  saveGroupVo.value.iconTreeType = IconTreeType.R;
+  saveUpdate(saveGroupVo.value).then((res: R<void>) => {
+
+  })
 }
 
-function confirm(row: any) {
-  if (row) {
-    deleteCommonIconTemplateHeader([row.id]).then((res: any) => {
-      if (res.code === 200) {
-        layer.msg('删除成功')
-      }
-      loadDataSource();
-    }).catch(e => {
-      layer.confirm(e.msg, {icon: 2})
-    })
-  }
-}
+function resetGroupModal() {
 
-function cancel() {
-  layer.msg('您已取消操作')
 }
 
 /* FUNCTION*/
 </script>
+
+<style>
+.site-doc-icon {
+  margin-bottom: 10px;
+  font-size: 0;
+}
+
+.site-doc-icon li {
+  display: inline-block;
+  vertical-align: middle;
+  width: 10%;
+  height: 105px;
+  line-height: 25px;
+  padding: 20px 0;
+  //margin-right: -1px;
+  //margin-bottom: -1px;
+  border: 1px solid #e2e2e2;
+  font-size: 14px;
+  text-align: center;
+  color: #000;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}
+
+.site-doc-icon li div .svgIcon {
+  margin-top: -10px;
+}
+
+.site-doc-icon li .doc-icon-name,
+.site-doc-icon li .doc-icon-code {
+  color: #000;
+  font-weight: bold;
+  font-size: 16pt;
+}
+
+.site-doc-icon li:hover {
+  background-color: #F6F6F6;
+}
+
+.site-doc-icon li:hover {
+  background-color: #ff9a9e;
+}
+
+.site-doc-icon li .layui-icon {
+  display: inline-block;
+  font-size: 32px;
+}
+
+.anim .site-doc-icon {
+  margin-bottom: 50px;
+  font-size: 0;
+}
+
+.anim .site-doc-icon li {
+  width: 50%;
+}
+
+.anim .site-doc-icon li {
+  display: inline-block;
+  vertical-align: middle;
+  width: 16.5%;
+  height: 105px;
+  line-height: 25px;
+  padding: 20px 0;
+  margin-right: -1px;
+  margin-bottom: -1px;
+  border: 1px solid #e2e2e2;
+  font-size: 14px;
+  text-align: center;
+  color: #666;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}
+
+.anim .site-doc-icon li .layui-anim {
+  width: 125px;
+  height: 125px;
+  line-height: 125px;
+  margin: 0 auto 10px;
+  text-align: center;
+  background-color: var(--global-primary-color);
+  cursor: pointer;
+  color: #fff;
+  border-radius: 50%;
+}
+
+.anim .site-doc-icon li .code {
+  white-space: nowrap;
+}
+</style>

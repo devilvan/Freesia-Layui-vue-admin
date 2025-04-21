@@ -107,10 +107,10 @@ export const dynamicRoutes = [
         path: '/common/iconTemplate',
         component: BaseLayout,
         hidden: true,
-        // permissions: [MenuPermission.COMMON_ICON_TEMPLATE_HEADER_INDEX],
+        permissions: [MenuPermission.COMMON_ICON_TEMPLATE_HEADER_SETUP_DETAIL],
         children: [
             {
-                path: 'iconTemplateDetail/:iconId(\\d+)',
+                path: 'iconTemplateDetail/:headerId(\\d+)',
                 component: () => import('@/views/common/iconTemplate/iconTemplateDetail.vue'),
                 name: 'IconTemplateDetail',
                 meta: {title: '图标模板明细', affix: false, cache: false, closable: true}

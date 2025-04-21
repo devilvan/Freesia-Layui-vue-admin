@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 通用图标模板表 映射
- * @date 2025-04-07
+ * @date 2025-04-21
  */
 @Setter
 @Getter
@@ -36,10 +36,10 @@ import java.math.BigDecimal;
 @EntityListeners(AuditingEntityListener.class)
 @Schema(description = "通用图标模板表 映射")
 public class CommonIconTemplateDetailPo extends BasePo implements Serializable {
-    @Schema(description = "图标ID")
-    @TableField(value = "ICON_ID")
-    @Column(name = "ICON_ID", columnDefinition = "BIGINT(19) NOT NULL COMMENT '图标ID'")
-    private Long iconId;
+    @Schema(description = "通用图标模板头表ID")
+    @TableField(value = "HEADER_ID")
+    @Column(name = "HEADER_ID", columnDefinition = "BIGINT(19) NOT NULL COMMENT '通用图标模板头表ID'")
+    private Long headerId;
     @Schema(description = "自定义图标名称")
     @TableField(value = "NAME")
     @Column(name = "NAME", columnDefinition = "VARCHAR(32) NOT NULL COMMENT '自定义图标名称'")
@@ -56,4 +56,8 @@ public class CommonIconTemplateDetailPo extends BasePo implements Serializable {
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(128) COMMENT '备注'")
     private String remark;
+    @Schema(description = "节点类型（ICON_TREE_TYPE）")
+    @TableField(value = "ICON_TREE_TYPE")
+    @Column(name = "ICON_TREE_TYPE", columnDefinition = "CHAR(1) COMMENT '节点类型（ICON_TREE_TYPE）'")
+    private String iconTreeType;
 }

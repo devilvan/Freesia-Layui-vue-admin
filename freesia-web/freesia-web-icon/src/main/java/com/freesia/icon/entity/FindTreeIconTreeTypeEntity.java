@@ -1,23 +1,18 @@
-package com.freesia.icon.dto;
+package com.freesia.icon.entity;
 
-import com.freesia.dto.BaseDto;
+import com.freesia.dto.TreeDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
-import java.util.Date;
-import java.math.BigDecimal;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * @author Evad.Wu
- * @Description 通用图标模板表 数据传输对象
+ * @author Bliss.Wu
+ * @Description 查询通用图标模板明细的节点数据 结果集
  * @date 2025-04-21
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "通用图标模板表 数据传输对象")
-public class CommonIconTemplateDetailDto extends BaseDto {
+public class FindTreeIconTreeTypeEntity extends TreeDto<FindTreeIconTreeTypeEntity> {
     @Schema(description = "通用图标模板头表ID")
     private Long headerId;
     @Schema(description = "自定义图标名称")

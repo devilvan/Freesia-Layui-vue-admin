@@ -1,0 +1,128 @@
+<template>
+  <ul class="site-doc-icon">
+    <li v-for="(layIcon, index) of accountIconNameList">
+      <div @click="selectIcon(layIcon)">
+        <SvgIcon class="svgIcon" :color="props.color" :name="layIcon" :size="props.size"></SvgIcon>
+        <div class="doc-icon-name">{{ layIcon.split("_")[1] }}</div>
+      </div>
+    </li>
+  </ul>
+</template>
+
+<script setup lang="ts">
+import {onMounted, ref} from 'vue'
+import SvgIcon from "@/views/component/svg/SvgIcon.vue";
+
+const props = defineProps({
+  color: {
+    type: String,
+    default: '#009688'
+  },
+  size: {
+    type: String,
+    default: '3em'
+  },
+})
+const emit = defineEmits(['callBack']);
+
+const accountIconNameList = ref<string[]>([])
+onMounted(() => {
+  let accountIconNameGlob = import.meta.glob("@/assets/svgIcon/*.svg")
+  for (let accountIconName in accountIconNameGlob) {
+    accountIconNameList.value.push(accountIconName.substring(accountIconName.lastIndexOf("/") + 1, accountIconName.lastIndexOf(".")))
+  }
+})
+
+function selectIcon(layIcon: any) {
+  emit('callBack', layIcon);
+}
+</script>
+
+<style>
+.site-doc-icon {
+  margin-bottom: 10px;
+  font-size: 0;
+}
+
+.site-doc-icon li {
+  display: inline-block;
+  vertical-align: middle;
+  width: 10%;
+  height: 105px;
+  line-height: 25px;
+  padding: 20px 0;
+  //margin-right: -1px;
+  //margin-bottom: -1px;
+  border: 1px solid #e2e2e2;
+  font-size: 14px;
+  text-align: center;
+  color: #000;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}
+.site-doc-icon li div .svgIcon{
+  margin-top: -10px;
+}
+
+.site-doc-icon li .doc-icon-name,
+.site-doc-icon li .doc-icon-code {
+  color: #000;
+  font-weight: bold;
+  font-size: 16pt;
+}
+
+.site-doc-icon li:hover {
+  background-color: #F6F6F6;
+}
+
+.site-doc-icon li:hover {
+  background-color: #ff9a9e;
+}
+
+.site-doc-icon li .layui-icon {
+  display: inline-block;
+  font-size: 32px;
+}
+
+.anim .site-doc-icon {
+  margin-bottom: 50px;
+  font-size: 0;
+}
+
+.anim .site-doc-icon li {
+  width: 50%;
+}
+
+.anim .site-doc-icon li {
+  display: inline-block;
+  vertical-align: middle;
+  width: 16.5%;
+  height: 105px;
+  line-height: 25px;
+  padding: 20px 0;
+  margin-right: -1px;
+  margin-bottom: -1px;
+  border: 1px solid #e2e2e2;
+  font-size: 14px;
+  text-align: center;
+  color: #666;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}
+
+.anim .site-doc-icon li .layui-anim {
+  width: 125px;
+  height: 125px;
+  line-height: 125px;
+  margin: 0 auto 10px;
+  text-align: center;
+  background-color: var(--global-primary-color);
+  cursor: pointer;
+  color: #fff;
+  border-radius: 50%;
+}
+
+.anim .site-doc-icon li .code {
+  white-space: nowrap;
+}
+</style>

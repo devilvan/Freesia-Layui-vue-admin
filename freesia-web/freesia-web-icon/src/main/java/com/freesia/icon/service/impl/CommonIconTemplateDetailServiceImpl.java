@@ -4,20 +4,22 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
+import com.freesia.icon.dto.CommonIconTemplateDetailDto;
+import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
+import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
+import com.freesia.icon.mapper.CommonIconTemplateDetailMapper;
+import com.freesia.icon.po.CommonIconTemplateDetailPo;
+import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
+import com.freesia.icon.service.CommonIconTemplateDetailService;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.icon.dto.CommonIconTemplateDetailDto;
-import com.freesia.icon.po.CommonIconTemplateDetailPo;
-import com.freesia.icon.service.CommonIconTemplateDetailService;
-import com.freesia.icon.mapper.CommonIconTemplateDetailMapper;
-import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.util.UTree;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -29,6 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconTemplateDetailMapper, CommonIconTemplateDetailPo> implements CommonIconTemplateDetailService {
     private final CommonIconTemplateDetailRepository commonIconTemplateDetailRepository;
+    private final CommonIconTemplateDetailMapper commonIconTemplateDetailMapper;
 
     @Override
     public CommonIconTemplateDetailDto saveUpdate(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
@@ -55,16 +58,19 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
     }
 
     @Override
-    public CommonIconTemplateDetailDto findCommonIconTemplateDetail(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
-        LambdaQueryWrapper<CommonIconTemplateDetailPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateDetailPo>()
-            .eq(CommonIconTemplateDetailPo::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(commonIconTemplateDetailDto.getId()), CommonIconTemplateDetailPo::getId, commonIconTemplateDetailDto.getId());
-        return UCopy.copyPo2Dto(getOne(wrapper), CommonIconTemplateDetailDto.class);
+    public FindCommonIconTemplateDetailEntity findCommonIconTemplateDetail(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
+        return commonIconTemplateDetailMapper.findCommonIconTemplateDetail(commonIconTemplateDetailDto);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteCommonIconTemplateDetail(List<Long> idList) {
         removeBatchByIds(idList);
+    }
+
+    @Override
+    public List<FindTreeIconTreeTypeEntity> findTreeIconTreeType(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
+        List<FindTreeIconTreeTypeEntity> findTreeIconTreeTypeEntityList = commonIconTemplateDetailMapper.findTreeIconTreeType(commonIconTemplateDetailDto);
+        return UTree.buildTree(findTreeIconTreeTypeEntityList);
     }
 }

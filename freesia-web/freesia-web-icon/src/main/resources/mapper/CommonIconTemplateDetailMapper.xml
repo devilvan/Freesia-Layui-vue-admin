@@ -1,4 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.icon.mapper.CommonIconTemplateDetailMapper">
+    <sql id="columns">
+        SELECT CITD.id,
+               CITD.creator,
+               CITD.create_time,
+               CITD.modifier,
+               CITD.modify_time,
+               CITD.logic_del,
+               CITD.rec_ver,
+               CITD.build_in,
+               CITD.tenant_id,
+               CITD.header_id,
+               CITD.name,
+               CITD.`grouping`,
+               CITD.order_num,
+               CITD.remark,
+               CITD.icon_tree_type
+        FROM COMMON_ICON_TEMPLATE_DETAIL CITD
+    </sql>
+    <select id="findCommonIconTemplateDetail"
+            resultType="com.freesia.icon.entity.FindCommonIconTemplateDetailEntity">
+        <include refid="columns"/>
+        WHERE 1 = 1
+        <if test="dto.id != null and dto.id != 0">
+            AND CITD.ID = #{dto.id}
+        </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND CITD.`NAME` = #{dto.name}
+        </if>
+        <if test="dto.grouping != null and dto.grouping != ''">
+            AND CITD.`GROUPING` = #{dto.grouping}
+        </if>
+        <if test="dto.iconTreeType != null and dto.iconTreeType != ''">
+            AND CITD.ICON_TREE_TYPE = #{dto.iconTreeType}
+        </if>
+    </select>
+    <select id="findTreeIconTreeType" resultType="com.freesia.icon.entity.FindTreeIconTreeTypeEntity">
+        SELECT CITD.id,
+        CITD.rec_ver,
+        CITD.header_id,
+        CITD.header_id AS PARENT_ID,
+        CITD.name,
+        CITD.`grouping`,
+        CITD.order_num,
+        CITD.remark,
+        CITD.icon_tree_type
+        FROM COMMON_ICON_TEMPLATE_DETAIL CITD
+        WHERE 1 = 1
+        <if test="dto.id != null and dto.id != 0">
+            AND CITD.ID = #{dto.id}
+        </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND CITD.`NAME` = #{dto.name}
+        </if>
+        <if test="dto.grouping != null and dto.grouping != ''">
+            AND CITD.`GROUPING` = #{dto.grouping}
+        </if>
+        <if test="dto.iconTreeType != null and dto.iconTreeType != ''">
+            AND CITD.ICON_TREE_TYPE = #{dto.iconTreeType}
+        </if>
+    </select>
 </mapper>

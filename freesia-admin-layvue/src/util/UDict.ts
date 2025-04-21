@@ -45,7 +45,11 @@ export enum Constants {
     /**
      * 通用图标所属分区
      */
-    COMMON_ICON_PARTITION = "COMMON_ICON_PARTITION"
+    COMMON_ICON_PARTITION = "COMMON_ICON_PARTITION",
+    /**
+     * 通用图标节点类型
+     */
+    ICON_TREE_TYPE = "ICON_TREE_TYPE"
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {
