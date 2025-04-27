@@ -12,8 +12,8 @@ importers:
         specifier: ^1.0.15
         version: 1.0.15
       '@layui/layui-vue':
-        specifier: 2.21.2
-        version: 2.21.2(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))
+        specifier: 2.22.0
+        version: 2.22.0(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))
       '@layui/unplugin-vue-components':
         specifier: 0.0.3
         version: 0.0.3(@babel/parser@7.26.10)(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))
@@ -337,8 +337,8 @@ packages:
   '@layui/layer-vue@2.4.8':
     resolution: {integrity: sha512-mZnsXuNS0dm24y/yIIXGyMVeKwTmeO5QEz8IirFOH1syNk6ny3xUQngA9fjVclPElN1UPystnFZtZ6ILYVofNA==}
 
-  '@layui/layui-vue@2.21.2':
-    resolution: {integrity: sha512-Clku63VkvUJHv+aeeOvNnSFgGrYH4RScINyfq67XRsU0E2owrU21c3z8qI2B7GT6GdS01ducSZkVf0cbK93g4g==}
+  '@layui/layui-vue@2.22.0':
+    resolution: {integrity: sha512-MLdylbl1AbtgZ51SYmc8+gc+ctFI1K/UcNanTPrjufmV29+zz1iwYCuLQOOIpuF4btmev/r7V6Ep3ZwF46TVsw==}
 
   '@layui/unplugin-vue-components@0.0.3':
     resolution: {integrity: sha512-s9TLwh9jRUb2ntEqsFy8yy+ZyQTlRx/FFCcP1sXIlxkvHYf4N5VrwcJV91eKCYRaufq8AO9+YMfeHvSh2kfhgw==}
@@ -2328,7 +2328,7 @@ snapshots:
     dependencies:
       '@layui/icons-vue': 1.1.3
 
-  '@layui/layui-vue@2.21.2(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))':
+  '@layui/layui-vue@2.22.0(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))':
     dependencies:
       '@babel/types': 7.21.0
       '@ctrl/tinycolor': 3.6.1

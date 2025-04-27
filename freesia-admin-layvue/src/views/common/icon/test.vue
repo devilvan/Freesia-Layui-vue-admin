@@ -5,7 +5,9 @@
         class="layTreeContainer"
         :tail-node-icon="true"
         :data="menuTree"
-        @check-change="checkChange"
+        :checked="true"
+        :spread="true"
+        :leaf="true"
         :showCheckbox="menuTreeShowCheckbox"
         v-model:checkedKeys="checkKeys"
     >
@@ -131,8 +133,8 @@ const menuTree = {
 const result = ref<string[]>([])
 
 function getCheckKeys() {
-  console.log("checkKeys: " + checkKeys.value)
-  console.log("result: " + result.value)
+  console.log("checkKeys: " + checkKeys.value + ", size: " + checkKeys.value.length)
+  console.log("result: " + result.value + ", size: " + result.value.length)
 }
 
 function searchNodeMethod(node: any, value: any) {
