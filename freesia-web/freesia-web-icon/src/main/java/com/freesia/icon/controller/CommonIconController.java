@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -172,6 +173,21 @@ public class CommonIconController extends BaseController {
     public R<Void> deleteCommonIcon(@RequestBody List<Long> idList) {
         commonIconService.deleteCommonIcon(idList);
         return R.ok();
+    }
+
+    /**
+     * 查询通用图标选择器
+     *
+     * @param commonIconVo 查询条件
+     * @return 形式返回
+     */
+    @Operation(summary = "查询通用图标选择器")
+    @GetMapping(value = "findCommonIconPicker")
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
+    public R<Map<String, List<FindCommonIconEntity>>> findCommonIconPicker(CommonIconVo commonIconVo) {
+        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        Map<String, List<FindCommonIconEntity>> resultMap = commonIconService.findCommonIconPicker(commonIconDto);
+        return R.ok(resultMap);
     }
 
     private List<CommonIconDto> buildCommonIconDtoList(List<SysOssDto> sysOssDtoList, CommonIconDto dto) {

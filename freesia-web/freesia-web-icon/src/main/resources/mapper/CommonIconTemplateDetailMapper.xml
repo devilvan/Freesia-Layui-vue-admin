@@ -16,7 +16,8 @@
                CITD.`grouping`,
                CITD.order_num,
                CITD.remark,
-               CITD.icon_tree_type
+               CITD.icon_tree_type,
+               CITD.ICON_ID
         FROM COMMON_ICON_TEMPLATE_DETAIL CITD
     </sql>
     <select id="findCommonIconTemplateDetail"
@@ -45,7 +46,9 @@
         CITD.`grouping`,
         CITD.order_num,
         CITD.remark,
-        CITD.icon_tree_type
+        CITD.icon_tree_type,
+        CITD.ICON_ID,
+        CITD.PARENT_ID
         FROM COMMON_ICON_TEMPLATE_DETAIL CITD
         WHERE 1 = 1
         <if test="dto.id != null and dto.id != 0">
@@ -60,5 +63,47 @@
         <if test="dto.iconTreeType != null and dto.iconTreeType != ''">
             AND CITD.ICON_TREE_TYPE = #{dto.iconTreeType}
         </if>
+    </select>
+    <select id="findMaxOrderNum" resultType="java.lang.Integer">
+        SELECT MAX(ORDER_NUM)
+        FROM common_icon_template_detail citd
+        where 1 = 1
+        AND CITD.LOGIC_DEL = 0
+        AND CITD.HEADER_ID = #{dto.headerId}
+        AND CITD.ICON_TREE_TYPE = #{dto.iconTreeType}
+        <if test="dto.grouping != null and dto.grouping != ''">
+            AND CITD.`GROUPING` = #{dto.grouping}
+        </if>
+        <if test="dto.parentId != null and dto.parentId != 0">
+            AND CITD.PARENT_ID = #{dto.parentId}
+        </if>
+
+    </select>
+    <select id="findGrouping" resultType="java.util.Map">
+        SELECT CITD.NAME AS label,
+               CITD.ID   AS `value`
+        FROM common_icon_template_detail CITD
+        WHERE 1 = 1
+          AND CITD.LOGIC_DEL = 0
+          AND CITD.HEADER_ID = #{dto.headerId}
+        ORDER BY CITD.ORDER_NUM
+    </select>
+    <select id="findCustomIconTemplateDetail" resultType="com.freesia.icon.entity.FindTreeIconTreeTypeEntity">
+        SELECT DISTINCT CITD.ID,
+                        CITD.REC_VER,
+                        CITD.HEADER_ID,
+                        CITD.NAME,
+                        CITD.`GROUPING`,
+                        CITD.ORDER_NUM,
+                        CITD.REMARK,
+                        CITD.ICON_TREE_TYPE,
+                        CITD.ICON_ID,
+                        CITD.PARENT_ID,
+                        SDV.VALUE AS URL
+        FROM common_icon_template_detail CITD
+                 LEFT JOIN sys_dict_value SDV ON CITD.ICON_ID = SDV.ID
+        WHERE 1 = 1
+          AND CITD.LOGIC_DEL = 0
+          AND CITD.HEADER_ID = #{dto.headerId}
     </select>
 </mapper>

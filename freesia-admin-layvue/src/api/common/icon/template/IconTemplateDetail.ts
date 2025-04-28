@@ -4,7 +4,7 @@ import {R, TableResult} from "@/types/Result";
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
 import {
     CommonIconTemplateDetailEntity,
-    CommonIconTemplateDetailVo, FindTreeIconTreeTypeEntity
+    CommonIconTemplateDetailVo, FindMaxOrderNumVo, FindTreeIconTreeTypeEntity
 } from "@/types/common/icon/template/IconTemplateDetail";
 
 export function saveUpdate(commonIconTemplateDetailVo: CommonIconTemplateDetailVo): Promise<R<void>> {
@@ -20,7 +20,7 @@ export function findPageCommonIconTemplateDetail(commonIconTemplateDetailVo: Com
     return Http.get("/common/commonIconTemplateDetailController/findPageCommonIconTemplateDetail", params);
 }
 
-export function findCommonIconTemplateDetail(commonIconTemplateDetailVo: CommonIconTemplateDetailVo): Promise<R<Map<String, CommonIconTemplateDetailEntity>>> {
+export function findCommonIconTemplateDetail(commonIconTemplateDetailVo: CommonIconTemplateDetailVo): Promise<R<Map<String, CommonIconTemplateDetailEntity[]>>> {
     let params = buildUrlParam(commonIconTemplateDetailVo);
     return Http.get("/common/commonIconTemplateDetailController/findCommonIconTemplateDetail", params);
 }
@@ -29,11 +29,22 @@ export function deleteCommonIconTemplateDetail(idList: Array<string>): Promise<R
     return Http.post("/common/commonIconTemplateDetailController/deleteCommonIconTemplateDetail", idList);
 }
 
-export function findMaxOrderNum(): Promise<R<number>> {
-    return Http.get("/common/commonIconTemplateDetailController/findMaxOrderNum");
+export function findMaxOrderNum(vo: FindMaxOrderNumVo): Promise<R<number>> {
+    let params = buildUrlParam(vo);
+    return Http.get("/common/commonIconTemplateDetailController/findMaxOrderNum", params);
 }
 
 export function findTreeIconTreeType(commonIconTemplateDetailVo: CommonIconTemplateDetailVo): Promise<R<Array<FindTreeIconTreeTypeEntity>>> {
     let params = buildUrlParam(commonIconTemplateDetailVo);
     return Http.get("/common/commonIconTemplateDetailController/findTreeIconTreeType", params);
+}
+
+export function findGrouping(vo: CommonIconTemplateDetailVo): Promise<R<Map<string, string>>> {
+    let params = buildUrlParam(vo);
+    return Http.get("/common/commonIconTemplateDetailController/findGrouping", params);
+}
+
+export function findCustomIconTemplateDetail(vo: CommonIconTemplateDetailVo): Promise<R<Record<string, FindTreeIconTreeTypeEntity[]>>> {
+    let params = buildUrlParam(vo);
+    return Http.get("/common/commonIconTemplateDetailController/findCustomIconTemplateDetail", params);
 }

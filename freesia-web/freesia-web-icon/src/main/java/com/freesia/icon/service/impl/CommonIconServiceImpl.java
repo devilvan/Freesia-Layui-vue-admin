@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -85,5 +86,12 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
             sysOssService.deleteSysOss(fileIdList);
         }
         removeBatchByIds(idList);
+    }
+
+    @Override
+    public Map<String, List<FindCommonIconEntity>> findCommonIconPicker(CommonIconDto commonIconDto) {
+        List<FindCommonIconEntity> findCommonIconEntityList = commonIconMapper.findCommonIconPicker(commonIconDto);
+        Map<String, List<FindCommonIconEntity>> map = findCommonIconEntityList.stream().collect(Collectors.groupingBy(FindCommonIconEntity::getIconPartitionName));
+        return map;
     }
 }

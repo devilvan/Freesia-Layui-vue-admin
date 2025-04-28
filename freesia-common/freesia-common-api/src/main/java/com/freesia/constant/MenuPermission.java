@@ -94,5 +94,12 @@ public class MenuPermission {
             COMMON_ICON_TEMPLATE_HEADER_INDEX = "common:iconTemplate:index",
             COMMON_ICON_TEMPLATE_HEADER_ADD = "common:iconTemplate:add",
             COMMON_ICON_TEMPLATE_HEADER_EDIT = "common:iconTemplate:edit",
-            COMMON_ICON_TEMPLATE_HEADER_DELETE = "common:iconTemplate:delete";
+            COMMON_ICON_TEMPLATE_HEADER_DELETE = "common:iconTemplate:delete",
+            COMMON_ICON_TEMPLATE_DETAIL_INDEX = "common:iconTemplate:detail:index",
+            COMMON_ICON_TEMPLATE_DETAIL_ADD_GROUP = "common:iconTemplate:detail:add:group",
+            COMMON_ICON_TEMPLATE_DETAIL_ADD_ICON = "common:iconTemplate:detail:add:icon",
+            COMMON_ICON_TEMPLATE_DETAIL_EDIT_GROUP = "common:iconTemplate:detail:edit:group",
+            COMMON_ICON_TEMPLATE_DETAIL_EDIT_ICON = "common:iconTemplate:detail:edit:icon",
+            COMMON_ICON_TEMPLATE_DETAIL_DELETE_GROUP = "common:iconTemplate:detail:delete:group",
+            COMMON_ICON_TEMPLATE_DETAIL_DELETE_ICON = "common:iconTemplate:detail:delete:icon";
 }

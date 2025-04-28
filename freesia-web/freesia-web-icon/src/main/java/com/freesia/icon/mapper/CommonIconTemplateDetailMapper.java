@@ -6,10 +6,12 @@ import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
 import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
 import com.freesia.icon.po.CommonIconTemplateDetailPo;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -34,4 +36,29 @@ public interface CommonIconTemplateDetailMapper extends BaseMapper<CommonIconTem
      * @return 通用图标模板明细的节点数据
      */
     List<FindTreeIconTreeTypeEntity> findTreeIconTreeType(@Param(value = "dto") CommonIconTemplateDetailDto dto);
+
+    /**
+     * 查询自增排序号
+     *
+     * @param dto 查询入参
+     * @return 最大排序号
+     */
+    Integer findMaxOrderNum(@Param(value = "dto") CommonIconTemplateDetailDto dto);
+
+    /**
+     * 查询自定义分组列表
+     *
+     * @param dto 查询入参
+     * @return 结果集
+     */
+    @MapKey(value = "label")
+    List<Map<String, String>> findGrouping(@Param(value = "dto") CommonIconTemplateDetailDto dto);
+
+    /**
+     * 查询自定义分组Map
+     *
+     * @param dto 查询入参
+     * @return 结果集
+     */
+    List<FindTreeIconTreeTypeEntity> findCustomIconTemplateDetail(@Param(value = "dto") CommonIconTemplateDetailDto dto);
 }

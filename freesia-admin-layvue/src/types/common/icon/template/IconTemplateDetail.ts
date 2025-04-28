@@ -16,6 +16,8 @@ export interface CommonIconTemplateDetailVo extends BaseVo {
     orderNum?: number;
     remark?: string;
     iconTreeType?: string;
+    iconId?: string;
+    parentId?: string;
 }
 
 export interface CommonIconTemplateDetailEntity extends BaseEntity {
@@ -25,6 +27,9 @@ export interface CommonIconTemplateDetailEntity extends BaseEntity {
     orderNum?: number;
     remark?: string;
     iconTreeType?: string;
+    iconId?: string;
+    parentId?: string;
+    url?: string
 }
 
 export interface FindTreeIconTreeTypeEntity extends Tree<FindTreeIconTreeTypeEntity> {
@@ -34,4 +39,13 @@ export interface FindTreeIconTreeTypeEntity extends Tree<FindTreeIconTreeTypeEnt
     orderNum?: number;
     remark?: string;
     iconTreeType?: string;
+    url?: string
+}
+
+export interface FindMaxOrderNumVo extends BaseVo {
+    headerId?: string;
+    name?: string;
+    grouping?: string;
+    iconTreeType?: string;
+    parentId?: string;
 }

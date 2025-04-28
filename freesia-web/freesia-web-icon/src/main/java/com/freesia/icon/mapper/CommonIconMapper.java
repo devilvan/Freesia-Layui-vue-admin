@@ -10,6 +10,8 @@ import com.freesia.icon.po.CommonIconPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @author Evad.Wu
  * @Description 通用图标表 持久层
@@ -34,4 +36,12 @@ public interface CommonIconMapper extends BaseMapper<CommonIconPo> {
      * @return 通用图标数据
      */
     FindCommonIconEntity findCommonIcon(@Param(value = "commonIconDto") CommonIconDto commonIconDto);
+
+    /**
+     * 查询通用图标选择器
+     *
+     * @param commonIconDto 查询入参
+     * @return 结果集
+     */
+    List<FindCommonIconEntity> findCommonIconPicker(@Param(value = "commonIconDto") CommonIconDto commonIconDto);
 }

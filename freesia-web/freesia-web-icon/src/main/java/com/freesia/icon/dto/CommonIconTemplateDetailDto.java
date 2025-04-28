@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 通用图标模板表 数据传输对象
- * @date 2025-04-21
+ * @date 2025-04-24
  */
 @Data
 @NoArgsConstructor
@@ -20,6 +20,10 @@ import java.math.BigDecimal;
 public class CommonIconTemplateDetailDto extends BaseDto {
     @Schema(description = "通用图标模板头表ID")
     private Long headerId;
+    @Schema(description = "父级ID")
+    private Long parentId;
+    @Schema(description = "图标ID")
+    private Long iconId;
     @Schema(description = "自定义图标名称")
     private String name;
     @Schema(description = "自定义分组")

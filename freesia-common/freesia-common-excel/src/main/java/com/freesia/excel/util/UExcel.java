@@ -170,7 +170,7 @@ public class UExcel {
      */
     public static <T extends BaseImportEntity> void read(
             @NotEmpty(message = "文件路径不能为空！") String fileName,
-            @NotNull(message = "数据类型！") Class<T> dataType,
+            @NotNull(message = "数据类型不能为空！") Class<T> dataType,
             ReadListener<T> readListener,
             Integer sheetNo,
             String sheetName) {
@@ -189,7 +189,7 @@ public class UExcel {
      */
     public static <T extends BaseImportEntity> void read(
             @NotNull(message = "文件路径不能为空！") InputStream inputStream,
-            @NotNull(message = "数据类型！") Class<T> dataType,
+            @NotNull(message = "数据类型不能为空！") Class<T> dataType,
             ExcelTypeEnum excelTypeEnum,
             ReadListener<T> readListener) {
         EasyExcel.read(inputStream, dataType, readListener)
@@ -210,7 +210,7 @@ public class UExcel {
      */
     public static <T extends BaseImportEntity> void read(
             @NotNull(message = "文件路径不能为空！") InputStream inputStream,
-            @NotNull(message = "数据类型！") Class<T> dataType,
+            @NotNull(message = "数据类型不能为空！") Class<T> dataType,
             ExcelTypeEnum excelTypeEnum,
             ReadListener<T> readListener,
             Integer sheetNo) {
@@ -233,7 +233,7 @@ public class UExcel {
      */
     public static <T extends BaseImportEntity> void read(
             @NotNull(message = "文件路径不能为空！") InputStream inputStream,
-            @NotNull(message = "数据类型！") Class<T> dataType,
+            @NotNull(message = "数据类型不能为空！") Class<T> dataType,
             ExcelTypeEnum excelTypeEnum,
             ReadListener<T> readListener,
             Integer sheetNo,

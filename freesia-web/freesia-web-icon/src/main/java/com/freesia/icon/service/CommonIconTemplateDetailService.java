@@ -1,12 +1,13 @@
 package com.freesia.icon.service;
 
+import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
 import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -61,4 +62,28 @@ public interface CommonIconTemplateDetailService {
      * @return 通用图标模板明细的节点数据
      */
     List<FindTreeIconTreeTypeEntity> findTreeIconTreeType(CommonIconTemplateDetailDto commonIconTemplateDetailDto);
+
+    /**
+     * 查询自增排序号
+     *
+     * @param commonIconTemplateDetailDto 查询入参
+     * @return 最大排序号
+     */
+    Integer findMaxOrderNum(CommonIconTemplateDetailDto commonIconTemplateDetailDto);
+
+    /**
+     * 查询自定义分组列表
+     *
+     * @param dto 查询入参
+     * @return 结果集
+     */
+    List<Map<String, String>> findGrouping(CommonIconTemplateDetailDto dto);
+
+    /**
+     * 查询自定义分组Map
+     *
+     * @param dto 查询入参
+     * @return 结果集
+     */
+    Map<String, List<FindTreeIconTreeTypeEntity>> findCustomIconTemplateDetail(CommonIconTemplateDetailDto dto);
 }

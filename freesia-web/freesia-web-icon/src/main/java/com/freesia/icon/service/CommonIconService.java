@@ -7,6 +7,7 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -53,4 +54,12 @@ public interface CommonIconService {
      * @param idList 主键
      */
     void deleteCommonIcon(List<Long> idList);
+
+    /**
+     * 查询通用图标选择器
+     *
+     * @param commonIconDto 查询入参
+     * @return 结果集
+     */
+    Map<String, List<FindCommonIconEntity>> findCommonIconPicker(CommonIconDto commonIconDto);
 }

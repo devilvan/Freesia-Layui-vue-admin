@@ -47,3 +47,8 @@ export function findCommonIcon(commonIconVo: CommonIconVo): Promise<R<FindCommon
 export function deleteCommonIcon(idList: Array<string>): Promise<R<void>> {
     return Http.post("/common/commonIconController/deleteCommonIcon", idList);
 }
+
+export function findCommonIconPicker(commonIconVo: CommonIconVo): Promise<R<Record<string, Array<FindCommonIconEntity>>>> {
+    let params = buildUrlParam(commonIconVo);
+    return Http.get("/common/commonIconController/findCommonIconPicker", params);
+}

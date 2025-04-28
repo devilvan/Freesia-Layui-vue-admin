@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -35,11 +37,9 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
 
     @Override
     public CommonIconTemplateDetailDto saveUpdate(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
-        CommonIconTemplateDetailPo commonIconTemplateDetailPo = new CommonIconTemplateDetailPo();
-        UCopy.fullCopy(commonIconTemplateDetailDto, commonIconTemplateDetailPo);
-        CommonIconTemplateDetailDto resultDto = new CommonIconTemplateDetailDto();
-        UCopy.fullCopy(commonIconTemplateDetailRepository.saveAndFlush(commonIconTemplateDetailPo), resultDto);
-        return resultDto;
+        CommonIconTemplateDetailPo commonIconTemplateDetailPo = UCopy.copyDto2Po(commonIconTemplateDetailDto, CommonIconTemplateDetailPo.class);
+        commonIconTemplateDetailDto = UCopy.copyPo2Dto(commonIconTemplateDetailRepository.saveAndFlush(commonIconTemplateDetailPo), CommonIconTemplateDetailDto.class);
+        return commonIconTemplateDetailDto;
     }
 
     @Override
@@ -72,5 +72,22 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
     public List<FindTreeIconTreeTypeEntity> findTreeIconTreeType(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
         List<FindTreeIconTreeTypeEntity> findTreeIconTreeTypeEntityList = commonIconTemplateDetailMapper.findTreeIconTreeType(commonIconTemplateDetailDto);
         return UTree.buildTree(findTreeIconTreeTypeEntityList);
+    }
+
+    @Override
+    public Integer findMaxOrderNum(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
+        return commonIconTemplateDetailMapper.findMaxOrderNum(commonIconTemplateDetailDto);
+    }
+
+    @Override
+    public List<Map<String, String>> findGrouping(CommonIconTemplateDetailDto dto) {
+        return commonIconTemplateDetailMapper.findGrouping(dto);
+    }
+
+    @Override
+    public Map<String, List<FindTreeIconTreeTypeEntity>> findCustomIconTemplateDetail(CommonIconTemplateDetailDto dto) {
+        List<FindTreeIconTreeTypeEntity> list = commonIconTemplateDetailMapper.findCustomIconTemplateDetail(dto);
+        List<FindTreeIconTreeTypeEntity> treeList = UTree.buildTree(list);
+        return treeList.stream().collect(Collectors.groupingBy(FindTreeIconTreeTypeEntity::getGrouping));
     }
 }

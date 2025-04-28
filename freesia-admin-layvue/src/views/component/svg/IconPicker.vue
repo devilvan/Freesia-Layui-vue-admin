@@ -1,19 +1,45 @@
 <template>
-  <ul class="site-doc-icon">
-    <li v-for="(layIcon, index) of accountIconNameList">
-      <div @click="selectIcon(layIcon)">
-        <SvgIcon class="svgIcon" :color="props.color" :name="layIcon" :size="props.size"></SvgIcon>
-        <div class="doc-icon-name">{{ layIcon.split("_")[1] }}</div>
-      </div>
-    </li>
-  </ul>
+  <lay-collapse v-model="openKeys">
+    <div v-for="[key, value] in props.dataSource" :key="key">
+<!--      <lay-collapse-item :title="key" :id="key">-->
+<!--        <ul class="site-doc-icon">-->
+<!--          <li v-for="(item, index) of value" :key="index">-->
+<!--            <div @click="selectIcon(item)">-->
+<!--              <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>-->
+<!--            </div>-->
+<!--          </li>-->
+<!--        </ul>-->
+<!--      </lay-collapse-item>-->
+      <lay-collapse-item :title="key" :id="key">
+        <ul class="site-doc-icon">
+          <li>
+            <SvgIcon class="svgIcon"
+                     :name="'http://127.0.0.1:9002/freesia/icon/2025/04/24/61ca68d0a33b471f89339a5de53aa518.svg'"
+                     :desc="'添加图标'"
+            ></SvgIcon>
+          </li>
+          <li v-show="item.iconTreeType === IconTreeType.L && item.children?.length > 0"
+              v-for="(item, index) of value"
+              :key="index">
+            <SvgIcon class="svgIcon" :name="item.url" :desc="item.name"></SvgIcon>
+          </li>
+        </ul>
+      </lay-collapse-item>
+    </div>
+  </lay-collapse>
 </template>
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
+import {IconTreeType} from "@/types/common/icon/template/IconTemplateDetail";
 
+/*INIT*/
 const props = defineProps({
+  dataSource: {
+    type: Array,
+    required: true
+  },
   color: {
     type: String,
     default: '#009688'
@@ -23,19 +49,23 @@ const props = defineProps({
     default: '3em'
   },
 })
-const emit = defineEmits(['callBack']);
-
-const accountIconNameList = ref<string[]>([])
 onMounted(() => {
-  let accountIconNameGlob = import.meta.glob("@/assets/svgIcon/*.svg")
-  for (let accountIconName in accountIconNameGlob) {
-    accountIconNameList.value.push(accountIconName.substring(accountIconName.lastIndexOf("/") + 1, accountIconName.lastIndexOf(".")))
-  }
 })
+/*INIT*/
 
+
+/*VAR*/
+const emit = defineEmits(['callBack']);
+const openKeys = ref<Array<string>>(<Array<string>>['0', '1']);
+/*VAR*/
+
+/*FUNCTION*/
 function selectIcon(layIcon: any) {
   emit('callBack', layIcon);
 }
+
+/*FUNCTION*/
+
 </script>
 
 <style>
@@ -47,9 +77,9 @@ function selectIcon(layIcon: any) {
 .site-doc-icon li {
   display: inline-block;
   vertical-align: middle;
-  width: 10%;
-  height: 105px;
-  line-height: 25px;
+  width: 20%;
+  height: 120px;
+  line-height: 20px;
   padding: 20px 0;
   //margin-right: -1px;
   //margin-bottom: -1px;
@@ -60,7 +90,8 @@ function selectIcon(layIcon: any) {
   transition: all 0.3s;
   -webkit-transition: all 0.3s;
 }
-.site-doc-icon li div .svgIcon{
+
+.site-doc-icon li div .svgIcon {
   margin-top: -10px;
 }
 

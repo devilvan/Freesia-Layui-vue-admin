@@ -37,4 +37,7 @@ public class FindCommonIconEntity extends BaseDto {
     @Schema(description = "修改时间")
     @JSONField(format = Constants.YMD_HMS)
     private Date modifyTime;
+    @Schema(description = "修改时间")
+    @JSONField(format = Constants.YMD_HMS)
+    private String iconPartitionName;
 }

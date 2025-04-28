@@ -9,7 +9,7 @@ export enum Flag {
 }
 
 export enum Operate {
-    ADD= "ADD",
+    ADD = "ADD",
     EDIT = "EDIT",
     COPY = "COPY"
 }
