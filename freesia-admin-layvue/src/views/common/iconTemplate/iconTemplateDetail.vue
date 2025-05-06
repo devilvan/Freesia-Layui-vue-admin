@@ -14,8 +14,7 @@
       <lay-collapse-item :title="key" :id="key">
         <ul class="site-doc-icon">
           <li>
-            <SvgIcon class="svgIcon"
-                     :name="'http://127.0.0.1:9002/freesia/icon/2025/04/24/61ca68d0a33b471f89339a5de53aa518.svg'"
+            <SvgIcon :name="'http://127.0.0.1:9002/freesia/icon/2025/04/24/61ca68d0a33b471f89339a5de53aa518.svg'"
                      :desc="'添加图标'"
             ></SvgIcon>
           </li>
@@ -91,7 +90,7 @@
               <lay-row>
                 <lay-col md="4">
                   <lay-avatar v-if="!saveIconVo.iconId" @click="showIconPickerModal"></lay-avatar>
-                  <SvgIcon v-else :name="saveIconVo.iconId" size="3em" @click="changeIconTreeTypeList"></SvgIcon>
+                  <SvgIcon v-else :name="saveIconVo.iconId" @click="changeIconTreeTypeList"></SvgIcon>
                 </lay-col>
                 <lay-col md="20"
                          style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
@@ -130,25 +129,31 @@
     </div>
   </lay-layer>
 
-  <lay-layer v-model="showIconPickerModalFlag" :area="['1000px', '600px']" :title="iconPickerModalTitle">
+  <lay-layer v-model="showIconPickerModalFlag" :area="['1200px', '600px']" :title="iconPickerModalTitle">
     <div v-esc-close="hideIconPickerModal">
-      <lay-collapse v-model="openKeys">
+      <lay-collapse v-model="iconPickerModalOpenKeys">
         <div v-for="[key, value] in findCommonIconPickerDataSource" :key="key">
           <lay-collapse-item :title="key" :id="key">
             <lay-card :shadow="true">
-              <lay-row :space="20">
+              <lay-row>
                 <lay-col :md="3">
-                  <div class="svgIcon">
+                  <div class="svgIcon" @click="doInsert">
                     <SvgIcon
                         :name="'http://127.0.0.1:9002/freesia/icon/2025/04/24/61ca68d0a33b471f89339a5de53aa518.svg'"
-                        :desc="'添加图标'"
+                        :desc="'添加'"
                     ></SvgIcon>
                   </div>
                 </lay-col>
                 <lay-col :md="3" v-for="(item, index) of value">
-                  <div class="svgIcon">
-                    <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>
-                  </div>
+                  <lay-checkcard-group v-model="checkCardGroupKeys">
+                    <lay-tooltip :visible="false" trigger="hover" :content="item.name">
+                      <lay-badge type="rim" :value="20">
+                        <lay-checkcard class="checkCard" :cover="item.url" v-model="item.id" :value="item.id"
+                                       @change="selectCheckCard"
+                        ></lay-checkcard>
+                      </lay-badge>
+                    </lay-tooltip>
+                  </lay-checkcard-group>
                 </lay-col>
               </lay-row>
             </lay-card>
@@ -176,7 +181,7 @@ import {
   CommonIconTemplateDetailVo, FindMaxOrderNumVo, FindTreeIconTreeTypeEntity, IconTreeType
 } from "@/types/common/icon/template/IconTemplateDetail";
 import {
-  findCommonIconTemplateDetail, findCustomIconTemplateDetail, findGrouping, findMaxOrderNum,
+  findCustomIconTemplateDetail, findGrouping, findMaxOrderNum,
   findTreeIconTreeType,
   saveUpdate
 } from "@/api/common/icon/template/IconTemplateDetail";
@@ -186,9 +191,6 @@ import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {Operate} from "@/types/Constants";
-import {findAccountCost} from "@/api/account/Account";
-import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
-import IconPicker from "@/views/component/svg/IconPicker.vue";
 import {findCommonIconPicker} from "@/api/common/icon/Icon";
 import {FindCommonIconEntity} from "@/types/common/icon/Icon";
 
@@ -209,7 +211,8 @@ const headerId = ref<string>('');
 const dataSource = ref<Map<string, FindTreeIconTreeTypeEntity[]>>()
 const findCommonIconPickerDataSource = ref<Map<string, Array<FindCommonIconEntity>>>()
 const loading = ref(true)
-const openKeys = ref<Array<string>>(<Array<string>>[]);
+const openKeys = ref<string[]>([]);
+const iconPickerModalOpenKeys = ref<string[]>([]);
 const saveGroupModalFlag = ref<boolean>(false)
 const saveIconModalFlag = ref<boolean>(false)
 const showIconPickerModalFlag = ref<boolean>(false)
@@ -224,6 +227,7 @@ const findGroupingList = ref<Array<Map<string, string>>>();
 const saveGroupTitle = ref<string>('')
 const saveIconTitle = ref<string>('')
 const iconPickerModalTitle = ref<string>('图标选择器')
+const checkCardGroupKeys = ref([])
 /* VAR*/
 
 /* FUNCTION*/
@@ -247,9 +251,7 @@ const loadDataSource = () => {
   }
   findCustomIconTemplateDetail(param).then((res: R<Record<string, FindTreeIconTreeTypeEntity[]>>) => {
     dataSource.value = new Map(Object.entries(res.data));
-    dataSource.value?.forEach((value, key) => {
-      openKeys.value.push(key)
-    })
+    openKeys.value = Array.from(dataSource.value.keys())
   }).catch(e => {
     layer.msg(e.msg)
   });
@@ -336,6 +338,7 @@ function changeIconTreeTypeList(value: any) {
 function doFindCommonIconPicker() {
   findCommonIconPicker({}).then((res: R<Record<string, Array<FindCommonIconEntity>>>) => {
     findCommonIconPickerDataSource.value = new Map(Object.entries(res.data))
+    iconPickerModalOpenKeys.value = Array.from(findCommonIconPickerDataSource.value.keys())
   })
 }
 
@@ -345,6 +348,7 @@ function saveGroup() {
   saveGroupVo.value.grouping = saveGroupVo.value?.name
   saveGroupVo.value.iconTreeType = IconTreeType.R;
   saveUpdate(saveGroupVo.value).then((res: R<void>) => {
+    change()
     hideSaveGroupingModal()
   })
 }
@@ -383,6 +387,16 @@ function callBackFun(icon: any) {
   hideIconPickerModal()
 }
 
+// , item: FindCommonIconEntity
+function selectCheckCard(value: any) {
+  console.log(value)
+  // console.log(checkCardGroupKeys.value)
+}
+
+function doInsert() {
+  console.log(checkCardGroupKeys.value)
+}
+
 /* FUNCTION*/
 </script>
 
@@ -398,10 +412,7 @@ function callBackFun(icon: any) {
   width: 100px;
   height: 100px;
   line-height: 20px;
-  padding: 20px 0;
-  //margin-right: -1px;
-  //margin-bottom: -1px;
-  border: 1px solid #e2e2e2;
+  margin: 20px 0;
   font-size: 14px;
   text-align: center;
   color: #000;
@@ -425,7 +436,7 @@ function callBackFun(icon: any) {
 }
 
 .site-doc-icon li:hover {
-  background-color: #ff9a9e;
+  //background-color: #ff9a9e;
 }
 
 .site-doc-icon li .layui-icon {
@@ -448,7 +459,7 @@ function callBackFun(icon: any) {
   width: 16.5%;
   height: 105px;
   line-height: 25px;
-  padding: 20px 0;
+  //margin: 20px 0;
   margin-right: -1px;
   margin-bottom: -1px;
   border: 1px solid #e2e2e2;
@@ -459,24 +470,14 @@ function callBackFun(icon: any) {
   -webkit-transition: all 0.3s;
 }
 
-.anim .site-doc-icon li .layui-anim {
-  width: 125px;
-  height: 125px;
-  line-height: 125px;
-  margin: 0 auto 10px;
-  text-align: center;
-  background-color: var(--global-primary-color);
-  cursor: pointer;
-  color: #fff;
-  border-radius: 50%;
-}
-
-.anim .site-doc-icon li .code {
-  white-space: nowrap;
-}
-
 .svgIcon {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
+  cursor: pointer
+}
+
+.checkCard {
+  height: 120px;
+  width: 120px
 }
 </style>

@@ -1,15 +1,6 @@
 <template>
   <lay-collapse v-model="openKeys">
     <div v-for="[key, value] in props.dataSource" :key="key">
-<!--      <lay-collapse-item :title="key" :id="key">-->
-<!--        <ul class="site-doc-icon">-->
-<!--          <li v-for="(item, index) of value" :key="index">-->
-<!--            <div @click="selectIcon(item)">-->
-<!--              <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>-->
-<!--            </div>-->
-<!--          </li>-->
-<!--        </ul>-->
-<!--      </lay-collapse-item>-->
       <lay-collapse-item :title="key" :id="key">
         <ul class="site-doc-icon">
           <li>
