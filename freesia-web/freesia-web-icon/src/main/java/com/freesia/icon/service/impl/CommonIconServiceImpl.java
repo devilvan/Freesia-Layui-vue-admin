@@ -94,4 +94,9 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
         Map<String, List<FindCommonIconEntity>> map = findCommonIconEntityList.stream().collect(Collectors.groupingBy(FindCommonIconEntity::getIconPartitionName));
         return map;
     }
+
+    @Override
+    public List<FindCommonIconEntity> findListCommonIcon(CommonIconDto commonIconDto) {
+        return commonIconMapper.findListCommonIcon(commonIconDto);
+    }
 }

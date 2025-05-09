@@ -39,6 +39,10 @@ export function findPageCommonIcon(commonIconVo: CommonIconVo, pageQuery: PageQu
     return Http.get("/common/commonIconController/findPageCommonIcon", params);
 }
 
+export function findListCommonIcon(commonIconVo: CommonIconVo): Promise<R<FindPageCommonIconEntity[]>> {
+    return Http.post("/common/commonIconController/findListCommonIcon", commonIconVo);
+}
+
 export function findCommonIcon(commonIconVo: CommonIconVo): Promise<R<FindCommonIconEntity>> {
     let params = buildUrlParam(commonIconVo);
     return Http.get("/common/commonIconController/findCommonIcon", params);

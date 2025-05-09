@@ -1,14 +1,15 @@
 package com.freesia.icon.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.freesia.icon.entity.FindCommonIconEntity;
 import com.freesia.vo.BaseVo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "通用图标模板表 值对象")
 public class CommonIconTemplateDetailVo extends BaseVo {
     @Schema(description = "通用图标模板头表ID")
@@ -44,4 +46,7 @@ public class CommonIconTemplateDetailVo extends BaseVo {
     @Schema(description = "节点类型（ICON_TREE_TYPE）")
     @JSONField(alternateNames = {"iconTreeType"})
     private String iconTreeType;
+    @Schema(description = "批量图标数据")
+    @JSONField(alternateNames = {"multipleIconList"})
+    private List<FindCommonIconEntity> multipleIconList;
 }

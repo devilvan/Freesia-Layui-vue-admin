@@ -7,6 +7,7 @@ export interface CommonIconVo extends BaseVo {
     fileId?: string;
     iconPartition?: string;
     remark?: string;
+    idList?: string[];
 }
 
 export interface CommonIconEntity extends BaseEntity {
@@ -14,7 +15,7 @@ export interface CommonIconEntity extends BaseEntity {
     fileId?: string;
     iconPartition?: string;
     remark?: string;
-
+    idList?: string[]
 }
 
 export interface CommonIconSaveUpdateEntity {

@@ -51,14 +51,15 @@ public class CommonIconTemplateDetailController extends BaseController {
     /**
      * 批量保存通用图标模板表信息
      *
-     * @param commonIconTemplateDetailVoList 待保存对象
+     * @param commonIconTemplateDetailVo 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存通用图标模板表信息")
     @PostMapping(value = "saveUpdateBatch")
-    public R<Void> saveUpdateBatch(@RequestBody List<CommonIconTemplateDetailVo> commonIconTemplateDetailVoList) {
-        List<CommonIconTemplateDetailDto> commonIconTemplateDetailDtoList = UCopy.fullCopyList(commonIconTemplateDetailVoList, CommonIconTemplateDetailDto.class);
-        commonIconTemplateDetailService.saveUpdateBatch(commonIconTemplateDetailDtoList);
+    public R<Void> saveUpdateBatch(@RequestBody CommonIconTemplateDetailVo commonIconTemplateDetailVo) {
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
+        commonIconTemplateDetailDto.setMultipleIconList(commonIconTemplateDetailVo.getMultipleIconList());
+        commonIconTemplateDetailService.saveUpdateBatch(commonIconTemplateDetailDto);
         return R.ok();
     }
 
@@ -144,6 +145,5 @@ public class CommonIconTemplateDetailController extends BaseController {
         Map<String, List<FindTreeIconTreeTypeEntity>> map = commonIconTemplateDetailService.findCustomIconTemplateDetail(dto);
         return R.ok(map);
     }
-
 
 }

@@ -12,4 +12,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class FindCommonIconTemplateDetailEntity extends CommonIconTemplateDetailDto {
+    /**
+     * 图标URL
+     */
+    private String url;
 }

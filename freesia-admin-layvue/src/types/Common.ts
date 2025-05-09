@@ -36,3 +36,8 @@ export interface PageQuery {
     limit?: number;
     total?: number;
 }
+
+export interface Select {
+    label?: string;
+    value?: any;
+}

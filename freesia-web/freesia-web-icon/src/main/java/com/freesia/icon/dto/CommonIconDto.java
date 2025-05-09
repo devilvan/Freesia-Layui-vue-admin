@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author Evad.Wu
  * @Description 通用图标表 数据传输对象
@@ -26,4 +28,6 @@ public class CommonIconDto extends BaseDto {
     private String iconPartition;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "主键集合")
+    private List<Long> idList;
 }

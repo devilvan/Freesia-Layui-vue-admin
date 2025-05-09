@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author Evad.Wu
  * @Description 通用图标表 值对象
@@ -31,4 +33,7 @@ public class CommonIconVo extends BaseVo {
     @Schema(description = "备注")
     @JSONField(alternateNames = {"remark"})
     private String remark;
+    @Schema(description = "主键集合")
+    @JSONField(alternateNames = {"idList"})
+    private List<Long> idList;
 }

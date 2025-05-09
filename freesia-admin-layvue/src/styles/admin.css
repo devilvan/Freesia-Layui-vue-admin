@@ -168,3 +168,7 @@
     text-overflow: ellipsis;
     text-align: left;
 }
+
+.easy-wrap {
+    display: inline-block;
+}

@@ -1,10 +1,13 @@
 package com.freesia.icon.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
+import com.freesia.icon.entity.FindCommonIconEntity;
 import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
 import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
 import com.freesia.icon.mapper.CommonIconTemplateDetailMapper;
@@ -20,8 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,9 +45,21 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
     }
 
     @Override
-    public List<CommonIconTemplateDetailDto> saveUpdateBatch(List<CommonIconTemplateDetailDto> list) {
-        List<CommonIconTemplateDetailPo> commonIconTemplateDetailPoList = UCopy.fullCopyList(list, CommonIconTemplateDetailPo.class);
-        return UCopy.fullCopyList(commonIconTemplateDetailRepository.saveAllAndFlush(commonIconTemplateDetailPoList), CommonIconTemplateDetailDto.class);
+    public List<CommonIconTemplateDetailDto> saveUpdateBatch(CommonIconTemplateDetailDto dto) {
+        List<CommonIconTemplateDetailPo> commonIconTemplateDetailPoList = new ArrayList<>();
+        List<FindCommonIconEntity> multipleIconList = dto.getMultipleIconList();
+        int orderNum = Convert.toInt(dto.getOrderNum(), 0) + 10;
+        for (FindCommonIconEntity entity : multipleIconList) {
+            CommonIconTemplateDetailPo po = new CommonIconTemplateDetailPo();
+            UCopy.fullCopy(dto, po);
+            po.setIconId(entity.getId());
+            po.setName(entity.getName());
+            po.setOrderNum(orderNum);
+            commonIconTemplateDetailPoList.add(po);
+            orderNum += 10;
+        }
+        List<CommonIconTemplateDetailPo> poList = commonIconTemplateDetailRepository.saveAll(commonIconTemplateDetailPoList);
+        return UCopy.fullCopyList(poList, CommonIconTemplateDetailDto.class);
     }
 
     @Override
@@ -87,7 +101,26 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
     @Override
     public Map<String, List<FindTreeIconTreeTypeEntity>> findCustomIconTemplateDetail(CommonIconTemplateDetailDto dto) {
         List<FindTreeIconTreeTypeEntity> list = commonIconTemplateDetailMapper.findCustomIconTemplateDetail(dto);
-        List<FindTreeIconTreeTypeEntity> treeList = UTree.buildTree(list);
-        return treeList.stream().collect(Collectors.groupingBy(FindTreeIconTreeTypeEntity::getGrouping));
+        // 首先创建一个parentId到父项name的映射
+        Map<Long, String> parentIdToNameMap = list.stream()
+                .filter(item -> AdminConstant.MENU_TOP_PARENT_ID.equals(item.getParentId()))
+                .collect(Collectors.toMap(FindTreeIconTreeTypeEntity::getId, FindTreeIconTreeTypeEntity::getName));
+        // 获取所有父项name
+        Set<String> allParentNames = new HashSet<>(parentIdToNameMap.values());
+        // 创建结果Map，先初始化所有父项
+        Map<String, List<FindTreeIconTreeTypeEntity>> result = allParentNames.stream()
+                .collect(Collectors.toMap(
+                        name -> name,
+                        name -> new ArrayList<>()
+                ));
+        // 填充子项
+        list.stream()
+                .filter(item -> !AdminConstant.MENU_TOP_PARENT_ID.equals(item.getParentId()))
+                .filter(item -> parentIdToNameMap.containsKey(item.getParentId()))
+                .forEach(item -> {
+                    String parentName = parentIdToNameMap.get(item.getParentId());
+                    result.get(parentName).add(item);
+                });
+        return result;
     }
 }

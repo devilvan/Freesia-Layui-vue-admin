@@ -86,6 +86,7 @@
         WHERE 1 = 1
           AND CITD.LOGIC_DEL = 0
           AND CITD.HEADER_ID = #{dto.headerId}
+          AND CITD.ICON_TREE_TYPE = 'R'
         ORDER BY CITD.ORDER_NUM
     </select>
     <select id="findCustomIconTemplateDetail" resultType="com.freesia.icon.entity.FindTreeIconTreeTypeEntity">
@@ -99,9 +100,10 @@
                         CITD.ICON_TREE_TYPE,
                         CITD.ICON_ID,
                         CITD.PARENT_ID,
-                        SDV.VALUE AS URL
+                        SO.URL
         FROM common_icon_template_detail CITD
-                 LEFT JOIN sys_dict_value SDV ON CITD.ICON_ID = SDV.ID
+                 LEFT JOIN common_icon CI ON CITD.ICON_ID = CI.ID
+                 LEFT JOIN SYS_OSS SO ON CI.FILE_ID = SO.ID
         WHERE 1 = 1
           AND CITD.LOGIC_DEL = 0
           AND CITD.HEADER_ID = #{dto.headerId}

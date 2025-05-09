@@ -44,4 +44,12 @@ public interface CommonIconMapper extends BaseMapper<CommonIconPo> {
      * @return 结果集
      */
     List<FindCommonIconEntity> findCommonIconPicker(@Param(value = "commonIconDto") CommonIconDto commonIconDto);
+
+    /**
+     * 条件查询通用图标表
+     *
+     * @param commonIconDto 查询条件
+     * @return 形式返回
+     */
+    List<FindCommonIconEntity> findListCommonIcon(@Param(value = "commonIconDto") CommonIconDto commonIconDto);
 }

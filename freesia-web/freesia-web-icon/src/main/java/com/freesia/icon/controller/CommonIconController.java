@@ -162,6 +162,22 @@ public class CommonIconController extends BaseController {
     }
 
     /**
+     * 条件查询通用图标表
+     *
+     * @param commonIconVo 查询条件
+     * @return 形式返回
+     */
+    @Operation(summary = "条件查询通用图标表")
+    @PostMapping(value = "findListCommonIcon")
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
+    public R<List<FindCommonIconEntity>> findListCommonIcon(@RequestBody CommonIconVo commonIconVo) {
+        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        commonIconDto.setIdList(commonIconVo.getIdList());
+        List<FindCommonIconEntity> list = commonIconService.findListCommonIcon(commonIconDto);
+        return R.ok(list);
+    }
+
+    /**
      * 删除通用图标表
      *
      * @param idList 主键

@@ -1,11 +1,14 @@
 package com.freesia.icon.dto;
 
 import com.freesia.dto.BaseDto;
+import com.freesia.icon.entity.FindCommonIconEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -34,4 +37,8 @@ public class CommonIconTemplateDetailDto extends BaseDto {
     private String remark;
     @Schema(description = "节点类型（ICON_TREE_TYPE）")
     private String iconTreeType;
+    @Schema(description = "主键集合")
+    private List<Long> idList;
+    @Schema(description = "批量图标数据")
+    private List<FindCommonIconEntity> multipleIconList;
 }

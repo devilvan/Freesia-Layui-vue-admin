@@ -38,7 +38,7 @@ public class UTree extends TreeUtil {
 
 //    /**
 //     * 广度优先算法
-//     * 获取该节点在列表中对应的子节点，并通过队列循环对子节点进行同样操作
+//     * 获取目标节点及其子节点
 //     *
 //     * @param list   需要遍历的集合
 //     * @param target 选取的节点

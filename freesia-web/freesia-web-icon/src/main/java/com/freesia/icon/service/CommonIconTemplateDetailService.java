@@ -26,10 +26,10 @@ public interface CommonIconTemplateDetailService {
     /**
      * 批量保存通用图标模板表信息
      *
-     * @param list 控制层处理后的数据传输对象集合
+     * @param dto 控制层处理后的数据传输对象
      * @return 保存回调对象
      */
-    List<CommonIconTemplateDetailDto> saveUpdateBatch(List<CommonIconTemplateDetailDto> list);
+    List<CommonIconTemplateDetailDto> saveUpdateBatch(CommonIconTemplateDetailDto dto);
 
     /**
      * 查询通用图标模板表信息

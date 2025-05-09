@@ -22,6 +22,11 @@
         <if test="commonIconDto.id != null and commonIconDto.id != 0">
             AND CI.ID = #{commonIconDto.id}
         </if>
+        <if test="commonIconDto.idList != null and commonIconDto.idList.size() > 0">
+            <foreach collection="commonIconDto.idList" item="id" open="AND CI.ID IN (" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
         <if test="commonIconDto.fileId != null and commonIconDto.fileId != 0">
             AND SO.ID = #{commonIconDto.fileId}
         </if>
@@ -74,5 +79,8 @@
         </if>
         GROUP BY CI.ICON_PARTITION, CI.NAME, CI.ORDER_NUM
         ORDER BY CI.ICON_PARTITION, CI.NAME, CI.ORDER_NUM
+    </select>
+    <select id="findListCommonIcon" resultType="com.freesia.icon.entity.FindCommonIconEntity">
+        <include refid="findCommonIconSqlRef"/>
     </select>
 </mapper>

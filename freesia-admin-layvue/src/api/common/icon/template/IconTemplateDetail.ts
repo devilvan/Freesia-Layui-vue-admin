@@ -11,8 +11,8 @@ export function saveUpdate(commonIconTemplateDetailVo: CommonIconTemplateDetailV
     return Http.post("/common/commonIconTemplateDetailController/saveUpdate", commonIconTemplateDetailVo);
 }
 
-export function saveUpdateBatch(commonIconTemplateDetailVoList: Array<CommonIconTemplateDetailVo>): Promise<R<void>> {
-    return Http.post("/common/commonIconTemplateDetailController/saveUpdateBatch", commonIconTemplateDetailVoList);
+export function saveUpdateBatch(commonIconTemplateDetailVo: CommonIconTemplateDetailVo): Promise<R<void>> {
+    return Http.post("/common/commonIconTemplateDetailController/saveUpdateBatch", commonIconTemplateDetailVo);
 }
 
 export function findPageCommonIconTemplateDetail(commonIconTemplateDetailVo: CommonIconTemplateDetailVo, pageQuery: PageQuery): Promise<TableResult<CommonIconTemplateDetailEntity>> {

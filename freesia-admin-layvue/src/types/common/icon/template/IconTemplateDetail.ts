@@ -2,6 +2,7 @@ import {saveUpdate} from "@/api/common/icon/Icon";
 import {SysOssEntity} from "@/types/system/Oss";
 import {BaseEntity, BaseVo} from "@/types/Common";
 import {Tree} from "@/types/Result";
+import {FindCommonIconEntity} from "@/types/common/icon/Icon";
 
 export enum IconTreeType {
     "R" = "R",
@@ -18,6 +19,10 @@ export interface CommonIconTemplateDetailVo extends BaseVo {
     iconTreeType?: string;
     iconId?: string;
     parentId?: string;
+    originName?: string;
+    url?: string;
+    multipleIconList?: FindCommonIconEntity[]
+    idList?: string[];
 }
 
 export interface CommonIconTemplateDetailEntity extends BaseEntity {

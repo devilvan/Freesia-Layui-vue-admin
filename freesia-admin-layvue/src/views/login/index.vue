@@ -9,8 +9,7 @@
         <div class="login-container">
           <div class="login-side">
             <div class="login-bg-title">
-              <h1>layui vue admin</h1>
-
+              <h1>Freesia-Admin</h1>
               <h3 style="margin: 20px auto">
                 开 箱 即 用 的 layui vue 企 业 级 前 端 模 板
               </h3>

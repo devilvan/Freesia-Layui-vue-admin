@@ -62,4 +62,12 @@ public interface CommonIconService {
      * @return 结果集
      */
     Map<String, List<FindCommonIconEntity>> findCommonIconPicker(CommonIconDto commonIconDto);
+
+    /**
+     * 条件查询通用图标表
+     *
+     * @param commonIconDto 查询条件
+     * @return 形式返回
+     */
+    List<FindCommonIconEntity> findListCommonIcon(CommonIconDto commonIconDto);
 }
