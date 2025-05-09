@@ -9,3 +9,13 @@ export enum LinkComponentType {
     BLANK = "blank",
     INNER_LINK = "innerLink"
 }
+
+export interface MenuTree {
+    id?: string;
+    icon?: string;
+    menuName?: string;
+    orderNum?: number;
+    parentId?: string;
+    visible?: string;
+    children?: MenuTree[]
+}
