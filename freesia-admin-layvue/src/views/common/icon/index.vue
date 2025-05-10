@@ -1,4 +1,5 @@
 <template>
+  <GoodTest></GoodTest>
   <lay-container :fluid="true">
     <lay-card>
       <lay-form ref="queryFormRef" :model="searchQuery"
@@ -270,6 +271,7 @@ import {getWeekdayCn} from "@/util/UDate";
 import {preview} from "@/util/UImage";
 import {useModalStore} from "@/layouts/composable/useModalStore";
 import app from "@/main";
+import GoodTest from "@/views/common/icon/test.vue";
 
 /* INIT*/
 onMounted(async () => {
