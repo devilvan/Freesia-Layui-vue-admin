@@ -101,11 +101,12 @@
               <lay-row>
                 <lay-col md="4">
                   <lay-avatar v-if="!saveSingleIconVo.url" @click="showSingleIconPickerModal"></lay-avatar>
-                  <object v-else style="height:40px" :data="saveSingleIconVo.url" type="image/svg+xml"
-                          @click="showSingleIconPickerModal"></object>
+                  <lay-avatar style="height:40px" v-else :src="saveSingleIconVo.url"
+                              @click="showSingleIconPickerModal"
+                  ></lay-avatar>
                 </lay-col>
                 <lay-col md="20" class="iconName">
-                  图标：{{ saveSingleIconVo.originName || saveSingleIconVo.name }}
+                  图标：{{ saveSingleIconVo.originName }}
                 </lay-col>
               </lay-row>
             </lay-form-item>
@@ -539,7 +540,7 @@ function selectCheckCard(item: FindCommonIconEntity) {
 function selectMultipleIcons() {
   if (!checkCardGroupKeys.value || checkCardGroupKeys.value.length < 1) {
     hideMultipleIconPickerModal()
-    return ;
+    return;
   }
   let param: CommonIconVo = {
     idList: checkCardGroupKeys.value

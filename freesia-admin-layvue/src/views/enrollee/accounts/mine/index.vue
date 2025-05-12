@@ -80,9 +80,6 @@
         </lay-tooltip>
       </template>
       <template #paymentTime="{ row }">
-        <!--        <div :style="'color:' + getDayColor(row.paymentTime)">-->
-        <!--          {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）-->
-        <!--        </div>-->
         {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）
       </template>
       <template #remark="{ row }">
@@ -99,8 +96,8 @@
         <dict-tag :options="paymentSignSelect" :value="row.paymentSign"/>
       </template>
       <template #iconType="{ row }">
-        <!--        <SvgIcon :name="row.icon" size="2em"></SvgIcon>-->
-        {{ row.icon }}
+        <lay-avatar :src="row.url"></lay-avatar>
+        &nbsp;&nbsp;{{ row.costType }}
       </template>
       <template v-slot:toolbar>
         <lay-button
@@ -185,12 +182,14 @@
               <lay-form-item label="图标" prop="icon" required>
                 <lay-row>
                   <lay-col md="4">
-                    <lay-avatar v-if="!accountCostVo.icon" @click="changeSelectTypeModal"></lay-avatar>
-                    <!--                    <IconPicker v-else :dataSource="findCommonIconPickerDataSource" :openKeys="openKeys" />-->
+                    <lay-avatar v-if="!accountCostVo.icon" class="iconContainer"
+                                @click="changeSelectTypeModal"></lay-avatar>
+                    <lay-avatar v-else class="iconContainer" :src="accountCostVo.url"
+                                @click="changeSelectTypeModal"></lay-avatar>
                   </lay-col>
                   <lay-col md="20"
                            style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
-                    图标：{{ accountCostVo.icon }}
+                    图标：{{ accountCostVo.iconName }}
                   </lay-col>
                 </lay-row>
               </lay-form-item>
@@ -352,6 +351,7 @@ import {findCommonIconPicker} from "@/api/common/icon/Icon";
 import {FindCommonIconEntity} from "@/types/common/icon/Icon";
 import {CommonIconTemplateDetailVo, FindTreeIconTreeTypeEntity} from "@/types/common/icon/template/IconTemplateDetail";
 import {findCustomIconTemplateDetail} from "@/api/common/icon/template/IconTemplateDetail";
+import {preview} from "@/util/UImage";
 
 /* INIT*/
 onMounted(async () => {
@@ -359,7 +359,7 @@ onMounted(async () => {
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
   searchQuery.value.paymentTimeRange = buildRange(7)
   let param: CommonIconTemplateDetailVo = {
-    headerId: '1910229069396738049'
+    headerId: '1921077018290704384'
   }
   findCustomIconTemplateDetail(param).then((res: R<Record<string, FindTreeIconTreeTypeEntity[]>>) => {
     findCommonIconPickerDataSource.value = new Map(Object.entries(res.data));
@@ -591,7 +591,7 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      accountCostVo.value.costType = accountCostVo.value.icon?.split("_")[0];
+      accountCostVo.value.costType = accountCostVo.value.iconName
       let id = accountCostVo.value.id;
       saveUpdate(accountCostVo.value).then((res: any) => {
         if (res.code === 200) {
@@ -666,6 +666,8 @@ function changeSelectTypeModal() {
 
 const callBackFun = (icon: FindCommonIconEntity) => {
   accountCostVo.value.icon = icon.id;
+  accountCostVo.value.url = icon.url
+  accountCostVo.value.iconName = icon.name
   changeSelectTypeModal()
 }
 
@@ -777,3 +779,10 @@ function getRowStyle(row: any, rowIndex: number) {
 
 /* FUNCTION*/
 </script>
+
+<style scoped>
+.iconContainer {
+  width: 40px;
+  height: 40px;
+}
+</style>

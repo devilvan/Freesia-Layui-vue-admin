@@ -120,4 +120,19 @@ function selectIcon(layIcon: any) {
   transition: all 0.3s;
   -webkit-transition: all 0.3s;
 }
+
+.container {
+  height: inherit;
+  width: inherit;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  text-align: center;
+}
+
+.container-desc {
+  padding: 0 20%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

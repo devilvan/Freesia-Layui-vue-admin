@@ -31,4 +31,10 @@ public class FindAccountCostEntity extends AccountCostDto {
      */
     @Schema(description = "用户昵称")
     private String acNickName;
+    /**
+     * 图标URL
+     */
+    @Schema(description = "图标URL")
+    private String url;
+
 }

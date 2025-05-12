@@ -13,7 +13,11 @@ export interface AccountCostVo extends BaseVo {
     accountCostUserIdList?: string[];
     accountCostUserNameList?: string[];
     acNickName?: string;
-    userList: SysUserEntity[];
+    userList?: SysUserEntity[];
+    status?: boolean;
+    url?: string;
+    iconName?: string;
+    iconPartition?: string;
 }
 
 export interface AccountCostEntity extends BaseEntity {

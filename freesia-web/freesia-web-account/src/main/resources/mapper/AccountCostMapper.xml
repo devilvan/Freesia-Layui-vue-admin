@@ -18,10 +18,14 @@
         AC.USER_ID,
         (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
         GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
+        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME,
+        SO.URL
         FROM account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
         LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        LEFT JOIN common_icon_template_detail CITD ON AC.ICON = CITD.ID
+        LEFT JOIN COMMON_ICON CI ON CITD.ICON_ID = CI.ID
+        LEFT JOIN SYS_OSS SO ON CI.FILE_ID = SO.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCost.userId}
@@ -59,10 +63,14 @@
         AC.USER_ID,
         (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
         GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
+        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME,
+        SO.URL
         FROM account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
         INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        LEFT JOIN common_icon_template_detail CITD ON AC.ICON = CITD.ID
+        LEFT JOIN COMMON_ICON CI ON CITD.ICON_ID = CI.ID
+        LEFT JOIN SYS_OSS SO ON CI.FILE_ID = SO.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCost.tenantId}
@@ -103,10 +111,14 @@
         AC.USER_ID,
         (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
         GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
+        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME,
+        SO.URL
         FROM account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
         LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        LEFT JOIN common_icon_template_detail CITD ON AC.ICON = CITD.ID
+        LEFT JOIN COMMON_ICON CI ON CITD.ICON_ID = CI.ID
+        LEFT JOIN SYS_OSS SO ON CI.FILE_ID = SO.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCost.userId}
@@ -134,10 +146,14 @@
         AC.USER_ID,
         (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
         GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
+        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME,
+        SO.URL
         FROM account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
         INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        LEFT JOIN common_icon_template_detail CITD ON AC.ICON = CITD.ID
+        LEFT JOIN COMMON_ICON CI ON CITD.ICON_ID = CI.ID
+        LEFT JOIN SYS_OSS SO ON CI.FILE_ID = SO.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCost.tenantId}
@@ -168,6 +184,7 @@
         <result property="acNickName" column="AC_NICK_NAME"/>
         <result property="accountCostUserId" column="SU_ID"/>
         <result property="accountCostUserName" column="NICK_NAME"/>
+        <result property="url" column="URL"/>
     </resultMap>
     <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
         SELECT T.COST_DESC,
