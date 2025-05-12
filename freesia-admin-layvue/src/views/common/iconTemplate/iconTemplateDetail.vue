@@ -23,8 +23,9 @@
                 <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>
                 <template #content>
                   <lay-dropdown-menu>
-                    <lay-dropdown-menu-item @click="editIcon">编辑</lay-dropdown-menu-item>
-                    <lay-dropdown-menu-item @click="deleteIcon">删除</lay-dropdown-menu-item>
+                    <lay-dropdown-menu-item @click="showSingleSaveIconModal(Operate.EDIT, item)">编辑
+                    </lay-dropdown-menu-item>
+                    <lay-dropdown-menu-item @click="deleteIcon(item)">删除</lay-dropdown-menu-item>
                   </lay-dropdown-menu>
                 </template>
               </lay-dropdown>
@@ -75,7 +76,8 @@
   </lay-layer>
 
   <lay-layer v-model="saveSingleIconModalFlag" :area="['1200px']" :title="saveSingleIconTitle">
-    <div style="padding: 20px" v-esc-close="hideSingleSaveIconModal">
+    <div style="padding: 20px" @keydown.enter.prevent="saveIcon"
+         v-esc-close="hideSingleSaveIconModal">
       <lay-form :model="saveSingleIconVo" ref="saveSingleIconFormRef" label-position="top" size="md">
         <lay-row space="20">
           <lay-col md="6">
@@ -103,7 +105,7 @@
                           @click="showSingleIconPickerModal"></object>
                 </lay-col>
                 <lay-col md="20" class="iconName">
-                  图标：{{ saveSingleIconVo.originName }}
+                  图标：{{ saveSingleIconVo.originName || saveSingleIconVo.name }}
                 </lay-col>
               </lay-row>
             </lay-form-item>
@@ -250,6 +252,7 @@ import {
   CommonIconTemplateDetailVo, FindMaxOrderNumVo, FindTreeIconTreeTypeEntity, IconTreeType
 } from "@/types/common/icon/template/IconTemplateDetail";
 import {
+  deleteCommonIconTemplateDetail,
   findCustomIconTemplateDetail, findGrouping, findMaxOrderNum,
   findTreeIconTreeType,
   saveUpdate, saveUpdateBatch
@@ -267,12 +270,14 @@ import {preview} from "@/util/UImage";
 import LayMenuAdapter from "@/views/component/LayMenuAdapter.vue";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
+import {deleteAccountCost} from "@/api/account/Account";
 
 /* INIT*/
 onMounted(async () => {
   headerId.value = $route.params && $route.params.headerId as string;
   iconTreeTypeList.value = await loadSysDictValue(Constants.ICON_TREE_TYPE);
   iconTreeTypeListSelect.value = await sysDictValueSelect(iconTreeTypeList.value);
+  doFindGrouping();
   doFindTreeIconTreeType()
   doFindCommonIconPicker();
   doFindConfigByKey(SysConfigKey.ADD_ICON_URL);
@@ -369,20 +374,16 @@ function showSaveGroupingModal(title: string, row: any) {
 function showSingleSaveIconModal(title: string, row: any) {
   saveSingleIconTitle.value = Operate.ADD === title ? "新增" : Operate.EDIT === title ? "编辑" : "";
   if (row != null) {
-    saveSingleIconTitle.value = {...row}
+    saveSingleIconVo.value = {...row}
   }
   if (Operate.EDIT === title) {
+    checkCardGroupKey.value = null
+    saveSingleIconVo.value.originName = row.name
+    saveSingleIconModalFlag.value = true
   } else if (Operate.ADD === title) {
     saveSingleIconVo.value = {}
     checkCardGroupKey.value = null
     saveSingleIconModalFlag.value = true
-    let param: CommonIconTemplateDetailVo = {
-      headerId: headerId.value
-    }
-    findGrouping(param).then((res: R<Map<string, string>>) => {
-      findGroupingList.value = res.data;
-    })
-  } else if (Operate.COPY === title) {
   }
 }
 
@@ -469,6 +470,7 @@ function saveGroup() {
   saveGroupVo.value.iconTreeType = IconTreeType.R;
   saveUpdate(saveGroupVo.value).then((res: R<void>) => {
     change()
+    doFindGrouping();
     hideSaveGroupingModal()
   })
 }
@@ -535,6 +537,10 @@ function selectCheckCard(item: FindCommonIconEntity) {
 }
 
 function selectMultipleIcons() {
+  if (!checkCardGroupKeys.value || checkCardGroupKeys.value.length < 1) {
+    hideMultipleIconPickerModal()
+    return ;
+  }
   let param: CommonIconVo = {
     idList: checkCardGroupKeys.value
   }
@@ -560,14 +566,46 @@ function findMultipleItemIndex(id: string | undefined): number {
   return checkCardGroupKeys.value.findIndex(item => item === id) + 1;
 }
 
-function editIcon() {
-
+function deleteIcon(item: FindTreeIconTreeTypeEntity) {
+  layer.confirm('确定要删除图标【' + item.name + '】吗？', {
+    title: '提示',
+    btn: [
+      {
+        text: '确定',
+        callback: (id: any) => {
+          let idList: string[] = []
+          if (item && item.id) {
+            idList.push(item.id);
+          }
+          deleteCommonIconTemplateDetail(idList).then((res: any) => {
+            if (res.code === 200) {
+              layer.msg('删除成功')
+            }
+            change();
+          }).catch(e => {
+            layer.confirm(e.msg, {icon: 2})
+          })
+          layer.close(id)
+        }
+      },
+      {
+        text: '取消',
+        callback: (id: any) => {
+          layer.close(id)
+        }
+      }
+    ]
+  })
 }
 
-function deleteIcon() {
-
+function doFindGrouping() {
+  let param: CommonIconTemplateDetailVo = {
+    headerId: headerId.value
+  }
+  findGrouping(param).then((res: R<Map<string, string>>) => {
+    findGroupingList.value = res.data;
+  })
 }
-
 
 /* FUNCTION*/
 </script>

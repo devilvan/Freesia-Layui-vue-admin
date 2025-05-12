@@ -11,7 +11,7 @@ export enum SysConfigKey {
     /**
      * 添加图标URL
      */
-    ADD_ICON_URL = "home.icon.url"
+    ADD_ICON_URL = "add.icon.url"
 }
 
 export interface SysConfigVo extends BaseVo {

@@ -92,6 +92,7 @@
     <select id="findCustomIconTemplateDetail" resultType="com.freesia.icon.entity.FindTreeIconTreeTypeEntity">
         SELECT DISTINCT CITD.ID,
                         CITD.REC_VER,
+                        CITD.LOGIC_DEL,
                         CITD.HEADER_ID,
                         CITD.NAME,
                         CITD.`GROUPING`,
