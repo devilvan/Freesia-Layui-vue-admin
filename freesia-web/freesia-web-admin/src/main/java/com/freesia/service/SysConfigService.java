@@ -20,7 +20,7 @@ public interface SysConfigService {
      * @param sysConfigDto 控制层处理后的数据传输对象
      * @return 保存回调对象
      */
-    SysConfigPo saveUpdate(SysConfigDto sysConfigDto);
+    SysConfigDto saveUpdate(SysConfigDto sysConfigDto);
 
     /**
      * 批量保存
@@ -31,12 +31,12 @@ public interface SysConfigService {
     List<SysConfigPo> saveUpdateBatch(List<SysConfigDto> list);
 
     /**
-     * 查询全局配置表中是否启用注册功能
+     * 根据系统配置键查询值
      *
-     * @param configKey config键，{@link com.freesia.constant.SysConfigConstant#SYS_ACCOUNT_REGISTER_USER}
-     * @return flag
+     * @param configKey 系统配置键
+     * @return 系统配置值
      */
-    String findConfigByKey(String configKey);
+    SysConfigDto findConfigByKey(String configKey);
 
     /**
      * 1. 判断验证码功能是否开启

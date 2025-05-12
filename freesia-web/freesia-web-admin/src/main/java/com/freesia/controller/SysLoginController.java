@@ -7,13 +7,11 @@ import cn.hutool.http.HttpStatus;
 import com.freesia.constant.Constants;
 import com.freesia.constant.SysConfigConstant;
 import com.freesia.crypt.util.UCrypt;
-import com.freesia.dto.RouterDto;
-import com.freesia.dto.SysMenuDto;
-import com.freesia.dto.SysTenantDto;
-import com.freesia.dto.SysUserDto;
+import com.freesia.dto.*;
 import com.freesia.entity.RouterEntity;
 import com.freesia.entity.SysUserEntity;
 import com.freesia.entity.SysUserInfoEntity;
+import com.freesia.po.SysConfigPo;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.*;
@@ -104,7 +102,8 @@ public class SysLoginController extends BaseController {
     @Operation(summary = "查询验证码启用状态")
     @GetMapping(value = "findCaptchaEnabled")
     public R<Boolean> findCaptchaEnabled() {
-        String captchaEnabled = sysConfigService.findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        SysConfigDto sysConfigDto = sysConfigService.findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        String captchaEnabled = sysConfigDto.getConfigValue();
         boolean captchaEnabledFlag = Convert.toBool(captchaEnabled, false);
         return R.ok(captchaEnabledFlag);
     }

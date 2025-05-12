@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.po.SysConfigPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysConfigService;
@@ -45,8 +46,9 @@ public class SysConfigController extends BaseController {
     @Operation(summary = "根据系统配置键获取配置值")
     @GetMapping(value = "findConfigByKey")
     public R<String> findPageSysConfig(@RequestParam String configKey) {
-        String configByKey = sysConfigService.findConfigByKey(configKey);
-        return R.ok(configByKey);
+        SysConfigDto sysConfigDto = sysConfigService.findConfigByKey(configKey);
+        String configValue = sysConfigDto.getConfigValue();
+        return R.ok(configValue);
     }
 
     @Idempotent

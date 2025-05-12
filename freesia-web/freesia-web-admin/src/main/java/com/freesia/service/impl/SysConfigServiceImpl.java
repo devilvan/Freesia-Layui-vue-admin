@@ -46,10 +46,11 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     @Override
     @CachePut(cacheNames = CacheConstant.SYS_CONFIG, key = "#sysConfigDto.configKey")
     @LogRecord(module = ConfigModule.CONFIG_MANAGEMENT, subModule = ConfigModule.SubModule.SAVE_CONFIG, message = "config.save")
-    public SysConfigPo saveUpdate(SysConfigDto sysConfigDto) {
+    public SysConfigDto saveUpdate(SysConfigDto sysConfigDto) {
         SysConfigPo sysConfigPo = new SysConfigPo();
         UCopy.fullCopy(sysConfigDto, sysConfigPo);
-        return sysConfigRepository.saveAndFlush(sysConfigPo);
+        sysConfigPo = sysConfigRepository.saveAndFlush(sysConfigPo);
+        return UCopy.copyPo2Dto(sysConfigPo, SysConfigDto.class);
     }
 
     @Override
@@ -61,21 +62,19 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     @Cacheable(cacheNames = CacheConstant.SYS_CONFIG, key = "#configKey")
-    public String findConfigByKey(String configKey) {
+    public SysConfigDto findConfigByKey(String configKey) {
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
                 .select(SysConfigPo::getConfigKey)
                 .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysConfigPo::getConfigKey, configKey);
         SysConfigPo sysConfigPo = this.getOne(queryWrapper);
-        if (ObjectUtil.isNotNull(sysConfigPo)) {
-            return sysConfigPo.getConfigValue();
-        }
-        return UString.EMPTY;
+        return UCopy.copyPo2Dto(sysConfigPo, SysConfigDto.class);
     }
 
     @Override
     public void validateCaptcha(String username, String code, String captchaKey) {
-        String captchaEnabled = USpring.getAopProxy(this).findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        SysConfigDto sysConfigDto = USpring.getAopProxy(this).findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        String captchaEnabled = sysConfigDto.getConfigValue();
         boolean flag = Convert.toBool(captchaEnabled, false);
         if (flag) {
             checkCaptcha(username, code, captchaKey);
@@ -87,7 +86,8 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
                 .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED);
         List<SysConfigPo> sysConfigPoList = this.list(queryWrapper);
-        sysConfigPoList.forEach(sysConfigPo -> UCache.put(CacheConstant.SYS_CONFIG, sysConfigPo.getConfigKey(), sysConfigPo.getConfigValue()));
+        List<SysConfigDto> sysConfigDtoList = UCopy.fullCopyList(sysConfigPoList, SysConfigDto.class);
+        sysConfigDtoList.forEach(sysConfigDto -> UCache.put(CacheConstant.SYS_CONFIG, sysConfigDto.getConfigKey(), sysConfigDto));
     }
 
     @Override

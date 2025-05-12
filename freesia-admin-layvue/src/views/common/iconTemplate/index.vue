@@ -1,6 +1,6 @@
 <template>
   <lay-container :fluid="true">
-    <lay-card>
+    <lay-card :shadow="'hover'">
       <lay-form ref="queryFormRef" :model="searchQuery"
                 label-position="top" @keydown.enter.prevent="toSearch">
         <lay-row :space="20">
@@ -98,7 +98,7 @@
     <lay-layer v-model="showSaveModalFlag" :area="['300px']" :title="saveModalTitle">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" v-esc-close="toCancel">
         <lay-form ref="saveFormRef" :model="saveVo" label-position="top">
-          <lay-form-item label="模板名称" prop="name">
+          <lay-form-item label="模板名称" prop="name" required>
             <lay-input
                 v-model="saveVo.name"
                 :allow-clear="true"

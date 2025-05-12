@@ -9,6 +9,8 @@ import com.freesia.constant.CaptchaType;
 import com.freesia.constant.Constants;
 import com.freesia.constant.SysConfigConstant;
 import com.freesia.dto.CaptchaCodeDto;
+import com.freesia.dto.SysConfigDto;
+import com.freesia.po.SysConfigPo;
 import com.freesia.properties.CaptchaProperties;
 import com.freesia.service.SysConfigService;
 import com.freesia.redis.util.URedis;
@@ -44,7 +46,8 @@ public class CaptchaController extends BaseController {
     @GetMapping("getCaptchaCode")
     public R<CaptchaCodeDto> getCaptchaCode() {
         CaptchaCodeDto captchaCodeDto = new CaptchaCodeDto();
-        String configValue = sysConfigService.findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        SysConfigDto sysConfigDto = sysConfigService.findConfigByKey(SysConfigConstant.SYS_ACCOUNT_CAPTCHA_ENABLED);
+        String configValue = sysConfigDto.getConfigValue();
         boolean captchaEnabled = Boolean.parseBoolean(configValue);
         captchaCodeDto.setEnabled(captchaEnabled);
         if (!captchaEnabled) {

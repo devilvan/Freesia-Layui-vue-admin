@@ -19,7 +19,15 @@
         <ul class="site-doc-icon">
           <li v-for="(item, index) of value" :key="index">
             <lay-tooltip :visible="false" trigger="hover" :content="item.name">
-              <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>
+              <lay-dropdown :trigger="triggerType" alignPoint>
+                <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>
+                <template #content>
+                  <lay-dropdown-menu>
+                    <lay-dropdown-menu-item @click="editIcon">编辑</lay-dropdown-menu-item>
+                    <lay-dropdown-menu-item @click="deleteIcon">删除</lay-dropdown-menu-item>
+                  </lay-dropdown-menu>
+                </template>
+              </lay-dropdown>
             </lay-tooltip>
           </li>
         </ul>
@@ -203,10 +211,7 @@
               <lay-row>
                 <lay-col :md="3">
                   <div class="svgIcon" @click="selectMultipleIcons">
-                    <SvgIcon
-                        :name="'http://127.0.0.1:9002/freesia/icon/2025/04/24/61ca68d0a33b471f89339a5de53aa518.svg'"
-                        :desc="'添加'"
-                    ></SvgIcon>
+                    <SvgIcon :name="addIconUrl" :desc="'添加'"></SvgIcon>
                   </div>
                 </lay-col>
                 <lay-col :md="3" v-for="(item, index) of value">
@@ -260,6 +265,8 @@ import {CommonIconVo, FindCommonIconEntity} from "@/types/common/icon/Icon";
 import {Select} from "@/types/Common";
 import {preview} from "@/util/UImage";
 import LayMenuAdapter from "@/views/component/LayMenuAdapter.vue";
+import {findConfigByKey} from "@/api/system/Config";
+import {SysConfigKey} from "@/types/system/Config";
 
 /* INIT*/
 onMounted(async () => {
@@ -268,6 +275,7 @@ onMounted(async () => {
   iconTreeTypeListSelect.value = await sysDictValueSelect(iconTreeTypeList.value);
   doFindTreeIconTreeType()
   doFindCommonIconPicker();
+  doFindConfigByKey(SysConfigKey.ADD_ICON_URL);
   change()
 })
 /* INIT*/
@@ -301,6 +309,8 @@ const saveMultipleIconTitle = ref<string>('')
 const iconPickerModalTitle = ref<string>('图标选择器')
 const checkCardGroupKeys = ref([])
 const checkCardGroupKey = ref('')
+const addIconUrl = ref<string | undefined>(<string>'');
+const triggerType = ['click', 'contextMenu']
 /* VAR*/
 
 /* FUNCTION*/
@@ -384,6 +394,7 @@ function showMultipleSaveIconModal(title: string, row: any) {
   if (Operate.EDIT === title) {
   } else if (Operate.ADD === title) {
     saveMultipleIconVo.value = {}
+    saveMultipleIconVo.value.multipleIconList = []
     checkCardGroupKeys.value = []
     saveMultipleIconModalFlag.value = true;
     let param: CommonIconTemplateDetailVo = {
@@ -442,6 +453,12 @@ function doFindCommonIconPicker() {
   findCommonIconPicker({}).then((res: R<Record<string, Array<FindCommonIconEntity>>>) => {
     findCommonIconPickerDataSource.value = new Map(Object.entries(res.data))
     iconPickerModalOpenKeys.value = Array.from(findCommonIconPickerDataSource.value.keys())
+  })
+}
+
+function doFindConfigByKey(configKey: string) {
+  findConfigByKey(configKey).then((res: R<string>) => {
+    addIconUrl.value = res.data
   })
 }
 
@@ -543,6 +560,15 @@ function findMultipleItemIndex(id: string | undefined): number {
   return checkCardGroupKeys.value.findIndex(item => item === id) + 1;
 }
 
+function editIcon() {
+
+}
+
+function deleteIcon() {
+
+}
+
+
 /* FUNCTION*/
 </script>
 
@@ -622,5 +648,20 @@ function findMultipleItemIndex(id: string | undefined): number {
   align-items: center;
   font-size: 10pt;
   line-height: 40px
+}
+
+.container {
+  height: inherit;
+  width: inherit;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  text-align: center;
+}
+
+.container-desc {
+  padding: 0 20%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
