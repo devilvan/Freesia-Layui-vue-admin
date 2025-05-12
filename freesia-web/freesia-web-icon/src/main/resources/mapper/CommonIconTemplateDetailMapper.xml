@@ -108,5 +108,6 @@
         WHERE 1 = 1
           AND CITD.LOGIC_DEL = 0
           AND CITD.HEADER_ID = #{dto.headerId}
+        ORDER BY CITD.ORDER_NUM
     </select>
 </mapper>

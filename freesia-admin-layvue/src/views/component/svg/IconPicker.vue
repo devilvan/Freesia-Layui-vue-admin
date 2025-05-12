@@ -1,53 +1,55 @@
 <template>
-  <lay-collapse v-model="openKeys">
+  <lay-collapse v-model="props.openKeys">
     <div v-for="[key, value] in props.dataSource" :key="key">
       <lay-collapse-item :title="key" :id="key">
-        <ul class="site-doc-icon">
-          <li>
-            <SvgIcon class="svgIcon"
-                     :name="'http://127.0.0.1:9002/freesia/icon/2025/04/24/61ca68d0a33b471f89339a5de53aa518.svg'"
-                     :desc="'添加图标'"
-            ></SvgIcon>
-          </li>
-          <li v-show="item.iconTreeType === IconTreeType.L && item.children?.length > 0"
-              v-for="(item, index) of value"
-              :key="index">
-            <SvgIcon class="svgIcon" :name="item.url" :desc="item.name"></SvgIcon>
-          </li>
-        </ul>
+        <!--        <ul class="site-doc-icon">-->
+        <!--          <li v-for="(item, index) of value" :key="index">-->
+        <!--            &lt;!&ndash;            <lay-tooltip :visible="false" trigger="hover" :content="item.name">&ndash;&gt;-->
+        <!--            <SvgIcon @click="selectIcon" :name="item.url" :desc="item.name"></SvgIcon>-->
+        <!--            &lt;!&ndash;            </lay-tooltip>&ndash;&gt;-->
+        <!--          </li>-->
+        <!--        </ul>-->
+        <lay-row>
+          <lay-col :md="3" v-for="(item, index) of value">
+            <lay-checkcard-group :single="true" v-model="checkCardGroupKey" @change="selectIcon(item)">
+              <lay-tooltip :visible="false" trigger="hover" :content="item.name">
+                <lay-checkcard style="width: 120px; height: 120px" class="checkCard" :cover="item.url" v-model="item.id"
+                               :value="item.id"
+                ></lay-checkcard>
+                <div class="container-desc">{{ item.name }}</div>
+              </lay-tooltip>
+            </lay-checkcard-group>
+          </lay-col>
+        </lay-row>
       </lay-collapse-item>
     </div>
   </lay-collapse>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
-import {IconTreeType} from "@/types/common/icon/template/IconTemplateDetail";
+import {ref} from "vue";
+import {FindCommonIconEntity} from "@/types/common/icon/Icon";
 
 /*INIT*/
 const props = defineProps({
   dataSource: {
-    type: Array,
+    type: Map,
     required: true
   },
-  color: {
-    type: String,
-    default: '#009688'
-  },
-  size: {
-    type: String,
-    default: '3em'
-  },
-})
-onMounted(() => {
+  openKeys: {
+    type: Array,
+    required: true
+  }
 })
 /*INIT*/
 
 
 /*VAR*/
 const emit = defineEmits(['callBack']);
-const openKeys = ref<Array<string>>(<Array<string>>['0', '1']);
+// const openKeys = ref<Array<string>>(<Array<string>>['0', '1']);
+// const dataSource = ref<Map<string, FindTreeIconTreeTypeEntity[]>>()
+const checkCardGroupKey = ref('')
 /*VAR*/
 
 /*FUNCTION*/
@@ -68,13 +70,10 @@ function selectIcon(layIcon: any) {
 .site-doc-icon li {
   display: inline-block;
   vertical-align: middle;
-  width: 20%;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   line-height: 20px;
-  padding: 20px 0;
-  //margin-right: -1px;
-  //margin-bottom: -1px;
-  border: 1px solid #e2e2e2;
+  margin: 20px 0;
   font-size: 14px;
   text-align: center;
   color: #000;
@@ -97,15 +96,6 @@ function selectIcon(layIcon: any) {
   background-color: #F6F6F6;
 }
 
-.site-doc-icon li:hover {
-  background-color: #ff9a9e;
-}
-
-.site-doc-icon li .layui-icon {
-  display: inline-block;
-  font-size: 32px;
-}
-
 .anim .site-doc-icon {
   margin-bottom: 50px;
   font-size: 0;
@@ -121,7 +111,6 @@ function selectIcon(layIcon: any) {
   width: 16.5%;
   height: 105px;
   line-height: 25px;
-  padding: 20px 0;
   margin-right: -1px;
   margin-bottom: -1px;
   border: 1px solid #e2e2e2;
@@ -130,21 +119,5 @@ function selectIcon(layIcon: any) {
   color: #666;
   transition: all 0.3s;
   -webkit-transition: all 0.3s;
-}
-
-.anim .site-doc-icon li .layui-anim {
-  width: 125px;
-  height: 125px;
-  line-height: 125px;
-  margin: 0 auto 10px;
-  text-align: center;
-  background-color: var(--global-primary-color);
-  cursor: pointer;
-  color: #fff;
-  border-radius: 50%;
-}
-
-.anim .site-doc-icon li .code {
-  white-space: nowrap;
 }
 </style>

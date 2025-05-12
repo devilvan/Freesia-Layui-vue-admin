@@ -99,7 +99,7 @@
         <dict-tag :options="paymentSignSelect" :value="row.paymentSign"/>
       </template>
       <template #iconType="{ row }">
-        <SvgIcon :name="row.icon" size="2em"></SvgIcon>
+        <!--        <SvgIcon :name="row.icon" size="2em"></SvgIcon>-->
         {{ row.icon }}
       </template>
       <template v-slot:toolbar>
@@ -186,7 +186,7 @@
                 <lay-row>
                   <lay-col md="4">
                     <lay-avatar v-if="!accountCostVo.icon" @click="changeSelectTypeModal"></lay-avatar>
-                    <SvgIcon v-else :name="accountCostVo.icon" size="3em" @click="changeSelectTypeModal"></SvgIcon>
+                    <!--                    <IconPicker v-else :dataSource="findCommonIconPickerDataSource" :openKeys="openKeys" />-->
                   </lay-col>
                   <lay-col md="20"
                            style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
@@ -249,9 +249,10 @@
       </div>
     </lay-layer>
 
-    <lay-layer v-model="showSelectTypeModalFlag" :area="['1200px']" :title="title">
+    <lay-layer v-model="showSelectTypeModalFlag" :area="['1200px', '500px']" :title="title">
       <div v-esc-close="selectTypeModalClose">
-        <AccountTypeIconPicker @callBack="callBackFun" :size="'3.5em'"></AccountTypeIconPicker>
+        <!--                <AccountTypeIconPicker @callBack="callBackFun" :size="'3.5em'"></AccountTypeIconPicker>-->
+        <IconPicker :dataSource="findCommonIconPickerDataSource" :openKeys="openKeys" @callBack="callBackFun"/>
       </div>
     </lay-layer>
 
@@ -325,7 +326,7 @@ export default {
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
-import {TableResult} from "@/types/Result";
+import {R, TableResult} from "@/types/Result";
 import {
   deleteAccountCost,
   findPageAccountCost,
@@ -346,12 +347,32 @@ import {SysUserEntity, SysUserVo} from "@/types/system/User";
 import {findPageSysUserList, findPageSysUserWithoutDataScope} from "@/api/system/User";
 import app from "@/main";
 import DictScan from "@/views/component/DictScan.vue";
+import IconPicker from "@/views/component/svg/IconPicker.vue";
+import {findCommonIconPicker} from "@/api/common/icon/Icon";
+import {FindCommonIconEntity} from "@/types/common/icon/Icon";
+import {CommonIconTemplateDetailVo, FindTreeIconTreeTypeEntity} from "@/types/common/icon/template/IconTemplateDetail";
+import {findCustomIconTemplateDetail} from "@/api/common/icon/template/IconTemplateDetail";
 
 /* INIT*/
 onMounted(async () => {
   paymentSignSelect.value = await loadSysDictValue(Constants.PAYMENT_SIGN)
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
   searchQuery.value.paymentTimeRange = buildRange(7)
+  let param: CommonIconTemplateDetailVo = {
+    headerId: '1910229069396738049'
+  }
+  findCustomIconTemplateDetail(param).then((res: R<Record<string, FindTreeIconTreeTypeEntity[]>>) => {
+    findCommonIconPickerDataSource.value = new Map(Object.entries(res.data));
+    let temp: string[] = []
+    findCommonIconPickerDataSource.value?.forEach((value, key) => {
+      if (value && value.length > 0) {
+        temp.push(key)
+      }
+    })
+    openKeys.value = temp;
+  }).catch(e => {
+    layer.msg(e.msg)
+  });
   loadDataSource()
 })
 /* INIT*/
@@ -459,6 +480,8 @@ const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const expandCollapseFlag = ref<boolean>(false);
+const findCommonIconPickerDataSource = ref<Map<string, Array<FindCommonIconEntity>>>()
+const openKeys = ref<string[]>([]);
 /* VAR*/
 
 /* FUNCTION*/
@@ -641,8 +664,8 @@ function changeSelectTypeModal() {
 }
 
 
-const callBackFun = (icon: any) => {
-  accountCostVo.value.icon = icon;
+const callBackFun = (icon: FindCommonIconEntity) => {
+  accountCostVo.value.icon = icon.id;
   changeSelectTypeModal()
 }
 

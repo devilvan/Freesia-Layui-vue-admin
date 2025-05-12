@@ -192,7 +192,7 @@
     </lay-layer>
 
     <lay-layer v-model="showBatchSaveModalFlag" :area="['400px', '500px']" :title="batchSaveModalTitle">
-      <div style="padding: 20px" @keydown.enter="toSubmit(false)"  v-esc-close="toCancel">
+      <div style="padding: 20px" @keydown.enter="toSubmit(false)" v-esc-close="toCancel">
         <lay-form ref="batchSaveFormRef" :model="batchSaveCommonIconVo" label-position="top">
           <lay-col :md="24">
             <lay-row>
@@ -271,7 +271,6 @@ import {getWeekdayCn} from "@/util/UDate";
 import {preview} from "@/util/UImage";
 import {useModalStore} from "@/layouts/composable/useModalStore";
 import app from "@/main";
-import GoodTest from "@/views/common/icon/test.vue";
 
 /* INIT*/
 onMounted(async () => {
