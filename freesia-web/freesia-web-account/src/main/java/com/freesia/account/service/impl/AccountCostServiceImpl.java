@@ -19,6 +19,8 @@ import com.freesia.constant.Constants;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
+import com.freesia.oss.pojo.OssFactory;
+import com.freesia.oss.pojo.OssHandler;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
@@ -130,12 +132,24 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Override
     public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostDto accountCost, PageQuery pageQuery) {
         Page<FindPageAccountCostEntity> pagePo = accountCostMapper.findPageAccountCost(accountCost, pageQuery.build());
+        OssHandler ossHandler = OssFactory.getInstance();
+        if (pagePo != null) {
+            List<FindPageAccountCostEntity> records = pagePo.getRecords();
+            for (FindPageAccountCostEntity record : records) {
+                record.setIcon(ossHandler.convertEndpoint2Domain(record.getIcon()));
+            }
+            pagePo.setRecords(records);
+        }
+        assert pagePo != null;
         return TableResult.build(pagePo);
     }
 
     @Override
     public FindAccountCostEntity findAccountCost(AccountCostDto accountCost) {
-        return accountCostMapper.findAccountCost(accountCost);
+        FindAccountCostEntity findAccountCost = accountCostMapper.findAccountCost(accountCost);
+        OssHandler ossHandler = OssFactory.getInstance();
+        findAccountCost.setIcon(ossHandler.convertEndpoint2Domain(findAccountCost.getIcon()));
+        return findAccountCost;
     }
 
     @Override

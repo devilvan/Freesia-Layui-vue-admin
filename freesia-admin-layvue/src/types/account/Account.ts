@@ -15,7 +15,6 @@ export interface AccountCostVo extends BaseVo {
     acNickName?: string;
     userList?: SysUserEntity[];
     status?: boolean;
-    url?: string;
     iconName?: string;
     iconPartition?: string;
 }

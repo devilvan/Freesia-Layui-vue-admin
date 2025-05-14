@@ -53,7 +53,7 @@
         </lay-row>
       </lay-form>
       <lay-line contentPosition="right" offset="8%">
-        <span v-if="expandCollapseFlag === true" @click="changeExpandCollapseFlag">
+        <span v-if="expandCollapseFlag" @click="changeExpandCollapseFlag">
           <lay-button type="primary" size="sm">收起<lay-icon class="layui-icon-up"></lay-icon></lay-button>
         </span>
         <span v-else @click="changeExpandCollapseFlag">
@@ -96,7 +96,7 @@
         <dict-tag :options="paymentSignSelect" :value="row.paymentSign"/>
       </template>
       <template #iconType="{ row }">
-        <lay-avatar :src="row.url"></lay-avatar>
+        <lay-avatar :src="row.icon" @click="preview(row.icon)"></lay-avatar>
         &nbsp;&nbsp;{{ row.costType }}
       </template>
       <template v-slot:toolbar>
@@ -184,7 +184,7 @@
                   <lay-col md="4">
                     <lay-avatar v-if="!accountCostVo.icon" class="iconContainer"
                                 @click="changeSelectTypeModal"></lay-avatar>
-                    <lay-avatar v-else class="iconContainer" :src="accountCostVo.url"
+                    <lay-avatar v-else class="iconContainer" :src="accountCostVo.icon"
                                 @click="changeSelectTypeModal"></lay-avatar>
                   </lay-col>
                   <lay-col md="20"
@@ -359,7 +359,7 @@ onMounted(async () => {
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
   searchQuery.value.paymentTimeRange = buildRange(7)
   let param: CommonIconTemplateDetailVo = {
-    headerId: '1921077018290704384'
+    headerId: '1910229069396738049'
   }
   findCustomIconTemplateDetail(param).then((res: R<Record<string, FindTreeIconTreeTypeEntity[]>>) => {
     findCommonIconPickerDataSource.value = new Map(Object.entries(res.data));
@@ -665,8 +665,7 @@ function changeSelectTypeModal() {
 
 
 const callBackFun = (icon: FindCommonIconEntity) => {
-  accountCostVo.value.icon = icon.id;
-  accountCostVo.value.url = icon.url
+  accountCostVo.value.icon = icon.url;
   accountCostVo.value.iconName = icon.name
   changeSelectTypeModal()
 }

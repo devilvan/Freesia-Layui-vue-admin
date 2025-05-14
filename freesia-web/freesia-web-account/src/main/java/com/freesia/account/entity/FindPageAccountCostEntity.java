@@ -21,9 +21,4 @@ public class FindPageAccountCostEntity extends AccountCostDto {
      */
     @Schema(description = "关联用户集合")
     private List<SysUserPo> userList;
-    /**
-     * 图标URL
-     */
-    @Schema(description = "图标URL")
-    private String iconUrl;
 }

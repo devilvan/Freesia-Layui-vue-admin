@@ -63,7 +63,7 @@ public class AccountCostPo extends BasePo implements Serializable {
     private Date paymentTime;
     @Schema(description = "图标")
     @TableField(value = "ICON")
-    @Column(name = "ICON", columnDefinition = "VARCHAR(32) COMMENT '图标'")
+    @Column(name = "ICON", columnDefinition = "TEXT COMMENT '图标'")
     private String icon;
     @Schema(description = "备注")
     @TableField(value = "REMARK")
