@@ -14,6 +14,8 @@ import com.freesia.icon.mapper.CommonIconTemplateDetailMapper;
 import com.freesia.icon.po.CommonIconTemplateDetailPo;
 import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
+import com.freesia.oss.pojo.OssFactory;
+import com.freesia.oss.pojo.OssHandler;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
@@ -85,6 +87,10 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
     @Override
     public List<FindTreeIconTreeTypeEntity> findTreeIconTreeType(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
         List<FindTreeIconTreeTypeEntity> findTreeIconTreeTypeEntityList = commonIconTemplateDetailMapper.findTreeIconTreeType(commonIconTemplateDetailDto);
+        OssHandler ossHandler = OssFactory.getInstance();
+        for (FindTreeIconTreeTypeEntity findTreeIconTreeTypeEntity : findTreeIconTreeTypeEntityList) {
+            findTreeIconTreeTypeEntity.setUrl(ossHandler.convertEndpoint2Domain(findTreeIconTreeTypeEntity.getUrl()));
+        }
         return UTree.buildTree(findTreeIconTreeTypeEntityList);
     }
 

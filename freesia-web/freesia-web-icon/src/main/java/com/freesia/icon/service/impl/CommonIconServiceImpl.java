@@ -91,6 +91,10 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
     @Override
     public Map<String, List<FindCommonIconEntity>> findCommonIconPicker(CommonIconDto commonIconDto) {
         List<FindCommonIconEntity> findCommonIconEntityList = commonIconMapper.findCommonIconPicker(commonIconDto);
+        OssHandler ossHandler = OssFactory.getInstance();
+        for (FindCommonIconEntity findCommonIconEntity : findCommonIconEntityList) {
+            findCommonIconEntity.setUrl(ossHandler.convertEndpoint2Domain(findCommonIconEntity.getUrl()));
+        }
         Map<String, List<FindCommonIconEntity>> map = findCommonIconEntityList.stream().collect(Collectors.groupingBy(FindCommonIconEntity::getIconPartitionName));
         return map;
     }
