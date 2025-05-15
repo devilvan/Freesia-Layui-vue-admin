@@ -4,12 +4,8 @@ import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
-import com.freesia.constant.Constants;
-import com.freesia.desensization.handler.DesensitizeValueFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,14 +16,10 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -94,29 +86,5 @@ public class RedisConfig implements WebMvcConfigurer {
                 // 配置同步修改或删除 put/evict
                 .transactionAware()
                 .build();
-    }
-
-
-    @Bean(value = "fastJsonHttpMessageConverter")
-    public FastJsonHttpMessageConverter buildFastJsonHttpMessageConverter() {
-        FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
-        FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        fastJsonConfig.setDateFormat(Constants.YMD_HMS);
-        // 解决循环引用导致树结构的children字段为空时依旧返回[]的问题
-        fastJsonConfig.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect);
-        //解决Long转json精度丢失的问题
-        SerializeConfig serializeConfig = SerializeConfig.globalInstance;
-        serializeConfig.put(BigInteger.class, ToStringSerializer.instance);
-        serializeConfig.put(Long.class, ToStringSerializer.instance);
-        serializeConfig.put(Long.TYPE, ToStringSerializer.instance);
-        // 添加脱敏拦截器
-        fastJsonConfig.setSerializeFilters(new DesensitizeValueFilter());
-        fastJsonConfig.setSerializeConfig(serializeConfig);
-        //处理中文乱码问题
-        List<MediaType> fastMediaTypes = new ArrayList<>();
-        fastMediaTypes.add(MediaType.APPLICATION_JSON);
-        fastConverter.setSupportedMediaTypes(fastMediaTypes);
-        fastConverter.setFastJsonConfig(fastJsonConfig);
-        return fastConverter;
     }
 }

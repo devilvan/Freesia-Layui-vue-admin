@@ -3,6 +3,7 @@ package com.freesia.icon.entity;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
+import com.freesia.oss.annotation.Domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,6 +30,7 @@ public class FindCommonIconEntity extends BaseDto {
     private Integer orderNum;
     @Schema(description = "备注")
     private String remark;
+    @Domain
     @Schema(description = "URL")
     private String url;
     @Schema(description = "创建时间")

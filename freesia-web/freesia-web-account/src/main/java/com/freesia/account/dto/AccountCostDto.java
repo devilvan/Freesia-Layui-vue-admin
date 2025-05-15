@@ -3,6 +3,7 @@ package com.freesia.account.dto;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
+import com.freesia.oss.annotation.Domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,6 +36,7 @@ public class AccountCostDto extends BaseDto {
     @Schema(description = "时间")
     @JSONField(format = Constants.YMD_HM)
     private Date paymentTime;
+    @Domain
     @Schema(description = "图标")
     private String icon;
     @Schema(description = "备注")

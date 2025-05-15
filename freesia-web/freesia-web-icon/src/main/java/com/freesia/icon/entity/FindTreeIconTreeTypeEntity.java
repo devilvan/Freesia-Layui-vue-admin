@@ -1,6 +1,7 @@
 package com.freesia.icon.entity;
 
 import com.freesia.dto.TreeDto;
+import com.freesia.oss.annotation.Domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,6 +28,7 @@ public class FindTreeIconTreeTypeEntity extends TreeDto<FindTreeIconTreeTypeEnti
     private String iconTreeType;
     @Schema(description = "图标ID")
     private Long iconId;
+    @Domain
     @Schema(description = "URL")
     private String url;
 }

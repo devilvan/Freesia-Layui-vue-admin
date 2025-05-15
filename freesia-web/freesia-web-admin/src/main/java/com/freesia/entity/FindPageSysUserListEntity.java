@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.constant.Constants;
 import com.freesia.desensization.constant.DesensitizedType;
+import com.freesia.oss.annotation.Domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,6 +31,7 @@ public class FindPageSysUserListEntity extends BaseEntity {
     @Schema(description = "邮箱")
     @Desensitize(strategy = DesensitizedType.EMAIL)
     private String email;
+    @Domain
     @Schema(description = "头像")
     private String avatar;
     @Schema(description = "电话号码")

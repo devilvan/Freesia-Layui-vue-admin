@@ -88,8 +88,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public SysUserDto findUserById(Long userId) {
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
-        OssHandler ossHandler = OssFactory.getInstance();
-        sysUserPo.setAvatar(ossHandler.convertEndpoint2Domain(sysUserPo.getAvatar()));
         return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
     }
 
@@ -113,11 +111,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
         Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserList(pageQuery.build(), sysUserPoWrapper);
-        List<FindPageSysUserListEntity> findPageSysUserListEntityList = page.getRecords();
-        for (FindPageSysUserListEntity findPageSysUserListEntity : findPageSysUserListEntityList) {
-            findPageSysUserListEntity.setAvatar(ossHandler.convertEndpoint2Domain(findPageSysUserListEntity.getAvatar()));
-        }
-        page.setRecords(findPageSysUserListEntityList);
         return TableResult.build(page);
     }
 
@@ -148,7 +141,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                 .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysUserPo::getId, userId);
         SysUserPo sysUserPo = sysUserMapper.findCurrentUserProfile(queryWrapper);
-        sysUserPo.setAvatar(ossHandler.convertEndpoint2Domain(sysUserPo.getAvatar()));
         return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
     }
 
@@ -297,11 +289,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
         Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserWithoutDataScope(pageQuery.build(), sysUserPoWrapper);
-        List<FindPageSysUserListEntity> findPageSysUserListEntityList = page.getRecords();
-        for (FindPageSysUserListEntity findPageSysUserListEntity : findPageSysUserListEntityList) {
-            findPageSysUserListEntity.setAvatar(ossHandler.convertEndpoint2Domain(findPageSysUserListEntity.getAvatar()));
-        }
-        page.setRecords(findPageSysUserListEntityList);
         return TableResult.build(page);
     }
 

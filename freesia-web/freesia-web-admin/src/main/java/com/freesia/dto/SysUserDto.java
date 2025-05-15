@@ -2,6 +2,7 @@ package com.freesia.dto;
 
 import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.desensization.constant.DesensitizedType;
+import com.freesia.oss.annotation.Domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,6 +37,7 @@ public class SysUserDto extends BaseDto {
     private String telNo;
     @Schema(description = "用户性别（M-男 F-女 U-未知）")
     private String gender;
+    @Domain
     @Schema(description = "头像地址")
     private String avatar;
     @Schema(description = "密码")

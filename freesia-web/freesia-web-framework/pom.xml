@@ -49,5 +49,9 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-idempotent</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-oss</artifactId>
+        </dependency>
     </dependencies>
 </project>

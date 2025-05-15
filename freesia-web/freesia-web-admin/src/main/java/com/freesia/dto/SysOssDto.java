@@ -1,5 +1,6 @@
 package com.freesia.dto;
 
+import com.freesia.oss.annotation.Domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class SysOssDto extends BaseDto {
     private String originalName;
     @Schema(description = "文件后缀名")
     private String fileSuffix;
+    @Domain
     @Schema(description = "URL地址")
     private String url;
     @Schema(description = "服务商")

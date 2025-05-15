@@ -1,4 +1,4 @@
-package com.freesia.validation.annotation;
+package com.freesia.oss.annotation;
 
 import java.lang.annotation.*;
 
@@ -11,5 +11,8 @@ import java.lang.annotation.*;
 @Target(value = {ElementType.FIELD})
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Domain {
-
+    /**
+     * @return 文件存储服务类型
+     */
+    String configKey() default "";
 }

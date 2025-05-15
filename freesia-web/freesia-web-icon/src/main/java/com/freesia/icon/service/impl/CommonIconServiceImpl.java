@@ -9,8 +9,6 @@ import com.freesia.icon.mapper.CommonIconMapper;
 import com.freesia.icon.po.CommonIconPo;
 import com.freesia.icon.repository.CommonIconRepository;
 import com.freesia.icon.service.CommonIconService;
-import com.freesia.oss.pojo.OssFactory;
-import com.freesia.oss.pojo.OssHandler;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysOssService;
@@ -20,10 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -56,25 +52,12 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
     @Override
     public TableResult<FindPageCommonIconEntity> findPageCommonIcon(CommonIconDto commonIconDto, PageQuery pageQuery) {
         Page<FindPageCommonIconEntity> findPageCommonIconEntityPage = commonIconMapper.findPageCommonIcon(commonIconDto, pageQuery.build());
-        List<FindPageCommonIconEntity> newRecordsList = Optional.of(findPageCommonIconEntityPage).map(Page::getRecords).map(list -> {
-            OssHandler instance = OssFactory.getInstance();
-            for (FindPageCommonIconEntity findPageCommonIconEntity : list) {
-                findPageCommonIconEntity.setUrl(instance.convertEndpoint2Domain(findPageCommonIconEntity.getUrl()));
-            }
-            return list;
-        }).orElseGet(ArrayList::new);
-        findPageCommonIconEntityPage.setRecords(newRecordsList);
         return TableResult.build(findPageCommonIconEntityPage);
     }
 
     @Override
     public FindCommonIconEntity findCommonIcon(CommonIconDto commonIconDto) {
-        FindCommonIconEntity findCommonIconEntity = commonIconMapper.findCommonIcon(commonIconDto);
-        return Optional.of(findCommonIconEntity).map(item -> {
-            OssHandler instance = OssFactory.getInstance();
-            item.setUrl(instance.convertEndpoint2Domain(item.getUrl()));
-            return item;
-        }).orElseGet(FindCommonIconEntity::new);
+        return commonIconMapper.findCommonIcon(commonIconDto);
     }
 
     @Override
@@ -91,10 +74,6 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
     @Override
     public Map<String, List<FindCommonIconEntity>> findCommonIconPicker(CommonIconDto commonIconDto) {
         List<FindCommonIconEntity> findCommonIconEntityList = commonIconMapper.findCommonIconPicker(commonIconDto);
-        OssHandler ossHandler = OssFactory.getInstance();
-        for (FindCommonIconEntity findCommonIconEntity : findCommonIconEntityList) {
-            findCommonIconEntity.setUrl(ossHandler.convertEndpoint2Domain(findCommonIconEntity.getUrl()));
-        }
         Map<String, List<FindCommonIconEntity>> map = findCommonIconEntityList.stream().collect(Collectors.groupingBy(FindCommonIconEntity::getIconPartitionName));
         return map;
     }
