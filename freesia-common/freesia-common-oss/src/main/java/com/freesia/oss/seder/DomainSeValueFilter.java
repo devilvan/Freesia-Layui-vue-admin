@@ -1,4 +1,4 @@
-package com.freesia.oss.filter;
+package com.freesia.oss.seder;
 
 import com.alibaba.fastjson.serializer.ValueFilter;
 import com.freesia.oss.annotation.Domain;
@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 
 /**
  * @author Bliss.Wu
- * @Description FastJSON序列化时将URL转化为域名模式 值过滤器
+ * @Description FastJSON序列化时将URL转化为IP模式 值过滤器
  * @date 2025-05-15
  */
 public class DomainSeValueFilter implements ValueFilter {

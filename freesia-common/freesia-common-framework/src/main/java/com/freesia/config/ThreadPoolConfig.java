@@ -18,7 +18,7 @@ public class ThreadPoolConfig {
     /**
      * 获取CPU核数
      */
-    private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors() + 1;
+    private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
     /**
      * 创建线程池
