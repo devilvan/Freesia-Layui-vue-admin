@@ -1,5 +1,6 @@
 package com.freesia.icon.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,6 +10,7 @@ import com.freesia.icon.mapper.CommonIconTemplateHeaderMapper;
 import com.freesia.icon.po.CommonIconTemplateHeaderPo;
 import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
+import com.freesia.po.BasePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
@@ -33,8 +35,22 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
 
     @Override
     public CommonIconTemplateHeaderDto saveUpdate(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto) {
+        Long userId = USecurity.getUserId();
+        if (commonIconTemplateHeaderDto.getDefaultFlag()) {
+            boolean flag = commonIconTemplateHeaderMapper.findExistsDefaultFlag(userId);
+            if (flag) {
+                Wrapper<CommonIconTemplateHeaderPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()
+                        .eq(BasePo::getLogicDel, FlagConstant.DISABLED)
+                        .eq(CommonIconTemplateHeaderPo::getUserId, userId);
+                List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList = commonIconTemplateHeaderMapper.selectList(wrapper);
+                for (CommonIconTemplateHeaderPo commonIconTemplateHeaderPo : commonIconTemplateHeaderPoList) {
+                    commonIconTemplateHeaderPo.setDefaultFlag(false);
+                }
+                commonIconTemplateHeaderRepository.saveAll(commonIconTemplateHeaderPoList);
+            }
+        }
         CommonIconTemplateHeaderPo commonIconTemplateHeaderPo = UCopy.copyDto2Po(commonIconTemplateHeaderDto, CommonIconTemplateHeaderPo.class);
-        commonIconTemplateHeaderPo.setUserId(USecurity.getUserId());
+        commonIconTemplateHeaderPo.setUserId(userId);
         CommonIconTemplateHeaderDto resultDto = new CommonIconTemplateHeaderDto();
         UCopy.fullCopy(commonIconTemplateHeaderRepository.saveAndFlush(commonIconTemplateHeaderPo), resultDto);
         return resultDto;

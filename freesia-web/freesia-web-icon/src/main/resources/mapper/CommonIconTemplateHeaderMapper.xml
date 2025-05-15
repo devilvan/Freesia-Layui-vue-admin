@@ -5,4 +5,12 @@
         SELECT MAX(CITH.ORDER_NUM)
         FROM common_icon_template_header CITH
     </select>
+    <select id="findExistsDefaultFlag" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1
+                      FROM common_icon_template_header
+                      WHERE 1 = 1
+                        AND LOGIC_DEL = 0
+                        AND USER_ID = #{userId}
+                        AND DEFAULT_FLAG = 1)
+    </select>
 </mapper>

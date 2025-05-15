@@ -29,6 +29,11 @@
           :even="evenFlag"
           @change="change"
           @sortChange="sortChange">
+        <template #defaultFlag="{ row }">
+          <lay-switch
+              :model-value="row.defaultFlag"
+          ></lay-switch>
+        </template>
         <template #createTime="{ row }">
           {{ row.createTime }} （{{ getWeekdayCn(row.createTime) }}）
         </template>
@@ -113,6 +118,9 @@
                 position="right"
             ></lay-input-number>
           </lay-form-item>
+          <lay-form-item label="是否默认" prop="defaultFlag">
+            <lay-switch v-model="saveVo.defaultFlag"></lay-switch>
+          </lay-form-item>
           <lay-form-item label="备注" prop="remark">
             <lay-textarea
                 v-model="saveVo.remark"
@@ -175,6 +183,7 @@ const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '模板名称', width: '130px', key: 'name', fixed: 'left'},
   {title: '排序', width: '80px', key: 'orderNum', sort: 'asc'},
+  {title: '是否默认', width: '40px', key: 'defaultFlag', customSlot: 'defaultFlag'},
   {title: '创建时间', width: '180px', key: 'createTime', customSlot: 'createTime', sort: 'desc'},
   {title: '修改时间', width: '180px', key: 'modifyTime', customSlot: 'modifyTime', sort: 'desc'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},

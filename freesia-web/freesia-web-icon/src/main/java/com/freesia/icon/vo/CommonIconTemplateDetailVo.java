@@ -2,25 +2,25 @@ package com.freesia.icon.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.icon.entity.FindCommonIconEntity;
-import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.freesia.vo.BaseVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * @author Evad.Wu
- * @Description 通用图标模板表 值对象
- * @date 2025-04-24
+ * @Description 通用图标模板明细表 值对象
+ * @date 2025-05-15
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@Schema(description = "通用图标模板表 值对象")
+@Schema(description = "通用图标模板明细表 值对象")
 public class CommonIconTemplateDetailVo extends BaseVo {
     @Schema(description = "通用图标模板头表ID")
     @JSONField(alternateNames = {"headerId"})
@@ -49,8 +49,4 @@ public class CommonIconTemplateDetailVo extends BaseVo {
     @Schema(description = "批量图标数据")
     @JSONField(alternateNames = {"multipleIconList"})
     private List<FindCommonIconEntity> multipleIconList;
-    /**
-     * URL
-     */
-    private String url;
 }

@@ -6,10 +6,14 @@ export interface CommonIconTemplateHeaderVo extends BaseVo {
     name?: string;
     orderNum?: number;
     remark?: string;
+    userId?: string;
+    defaultFlag?: boolean;
 }
 
 export interface CommonIconTemplateHeaderEntity extends BaseEntity {
     name?: string;
     orderNum?: number;
     remark?: string;
+    userId?: string;
+    defaultFlag?: boolean;
 }
