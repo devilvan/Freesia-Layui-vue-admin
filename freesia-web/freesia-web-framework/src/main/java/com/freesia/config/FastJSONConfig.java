@@ -37,10 +37,6 @@ public class FastJSONConfig {
         // 添加脱敏拦截器
         fastJsonConfig.setSerializeFilters(new DesensitizeValueFilter(), new DomainSeValueFilter());
         fastJsonConfig.setSerializeConfig(serializeConfig);
-        // 添加
-//        ParserConfig parserConfig = fastJsonConfig.getParserConfig();
-//        parserConfig.putDeserializer(Object.class, new EndpointDeserializer());
-//        fastJsonConfig.setParserConfig(parserConfig);
         //处理中文乱码问题
         List<MediaType> fastMediaTypes = List.of(MediaType.APPLICATION_JSON);
         fastConverter.setSupportedMediaTypes(fastMediaTypes);

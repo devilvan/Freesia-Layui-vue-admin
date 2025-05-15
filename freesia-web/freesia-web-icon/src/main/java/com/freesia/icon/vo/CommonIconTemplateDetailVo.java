@@ -2,7 +2,6 @@ package com.freesia.icon.vo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.freesia.icon.entity.FindCommonIconEntity;
-import com.freesia.oss.annotation.Endpoint;
 import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -53,6 +52,5 @@ public class CommonIconTemplateDetailVo extends BaseVo {
     /**
      * URL
      */
-    @Endpoint
     private String url;
 }
