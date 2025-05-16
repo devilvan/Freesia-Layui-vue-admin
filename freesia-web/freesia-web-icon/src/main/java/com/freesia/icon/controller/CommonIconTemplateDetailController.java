@@ -10,6 +10,7 @@ import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
 import com.freesia.icon.vo.CommonIconTemplateDetailVo;
 import com.freesia.icon.vo.FindMaxOrderNumVo;
+import com.freesia.pojo.LayMenu;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
@@ -131,9 +132,9 @@ public class CommonIconTemplateDetailController extends BaseController {
     @Operation(summary = "查询自定义分组列表")
     @GetMapping(value = "findGrouping")
     @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
-    public R<List<Map<String, String>>> findGrouping(CommonIconTemplateDetailVo vo) {
+    public R<List<LayMenu>> findGrouping(CommonIconTemplateDetailVo vo) {
         CommonIconTemplateDetailDto dto = UCopy.copyVo2Dto(vo, CommonIconTemplateDetailDto.class);
-        List<Map<String, String>> resultMap = commonIconTemplateDetailService.findGrouping(dto);
+        List<LayMenu> resultMap = commonIconTemplateDetailService.findGrouping(dto);
         return R.ok(resultMap);
     }
 

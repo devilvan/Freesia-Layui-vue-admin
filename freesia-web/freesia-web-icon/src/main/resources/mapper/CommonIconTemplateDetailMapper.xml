@@ -79,16 +79,6 @@
         </if>
 
     </select>
-    <select id="findGrouping" resultType="java.util.Map">
-        SELECT CITD.NAME AS label,
-               CITD.ID   AS `value`
-        FROM common_icon_template_detail CITD
-        WHERE 1 = 1
-          AND CITD.LOGIC_DEL = 0
-          AND CITD.HEADER_ID = #{dto.headerId}
-          AND CITD.ICON_TREE_TYPE = 'R'
-        ORDER BY CITD.ORDER_NUM
-    </select>
     <select id="findCustomIconTemplateDetail" resultType="com.freesia.icon.entity.FindTreeIconTreeTypeEntity">
         SELECT DISTINCT CITD.ID,
                         CITD.REC_VER,
@@ -108,6 +98,16 @@
         WHERE 1 = 1
           AND CITD.LOGIC_DEL = 0
           AND CITD.HEADER_ID = #{dto.headerId}
+        ORDER BY CITD.ORDER_NUM
+    </select>
+    <select id="findGrouping" resultType="com.freesia.pojo.LayMenu">
+        SELECT CITD.NAME AS label,
+               CITD.ID   AS `value`
+        FROM common_icon_template_detail CITD
+        WHERE 1 = 1
+          AND CITD.LOGIC_DEL = 0
+          AND CITD.HEADER_ID = #{dto.headerId}
+          AND CITD.ICON_TREE_TYPE = 'R'
         ORDER BY CITD.ORDER_NUM
     </select>
 </mapper>

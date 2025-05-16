@@ -266,7 +266,7 @@ import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {Operate} from "@/types/Constants";
 import {findCommonIconPicker, findListCommonIcon} from "@/api/common/icon/Icon";
 import {CommonIconVo, FindCommonIconEntity} from "@/types/common/icon/Icon";
-import {Select} from "@/types/Common";
+import {LayMenu} from "@/types/Common";
 import {preview} from "@/util/UImage";
 import LayMenuAdapter from "@/views/component/LayMenuAdapter.vue";
 import {findConfigByKey} from "@/api/system/Config";
@@ -308,7 +308,7 @@ const treeIconTreeTypeEntityList = ref<Array<FindTreeIconTreeTypeEntity>>([])
 const saveGroupFormRef = ref();
 const saveSingleIconFormRef = ref();
 const saveMultipleIconFormRef = ref();
-const findGroupingList = ref<Array<Select>>();
+const findGroupingList = ref<Array<LayMenu>>();
 const saveGroupTitle = ref<string>('')
 const saveSingleIconTitle = ref<string>('')
 const saveMultipleIconTitle = ref<string>('')

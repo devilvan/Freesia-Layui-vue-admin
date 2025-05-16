@@ -1,5 +1,6 @@
 package com.freesia.icon.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,7 +37,7 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
     @Override
     public CommonIconTemplateHeaderDto saveUpdate(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto) {
         Long userId = USecurity.getUserId();
-        if (commonIconTemplateHeaderDto.getDefaultFlag()) {
+        if (Convert.toBool(commonIconTemplateHeaderDto.getDefaultFlag(), false)) {
             boolean flag = commonIconTemplateHeaderMapper.findExistsDefaultFlag(userId);
             if (flag) {
                 Wrapper<CommonIconTemplateHeaderPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()

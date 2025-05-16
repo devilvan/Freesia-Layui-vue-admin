@@ -6,12 +6,11 @@ import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
 import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
 import com.freesia.icon.po.CommonIconTemplateDetailPo;
-import org.apache.ibatis.annotations.MapKey;
+import com.freesia.pojo.LayMenu;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -51,8 +50,7 @@ public interface CommonIconTemplateDetailMapper extends BaseMapper<CommonIconTem
      * @param dto 查询入参
      * @return 结果集
      */
-    @MapKey(value = "label")
-    List<Map<String, String>> findGrouping(@Param(value = "dto") CommonIconTemplateDetailDto dto);
+    List<LayMenu> findGrouping(@Param(value = "dto") CommonIconTemplateDetailDto dto);
 
     /**
      * 查询自定义分组Map

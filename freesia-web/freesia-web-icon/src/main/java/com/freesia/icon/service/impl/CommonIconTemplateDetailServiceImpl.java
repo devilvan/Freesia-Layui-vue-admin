@@ -14,6 +14,7 @@ import com.freesia.icon.mapper.CommonIconTemplateDetailMapper;
 import com.freesia.icon.po.CommonIconTemplateDetailPo;
 import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
+import com.freesia.pojo.LayMenu;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
@@ -94,7 +95,7 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
     }
 
     @Override
-    public List<Map<String, String>> findGrouping(CommonIconTemplateDetailDto dto) {
+    public List<LayMenu> findGrouping(CommonIconTemplateDetailDto dto) {
         return commonIconTemplateDetailMapper.findGrouping(dto);
     }
 

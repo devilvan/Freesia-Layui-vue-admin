@@ -59,9 +59,7 @@
             v-model="appStore.themeVariable['--global-border-radius']"
         >
           <lay-radio-button size="xs" value="0px">0%</lay-radio-button>
-          <lay-radio-button size="xs" value="5px">
-            50%
-          </lay-radio-button>
+          <lay-radio-button size="xs" value="5px">50%</lay-radio-button>
           <lay-radio-button size="xs" value="10px">75%</lay-radio-button>
           <lay-radio-button size="xs" value="20px">100%</lay-radio-button>
         </lay-radio-group>
@@ -77,6 +75,19 @@
           </lay-radio-button>
           <lay-radio-button size="xs" value="designer">样式三</lay-radio-button>
         </lay-radio-group>
+      </global-setup-item>
+      <global-setup-item label="图标模板">
+        <lay-select style="width: 145px">
+        </lay-select>
+        <lay-select
+            style="width: 145px"
+            v-model="appStore.commonIconHeader"
+            placeholder="请选择图标模板"
+            :options="paymentSignSelectList"
+            :items="paymentSignSelectList"
+            @change="changeCommonIconHeaderSelect"
+        >
+        </lay-select>
       </global-setup-item>
       <div style="padding: 15px">
         <lay-button border="green" border-style="dashed" :fluid="true"
@@ -156,6 +167,10 @@ watch(
       appStore.themeVariable['--global-border-radius'] = val
     }
 )
+
+function changeCommonIconHeaderSelect(val: string) {
+  appStore.commonIconHeader = val;
+}
 </script>
 
 <style>
