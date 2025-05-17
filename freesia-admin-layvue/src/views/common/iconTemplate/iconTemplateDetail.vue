@@ -105,7 +105,7 @@
                               @click="showSingleIconPickerModal"
                   ></lay-avatar>
                 </lay-col>
-                <lay-col md="20" class="iconName">
+                <lay-col v-if="saveSingleIconVo.originName" md="20" class="iconName">
                   图标：{{ saveSingleIconVo.originName }}
                 </lay-col>
               </lay-row>
@@ -253,7 +253,7 @@ import {
   CommonIconTemplateDetailVo, FindMaxOrderNumVo, FindTreeIconTreeTypeEntity, IconTreeType
 } from "@/types/common/icon/template/IconTemplateDetail";
 import {
-  deleteCommonIconTemplateDetail,
+  deleteCommonIconTemplateDetail, findCommonIconTemplateDetail,
   findCustomIconTemplateDetail, findGrouping, findMaxOrderNum,
   findTreeIconTreeType,
   saveUpdate, saveUpdateBatch
@@ -379,7 +379,14 @@ function showSingleSaveIconModal(title: string, row: any) {
   }
   if (Operate.EDIT === title) {
     checkCardGroupKey.value = null
-    saveSingleIconVo.value.originName = row.name
+    let param: CommonIconTemplateDetailVo = {
+      id: row.id
+    }
+    findCommonIconTemplateDetail(param).then((res: R<CommonIconTemplateDetailEntity>) => {
+      saveSingleIconVo.value.recVer = res.data?.recVer
+      saveSingleIconVo.value.originName = res.data?.name
+      saveSingleIconVo.value.name = res.data?.name
+    })
     saveSingleIconModalFlag.value = true
   } else if (Operate.ADD === title) {
     saveSingleIconVo.value = {}

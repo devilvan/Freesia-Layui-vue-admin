@@ -20,7 +20,7 @@ export function findPageCommonIconTemplateDetail(commonIconTemplateDetailVo: Com
     return Http.get("/common/commonIconTemplateDetailController/findPageCommonIconTemplateDetail", params);
 }
 
-export function findCommonIconTemplateDetail(commonIconTemplateDetailVo: CommonIconTemplateDetailVo): Promise<R<Map<String, CommonIconTemplateDetailEntity[]>>> {
+export function findCommonIconTemplateDetail(commonIconTemplateDetailVo: CommonIconTemplateDetailVo): Promise<R<CommonIconTemplateDetailEntity>> {
     let params = buildUrlParam(commonIconTemplateDetailVo);
     return Http.get("/common/commonIconTemplateDetailController/findCommonIconTemplateDetail", params);
 }

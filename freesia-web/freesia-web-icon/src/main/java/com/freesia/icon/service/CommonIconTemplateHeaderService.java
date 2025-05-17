@@ -1,8 +1,10 @@
 package com.freesia.icon.service;
 
+import com.freesia.pojo.LayMenu;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
+import com.freesia.vo.R;
 
 import java.util.List;
 
@@ -58,4 +60,12 @@ public interface CommonIconTemplateHeaderService {
      * @return 最大排序号
      */
     Integer findMaxOrderNum();
+
+    /**
+     * 查询通用图标模板头表下拉数据
+     *
+     * @param userId 用户ID
+     * @return 下拉数据集合
+     */
+    List<LayMenu> findSelectCommonIconHeader(Long userId);
 }

@@ -12,6 +12,7 @@ import com.freesia.icon.po.CommonIconTemplateHeaderPo;
 import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.po.BasePo;
+import com.freesia.pojo.LayMenu;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -91,5 +93,28 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
     @Override
     public Integer findMaxOrderNum() {
         return commonIconTemplateHeaderMapper.findMaxOrderNum();
+    }
+
+    @Override
+    public List<LayMenu> findSelectCommonIconHeader(Long userId) {
+        LambdaQueryWrapper<CommonIconTemplateHeaderPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()
+                .eq(CommonIconTemplateHeaderPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(CommonIconTemplateHeaderPo::getUserId, USecurity.getUserId());
+        List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList = commonIconTemplateHeaderMapper.selectList(wrapper);
+        return buildLayMenus(commonIconTemplateHeaderPoList);
+    }
+
+    private static List<LayMenu> buildLayMenus(List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList) {
+        List<LayMenu> layMenuList = new ArrayList<>();
+        if (UEmpty.isNotEmpty(commonIconTemplateHeaderPoList)) {
+            for (CommonIconTemplateHeaderPo commonIconTemplateHeaderPo : commonIconTemplateHeaderPoList) {
+                LayMenu layMenu = new LayMenu();
+                layMenu.setLabel(commonIconTemplateHeaderPo.getName());
+                layMenu.setValue(commonIconTemplateHeaderPo.getId().toString());
+                layMenu.setDefaultFlag(commonIconTemplateHeaderPo.getDefaultFlag());
+                layMenuList.add(layMenu);
+            }
+        }
+        return layMenuList;
     }
 }

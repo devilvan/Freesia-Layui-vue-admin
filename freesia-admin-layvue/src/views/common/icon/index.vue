@@ -1,5 +1,4 @@
 <template>
-  <GoodTest></GoodTest>
   <lay-container :fluid="true">
     <lay-card>
       <lay-form ref="queryFormRef" :model="searchQuery"

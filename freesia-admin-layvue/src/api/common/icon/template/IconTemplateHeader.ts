@@ -1,5 +1,5 @@
 import Http from "../../../Http";
-import {PageQuery} from "@/types/Common";
+import {LayMenu, PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
 import {
@@ -32,3 +32,8 @@ export function deleteCommonIconTemplateHeader(idList: Array<string>): Promise<R
 export function findMaxOrderNum(): Promise<R<number>> {
     return Http.get("/common/commonIconTemplateHeaderController/findMaxOrderNum");
 }
+
+export function findSelectCommonIconHeader(): Promise<R<LayMenu[]>> {
+    return Http.get("/common/commonIconTemplateHeaderController/findSelectCommonIconHeader");
+}
+

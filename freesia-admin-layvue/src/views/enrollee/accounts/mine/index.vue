@@ -352,6 +352,7 @@ import {FindCommonIconEntity} from "@/types/common/icon/Icon";
 import {CommonIconTemplateDetailVo, FindTreeIconTreeTypeEntity} from "@/types/common/icon/template/IconTemplateDetail";
 import {findCustomIconTemplateDetail} from "@/api/common/icon/template/IconTemplateDetail";
 import {preview} from "@/util/UImage";
+import {useAppStore} from "@/store/app";
 
 /* INIT*/
 onMounted(async () => {
@@ -359,7 +360,7 @@ onMounted(async () => {
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
   searchQuery.value.paymentTimeRange = buildRange(7)
   let param: CommonIconTemplateDetailVo = {
-    headerId: '1910229069396738049'
+    headerId: useStore.commonIconHeader
   }
   findCustomIconTemplateDetail(param).then((res: R<Record<string, FindTreeIconTreeTypeEntity[]>>) => {
     findCommonIconPickerDataSource.value = new Map(Object.entries(res.data));
@@ -378,6 +379,7 @@ onMounted(async () => {
 /* INIT*/
 
 /* VAR*/
+const useStore = useAppStore()
 const $ACCOUNT_MENU_PERMISSION = app.config.globalProperties.$ACCOUNT_MENU_PERMISSION
 const $router = router;
 const paymentSignSelect = ref<Array<SysDictValueEntity>>();

@@ -39,5 +39,7 @@ export interface PageQuery {
 
 export interface LayMenu {
     label?: string;
-    value?: any;
+    value?: string;
+    defaultFlag: false
+    disabled: false
 }

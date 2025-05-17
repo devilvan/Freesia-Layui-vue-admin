@@ -9,8 +9,10 @@ import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
 import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.pojo.LayMenu;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -121,5 +123,13 @@ public class CommonIconTemplateHeaderController extends BaseController {
         int maxOrderNum = Convert.toInt(commonIconTemplateHeaderService.findMaxOrderNum(), 0);
         maxOrderNum = (maxOrderNum / 10) * 10 + 10;
         return R.ok(maxOrderNum);
+    }
+
+    @Operation(summary = "查询通用图标模板头表下拉数据")
+    @GetMapping(value = "findSelectCommonIconHeader")
+    public R<List<LayMenu>> findSelectCommonIconHeader() {
+        Long userId = USecurity.getUserId();
+        List<LayMenu> list = commonIconTemplateHeaderService.findSelectCommonIconHeader(userId);
+        return R.ok(list);
     }
 }

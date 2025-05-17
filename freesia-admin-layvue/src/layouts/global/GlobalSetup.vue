@@ -77,16 +77,16 @@
         </lay-radio-group>
       </global-setup-item>
       <global-setup-item label="图标模板">
-        <lay-select style="width: 145px">
-        </lay-select>
         <lay-select
             style="width: 145px"
             v-model="appStore.commonIconHeader"
             placeholder="请选择图标模板"
-            :options="paymentSignSelectList"
-            :items="paymentSignSelectList"
             @change="changeCommonIconHeaderSelect"
         >
+          <template v-for="(item, index) in findSelectCommonIconHeaderList" :key="index">
+            <lay-select-option :value="item.value" :label="item.label">
+            </lay-select-option>
+          </template>
         </lay-select>
       </global-setup-item>
       <div style="padding: 15px">
@@ -110,10 +110,20 @@ import globalSetupItem from './GlobalSetupItem.vue'
 import globalSetupTheme from './GlobalSetupTheme.vue'
 import globalColor from './GlobalColor.vue'
 import {useAppStore} from '@/store/app'
-import {ref, watch} from 'vue'
+import {onMounted, ref, watch} from 'vue'
+import {findSelectCommonIconHeader} from "@/api/common/icon/template/IconTemplateHeader";
+import {R} from "@/types/Result";
+import {LayMenu} from "@/types/Common";
+
+/*INIT*/
+onMounted(() => {
+  doFindSelectCommonIconHeader();
+})
+/*INIT*/
 
 const appStore = useAppStore()
 const emits = defineEmits(['update:modelValue'])
+const findSelectCommonIconHeaderList = ref<LayMenu[]>([]);
 
 interface SetupProps {
   modelValue: boolean
@@ -171,6 +181,13 @@ watch(
 function changeCommonIconHeaderSelect(val: string) {
   appStore.commonIconHeader = val;
 }
+
+function doFindSelectCommonIconHeader() {
+  findSelectCommonIconHeader().then((res: R<LayMenu[]>) => {
+    findSelectCommonIconHeaderList.value = res.data
+  })
+}
+
 </script>
 
 <style>

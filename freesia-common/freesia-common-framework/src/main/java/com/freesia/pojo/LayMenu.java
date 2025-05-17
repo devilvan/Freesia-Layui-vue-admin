@@ -17,4 +17,12 @@ public class LayMenu {
      * 值
      */
     private String value;
+    /**
+     * 是否默认
+     */
+    private Boolean defaultFlag;
+    /**
+     * 是否禁用
+     */
+    private Boolean disabled;
 }

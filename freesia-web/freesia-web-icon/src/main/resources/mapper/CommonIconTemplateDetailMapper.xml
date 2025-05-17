@@ -2,22 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.icon.mapper.CommonIconTemplateDetailMapper">
     <sql id="columns">
-        SELECT CITD.id,
-               CITD.creator,
-               CITD.create_time,
-               CITD.modifier,
-               CITD.modify_time,
-               CITD.logic_del,
-               CITD.rec_ver,
-               CITD.build_in,
-               CITD.tenant_id,
-               CITD.header_id,
-               CITD.name,
-               CITD.`grouping`,
-               CITD.order_num,
-               CITD.remark,
-               CITD.icon_tree_type,
-               CITD.ICON_ID
+        SELECT CITD.ID,
+               CITD.BUILD_IN,
+               CITD.CREATE_TIME,
+               CITD.CREATOR,
+               CITD.LOGIC_DEL,
+               CITD.MODIFIER,
+               CITD.MODIFY_TIME,
+               CITD.REC_VER,
+               CITD.TENANT_ID,
+               CITD.`GROUPING`,
+               CITD.HEADER_ID,
+               CITD.ICON_ID,
+               CITD.ICON_TREE_TYPE,
+               CITD.NAME,
+               CITD.ORDER_NUM,
+               CITD.PARENT_ID,
+               CITD.REMARK
         FROM COMMON_ICON_TEMPLATE_DETAIL CITD
     </sql>
     <select id="findCommonIconTemplateDetail"
