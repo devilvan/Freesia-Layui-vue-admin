@@ -77,8 +77,8 @@
         <if test="commonIconDto.iconPartition != null and commonIconDto.iconPartition != ''">
             AND CI.ICON_PARTITION = #{commonIconDto.iconPartition}
         </if>
-        GROUP BY CI.ICON_PARTITION, CI.NAME, CI.ORDER_NUM
-        ORDER BY CI.ICON_PARTITION, CI.NAME, CI.ORDER_NUM
+        GROUP BY CI.ICON_PARTITION, CI.ID, CI.ORDER_NUM
+        ORDER BY CI.ICON_PARTITION, CI.ID, CI.ORDER_NUM
     </select>
     <select id="findListCommonIcon" resultType="com.freesia.icon.entity.FindCommonIconEntity">
         <include refid="findCommonIconSqlRef"/>
