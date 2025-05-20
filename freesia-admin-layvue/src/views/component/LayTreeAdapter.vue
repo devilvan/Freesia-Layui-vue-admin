@@ -2,11 +2,12 @@
   <lay-card>
     <lay-button @click="getCheckKeys">按钮</lay-button>
     <lay-tree
-        class="layTreeContainer"
-        :tailNodeIcon="props.tailNodeIcon"
         :data="props.data"
+        :tailNodeIcon="props.tailNodeIcon"
+        :default-expand-all="props.defaultExpandAll"
+        :showCheckbox="props.showCheckbox"
         @check-change="checkChange"
-        :showCheckbox="menuTreeShowCheckbox"
+        v-model:checkedKeys="internalCheckedKeys"
         :value="modelValue"
     >
       <template #title="{ data }">
@@ -19,19 +20,25 @@
 
 <script lang="ts">
 export default {
-  name: 'LayMenuAdapter'
+  name: 'LayTreeAdapter'
 }
 </script>
 
 <script setup lang="ts">
 /*
-* 解决2.18.0版本后,lay-tree不再支持子节点未完全选择时，父节点仍然保留的问题
+* 处理2.18.0版本后,lay-tree不再支持子节点未完全选择时，父节点仍然保留的问题
 * */
-import {ref} from "vue";
+import {ref, watch} from "vue";
 
 /*INIT*/
 const props = defineProps({
   modelValue: {
+    type: Array<String>
+  },
+  checkedKeys: {
+    type: Array<String>
+  },
+  keys: {
     type: Array<String>
   },
   data: {
@@ -42,20 +49,37 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
-  }
+  },
+  defaultExpandAll: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  showCheckbox: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+
 })
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Array<String>): void
+  (e: 'update:keys', value: Array<String>): void
 }>()
 /*INIT*/
 
 /*VAR*/
-const menuTreeShowCheckbox = ref(true)
-const result = ref<string[]>([])
+const result = ref<string[]>(props.modelValue || [])
+// 内部状态
+const internalCheckedKeys = ref<string[]>(props.checkedKeys || [])
 /*VAR*/
 
 /*FUNCTION*/
+// watch(internalCheckedKeys, (newVal) => {
+//   emit('update:keys', newVal)
+// }, { deep: true })
+
 function getCheckKeys() {
   console.log("result: " + result.value)
 }
@@ -93,6 +117,7 @@ function checkChange(ve: any) {
   }
   result.value = newCheckedKeys;
   emit('update:modelValue', result.value)
+  // emit('update:keys', result.value)
 }
 
 // 移除所有子节点的key

@@ -10,6 +10,7 @@ import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.SysMenuDto;
 import com.freesia.entity.FindAllMenuTreeEntity;
 import com.freesia.entity.FindMenuListByUserIdEntity;
+import com.freesia.entity.FindSelectedMenuListByRoleIdEntity;
 import com.freesia.entity.FindTreeMenuSelectEntity;
 import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
@@ -33,7 +34,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -74,7 +74,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "查询所有菜单下拉树")
     @GetMapping(value = "findAllMenuTree")
     public R<List<FindAllMenuTreeEntity>> findAllMenuTree() {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuService.findAllMenuTree(loginUser.getUserId());
         return R.ok(findAllMenuTreeEntityList);
     }
@@ -83,7 +83,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "根据角色ID查询所有菜单下拉树")
     @GetMapping(value = "findAllMenuTreeByRoleId")
     public R<List<FindAllMenuTreeEntity>> findAllMenuTree(@RequestParam Long roleId) {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuService.findAllMenuTree(roleId, loginUser.getUserId());
         return R.ok(findAllMenuTreeEntityList);
     }
@@ -91,10 +91,9 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_MENU_EDIT)
     @Operation(summary = "根据角色ID查询菜单列表")
     @GetMapping(value = "findSelectedMenuListByRoleId")
-    public R<List<String>> findSelectedMenuListByRoleId(@NotNull String roleId) {
-        List<Long> menuIdList = sysMenuService.findSelectedMenuListByRoleId(Long.valueOf(roleId));
-        List<String> menuIdStrList = menuIdList.stream().map(Object::toString).collect(Collectors.toList());
-        return R.ok(menuIdStrList);
+    public R<List<FindSelectedMenuListByRoleIdEntity>> findSelectedMenuListByRoleId(@NotNull String roleId) {
+        List<FindSelectedMenuListByRoleIdEntity> entityList = sysMenuService.findSelectedMenuListByRoleId(Long.valueOf(roleId));
+        return R.ok(entityList);
     }
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_INDEX)

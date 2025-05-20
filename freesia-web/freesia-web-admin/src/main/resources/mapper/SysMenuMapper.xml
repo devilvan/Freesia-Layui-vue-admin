@@ -54,8 +54,13 @@
                  LEFT JOIN sys_user_role SUR ON SUR.ROLE_ID = SRM.ROLE_ID
             ${ew.getCustomSqlSegment}
     </select>
-    <select id="findSelectedMenuListByRoleId" resultType="java.lang.Long">
-        SELECT DISTINCT M.ID
+    <select id="findSelectedMenuListByRoleId" resultType="com.freesia.entity.FindSelectedMenuListByRoleIdEntity">
+        SELECT M.ID,
+               MENU_NAME,
+               PARENT_ID,
+               ORDER_NUM,
+               VISIBLE,
+               ICON
         FROM sys_menu M
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
@@ -64,10 +69,14 @@
           AND M.MENU_TYPE IN ('D', 'M', 'B')
           AND RM.ROLE_ID = #{roleId}
     </select>
-    <select id="findAdminMenuList" resultType="java.lang.Long">
-        SELECT DISTINCT M.ID
+    <select id="findAdminMenuList" resultType="com.freesia.entity.FindSelectedMenuListByRoleIdEntity">
+        SELECT M.ID,
+               M.MENU_NAME,
+               M.PARENT_ID,
+               M.ORDER_NUM,
+               M.VISIBLE,
+               M.ICON
         FROM sys_menu M
-                 LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
           AND M.LOGIC_DEL = 0
           AND M.STATUS = '1'

@@ -268,10 +268,8 @@ import {findCommonIconPicker, findListCommonIcon} from "@/api/common/icon/Icon";
 import {CommonIconVo, FindCommonIconEntity} from "@/types/common/icon/Icon";
 import {LayMenu} from "@/types/Common";
 import {preview} from "@/util/UImage";
-import LayMenuAdapter from "@/views/component/LayMenuAdapter.vue";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
-import {deleteAccountCost} from "@/api/account/Account";
 
 /* INIT*/
 onMounted(async () => {

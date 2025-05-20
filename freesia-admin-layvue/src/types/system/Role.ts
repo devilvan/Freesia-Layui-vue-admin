@@ -1,4 +1,6 @@
 import {BaseVo} from "../Common";
+import {SysMenuEntity} from "@/types/system/Menu";
+import {Tree} from "@/types/Result";
 
 /**
  * 查询参数
@@ -35,6 +37,7 @@ export interface SaveRoleMenuPrivilegeVo extends BaseVo {
     roleId?: string,
     dataScope?: string;
     treeSelectedIdList?: Array<string>;
+    treeSelectedTreeList?: Array<FindSelectedMenuListByRoleIdEntity>;
 }
 
 export interface SysRoleEntity {
@@ -63,4 +66,11 @@ export interface SaveRoleVo extends BaseVo {
     orderNum?: number;
     dataScope?: string;
     remark?: string;
+}
+
+export interface FindSelectedMenuListByRoleIdEntity extends Tree<FindSelectedMenuListByRoleIdEntity> {
+    id?: string;
+    menuName?: string;
+    orderNum?: number;
+    visible?: string;
 }

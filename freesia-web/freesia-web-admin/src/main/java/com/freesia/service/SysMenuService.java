@@ -4,10 +4,7 @@ package com.freesia.service;
 import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.RouterDto;
 import com.freesia.dto.SysMenuDto;
-import com.freesia.entity.FindAllMenuTreeEntity;
-import com.freesia.entity.FindMenuListByUserIdEntity;
-import com.freesia.entity.FindTreeMenuSelectEntity;
-import com.freesia.entity.RouterEntity;
+import com.freesia.entity.*;
 
 import java.util.List;
 import java.util.Set;
@@ -91,7 +88,7 @@ public interface SysMenuService {
      * @param roleId 角色ID
      * @return 该角色已选择的菜单列表
      */
-    List<Long> findSelectedMenuListByRoleId(Long roleId);
+    List<FindSelectedMenuListByRoleIdEntity> findSelectedMenuListByRoleId(Long roleId);
 
     /**
      * 根据用户ID查询菜单列表

@@ -279,20 +279,27 @@
             <!--            <lay-input v-model="saveRoleMenuPrivilegeModel.dataScope" :disabled="true">-->
             <!--            </lay-input>-->
           </lay-form-item>
-          <lay-form-item label="菜单树" prop="treeSelectedIdList">
+          <lay-form-item label="菜单树" prop="treeSelectedTreeList">
             <lay-container>
-              <lay-tree
-                  class="layTreeContainer"
-                  :tail-node-icon="true"
-                  :data="menuTree"
-                  :showCheckbox="menuTreeShowCheckbox"
-                  v-model:checkedKeys="saveRoleMenuPrivilegeModel.treeSelectedIdList"
-              >
-                <template #title="{ data }">
-                  <lay-icon :class="data.icon"></lay-icon>
-                  {{ data.menuName }}
-                </template>
-              </lay-tree>
+              <!--              <lay-tree-->
+              <!--                  class="layTreeContainer"-->
+              <!--                  :tail-node-icon="true"-->
+              <!--                  :data="menuTree"-->
+              <!--                  :showCheckbox="menuTreeShowCheckbox"-->
+              <!--                  v-model:checkedKeys="saveRoleMenuPrivilegeModel.treeSelectedTreeList"-->
+              <!--              >-->
+              <!--                <template #title="{ data }">-->
+              <!--                  <lay-icon :class="data.icon"></lay-icon>-->
+              <!--                  {{ data.menuName }}-->
+              <!--                </template>-->
+              <!--              </lay-tree>-->
+              <LayTreeAdapter class="layTreeContainer"
+                              :data="menuTree"
+                              :show-checkbox="menuTreeShowCheckbox"
+                              :checkedKeys="saveRoleMenuPrivilegeModel.treeSelectedIdList"
+                              v-model="saveRoleMenuPrivilegeModel.treeSelectedTreeList"
+                              v-model:keys="saveRoleMenuPrivilegeModel.treeSelectedTreeList">
+              </LayTreeAdapter>
             </lay-container>
           </lay-form-item>
         </lay-form>
@@ -360,6 +367,7 @@ import app from "@/main";
 import router from "@/router";
 import {SysDeptSelectEntity} from "@/types/system/Dept";
 import {findTreeAssignDeptSelect} from "@/api/system/Dept";
+import LayTreeAdapter from "@/views/component/LayTreeAdapter.vue";
 /* INIT*/
 const $ADMIN_ROLE = app.config.globalProperties.$ADMIN_ROLE
 onMounted(async () => {
@@ -613,7 +621,7 @@ async function toPrivilegesRow(row: any) {
   selectRowRoleId.value = row.id;
   const {data, code, msg} = await findSelectedMenuListByRoleId(row.id)
   if (code === 200) {
-    saveRoleMenuPrivilegeModel.value.treeSelectedIdList = data;
+    saveRoleMenuPrivilegeModel.value.treeSelectedTreeList = data;
     saveRoleMenuPrivilegeModel.value.roleId = row.id
     saveRoleMenuPrivilegeModel.value.roleName = row.roleName
     saveRoleMenuPrivilegeModel.value.dataScope = row.dataScope
@@ -634,7 +642,7 @@ async function toPrivilegesSelectKeys() {
   selectRowRoleId.value = selectKeys[0];
   const {data, code, msg} = await findSelectedMenuListByRoleId(row.id)
   if (code === 200) {
-    saveRoleMenuPrivilegeModel.value.treeSelectedIdList = data;
+    saveRoleMenuPrivilegeModel.value.treeSelectedTreeList = data;
     saveRoleMenuPrivilegeModel.value.roleId = row.id
     saveRoleMenuPrivilegeModel.value.roleName = row.roleName
     saveRoleMenuPrivilegeModel.value.dataScope = row.dataScope
@@ -646,16 +654,17 @@ async function toPrivilegesSelectKeys() {
 
 // 【分配权限】 -> 【保存】
 async function toPrivilegesSubmit() {
-  const {
-    code,
-    msg
-  } = await saveRoleMenuPrivilege(saveRoleMenuPrivilegeModel.value)
-  if (code === 200) {
-    await userStore.getInfo();
-    refresh()
-  }
-  layer.msg(msg, {icon: 1, time: 1000})
-  saveRoleMenuPrivilegeVisible.value = false
+  // const {
+  //   code,
+  //   msg
+  // } = await saveRoleMenuPrivilege(saveRoleMenuPrivilegeModel.value)
+  // if (code === 200) {
+  //   await userStore.getInfo();
+  //   refresh()
+  // }
+  // layer.msg(msg, {icon: 1, time: 1000})
+  // saveRoleMenuPrivilegeVisible.value = false
+  console.log(saveRoleMenuPrivilegeModel.value)
 }
 
 // 【分配权限】 -> 【取消】
