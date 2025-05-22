@@ -54,13 +54,8 @@
                  LEFT JOIN sys_user_role SUR ON SUR.ROLE_ID = SRM.ROLE_ID
             ${ew.getCustomSqlSegment}
     </select>
-    <select id="findSelectedMenuListByRoleId" resultType="com.freesia.entity.FindSelectedMenuListByRoleIdEntity">
-        SELECT M.ID,
-               MENU_NAME,
-               PARENT_ID,
-               ORDER_NUM,
-               VISIBLE,
-               ICON
+    <select id="findSelectedMenuListByRoleId" resultType="java.lang.String">
+        SELECT M.ID
         FROM sys_menu M
                  LEFT JOIN sys_role_menu RM ON M.ID = RM.MENU_ID
         WHERE 1 = 1
@@ -69,13 +64,8 @@
           AND M.MENU_TYPE IN ('D', 'M', 'B')
           AND RM.ROLE_ID = #{roleId}
     </select>
-    <select id="findAdminMenuList" resultType="com.freesia.entity.FindSelectedMenuListByRoleIdEntity">
-        SELECT M.ID,
-               M.MENU_NAME,
-               M.PARENT_ID,
-               M.ORDER_NUM,
-               M.VISIBLE,
-               M.ICON
+    <select id="findAdminMenuList" resultType="java.lang.String">
+        SELECT M.ID
         FROM sys_menu M
         WHERE 1 = 1
           AND M.LOGIC_DEL = 0
@@ -126,13 +116,11 @@
         </if>
     </select>
     <select id="findByComponentExists" resultType="java.lang.Boolean">
-        SELECT EXISTS(
-                       SELECT 1
-                       FROM SYS_MENU
-                       WHERE 1 = 1
-                         AND COMPONENT = #{component}
-                         AND COMPONENT NOT IN ('modal', 'blank')
-                   )
+        SELECT EXISTS(SELECT 1
+                      FROM SYS_MENU
+                      WHERE 1 = 1
+                        AND COMPONENT = #{component}
+                        AND COMPONENT NOT IN ('modal', 'blank'))
     </select>
     <select id="findAllSysButton" resultType="com.freesia.po.SysMenuPo">
         SELECT DISTINCT SM.ID,

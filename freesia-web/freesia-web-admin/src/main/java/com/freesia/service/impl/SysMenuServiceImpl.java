@@ -9,19 +9,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
-import com.freesia.dto.AssignButtonDto;
-import com.freesia.dto.MetaDto;
-import com.freesia.dto.RouterDto;
-import com.freesia.dto.SysMenuDto;
+import com.freesia.dto.*;
 import com.freesia.entity.*;
 import com.freesia.exception.ServiceException;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysMenuMapper;
 import com.freesia.mapper.SysRoleMapper;
-import com.freesia.po.SysMenuPo;
-import com.freesia.po.SysRoleMenuPk;
-import com.freesia.po.SysRoleMenuPo;
-import com.freesia.po.SysRolePo;
+import com.freesia.po.*;
 import com.freesia.repository.SysMenuRepository;
 import com.freesia.repository.SysRoleMenuRepository;
 import com.freesia.satoken.util.USecurity;
@@ -246,14 +240,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     }
 
     @Override
-    public List<FindSelectedMenuListByRoleIdEntity> findSelectedMenuListByRoleId(Long roleId) {
+    public List<String> findSelectedMenuListByRoleId(Long roleId) {
         SysRolePo sysRolePo = sysRoleMapper.selectById(roleId);
         // 20240913 由于角色管理-分配菜单权限 保存时包含基本数据与菜单数据，如果只保存基本数据会导致菜单数据中的按钮数据部分被删除
         if (AdminConstant.ADMIN.equals(sysRolePo.getRoleKey())) {
-            return UTree.buildTree(sysMenuMapper.findAdminMenuList());
+            return sysMenuMapper.findAdminMenuList();
         }
         // 20240913 由于角色管理-分配菜单权限 保存时包含基本数据与菜单数据，如果只保存基本数据会导致菜单数据中的按钮数据部分被删除
-        return UTree.buildTree(sysMenuMapper.findSelectedMenuListByRoleId(roleId));
+        return sysMenuMapper.findSelectedMenuListByRoleId(roleId);
     }
 
     @Override

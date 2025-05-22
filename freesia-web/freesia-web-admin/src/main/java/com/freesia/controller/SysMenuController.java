@@ -10,7 +10,6 @@ import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.SysMenuDto;
 import com.freesia.entity.FindAllMenuTreeEntity;
 import com.freesia.entity.FindMenuListByUserIdEntity;
-import com.freesia.entity.FindSelectedMenuListByRoleIdEntity;
 import com.freesia.entity.FindTreeMenuSelectEntity;
 import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
@@ -91,9 +90,9 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_MENU_EDIT)
     @Operation(summary = "根据角色ID查询菜单列表")
     @GetMapping(value = "findSelectedMenuListByRoleId")
-    public R<List<FindSelectedMenuListByRoleIdEntity>> findSelectedMenuListByRoleId(@NotNull String roleId) {
-        List<FindSelectedMenuListByRoleIdEntity> entityList = sysMenuService.findSelectedMenuListByRoleId(Long.valueOf(roleId));
-        return R.ok(entityList);
+    public R<List<String>> findSelectedMenuListByRoleId(@NotNull String roleId) {
+        List<String> treeSelectedIdList = sysMenuService.findSelectedMenuListByRoleId(Long.valueOf(roleId));
+        return R.ok(treeSelectedIdList);
     }
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_INDEX)

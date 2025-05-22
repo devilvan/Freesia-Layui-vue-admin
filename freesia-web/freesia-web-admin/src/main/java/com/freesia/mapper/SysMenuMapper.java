@@ -9,7 +9,6 @@ import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuType;
 import com.freesia.dto.SysMenuDto;
 import com.freesia.entity.FindMenuListByUserIdEntity;
-import com.freesia.entity.FindSelectedMenuListByRoleIdEntity;
 import com.freesia.entity.FindTreeMenuSelectEntity;
 import com.freesia.po.SysMenuPo;
 import org.apache.ibatis.annotations.Mapper;
@@ -69,14 +68,14 @@ public interface SysMenuMapper extends BaseMapper<SysMenuPo> {
      * @param roleId 角色ID
      * @return 该角色已选择的菜单列表
      */
-    List<FindSelectedMenuListByRoleIdEntity> findSelectedMenuListByRoleId(@Param("roleId") Long roleId);
+    List<String> findSelectedMenuListByRoleId(@Param("roleId") Long roleId);
 
     /**
      * 查询管理员可用的所有菜单ID
      *
      * @return 管理员可用的所有菜单ID
      */
-    List<FindSelectedMenuListByRoleIdEntity> findAdminMenuList();
+    List<String> findAdminMenuList();
 
     /**
      * 根据用户ID查询菜单列表

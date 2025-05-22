@@ -37,7 +37,6 @@ export interface SaveRoleMenuPrivilegeVo extends BaseVo {
     roleId?: string,
     dataScope?: string;
     treeSelectedIdList?: Array<string>;
-    treeSelectedTreeList?: Array<FindSelectedMenuListByRoleIdEntity>;
 }
 
 export interface SysRoleEntity {

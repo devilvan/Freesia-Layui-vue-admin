@@ -86,9 +86,9 @@ public interface SysMenuService {
      * 根据角色ID查询菜单列表
      *
      * @param roleId 角色ID
-     * @return 该角色已选择的菜单列表
+     * @return 该角色已选择的菜单ID
      */
-    List<FindSelectedMenuListByRoleIdEntity> findSelectedMenuListByRoleId(Long roleId);
+    List<String> findSelectedMenuListByRoleId(Long roleId);
 
     /**
      * 根据用户ID查询菜单列表

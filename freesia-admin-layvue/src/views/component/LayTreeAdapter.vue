@@ -38,9 +38,6 @@ const props = defineProps({
   checkedKeys: {
     type: Array<String>
   },
-  keys: {
-    type: Array<String>
-  },
   data: {
     type: Object,
     required: true
@@ -65,7 +62,6 @@ const props = defineProps({
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Array<String>): void
-  (e: 'update:keys', value: Array<String>): void
 }>()
 /*INIT*/
 
@@ -76,9 +72,6 @@ const internalCheckedKeys = ref<string[]>(props.checkedKeys || [])
 /*VAR*/
 
 /*FUNCTION*/
-// watch(internalCheckedKeys, (newVal) => {
-//   emit('update:keys', newVal)
-// }, { deep: true })
 
 function getCheckKeys() {
   console.log("result: " + result.value)
@@ -117,7 +110,6 @@ function checkChange(ve: any) {
   }
   result.value = newCheckedKeys;
   emit('update:modelValue', result.value)
-  // emit('update:keys', result.value)
 }
 
 // 移除所有子节点的key
