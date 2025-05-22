@@ -141,6 +141,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                 .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysUserPo::getId, userId);
         SysUserPo sysUserPo = sysUserMapper.findCurrentUserProfile(queryWrapper);
+        sysUserPo.setAvatar(ossHandler.convertEndpoint2Domain(sysUserPo.getAvatar()));
         return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
     }
 

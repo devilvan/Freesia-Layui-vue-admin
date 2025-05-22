@@ -360,8 +360,8 @@ function resolveImgPath(imgPath: string) {
 function uploadOnChange(file: any) {
   uploadTemp(file).then((res: any) => {
     if (res.code === 200) {
-      if (res.data) {
-        previewAvatar.value = res.data.url
+      if (res.data && res.data.length > 0) {
+        previewAvatar.value = res.data[0].url;
       }
     }
   })
@@ -451,6 +451,7 @@ function uploadOnChange(file: any) {
 .target {
   width: 100%;
   height: 440px;
+  margin-top: 20px;
   display: flex;
   /*justify-content: center;*/
   flex-direction: column;
