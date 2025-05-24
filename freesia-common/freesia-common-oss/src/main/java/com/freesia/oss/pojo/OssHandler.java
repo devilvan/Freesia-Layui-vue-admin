@@ -305,7 +305,7 @@ public class OssHandler {
         // 生成uuid
         String uuid = IdUtil.fastSimpleUUID();
         // 文件路径
-        String path = (UEmpty.isEmpty(dir) ? "" : dir) + "/" + Constants.SDF_YMD_PATH.format(new Date()) + "/" + uuid;
+        String path = (UEmpty.isEmpty(dir) ? "" : (dir + "/")) + Constants.SDF_YMD_PATH.format(new Date()) + "/" + uuid;
         if (StringUtils.isNotBlank(prefix)) {
             path = prefix + "/" + path;
         }

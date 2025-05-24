@@ -129,7 +129,6 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
                     .map(MultipartFile::getOriginalFilename)
                     .map(m -> m.substring(m.lastIndexOf('.') + 1))
                     .orElseThrow(() -> new OssException("oss.file.required"));
-            new OssHandler.UploadResultEntity();
             OssHandler.UploadResultEntity uploadResultEntity;
             try {
                 uploadResultEntity = ossHandler.uploadSuffix(file.getBytes(), dir, "." + suffix, file.getContentType());

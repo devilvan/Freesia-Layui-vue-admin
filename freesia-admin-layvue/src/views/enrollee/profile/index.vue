@@ -330,6 +330,7 @@ function profileFormReset() {
 }
 
 function toImport() {
+  fileList.value = []
   visibleImport.value = true
 }
 
