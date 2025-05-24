@@ -43,7 +43,6 @@
     <div class="table-box width-resize">
       <lay-table
           ref="tableRef"
-          :height="`500px`"
           :loading="loading"
           :columns="columns"
           children-column-name="children"
@@ -54,7 +53,9 @@
           :resize="true"
       >
         <template #toolbar>
-          <lay-button type="normal" size="sm" @click="toSearch" v-permission="[$MENU_PERMISSION.SYSTEM_MENU_INDEX]">查询</lay-button>
+          <lay-button type="normal" size="sm" @click="toSearch" v-permission="[$MENU_PERMISSION.SYSTEM_MENU_INDEX]">
+            查询
+          </lay-button>
           <lay-button size="sm" @click="toReset" v-permission="[$MENU_PERMISSION.SYSTEM_MENU_INDEX]">重置</lay-button>
           <lay-button size="sm" type="primary" @click="changeSaveMenuVoModalFlag(MenuType.DIR)"
                       v-permission="[$MENU_PERMISSION.SYSTEM_MENU_ADD_DIR]">新建目录
@@ -159,15 +160,18 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="saveDirModalFlag" :title="title">
+    <lay-layer v-model="saveDirModalFlag" :title="title" :area="['1200px']">
       <div style="padding: 20px" v-esc-close="hideSaveDirModal">
         <lay-form :model="sysDirVo" ref="saveDirFormRef" label-position="top" size="md">
           <lay-row space="20">
             <lay-col md="6">
               <lay-form-item label="父目录" prop="parentId">
-                <lay-tree-select v-model="sysDirVo.parentId" :data="treeMenuSelectList"
-                                 @change="changeDirModalParentIdSelect"
-                                 :allow-clear="true" :disabled="proceedCode === PROCEED_CODE.UPDATE"></lay-tree-select>
+                <lay-tree-select style="width: 100%"
+                                 v-model="sysDirVo.parentId"
+                                 :data="treeMenuSelectList"
+                                 :allow-clear="true"
+                                 :disabled="proceedCode === PROCEED_CODE.UPDATE"
+                                 @change="changeDirModalParentIdSelect"></lay-tree-select>
               </lay-form-item>
             </lay-col>
             <lay-col md="6">
@@ -224,7 +228,7 @@
       </div>
     </lay-layer>
 
-    <lay-layer v-model="saveMenuModalFlag" :title="title">
+    <lay-layer v-model="saveMenuModalFlag" :title="title" :area="['1200px']">
       <div style="padding: 20px" v-esc-close="hideSaveMenuModal">
         <lay-form :model="sysMenuVo" ref="saveMenuFormRef" :rules="sysMenuVoRules" label-position="top" size="md">
           <lay-row space="20">
@@ -303,7 +307,7 @@
       </div>
     </lay-layer>
 
-    <lay-layer v-model="saveButtonModalFlag" :title="title">
+    <lay-layer v-model="saveButtonModalFlag" :title="title" :area="['1200px']">
       <div style="padding: 20px" v-esc-close="hideSaveButtonModal">
         <lay-form :model="sysButtonVo" ref="saveButtonFormRef" :rules="sysButtonVoRules" label-position="top" size="md">
           <lay-row space="20">
@@ -366,7 +370,7 @@
       </div>
     </lay-layer>
 
-    <lay-layer v-model="saveLinkModalFlag" :title="title">
+    <lay-layer v-model="saveLinkModalFlag" :title="title" :area="['1200px']">
       <div style="padding: 20px" v-esc-close="hideSaveLinkModal">
         <lay-form :model="sysLinkVo" ref="saveLinkFormRef" :rules="sysLinkVoRules" label-position="top" size="md">
           <lay-row space="20">

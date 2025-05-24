@@ -83,7 +83,6 @@ public class SysDictController extends BaseController {
         return R.ok(sysDictValueDtoList);
     }
 
-    @SaCheckLogin
     @Operation(summary = "（缓存）查询字典值列表数据")
     @GetMapping(value = "findCacheSysDictValueList")
     public R<List<SysDictValueDto>> findCacheSysDictValueList(@RequestParam String dictKey) {

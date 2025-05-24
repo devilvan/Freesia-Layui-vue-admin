@@ -1,6 +1,6 @@
 <template>
   <lay-card>
-    <lay-button @click="getCheckKeys">按钮</lay-button>
+<!--    <lay-button @click="getCheckKeys">按钮</lay-button>-->
     <lay-tree
         :data="props.data"
         :tailNodeIcon="props.tailNodeIcon"
