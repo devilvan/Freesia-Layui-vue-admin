@@ -1,16 +1,16 @@
 package com.freesia.config;
 
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.serializer.ToStringSerializer;
+import com.alibaba.fastjson.serializer.*;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.freesia.constant.Constants;
 import com.freesia.desensization.handler.DesensitizeValueFilter;
+import com.freesia.filter.CombinedValueFilter;
 import com.freesia.oss.seder.DomainSeValueFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.web.filter.CompositeFilter;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -35,7 +35,10 @@ public class FastJSONConfig {
         serializeConfig.put(Long.class, ToStringSerializer.instance);
         serializeConfig.put(Long.TYPE, ToStringSerializer.instance);
         // 添加脱敏拦截器
-        fastJsonConfig.setSerializeFilters(new DesensitizeValueFilter(), new DomainSeValueFilter());
+        CombinedValueFilter combinedValueFilter = new CombinedValueFilter();
+        combinedValueFilter.addFilter(new DesensitizeValueFilter());
+        combinedValueFilter.addFilter(new DomainSeValueFilter());
+        fastJsonConfig.setSerializeFilters(combinedValueFilter);
         fastJsonConfig.setSerializeConfig(serializeConfig);
         //处理中文乱码问题
         List<MediaType> fastMediaTypes = List.of(MediaType.APPLICATION_JSON);

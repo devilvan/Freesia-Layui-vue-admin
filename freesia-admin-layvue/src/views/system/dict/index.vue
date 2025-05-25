@@ -54,7 +54,7 @@
         </div>
       </div>
 
-      <div style="width: 1200px">
+      <div style="margin-left: 20px">
         <lay-card>
           <lay-form style="margin-top: 10px" @keydown.enter.prevent="toSearch">
             <lay-row>
@@ -96,11 +96,13 @@
           </lay-form>
         </lay-card>
         <lay-table
+            :page="pageQuery"
             :columns="columns"
             :loading="loading"
             :default-toolbar="true"
             :data-source="sysDictValueList"
             v-model:selected-keys="selectedKeys"
+            @change="change"
             @sortChange="sortChange"
         >
           <template #status="{ row }">
