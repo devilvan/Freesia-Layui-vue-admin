@@ -121,7 +121,7 @@ public class CommonIconTemplateDetailController extends BaseController {
 
     @Operation(summary = "查询自增排序号")
     @GetMapping(value = "findMaxOrderNum")
-    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
+//    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
     public R<Integer> findMaxOrderNum(FindMaxOrderNumVo findMaxOrderNumVo) {
         CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(findMaxOrderNumVo, CommonIconTemplateDetailDto.class);
         Integer maxOrderNum = Convert.toInt(commonIconTemplateDetailService.findMaxOrderNum(commonIconTemplateDetailDto), 0);
@@ -131,7 +131,7 @@ public class CommonIconTemplateDetailController extends BaseController {
 
     @Operation(summary = "查询自定义分组列表")
     @GetMapping(value = "findGrouping")
-    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
+//    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
     public R<List<LayMenu>> findGrouping(CommonIconTemplateDetailVo vo) {
         CommonIconTemplateDetailDto dto = UCopy.copyVo2Dto(vo, CommonIconTemplateDetailDto.class);
         List<LayMenu> resultMap = commonIconTemplateDetailService.findGrouping(dto);
@@ -140,7 +140,7 @@ public class CommonIconTemplateDetailController extends BaseController {
 
     @Operation(summary = "查询自定义分组Map")
     @GetMapping(value = "findCustomIconTemplateDetail")
-    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
+//    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
     public R<Map<String, List<FindTreeIconTreeTypeEntity>>> findCustomIconTemplateDetail(CommonIconTemplateDetailVo vo) {
         CommonIconTemplateDetailDto dto = UCopy.copyVo2Dto(vo, CommonIconTemplateDetailDto.class);
         Map<String, List<FindTreeIconTreeTypeEntity>> map = commonIconTemplateDetailService.findCustomIconTemplateDetail(dto);
