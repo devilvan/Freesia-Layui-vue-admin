@@ -189,7 +189,7 @@
                   </lay-col>
                   <lay-col md="20"
                            style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
-                    图标：{{ accountCostVo.iconName }}
+                    图标：{{ accountCostVo.costType }}
                   </lay-col>
                 </lay-row>
               </lay-form-item>
@@ -593,7 +593,6 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      accountCostVo.value.costType = accountCostVo.value.iconName
       let id = accountCostVo.value.id;
       saveUpdate(accountCostVo.value).then((res: any) => {
         if (res.code === 200) {
@@ -668,7 +667,7 @@ function changeSelectTypeModal() {
 
 const callBackFun = (icon: FindCommonIconEntity) => {
   accountCostVo.value.icon = icon.url;
-  accountCostVo.value.iconName = icon.name
+  accountCostVo.value.costType = icon.name
   changeSelectTypeModal()
 }
 

@@ -21,4 +21,19 @@ public class FindPageAccountCostEntity extends AccountCostDto {
      */
     @Schema(description = "关联用户集合")
     private List<SysUserPo> userList;
+    /**
+     * 关联用户ID
+     */
+    @Schema(description = "关联用户ID")
+    private String accountCostUserId;
+    /**
+     * 关联用户昵称
+     */
+    @Schema(description = "关联用户昵称")
+    private String accountCostUserName;
+    /**
+     * 用户昵称
+     */
+    @Schema(description = "用户昵称")
+    private String acNickName;
 }
