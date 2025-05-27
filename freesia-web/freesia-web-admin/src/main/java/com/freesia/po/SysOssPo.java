@@ -63,4 +63,8 @@ public class SysOssPo extends BasePo implements Serializable {
     @TableField(value = "FILE_SIZE")
     @Column(name = "FILE_SIZE", columnDefinition = "BIGINT(20) COMMENT '文件大小'")
     private Long fileSize;
+    @Schema(description = "文件哈希值")
+    @TableField(value = "FILE_HASH")
+    @Column(name = "FILE_HASH", columnDefinition = "VARCHAR(64) COMMENT '文件哈希值'")
+    private String fileHash;
 }

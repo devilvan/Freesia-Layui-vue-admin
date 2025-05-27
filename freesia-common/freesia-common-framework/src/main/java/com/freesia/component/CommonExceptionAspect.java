@@ -2,10 +2,8 @@ package com.freesia.component;
 
 import cn.hutool.http.HttpStatus;
 import com.freesia.exception.ServiceException;
-import com.freesia.util.UMessage;
 import com.freesia.vo.R;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,15 +22,6 @@ import java.util.Objects;
 @Component
 @RestControllerAdvice
 public class CommonExceptionAspect {
-    /**
-     * 超出文件上传大小
-     */
-    @ExceptionHandler(FileSizeLimitExceededException.class)
-    public R<String> handleMethodArgumentFileSizeLimitExceededException(FileSizeLimitExceededException e) {
-        log.error(e.getMessage(), e);
-        return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, UMessage.message("file.upload.max.size.exceed", e.getFieldName(), e.getPermittedSize()));
-    }
-
     /**
      * Validation 参数校验，验证异常
      */

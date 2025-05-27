@@ -6,6 +6,7 @@ import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
+import com.freesia.constant.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +53,7 @@ public class RedisConfig implements WebMvcConfigurer {
                 out.writeNull();
                 return;
             }
-            out.writeString(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format((LocalDateTime) object));
+            out.writeString(DateTimeFormatter.ofPattern(Constants.YMD_HMS).format((LocalDateTime) object));
         });
         fastJsonConfig.setSerializeConfig(serializeConfig);
         fastJsonConfig.setFeatures(Feature.SupportAutoType);

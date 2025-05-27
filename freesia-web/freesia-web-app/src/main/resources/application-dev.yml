@@ -57,7 +57,7 @@ captcha:
 spring:
   messages:
     # 引入不同模块的i18n messages文件，逗号分隔
-    basename: i18n/messages_account,i18n/messages_common,i18n/messages
+    basename: i18n/messages_account,i18n/messages_common,i18n/messages,i18n/messages_common_service
     encoding: UTF-8
 ---
 # Sa-Token配置

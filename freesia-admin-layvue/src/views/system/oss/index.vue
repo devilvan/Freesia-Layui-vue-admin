@@ -341,6 +341,8 @@ function toUpload() {
       visibleImport.value = !visibleImport.value
       loadDataSource()
     }
+  }).catch(e => {
+    layer.confirm(e.message);
   })
 }
 
