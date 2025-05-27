@@ -1,5 +1,5 @@
 import Http from "../../../Http";
-import {LayMenu, PageQuery} from "@/types/Common";
+import {LaySelect, PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
 import {
@@ -33,7 +33,11 @@ export function findMaxOrderNum(): Promise<R<number>> {
     return Http.get("/common/commonIconTemplateHeaderController/findMaxOrderNum");
 }
 
-export function findSelectCommonIconHeader(): Promise<R<LayMenu[]>> {
+export function findSelectCommonIconHeader(): Promise<R<LaySelect[]>> {
     return Http.get("/common/commonIconTemplateHeaderController/findSelectCommonIconHeader");
+}
+
+export function findListSelectCostType(): Promise<R<LaySelect[]>> {
+    return Http.get("/common/commonIconTemplateHeaderController/findListSelectCostType");
 }
 

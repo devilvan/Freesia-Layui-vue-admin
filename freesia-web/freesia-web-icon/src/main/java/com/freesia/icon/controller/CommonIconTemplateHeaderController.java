@@ -5,11 +5,14 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.convert.Convert;
 import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
+import com.freesia.exception.ServiceException;
+import com.freesia.exception.UserException;
+import com.freesia.icon.constant.CommonIconModule;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
 import com.freesia.idempotent.annotation.Idempotent;
-import com.freesia.pojo.LayMenu;
+import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
@@ -18,9 +21,11 @@ import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -127,9 +132,18 @@ public class CommonIconTemplateHeaderController extends BaseController {
 
     @Operation(summary = "查询通用图标模板头表下拉数据")
     @GetMapping(value = "findSelectCommonIconHeader")
-    public R<List<LayMenu>> findSelectCommonIconHeader() {
+    public R<List<LaySelect>> findSelectCommonIconHeader() {
         Long userId = USecurity.getUserId();
-        List<LayMenu> list = commonIconTemplateHeaderService.findSelectCommonIconHeader(userId);
+        List<LaySelect> list = commonIconTemplateHeaderService.findSelectCommonIconHeader(userId);
         return R.ok(list);
+    }
+
+    @Validated
+    @Operation(summary = "根据用户ID查询开销类型下拉集合")
+    @GetMapping(value = "findListSelectCostType")
+    public R<List<LaySelect>> findListSelectCostType() {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        List<LaySelect> laySelectList = commonIconTemplateHeaderService.findListSelectCostType(userId);
+        return R.ok(laySelectList);
     }
 }

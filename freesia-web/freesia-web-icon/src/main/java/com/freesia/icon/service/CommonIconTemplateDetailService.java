@@ -3,7 +3,7 @@ package com.freesia.icon.service;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
 import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
-import com.freesia.pojo.LayMenu;
+import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -78,7 +78,7 @@ public interface CommonIconTemplateDetailService {
      * @param dto 查询入参
      * @return 结果集
      */
-    List<LayMenu> findGrouping(CommonIconTemplateDetailDto dto);
+    List<LaySelect> findGrouping(CommonIconTemplateDetailDto dto);
 
     /**
      * 查询自定义分组Map

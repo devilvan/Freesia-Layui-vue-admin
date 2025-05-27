@@ -31,26 +31,24 @@
                                @change="changePaymentTimeDoSelect"></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-transition>
-            <lay-card v-if="expandCollapseFlag">
-              <lay-row :space="20">
-                <lay-col :md="6">
-                  <lay-form-item label="开销标识">
-                    <lay-select
-                        style="width: 100%"
-                        size="sm"
-                        v-model="searchQuery.paymentSign"
-                        :options="paymentSignSelectList"
-                        :items="paymentSignSelectList"
-                        :allow-clear="true"
-                        placeholder="请选择"
-                    ></lay-select>
-                  </lay-form-item>
-                </lay-col>
-              </lay-row>
-            </lay-card>
-          </lay-transition>
         </lay-row>
+        <lay-transition>
+          <lay-row :space="20" v-if="expandCollapseFlag">
+            <lay-col :md="6">
+              <lay-form-item label="开销标识">
+                <lay-select
+                    style="width: 100%"
+                    size="sm"
+                    v-model="searchQuery.paymentSign"
+                    :options="paymentSignSelectList"
+                    :items="paymentSignSelectList"
+                    :allow-clear="true"
+                    placeholder="请选择"
+                ></lay-select>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+        </lay-transition>
       </lay-form>
       <lay-line contentPosition="right" offset="8%">
         <span v-if="expandCollapseFlag" @click="changeExpandCollapseFlag">

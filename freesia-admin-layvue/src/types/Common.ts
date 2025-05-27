@@ -37,7 +37,7 @@ export interface PageQuery {
     total?: number;
 }
 
-export interface LayMenu {
+export interface LaySelect {
     label?: string;
     value?: string;
     defaultFlag: false

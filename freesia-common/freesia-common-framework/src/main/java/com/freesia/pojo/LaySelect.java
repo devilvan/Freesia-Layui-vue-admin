@@ -8,7 +8,7 @@ import lombok.Data;
  * @date 2025-05-16
  */
 @Data
-public class LayMenu {
+public class LaySelect {
     /**
      * 键
      */
