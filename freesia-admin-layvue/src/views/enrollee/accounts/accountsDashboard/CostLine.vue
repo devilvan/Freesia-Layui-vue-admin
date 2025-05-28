@@ -61,7 +61,7 @@ import * as echarts from "echarts";
 import {findCostLineChart} from "@/api/account/Account";
 import {findListSelectCostType} from "@/api/common/icon/template/IconTemplateHeader";
 import {R} from "@/types/Result";
-import {LaySelect} from "@/types/Common";
+import {LaySelectEntity} from "@/types/Common";
 import {layer} from "@layui/layui-vue";
 
 /*INIT*/
@@ -105,7 +105,7 @@ let monthCostLineChart: echarts.ECharts | null = null;
 let yearCostLineChart: echarts.ECharts | null = null;
 const sdf_YM = 'YYYY-MM'
 const sdf_Y = 'YYYY'
-const findSelectCostTypeList = ref<LaySelect[]>([]);
+const findSelectCostTypeList = ref<LaySelectEntity[]>([]);
 /*VAR*/
 
 /*FUNCTION*/
@@ -295,7 +295,7 @@ function showYearCostLineChart(data: any) {
 }
 
 function doFindListSelectCostType() {
-  findListSelectCostType().then((res: R<LaySelect[]>) => {
+  findListSelectCostType().then((res: R<LaySelectEntity[]>) => {
     findSelectCostTypeList.value = res.data
   }).catch(e => {
     layer.confirm(e.message)
