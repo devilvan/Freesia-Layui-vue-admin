@@ -133,16 +133,26 @@ logging:
   level:
     root: INFO
 # spring安全信息
+#management:
+#  endpoints:
+#    enabled-by-default: true
+#    web:
+#      exposure:
+#        include: 'health'
+#  endpoint:
+#    health:
+#      enabled: true
+#      show-details: always
 management:
+  endpoint:
+    health:
+      show-details: always
   endpoints:
     enabled-by-default: true
     web:
+      base-path: /actuator
       exposure:
-        include: 'health'
-  endpoint:
-    health:
-      enabled: true
-      show-details: always
+        include: '*'
 ---
 sse:
   enabled: true

@@ -4,6 +4,19 @@ server:
 spring:
   application:
     name: freesia-admin
+  cloud:
+    zookeeper:
+      connect-string: localhost:2181
+      enabled: true
+      connection-timeout: 60000
+---
+spring:
+  boot:
+    admin:
+      client:
+        instance:
+          service-host-type: host_name
+          name: ${spring.application.name}
 ---
 freesia:
   web:

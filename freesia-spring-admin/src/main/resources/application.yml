@@ -1,0 +1,16 @@
+server:
+  # \u53EA\u80FD\u9009\u62E98xxx\u7AEF\u53E3
+  port: 8003
+spring:
+  application:
+    ## \u6CE8\u518C\u670D\u52A1\u540D
+    name: freesia-spring-admin
+    admin:
+      enabled: true
+  boot:
+    admin:
+      context-path: /spring-admin
+management:
+  endpoint:
+    health:
+      show-details: always
