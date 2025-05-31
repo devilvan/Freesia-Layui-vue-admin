@@ -58,6 +58,8 @@
                 <!-- 环境标识，需要与配置文件的名称相对应 -->
                 <profiles.active>dev</profiles.active>
                 <logging.level>debug</logging.level>
+                <monitor.username>freesia</monitor.username>
+                <monitor.password>lklpos</monitor.password>
             </properties>
             <activation>
                 <!-- 默认环境 -->
@@ -69,6 +71,8 @@
             <properties>
                 <profiles.active>test</profiles.active>
                 <logging.level>info</logging.level>
+                <monitor.username>freesia</monitor.username>
+                <monitor.password>lklpos</monitor.password>
             </properties>
         </profile>
         <profile>
@@ -76,6 +80,8 @@
             <properties>
                 <profiles.active>prod</profiles.active>
                 <logging.level>warn</logging.level>
+                <monitor.username>freesia</monitor.username>
+                <monitor.password>lklpos</monitor.password>
             </properties>
         </profile>
 

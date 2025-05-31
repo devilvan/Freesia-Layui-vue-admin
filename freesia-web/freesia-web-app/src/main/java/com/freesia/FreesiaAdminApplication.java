@@ -1,6 +1,7 @@
 package com.freesia;
 
 import cn.hutool.crypto.SecureUtil;
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync
 @EnableCaching
 @EnableJpaAuditing
-@EnableDiscoveryClient
+//@EnableAdminServer
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 @SpringBootApplication(scanBasePackages = "com.freesia")

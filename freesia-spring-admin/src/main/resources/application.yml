@@ -7,9 +7,20 @@ spring:
     name: freesia-spring-admin
     admin:
       enabled: true
+---
+spring:
   boot:
     admin:
       context-path: /spring-admin
+      client:
+        enabled: true
+        url: http://localhost:8003/spring-admin
+        instance:
+          metadata:
+            username: ${spring.boot.admin.client.username}
+            userpassword: ${spring.boot.admin.client.password}
+        username: @monitor.username@
+        password: @monitor.password@
 management:
   endpoint:
     health:
