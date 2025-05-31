@@ -1,6 +1,6 @@
 package com.freesia.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,31 +19,31 @@ import java.util.Date;
 @Schema(description = "部门信息表 值对象")
 public class SysDeptVo {
     @Schema(description = "父部门ID")
-    @JSONField(alternateNames = {"parentId"})
+    @JsonAlias(value = {"parentId"})
     private Long parentId;
     @Schema(description = "祖级列表")
-    @JSONField(alternateNames = {"ancestors"})
+    @JsonAlias(value = {"ancestors"})
     private String ancestors;
     @Schema(description = "部门名称")
-    @JSONField(alternateNames = {"deptName"})
+    @JsonAlias(value = {"deptName"})
     private String deptName;
     @Schema(description = "显示顺序")
-    @JSONField(alternateNames = {"orderNum"})
+    @JsonAlias(value = {"orderNum"})
     private Integer orderNum;
     @Schema(description = "负责人")
-    @JSONField(alternateNames = {"leader"})
+    @JsonAlias(value = {"leader"})
     private String leader;
     @Schema(description = "联系电话")
-    @JSONField(alternateNames = {"telNo"})
+    @JsonAlias(value = {"telNo"})
     private String telNo;
     @Schema(description = "邮箱")
-    @JSONField(alternateNames = {"email"})
+    @JsonAlias(value = {"email"})
     private String email;
     @Schema(description = "部门状态（0-禁用，1-启用）")
-    @JSONField(alternateNames = {"deptStatus"})
+    @JsonAlias(value = {"deptStatus"})
     private String deptStatus;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
     @Schema(description = "创建时间（从）")
     private Date createTimeFrom;

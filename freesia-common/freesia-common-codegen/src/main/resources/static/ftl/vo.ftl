@@ -1,6 +1,6 @@
 package ${packageName}.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ public class ${dataBaseDto.className}Vo extends BaseVo {
 <#if dataBaseDto.fieldList ??>
     <#list dataBaseDto.fieldList as field>
     @Schema(description = "${field.remark ! ''}")
-    @JSONField(alternateNames = {"${field.fieldName}"})
+    @JsonAlias(value = {"${field.fieldName}"})
     private <#if field.columnType == 'BIT'>Boolean<#else>${field.javaType}</#if> ${field.fieldName};
     </#list>
 </#if>

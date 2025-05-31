@@ -1,6 +1,6 @@
 package com.freesia.account.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
 import lombok.AllArgsConstructor;
@@ -21,27 +21,27 @@ import java.math.BigDecimal;
 @Schema(description = "开销-预算表 值对象")
 public class AccountBudgetVo extends BaseVo {
     @Schema(description = "预算描述")
-    @JSONField(alternateNames = {"budgetDesc"})
+    @JsonAlias(value = {"budgetDesc"})
     private String budgetDesc;
     @Schema(description = "预算金额")
-    @JSONField(alternateNames = {"outlay"})
+    @JsonAlias(value = {"outlay"})
     private BigDecimal outlay;
     @Schema(description = "时间范围从")
-    @JSONField(alternateNames = {"durationFrom"})
+    @JsonAlias(value = {"durationFrom"})
     private Date durationFrom;
     @Schema(description = "时间范围到")
-    @JSONField(alternateNames = {"durationTo"})
+    @JsonAlias(value = {"durationTo"})
     private Date durationTo;
     @Schema(description = "预算类型（ACCOUNT_BUDGET_DURATION_TYPE）")
-    @JSONField(alternateNames = {"budgetType"})
+    @JsonAlias(value = {"budgetType"})
     private String budgetType;
     @Schema(description = "用户ID")
-    @JSONField(alternateNames = {"userId"})
+    @JsonAlias(value = {"userId"})
     private Long userId;
     @Schema(description = "适用策略ID")
-    @JSONField(alternateNames = {"strategyId"})
+    @JsonAlias(value = {"strategyId"})
     private Long strategyId;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
 }

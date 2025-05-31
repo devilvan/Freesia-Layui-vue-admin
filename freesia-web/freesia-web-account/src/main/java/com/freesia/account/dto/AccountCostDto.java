@@ -1,6 +1,6 @@
 package com.freesia.account.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import com.freesia.oss.annotation.Domain;
@@ -34,7 +34,7 @@ public class AccountCostDto extends BaseDto {
     @Schema(description = "开销标识（支出、收入）")
     private String paymentSign;
     @Schema(description = "时间")
-    @JSONField(format = Constants.YMD_HM)
+    @JsonFormat(pattern = Constants.YMD_HM)
     private Date paymentTime;
     @Domain
     @Schema(description = "图标")

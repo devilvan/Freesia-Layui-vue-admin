@@ -1,8 +1,8 @@
 package com.freesia.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.freesia.desensization.annotation.Desensitize;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
+import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.desensization.constant.DesensitizedType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -40,7 +40,7 @@ public class FindPageSysUserByDeptEntity extends BaseEntity {
     @Schema(description = "逻辑删除")
     private Boolean logicDel;
     @Schema(description = "创建时间")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date createTime;
     @Schema(description = "创建人")
     private String creator;

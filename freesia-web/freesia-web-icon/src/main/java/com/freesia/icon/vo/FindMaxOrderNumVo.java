@@ -1,6 +1,6 @@
 package com.freesia.icon.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -15,15 +15,15 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class FindMaxOrderNumVo extends BaseVo {
     @Schema(description = "通用图标模板头表ID")
-    @JSONField(alternateNames = {"headerId"})
+    @JsonAlias(value = {"headerId"})
     private Long headerId;
     @Schema(description = "自定义图标名称")
-    @JSONField(alternateNames = {"name"})
+    @JsonAlias(value = {"name"})
     private String name;
     @Schema(description = "自定义分组")
-    @JSONField(alternateNames = {"grouping"})
+    @JsonAlias(value = {"grouping"})
     private String grouping;
     @Schema(description = "节点类型（ICON_TREE_TYPE）")
-    @JSONField(alternateNames = {"iconTreeType"})
+    @JsonAlias(value = {"iconTreeType"})
     private String iconTreeType;
 }

@@ -1,6 +1,6 @@
 package com.freesia.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import com.freesia.mapper.SysRoleMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,6 +38,6 @@ public class FindPageSysRoleListEntity extends BaseEntity {
     @Schema(description = "逻辑删除")
     private Boolean logicDel;
     @Schema(description = "创建时间")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date createTime;
 }

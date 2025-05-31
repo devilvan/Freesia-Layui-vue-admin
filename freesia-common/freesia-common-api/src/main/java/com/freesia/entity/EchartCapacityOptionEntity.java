@@ -1,6 +1,6 @@
 package com.freesia.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -24,10 +24,10 @@ public class EchartCapacityOptionEntity {
     @Schema(description = "开销金额")
     private BigDecimal outlay;
     @Schema(description = "时间范围从")
-    @JSONField(format = Constants.YMD)
+    @JsonFormat(pattern = Constants.YMD)
     private Date durationFrom;
     @Schema(description = "时间范围到")
-    @JSONField(format = Constants.YMD)
+    @JsonFormat(pattern = Constants.YMD)
     private Date durationTo;
     @Schema(description = "预算类型")
     private String budgetType;

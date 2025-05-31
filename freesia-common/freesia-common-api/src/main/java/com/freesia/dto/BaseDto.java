@@ -1,6 +1,6 @@
 package com.freesia.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -20,12 +20,12 @@ public class BaseDto {
     @Schema(description = "创建人")
     private String creator;
     @Schema(description = "创建时间")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date createTime;
     @Schema(description = "修改人")
     private String modifier;
     @Schema(description = "修改时间")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date modifyTime;
     @Schema(description = "逻辑删除")
     private Boolean logicDel;

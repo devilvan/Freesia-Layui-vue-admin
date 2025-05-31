@@ -1,8 +1,7 @@
 package com.freesia.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
-import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,7 +46,7 @@ public class SysSensitiveLogDto extends BaseDto implements Serializable {
     @Schema(description = "操作地点")
     private String location;
     @Schema(description = "操作时间")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date operateTime;
     @Schema(description = "操作时间从")
     private Date operateTimeFrom;

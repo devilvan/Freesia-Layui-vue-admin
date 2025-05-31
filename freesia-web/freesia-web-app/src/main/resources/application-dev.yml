@@ -4,24 +4,32 @@ server:
 spring:
   application:
     name: freesia-admin
-  cloud:
-    zookeeper:
-      connect-string: localhost:2181
+    admin:
       enabled: true
-      connection-timeout: 60000
 ---
 spring:
   boot:
     admin:
+#      context-path: /spring-admin
       client:
         enabled: true
         url: http://localhost:8570
         instance:
+          service-host-type: IP
           metadata:
             username: ${spring.boot.admin.client.username}
             userpassword: ${spring.boot.admin.client.password}
         username: @monitor.username@
         password: @monitor.password@
+---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
 ---
 freesia:
   web:

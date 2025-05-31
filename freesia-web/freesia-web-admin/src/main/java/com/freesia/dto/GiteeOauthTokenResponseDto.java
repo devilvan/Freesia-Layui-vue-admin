@@ -1,6 +1,6 @@
 package com.freesia.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.freesia.util.UCollection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -20,18 +20,18 @@ public class GiteeOauthTokenResponseDto {
     public static final String URL = "https://gitee.com/oauth/token";
 
     @Schema(description = "授权类型")
-    @JSONField(name = "grant_type")
+    @JsonProperty(value = "grant_type")
     private String grantType;
     @Schema(description = "用户名")
-    @JSONField(name = "username")
+    @JsonProperty(value = "username")
     private String userName;
     @Schema(description = "password")
     private String password;
     @Schema(description = "用户ID")
-    @JSONField(name = "client_id")
+    @JsonProperty(value = "client_id")
     private String clientId;
     @Schema(description = "用户秘钥")
-    @JSONField(name = "client_secret")
+    @JsonProperty(value = "client_secret")
     private String clientSecret;
     @Schema(description = "授权范围")
     private String scope;

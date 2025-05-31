@@ -1,6 +1,6 @@
 package com.freesia.icon.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -22,18 +22,18 @@ import java.util.List;
 @Schema(description = "通用图标表 值对象")
 public class CommonIconVo extends BaseVo {
     @Schema(description = "图标名称")
-    @JSONField(alternateNames = {"name"})
+    @JsonAlias(value = {"name"})
     private String name;
     @Schema(description = "文件ID")
-    @JSONField(alternateNames = {"fileId"})
+    @JsonAlias(value = {"fileId"})
     private Long fileId;
     @Schema(description = "图标所属分区")
-    @JSONField(alternateNames = {"iconPartition"})
+    @JsonAlias(value = {"iconPartition"})
     private String iconPartition;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
     @Schema(description = "主键集合")
-    @JSONField(alternateNames = {"idList"})
+    @JsonAlias(value = {"idList"})
     private List<Long> idList;
 }

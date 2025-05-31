@@ -1,6 +1,6 @@
 package com.freesia.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.desensization.constant.DesensitizedType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,7 +18,7 @@ public class FindGiteeCommitsEntity {
     private String url;
     @Schema(description = "唯一标识")
     private String sha;
-    @JSONField(alternateNames = "html_url")
+    @JsonAlias(value = "html_url")
     @Schema(description = "提交明细页面地址")
     private String htmlUrl;
     @Schema(description = "用户ID")
@@ -28,10 +28,10 @@ public class FindGiteeCommitsEntity {
     @Schema(description = "昵称")
     private String name;
     @Schema(description = "头像地址")
-    @JSONField(alternateNames = "avatar_url")
+    @JsonAlias(value = "avatar_url")
     private String avatarUrl;
     @Schema(description = "个人主页")
-    @JSONField(alternateNames = "html_url")
+    @JsonAlias(value = "html_url")
     private String authorHtmlUrl;
     @Schema(description = "备注")
     private String remark;

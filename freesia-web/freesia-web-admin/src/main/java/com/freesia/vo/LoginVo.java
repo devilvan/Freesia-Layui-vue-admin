@@ -1,6 +1,6 @@
 package com.freesia.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.freesia.constant.AdminConstant;
 import com.freesia.controller.SysLoginController;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,7 +21,7 @@ public class LoginVo {
     @Schema(description = "用户名")
     @NotBlank(message = "{user.username.not.null}")
     @Length(min = AdminConstant.USERNAME_MIN_LENGTH, max = AdminConstant.USERNAME_MAX_LENGTH, message = "{user.username.length.invalid}")
-    @JSONField(alternateNames = {"username", "account"})
+    @JsonAlias(value = {"username", "account"})
     private String username;
     @Schema(description = "用户密码")
     @NotBlank(message = "{user.password.not.null}")

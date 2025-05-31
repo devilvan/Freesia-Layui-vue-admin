@@ -1,6 +1,6 @@
 package com.freesia.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,42 +19,42 @@ import java.util.Date;
 @Schema(description = "OSS配置信息表 值对象")
 public class SysOssConfigVo {
     @Schema(description = "配置key")
-    @JSONField(alternateNames = {"configKey"})
+    @JsonAlias(value = {"configKey"})
     private String configKey;
     @Schema(description = "公钥")
-    @JSONField(alternateNames = {"accessKey"})
+    @JsonAlias(value = {"accessKey"})
     private String accessKey;
     @Schema(description = "秘钥")
-    @JSONField(alternateNames = {"secretKey"})
+    @JsonAlias(value = {"secretKey"})
     private String secretKey;
     @Schema(description = "桶名称")
-    @JSONField(alternateNames = {"bucketName"})
+    @JsonAlias(value = {"bucketName"})
     private String bucketName;
     @Schema(description = "前缀")
-    @JSONField(alternateNames = {"filePrefix"})
+    @JsonAlias(value = {"filePrefix"})
     private String filePrefix;
     @Schema(description = "访问站点")
-    @JSONField(alternateNames = {"endpoint"})
+    @JsonAlias(value = {"endpoint"})
     private String endpoint;
     @Schema(description = "自定义域名")
-    @JSONField(alternateNames = {"domain"})
+    @JsonAlias(value = {"domain"})
     private String domain;
     @Schema(description = "是否https（0-否 1-是）")
-    @JSONField(alternateNames = {"isHttps"})
+    @JsonAlias(value = {"isHttps"})
     private Boolean isHttps;
     @Schema(description = "域")
-    @JSONField(alternateNames = {"region"})
+    @JsonAlias(value = {"region"})
     private String region;
     @Schema(description = "桶权限类型(PRIVATE PUBLIC CUSTOM)")
-    @JSONField(alternateNames = {"accessPolicy"})
+    @JsonAlias(value = {"accessPolicy"})
     private String accessPolicy;
     @Schema(description = "是否默认（0-否 1-是）")
-    @JSONField(alternateNames = {"status"})
+    @JsonAlias(value = {"status"})
     private Boolean status;
     @Schema(description = "扩展字段")
-    @JSONField(alternateNames = {"ext1"})
+    @JsonAlias(value = {"ext1"})
     private String ext1;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
 }

@@ -1,13 +1,16 @@
 package com.freesia.account.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Evad.Wu
@@ -25,10 +28,10 @@ public class AccountBudgetDto extends BaseDto {
     @Schema(description = "预算金额")
     private BigDecimal outlay;
     @Schema(description = "时间范围从")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date durationFrom;
     @Schema(description = "时间范围到")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date durationTo;
     @Schema(description = "预算类型（ACCOUNT_BUDGET_DURATION_TYPE）")
     private String budgetType;

@@ -273,13 +273,13 @@
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-server</artifactId>
-                <version>2.7.10</version>
+                <version>${springboot.version}</version>
             </dependency>
             <!-- Admin Client -->
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-client</artifactId>
-                <version>2.7.10</version>
+                <version>${springboot.version}</version>
             </dependency>
             <!-- 基础模块-->
             <dependency>
@@ -294,13 +294,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
-    </dependencies>
-
     <repositories>
         <repository>
             <id>public</id>

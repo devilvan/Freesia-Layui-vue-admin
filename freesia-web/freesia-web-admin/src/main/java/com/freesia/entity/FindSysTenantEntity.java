@@ -1,6 +1,6 @@
 package com.freesia.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -35,6 +35,6 @@ public class FindSysTenantEntity extends BaseEntity {
     @Schema(description = "租户地址")
     private String address;
     @Schema(description = "营业时间（从）")
-    @JSONField(format = Constants.YM)
+    @JsonFormat(pattern = Constants.YM)
     private Date businessHoursFrom;
 }

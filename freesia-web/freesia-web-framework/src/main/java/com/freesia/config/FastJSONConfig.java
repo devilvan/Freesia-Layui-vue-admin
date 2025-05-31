@@ -1,16 +1,15 @@
 package com.freesia.config;
 
-import com.alibaba.fastjson.serializer.*;
+import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.freesia.constant.Constants;
 import com.freesia.desensization.handler.DesensitizeValueFilter;
 import com.freesia.filter.CombinedValueFilter;
 import com.freesia.oss.seder.DomainSeValueFilter;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.web.filter.CompositeFilter;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -20,9 +19,9 @@ import java.util.List;
  * @Description FastJSON 配置类
  * @date 2025-05-15
  */
-@Configuration
+//@Configuration
 public class FastJSONConfig {
-    @Bean(value = "fastJsonHttpMessageConverter")
+//    @Bean(value = "fastJsonHttpMessageConverter")
     public FastJsonHttpMessageConverter buildFastJsonHttpMessageConverter() {
         FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
         FastJsonConfig fastJsonConfig = new FastJsonConfig();

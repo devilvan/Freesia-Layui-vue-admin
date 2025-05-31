@@ -1,8 +1,9 @@
 package com.freesia.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.freesia.desensization.annotation.Desensitize;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
+import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.desensization.constant.DesensitizedType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class GiteeCommitsResponseDto {
     private String url;
     @Schema(description = "唯一标识")
     private String sha;
-    @JSONField(alternateNames = "html_url")
+    @JsonAlias(value = "html_url")
     @Schema(description = "提交明细页面地址")
     private String htmlUrl;
     @Schema(description = "提交信息")
@@ -39,12 +40,12 @@ public class GiteeCommitsResponseDto {
         @Schema(description = "昵称")
         private String name;
         @Schema(description = "头像地址")
-        @JSONField(alternateNames = "avatar_url")
+        @JsonAlias(value = "avatar_url")
         private String avatarUrl;
         @Schema(description = "个人信息URL")
         private String url;
         @Schema(description = "个人主页")
-        @JSONField(alternateNames = "html_url")
+        @JsonAlias(value = "html_url")
         private String htmlUrl;
         @Schema(description = "备注")
         private String remark;
@@ -66,7 +67,7 @@ public class GiteeCommitsResponseDto {
             @Schema(description = "提交人")
             private String name;
             @Schema(description = "提交时间")
-            @JSONField(format = Constants.YMD_HMS)
+            @JsonFormat(pattern = Constants.YMD_HMS)
             private Date date;
             @Schema(description = "邮箱地址")
             @Desensitize(strategy = DesensitizedType.EMAIL)

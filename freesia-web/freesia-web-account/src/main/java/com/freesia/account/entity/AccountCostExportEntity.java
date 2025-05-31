@@ -3,7 +3,7 @@ package com.freesia.account.entity;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import com.freesia.excel.pojo.BaseExportEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +45,7 @@ AccountCostExportEntity extends BaseExportEntity {
     @Schema(description = "开销时间")
     @ExcelProperty(value = "开销时间")
     @DateTimeFormat(value = Constants.YMD)
-    @JSONField(format = Constants.YMD)
+    @JsonFormat(pattern = Constants.YMD)
     private Date paymentTime;
     @Schema(description = "备注")
     @ExcelProperty(value = "备注")

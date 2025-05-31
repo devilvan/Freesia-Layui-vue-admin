@@ -1,6 +1,6 @@
 package com.freesia.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,20 +21,20 @@ import javax.validation.constraints.NotEmpty;
 @Schema(description = "字典键信息表 值对象")
 public class SysDictKeyVo extends BaseVo {
     @Schema(description = "字典键名")
-    @JSONField(alternateNames = {"keyName"})
+    @JsonAlias(value = {"keyName"})
     @NotEmpty(message = "{not.null}")
     private String keyName;
     @Schema(description = "字典键")
-    @JSONField(alternateNames = {"dictKey"})
+    @JsonAlias(value = {"dictKey"})
     @NotEmpty(message = "{not.null}")
     private String dictKey;
     @Schema(description = "状态（0-禁用，1-启用）")
-    @JSONField(alternateNames = {"status"})
+    @JsonAlias(value = {"status"})
     private String status;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
     @Schema(description = "根据字典键或字典键名查询键")
-    @JSONField(alternateNames = {"keyNameOrDictKey"})
+    @JsonAlias(value = {"keyNameOrDictKey"})
     private String keyNameOrDictKey;
 }

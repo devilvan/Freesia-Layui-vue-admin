@@ -1,20 +1,24 @@
 package com.freesia.config;
 
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,8 +29,12 @@ import java.util.List;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+    //    @Resource
+//    private FastJsonHttpMessageConverter fastJsonHttpMessageConverter;
     @Resource
-    private FastJsonHttpMessageConverter fastJsonHttpMessageConverter;
+    private ObjectMapper objectMapper;
+    @Resource
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     /**
      * 项目资源注册器
@@ -74,20 +82,44 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return new CorsFilter(source);
     }
 
-    /**
-     * Fastjson 处理前端或请求工具导致Long类型数据丢精度问题
-     *
-     * @param converters Http消息转换器
-     * @return 响应报文转换器
-     */
-    @Bean
-    public HttpMessageConverters fastjsonHttpMessageConverter(List<HttpMessageConverter<?>> converters) {
-        converters.add(fastJsonHttpMessageConverter);
-        return new HttpMessageConverters(converters);
-    }
+//    /**
+//     * Fastjson 处理前端或请求工具导致Long类型数据丢精度问题
+//     *
+//     * @param converters Http消息转换器
+//     * @return 响应报文转换器
+//     */
+//    @Bean
+//    public HttpMessageConverters fastjsonHttpMessageConverter(List<HttpMessageConverter<?>> converters) {
+////        converters.add(fastJsonHttpMessageConverter);
+//        return new HttpMessageConverters(converters);
+//    }
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(fastJsonHttpMessageConverter);
+        // 将String转换器放在前面
+        converters.add(0, new StringHttpMessageConverter());
+        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        List<MediaType> mediaTypes = new ArrayList<>();
+        mediaTypes.add(MediaType.APPLICATION_JSON);
+        mediaTypes.add(MediaType.TEXT_HTML);
+        mediaTypes.add(new MediaType("application", "xml"));
+        mediaTypes.add(new MediaType("text", "xml"));
+        mediaTypes.add(new MediaType("application", "*+xml"));
+        mediaTypes.add(MediaType.ALL);
+        jackson2HttpMessageConverter.setSupportedMediaTypes(mediaTypes);
+        jackson2HttpMessageConverter.setObjectMapper(objectMapper);
+        converters.add(1, jackson2HttpMessageConverter);
+    }
+
+    @Override
+    public void configureAsyncSupport(final AsyncSupportConfigurer configurer) {
+        configurer.setDefaultTimeout(60 * 1000L);
+        configurer.registerCallableInterceptors(timeoutInterceptor());
+        configurer.setTaskExecutor(threadPoolTaskExecutor);
+    }
+
+    @Bean
+    public TimeoutCallableProcessingInterceptor timeoutInterceptor() {
+        return new TimeoutCallableProcessingInterceptor();
     }
 }

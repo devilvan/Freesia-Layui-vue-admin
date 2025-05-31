@@ -1,6 +1,6 @@
 package com.freesia.account.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import com.freesia.excel.pojo.BaseImportEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,7 +32,7 @@ public class AccountCostImportEntity extends BaseImportEntity {
     @Schema(description = "开销标识（支出、收入）")
     private String paymentSign;
     @Schema(description = "时间")
-    @JSONField(format = Constants.YMD)
+    @JsonFormat(pattern = Constants.YMD)
     private Date paymentTime;
     @Schema(description = "备注")
     private String remark;

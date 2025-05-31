@@ -1,7 +1,7 @@
 package com.freesia.dto;
 
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +23,6 @@ public class GiteeCommitsRequestParamDto {
     @Schema(description = "当前页")
     private Integer page;
     @Schema(description = "页面大小")
-    @JSONField(alternateNames = "per_page")
+    @JsonAlias(value = "per_page")
     private Integer perPage;
 }

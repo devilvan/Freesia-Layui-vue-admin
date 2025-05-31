@@ -1,6 +1,6 @@
 package com.freesia.icon.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
 import lombok.AllArgsConstructor;
@@ -21,18 +21,18 @@ import java.math.BigDecimal;
 @Schema(description = "通用图标模板头表 值对象")
 public class CommonIconTemplateHeaderVo extends BaseVo {
     @Schema(description = "模板名称")
-    @JSONField(alternateNames = {"name"})
+    @JsonAlias(value = {"name"})
     private String name;
     @Schema(description = "排序")
-    @JSONField(alternateNames = {"orderNum"})
+    @JsonAlias(value = {"orderNum"})
     private Integer orderNum;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
     @Schema(description = "所属用户ID")
-    @JSONField(alternateNames = {"userId"})
+    @JsonAlias(value = {"userId"})
     private Long userId;
     @Schema(description = "默认标识")
-    @JSONField(alternateNames = {"defaultFlag"})
+    @JsonAlias(value = {"defaultFlag"})
     private Boolean defaultFlag;
 }

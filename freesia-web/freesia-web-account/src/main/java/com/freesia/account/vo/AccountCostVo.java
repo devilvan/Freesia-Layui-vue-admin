@@ -1,6 +1,6 @@
 package com.freesia.account.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -24,30 +24,30 @@ import java.util.List;
 @Schema(description = "开销表 值对象")
 public class AccountCostVo extends BaseVo {
     @Schema(description = "开销描述")
-    @JSONField(alternateNames = {"costDesc"})
+    @JsonAlias(value = {"costDesc"})
     private String costDesc;
     @Schema(description = "开销金额")
-    @JSONField(alternateNames = {"outlay"})
+    @JsonAlias(value = {"outlay"})
     private BigDecimal outlay;
     @Schema(description = "开销类型（ACCOUNT_COST_TYPE）")
-    @JSONField(alternateNames = {"costType"})
+    @JsonAlias(value = {"costType"})
     private String costType;
     @Schema(description = "开销标识（支出、收入）")
-    @JSONField(alternateNames = {"paymentSign"})
+    @JsonAlias(value = {"paymentSign"})
     private String paymentSign;
     @Schema(description = "时间")
-    @JSONField(alternateNames = {"paymentTime"})
+    @JsonAlias(value = {"paymentTime"})
     private Date paymentTime;
     @Schema(description = "时间范围（查询）")
-    @JSONField(alternateNames = {"paymentTimeRange"})
+    @JsonAlias(value = {"paymentTimeRange"})
     private String paymentTimeRange;
     @Schema(description = "图标")
-    @JSONField(alternateNames = {"icon"})
+    @JsonAlias(value = {"icon"})
     private String icon;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
     @Schema(description = "关联用户ID集合")
-    @JSONField(alternateNames = {"accountCostUserIdList"})
+    @JsonAlias(value = {"accountCostUserIdList"})
     private List<Long> accountCostUserIdList;
 }

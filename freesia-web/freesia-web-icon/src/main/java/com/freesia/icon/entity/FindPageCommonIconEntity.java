@@ -1,6 +1,6 @@
 package com.freesia.icon.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import com.freesia.oss.annotation.Domain;
@@ -34,9 +34,9 @@ public class FindPageCommonIconEntity extends BaseDto {
     @Schema(description = "URL")
     private String url;
     @Schema(description = "创建时间")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date createTime;
     @Schema(description = "修改时间")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date modifyTime;
 }

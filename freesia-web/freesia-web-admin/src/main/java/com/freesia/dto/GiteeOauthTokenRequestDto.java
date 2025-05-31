@@ -1,6 +1,6 @@
 package com.freesia.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.freesia.util.UString;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -16,18 +16,18 @@ import java.util.Arrays;
 @Schema(description = "请求gitee获取access_token接口-入参 数据传输类")
 public class GiteeOauthTokenRequestDto {
     @Schema(description = "授权类型")
-    @JSONField(name = "grant_type")
+    @JsonProperty(value = "grant_type")
     private String grantType;
     @Schema(description = "用户名")
-    @JSONField(name = "username")
+    @JsonProperty(value = "username")
     private String userName;
     @Schema(description = "password")
     private String password;
     @Schema(description = "用户ID")
-    @JSONField(name = "client_id")
+    @JsonProperty(value = "client_id")
     private String clientId;
     @Schema(description = "用户秘钥")
-    @JSONField(name = "client_secret")
+    @JsonProperty(value = "client_secret")
     private String clientSecret;
     /**
      * 注意：如果gitee个人设置-第三方应用中只开启部分权限，在设置未开启的权限时会返回error信息

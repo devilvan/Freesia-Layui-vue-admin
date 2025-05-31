@@ -1,6 +1,6 @@
 package com.freesia.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,22 +21,22 @@ import java.util.Date;
 @Schema(description = "保存角色 值对象")
 public class SaveRoleVo extends BaseVo {
     @Schema(description = "角色名称")
-    @JSONField(alternateNames = {"roleName"})
+    @JsonAlias(value = {"roleName"})
     private String roleName;
     @Schema(description = "角色权限字符串")
-    @JSONField(alternateNames = {"roleKey"})
+    @JsonAlias(value = {"roleKey"})
     private String roleKey;
     @Schema(description = "角色状态（0-停用，1-正常）")
-    @JSONField(alternateNames = {"status"})
+    @JsonAlias(value = {"status"})
     private String status;
     @Schema(description = "数据范围")
-    @JSONField(alternateNames = {"dataScope"})
+    @JsonAlias(value = {"dataScope"})
     private String dataScope;
     @Schema(description = "排序号")
-    @JSONField(alternateNames = {"orderNum"})
+    @JsonAlias(value = {"orderNum"})
     private Integer orderNum;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
     @Schema(description = "创建时间（从）")
     private Date createTimeFrom;

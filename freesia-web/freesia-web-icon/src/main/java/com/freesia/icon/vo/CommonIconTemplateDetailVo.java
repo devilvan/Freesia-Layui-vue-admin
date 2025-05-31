@@ -1,6 +1,6 @@
 package com.freesia.icon.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.freesia.icon.entity.FindCommonIconEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
@@ -23,30 +23,30 @@ import java.util.List;
 @Schema(description = "通用图标模板明细表 值对象")
 public class CommonIconTemplateDetailVo extends BaseVo {
     @Schema(description = "通用图标模板头表ID")
-    @JSONField(alternateNames = {"headerId"})
+    @JsonAlias(value = {"headerId"})
     private Long headerId;
     @Schema(description = "父级ID")
-    @JSONField(alternateNames = {"parentId"})
+    @JsonAlias(value = {"parentId"})
     private Long parentId;
     @Schema(description = "图标ID")
-    @JSONField(alternateNames = {"iconId"})
+    @JsonAlias(value = {"iconId"})
     private Long iconId;
     @Schema(description = "自定义图标名称")
-    @JSONField(alternateNames = {"name"})
+    @JsonAlias(value = {"name"})
     private String name;
     @Schema(description = "自定义分组")
-    @JSONField(alternateNames = {"grouping"})
+    @JsonAlias(value = {"grouping"})
     private String grouping;
     @Schema(description = "排序")
-    @JSONField(alternateNames = {"orderNum"})
+    @JsonAlias(value = {"orderNum"})
     private Integer orderNum;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
     @Schema(description = "节点类型（ICON_TREE_TYPE）")
-    @JSONField(alternateNames = {"iconTreeType"})
+    @JsonAlias(value = {"iconTreeType"})
     private String iconTreeType;
     @Schema(description = "批量图标数据")
-    @JSONField(alternateNames = {"multipleIconList"})
+    @JsonAlias(value = {"multipleIconList"})
     private List<FindCommonIconEntity> multipleIconList;
 }

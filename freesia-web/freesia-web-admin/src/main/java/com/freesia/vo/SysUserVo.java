@@ -1,6 +1,7 @@
 package com.freesia.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -22,40 +23,40 @@ import java.util.Date;
 @Schema(description = "用户信息表 值对象")
 public class SysUserVo extends BaseVo {
     @Schema(description = "部门ID")
-    @JSONField(alternateNames = {"deptId"})
+    @JsonAlias(value = {"deptId"})
     private Long deptId;
     @Schema(description = "用户账号")
-    @JSONField(alternateNames = {"userName"})
+    @JsonAlias(value = {"userName"})
     private String userName;
     @Schema(description = "用户昵称")
-    @JSONField(alternateNames = {"nickName"})
+    @JsonAlias(value = {"nickName"})
     private String nickName;
     @Schema(description = "用户类型（见USER_TYPE）")
-    @JSONField(alternateNames = {"userType"})
+    @JsonAlias(value = {"userType"})
     private String userType;
     @Schema(description = "用户邮箱")
-    @JSONField(alternateNames = {"email"})
+    @JsonAlias(value = {"email"})
     private String email;
     @Schema(description = "手机号码")
-    @JSONField(alternateNames = {"telNo"})
+    @JsonAlias(value = {"telNo"})
     private String telNo;
     @Schema(description = "用户性别（M-男 F-女 U-未知）")
-    @JSONField(alternateNames = {"gender"})
+    @JsonAlias(value = {"gender"})
     private String gender;
     @Schema(description = "头像地址")
-    @JSONField(alternateNames = {"avatar"})
+    @JsonAlias(value = {"avatar"})
     private String avatar;
     @Schema(description = "帐号状态（0-否，1-是）")
-    @JSONField(alternateNames = {"accountStatus"})
+    @JsonAlias(value = {"accountStatus"})
     private String accountStatus;
     @Schema(description = "备注")
-    @JSONField(alternateNames = {"remark"})
+    @JsonAlias(value = {"remark"})
     private String remark;
     @Schema(description = "创建时间（从）")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date createTimeFrom;
     @Schema(description = "创建时间（从）")
-    @JSONField(format = Constants.YMD_HMS)
+    @JsonFormat(pattern = Constants.YMD_HMS)
     private Date createTimeTo;
 
 }

@@ -1,6 +1,6 @@
 package com.freesia.excel.pojo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 public class DemoData extends BaseImportEntity {
     private String string;
-    @JSONField(format = Constants.YMD_HMS_SSS)
+    @JsonFormat(pattern = Constants.YMD_HMS_SSS)
     private Date date;
     private Double doubleData;
 }

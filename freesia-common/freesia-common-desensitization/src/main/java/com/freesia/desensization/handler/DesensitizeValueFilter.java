@@ -4,6 +4,7 @@ import com.alibaba.fastjson.serializer.ValueFilter;
 import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.desensization.constant.DesensitizedType;
 import com.freesia.desensization.util.UDesensitized;
+import com.freesia.util.UEmpty;
 
 import java.lang.reflect.Field;
 
@@ -24,7 +25,7 @@ public class DesensitizeValueFilter implements ValueFilter {
             if (value instanceof Long) {
                 return String.valueOf(UDesensitized.userId());
             }
-            if (!(value instanceof String valueStr) || ((String) value).length() == 0) {
+            if (!(value instanceof String valueStr) || UEmpty.isNotEmpty(value)) {
                 return value;
             }
             DesensitizedType[] strategyArr = Desensitize.strategy();

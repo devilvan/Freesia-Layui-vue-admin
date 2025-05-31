@@ -1,6 +1,6 @@
 package com.freesia.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,15 +21,15 @@ import javax.validation.constraints.NotEmpty;
 @Schema(description = "全局配置信息表 值对象")
 public class SysConfigVo extends BaseVo {
     @Schema(description = "参数名称")
-    @JSONField(alternateNames = {"configName"})
+    @JsonAlias(value = {"configName"})
     @NotEmpty(message = "{not.null}")
     private String configName;
     @Schema(description = "参数键名")
-    @JSONField(alternateNames = {"configKey"})
+    @JsonAlias(value = {"configKey"})
     @NotEmpty(message = "{not.null}")
     private String configKey;
     @Schema(description = "参数键值")
-    @JSONField(alternateNames = {"configValue"})
+    @JsonAlias(value = {"configValue"})
     @NotEmpty(message = "{not.null}")
     private String configValue;
 }
