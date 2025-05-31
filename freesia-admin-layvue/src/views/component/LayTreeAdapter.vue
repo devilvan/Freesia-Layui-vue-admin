@@ -1,6 +1,6 @@
 <template>
   <lay-card>
-    <lay-button @click="getCheckKeys">按钮</lay-button>
+<!--    <lay-button @click="getCheckKeys">按钮</lay-button>-->
     <lay-tree
         :data="props.data"
         :tailNodeIcon="props.tailNodeIcon"
@@ -77,10 +77,10 @@ function getCheckKeys() {
   console.log("result: " + result.value)
 }
 
-function checkChange(ve: any) {
+function checkChange(ve: any, isChecked: boolean) {
   const newCheckedKeys = [...result.value];
 
-  if (ve.isChecked) {
+  if (isChecked) {
     // 选中节点时，添加当前节点和所有父节点
     if (!newCheckedKeys.includes(ve.id)) {
       newCheckedKeys.push(ve.id);

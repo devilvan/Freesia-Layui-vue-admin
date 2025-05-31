@@ -1,4 +1,4 @@
-package com.freesia.account.constant;
+package com.freesia.icon.constant;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -10,16 +10,16 @@ import lombok.NoArgsConstructor;
  * @date 2025-03-06
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AccountModule {
+public final class CommonIconModule {
     /**
-     * 主模块 记账模块
+     * 主模块 通用图标模块
      */
-    public static final String ACCOUNT_MANAGEMENT = "ACCOUNT_MANAGEMENT";
+    public static final String COMMON_ICON_MANAGEMENT = "COMMON_ICON_MANAGEMENT";
 
     /**
      * 子模块
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public final static class SubModule {
+    public static class SubModule {
     }
 }

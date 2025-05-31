@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.account.mapper.AccountCostMapper">
-<!--    resultMap="findAccountCostResultMap"-->
-    <select id="findPageAccountCost" resultType="com.freesia.account.entity.FindPageAccountCostEntity">
+    <select id="findPageAccountCost" resultMap="findPageAccountCostResultMap">
         SELECT AC.ID,
         AC.CREATE_TIME,
         AC.MODIFY_TIME,
@@ -170,6 +169,28 @@
         <result property="accountCostUserId" column="SU_ID"/>
         <result property="accountCostUserName" column="NICK_NAME"/>
     </resultMap>
+    <resultMap id="findPageAccountCostResultMap" type="com.freesia.account.entity.FindPageAccountCostEntity">
+        <id property="id" column="ID"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifier" column="MODIFIER"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+        <result property="logicDel" column="LOGIC_DEL"/>
+        <result property="recVer" column="REC_VER"/>
+        <result property="buildIn" column="BUILD_IN"/>
+        <result property="tenantId" column="TENANT_ID"/>
+        <result property="costDesc" column="COST_DESC"/>
+        <result property="outlay" column="OUTLAY"/>
+        <result property="costType" column="COST_TYPE"/>
+        <result property="paymentSign" column="PAYMENT_SIGN"/>
+        <result property="paymentTime" column="PAYMENT_TIME"/>
+        <result property="icon" column="ICON"/>
+        <result property="remark" column="REMARK"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="acNickName" column="AC_NICK_NAME"/>
+        <result property="accountCostUserId" column="SU_ID"/>
+        <result property="accountCostUserName" column="NICK_NAME"/>
+    </resultMap>
     <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
         SELECT T.COST_DESC,
                T.OUTLAY,
@@ -258,9 +279,7 @@
         FROM
         (
         SELECT
-        SDV.
-        VALUE
-        AS COST_TYPE,
+        AC.COST_TYPE,
         ROUND(
         IFNULL( AC.OUTLAY, 0 ) /
         CASE
@@ -273,8 +292,6 @@
         FROM
         account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-        LEFT JOIN SYS_DICT_VALUE SDV ON SDV.DICT_KEY = 'ACCOUNT_COST_TYPE'
-        AND SDV.VALUE_NAME = AC.COST_TYPE
         WHERE 1=1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -289,9 +306,7 @@
         UNION ALL
 
         SELECT
-        SDV.
-        VALUE
-        AS COST_TYPE,
+        AC.COST_TYPE,
         ROUND(
         IFNULL( AC.OUTLAY, 0 ) /
         CASE
@@ -305,8 +320,6 @@
         FROM
         account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-        LEFT JOIN SYS_DICT_VALUE SDV ON SDV.DICT_KEY = 'ACCOUNT_COST_TYPE'
-        AND SDV.VALUE_NAME = AC.COST_TYPE
         WHERE 1=1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'

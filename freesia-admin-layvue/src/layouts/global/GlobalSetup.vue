@@ -113,7 +113,7 @@ import {useAppStore} from '@/store/app'
 import {onMounted, ref, watch} from 'vue'
 import {findSelectCommonIconHeader} from "@/api/common/icon/template/IconTemplateHeader";
 import {R} from "@/types/Result";
-import {LayMenu} from "@/types/Common";
+import {LaySelectEntity} from "@/types/Common";
 
 /*INIT*/
 onMounted(() => {
@@ -123,7 +123,7 @@ onMounted(() => {
 
 const appStore = useAppStore()
 const emits = defineEmits(['update:modelValue'])
-const findSelectCommonIconHeaderList = ref<LayMenu[]>([]);
+const findSelectCommonIconHeaderList = ref<LaySelectEntity[]>([]);
 
 interface SetupProps {
   modelValue: boolean
@@ -183,8 +183,14 @@ function changeCommonIconHeaderSelect(val: string) {
 }
 
 function doFindSelectCommonIconHeader() {
-  findSelectCommonIconHeader().then((res: R<LayMenu[]>) => {
+  findSelectCommonIconHeader().then((res: R<LaySelectEntity[]>) => {
     findSelectCommonIconHeaderList.value = res.data
+    let defaultCommonIconHeader = findSelectCommonIconHeaderList.value.find(item => {
+      return item.defaultFlag
+    });
+    if (defaultCommonIconHeader && defaultCommonIconHeader.value) {
+      appStore.commonIconHeader = defaultCommonIconHeader.value
+    }
   })
 }
 

@@ -3,7 +3,7 @@
     <template #title>{{ costLineChartTitle }}</template>
     <lay-form :model="findCostLineChartQueryVo" ref="findCostLineChartQueryRef" label-position="left">
       <lay-row :space="20">
-        <lay-col :md="12">
+        <lay-col :md="8">
           <lay-form-item label="时间范围：" prop="dateScope">
             <lay-radio v-model="findCostLineChartQueryVo.dateScope" name="action" :value="DateScope.WEEK"
                        label="近一周" @change="changeDateScope(DateScope.WEEK)"></lay-radio>
@@ -13,7 +13,7 @@
                        label="年" @change="changeDateScope(DateScope.YEAR)"></lay-radio>
           </lay-form-item>
         </lay-col>
-        <lay-col :md="12">
+        <lay-col :md="8">
           <lay-form-item label="选择时间：" prop="month">
             <lay-date-picker v-if="findCostLineChartQueryVo.dateScope === DateScope.MONTH" style="width: 100%"
                              @change="doFindCostLineChart"
@@ -23,6 +23,19 @@
                              @change="doFindCostLineChart"
                              v-model="findCostLineChartQueryVo.dateValue" type="year" allow-clear
                              :format="sdf_Y" :inputFormat="sdf_Y" simple></lay-date-picker>
+          </lay-form-item>
+        </lay-col>
+        <lay-col :md="8">
+          <lay-form-item label="开销类型：" prop="type">
+            <lay-select
+                style="width: 100%"
+                size="sm"
+                v-model="findCostLineChartQueryVo.costType"
+                :options="findSelectCostTypeList"
+                :items="findSelectCostTypeList"
+                :allow-clear="true"
+                placeholder="请选择"
+            ></lay-select>
           </lay-form-item>
         </lay-col>
       </lay-row>
@@ -46,6 +59,10 @@ import {onBeforeUnmount, onMounted, ref} from "vue";
 import {DateScope, FindCostLineChartVo} from "@/types/account/Account";
 import * as echarts from "echarts";
 import {findCostLineChart} from "@/api/account/Account";
+import {findListSelectCostType} from "@/api/common/icon/template/IconTemplateHeader";
+import {R} from "@/types/Result";
+import {LaySelectEntity} from "@/types/Common";
+import {layer} from "@layui/layui-vue";
 
 /*INIT*/
 const props = defineProps({
@@ -57,6 +74,7 @@ const props = defineProps({
 });
 onMounted(() => {
   findCostLineChartQueryVo.value.dateScope = DateScope.WEEK
+  doFindListSelectCostType();
   doFindCostLineChart()
 })
 /*INIT*/
@@ -87,6 +105,7 @@ let monthCostLineChart: echarts.ECharts | null = null;
 let yearCostLineChart: echarts.ECharts | null = null;
 const sdf_YM = 'YYYY-MM'
 const sdf_Y = 'YYYY'
+const findSelectCostTypeList = ref<LaySelectEntity[]>([]);
 /*VAR*/
 
 /*FUNCTION*/
@@ -273,6 +292,14 @@ function showYearCostLineChart(data: any) {
   }
   yearCostLineChart = echarts.init(yearCostLineChartRef.value)
   yearCostLineChart.setOption(option)
+}
+
+function doFindListSelectCostType() {
+  findListSelectCostType().then((res: R<LaySelectEntity[]>) => {
+    findSelectCostTypeList.value = res.data
+  }).catch(e => {
+    layer.confirm(e.message)
+  })
 }
 
 /*FUNCTION*/

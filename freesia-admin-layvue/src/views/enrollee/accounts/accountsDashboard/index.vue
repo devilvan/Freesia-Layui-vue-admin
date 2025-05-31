@@ -15,7 +15,7 @@
       </lay-col>
     </lay-row>
     <lay-row :space="20">
-      <lay-col md="16" sm="16" xs="24">
+      <lay-col md="24" sm="16" xs="24">
         <lay-row :space="20">
           <lay-col :md="24">
             <CostLine></CostLine>
@@ -40,49 +40,49 @@
           </lay-col>
         </lay-row>
       </lay-col>
-      <lay-col md="8" sm="8" xs="12">
-        <lay-row :space="20">
-          <lay-col :md="24">
-            <lay-card>
-              <template #title>效果报告</template>
-              <div class="task-progress">
-                <span>80%</span>
-                <span class="task-progress-title">转化率</span>
-                <lay-progress percent="80"></lay-progress>
-              </div>
-              <div class="task-progress">
-                <span>80%</span>
-                <span class="task-progress-title">签到率</span>
-                <lay-progress percent="80"></lay-progress>
-              </div>
-            </lay-card>
-          </lay-col>
-          <lay-col :md="24">
-            <lay-card>
-              <template #title>效果报告</template>
-              <div class="task-progress">
-                <span>80%</span>
-                <span class="task-progress-title">转化率</span>
-                <lay-progress percent="80"></lay-progress>
-              </div>
-              <div class="task-progress">
-                <span>80%</span>
-                <span class="task-progress-title">转化率</span>
-                <lay-progress percent="80"></lay-progress>
-              </div>
-            </lay-card>
-          </lay-col>
-          <lay-col :md="24">
-            <lay-card>
-              <template #title>作者寄语</template>
-              <p style="line-height: 40px">
-                原想将澎湃的爱平平稳稳放置你手心，奈何我徒有一股蛮劲，只顾向你跑去，一个不稳跌的满身脏兮兮。试图爬起的我，
-                心想你会不会笑我 " 献爱献的这样笨拙, 怎么不知避开爱里的埋伏 "
-              </p>
-            </lay-card>
-          </lay-col>
-        </lay-row>
-      </lay-col>
+<!--      <lay-col md="8" sm="8" xs="12">-->
+<!--        <lay-row :space="20">-->
+<!--          <lay-col :md="24">-->
+<!--            <lay-card>-->
+<!--              <template #title>效果报告</template>-->
+<!--              <div class="task-progress">-->
+<!--                <span>80%</span>-->
+<!--                <span class="task-progress-title">转化率</span>-->
+<!--                <lay-progress percent="80"></lay-progress>-->
+<!--              </div>-->
+<!--              <div class="task-progress">-->
+<!--                <span>80%</span>-->
+<!--                <span class="task-progress-title">签到率</span>-->
+<!--                <lay-progress percent="80"></lay-progress>-->
+<!--              </div>-->
+<!--            </lay-card>-->
+<!--          </lay-col>-->
+<!--          <lay-col :md="24">-->
+<!--            <lay-card>-->
+<!--              <template #title>效果报告</template>-->
+<!--              <div class="task-progress">-->
+<!--                <span>80%</span>-->
+<!--                <span class="task-progress-title">转化率</span>-->
+<!--                <lay-progress percent="80"></lay-progress>-->
+<!--              </div>-->
+<!--              <div class="task-progress">-->
+<!--                <span>80%</span>-->
+<!--                <span class="task-progress-title">转化率</span>-->
+<!--                <lay-progress percent="80"></lay-progress>-->
+<!--              </div>-->
+<!--            </lay-card>-->
+<!--          </lay-col>-->
+<!--          <lay-col :md="24">-->
+<!--            <lay-card>-->
+<!--              <template #title>作者寄语</template>-->
+<!--              <p style="line-height: 40px">-->
+<!--                原想将澎湃的爱平平稳稳放置你手心，奈何我徒有一股蛮劲，只顾向你跑去，一个不稳跌的满身脏兮兮。试图爬起的我，-->
+<!--                心想你会不会笑我 " 献爱献的这样笨拙, 怎么不知避开爱里的埋伏 "-->
+<!--              </p>-->
+<!--            </lay-card>-->
+<!--          </lay-col>-->
+<!--        </lay-row>-->
+<!--      </lay-col>-->
     </lay-row>
   </lay-container>
 </template>

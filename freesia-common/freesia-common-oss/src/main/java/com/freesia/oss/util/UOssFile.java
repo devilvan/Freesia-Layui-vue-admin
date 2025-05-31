@@ -1,11 +1,16 @@
 package com.freesia.oss.util;
 
+import com.freesia.oss.exception.OssException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Evad.Wu
@@ -17,6 +22,38 @@ public class UOssFile {
     public static final String ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
     public static final String CONTENT_DISPOSITION = "Content-disposition";
     public static final String DOWNLOAD_FILENAME = "download-filename";
+
+    /**
+     * 计算文件哈希值
+     *
+     * @param file 文件
+     * @return 文件哈希值
+     */
+    public static String calculateFileHash(MultipartFile file) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] fileBytes = file.getBytes();
+            byte[] hashBytes = digest.digest(fileBytes);
+            String fileHash = bytesToHex(hashBytes);
+            System.out.println("上传文件【" + file.getOriginalFilename() + "】，文件Hash：" + fileHash);
+            return fileHash;
+        } catch (NoSuchAlgorithmException | IOException e) {
+            throw new OssException(e.toString());
+        }
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            ;
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
 
     /**
      * 下载文件名重新编码

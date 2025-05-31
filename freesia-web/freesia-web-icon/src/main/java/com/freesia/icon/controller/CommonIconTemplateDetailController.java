@@ -1,8 +1,6 @@
 package com.freesia.icon.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.convert.Convert;
-import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
@@ -10,7 +8,7 @@ import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
 import com.freesia.icon.vo.CommonIconTemplateDetailVo;
 import com.freesia.icon.vo.FindMaxOrderNumVo;
-import com.freesia.pojo.LayMenu;
+import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
@@ -121,7 +119,7 @@ public class CommonIconTemplateDetailController extends BaseController {
 
     @Operation(summary = "查询自增排序号")
     @GetMapping(value = "findMaxOrderNum")
-    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
+//    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
     public R<Integer> findMaxOrderNum(FindMaxOrderNumVo findMaxOrderNumVo) {
         CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(findMaxOrderNumVo, CommonIconTemplateDetailDto.class);
         Integer maxOrderNum = Convert.toInt(commonIconTemplateDetailService.findMaxOrderNum(commonIconTemplateDetailDto), 0);
@@ -131,16 +129,16 @@ public class CommonIconTemplateDetailController extends BaseController {
 
     @Operation(summary = "查询自定义分组列表")
     @GetMapping(value = "findGrouping")
-    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
-    public R<List<LayMenu>> findGrouping(CommonIconTemplateDetailVo vo) {
+//    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
+    public R<List<LaySelect>> findGrouping(CommonIconTemplateDetailVo vo) {
         CommonIconTemplateDetailDto dto = UCopy.copyVo2Dto(vo, CommonIconTemplateDetailDto.class);
-        List<LayMenu> resultMap = commonIconTemplateDetailService.findGrouping(dto);
+        List<LaySelect> resultMap = commonIconTemplateDetailService.findGrouping(dto);
         return R.ok(resultMap);
     }
 
     @Operation(summary = "查询自定义分组Map")
     @GetMapping(value = "findCustomIconTemplateDetail")
-    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
+//    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
     public R<Map<String, List<FindTreeIconTreeTypeEntity>>> findCustomIconTemplateDetail(CommonIconTemplateDetailVo vo) {
         CommonIconTemplateDetailDto dto = UCopy.copyVo2Dto(vo, CommonIconTemplateDetailDto.class);
         Map<String, List<FindTreeIconTreeTypeEntity>> map = commonIconTemplateDetailService.findCustomIconTemplateDetail(dto);

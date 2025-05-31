@@ -146,6 +146,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
             sysOssDto.setUrl(url);
             sysOssDto.setService(ossHandler.getConfigKey());
             sysOssDto.setFileSize(file.getSize());
+            sysOssDto.setFileHash(UOssFile.calculateFileHash(file));
             SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
             SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
             resultSysOssDtoList.add(resultSysOssDto);
@@ -196,6 +197,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
             sysOssDto.setService(ossHandler.getConfigKey());
             sysOssDto.setTempFlag(true);
             sysOssDto.setFileSize(file.getSize());
+            sysOssDto.setFileHash(UOssFile.calculateFileHash(file));
             setPrivateBucketExpirationUrl(sysOssDto);
             SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
             sysOssPoList.add(sysOssPo);

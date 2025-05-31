@@ -1,10 +1,9 @@
 package com.freesia.icon.service;
 
-import com.freesia.pojo.LayMenu;
+import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
-import com.freesia.vo.R;
 
 import java.util.List;
 
@@ -67,5 +66,13 @@ public interface CommonIconTemplateHeaderService {
      * @param userId 用户ID
      * @return 下拉数据集合
      */
-    List<LayMenu> findSelectCommonIconHeader(Long userId);
+    List<LaySelect> findSelectCommonIconHeader(Long userId);
+
+    /**
+     * 根据用户ID查询开销类型下拉集合
+     *
+     * @param userId 用户ID
+     * @return 开销类型下拉集合
+     */
+    List<LaySelect> findListSelectCostType(Long userId);
 }

@@ -149,4 +149,5 @@ public class SysOssController extends BaseController {
     public void download(@PathVariable String id, HttpServletResponse response) throws IOException {
         sysOssService.download(Long.parseLong(id), response);
     }
+
 }

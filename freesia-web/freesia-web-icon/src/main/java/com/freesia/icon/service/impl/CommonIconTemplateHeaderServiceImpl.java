@@ -12,7 +12,7 @@ import com.freesia.icon.po.CommonIconTemplateHeaderPo;
 import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.po.BasePo;
-import com.freesia.pojo.LayMenu;
+import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
@@ -96,25 +96,30 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
     }
 
     @Override
-    public List<LayMenu> findSelectCommonIconHeader(Long userId) {
+    public List<LaySelect> findSelectCommonIconHeader(Long userId) {
         LambdaQueryWrapper<CommonIconTemplateHeaderPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()
                 .eq(CommonIconTemplateHeaderPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(CommonIconTemplateHeaderPo::getUserId, USecurity.getUserId());
         List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList = commonIconTemplateHeaderMapper.selectList(wrapper);
-        return buildLayMenus(commonIconTemplateHeaderPoList);
+        return buildLaySelects(commonIconTemplateHeaderPoList);
     }
 
-    private static List<LayMenu> buildLayMenus(List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList) {
-        List<LayMenu> layMenuList = new ArrayList<>();
+    @Override
+    public List<LaySelect> findListSelectCostType(Long userId) {
+        return commonIconTemplateHeaderMapper.findListSelectCostType(userId);
+    }
+
+    private static List<LaySelect> buildLaySelects(List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList) {
+        List<LaySelect> laySelectList = new ArrayList<>();
         if (UEmpty.isNotEmpty(commonIconTemplateHeaderPoList)) {
             for (CommonIconTemplateHeaderPo commonIconTemplateHeaderPo : commonIconTemplateHeaderPoList) {
-                LayMenu layMenu = new LayMenu();
-                layMenu.setLabel(commonIconTemplateHeaderPo.getName());
-                layMenu.setValue(commonIconTemplateHeaderPo.getId().toString());
-                layMenu.setDefaultFlag(commonIconTemplateHeaderPo.getDefaultFlag());
-                layMenuList.add(layMenu);
+                LaySelect laySelect = new LaySelect();
+                laySelect.setLabel(commonIconTemplateHeaderPo.getName());
+                laySelect.setValue(commonIconTemplateHeaderPo.getId().toString());
+                laySelect.setDefaultFlag(commonIconTemplateHeaderPo.getDefaultFlag());
+                laySelectList.add(laySelect);
             }
         }
-        return layMenuList;
+        return laySelectList;
     }
 }

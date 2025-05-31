@@ -4,8 +4,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @author Evad.Wu
  * @Description Redisson可读面板属性 数据传输类
@@ -74,7 +72,9 @@ public class RedissonPropertiesDto {
     @JSONField(alternateNames = "rdb_saves")
     private String rdb_saves;
     private String io_threaded_writes_processed;
-    private String instantaneous_ops_per_sec;
+    @Schema(description = "每秒钟执行的Redis命令数量")
+    @JSONField(alternateNames = "instantaneous_ops_per_sec")
+    private String instantaneousOpsPerSec;
     @Schema(description = "Redis分配的字节数，使用其分配器（标准libc、jemalloc或其他分配器，例如tcmalloc）")
     @JSONField(alternateNames = "used_memory_human")
     private String usedMemoryHuman;

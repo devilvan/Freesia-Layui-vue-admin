@@ -101,7 +101,7 @@
           AND CITD.HEADER_ID = #{dto.headerId}
         ORDER BY CITD.ORDER_NUM
     </select>
-    <select id="findGrouping" resultType="com.freesia.pojo.LayMenu">
+    <select id="findGrouping" resultType="com.freesia.pojo.LaySelect">
         SELECT CITD.NAME AS label,
                CITD.ID   AS `value`
         FROM common_icon_template_detail CITD

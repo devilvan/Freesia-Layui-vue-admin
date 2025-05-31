@@ -79,15 +79,15 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         } else {
             List<FindPageSysDeptListEntity> list = sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
             // 根据查询出的部门，查找其上级部门
-            List<Long> ancestorIdList = list.stream()
-                    .map(FindPageSysDeptListEntity::getAncestors)
-                    .flatMap(ancestor -> Arrays.stream(ancestor.split(",")))
-                    .map(Long::parseLong)
-                    .distinct()
-                    .collect(Collectors.toList());
-            List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectBatchIds(ancestorIdList);
-            List<FindPageSysDeptListEntity> sysDeptListEntityList = UCopy.fullCopyList(sysDeptPoList, FindPageSysDeptListEntity.class);
-            list.addAll(sysDeptListEntityList);
+//            List<Long> ancestorIdList = list.stream()
+//                    .map(FindPageSysDeptListEntity::getAncestors)
+//                    .flatMap(ancestor -> Arrays.stream(ancestor.split(",")))
+//                    .map(Long::parseLong)
+//                    .distinct()
+//                    .collect(Collectors.toList());
+//            List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectBatchIds(ancestorIdList);
+//            List<FindPageSysDeptListEntity> sysDeptListEntityList = UCopy.fullCopyList(sysDeptPoList, FindPageSysDeptListEntity.class);
+//            list.addAll(sysDeptListEntityList);
             return list;
         }
     }

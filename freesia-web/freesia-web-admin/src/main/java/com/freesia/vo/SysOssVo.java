@@ -37,4 +37,6 @@ public class SysOssVo extends BaseVo {
     private Boolean tempFlag;
     @Schema(description = "文件大小")
     private Long fileSize;
+    @Schema(description = "文件哈希值")
+    private String fileHash;
 }

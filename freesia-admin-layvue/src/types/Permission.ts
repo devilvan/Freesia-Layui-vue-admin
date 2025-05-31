@@ -10,10 +10,10 @@ export enum MenuPermission {
 
     /* 菜单管理*/
     SYSTEM_MENU_INDEX = "system:menu:index",
-    SYSTEM_MENU_ADD_DIR = "system:menu_addDir",
-    SYSTEM_MENU_ADD_MENU = "system:menu_addMenu",
-    SYSTEM_MENU_ADD_BUTTON = "system:menu_addButton",
-    SYSTEM_MENU_ADD_LINK = "system:menu_addLink",
+    SYSTEM_MENU_ADD_DIR = "system:menu:addDir",
+    SYSTEM_MENU_ADD_MENU = "system:menu:addMenu",
+    SYSTEM_MENU_ADD_BUTTON = "system:menu:addButton",
+    SYSTEM_MENU_ADD_LINK = "system:menu:addLink",
     SYSTEM_MENU_EDIT = "system:menu:edit",
     SYSTEM_MENU_DELETE = "system:menu:delete",
 
@@ -33,7 +33,7 @@ export enum MenuPermission {
     SYSTEM_DEPT_ASSIGN_ROLE = "system:dept:assignRole",
 
     /* 字典管理*/
-    SYSTEM_DICT_INDEX = "SYSTEM_DICT_INDEX",
+    SYSTEM_DICT_INDEX = "system:dict:index",
     SYSTEM_DICT_KEY_ADD = "system:dict:key:add",
     SYSTEM_DICT_KEY_EDIT = "system:dict:key:edit",
     SYSTEM_DICT_KEY_DELETE = "system:dict:key:delete",
