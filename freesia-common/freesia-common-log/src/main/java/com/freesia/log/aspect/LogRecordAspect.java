@@ -1,8 +1,8 @@
 package com.freesia.log.aspect;
 
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
+import com.freesia.json.util.UJSON;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UEmpty;
@@ -80,7 +80,7 @@ public class LogRecordAspect {
                     paramMap.put(parameterName, arg);
                 }
                 if (!paramMap.isEmpty()) {
-                    result = JSONObject.toJSONString(paramMap);
+                    result = UJSON.toJSONString(paramMap);
                     log.info("---{}---\n[{}]方法：{}\n入参：{}", clzName, uuid, proceedingJoinPoint.getSignature(), result);
                 }
             }
@@ -101,7 +101,7 @@ public class LogRecordAspect {
         String result = null;
         try {
             if (UEmpty.isNotNull(proceed)) {
-                result = JSONObject.toJSONString(proceed);
+                result = UJSON.toJSONString(proceed);
                 log.info("---{}---\n[{}]方法：{}\n返回值：{}", clzName, uuid, proceedingJoinPoint.getSignature(), result);
             }
         } catch (Exception e) {

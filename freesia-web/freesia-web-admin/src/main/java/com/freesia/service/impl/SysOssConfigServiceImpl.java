@@ -1,14 +1,14 @@
 package com.freesia.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.freesia.log.annotation.LogRecord;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.dto.SysOssConfigDto;
+import com.freesia.json.util.UJSON;
+import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysOssConfigMapper;
 import com.freesia.oss.constant.OssModule;
 import com.freesia.po.SysOssConfigPo;
@@ -87,7 +87,7 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
         for (SysOssConfigPo sysOssConfigPo : sysOssConfigPoList) {
             String configKey = sysOssConfigPo.getConfigKey();
             URedis.set(CacheConstant.SYS_OSS_DEFAULT_CONFIG, configKey);
-            URedis.put(CacheConstant.SYS_OSS_CONFIG, configKey, JSONObject.toJSONString(sysOssConfigPo));
+            URedis.put(CacheConstant.SYS_OSS_CONFIG, configKey, UJSON.toJSONString(sysOssConfigPo));
         }
     }
 }

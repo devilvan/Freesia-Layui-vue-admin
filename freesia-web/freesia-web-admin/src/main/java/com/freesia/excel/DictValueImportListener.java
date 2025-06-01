@@ -3,12 +3,12 @@ package com.freesia.excel;
 import cn.hutool.core.convert.Convert;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.util.ListUtils;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.SysDictValueDto;
 import com.freesia.entity.SysDictValueImportEntity;
 import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.pojo.BaseImportEntity;
 import com.freesia.exception.ServiceException;
+import com.freesia.json.util.UJSON;
 import com.freesia.service.SysDictValueService;
 import com.freesia.util.UCollection;
 import com.freesia.util.UCopy;
@@ -77,7 +77,7 @@ public class DictValueImportListener<T extends BaseImportEntity> extends BaseImp
                         existInner.setValue(outer.getValue());
                         return existInner;
                     });
-            log.info(JSONObject.toJSONString(sysDictValueSyncAdditionCollectionDto));
+            log.info(UJSON.toJSONString(sysDictValueSyncAdditionCollectionDto));
             // 保存
             Collection<SysDictValueDto> mergeCollection = sysDictValueSyncAdditionCollectionDto.getMergeCollection();
             if (UEmpty.isNotEmpty(mergeCollection)) {

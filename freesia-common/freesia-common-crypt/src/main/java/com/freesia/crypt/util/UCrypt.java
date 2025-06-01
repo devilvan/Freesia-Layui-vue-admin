@@ -8,9 +8,9 @@ import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.Constants;
 import com.freesia.crypt.exception.CryptException;
+import com.freesia.json.util.UJSON;
 import com.freesia.util.UEmpty;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
+import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -100,9 +101,9 @@ public class UCrypt {
      * @return 转换后的对象类型
      */
     public static <T> T aesDecryptJSON(String requestBody, Class<T> clz) {
-        String encrypt = JSONObject.parseObject(requestBody).getString(Constants.ENCRYPT);
+        String encrypt = Optional.ofNullable(UJSON.parseMap(requestBody)).map(item -> item.get(Constants.ENCRYPT, "")).orElse("");
         String decrypt = aesDecrypt(encrypt);
-        return JSONObject.parseObject(decrypt, clz);
+        return UJSON.parseObject(decrypt, clz);
     }
 
     /**

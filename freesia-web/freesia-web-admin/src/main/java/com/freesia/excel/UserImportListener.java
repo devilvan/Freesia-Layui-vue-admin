@@ -2,13 +2,13 @@ package com.freesia.excel;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.util.ListUtils;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.FlagConstant;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.SysUserImportEntity;
 import com.freesia.excel.listener.BaseImportEntityListener;
 import com.freesia.excel.pojo.BaseImportEntity;
 import com.freesia.exception.ServiceException;
+import com.freesia.json.util.UJSON;
 import com.freesia.satoken.constant.UserType;
 import com.freesia.service.SysUserService;
 import com.freesia.util.UCollection;
@@ -79,7 +79,7 @@ public class UserImportListener<T extends BaseImportEntity> extends BaseImportEn
                         existInner.setRemark(outer.getRemark());
                         return existInner;
                     });
-            System.out.println(JSONObject.toJSONString(sysUserDtoSyncAdditionCollectionDto));
+            System.out.println(UJSON.toJSONString(sysUserDtoSyncAdditionCollectionDto));
             // 保存
             Collection<SysUserDto> mergeCollection = sysUserDtoSyncAdditionCollectionDto.getMergeCollection();
             if (UEmpty.isNotEmpty(mergeCollection)) {

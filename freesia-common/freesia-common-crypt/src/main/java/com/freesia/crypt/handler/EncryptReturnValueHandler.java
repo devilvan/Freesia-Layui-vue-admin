@@ -1,12 +1,11 @@
 package com.freesia.crypt.handler;
 
 import cn.hutool.http.ContentType;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.Constants;
 import com.freesia.crypt.annotation.Encrypt;
-import com.freesia.crypt.constant.CryptModule;
-import com.freesia.crypt.util.UCrypt;
 import com.freesia.crypt.exception.CryptException;
+import com.freesia.crypt.util.UCrypt;
+import com.freesia.json.util.UJSON;
 import com.freesia.util.UEmpty;
 import com.freesia.vo.R;
 import lombok.NonNull;
@@ -50,11 +49,11 @@ public class EncryptReturnValueHandler implements HandlerMethodReturnValueHandle
             if (UEmpty.isNotNull(data)) {
                 r.setData(encryptBasicType(data));
             }
-            doWrite(webRequest, mavContainer, JSONObject.toJSONString(r));
+            doWrite(webRequest, mavContainer, UJSON.toJSONString(r));
         } else {
             // 基础类型、数组类型统一转String后加密返回
             String encrypt = encryptBasicType(returnValue);
-            doWrite(webRequest, mavContainer, JSONObject.toJSONString(encrypt));
+            doWrite(webRequest, mavContainer, UJSON.toJSONString(encrypt));
         }
     }
 
@@ -91,7 +90,7 @@ public class EncryptReturnValueHandler implements HandlerMethodReturnValueHandle
         } else if (returnValue instanceof Object[]) {
             encrypt = UCrypt.aesEncrypt(Arrays.toString((Object[]) returnValue));
         } else {
-            encrypt = UCrypt.aesEncrypt(JSONObject.toJSONString(returnValue));
+            encrypt = UCrypt.aesEncrypt(UJSON.toJSONString(returnValue));
         }
         return encrypt;
     }

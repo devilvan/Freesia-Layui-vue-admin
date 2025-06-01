@@ -3,7 +3,6 @@ package com.freesia.icon.controller;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.http.HttpStatus;
-import com.alibaba.fastjson2.JSONObject;
 import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
 import com.freesia.dto.SysOssDto;
@@ -14,6 +13,7 @@ import com.freesia.icon.entity.FindPageCommonIconEntity;
 import com.freesia.icon.service.CommonIconService;
 import com.freesia.icon.vo.CommonIconVo;
 import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.json.util.UJSON;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysOssService;
@@ -64,7 +64,7 @@ public class CommonIconController extends BaseController {
     @PostMapping(value = "saveUpdate", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public R<CommonIconSaveUpdateEntity> saveUpdate(@RequestPart(value = "file[]", required = false) List<MultipartFile> fileList,
                                                     @RequestPart("commonIconVo") String request) {
-        CommonIconVo commonIconVo = JSONObject.parseObject(request, CommonIconVo.class);
+        CommonIconVo commonIconVo = UJSON.parseObject(request, CommonIconVo.class);
         // 如果是修改，但未上传新的图片，则允许为空
         if (UEmpty.isEmpty(fileList) && UEmpty.isNull(commonIconVo.getId())) {
             return R.failed(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("oss.file.required"));
@@ -117,7 +117,7 @@ public class CommonIconController extends BaseController {
     @PostMapping(value = "saveUpdateBatch", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public R<Void> saveUpdateBatch(@NotNull @RequestPart("file[]") List<MultipartFile> fileList,
                                    @RequestPart("commonIconVo") String request) {
-        CommonIconVo commonIconVo = JSONObject.parseObject(request, CommonIconVo.class);
+        CommonIconVo commonIconVo = UJSON.parseObject(request, CommonIconVo.class);
         CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
         return transactionTemplate.execute(status -> {
             List<SysOssDto> sysOssDtoList = sysOssService.upload(fileList, "icon");

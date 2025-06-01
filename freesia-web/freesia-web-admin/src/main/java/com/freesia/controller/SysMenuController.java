@@ -2,7 +2,6 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.MenuPermission;
 import com.freesia.constant.MenuType;
@@ -14,6 +13,7 @@ import com.freesia.entity.FindTreeMenuSelectEntity;
 import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
 import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.json.util.UJSON;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysMenuService;
@@ -64,7 +64,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "批量保存菜单信息")
     @PostMapping(value = "saveMenuList")
     public R<List<SysMenuVo>> saveMenuList(@RequestBody String request) {
-        List<SysMenuVo> sysMenuVoList = JSONObject.parseArray(request, SysMenuVo.class);
+        List<SysMenuVo> sysMenuVoList = UJSON.parseArray(request, SysMenuVo.class);
         List<SysMenuDto> sysMenuDtoList = sysMenuService.saveUpdateBatch(UCopy.fullCopyList(sysMenuVoList, SysMenuDto.class));
         return R.ok(UCopy.fullCopyList(sysMenuDtoList, SysMenuVo.class));
     }

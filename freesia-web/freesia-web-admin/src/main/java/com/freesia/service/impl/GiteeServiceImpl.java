@@ -1,6 +1,6 @@
 package com.freesia.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.freesia.constant.Constants;
 import com.freesia.dto.GiteeCommitsRequestParamDto;
 import com.freesia.dto.GiteeCommitsResponseDto;
@@ -8,6 +8,7 @@ import com.freesia.dto.GiteeOauthTokenRequestDto;
 import com.freesia.dto.GiteeOauthTokenResponseDto;
 import com.freesia.entity.FindGiteeCommitsEntity;
 import com.freesia.exception.GiteeCommitException;
+import com.freesia.json.util.UJSON;
 import com.freesia.net.builder.HttpBuilder;
 import com.freesia.net.component.HttpClientComponent;
 import com.freesia.net.dto.HttpClientDto;
@@ -37,10 +38,11 @@ public class GiteeServiceImpl implements GiteeService {
     @Override
     public Map<String, List<FindGiteeCommitsEntity>> findGiteeCommits() {
         GiteeCommitsRequestParamDto giteeCommitsRequestParamDto = new GiteeCommitsRequestParamDto("761a2ac6f63f1943c595bb2bcb3abc30", 1, 20);
-        Map<String, Object> params = JSONObject.parseObject(JSONObject.toJSONString(giteeCommitsRequestParamDto)).getInnerMap();
+        Map<String, Object> params = UJSON.parseObject(UJSON.toJSONString(giteeCommitsRequestParamDto), new TypeReference<Map<String, Object>>() {
+        });
         HttpClientDto httpClientDto = HttpBuilder.create().setHttpRequest(RequestMethod.GET, giteeProperties.getCommits().getUrl(), params).build();
         String responseBody = httpClientComponent.doExecute(httpClientDto);
-        List<GiteeCommitsResponseDto> giteeCommitsResponseDtoList = JSONObject.parseArray(responseBody, GiteeCommitsResponseDto.class);
+        List<GiteeCommitsResponseDto> giteeCommitsResponseDtoList = UJSON.parseArray(responseBody, GiteeCommitsResponseDto.class);
         // 请求的结果集扁平化
         List<FindGiteeCommitsEntity> findGiteeCommitsEntityList = buildGiteeCommitsEntityList(giteeCommitsResponseDtoList);
         // 根据提交日期进行分组
@@ -57,11 +59,12 @@ public class GiteeServiceImpl implements GiteeService {
                 GiteeOauthTokenRequestDto.Scope.PULL_REQUESTS,
                 GiteeOauthTokenRequestDto.Scope.ISSUES
         );
-        Map<String, Object> params = JSONObject.parseObject(JSONObject.toJSONString(giteeOauthTokenRequestDto)).getInnerMap();
+        Map<String, Object> params = UJSON.parseObject(UJSON.toJSONString(giteeOauthTokenRequestDto), new TypeReference<Map<String, Object>>() {
+        });
         HttpClientDto httpClientDto = HttpBuilder.create().setHttpRequest(RequestMethod.POST, giteeProperties.getOauth().getUrl(), params).build();
         String responseBody = httpClientComponent.doExecute(httpClientDto);
         System.out.println(responseBody);
-        return JSONObject.parseObject(responseBody, GiteeOauthTokenResponseDto.class);
+        return UJSON.parseObject(responseBody, GiteeOauthTokenResponseDto.class);
     }
 
     /**

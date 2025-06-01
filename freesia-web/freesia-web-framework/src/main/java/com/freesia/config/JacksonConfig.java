@@ -14,7 +14,7 @@ import com.freesia.desensization.annotation.Desensitize;
 import com.freesia.desensization.handler.DesensitizeSerializer;
 import com.freesia.oss.annotation.Domain;
 import com.freesia.oss.seder.DomainSerializer;
-import com.freesia.serde.CustomDateDeserializer;
+import com.freesia.serde.JacksonDateDeserializer;
 import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class JacksonConfig {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(Constants.YMD_HMS);
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dtf));
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dtf));
-        module.addDeserializer(Date.class, new CustomDateDeserializer());
+        module.addDeserializer(Date.class, new JacksonDateDeserializer());
         objectMapper.registerModules(module, new JavaTimeModule());
         if (adminServerModule != null) {
             objectMapper.registerModules(adminServerModule);

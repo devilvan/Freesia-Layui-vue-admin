@@ -1,10 +1,10 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.dto.RedissonPropertiesDto;
 import com.freesia.entity.FindRedisDashboardInfoEntity;
 import com.freesia.exception.DashboardException;
+import com.freesia.json.util.UJSON;
 import com.freesia.util.UCollection;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,7 +47,7 @@ public class RedisDashboardController extends BaseController {
                 .map(RedisConnectionFactory::getConnection);
         // Redis内置信息
         RedissonPropertiesDto redissonPropertiesDto = redisConnection.map(RedisConnection::info)
-                .map(properties -> JSONObject.parseObject(JSONObject.toJSONString(properties), RedissonPropertiesDto.class))
+                .map(properties -> UJSON.parseObject(UJSON.toJSONString(properties), RedissonPropertiesDto.class))
                 .orElseThrow(() -> new DashboardException("dashboard.redis.info.find.failed", new Object[]{}));
         // Redis指令信息
         List<Map<String, String>> commandStats = redisConnection.map(m -> m.info(COMMAND_STATS))

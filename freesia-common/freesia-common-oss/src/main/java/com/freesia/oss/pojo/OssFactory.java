@@ -1,7 +1,7 @@
 package com.freesia.oss.pojo;
 
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.CacheConstant;
+import com.freesia.json.util.UJSON;
 import com.freesia.oss.exception.OssException;
 import com.freesia.oss.properties.OssProperties;
 import com.freesia.redis.util.URedis;
@@ -45,7 +45,7 @@ public class OssFactory {
         if (json == null) {
             throw new OssException("系统异常, '" + configKey + "'配置信息不存在!");
         }
-        OssProperties properties = JSONObject.parseObject(json, OssProperties.class);
+        OssProperties properties = UJSON.parseObject(json, OssProperties.class);
         OssHandler ossHandler = CLIENT_CACHE.get(configKey);
         if (ossHandler == null) {
             CLIENT_CACHE.put(configKey, new OssHandler(configKey, properties));

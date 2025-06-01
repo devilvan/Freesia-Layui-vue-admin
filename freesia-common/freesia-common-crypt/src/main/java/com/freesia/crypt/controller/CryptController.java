@@ -1,9 +1,9 @@
 package com.freesia.crypt.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.controller.BaseController;
 import com.freesia.crypt.service.CryptService;
+import com.freesia.json.util.UJSON;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -37,7 +39,7 @@ public class CryptController extends BaseController {
     @Operation(summary = "交换AES加密信息")
     @PostMapping(value = "wrapEncryptPub2")
     public R<String> wrapEncryptPub2(@RequestBody String request) throws Exception {
-        final String encryptPub2 = JSONObject.parseObject(request).getString("encryptPub2");
+        String encryptPub2 = Optional.ofNullable(UJSON.parseMap(request)).map(item -> item.get("encryptPub2", "")).orElse("");
         String aes = cryptService.wrapEncryptPub2(encryptPub2);
         return R.ok(aes);
     }

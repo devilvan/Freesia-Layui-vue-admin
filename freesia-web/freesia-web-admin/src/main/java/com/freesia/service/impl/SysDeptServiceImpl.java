@@ -2,7 +2,6 @@ package com.freesia.service.impl;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,6 +17,7 @@ import com.freesia.entity.FindPageSysDeptListEntity;
 import com.freesia.entity.FindTreeDeptSelectEntity;
 import com.freesia.exception.DeptException;
 import com.freesia.exception.UserException;
+import com.freesia.json.util.UJSON;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.po.SysDeptPo;
@@ -37,7 +37,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -192,8 +195,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
                     sysSensitiveLogBean.setSubModule(DeptModule.SubModule.ASSIGN_ROLE);
                     sysSensitiveLogBean.setType(DeptModule.SubModule.ASSIGN_ROLE);
                     sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
-                    sysSensitiveLogBean.setContextOld("分配前角色ID：" + JSONObject.toJSONString(beforeRoleIdList));
-                    sysSensitiveLogBean.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
+                    sysSensitiveLogBean.setContextOld("分配前角色ID：" + UJSON.toJSONString(beforeRoleIdList));
+                    sysSensitiveLogBean.setContext("分配后角色ID：" + UJSON.toJSONString(afterRoleIdSet));
                     sysSensitiveLogBean.setRemark(UMessage.message("assign_role_permissions_success"));
                     return sysSensitiveLogBean;
                 });

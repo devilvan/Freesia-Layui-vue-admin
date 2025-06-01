@@ -2,7 +2,6 @@ package com.freesia.service.impl;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -19,6 +18,7 @@ import com.freesia.entity.FindPageSysUserListEntity;
 import com.freesia.entity.FindUserRolesByUserIdEntity;
 import com.freesia.exception.UserException;
 import com.freesia.helper.DataBaseHelper;
+import com.freesia.json.util.UJSON;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysDeptMapper;
 import com.freesia.mapper.SysUserMapper;
@@ -202,8 +202,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
                     sysSensitiveLogBean.setSubModule(MenuModule.SubModule.ASSIGN_ROLE);
                     sysSensitiveLogBean.setType(MenuModule.SubModule.ASSIGN_ROLE);
                     sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
-                    sysSensitiveLogBean.setContextOld("分配前角色ID：" + JSONObject.toJSONString(beforeRoleIdList));
-                    sysSensitiveLogBean.setContext("分配后角色ID：" + JSONObject.toJSONString(afterRoleIdSet));
+                    sysSensitiveLogBean.setContextOld("分配前角色ID：" + UJSON.toJSONString(beforeRoleIdList));
+                    sysSensitiveLogBean.setContext("分配后角色ID：" + UJSON.toJSONString(afterRoleIdSet));
                     sysSensitiveLogBean.setRemark(UMessage.message("assign_role_permissions_success"));
                     return sysSensitiveLogBean;
                 });

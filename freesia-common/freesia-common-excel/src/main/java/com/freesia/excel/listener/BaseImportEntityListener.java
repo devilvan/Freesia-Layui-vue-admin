@@ -3,8 +3,8 @@ package com.freesia.excel.listener;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.excel.pojo.BaseImportEntity;
+import com.freesia.json.util.UJSON;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class BaseImportEntityListener<T extends BaseImportEntity> implements Rea
      */
     @Override
     public void invoke(T data, AnalysisContext context) {
-        log.info("解析到一条数据:{}", JSONObject.toJSONString(data));
+        log.info("解析到一条数据:{}", UJSON.toJSONString(data));
     }
 
     /**

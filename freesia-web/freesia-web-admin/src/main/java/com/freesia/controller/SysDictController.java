@@ -1,10 +1,8 @@
 package com.freesia.controller;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.convert.Convert;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysDictDto;
 import com.freesia.dto.SysDictKeyDto;
@@ -16,6 +14,7 @@ import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.util.UExcel;
 import com.freesia.exception.ServiceException;
 import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.json.util.UJSON;
 import com.freesia.oss.exception.OssException;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -107,7 +106,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "保存字典键数据")
     @PostMapping(value = "saveSysDictKeyList")
     public R<Void> saveSysDictKeyList(@RequestBody String request) {
-        List<SysDictKeyVo> sysDictKeyVoList = JSONObject.parseArray(request, SysDictKeyVo.class);
+        List<SysDictKeyVo> sysDictKeyVoList = UJSON.parseArray(request, SysDictKeyVo.class);
         List<SysDictKeyDto> sysDictKeyDtoList = UCopy.fullCopyList(sysDictKeyVoList, SysDictKeyDto.class);
         sysDictKeyService.saveUpdateBatch(sysDictKeyDtoList);
         return R.ok();
@@ -121,7 +120,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "保存字典键数据")
     @PostMapping(value = "saveSysDictKey")
     public R<SysDictKeyDto> saveSysDictKey(@RequestBody String request) {
-        SysDictKeyVo sysDictKeyVo = JSONObject.parseObject(request, SysDictKeyVo.class);
+        SysDictKeyVo sysDictKeyVo = UJSON.parseObject(request, SysDictKeyVo.class);
         SysDictKeyDto sysDictKeyDto = UCopy.copyVo2Dto(sysDictKeyVo, SysDictKeyDto.class);
         sysDictKeyDto = sysDictKeyService.saveSysDictKey(sysDictKeyDto);
         return R.ok(sysDictKeyDto);
@@ -135,7 +134,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "保存字典值数据")
     @PostMapping(value = "saveSysDictValue")
     public R<SysDictValueDto> saveSysDictValue(@RequestBody String request) {
-        SysDictValueVo sysDictValueVo = JSONObject.parseObject(request, SysDictValueVo.class);
+        SysDictValueVo sysDictValueVo = UJSON.parseObject(request, SysDictValueVo.class);
         SysDictValueDto sysDictValueDto = UCopy.copyVo2Dto(sysDictValueVo, SysDictValueDto.class);
         sysDictValueDto = sysDictValueService.saveSysDictValue(sysDictValueDto);
         return R.ok(sysDictValueDto);
@@ -149,7 +148,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "保存字典值数据")
     @PostMapping(value = "saveSysDictValueList")
     public R<Void> saveSysDictValueList(@RequestBody String request) {
-        List<SysDictValueVo> sysDictValueVoList = JSONObject.parseArray(request, SysDictValueVo.class);
+        List<SysDictValueVo> sysDictValueVoList = UJSON.parseArray(request, SysDictValueVo.class);
         List<SysDictValueDto> sysDictValueDtoList = UCopy.fullCopyList(sysDictValueVoList, SysDictValueDto.class);
         sysDictValueService.saveUpdateBatch(sysDictValueDtoList);
         return R.ok();
@@ -160,7 +159,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "删除字典值")
     @PutMapping(value = "deleteSysDictValueList")
     public R<Void> deleteSysDictValueList(@RequestBody String request) {
-        List<Long> idList = JSONObject.parseArray(request, Long.class);
+        List<Long> idList = UJSON.parseArray(request, Long.class);
         sysDictValueService.deleteSysDictValueList(idList);
         return R.ok();
     }
@@ -170,7 +169,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "启用/禁用字典键")
     @PutMapping(value = "enableSysDictValueList")
     public R<Void> enableSysDictValueList(@RequestBody String request) {
-        List<Long> idList = JSONObject.parseArray(request, Long.class);
+        List<Long> idList = UJSON.parseArray(request, Long.class);
         sysDictValueService.enableSysDictValueList(idList);
         return R.ok(null, idList.size());
     }

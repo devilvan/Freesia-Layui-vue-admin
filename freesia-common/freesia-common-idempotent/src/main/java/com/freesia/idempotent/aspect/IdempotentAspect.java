@@ -3,12 +3,12 @@ package com.freesia.idempotent.aspect;
 import cn.dev33.satoken.SaManager;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.Constants;
 import com.freesia.crypt.util.UCrypt;
 import com.freesia.exception.ServiceException;
 import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.json.util.UJSON;
 import com.freesia.net.util.UServlet;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
@@ -66,7 +66,7 @@ public class IdempotentAspect {
         }
         for (Object o : paramsArray) {
             if (ObjectUtil.isNotNull(o) && !isFilterObject(o)) {
-                params.add(JSONObject.toJSONString(o));
+                params.add(UJSON.toJSONString(o));
             }
         }
         return params.toString();
