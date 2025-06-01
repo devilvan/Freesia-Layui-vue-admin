@@ -16,6 +16,7 @@ import com.freesia.oss.annotation.Domain;
 import com.freesia.oss.seder.DomainSerializer;
 import com.freesia.serde.CustomDateDeserializer;
 import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +35,10 @@ import java.util.Date;
  */
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class JacksonConfig {
+    private final AdminServerModule adminServerModule;
+
     @Bean
     @Primary
     public ObjectMapper objectMapper() {
@@ -43,9 +47,8 @@ public class JacksonConfig {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         // 设置日期格式
         objectMapper.setDateFormat(new SimpleDateFormat(Constants.YMD_HMS));
-        String[] arr = new String[]{".*password$", ".*secret$", ".*key$", ".*token$", ".*credentials.*,", ".*vcap_services$"};
         // 注册spring-admin服务端Module
-        SimpleModule module = new AdminServerModule(arr);
+        SimpleModule module = new SimpleModule();
         // 解决Long精度丢失问题
         module.addSerializer(BigInteger.class, ToStringSerializer.instance);
         module.addSerializer(Long.class, ToStringSerializer.instance);
@@ -55,6 +58,9 @@ public class JacksonConfig {
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dtf));
         module.addDeserializer(Date.class, new CustomDateDeserializer());
         objectMapper.registerModules(module, new JavaTimeModule());
+        if (adminServerModule != null) {
+            objectMapper.registerModules(adminServerModule);
+        }
         // 添加自定义序列化过滤器
         objectMapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
             @Override
