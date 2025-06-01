@@ -29,7 +29,7 @@ public class SysSensitiveLogEventListener {
      * @param sysSensitiveLogBean 敏感日志对象
      */
     @EventListener
-    @Async("threadPoolExecutor")
+    @Async("threadPoolTaskExecutor")
     public void recordLoginOperateLog(SysSensitiveLogBean sysSensitiveLogBean) {
         SysSensitiveLogDto sysSensitiveLogDto = new SysSensitiveLogDto();
         UCopy.fullCopy(sysSensitiveLogBean, sysSensitiveLogDto);
