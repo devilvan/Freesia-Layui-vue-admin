@@ -1,12 +1,15 @@
 package com.freesia.sse.component;
 
 
-import cn.hutool.core.collection.CollUtil;
 import com.freesia.dto.BaseSseMessageDto;
+import com.freesia.exception.ServiceException;
 import com.freesia.redis.util.URedis;
+import com.freesia.sse.constant.SseModule;
+import com.freesia.sse.dto.SseEmitterUTF8;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -41,7 +44,7 @@ public class SseEmitterManager {
         // 通过userId获取SSE连接，每个用户可以拥有多个连接，通过token区分
         // 创建SSE实例，超时时间为0表示无限制
         Map<String, SseEmitter> tokenEmitter = USER_TOKEN_EMITTER.computeIfAbsent(userId, mapping -> new ConcurrentHashMap<>());
-        SseEmitter sseEmitter = new SseEmitter(0L);
+        SseEmitterUTF8 sseEmitter = new SseEmitterUTF8(0L);
         tokenEmitter.put(token, sseEmitter);
         // 当 emitter 完成、超时或发生错误时，从映射表中移除对应的 token
         sseEmitter.onCompletion(() -> tokenEmitter.remove(token));
@@ -51,9 +54,9 @@ public class SseEmitterManager {
         try {
             sseEmitter.send(event().comment("connected"));
         } catch (IOException e) {
-            e.printStackTrace();
             // 如果发送消息失败，则从映射表中移除 emitter
             tokenEmitter.remove(token);
+            throw new ServiceException(SseModule.SSE_MANAGEMENT, "sse.connect.failed", new Object[]{e.toString()});
         }
         return sseEmitter;
     }
@@ -71,7 +74,7 @@ public class SseEmitterManager {
                 SseEmitter sseEmitter = tokenEmitter.get(token);
                 sseEmitter.send(event().comment("disconnected"));
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new ServiceException(SseModule.SSE_MANAGEMENT, "sse.disconnect.failed", new Object[]{e.toString()});
             }
             tokenEmitter.remove(token);
         }
@@ -98,9 +101,10 @@ public class SseEmitterManager {
                         String token = entry.getKey();
                         SseEmitter sseEmitter = entry.getValue();
                         try {
-                            sseEmitter.send(event().name("message").data(content));
+                            sseEmitter.send(event().name("message").data(content, MediaType.APPLICATION_JSON));
                         } catch (Exception e) {
                             tokenEmitter.remove(token);
+                            throw new ServiceException(SseModule.SSE_MANAGEMENT, "sse.send.failed", new Object[]{e.toString()});
                         }
                     }
                 }

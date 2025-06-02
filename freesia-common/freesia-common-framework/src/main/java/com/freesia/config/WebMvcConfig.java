@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private ObjectMapper objectMapper;
     @Resource
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+    @Bean
+    public HttpMessageConverter<?> jacksonMessageConverter() {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setDefaultCharset(StandardCharsets.UTF_8);
+        return converter;
+    }
 
     /**
      * 项目资源注册器

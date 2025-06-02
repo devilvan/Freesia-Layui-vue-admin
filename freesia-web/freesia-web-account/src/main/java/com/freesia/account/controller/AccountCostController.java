@@ -31,15 +31,11 @@ import com.freesia.exception.UserException;
 import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.oss.exception.OssException;
 import com.freesia.oss.util.UOssFile;
-import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.tenant.exception.TenantException;
-import com.freesia.util.UCopy;
-import com.freesia.util.UEmpty;
-import com.freesia.util.UMessage;
-import com.freesia.util.UString;
+import com.freesia.util.*;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,10 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author Evad.Wu
@@ -249,10 +242,22 @@ public class AccountCostController extends BaseController {
         accountCostDto.setUserId(userId);
         accountCostDto.setTenantId(tenantId);
         String dateValue = findCostLineChartVo.getDateValue();
-        if (DateScope.MONTH.getCode().equals(code) || DateScope.YEAR.getCode().equals(code)) {
-            if (UEmpty.isEmpty(dateValue)) {
-                throw new ServiceException(UMessage.message("account.dateValue.not.empty"));
+        if (DateScope.WEEK.getCode().equals(code)) {
+            Date[] dates = defaultDateRange(7);
+            accountCostDto.setPaymentTimeFrom(dates[0]);
+            accountCostDto.setPaymentTimeTo(dates[1]);
+        }
+        if (UEmpty.isEmpty(dateValue)) {
+            if (DateScope.MONTH.getCode().equals(code)) {
+                Date[] dateRange = UCalendar.buildCurrentMonthDateRange(new Date());
+                accountCostDto.setPaymentTimeFrom(dateRange[0]);
+                accountCostDto.setPaymentTimeTo(dateRange[1]);
+            } else if (DateScope.YEAR.getCode().equals(code)) {
+                Date[] dateRange = UCalendar.buildCurrentYearDateRange(new Date());
+                accountCostDto.setPaymentTimeFrom(dateRange[0]);
+                accountCostDto.setPaymentTimeTo(dateRange[1]);
             }
+        } else {
             String[] yearMonth = dateValue.split("-");
             if (DateScope.YEAR.getCode().equals(code)) {
                 if (yearMonth.length == 1) {
@@ -270,11 +275,6 @@ public class AccountCostController extends BaseController {
                 }
             }
         }
-        if (DateScope.WEEK.getCode().equals(code)) {
-            Date[] dates = defaultDateRange(7);
-            accountCostDto.setPaymentTimeFrom(dates[0]);
-            accountCostDto.setPaymentTimeTo(dates[1]);
-        }
         EchartLineOptionEntity echartLineOptionEntity = accountCostService.findCostLineChart(accountCostDto);
         return R.ok(echartLineOptionEntity);
     }
@@ -282,7 +282,8 @@ public class AccountCostController extends BaseController {
     @Validated
     @Operation(summary = "日历-查询近一年支出")
     @GetMapping(value = "findCostSumCalendarNearYear")
-    public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNeaerYearVo findCostSumCalendarNeaerYearVo) {
+    public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNeaerYearVo
+                                                                             findCostSumCalendarNeaerYearVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostSumCalendarNeaerYearVo, AccountCostDto.class);
@@ -304,7 +305,8 @@ public class AccountCostController extends BaseController {
      * @param accountCostExportEntityList 导出数据
      * @throws IOException IO流异常
      */
-    private void doAccountExport(HttpServletResponse response, Date[] dates, List<AccountCostExportEntity> accountCostExportEntityList) throws IOException {
+    private void doAccountExport(HttpServletResponse response, Date[]
+            dates, List<AccountCostExportEntity> accountCostExportEntityList) throws IOException {
         String dateFrom = Constants.SDF_YMD.format(dates[0]);
         String dateTo = Constants.SDF_YMD.format(dates[1]);
         String title = dateFrom + "到" + dateTo + "记账合计";

@@ -362,7 +362,6 @@ export default {
           title: "消息",
           content: e.data
         })
-        // layer.confirm(e.data, {icon: 1})
       })
     }
 

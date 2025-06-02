@@ -21,7 +21,7 @@ public class UEmpty extends ObjectUtil {
     }
 
     public static boolean isEmpty(String value) {
-        return value == null || value.length() < 1;
+        return value == null || value.isEmpty();
     }
 
     public static boolean isAllEmpty(String[] stringArray) {

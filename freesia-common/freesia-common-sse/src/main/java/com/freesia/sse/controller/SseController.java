@@ -1,5 +1,6 @@
 package com.freesia.sse.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import com.freesia.controller.BaseController;
@@ -37,6 +38,7 @@ public class SseController extends BaseController implements DisposableBean {
     /**
      * 建立 SSE 连接
      */
+    @SaCheckLogin
     @GetMapping(value = "${sse.path}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter connect() {
         Long userId = USecurity.getUserId();
