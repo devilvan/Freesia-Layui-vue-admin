@@ -1,5 +1,6 @@
 package com.freesia.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ public class EchartLineOptionEntity {
     /**
      * X轴描述
      */
+    @JsonProperty(value = "xAxis")
     private List<String> xAxis;
     /**
      * 图表序列（K-V对）

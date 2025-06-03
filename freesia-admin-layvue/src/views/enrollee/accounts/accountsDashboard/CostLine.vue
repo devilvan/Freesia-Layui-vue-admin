@@ -35,6 +35,7 @@
                 :items="findSelectCostTypeList"
                 :allow-clear="true"
                 placeholder="请选择"
+                @change="changeCostType"
             ></lay-select>
           </lay-form-item>
         </lay-col>
@@ -111,12 +112,12 @@ const findSelectCostTypeList = ref<LaySelectEntity[]>([]);
 /*FUNCTION*/
 function doFindCostLineChart() {
   let dateScope = findCostLineChartQueryVo.value.dateScope;
-  if (dateScope === DateScope.MONTH || dateScope === DateScope.YEAR) {
-    let dateValue = findCostLineChartQueryVo.value.dateValue;
-    if (!dateValue || dateValue === '') {
-      return;
-    }
-  }
+  // if (dateScope === DateScope.MONTH || dateScope === DateScope.YEAR) {
+  //   let dateValue = findCostLineChartQueryVo.value.dateValue;
+  //   if (!dateValue || dateValue === '') {
+  //     return;
+  //   }
+  // }
   findCostLineChart(findCostLineChartQueryVo.value).then((res: any) => {
     if (res.code === 200) {
       let data = res.data;
@@ -301,6 +302,13 @@ function doFindListSelectCostType() {
     layer.confirm(e.message)
   })
 }
+
+function changeCostType(value: any) {
+  findCostLineChartQueryVo.value.costType = value;
+  doFindCostLineChart();
+}
+
+
 
 /*FUNCTION*/
 

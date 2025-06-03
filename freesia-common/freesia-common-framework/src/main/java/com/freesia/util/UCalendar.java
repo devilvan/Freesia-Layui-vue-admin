@@ -26,6 +26,28 @@ public class UCalendar {
     }
 
     /**
+     * 根据日期获取年份
+     *
+     * @param date 日期
+     * @return 年份
+     */
+    public static int getYear(Date date) {
+        CALENDAR.setTime(new Date());
+        return CALENDAR.get(Calendar.YEAR);
+    }
+
+    /**
+     * 根据日期获取月份
+     *
+     * @param date 日期
+     * @return 月份
+     */
+    public static int getMonth(Date date) {
+        CALENDAR.setTime(new Date());
+        return CALENDAR.get(Calendar.MONTH) + 1;
+    }
+
+    /**
      * 构建输入的日期所在的当月日期数据（[开始时间, 结束时间]）
      *
      * @param date 日期

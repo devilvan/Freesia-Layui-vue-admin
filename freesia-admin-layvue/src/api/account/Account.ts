@@ -1,6 +1,6 @@
 import Http from "../Http";
 import {PageQuery} from "../../types/Common";
-import {TableResult} from "../../types/Result";
+import {R, TableResult} from "../../types/Result";
 import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
 import {
     AccountCostEntity,

@@ -249,13 +249,15 @@ public class AccountCostController extends BaseController {
         }
         if (UEmpty.isEmpty(dateValue)) {
             if (DateScope.MONTH.getCode().equals(code)) {
-                Date[] dateRange = UCalendar.buildCurrentMonthDateRange(new Date());
-                accountCostDto.setPaymentTimeFrom(dateRange[0]);
-                accountCostDto.setPaymentTimeTo(dateRange[1]);
+                Date date = new Date();
+                int month = UCalendar.getMonth(date);
+                int year = UCalendar.getYear(date);
+                accountCostDto.setYear(year);
+                accountCostDto.setMonth(month);
             } else if (DateScope.YEAR.getCode().equals(code)) {
-                Date[] dateRange = UCalendar.buildCurrentYearDateRange(new Date());
-                accountCostDto.setPaymentTimeFrom(dateRange[0]);
-                accountCostDto.setPaymentTimeTo(dateRange[1]);
+                Date date = new Date();
+                int year = UCalendar.getYear(date);
+                accountCostDto.setYear(year);
             }
         } else {
             String[] yearMonth = dateValue.split("-");

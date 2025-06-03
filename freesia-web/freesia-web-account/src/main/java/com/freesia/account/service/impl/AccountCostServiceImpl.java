@@ -19,7 +19,6 @@ import com.freesia.constant.Constants;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
-import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
@@ -219,7 +218,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                         String.valueOf(accountCostDto.getUserId()),
                         String.valueOf(accountCostDto.getTenantId()),
                         dateScope,
-                        formatPaymentTimeFrom, formatPaymentTimeTo);
+                        formatPaymentTimeFrom, formatPaymentTimeTo, accountCostDto.getCostType());
         EchartLineOptionEntity echartLineOptionCache = URedis.get(cacheKey);
         if (UEmpty.isNotNull(echartLineOptionCache)) {
             return echartLineOptionCache;

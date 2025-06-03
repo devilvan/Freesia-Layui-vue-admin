@@ -337,68 +337,74 @@
     </select>
     <select id="findWeekCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
         WITH RECURSIVE dateseries AS (SELECT CURDATE() AS date
-                                      UNION ALL
-                                      SELECT DATE_SUB(date, INTERVAL 1 DAY)
-                                      FROM dateseries
-                                      WHERE DATE_SUB(date, INTERVAL 1 DAY) <![CDATA[>=]]> DATE_SUB(CURDATE(), INTERVAL 6 DAY))
-        SELECT ifnull(SUM(T.OUTLAY), 0)                                                          AS OUTLAY,
-               ifnull(DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d'), DATE_FORMAT(DS.DATE, '%Y-%m-%d')) AS PAYMENT_TIME,
-               IFNULL(
-                       CONCAT(STR_TO_DATE(T.PAYMENT_TIME, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')'),
-                       CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
-               )                                                                                 AS X_AXIS
+        UNION ALL
+        SELECT DATE_SUB(date, INTERVAL 1 DAY)
+        FROM dateseries
+        WHERE DATE_SUB(date, INTERVAL 1 DAY) <![CDATA[>=]]> DATE_SUB(CURDATE(), INTERVAL 6 DAY))
+        SELECT ifnull(SUM(T.OUTLAY), 0) AS OUTLAY,
+        ifnull(DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d'), DATE_FORMAT(DS.DATE, '%Y-%m-%d')) AS PAYMENT_TIME,
+        IFNULL(
+        CONCAT(STR_TO_DATE(T.PAYMENT_TIME, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')'),
+        CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
+        ) AS X_AXIS
         FROM DateSeries ds
-                 LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
-                                                                    WHEN (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                                        1
-                                                                    ELSE (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) END
-                                       , 2) AS OUTLAY,
-                                   AC.PAYMENT_TIME
-                            FROM account_cost AC
-                                     LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-                            WHERE 1 = 1
-                              AND AC.LOGIC_DEL = 0
-                              AND AC.PAYMENT_SIGN = 'EXPENSES'
-                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
-                              AND AC.USER_ID = #{accountCostDto.userId}
-                              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
-                              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
-                            GROUP BY AC.ID
-                            UNION ALL
-                            SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+        WHEN (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) = 0 THEN
+        1
+        ELSE (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) END
+        , 2) AS OUTLAY,
+        AC.PAYMENT_TIME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND AC.USER_ID = #{accountCostDto.userId}
+        AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
+            AND AC.COST_TYPE = #{accountCostDto.costType}
+        </if>
+        GROUP BY AC.ID
+        UNION ALL
+        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
-                                                                    WHEN (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                                        1
-                                                                    ELSE (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) END
-                                       , 2) AS OUTLAY,
-                                   AC.PAYMENT_TIME
-                            FROM account_cost AC
-                                     LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-                            WHERE 1 = 1
-                              AND AC.LOGIC_DEL = 0
-                              AND AC.PAYMENT_SIGN = 'EXPENSES'
-                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
-                              AND ACU.USER_ID = #{accountCostDto.userId}
-                              AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-                              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
-                              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
-                            GROUP BY AC.ID) T
-                           ON DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d') = ds.date
-                 LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'
-            AND SDV.VALUE = WEEKDAY(STR_TO_DATE(IFNULL(T.PAYMENT_TIME, DS.DATE), '%Y-%m-%d')) + 1
+        WHEN (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) = 0 THEN
+        1
+        ELSE (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) END
+        , 2) AS OUTLAY,
+        AC.PAYMENT_TIME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+        AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
+            AND AC.COST_TYPE = #{accountCostDto.costType}
+        </if>
+        GROUP BY AC.ID) T
+        ON DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d') = ds.date
+        LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'
+        AND SDV.VALUE = WEEKDAY(STR_TO_DATE(IFNULL(T.PAYMENT_TIME, DS.DATE), '%Y-%m-%d')) + 1
         GROUP BY ds.date
         ORDER BY DS.DATE
     </select>
@@ -410,150 +416,162 @@
     </sql>
     <select id="findMonthCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
         WITH RECURSIVE DATESERIES AS (SELECT CONCAT(#{accountCostDto.year}, '-', LPAD(#{accountCostDto.month}, 2, '0'),
-                                                    '-01') AS date
-                                      UNION ALL
-                                      SELECT DATE_ADD(date, INTERVAL 1 DAY)
-                                      FROM DATESERIES
-                                      WHERE DATE_ADD(date, INTERVAL 1 DAY) <![CDATA[<=]]>
-                                            CASE
-                                                WHEN #{accountCostDto.year} = YEAR(CURDATE()) AND
-                                                     #{accountCostDto.month} = MONTH(CURDATE())
-                                                    THEN CURDATE()
-                                                ELSE LAST_DAY(CONCAT(#{accountCostDto.year}, '-',
-                                                                     LPAD(#{accountCostDto.month}, 2, '0'),
-                                                                     '-01'))
-                                                END)
-        SELECT ifnull(SUM(T.OUTLAY), 0)                                                          AS OUTLAY,
-               ifnull(DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d'), DATE_FORMAT(DS.DATE, '%Y-%m-%d')) AS PAYMENT_TIME,
-               IFNULL(
-                       CONCAT(STR_TO_DATE(T.PAYMENT_TIME, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')'),
-                       CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
-               )                                                                                 AS X_AXIS
+        '-01') AS date
+        UNION ALL
+        SELECT DATE_ADD(date, INTERVAL 1 DAY)
+        FROM DATESERIES
+        WHERE DATE_ADD(date, INTERVAL 1 DAY) <![CDATA[<=]]>
+        CASE
+        WHEN #{accountCostDto.year} = YEAR(CURDATE()) AND
+        #{accountCostDto.month} = MONTH(CURDATE())
+        THEN CURDATE()
+        ELSE LAST_DAY(CONCAT(#{accountCostDto.year}, '-',
+        LPAD(#{accountCostDto.month}, 2, '0'),
+        '-01'))
+        END)
+        SELECT ifnull(SUM(T.OUTLAY), 0) AS OUTLAY,
+        ifnull(DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d'), DATE_FORMAT(DS.DATE, '%Y-%m-%d')) AS PAYMENT_TIME,
+        IFNULL(
+        CONCAT(STR_TO_DATE(T.PAYMENT_TIME, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')'),
+        CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
+        ) AS X_AXIS
         FROM DateSeries ds
-                 LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
-                                                                    WHEN (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                                        1
-                                                                    ELSE (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) END
-                                       , 2) AS OUTLAY,
-                                   AC.PAYMENT_TIME
-                            FROM account_cost AC
-                                     LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-                            WHERE 1 = 1
-                              AND AC.LOGIC_DEL = 0
-                              AND AC.PAYMENT_SIGN = 'EXPENSES'
-                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
-                              AND AC.USER_ID = #{accountCostDto.userId}
-                              AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
-                              AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
-                            GROUP BY AC.ID
+        WHEN (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) = 0 THEN
+        1
+        ELSE (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) END
+        , 2) AS OUTLAY,
+        AC.PAYMENT_TIME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND AC.USER_ID = #{accountCostDto.userId}
+        <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
+            AND AC.COST_TYPE = #{accountCostDto.costType}
+        </if>
+        AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
+        GROUP BY AC.ID
 
-                            UNION ALL
+        UNION ALL
 
-                            SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
-                                                                    WHEN (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                                        1
-                                                                    ELSE (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) END
-                                       , 2) AS OUTLAY,
-                                   AC.PAYMENT_TIME
-                            FROM account_cost AC
-                                     LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-                            WHERE 1 = 1
-                              AND AC.LOGIC_DEL = 0
-                              AND AC.PAYMENT_SIGN = 'EXPENSES'
-                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
-                              AND ACU.USER_ID = #{accountCostDto.userId}
-                              AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-                              AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
-                              AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
-                            GROUP BY AC.ID) T
-                           ON DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d') = ds.date
-                 LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'
-            AND SDV.VALUE = WEEKDAY(STR_TO_DATE(IFNULL(T.PAYMENT_TIME, DS.DATE), '%Y-%m-%d')) + 1
+        WHEN (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) = 0 THEN
+        1
+        ELSE (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) END
+        , 2) AS OUTLAY,
+        AC.PAYMENT_TIME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
+            AND AC.COST_TYPE = #{accountCostDto.costType}
+        </if>
+        AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        AND MONTH(AC.PAYMENT_TIME) = #{accountCostDto.month}
+        GROUP BY AC.ID) T
+        ON DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d') = ds.date
+        LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'
+        AND SDV.VALUE = WEEKDAY(STR_TO_DATE(IFNULL(T.PAYMENT_TIME, DS.DATE), '%Y-%m-%d')) + 1
         GROUP BY ds.date
         ORDER BY DS.DATE
     </select>
     <select id="findYearCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
         WITH RECURSIVE DateSeries AS (SELECT CONCAT(#{accountCostDto.year}, '-01-01') AS date
-                                      UNION ALL
-                                      SELECT DATE_ADD(date, INTERVAL 1 DAY)
-                                      FROM DateSeries
-                                      WHERE DATE_ADD(date, INTERVAL 1 DAY) <![CDATA[<=]]>
-                                            CASE
-                                                WHEN #{accountCostDto.year} = YEAR(CURDATE()) THEN CURDATE()
-                                                ELSE CONCAT(#{accountCostDto.year}, '-12-31')
-                                                END)
-        SELECT ifnull(SUM(T.OUTLAY), 0)                                                          AS OUTLAY,
-               ifnull(DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d'), DATE_FORMAT(DS.DATE, '%Y-%m-%d')) AS PAYMENT_TIME,
-               IFNULL(
-                       CONCAT(STR_TO_DATE(T.PAYMENT_TIME, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')'),
-                       CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
-               )                                                                                 AS X_AXIS
+        UNION ALL
+        SELECT DATE_ADD(date, INTERVAL 1 DAY)
+        FROM DateSeries
+        WHERE DATE_ADD(date, INTERVAL 1 DAY) <![CDATA[<=]]>
+        CASE
+        WHEN #{accountCostDto.year} = YEAR(CURDATE()) THEN CURDATE()
+        ELSE CONCAT(#{accountCostDto.year}, '-12-31')
+        END)
+        SELECT ifnull(SUM(T.OUTLAY), 0) AS OUTLAY,
+        ifnull(DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d'), DATE_FORMAT(DS.DATE, '%Y-%m-%d')) AS PAYMENT_TIME,
+        IFNULL(
+        CONCAT(STR_TO_DATE(T.PAYMENT_TIME, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')'),
+        CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
+        ) AS X_AXIS
         FROM DateSeries ds
-                 LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
-                                                                    WHEN (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                                        1
-                                                                    ELSE (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) END
-                                       , 2) AS OUTLAY,
-                                   AC.PAYMENT_TIME
-                            FROM account_cost AC
-                                     LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-                            WHERE 1 = 1
-                              AND AC.LOGIC_DEL = 0
-                              AND AC.PAYMENT_SIGN = 'EXPENSES'
-                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
-                              AND AC.USER_ID = #{accountCostDto.userId}
-                              AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
-                            GROUP BY AC.ID
+        WHEN (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) = 0 THEN
+        1
+        ELSE (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) END
+        , 2) AS OUTLAY,
+        AC.PAYMENT_TIME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND AC.USER_ID = #{accountCostDto.userId}
+        <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
+            AND AC.COST_TYPE = #{accountCostDto.costType}
+        </if>
+        AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        GROUP BY AC.ID
 
-                            UNION ALL
+        UNION ALL
 
-                            SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
-                                                                    WHEN (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                                        1
-                                                                    ELSE (SELECT COUNT(1)
-                                                                          FROM account_cost_user ACU
-                                                                          WHERE 1 = 1
-                                                                            AND ACU.COST_ID = AC.ID) END
-                                       , 2) AS OUTLAY,
-                                   AC.PAYMENT_TIME
-                            FROM account_cost AC
-                                     LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-                            WHERE 1 = 1
-                              AND AC.LOGIC_DEL = 0
-                              AND AC.PAYMENT_SIGN = 'EXPENSES'
-                              AND AC.TENANT_ID = #{accountCostDto.tenantId}
-                              AND ACU.USER_ID = #{accountCostDto.userId}
-                              AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-                              AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
-                            GROUP BY AC.ID) T
-                           ON DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d') = ds.date
-                 LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'
-            AND SDV.VALUE = WEEKDAY(STR_TO_DATE(IFNULL(T.PAYMENT_TIME, DS.DATE), '%Y-%m-%d')) + 1
+        WHEN (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) = 0 THEN
+        1
+        ELSE (SELECT COUNT(1)
+        FROM account_cost_user ACU
+        WHERE 1 = 1
+        AND ACU.COST_ID = AC.ID) END
+        , 2) AS OUTLAY,
+        AC.PAYMENT_TIME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
+            AND AC.COST_TYPE = #{accountCostDto.costType}
+        </if>
+        AND YEAR(AC.PAYMENT_TIME) = #{accountCostDto.year}
+        GROUP BY AC.ID) T
+        ON DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d') = ds.date
+        LEFT JOIN sys_dict_value SDV ON SDV.DICT_KEY = 'WEEK_DAY'
+        AND SDV.VALUE = WEEKDAY(STR_TO_DATE(IFNULL(T.PAYMENT_TIME, DS.DATE), '%Y-%m-%d')) + 1
         GROUP BY ds.date
         ORDER BY DS.DATE
     </select>

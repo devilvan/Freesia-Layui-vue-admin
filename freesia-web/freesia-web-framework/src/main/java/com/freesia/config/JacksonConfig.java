@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author Evad.Wu
@@ -47,6 +48,8 @@ public class JacksonConfig {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         // 设置日期格式
         objectMapper.setDateFormat(new SimpleDateFormat(Constants.YMD_HMS));
+        // 设置时区（例如设置为系统默认时区）
+        objectMapper.setTimeZone(TimeZone.getDefault());
         // 注册spring-admin服务端Module
         SimpleModule module = new SimpleModule();
         // 解决Long精度丢失问题

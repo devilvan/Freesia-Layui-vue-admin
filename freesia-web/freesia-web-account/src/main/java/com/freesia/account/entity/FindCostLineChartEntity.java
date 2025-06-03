@@ -1,5 +1,6 @@
 package com.freesia.account.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.freesia.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -30,5 +31,6 @@ public class FindCostLineChartEntity extends BaseEntity {
      * x轴描述
      */
     @Schema(description = "x轴描述")
+    @JsonProperty(value = "xAxis")
     private String xAxis;
 }
