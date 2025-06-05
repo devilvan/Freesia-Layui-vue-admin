@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * @author Evad.Wu
@@ -42,7 +41,7 @@ public class USecurity {
      * @param <T> 入参泛型
      */
     @FunctionalInterface
-    public interface Modifier<T extends SysSensitiveLogBean> {
+    public interface Modifier<T> {
         /**
          * 修改器实现
          *

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>freesia-web</artifactId>
         <groupId>com.freesia</groupId>
-        <version>1.3.3</version>
+        <version>1.4.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -115,6 +115,10 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-mail</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-spring-admin</artifactId>
+        </dependency>
         <!--spring-test测试=-->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -155,7 +159,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warName>${project.artifactId}</warName>
