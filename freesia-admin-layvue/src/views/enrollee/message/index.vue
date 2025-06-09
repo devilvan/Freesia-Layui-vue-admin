@@ -1,7 +1,7 @@
 <template>
   <lay-tab
-    type="brief"
-    style="
+      type="brief"
+      style="
       background: #fff;
       padding: 20px 0;
       border: 1px solid #eee;
@@ -9,8 +9,8 @@
       height: 70%;
       margin: 10px;
     "
-    v-model="currentTab"
-    tabPosition="left"
+      v-model="currentTab"
+      tabPosition="left"
   >
     <lay-tab-item id="system">
       <template #title>
@@ -21,7 +21,7 @@
           </div>
         </div>
       </template>
-      <table-content key="system" />
+      <SysNotice key="system"/>
     </lay-tab-item>
     <lay-tab-item id="user">
       <template #title>
@@ -32,7 +32,7 @@
           </div>
         </div>
       </template>
-      <table-content key="user" />
+      <table-content key="user"/>
     </lay-tab-item>
     <lay-tab-item id="todo">
       <template #title>
@@ -43,16 +43,18 @@
           </div>
         </div>
       </template>
-      <table-content key="todo" />
+      <table-content key="todo"/>
     </lay-tab-item>
   </lay-tab>
 </template>
 <script lang="ts">
-import { ref } from 'vue'
+import {ref} from 'vue'
 import tableContent from './table.vue'
+import SysNotice from "@/views/enrollee/message/sysNotice.vue";
 
 export default {
   components: {
+    SysNotice,
     tableContent
   },
   setup() {

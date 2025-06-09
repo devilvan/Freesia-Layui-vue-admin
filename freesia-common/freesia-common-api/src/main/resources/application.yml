@@ -41,7 +41,9 @@ spring:
             multi-statement-allow: true
       use-global-data-source-stat: true
       # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-      connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      connect-properties:
+        druid.stat.mergeSql: true
+        druid.stat.slowSqlMillis: 5000
       # 配置监控服务器
       stat-view-servlet:
         enabled: true
@@ -100,7 +102,6 @@ spring:
     open-in-view: true
     hibernate:
       ddl-auto: update
-      generate_statistics: true
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
@@ -114,6 +115,7 @@ spring:
         # 定义JPA的SQL拦截，没有需要可以不创建
 #        session_factory:
 #          statement_inspector: com.freesia.interceptor.JpaDataPermissionInterceptor
+        generate_statistics: false
 # Mybatis
 mybatis-plus:
   mapper-locations: classpath*:/mapper/*.xml

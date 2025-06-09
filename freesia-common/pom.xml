@@ -32,6 +32,7 @@
         <module>freesia-common-idempotent</module>
         <module>freesia-common-sse</module>
         <module>freesia-common-mail</module>
+        <module>freesia-common-notice</module>
     </modules>
 
     <properties>
@@ -119,6 +120,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-common-mail</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-notice</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>
