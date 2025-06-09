@@ -49,7 +49,11 @@ export enum Constants {
     /**
      * 通用图标节点类型
      */
-    ICON_TREE_TYPE = "ICON_TREE_TYPE"
+    ICON_TREE_TYPE = "ICON_TREE_TYPE",
+    /**
+     * 通知类型
+     */
+    SYS_NOTICE_TYPE = "SYS_NOTICE_TYPE"
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {

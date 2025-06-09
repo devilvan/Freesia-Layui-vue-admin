@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum SysNotice {
+public enum SysNoticeType {
     /**
      * 通知
      */
@@ -29,13 +29,13 @@ public enum SysNotice {
      * @param code 编码
      * @return 枚举对象
      */
-    public static SysNotice getInstanceByCode(String code) {
-        SysNotice[] values = SysNotice.values();
-        for (SysNotice value : values) {
+    public static SysNoticeType getInstanceByCode(String code) {
+        SysNoticeType[] values = SysNoticeType.values();
+        for (SysNoticeType value : values) {
             if (value.code.equals(code)) {
                 return value;
             }
         }
         return null;
     }
-    }
+}

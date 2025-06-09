@@ -1,18 +1,18 @@
 package com.freesia.notice.controller;
 
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
-import com.freesia.notice.vo.SysNoticeVo;
+import com.freesia.controller.BaseController;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.service.SysNoticeService;
-import com.freesia.controller.BaseController;
-import com.freesia.sse.component.SseEmitterManager;
+import com.freesia.notice.vo.SysNoticeVo;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
+import com.freesia.util.UEmpty;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -28,27 +28,30 @@ import java.util.List;
 @Tag(name = "SysNoticeController", description = "消息公告表 控制器")
 public class SysNoticeController extends BaseController {
     private final SysNoticeService sysNoticeService;
-    private final SseEmitterManager sseEmitterManager;
 
     /**
      * 保存消息公告表信息
      *
-     * @param sysNoticeVo    待保存对象
+     * @param sysNoticeVo 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存消息公告表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysNoticeVo sysNoticeVo) {
         SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+        Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
+        if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
+            sysNoticeDto.setEffectiveTimeFrom(effectiveTime[0]);
+            sysNoticeDto.setEffectiveTimeTo(effectiveTime[1]);
+        }
         sysNoticeService.saveUpdate(sysNoticeDto);
-
         return R.ok();
     }
 
     /**
      * 批量保存消息公告表信息
      *
-     * @param sysNoticeVoList    待保存对象
+     * @param sysNoticeVoList 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存消息公告表信息")
@@ -70,9 +73,11 @@ public class SysNoticeController extends BaseController {
     @GetMapping(value = "findPageSysNotice")
     public TableResult<SysNoticeDto> findPageSysNotice(SysNoticeVo sysNoticeVo, PageQuery pageQuery) {
         SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
-        Date[] effectiveTimeRange = this.parseDateRange(sysNoticeVo.getEffectiveTime());
-        sysNoticeDto.setEffectiveTimeFrom(effectiveTimeRange[0]);
-        sysNoticeDto.setEffectiveTimeTo(effectiveTimeRange[1]);
+        Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
+        if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
+            sysNoticeDto.setEffectiveTimeFrom(effectiveTime[0]);
+            sysNoticeDto.setEffectiveTimeTo(effectiveTime[1]);
+        }
         return sysNoticeService.findPageSysNotice(sysNoticeDto, pageQuery);
     }
 

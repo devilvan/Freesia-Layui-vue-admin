@@ -149,6 +149,11 @@
                 <artifactId>freesia-spring-admin</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-common-notice</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

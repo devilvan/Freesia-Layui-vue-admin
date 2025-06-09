@@ -53,7 +53,7 @@
             </lay-form-item>
           </lay-row>
           <lay-row>
-            <lay-form-item>
+            <lay-form-item label="生效时间">
               <lay-date-picker style="width: 100%" v-model="saveVo.effectiveTime" allow-clear range
                                :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
                                :shortcuts="defaultShortcuts" simple
@@ -61,8 +61,8 @@
             </lay-form-item>
           </lay-row>
           <lay-row>
-            <lay-form-item label="备注" prop="remark">
-              <lay-textarea v-model="saveVo.remark" :allow-clear="true" show-count
+            <lay-form-item label="内容" prop="content">
+              <lay-textarea v-model="saveVo.content" :allow-clear="true" show-count
                             :maxlength="127"></lay-textarea>
             </lay-form-item>
           </lay-row>
@@ -87,15 +87,16 @@ import {ref, watch, reactive, onMounted} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {Operate} from "@/types/Constants";
 import {findMenuListByUserId} from "@/api/system/Menu";
-import {findPageSysNotice} from "@/api/system/Notice";
+import {findPageSysNotice, saveUpdate} from "@/api/system/Notice";
 import {SysNoticeEntity, SysNoticeVo} from "@/types/system/Notice";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {defaultShortcuts} from "@/util/UDate";
+import {R} from "@/types/Result";
 
 /*INIT*/
 onMounted(async () => {
-  sysNoticeTypeSelect.value = await loadSysDictValue(Constants.PAYMENT_SIGN)
+  sysNoticeTypeSelect.value = await loadSysDictValue(Constants.SYS_NOTICE_TYPE)
   sysNoticeTypeSelectList.value = await sysDictValueSelect(sysNoticeTypeSelect.value)
   setTimeout(() => {
     loading.value = false
@@ -139,7 +140,7 @@ const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 /*VAR*/
 
 /*FUNCTION*/
-const change = (page: any) => {
+function change() {
   loading.value = true
   setTimeout(() => {
     loadDataSource()
@@ -174,7 +175,10 @@ function showSaveModal(o: Operate) {
 }
 
 function toSave() {
-
+  saveUpdate(saveVo.value).then((res: R<void>) => {
+    closeSaveModal();
+    change();
+  })
 }
 
 function closeSaveModal() {

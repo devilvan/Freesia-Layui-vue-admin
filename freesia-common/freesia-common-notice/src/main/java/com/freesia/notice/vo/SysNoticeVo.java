@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * @author Evad.Wu
  * @Description 消息公告表 值对象
@@ -27,7 +29,7 @@ public class SysNoticeVo extends BaseVo {
     private String type;
     @Schema(description = "生效时间从")
     @JsonAlias(value = {"effectiveTime"})
-    private String effectiveTime;
+    private Date[] effectiveTime;
     @Schema(description = "内容")
     @JsonAlias(value = {"content"})
     private String content;

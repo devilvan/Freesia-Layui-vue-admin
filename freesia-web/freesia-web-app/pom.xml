@@ -119,6 +119,10 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-spring-admin</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-notice</artifactId>
+        </dependency>
         <!--spring-test测试=-->
         <dependency>
             <groupId>org.springframework</groupId>

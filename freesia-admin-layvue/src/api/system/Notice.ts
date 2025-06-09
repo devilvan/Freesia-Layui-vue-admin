@@ -15,9 +15,9 @@ export function findSysNotice(searchQuery: SysNoticeVo): Promise<R<SysNoticeEnti
 }
 
 export function saveUpdate(sysNoticeVo: SysNoticeVo) {
-    return Http.post("/api/sysNoticeController/saveNotice", sysNoticeVo);
+    return Http.post("/api/sysNoticeController/saveUpdate", sysNoticeVo);
 }
 
 export function deleteSysNotice(idList: string[]) {
-    return Http.delete("/api/sysNoticeController/deleteNotice", idList);
+    return Http.delete("/api/sysNoticeController/deleteSysNotice", idList);
 }
