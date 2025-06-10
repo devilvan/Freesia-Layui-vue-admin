@@ -40,15 +40,15 @@ public class IdempotentAspect {
     public static final ThreadLocal<String> submitKeyThreadLocal = new ThreadLocal<>();
 
     @Around(value = "@annotation(idempotent)")
-    protected Object around(ProceedingJoinPoint proceedingJoinPoint, Idempotent idempotent) {
+    protected Object around(ProceedingJoinPoint proceedingJoinPoint, Idempotent idempotent) throws Throwable {
         Object proceed = null;
         this.idempotentBeforeHandler(proceedingJoinPoint, idempotent);
         try {
             proceed = proceedingJoinPoint.proceed();
             this.idempotentAfterHandler(proceedingJoinPoint, proceed, idempotent);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
             log.error("\n---AOP Error---\n[{}]\nidempotentAspect错误报文: {}", proceedingJoinPoint.getSignature(), throwable.toString());
+            throw throwable;
         }
         return proceed;
     }

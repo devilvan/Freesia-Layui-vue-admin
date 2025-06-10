@@ -5,7 +5,14 @@ spring:
   profiles:
     # 根据当前活跃环境指定对应的 application文件
     active: @profiles.active@
-
+---
+server:
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
 ---
 spring:
   datasource:
@@ -69,6 +76,10 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: PATH_PATTERN_PARSER
+---
+spring:
+  thymeleaf:
+    check-template-location: false
 ---
 spring:
   servlet:
