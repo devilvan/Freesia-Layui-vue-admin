@@ -51,6 +51,8 @@ spring:
       connect-properties:
         druid.stat.mergeSql: true
         druid.stat.slowSqlMillis: 5000
+        useCursorFetch: true
+        defaultFetchSize: 1000
       # 配置监控服务器
       stat-view-servlet:
         enabled: true

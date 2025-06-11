@@ -1,10 +1,10 @@
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
 import Http from "../Http";
 import {PageQuery} from "@/types/Common";
-import {R} from "@/types/Result";
+import {R, TableResult} from "@/types/Result";
 import {SysNoticeEntity, SysNoticeVo} from "@/types/system/Notice";
 
-export function findPageSysNotice(searchQuery: SysNoticeVo, pageQuery: PageQuery): Promise<SysNoticeEntity> {
+export function findPageSysNotice(searchQuery: SysNoticeVo, pageQuery: PageQuery): Promise<TableResult<SysNoticeEntity>> {
     let params = buildPageUrlParam(searchQuery, pageQuery);
     return Http.get("/api/sysNoticeController/findPageSysNotice", params);
 }

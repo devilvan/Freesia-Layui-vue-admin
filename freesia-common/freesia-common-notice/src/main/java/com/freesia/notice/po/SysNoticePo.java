@@ -12,11 +12,12 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.io.Serial;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
@@ -42,7 +43,7 @@ public class SysNoticePo extends BasePo implements Serializable {
     private String title;
     @Schema(description = "通知类型（SYS_NOTICE_TYPE）")
     @TableField(value = "TYPE")
-    @Column(name = "TYPE", columnDefinition = "VARCHAR(8) NOT NULL COMMENT '通知类型（SYS_NOTICE_TYPE）'")
+    @Column(name = "TYPE", columnDefinition = "VARCHAR(16) NOT NULL COMMENT '通知类型（SYS_NOTICE_TYPE）'")
     private String type;
     @Schema(description = "生效时间从")
     @TableField(value = "EFFECTIVE_TIME_FROM")
@@ -54,7 +55,7 @@ public class SysNoticePo extends BasePo implements Serializable {
     private Date effectiveTimeTo;
     @Schema(description = "内容")
     @TableField(value = "CONTENT")
-    @Column(name = "CONTENT", columnDefinition = "TEXT(65,535) NOT NULL COMMENT '内容'")
+    @Column(name = "CONTENT", columnDefinition = "TEXT(65535) NOT NULL COMMENT '内容'")
     private String content;
     @Schema(description = "发布人ID")
     @TableField(value = "PUBLISHER_ID")

@@ -59,11 +59,12 @@ freesia:
         - SYS_CONFIG
         - SYS_OSS
         - SYS_OSS_CONFIG
+        - DATESERIES
         - ACCOUNT_COST_USER
         - COMMON_ICON
         - COMMON_ICON_TEMPLATE_HEADER
         - COMMON_ICON_TEMPLATE_DETAIL
-        - DATESERIES
+        - SYS_NOTICE
 ---
 login.password:
   # 密码最大错误次数

@@ -92,7 +92,8 @@ import {SysNoticeEntity, SysNoticeVo} from "@/types/system/Notice";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {defaultShortcuts} from "@/util/UDate";
-import {R} from "@/types/Result";
+import {R, TableResult} from "@/types/Result";
+import {PageQuery} from "@/types/Common";
 
 /*INIT*/
 onMounted(async () => {
@@ -113,7 +114,10 @@ const messageInfo = ref({
   todo: 11
 })
 const selectedKeys = ref<string[]>([])
-const page = reactive({current: 1, limit: 10, total: 100})
+const pageQuery = reactive<PageQuery>({
+  current: 1,
+  limit: 10
+})
 const columns = ref([
   {title: '选项', width: '50px', type: 'checkbox', fixed: 'left'},
   {title: '编号', width: '80px', key: 'id', fixed: 'left', sort: 'desc'},
@@ -161,8 +165,8 @@ const remove = () => {
 }
 
 function loadDataSource() {
-  findPageSysNotice().then(res => {
-    dataSource.value = res.data;
+  findPageSysNotice(searchQuery.value, pageQuery).then((res: TableResult<SysNoticeEntity>) => {
+    dataSource.value = res.rows;
   });
 }
 
