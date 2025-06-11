@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.freesia.notice.po.SysNoticePo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @author Evad.Wu
  * @Description 消息公告表 持久层
@@ -12,5 +14,10 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface SysNoticeMapper extends BaseMapper<SysNoticePo> {
-
+    /**
+     * 查询已发布的公告
+     *
+     * @return 公告集合
+     */
+    List<SysNoticePo> findPublishedAnnouncement();
 }

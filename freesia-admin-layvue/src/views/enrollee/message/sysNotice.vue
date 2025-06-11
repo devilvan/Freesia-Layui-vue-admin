@@ -9,20 +9,24 @@
       @change="change"
       @sortChange="sortChange"
   >
-    <!--    <template #status="{ row }">-->
-    <!--      <lay-switch-->
-    <!--          :model-value="row.status"-->
-    <!--          @change="changeStatus($event, row)"-->
-    <!--      ></lay-switch>-->
-    <!--    </template>-->
+    <template #effectiveTime="{ row }">
+      {{ row.effectiveTimeFrom }} - {{ row.effectiveTimeTo }}
+    </template>
     <template v-slot:toolbar>
       <lay-button size="sm" type="primary">标记已读</lay-button>
-      <lay-button size="sm" type="normal" @click="showSaveModal(Operate.ADD)">新增</lay-button>
-      <lay-button size="sm" @click="remove">删除</lay-button>
+      <lay-button size="sm" type="warm">标记已读</lay-button>
+      <lay-button size="sm" type="normal" @click="showSaveModal(Operate.ADD, null)">新增</lay-button>
+      <lay-button size="sm" type="danger" @click="toRemove">删除</lay-button>
     </template>
     <template v-slot:operator="{ row }">
-      <lay-button size="sm" type="primary" @click="toEdit(row)">编辑</lay-button>
+      <lay-button size="sm" type="primary" @click="showSaveModal(Operate.EDIT, row)">编辑</lay-button>
       <lay-button size="sm">查看</lay-button>
+      <lay-popconfirm
+          content="确定要删除吗?"
+          @cancel="toCancel"
+          @confirm="confirmDelete(row)">
+        <lay-button size="sm" type="danger">删除</lay-button>
+      </lay-popconfirm>
     </template>
   </lay-table>
 
@@ -69,7 +73,7 @@
         </lay-col>
 
       </lay-form>
-      <div style="width: 97%; text-align: right">
+      <div style="width: 100%; text-align: right">
         <lay-button size="sm" type="primary" @click="toSave">保存</lay-button>
         <lay-button size="sm" @click="closeSaveModal">取消</lay-button>
       </div>
@@ -87,13 +91,14 @@ import {ref, watch, reactive, onMounted} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {Operate} from "@/types/Constants";
 import {findMenuListByUserId} from "@/api/system/Menu";
-import {findPageSysNotice, saveUpdate} from "@/api/system/Notice";
+import {deleteSysNotice, findPageSysNotice, findSysNotice, saveUpdate} from "@/api/system/Notice";
 import {SysNoticeEntity, SysNoticeVo} from "@/types/system/Notice";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {defaultShortcuts} from "@/util/UDate";
 import {R, TableResult} from "@/types/Result";
 import {PageQuery} from "@/types/Common";
+import {deleteAccountCost, findAccountCost} from "@/api/account/Account";
 
 /*INIT*/
 onMounted(async () => {
@@ -120,10 +125,10 @@ const pageQuery = reactive<PageQuery>({
 })
 const columns = ref([
   {title: '选项', width: '50px', type: 'checkbox', fixed: 'left'},
-  {title: '编号', width: '80px', key: 'id', fixed: 'left', sort: 'desc'},
-  {title: '姓名', width: '80px', key: 'name', sort: 'desc'},
-  {title: '内容', width: '260px', key: 'remark'},
-  {title: '时间', width: '120px', key: 'joinTime'},
+  {title: '标题', width: '80px', key: 'title'},
+  {title: '内容', width: '260px', key: 'content'},
+  {title: '生效时间', width: '120px', key: 'effectiveTime', customSlot: 'effectiveTime'},
+  {title: '发布时间', width: '60px', key: 'createTime'},
   {
     title: '操作',
     width: '150px',
@@ -149,7 +154,7 @@ function change() {
   setTimeout(() => {
     loadDataSource()
     loading.value = false
-  }, 1000)
+  }, 100)
 }
 
 const sortChange = (key: any, sort: any) => {
@@ -160,8 +165,36 @@ const sortChange = (key: any, sort: any) => {
 
 const dataSource = ref<SysNoticeEntity[]>();
 
-const remove = () => {
-  layer.msg(selectedKeys.value[0], {area: '50%'})
+function toRemove() {
+  if (selectedKeys.value.length == 0) {
+    layer.msg('您未选择数据，请先选择要删除的数据', {icon: 3, time: 2000})
+    return
+  }
+  layer.confirm('您将删除所有选中的数据？', {
+    title: '提示',
+    btn: [
+      {
+        text: '确定',
+        callback: (id: any) => {
+          deleteSysNotice(selectedKeys.value).then((res: any) => {
+            if (res.code === 200) {
+              layer.msg('删除成功')
+            }
+            loadDataSource();
+          }).catch(e => {
+            layer.confirm(e.msg, {icon: 2})
+          })
+          layer.close(id)
+        }
+      },
+      {
+        text: '取消',
+        callback: (id: any) => {
+          layer.close(id)
+        }
+      }
+    ]
+  })
 }
 
 function loadDataSource() {
@@ -170,11 +203,23 @@ function loadDataSource() {
   });
 }
 
-function toEdit(row: any) {
-}
-
-function showSaveModal(o: Operate) {
+function showSaveModal(o: Operate, row: any) {
   operate.value = o
+  if (row != null) {
+    saveVo.value = {...row}
+  }
+  if (Operate.EDIT === o) {
+    saveVo.value = {}
+    let param: SysNoticeVo = {
+      id: row.id
+    }
+    findSysNotice(param).then((res: R<SysNoticeEntity>) => {
+      let data = res.data;
+      saveVo.value = {...data}
+      saveVo.value.effectiveTime = [data?.effectiveTimeFrom, data?.effectiveTimeTo]
+    })
+  } else if (Operate.ADD === o) {
+  }
   saveModalFlag.value = true
 }
 
@@ -187,6 +232,26 @@ function toSave() {
 
 function closeSaveModal() {
   saveModalFlag.value = false
+}
+
+function toCancel() {
+  layer.msg('您已取消操作')
+}
+
+function confirmDelete(row: any) {
+  if (row && row.buildIn) {
+    layer.msg('系统内置参数无法删除！')
+    return;
+  } else {
+    deleteSysNotice([row.id]).then((res: any) => {
+      if (res.code === 200) {
+        layer.msg('删除成功')
+      }
+      loadDataSource();
+    }).catch(e => {
+      layer.confirm(e.msg, {icon: 2})
+    })
+  }
 }
 
 /*FUNCTION*/

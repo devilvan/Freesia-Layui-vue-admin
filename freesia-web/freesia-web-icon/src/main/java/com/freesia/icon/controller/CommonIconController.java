@@ -63,7 +63,7 @@ public class CommonIconController extends BaseController {
     })
     @PostMapping(value = "saveUpdate", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public R<CommonIconSaveUpdateEntity> saveUpdate(@RequestPart(value = "file[]", required = false) List<MultipartFile> fileList,
-                                                    @RequestPart("commonIconVo") String request) {
+                                                    @RequestParam(value = "commonIconVo") String request) {
         CommonIconVo commonIconVo = UJSON.parseObject(request, CommonIconVo.class);
         // 如果是修改，但未上传新的图片，则允许为空
         if (UEmpty.isEmpty(fileList) && UEmpty.isNull(commonIconVo.getId())) {
@@ -115,8 +115,8 @@ public class CommonIconController extends BaseController {
             @SaCheckPermission(value = MenuPermission.COMMON_ICON_EDIT),
     })
     @PostMapping(value = "saveUpdateBatch", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public R<Void> saveUpdateBatch(@NotNull @RequestPart("file[]") List<MultipartFile> fileList,
-                                   @RequestPart("commonIconVo") String request) {
+    public R<Void> saveUpdateBatch(@NotNull @RequestPart(value = "file[]") List<MultipartFile> fileList,
+                                   @RequestParam(value = "commonIconVo") String request) {
         CommonIconVo commonIconVo = UJSON.parseObject(request, CommonIconVo.class);
         CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
         return transactionTemplate.execute(status -> {

@@ -40,7 +40,7 @@
                    LEADER
             FROM SYS_DEPT
             WHERE 1 = 1
-              AND LOGIC_DEL = FALSE
+              AND LOGIC_DEL = 0
               AND DEPT_STATUS = '1'
         ) D ON U.DEPT_ID = D.ID
                  LEFT JOIN sys_tenant_user stu on U.ID = stu.USER_ID

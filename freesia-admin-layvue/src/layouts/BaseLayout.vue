@@ -192,6 +192,9 @@
           </lay-menu>
         </lay-header>
         <lay-body>
+          <lay-notice-bar leftIcon="layui-icon-mute"
+                          :text="announcement"
+                          mode="closeable" rightIcon="layui-icon-close"></lay-notice-bar>
           <global-tab
               :class="
               appStore.tagsTheme == 'concise'
@@ -212,7 +215,7 @@
 </template>
 
 <script lang="ts">
-import {computed, onMounted, ref} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import {useAppStore} from '../store/app'
 import {useUserStore} from '../store/user'
 import GlobalSetup from './global/GlobalSetup.vue'
@@ -234,6 +237,8 @@ import {sseDisconnect} from "../api/Login";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
 import {R} from "@/types/Result";
+import {findPublishedAnnouncement} from "@/api/system/Notice";
+import {SysNoticeEntity} from "@/types/system/Notice";
 
 export default {
   components: {
@@ -261,6 +266,8 @@ export default {
     )
     const sseConnectUrl = import.meta.env.VITE_SSE_CONNECT_URL
     const bootstrapImageUrl = ref<string | undefined>(<string>'/不要停下来啊.png');
+    const announcement = ref<string>();
+    const announcementList = ref<SysNoticeEntity[]>([]);
     const {
       selectedKey,
       openKeys,
@@ -273,13 +280,20 @@ export default {
     } = useMenu()
 
     onMounted(() => {
-      initSse();
       if (document.body.clientWidth < 768) {
         appStore.collapse = true
       }
       userInfoStore.getMenu()
+      // 查询首页图片
       findConfigByKey(SysConfigKey.HOME_ICON_URL).then((res: R<string>) => {
         bootstrapImageUrl.value = res.data
+      })
+      // 初始化SSE
+      initSse();
+      // 查询公告
+      findPublishedAnnouncement().then((res: R<SysNoticeEntity[]>) => {
+        announcementList.value = res.data
+        announcement.value = announcementList.value.map(item => item.content).join(";");
       })
     })
 
@@ -402,7 +416,9 @@ export default {
       resolveImgPath,
       initSse,
       bootstrapImageUrl,
-      preview
+      preview,
+      announcement,
+      announcementList
     }
   }
 }

@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.notice.mapper.SysNoticeMapper">
+    <select id="findPublishedAnnouncement" resultType="com.freesia.notice.po.SysNoticePo">
+        SELECT ID,
+               REC_VER,
+               CONTENT
+        FROM sys_notice
+        WHERE 1 = 1
+            AND LOGIC_DEL = 0
+            AND TYPE = 'ANNOUNCEMENT'
+            AND (EFFECTIVE_TIME_FROM IS NULL AND EFFECTIVE_TIME_TO IS NULL)
+           OR (NOW() BETWEEN EFFECTIVE_TIME_FROM AND EFFECTIVE_TIME_TO)
+    </select>
 </mapper>

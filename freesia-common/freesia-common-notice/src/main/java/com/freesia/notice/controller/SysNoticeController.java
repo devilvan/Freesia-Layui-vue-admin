@@ -96,6 +96,18 @@ public class SysNoticeController extends BaseController {
     }
 
     /**
+     * 查询已发布的公告
+     *
+     * @return 形式返回
+     */
+    @Operation(summary = "查询已发布的公告")
+    @GetMapping(value = "findPublishedAnnouncement")
+    public R<List<SysNoticeDto>> findPublishedAnnouncement() {
+        List<SysNoticeDto> sysNoticeDtoList = sysNoticeService.findPublishedAnnouncement();
+        return R.ok(sysNoticeDtoList);
+    }
+
+    /**
      * 删除消息公告表
      *
      * @param idList 主键

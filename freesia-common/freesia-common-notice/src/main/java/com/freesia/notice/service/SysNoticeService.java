@@ -51,4 +51,11 @@ public interface SysNoticeService {
      * @param idList 主键
      */
     void deleteSysNotice(List<Long> idList);
+
+    /**
+     * 查询已发布的公告
+     *
+     * @return 公告集合
+     */
+    List<SysNoticeDto> findPublishedAnnouncement();
 }

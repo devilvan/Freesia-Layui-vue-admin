@@ -14,14 +14,14 @@
   >
     <lay-tab-item id="system">
       <template #title>
-        系统通知
+        系统公告
         <div style="width: 40px; margin-left: 20px; display: inline-block">
           <div v-if="messageInfo.system > 0" class="corner-mark">
             {{ messageInfo.system }}
           </div>
         </div>
       </template>
-      <SysNotice key="system"/>
+      <SysNotice/>
     </lay-tab-item>
     <lay-tab-item id="user">
       <template #title>

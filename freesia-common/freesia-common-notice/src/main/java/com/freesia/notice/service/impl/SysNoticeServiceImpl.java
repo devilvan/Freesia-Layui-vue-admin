@@ -38,6 +38,7 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
     private final SysNoticeRepository sysNoticeRepository;
     private final SseEmitterManager sseEmitterManager;
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    private final SysNoticeMapper sysNoticeMapper;
 
     @Override
     public SysNoticeDto saveUpdate(SysNoticeDto sysNoticeDto) {
@@ -81,5 +82,11 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
     @Transactional(rollbackFor = Exception.class)
     public void deleteSysNotice(List<Long> idList) {
         removeBatchByIds(idList);
+    }
+
+    @Override
+    public List<SysNoticeDto> findPublishedAnnouncement() {
+        List<SysNoticePo> sysNoticePoList = sysNoticeMapper.findPublishedAnnouncement();
+        return UCopy.fullCopyList(sysNoticePoList, SysNoticeDto.class);
     }
 }
