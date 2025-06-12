@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FreesiaApplicationRunner implements ApplicationRunner {
+public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
     private final WebCommonProperties webCommonProperties;
     private final SysConfigService sysConfigService;
     private final SysDictValueService sysDictValueService;
@@ -48,5 +49,10 @@ public class FreesiaApplicationRunner implements ApplicationRunner {
             cryptService.initRsa();
             log.info(UMessage.message("crypt.init.success"));
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
     }
 }

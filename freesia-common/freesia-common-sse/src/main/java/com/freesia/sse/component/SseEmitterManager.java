@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * @author Evad.Wu
@@ -47,9 +48,15 @@ public class SseEmitterManager {
         SseEmitterUTF8 sseEmitter = new SseEmitterUTF8(0L);
         tokenEmitter.put(token, sseEmitter);
         // 当 emitter 完成、超时或发生错误时，从映射表中移除对应的 token
-        sseEmitter.onCompletion(() -> tokenEmitter.remove(token));
-        sseEmitter.onTimeout(() -> tokenEmitter.remove(token));
-        sseEmitter.onError(e -> tokenEmitter.remove(token));
+        sseEmitter.onCompletion(() -> {
+            removeComplete(token, tokenEmitter);
+        });
+        sseEmitter.onTimeout(() -> {
+            removeComplete(token, tokenEmitter);
+        });
+        sseEmitter.onError(e -> {
+            removeComplete(token, tokenEmitter);
+        });
         // 向客户端发送一条连接成功的事件
         try {
             sseEmitter.send(event().comment("connected"));
@@ -59,6 +66,13 @@ public class SseEmitterManager {
             throw new ServiceException(SseModule.SSE_MANAGEMENT, "sse.connect.failed", new Object[]{e.toString()});
         }
         return sseEmitter;
+    }
+
+    private static void removeComplete(String token, Map<String, SseEmitter> tokenEmitter) {
+        SseEmitter emitter = tokenEmitter.remove(token);
+        if (emitter != null) {
+            emitter.complete();
+        }
     }
 
     /**
@@ -128,5 +142,8 @@ public class SseEmitterManager {
         List<String> topicList = sseMessageDto.getTopicList();
         String content = sseMessageDto.getContent();
         URedis.send(topicList, content);
+    }
+
+    public <T extends BaseSseMessageDto> void subscribe(Consumer<T> consumer) {
     }
 }

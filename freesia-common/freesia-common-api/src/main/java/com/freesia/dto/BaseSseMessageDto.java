@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2024-10-22
  */
 @Data
-public class BaseSseMessageDto {
+public abstract class BaseSseMessageDto {
     /**
      * 主题
      */

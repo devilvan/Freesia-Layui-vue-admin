@@ -39,18 +39,10 @@ public class SseConfig {
         redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
         SseTopic[] sseTopics = SseTopic.values();
         for (SseTopic sseTopic : sseTopics) {
-            String key = sseTopic.getKey();
             MessageReceiveHandler messageReceiveHandler = sseTopic.getListener().copy();
-            redisMessageListenerContainer.addMessageListener(this.buildMessageListenerAdapter(messageReceiveHandler), this.buildChannelTopic(key));
+            MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(messageReceiveHandler, MessageListenerAdapter.ORIGINAL_DEFAULT_LISTENER_METHOD);
+            redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new ChannelTopic(sseTopic.getKey()));
         }
         return redisMessageListenerContainer;
-    }
-
-    public ChannelTopic buildChannelTopic(String topic) {
-        return new ChannelTopic(topic);
-    }
-
-    public MessageListenerAdapter buildMessageListenerAdapter(MessageReceiveHandler messageReceiveHandler) {
-        return new MessageListenerAdapter(messageReceiveHandler, MessageListenerAdapter.ORIGINAL_DEFAULT_LISTENER_METHOD);
     }
 }

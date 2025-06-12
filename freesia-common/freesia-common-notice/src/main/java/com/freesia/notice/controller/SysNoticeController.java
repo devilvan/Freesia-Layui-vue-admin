@@ -6,6 +6,9 @@ import com.freesia.notice.service.SysNoticeService;
 import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.sse.component.SseEmitterManager;
+import com.freesia.sse.constant.SseTopic;
+import com.freesia.sse.dto.SseMessageDto;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.vo.R;
@@ -14,8 +17,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Evad.Wu
@@ -28,6 +34,8 @@ import java.util.List;
 @Tag(name = "SysNoticeController", description = "消息公告表 控制器")
 public class SysNoticeController extends BaseController {
     private final SysNoticeService sysNoticeService;
+    private final SseEmitterManager sseEmitterManager;
+    private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
     /**
      * 保存消息公告表信息
@@ -44,6 +52,12 @@ public class SysNoticeController extends BaseController {
             sysNoticeDto.setEffectiveTimeFrom(effectiveTime[0]);
             sysNoticeDto.setEffectiveTimeTo(effectiveTime[1]);
         }
+        scheduledThreadPoolExecutor.schedule(() -> {
+            SseMessageDto sseMessageDto = new SseMessageDto();
+            sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
+            sseMessageDto.setContent(sysNoticeDto.getContent());
+            sseEmitterManager.publishAll(sseMessageDto);
+        }, 5, TimeUnit.SECONDS);
         sysNoticeService.saveUpdate(sysNoticeDto);
         return R.ok();
     }

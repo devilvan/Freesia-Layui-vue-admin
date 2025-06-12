@@ -13,19 +13,13 @@ import com.freesia.po.BasePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
-import com.freesia.sse.component.SseEmitterManager;
-import com.freesia.sse.constant.SseTopic;
-import com.freesia.sse.dto.SseMessageDto;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Evad.Wu
@@ -36,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNoticePo> implements SysNoticeService {
     private final SysNoticeRepository sysNoticeRepository;
-    private final SseEmitterManager sseEmitterManager;
-    private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private final SysNoticeMapper sysNoticeMapper;
 
     @Override
@@ -45,12 +37,6 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
         SysNoticePo sysNoticePo = UCopy.copyDto2Po(sysNoticeDto, SysNoticePo.class);
         sysNoticePo.setPublisherId(USecurity.getUserId());
         SysNoticePo po = sysNoticeRepository.saveAndFlush(sysNoticePo);
-        scheduledThreadPoolExecutor.schedule(() -> {
-            SseMessageDto sseMessageDto = new SseMessageDto();
-            sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
-            sseMessageDto.setContent(sysNoticeDto.getContent());
-            sseEmitterManager.publishAll(sseMessageDto);
-        }, 5, TimeUnit.SECONDS);
         return UCopy.copyPo2Dto(po, SysNoticeDto.class);
     }
 
