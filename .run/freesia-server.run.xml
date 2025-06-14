@@ -1,0 +1,57 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="freesia-server" type="docker-deploy" factoryName="dockerfile" server-name="freesia">
+    <deployment type="dockerfile">
+      <settings>
+        <option name="imageTag" value="freesia-server:latest" />
+        <option name="containerName" value="freesia-server" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="JAVA_OPTS" />
+              <option name="value" value="-Xmx512m -Xms256m -Xlog:gc:/var/log/gc.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/dump/heapdump.bin --add-opens java.base/java.lang.invoke=ALL-UNNAMED" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="SPRING_CONFIG_LOCATION" />
+              <option name="value" value="file:/home/freesia/conf/freesia-server/" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="TZ" />
+              <option name="value" value="Asia/Shanghai" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="8570" />
+              <option name="hostPort" value="8570" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
+        <option name="commandLineOptions" value="--network freesia-net --restart=always" />
+        <option name="sourceFilePath" value="freesia-web/freesia-web-app/Dockerfile" />
+        <option name="volumeBindings">
+          <list>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/home/freesia/conf/freesia-server/" />
+              <option name="hostPath" value="/home/freesia/conf/freesia-server" />
+            </DockerVolumeBindingImpl>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/logs" />
+              <option name="hostPath" value="/home/freesia/logs/freesia-server" />
+            </DockerVolumeBindingImpl>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/var/log" />
+              <option name="hostPath" value="/home/freesia/logs/freesia-server/gc" />
+            </DockerVolumeBindingImpl>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/var/dump" />
+              <option name="hostPath" value="/home/freesia/dump/freesia-server" />
+            </DockerVolumeBindingImpl>
+          </list>
+        </option>
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
