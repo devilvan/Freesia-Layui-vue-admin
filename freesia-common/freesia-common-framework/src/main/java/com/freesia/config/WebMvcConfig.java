@@ -108,15 +108,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
         converters.add(0, new StringHttpMessageConverter());
         MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         List<MediaType> mediaTypes = new ArrayList<>();
-        mediaTypes.add(MediaType.APPLICATION_JSON);
-        mediaTypes.add(MediaType.TEXT_HTML);
-        mediaTypes.add(new MediaType("application", "xml"));
-        mediaTypes.add(new MediaType("text", "xml"));
-        mediaTypes.add(new MediaType("application", "*+xml"));
+//        mediaTypes.add(MediaType.APPLICATION_JSON);
+//        mediaTypes.add(MediaType.TEXT_HTML);
+//        mediaTypes.add(new MediaType("application", "xml"));
+//        mediaTypes.add(new MediaType("text", "xml"));
+//        mediaTypes.add(new MediaType("application", "*+xml"));
+//        mediaTypes.add(MediaType.APPLICATION_OCTET_STREAM);
         mediaTypes.add(MediaType.ALL);
         jackson2HttpMessageConverter.setSupportedMediaTypes(mediaTypes);
         jackson2HttpMessageConverter.setObjectMapper(objectMapper);
-        converters.add(1, jackson2HttpMessageConverter);
+        converters.add(0, jackson2HttpMessageConverter);
     }
 
     @Override

@@ -10,7 +10,9 @@ spring:
 spring:
   boot:
     admin:
-#      context-path: /spring-admin
+      #      context-path: /spring-admin
+      ui:
+        brand: "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Fressia Spring Boot Admin</span>"
       client:
         enabled: true
         url: http://localhost:8570
@@ -19,8 +21,14 @@ spring:
           metadata:
             username: ${spring.boot.admin.client.username}
             userpassword: ${spring.boot.admin.client.password}
-        username: @monitor.username@
-        password: @monitor.password@
+        username: ${spring.security.user.name}
+        password: ${spring.security.user.password}
+---
+spring:
+  security:
+    user:
+      name: @monitor.username@
+      password: @monitor.password@
 ---
 management:
   endpoints:

@@ -2,6 +2,7 @@ package com.freesia.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -46,6 +47,8 @@ public class JacksonConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         // 配置 ObjectMapper 忽略未知字段
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         // 设置日期格式
         objectMapper.setDateFormat(new SimpleDateFormat(Constants.YMD_HMS));
         // 设置时区（例如设置为系统默认时区）

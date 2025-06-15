@@ -1,0 +1,62 @@
+package com.freesia.spring.admin.config;
+
+import cn.hutool.core.lang.UUID;
+import de.codecentric.boot.admin.server.config.AdminServerProperties;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.Arrays;
+import java.util.List;
+
+@EnableWebSecurity
+@RequiredArgsConstructor
+@Configuration(proxyBeanMethods = false)
+public class SecurityConfig {
+    private final AdminServerProperties adminServer;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+        successHandler.setTargetUrlParameter("redirectTo");
+        successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
+        // 构建过滤链并返回
+        return http.authorizeRequests(
+                        (authorizeRequests) -> authorizeRequests
+                                .antMatchers(this.adminServer.path("/login")).permitAll()
+                                .antMatchers(this.adminServer.path("/assets/**")).permitAll()
+                                .antMatchers(this.adminServer.path("/actuator/info")).permitAll()
+                                .antMatchers(this.adminServer.path("/actuator/health")).permitAll()
+                                .antMatchers(this.adminServer.path("/applications")).authenticated()
+                                .antMatchers(this.adminServer.path("/instances/**")).authenticated()
+//                                .anyRequest().permitAll()
+                ).formLogin(
+                        (formLogin) -> formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler).and()
+                ).logout((logout) -> {
+                    logout.logoutUrl(this.adminServer.path("/logout"));
+                    logout.logoutSuccessUrl(this.adminServer.path("/login"));
+                }).httpBasic(Customizer.withDefaults())
+                .csrf((csrf) -> {
+                    csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                    List<RequestMatcher> requestMatcherList = Arrays.asList(
+                            new AntPathRequestMatcher(this.adminServer.path("/instances"),
+                                    HttpMethod.POST.toString()),
+                            new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
+                                    HttpMethod.DELETE.toString())
+                    );
+                    csrf.ignoringRequestMatchers(requestMatcherList.toArray(RequestMatcher[]::new));
+                })
+                .rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(3600))
+                .build();
+    }
+}
+
