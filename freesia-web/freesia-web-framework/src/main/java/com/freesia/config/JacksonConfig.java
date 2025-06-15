@@ -16,7 +16,9 @@ import com.freesia.desensization.handler.DesensitizeSerializer;
 import com.freesia.oss.annotation.Domain;
 import com.freesia.oss.seder.DomainSerializer;
 import com.freesia.serde.JacksonDateDeserializer;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
+import de.codecentric.boot.admin.server.utils.jackson.RegistrationDeserializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -63,6 +65,7 @@ public class JacksonConfig {
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dtf));
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dtf));
         module.addDeserializer(Date.class, new JacksonDateDeserializer());
+        module.addDeserializer(Registration.class, new RegistrationDeserializer());
         objectMapper.registerModules(module, new JavaTimeModule());
         if (adminServerModule != null) {
             objectMapper.registerModules(adminServerModule);

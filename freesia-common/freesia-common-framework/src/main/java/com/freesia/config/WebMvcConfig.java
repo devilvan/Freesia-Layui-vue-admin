@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
@@ -105,16 +104,24 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // 将String转换器放在前面
-        converters.add(0, new StringHttpMessageConverter());
         MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         List<MediaType> mediaTypes = new ArrayList<>();
-//        mediaTypes.add(MediaType.APPLICATION_JSON);
-//        mediaTypes.add(MediaType.TEXT_HTML);
-//        mediaTypes.add(new MediaType("application", "xml"));
-//        mediaTypes.add(new MediaType("text", "xml"));
-//        mediaTypes.add(new MediaType("application", "*+xml"));
-//        mediaTypes.add(MediaType.APPLICATION_OCTET_STREAM);
-        mediaTypes.add(MediaType.ALL);
+        mediaTypes.add(MediaType.APPLICATION_JSON);
+        mediaTypes.add(MediaType.APPLICATION_ATOM_XML);
+        mediaTypes.add(MediaType.APPLICATION_FORM_URLENCODED);
+        mediaTypes.add(MediaType.APPLICATION_OCTET_STREAM);
+        mediaTypes.add(MediaType.APPLICATION_PDF);
+        mediaTypes.add(MediaType.APPLICATION_RSS_XML);
+        mediaTypes.add(MediaType.APPLICATION_XHTML_XML);
+        mediaTypes.add(MediaType.APPLICATION_XML);
+        mediaTypes.add(MediaType.IMAGE_GIF);
+        mediaTypes.add(MediaType.IMAGE_JPEG);
+        mediaTypes.add(MediaType.IMAGE_PNG);
+        mediaTypes.add(MediaType.TEXT_EVENT_STREAM);
+        mediaTypes.add(MediaType.TEXT_HTML);
+        mediaTypes.add(MediaType.TEXT_MARKDOWN);
+        mediaTypes.add(MediaType.TEXT_PLAIN);
+        mediaTypes.add(MediaType.TEXT_XML);
         jackson2HttpMessageConverter.setSupportedMediaTypes(mediaTypes);
         jackson2HttpMessageConverter.setObjectMapper(objectMapper);
         converters.add(0, jackson2HttpMessageConverter);

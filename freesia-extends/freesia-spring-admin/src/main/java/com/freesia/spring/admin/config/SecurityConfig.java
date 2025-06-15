@@ -30,21 +30,26 @@ public class SecurityConfig {
         successHandler.setTargetUrlParameter("redirectTo");
         successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
         // 构建过滤链并返回
-        return http.authorizeRequests(
-                        (authorizeRequests) -> authorizeRequests
-                                .antMatchers(this.adminServer.path("/login")).permitAll()
-                                .antMatchers(this.adminServer.path("/assets/**")).permitAll()
-                                .antMatchers(this.adminServer.path("/actuator/info")).permitAll()
-                                .antMatchers(this.adminServer.path("/actuator/health")).permitAll()
-                                .antMatchers(this.adminServer.path("/applications")).authenticated()
-                                .antMatchers(this.adminServer.path("/instances/**")).authenticated()
+        return http.authorizeRequests((authorizeRequests) -> {
+                            authorizeRequests
+                                    .antMatchers(this.adminServer.path("/login")).permitAll()
+                                    .antMatchers(this.adminServer.path("/assets/**")).permitAll()
+                                    .antMatchers(this.adminServer.path("/actuator/info")).permitAll()
+                                    .antMatchers(this.adminServer.path("/actuator/health")).permitAll()
+                                    .antMatchers(this.adminServer.path("/actuator/heapdump")).permitAll()
+                                    .antMatchers(this.adminServer.path("/applications")).authenticated()
+                                    .antMatchers(this.adminServer.path("/instances/**")).authenticated();
 //                                .anyRequest().permitAll()
-                ).formLogin(
-                        (formLogin) -> formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler).and()
-                ).logout((logout) -> {
+                        }
+                )
+                .formLogin((formLogin) -> {
+                    formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler);
+                })
+                .logout((logout) -> {
                     logout.logoutUrl(this.adminServer.path("/logout"));
                     logout.logoutSuccessUrl(this.adminServer.path("/login"));
-                }).httpBasic(Customizer.withDefaults())
+                })
+                .httpBasic(Customizer.withDefaults())
                 .csrf((csrf) -> {
                     csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                     List<RequestMatcher> requestMatcherList = Arrays.asList(
@@ -55,7 +60,9 @@ public class SecurityConfig {
                     );
                     csrf.ignoringRequestMatchers(requestMatcherList.toArray(RequestMatcher[]::new));
                 })
-                .rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(3600))
+                .rememberMe((rememberMe) -> {
+                    rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(3600);
+                })
                 .build();
     }
 }
