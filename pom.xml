@@ -260,17 +260,12 @@
                 <version>${bcprov-jdk15to18.version}</version>
             </dependency>
             <!-- Lock4j-->
-<!--            <dependency>-->
-<!--                <groupId>com.baomidou</groupId>-->
-<!--                <artifactId>lock4j-redisson-spring-boot-starter</artifactId>-->
-<!--                <version>${lock4j-redisson.version}</version>-->
-<!--            </dependency>-->
-            <!-- 邮件模块-->
             <dependency>
-                <groupId>com.sun.mail</groupId>
-                <artifactId>javax.mail</artifactId>
-                <version>${javax.mail.version}</version>
+                <groupId>com.baomidou</groupId>
+                <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
+                <version>${lock4j-redisson.version}</version>
             </dependency>
+            <!-- 邮件模块-->
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-server</artifactId>

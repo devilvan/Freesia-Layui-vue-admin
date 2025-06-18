@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,13 +33,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private ObjectMapper objectMapper;
     @Resource
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
-
-    @Bean
-    public HttpMessageConverter<?> jacksonMessageConverter() {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setDefaultCharset(StandardCharsets.UTF_8);
-        return converter;
-    }
 
     /**
      * 项目资源注册器
@@ -89,42 +80,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return new CorsFilter(source);
     }
 
-//    /**
-//     * Fastjson 处理前端或请求工具导致Long类型数据丢精度问题
-//     *
-//     * @param converters Http消息转换器
-//     * @return 响应报文转换器
-//     */
-//    @Bean
-//    public HttpMessageConverters fastjsonHttpMessageConverter(List<HttpMessageConverter<?>> converters) {
-////        converters.add(fastJsonHttpMessageConverter);
-//        return new HttpMessageConverters(converters);
-//    }
-
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // 将String转换器放在前面
         MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        List<MediaType> mediaTypes = new ArrayList<>();
-        mediaTypes.add(MediaType.APPLICATION_JSON);
-        mediaTypes.add(MediaType.APPLICATION_ATOM_XML);
-        mediaTypes.add(MediaType.APPLICATION_FORM_URLENCODED);
-        mediaTypes.add(MediaType.APPLICATION_OCTET_STREAM);
-        mediaTypes.add(MediaType.APPLICATION_PDF);
-        mediaTypes.add(MediaType.APPLICATION_RSS_XML);
-        mediaTypes.add(MediaType.APPLICATION_XHTML_XML);
-        mediaTypes.add(MediaType.APPLICATION_XML);
-        mediaTypes.add(MediaType.IMAGE_GIF);
-        mediaTypes.add(MediaType.IMAGE_JPEG);
-        mediaTypes.add(MediaType.IMAGE_PNG);
-        mediaTypes.add(MediaType.TEXT_EVENT_STREAM);
-        mediaTypes.add(MediaType.TEXT_HTML);
-        mediaTypes.add(MediaType.TEXT_MARKDOWN);
-        mediaTypes.add(MediaType.TEXT_PLAIN);
-        mediaTypes.add(MediaType.TEXT_XML);
-        jackson2HttpMessageConverter.setSupportedMediaTypes(mediaTypes);
+        jackson2HttpMessageConverter.setDefaultCharset(StandardCharsets.UTF_8);
         jackson2HttpMessageConverter.setObjectMapper(objectMapper);
-        converters.add(0, jackson2HttpMessageConverter);
+        converters.add(jackson2HttpMessageConverter);
     }
 
     @Override

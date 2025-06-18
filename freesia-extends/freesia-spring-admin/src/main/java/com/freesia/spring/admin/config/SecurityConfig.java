@@ -5,18 +5,12 @@ import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import java.util.Arrays;
-import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -38,8 +32,8 @@ public class SecurityConfig {
                                     .antMatchers(this.adminServer.path("/actuator/health")).permitAll()
                                     .antMatchers(this.adminServer.path("/actuator/heapdump")).permitAll()
                                     .antMatchers(this.adminServer.path("/applications")).authenticated()
-                                    .antMatchers(this.adminServer.path("/instances/**")).authenticated();
-//                                .anyRequest().permitAll()
+                                    .antMatchers(this.adminServer.path("/instances/**")).authenticated()
+                                    .anyRequest().permitAll();
                         }
                 )
                 .formLogin((formLogin) -> {
@@ -50,16 +44,7 @@ public class SecurityConfig {
                     logout.logoutSuccessUrl(this.adminServer.path("/login"));
                 })
                 .httpBasic(Customizer.withDefaults())
-                .csrf((csrf) -> {
-                    csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                    List<RequestMatcher> requestMatcherList = Arrays.asList(
-                            new AntPathRequestMatcher(this.adminServer.path("/instances"),
-                                    HttpMethod.POST.toString()),
-                            new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
-                                    HttpMethod.DELETE.toString())
-                    );
-                    csrf.ignoringRequestMatchers(requestMatcherList.toArray(RequestMatcher[]::new));
-                })
+                .csrf(AbstractHttpConfigurer::disable)
                 .rememberMe((rememberMe) -> {
                     rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(3600);
                 })

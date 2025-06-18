@@ -56,7 +56,7 @@ public class JacksonConfig {
         // 设置时区（例如设置为系统默认时区）
         objectMapper.setTimeZone(TimeZone.getDefault());
         // 注册spring-admin服务端Module
-        SimpleModule module = new SimpleModule();
+        SimpleModule module = new JavaTimeModule();
         // 解决Long精度丢失问题
         module.addSerializer(BigInteger.class, ToStringSerializer.instance);
         module.addSerializer(Long.class, ToStringSerializer.instance);
@@ -66,10 +66,7 @@ public class JacksonConfig {
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dtf));
         module.addDeserializer(Date.class, new JacksonDateDeserializer());
         module.addDeserializer(Registration.class, new RegistrationDeserializer());
-        objectMapper.registerModules(module, new JavaTimeModule());
-        if (adminServerModule != null) {
-            objectMapper.registerModules(adminServerModule);
-        }
+        objectMapper.registerModules(module, adminServerModule);
         // 添加自定义序列化过滤器
         objectMapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
             @Override
