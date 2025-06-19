@@ -26,13 +26,10 @@ public class SecurityConfig {
         // 构建过滤链并返回
         return http.authorizeRequests((authorizeRequests) -> {
                             authorizeRequests
-                                    .antMatchers(this.adminServer.path("/login")).permitAll()
-                                    .antMatchers(this.adminServer.path("/assets/**")).permitAll()
-                                    .antMatchers(this.adminServer.path("/actuator/info")).permitAll()
-                                    .antMatchers(this.adminServer.path("/actuator/health")).permitAll()
-                                    .antMatchers(this.adminServer.path("/actuator/heapdump")).permitAll()
                                     .antMatchers(this.adminServer.path("/applications")).authenticated()
                                     .antMatchers(this.adminServer.path("/instances/**")).authenticated()
+                                    .antMatchers(this.adminServer.path("/instances/**")).authenticated()
+                                    .antMatchers(this.adminServer.path("/swagger-ui/**")).authenticated()
                                     .anyRequest().permitAll();
                         }
                 )
