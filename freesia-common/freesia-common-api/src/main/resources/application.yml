@@ -29,7 +29,7 @@ spring:
       # 最大连接池数量
       max-active: 20
       # 配置检测连接是否有效
-      validation-query: SELECT 1 FROM DUAL
+      validation-query: SELECT 1
       test-while-idle: true
       test-on-borrow: false
       test-on-return: false
