@@ -1,6 +1,6 @@
 <template>
   <lay-table
-      :page="page"
+      :page="pageQuery"
       :columns="columns"
       :loading="loading"
       :default-toolbar="true"
@@ -44,7 +44,7 @@
             </lay-form-item>
           </lay-row>
           <lay-row>
-            <lay-form-item label="通知类型" required>
+            <lay-form-item label="通知类型" prop="type" required>
               <lay-select
                   style="width: 100%"
                   size="sm"
@@ -57,15 +57,23 @@
             </lay-form-item>
           </lay-row>
           <lay-row>
-            <lay-form-item label="生效时间">
-              <lay-date-picker style="width: 100%" v-model="saveVo.effectiveTime" allow-clear range
-                               :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
-                               :shortcuts="defaultShortcuts" simple
-                               :default-time="dateRangeDefaultTime"></lay-date-picker>
+            <lay-form-item label="生效时间从">
+              <lay-date-picker style="width: 100%" v-model="saveVo.effectiveTimeFrom" allow-clear
+                               type="date" simple
+                               :shortcuts="singleShortcuts"
+                               :default-time="dateRangeDefaultTime[0]"></lay-date-picker>
             </lay-form-item>
           </lay-row>
           <lay-row>
-            <lay-form-item label="内容" prop="content">
+            <lay-form-item label="生效时间到">
+              <lay-date-picker style="width: 100%" v-model="saveVo.effectiveTimeTo" allow-clear
+                               :type="'date'" simple
+                               :shortcuts="singleShortcuts"
+                               :defaultTime="dateRangeDefaultTime[1]"></lay-date-picker>
+            </lay-form-item>
+          </lay-row>
+          <lay-row>
+            <lay-form-item label="内容" prop="content" required>
               <lay-textarea v-model="saveVo.content" :allow-clear="true" show-count
                             :maxlength="127"></lay-textarea>
             </lay-form-item>
@@ -95,10 +103,12 @@ import {deleteSysNotice, findPageSysNotice, findSysNotice, saveUpdate} from "@/a
 import {SysNoticeEntity, SysNoticeVo} from "@/types/system/Notice";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {defaultShortcuts} from "@/util/UDate";
+import {defaultShortcuts, singleShortcuts} from "@/util/UDate";
 import {R, TableResult} from "@/types/Result";
 import {PageQuery} from "@/types/Common";
 import {deleteAccountCost, findAccountCost} from "@/api/account/Account";
+import {IconTreeType} from "@/types/common/icon/template/IconTemplateDetail";
+import {saveUpdateBatch} from "@/api/common/icon/template/IconTemplateDetail";
 
 /*INIT*/
 onMounted(async () => {
@@ -128,6 +138,7 @@ const columns = ref([
   {title: '标题', width: '80px', key: 'title'},
   {title: '内容', width: '260px', key: 'content'},
   {title: '生效时间', width: '120px', key: 'effectiveTime', customSlot: 'effectiveTime'},
+  {title: '发布人', width: '100px', key: 'publisherName'},
   {title: '发布时间', width: '60px', key: 'createTime'},
   {
     title: '操作',
@@ -144,8 +155,11 @@ const searchQuery = ref<SysNoticeVo>({});
 const saveVo = ref<SysNoticeVo>({});
 const sysNoticeTypeSelect = ref<Array<SysDictValueEntity>>();
 const sysNoticeTypeSelectList = ref<any[]>();
-const sdf_YMDHMS = 'YYYY-MM-DD HH:mm:ss'
+const sdf_ymdhms = 'YYYY-MM-DD HH:mm:ss'
+// const sdf_000000 = 'YYYY-MM-DD 00:00:00'
+// const sdf_235959 = 'YYYY-MM-DD 23:59:59'
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
+const saveGroupFormRef = ref()
 /*VAR*/
 
 /*FUNCTION*/
@@ -219,15 +233,21 @@ function showSaveModal(o: Operate, row: any) {
       saveVo.value.effectiveTime = [data?.effectiveTimeFrom, data?.effectiveTimeTo]
     })
   } else if (Operate.ADD === o) {
+    saveVo.value = {}
   }
   saveModalFlag.value = true
 }
 
 function toSave() {
-  saveUpdate(saveVo.value).then((res: R<void>) => {
-    closeSaveModal();
-    change();
+  saveGroupFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      saveUpdate(saveVo.value).then((res: R<void>) => {
+        closeSaveModal();
+        change();
+      })
+    }
   })
+
 }
 
 function closeSaveModal() {

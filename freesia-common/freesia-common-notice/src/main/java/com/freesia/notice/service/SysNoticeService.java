@@ -1,5 +1,6 @@
 package com.freesia.notice.service;
 
+import com.freesia.notice.FindPageSysNoticeEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.notice.dto.SysNoticeDto;
@@ -35,7 +36,7 @@ public interface SysNoticeService {
      * @param pageQuery    分页条件
      * @return 分页信息
      */
-    TableResult<SysNoticeDto> findPageSysNotice(SysNoticeDto sysNoticeDto, PageQuery pageQuery);
+    TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeDto sysNoticeDto, PageQuery pageQuery);
 
     /**
      * 条件查询消息公告表信息

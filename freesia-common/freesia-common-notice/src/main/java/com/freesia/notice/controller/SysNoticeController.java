@@ -1,6 +1,7 @@
 package com.freesia.notice.controller;
 
 import com.freesia.controller.BaseController;
+import com.freesia.notice.FindPageSysNoticeEntity;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.service.SysNoticeService;
 import com.freesia.notice.vo.SysNoticeVo;
@@ -9,6 +10,7 @@ import com.freesia.pojo.TableResult;
 import com.freesia.sse.component.SseEmitterManager;
 import com.freesia.sse.constant.SseTopic;
 import com.freesia.sse.dto.SseMessageDto;
+import com.freesia.util.UCalendar;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.vo.R;
@@ -17,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -46,12 +49,33 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "保存消息公告表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysNoticeVo sysNoticeVo) {
-        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
-        Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
-        if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
-            sysNoticeDto.setEffectiveTimeFrom(effectiveTime[0]);
-            sysNoticeDto.setEffectiveTimeTo(effectiveTime[1]);
+        Date effectiveTimeFrom = sysNoticeVo.getEffectiveTimeFrom();
+        Date effectiveTimeTo = sysNoticeVo.getEffectiveTimeTo();
+        // 生效时间从 -> 生效时间到
+        Calendar calendar = UCalendar.getInstance();
+        if (effectiveTimeFrom != null && effectiveTimeTo != null) {
+            calendar.setTime(effectiveTimeFrom);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            sysNoticeVo.setEffectiveTimeFrom(calendar.getTime());
+            calendar.setTime(effectiveTimeTo);
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND, 999);
+            sysNoticeVo.setEffectiveTimeTo(calendar.getTime());
+        } else if (effectiveTimeFrom != null) {
+            // 生效时间从 -> 长期
+            calendar.setTime(effectiveTimeFrom);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            sysNoticeVo.setEffectiveTimeFrom(calendar.getTime());
         }
+        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
         scheduledThreadPoolExecutor.schedule(() -> {
             SseMessageDto sseMessageDto = new SseMessageDto();
             sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
@@ -85,7 +109,7 @@ public class SysNoticeController extends BaseController {
      */
     @Operation(summary = "查询消息公告表分页信息")
     @GetMapping(value = "findPageSysNotice")
-    public TableResult<SysNoticeDto> findPageSysNotice(SysNoticeVo sysNoticeVo, PageQuery pageQuery) {
+    public TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeVo sysNoticeVo, PageQuery pageQuery) {
         SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
         Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
         if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {

@@ -7,9 +7,62 @@
                CONTENT
         FROM sys_notice
         WHERE 1 = 1
-            AND LOGIC_DEL = 0
-            AND TYPE = 'ANNOUNCEMENT'
-            AND (EFFECTIVE_TIME_FROM IS NULL AND EFFECTIVE_TIME_TO IS NULL)
-           OR (NOW() BETWEEN EFFECTIVE_TIME_FROM AND EFFECTIVE_TIME_TO)
+          AND LOGIC_DEL = 0
+          AND TYPE = 'ANNOUNCEMENT'
+          AND EFFECTIVE_TIME_FROM IS NULL
+          AND EFFECTIVE_TIME_TO IS NULL
+
+        union all
+
+        SELECT ID,
+               REC_VER,
+               CONTENT
+        FROM sys_notice
+        WHERE 1 = 1
+          AND LOGIC_DEL = 0
+          AND TYPE = 'ANNOUNCEMENT'
+          AND EFFECTIVE_TIME_FROM IS NOT NULL
+          AND EFFECTIVE_TIME_TO IS NOT NULL
+          and NOW() BETWEEN EFFECTIVE_TIME_FROM AND EFFECTIVE_TIME_TO
+
+        UNION ALL
+
+        SELECT ID,
+               REC_VER,
+               CONTENT
+        FROM sys_notice
+        WHERE 1 = 1
+          AND LOGIC_DEL = 0
+          AND TYPE = 'ANNOUNCEMENT'
+          and EFFECTIVE_TIME_FROM IS NOT NULL
+          AND EFFECTIVE_TIME_TO IS NULL
+          AND NOW() <![CDATA[>=]]> EFFECTIVE_TIME_FROM
+    </select>
+    <select id="findPageSysNotice" resultType="com.freesia.notice.FindPageSysNoticeEntity">
+        SELECT SN.ID,
+        SN.CREATOR,
+        SN.CREATE_TIME,
+        SN.MODIFIER,
+        SN.MODIFY_TIME,
+        SN.LOGIC_DEL,
+        SN.REC_VER,
+        SN.BUILD_IN,
+        SN.TENANT_ID,
+        SN.TITLE,
+        SN.TYPE,
+        SN.EFFECTIVE_TIME_FROM,
+        SN.EFFECTIVE_TIME_TO,
+        SN.CONTENT,
+        SN.PUBLISHER_ID,
+        SN.REMARK,
+        SU.NICK_NAME AS PUBLISHER_NAME
+        FROM sys_notice sn
+        LEFT JOIN sys_user su on su.id = sn.PUBLISHER_ID
+        WHERE 1 = 1
+        AND SN.LOGIC_DEL = 0
+        <if test="sysNoticeDto.id != null and sysNoticeDto.id != 0">
+            AND SN.ID = #{sysNoticeDto.id}
+        </if>
+        order by SN.ID desc
     </select>
 </mapper>

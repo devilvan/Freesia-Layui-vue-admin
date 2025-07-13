@@ -27,9 +27,15 @@ public class SysNoticeVo extends BaseVo {
     @Schema(description = "通知类型（SYS_NOTICE_TYPE）")
     @JsonAlias(value = {"type"})
     private String type;
-    @Schema(description = "生效时间从")
+    @Schema(description = "生效时间")
     @JsonAlias(value = {"effectiveTime"})
     private Date[] effectiveTime;
+    @Schema(description = "生效时间从")
+    @JsonAlias(value = {"effectiveTimeFrom"})
+    private Date effectiveTimeFrom;
+    @Schema(description = "生效时间到")
+    @JsonAlias(value = {"effectiveTimeTo"})
+    private Date effectiveTimeTo;
     @Schema(description = "内容")
     @JsonAlias(value = {"content"})
     private String content;

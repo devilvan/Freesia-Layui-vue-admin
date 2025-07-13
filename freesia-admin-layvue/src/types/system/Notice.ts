@@ -3,7 +3,8 @@ import {BaseEntity, BaseVo} from "@/types/Common";
 export interface SysNoticeVo extends BaseVo {
     title?: string;
     type?: string;
-    effectiveTime?: string;
+    effectiveTimeFrom?: string;
+    effectiveTimeTo?: string;
     content?: string;
     publisherId?: string;
     remark?: string;

@@ -4,12 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
+import com.freesia.notice.FindPageSysNoticeEntity;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.mapper.SysNoticeMapper;
 import com.freesia.notice.po.SysNoticePo;
 import com.freesia.notice.repository.SysNoticeRepository;
 import com.freesia.notice.service.SysNoticeService;
-import com.freesia.po.BasePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
@@ -47,13 +47,9 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
     }
 
     @Override
-    public TableResult<SysNoticeDto> findPageSysNotice(SysNoticeDto sysNoticeDto, PageQuery pageQuery) {
-        LambdaQueryWrapper<SysNoticePo> wrapper = new LambdaQueryWrapper<SysNoticePo>()
-                .eq(SysNoticePo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysNoticeDto.getId()), SysNoticePo::getId, sysNoticeDto.getId())
-                .orderByDesc(BasePo::getId);
-        Page<SysNoticePo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysNoticeDto.class));
+    public TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeDto sysNoticeDto, PageQuery pageQuery) {
+        Page<FindPageSysNoticeEntity> pagePo = sysNoticeMapper.findPageSysNotice(sysNoticeDto, pageQuery.build());
+        return TableResult.build(UCopy.convertPageEntity2Dto(pagePo, FindPageSysNoticeEntity.class));
     }
 
     @Override
