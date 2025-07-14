@@ -4,8 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
-import com.freesia.notice.FindPageSysNoticeEntity;
+import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.dto.SysNoticeDto;
+import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
 import com.freesia.notice.mapper.SysNoticeMapper;
 import com.freesia.notice.po.SysNoticePo;
 import com.freesia.notice.repository.SysNoticeRepository;
@@ -67,8 +68,14 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
     }
 
     @Override
-    public List<SysNoticeDto> findPublishedAnnouncement() {
-        List<SysNoticePo> sysNoticePoList = sysNoticeMapper.findPublishedAnnouncement();
-        return UCopy.fullCopyList(sysNoticePoList, SysNoticeDto.class);
+    public List<FindPublishedAnnouncementEntity> findPublishedAnnouncement() {
+        List<FindPublishedAnnouncementEntity> findPublishedAnnouncementEntityList = sysNoticeMapper.findPublishedAnnouncement();
+        for (FindPublishedAnnouncementEntity entity : findPublishedAnnouncementEntityList) {
+            String content = entity.getContent();
+            if (UEmpty.isNotEmpty(content)) {
+                entity.setContent("【" + entity.getTypeName() + "】" +content);
+            }
+        }
+        return findPublishedAnnouncementEntityList;
     }
 }

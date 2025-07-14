@@ -1,8 +1,9 @@
 package com.freesia.notice.controller;
 
 import com.freesia.controller.BaseController;
-import com.freesia.notice.FindPageSysNoticeEntity;
+import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.dto.SysNoticeDto;
+import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
 import com.freesia.notice.service.SysNoticeService;
 import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
@@ -140,8 +141,8 @@ public class SysNoticeController extends BaseController {
      */
     @Operation(summary = "查询已发布的公告")
     @GetMapping(value = "findPublishedAnnouncement")
-    public R<List<SysNoticeDto>> findPublishedAnnouncement() {
-        List<SysNoticeDto> sysNoticeDtoList = sysNoticeService.findPublishedAnnouncement();
+    public R<List<FindPublishedAnnouncementEntity>> findPublishedAnnouncement() {
+        List<FindPublishedAnnouncementEntity> sysNoticeDtoList = sysNoticeService.findPublishedAnnouncement();
         return R.ok(sysNoticeDtoList);
     }
 

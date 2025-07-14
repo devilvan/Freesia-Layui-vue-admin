@@ -1,45 +1,53 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.notice.mapper.SysNoticeMapper">
-    <select id="findPublishedAnnouncement" resultType="com.freesia.notice.po.SysNoticePo">
-        SELECT ID,
-               REC_VER,
-               CONTENT
-        FROM sys_notice
+    <select id="findPublishedAnnouncement" resultType="com.freesia.notice.entity.FindPublishedAnnouncementEntity">
+        SELECT SN.ID,
+               SN.REC_VER,
+               SN.CONTENT,
+               SDV.VALUE_NAME AS TYPE_NAME
+        FROM sys_notice sn
+                 LEFT JOIN sys_dict_value sdv on sdv.DICT_KEY = 'SYS_NOTICE_TYPE' AND SDV.VALUE = SN.TYPE
+
         WHERE 1 = 1
-          AND LOGIC_DEL = 0
-          AND TYPE = 'ANNOUNCEMENT'
-          AND EFFECTIVE_TIME_FROM IS NULL
-          AND EFFECTIVE_TIME_TO IS NULL
+          AND SN.LOGIC_DEL = 0
+          AND SN.TYPE = 'ANNOUNCEMENT'
+          AND SN.EFFECTIVE_TIME_FROM IS NULL
+          AND SN.EFFECTIVE_TIME_TO IS NULL
 
         union all
 
-        SELECT ID,
-               REC_VER,
-               CONTENT
-        FROM sys_notice
+        SELECT SN.ID,
+               SN.REC_VER,
+               SN.CONTENT,
+               SDV.VALUE_NAME AS TYPE_NAME
+        FROM sys_notice SN
+                 LEFT JOIN sys_dict_value sdv on sdv.DICT_KEY = 'SYS_NOTICE_TYPE' AND SDV.VALUE = SN.TYPE
         WHERE 1 = 1
-          AND LOGIC_DEL = 0
-          AND TYPE = 'ANNOUNCEMENT'
-          AND EFFECTIVE_TIME_FROM IS NOT NULL
-          AND EFFECTIVE_TIME_TO IS NOT NULL
-          and NOW() BETWEEN EFFECTIVE_TIME_FROM AND EFFECTIVE_TIME_TO
+          AND SN.LOGIC_DEL = 0
+          AND SN.TYPE = 'ANNOUNCEMENT'
+          AND SN.EFFECTIVE_TIME_FROM IS NOT NULL
+          AND SN.EFFECTIVE_TIME_TO IS NOT NULL
+          and NOW() BETWEEN SN.EFFECTIVE_TIME_FROM AND SN.EFFECTIVE_TIME_TO
 
         UNION ALL
 
-        SELECT ID,
-               REC_VER,
-               CONTENT
-        FROM sys_notice
-        WHERE 1 = 1
-          AND LOGIC_DEL = 0
-          AND TYPE = 'ANNOUNCEMENT'
-          and EFFECTIVE_TIME_FROM IS NOT NULL
-          AND EFFECTIVE_TIME_TO IS NULL
-          AND NOW() <![CDATA[>=]]> EFFECTIVE_TIME_FROM
-    </select>
-    <select id="findPageSysNotice" resultType="com.freesia.notice.FindPageSysNoticeEntity">
         SELECT SN.ID,
+               SN.REC_VER,
+               SN.CONTENT,
+               SDV.VALUE_NAME AS TYPE_NAME
+        FROM sys_notice SN
+                 LEFT JOIN sys_dict_value sdv on sdv.DICT_KEY = 'SYS_NOTICE_TYPE' AND SDV.VALUE = SN.TYPE
+        WHERE 1 = 1
+          AND SN.LOGIC_DEL = 0
+          AND SN.TYPE = 'ANNOUNCEMENT'
+          and SN.EFFECTIVE_TIME_FROM IS NOT NULL
+          AND SN.EFFECTIVE_TIME_TO IS NULL
+          AND NOW() <![CDATA[>=]]> SN.EFFECTIVE_TIME_FROM
+    </select>
+    <select id="findPageSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
+        SELECT
+        SN.ID,
         SN.CREATOR,
         SN.CREATE_TIME,
         SN.MODIFIER,

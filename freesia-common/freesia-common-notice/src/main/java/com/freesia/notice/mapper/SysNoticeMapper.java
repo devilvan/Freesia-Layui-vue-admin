@@ -3,8 +3,9 @@ package com.freesia.notice.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.freesia.notice.FindPageSysNoticeEntity;
+import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.dto.SysNoticeDto;
+import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
 import com.freesia.notice.po.SysNoticePo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -23,7 +24,7 @@ public interface SysNoticeMapper extends BaseMapper<SysNoticePo> {
      *
      * @return 公告集合
      */
-    List<SysNoticePo> findPublishedAnnouncement();
+    List<FindPublishedAnnouncementEntity> findPublishedAnnouncement();
 
     /**
      * 查询消息公告表信息
