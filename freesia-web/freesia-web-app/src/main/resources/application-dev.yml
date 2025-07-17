@@ -10,11 +10,13 @@ spring:
 spring:
   boot:
     admin:
+      server:
+        enabled: true
       #      context-path: /spring-admin
       ui:
         brand: "<img src=\"assets/img/icon-spring-boot-admin.svg\"><span>Fressia Spring Boot Admin</span>"
       client:
-        enabled: true
+        enabled: false
         url: http://localhost:8570
         instance:
           service-host-type: IP

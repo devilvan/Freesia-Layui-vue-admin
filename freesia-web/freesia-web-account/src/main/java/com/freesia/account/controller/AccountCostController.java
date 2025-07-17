@@ -8,15 +8,12 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.constant.MenuPermission;
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.entity.AccountCostExportEntity;
-import com.freesia.account.entity.AccountCostImportEntity;
-import com.freesia.account.entity.FindAccountCostEntity;
-import com.freesia.account.entity.FindPageAccountCostEntity;
+import com.freesia.account.entity.*;
 import com.freesia.account.listener.AccountsImportListener;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.vo.AccountCostVo;
 import com.freesia.account.vo.FindCostLineChartVo;
-import com.freesia.account.vo.FindCostSumCalendarNeaerYearVo;
+import com.freesia.account.vo.FindCostSumCalendarNearYearVo;
 import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
 import com.freesia.entity.EchartCalendarOptionEntity;
@@ -48,7 +45,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -284,11 +284,10 @@ public class AccountCostController extends BaseController {
     @Validated
     @Operation(summary = "日历-查询近一年支出")
     @GetMapping(value = "findCostSumCalendarNearYear")
-    public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNeaerYearVo
-                                                                             findCostSumCalendarNeaerYearVo) {
+    public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNearYearVo findCostSumCalendarNearYearVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostSumCalendarNeaerYearVo, AccountCostDto.class);
+        AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostSumCalendarNearYearVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
         accountCostDto.setTenantId(tenantId);
         Date[] dates = defaultDateRange(365);
@@ -296,6 +295,18 @@ public class AccountCostController extends BaseController {
         accountCostDto.setPaymentTimeTo(dates[1]);
         EchartCalendarOptionEntity echartCalendarOptionEntity = accountCostService.findCostSumCalendarNearYear(accountCostDto);
         return R.ok(echartCalendarOptionEntity);
+    }
+
+    @Operation(summary = "排名-按消费类型排名")
+    @GetMapping(value = "findRankByCostType")
+    public R<FindRankByCostTypeEntity> findRankByCostType(AccountCostVo accountCostVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        accountCostDto.setUserId(userId);
+        accountCostDto.setTenantId(tenantId);
+        FindRankByCostTypeEntity findRankByCostTypeEntity = accountCostService.findRankByCostType(accountCostDto);
+        return R.ok(findRankByCostTypeEntity);
     }
 
 

@@ -16,12 +16,13 @@
         AC.ICON,
         AC.REMARK,
         AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+        AC_SU.NICK_NAME AS AC_NICK_NAME,
         GROUP_CONCAT(SU.ID) AS SU_ID,
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
         LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        LEFT JOIN sys_user AC_SU ON AC.USER_ID = AC_SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCost.userId}
@@ -57,12 +58,13 @@
         AC.ICON,
         AC.REMARK,
         AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+        AC_SU.NICK_NAME AS AC_NICK_NAME,
         GROUP_CONCAT(SU.ID) AS SU_ID,
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
         INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        LEFT JOIN sys_user AC_SU ON AC.USER_ID = AC_SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCost.tenantId}
@@ -101,12 +103,13 @@
         AC.ICON,
         AC.REMARK,
         AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+        AC_SU.NICK_NAME AS AC_NICK_NAME,
         GROUP_CONCAT(SU.ID) AS SU_ID,
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
         LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        LEFT JOIN sys_user AC_SU ON AC.USER_ID = AC_SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCost.userId}
@@ -132,12 +135,13 @@
         AC.ICON,
         AC.REMARK,
         AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
+        AC_SU.NICK_NAME AS AC_NICK_NAME,
         GROUP_CONCAT(SU.ID) AS SU_ID,
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
         LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
         INNER JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        LEFT JOIN sys_user AC_SU ON AC.USER_ID = AC_SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCost.tenantId}
@@ -203,17 +207,8 @@
                T.CREATE_TIME,
                T.PAYMENT_TIME_GROUPING_KEY
         FROM (SELECT AC.COST_DESC,
-                     ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-                                                      WHEN (SELECT COUNT(1)
-                                                            FROM account_cost_user ACU
-                                                            WHERE 1 = 1
-                                                              AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                          1
-                                                      ELSE (SELECT COUNT(1)
-                                                            FROM account_cost_user ACU
-                                                            WHERE 1 = 1
-                                                              AND ACU.COST_ID = AC.ID) END
+                     ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE(
+                             (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0, 1)
                          , 2)                                 AS OUTLAY,
                      AC.COST_TYPE,
                      AC.PAYMENT_SIGN,
@@ -237,17 +232,8 @@
               UNION ALL
 
               SELECT AC.COST_DESC,
-                     ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-                                                      WHEN (SELECT COUNT(1)
-                                                            FROM account_cost_user ACU
-                                                            WHERE 1 = 1
-                                                              AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                          1
-                                                      ELSE (SELECT COUNT(1)
-                                                            FROM account_cost_user ACU
-                                                            WHERE 1 = 1
-                                                              AND ACU.COST_ID = AC.ID) END
+                     ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE(
+                             (SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0, 1)
                          , 2)                                 AS OUTLAY,
                      AC.COST_TYPE,
                      AC.PAYMENT_SIGN,
@@ -281,12 +267,7 @@
         SELECT
         AC.COST_TYPE,
         ROUND(
-        IFNULL( AC.OUTLAY, 0 ) /
-        CASE
-
-        WHEN ( SELECT COUNT( 1 ) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID ) = 0 THEN
-        1 ELSE ( SELECT COUNT( 1 ) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID )
-        END,
+        IFNULL( AC.OUTLAY, 0 ) / COALESCE((SELECT COUNT(1) FROM account_cost_user ACU WHERE 1 = 1 AND ACU.COST_ID = AC.ID) = 0, 1),
         2
         ) AS OUTLAY
         FROM
@@ -348,17 +329,10 @@
         CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
         ) AS X_AXIS
         FROM DateSeries ds
-        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
+        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE((SELECT COUNT(1)
         FROM account_cost_user ACU
         WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user ACU
-        WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) END
+        AND ACU.COST_ID = AC.ID) = 0, 1)
         , 2) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
@@ -375,17 +349,10 @@
         </if>
         GROUP BY AC.ID
         UNION ALL
-        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
+        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE((SELECT COUNT(1)
         FROM account_cost_user ACU
         WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user ACU
-        WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) END
+        AND ACU.COST_ID = AC.ID) = 0, 1)
         , 2) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
@@ -421,14 +388,10 @@
         SELECT DATE_ADD(date, INTERVAL 1 DAY)
         FROM DATESERIES
         WHERE DATE_ADD(date, INTERVAL 1 DAY) <![CDATA[<=]]>
-        CASE
-        WHEN #{accountCostDto.year} = YEAR(CURDATE()) AND
-        #{accountCostDto.month} = MONTH(CURDATE())
-        THEN CURDATE()
-        ELSE LAST_DAY(CONCAT(#{accountCostDto.year}, '-',
+        IF(#{accountCostDto.year} = YEAR(CURDATE()) AND
+        #{accountCostDto.month} = MONTH(CURDATE()), CURDATE(), LAST_DAY(CONCAT(#{accountCostDto.year}, '-',
         LPAD(#{accountCostDto.month}, 2, '0'),
-        '-01'))
-        END)
+        '-01'))))
         SELECT ifnull(SUM(T.OUTLAY), 0) AS OUTLAY,
         ifnull(DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d'), DATE_FORMAT(DS.DATE, '%Y-%m-%d')) AS PAYMENT_TIME,
         IFNULL(
@@ -436,17 +399,10 @@
         CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
         ) AS X_AXIS
         FROM DateSeries ds
-        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
+        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE((SELECT COUNT(1)
         FROM account_cost_user ACU
         WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user ACU
-        WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) END
+        AND ACU.COST_ID = AC.ID) = 0, 1)
         , 2) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
@@ -465,17 +421,10 @@
 
         UNION ALL
 
-        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
+        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE((SELECT COUNT(1)
         FROM account_cost_user ACU
         WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user ACU
-        WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) END
+        AND ACU.COST_ID = AC.ID) = 0, 1)
         , 2) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
@@ -515,17 +464,10 @@
         CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
         ) AS X_AXIS
         FROM DateSeries ds
-        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
+        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE((SELECT COUNT(1)
         FROM account_cost_user ACU
         WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user ACU
-        WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) END
+        AND ACU.COST_ID = AC.ID) = 0, 1)
         , 2) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
@@ -543,17 +485,10 @@
 
         UNION ALL
 
-        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
+        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE((SELECT COUNT(1)
         FROM account_cost_user ACU
         WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user ACU
-        WHERE 1 = 1
-        AND ACU.COST_ID = AC.ID) END
+        AND ACU.COST_ID = AC.ID) = 0, 1)
         , 2) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
@@ -580,17 +515,10 @@
         SELECT SUM(T.OUTLAY) AS OUTLAY,
                T.PAYMENT_TIME,
                T.X_AXIS
-        FROM (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-                                                      WHEN (SELECT COUNT(1)
+        FROM (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE((SELECT COUNT(1)
                                                             FROM account_cost_user ACU
                                                             WHERE 1 = 1
-                                                              AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                          1
-                                                      ELSE (SELECT COUNT(1)
-                                                            FROM account_cost_user ACU
-                                                            WHERE 1 = 1
-                                                              AND ACU.COST_ID = AC.ID) END
+                                                              AND ACU.COST_ID = AC.ID) = 0, 1)
                          , 2)                                 AS OUTLAY,
                      DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
                      DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS X_AXIS
@@ -606,17 +534,10 @@
 
               UNION ALL
 
-              SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-                                                      WHEN (SELECT COUNT(1)
+              SELECT ROUND(IFNULL(AC.OUTLAY, 0) / COALESCE((SELECT COUNT(1)
                                                             FROM account_cost_user ACU
                                                             WHERE 1 = 1
-                                                              AND ACU.COST_ID = AC.ID) = 0 THEN
-                                                          1
-                                                      ELSE (SELECT COUNT(1)
-                                                            FROM account_cost_user ACU
-                                                            WHERE 1 = 1
-                                                              AND ACU.COST_ID = AC.ID) END
+                                                              AND ACU.COST_ID = AC.ID) = 0, 1)
                          , 2)                                 AS OUTLAY,
                      DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
                      DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS X_AXIS
@@ -631,6 +552,29 @@
                 AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
               GROUP BY AC.ID) T
         GROUP BY DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d')
+    </select>
+    <select id="findRankByCostType" resultType="com.freesia.account.entity.FindRankByCostTypeEntity">
+        SELECT T.*, DENSE_RANK() OVER ( PARTITION BY T.COST_TYPE ORDER BY T.OUTLAY ) AS RK
+        FROM (SELECT AC.ID,
+                     AC.CREATE_TIME,
+                     AC.MODIFY_TIME,
+                     AC.LOGIC_DEL,
+                     AC.COST_TYPE,
+                     AC.COST_DESC,
+                     AC.ICON,
+                     dense_rank() over (partition by AC.OUTLAY),
+                     SUM(AC, OUTLAY) AS OUTLAY
+              FROM account_cost AC
+                       LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+                       LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+              WHERE 1 = 1
+                AND AC.LOGIC_DEL = 0
+                AND AC.PAYMENT_SIGN = 'EXPENSES'
+                AND AC.TENANT_ID = #{accountCost.tenantId}
+                AND ACU.USER_ID = #{accountCost.userId}
+                AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
+                AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
+              GROUP BY AC.COST_TYPE) T
     </select>
 
 </mapper>

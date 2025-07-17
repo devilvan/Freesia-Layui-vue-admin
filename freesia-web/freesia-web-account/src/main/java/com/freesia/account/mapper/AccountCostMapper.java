@@ -4,7 +4,6 @@ package com.freesia.account.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.*;
 import com.freesia.account.po.AccountCostPo;
 import org.apache.ibatis.annotations.Mapper;
@@ -83,4 +82,12 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @return 结果集
      */
     FindAccountCostEntity findAccountCost(@Param("accountCost") AccountCostDto accountCost);
+
+    /**
+     * 排名-按消费类型排名
+     *
+     * @param accountCostDto 查询入参
+     * @return 排名数据
+     */
+    FindRankByCostTypeEntity findRankByCostType(@Param("accountCost") AccountCostDto accountCostDto);
 }

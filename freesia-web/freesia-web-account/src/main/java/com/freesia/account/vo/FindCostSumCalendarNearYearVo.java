@@ -10,5 +10,5 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class FindCostSumCalendarNeaerYearVo extends AccountCostVo {
+public class FindCostSumCalendarNearYearVo extends AccountCostVo {
 }

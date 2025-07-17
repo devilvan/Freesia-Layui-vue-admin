@@ -15,4 +15,6 @@ public class BaseEntity {
     private Long id;
     @Schema(description = "版本号")
     private Long recVer;
+    @Schema(description = "逻辑删除")
+    private Boolean logicDel;
 }

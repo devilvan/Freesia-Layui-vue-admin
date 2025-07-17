@@ -1,15 +1,13 @@
 package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.FindAccountCostEntity;
 import com.freesia.account.entity.FindPageAccountCostEntity;
+import com.freesia.account.entity.FindRankByCostTypeEntity;
 import com.freesia.entity.EchartCalendarOptionEntity;
-import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
-import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -92,4 +90,12 @@ public interface AccountCostService {
      * @return 结果集
      */
     EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto);
+
+    /**
+     * 排名-按消费类型排名
+     *
+     * @param accountCostDto 查询入参
+     * @return 排名数据
+     */
+    FindRankByCostTypeEntity findRankByCostType(AccountCostDto accountCostDto);
 }

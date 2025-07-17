@@ -1,5 +1,6 @@
 package com.freesia.account.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -188,7 +189,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             for (FindCostTypeRatePieEntity findCostTypeRatePieEntity : accountCostPoList) {
                 EchartPieOptionEntity.Series tmp = new EchartPieOptionEntity.Series();
                 tmp.setName(findCostTypeRatePieEntity.getCostType());
-                tmp.setValue(findCostTypeRatePieEntity.getOutlay().setScale(2, RoundingMode.HALF_UP).toString());
+                tmp.setValue(Convert.toBigDecimal(findCostTypeRatePieEntity.getOutlay(), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_UP).toString());
                 series.add(tmp);
             }
             echartPieOptionEntity.setSeries(series);
@@ -259,12 +260,18 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         return echartCalendarOptionEntity;
     }
 
+    @Override
+    public FindRankByCostTypeEntity findRankByCostType(AccountCostDto accountCostDto) {
+        return accountCostMapper.findRankByCostType(accountCostDto);
+    }
+
     private EchartCalendarOptionEntity buildEchartCalendarOptionEntity(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList, AccountCostDto accountCostDto) {
         EchartCalendarOptionEntity echartCalendarOptionEntity = new EchartCalendarOptionEntity();
         if (UEmpty.isNotEmpty(findCostSumCalendarNearYearEntityList)) {
             List<List<String>> series = buildSeries(findCostSumCalendarNearYearEntityList);
             BigDecimal maxValue = findCostSumCalendarNearYearEntityList.stream()
                     .map(FindCostSumCalendarNearYearEntity::getOutlay)
+                    .filter(Objects::nonNull)
                     .max(BigDecimal::compareTo)
                     .orElse(BigDecimal.ZERO);
             echartCalendarOptionEntity.setMaxValue(maxValue);
@@ -279,7 +286,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     private static List<List<String>> buildSeries(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList) {
         List<List<String>> series = new ArrayList<>();
         for (FindCostSumCalendarNearYearEntity findCostSumCalendarNearYearEntity : findCostSumCalendarNearYearEntityList) {
-            BigDecimal outlay = findCostSumCalendarNearYearEntity.getOutlay().setScale(2, RoundingMode.HALF_UP);
+            BigDecimal outlay = Convert.toBigDecimal(findCostSumCalendarNearYearEntity.getOutlay(), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_UP);
             String paymentTime = findCostSumCalendarNearYearEntity.getPaymentTime();
             List<String> seriesList = Arrays.asList(paymentTime, outlay.toString());
             series.add(seriesList);
