@@ -9,6 +9,11 @@
       @change="change"
       @sortChange="sortChange"
   >
+    <template #content="{ row }">
+      <lay-tooltip :visible="false" trigger="hover" :content="row.content">
+        <div class="oneRow">{{ row.content }}</div>
+      </lay-tooltip>
+    </template>
     <template #effectiveTime="{ row }">
       {{ row.effectiveTimeFrom }} - {{ row.effectiveTimeTo }}
     </template>
@@ -136,10 +141,11 @@ const pageQuery = reactive<PageQuery>({
 const columns = ref([
   {title: '选项', width: '50px', type: 'checkbox', fixed: 'left'},
   {title: '标题', width: '80px', key: 'title'},
-  {title: '内容', width: '260px', key: 'content'},
+  {title: '内容', width: '260px', key: 'content', customSlot: 'content'},
+  {title: '通知类型', width: '80px', key: 'typeName'},
   {title: '生效时间', width: '120px', key: 'effectiveTime', customSlot: 'effectiveTime'},
   {title: '发布人', width: '100px', key: 'publisherName'},
-  {title: '发布时间', width: '60px', key: 'createTime'},
+  {title: '发布时间', width: '150px', key: 'createTime'},
   {
     title: '操作',
     width: '150px',

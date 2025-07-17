@@ -1,6 +1,7 @@
 package com.freesia.notice.service;
 
-import com.freesia.notice.FindPageSysNoticeEntity;
+import com.freesia.notice.entity.FindPageSysNoticeEntity;
+import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.notice.dto.SysNoticeDto;
@@ -58,5 +59,5 @@ public interface SysNoticeService {
      *
      * @return 公告集合
      */
-    List<SysNoticeDto> findPublishedAnnouncement();
+    List<FindPublishedAnnouncementEntity> findPublishedAnnouncement();
 }

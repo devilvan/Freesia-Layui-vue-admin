@@ -193,7 +193,8 @@
         </lay-header>
         <lay-body>
           <lay-notice-bar leftIcon="layui-icon-mute"
-                          :text="announcement"
+                          :scrollable="true"
+                          :textlist="announcementContentList"
                           mode="closeable" rightIcon="layui-icon-close"></lay-notice-bar>
           <global-tab
               :class="
@@ -240,6 +241,11 @@ import {R} from "@/types/Result";
 import {findPublishedAnnouncement} from "@/api/system/Notice";
 import {SysNoticeEntity} from "@/types/system/Notice";
 
+export interface AnnouncementContent {
+  id?: string,
+  text?: string
+}
+
 export default {
   components: {
     GlobalSetup,
@@ -266,8 +272,8 @@ export default {
     )
     const sseConnectUrl = import.meta.env.VITE_SSE_CONNECT_URL
     const bootstrapImageUrl = ref<string | undefined>(<string>'/不要停下来啊.png');
-    const announcement = ref<string>();
     const announcementList = ref<SysNoticeEntity[]>([]);
+    const announcementContentList = ref<AnnouncementContent[]>([]);
     const {
       selectedKey,
       openKeys,
@@ -293,7 +299,13 @@ export default {
       // 查询公告
       findPublishedAnnouncement().then((res: R<SysNoticeEntity[]>) => {
         announcementList.value = res.data
-        announcement.value = announcementList.value.map(item => item.content).join(";");
+        announcementList.value.forEach(item => {
+          let announcementContent: AnnouncementContent = {
+            id: item.id,
+            text: item.content
+          };
+          announcementContentList.value.push(announcementContent)
+        })
       })
     })
 
@@ -417,8 +429,8 @@ export default {
       initSse,
       bootstrapImageUrl,
       preview,
-      announcement,
-      announcementList
+      announcementList,
+      announcementContentList
     }
   }
 }
