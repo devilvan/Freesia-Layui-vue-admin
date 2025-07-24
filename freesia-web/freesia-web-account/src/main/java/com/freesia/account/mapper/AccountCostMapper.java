@@ -89,5 +89,5 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @param accountCostDto 查询入参
      * @return 排名数据
      */
-    FindRankByCostTypeEntity findRankByCostType(@Param("accountCost") AccountCostDto accountCostDto);
+    List<FindRankByCostTypeEntity> findRankByCostType(@Param("accountCost") AccountCostDto accountCostDto);
 }

@@ -554,27 +554,23 @@
         GROUP BY DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d')
     </select>
     <select id="findRankByCostType" resultType="com.freesia.account.entity.FindRankByCostTypeEntity">
-        SELECT T.*, DENSE_RANK() OVER ( PARTITION BY T.COST_TYPE ORDER BY T.OUTLAY ) AS RK
-        FROM (SELECT AC.ID,
-                     AC.CREATE_TIME,
-                     AC.MODIFY_TIME,
-                     AC.LOGIC_DEL,
-                     AC.COST_TYPE,
-                     AC.COST_DESC,
-                     AC.ICON,
-                     dense_rank() over (partition by AC.OUTLAY),
-                     SUM(AC, OUTLAY) AS OUTLAY
-              FROM account_cost AC
-                       LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
-                       LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
-              WHERE 1 = 1
-                AND AC.LOGIC_DEL = 0
-                AND AC.PAYMENT_SIGN = 'EXPENSES'
-                AND AC.TENANT_ID = #{accountCost.tenantId}
-                AND ACU.USER_ID = #{accountCost.userId}
-                AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
-                AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
-              GROUP BY AC.COST_TYPE) T
+        SELECT AC.ID,
+               AC.COST_TYPE,
+               AC.COST_DESC,
+               AC.ICON                                       as ICON_URL,
+               SUM(AC.OUTLAY)                                AS OUTLAY,
+               DENSE_RANK() OVER ( ORDER BY ac.OUTLAY DESC ) AS RK
+        FROM account_cost AC
+                 LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+                 LEFT JOIN sys_user SU ON ACU.USER_ID = SU.ID
+        WHERE 1 = 1
+          AND AC.LOGIC_DEL = 0
+          AND AC.PAYMENT_SIGN = 'EXPENSES'
+          AND AC.TENANT_ID = #{accountCost.tenantId}
+          AND AC.USER_ID = #{accountCost.userId}
+          AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
+          AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
+        GROUP BY AC.COST_TYPE
     </select>
 
 </mapper>

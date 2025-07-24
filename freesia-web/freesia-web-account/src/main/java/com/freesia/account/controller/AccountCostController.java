@@ -19,6 +19,7 @@ import com.freesia.controller.BaseController;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
+import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
 import com.freesia.excel.constant.ExcelCellWriteStyle;
 import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.handler.ExcelExportHandler;
@@ -299,14 +300,14 @@ public class AccountCostController extends BaseController {
 
     @Operation(summary = "排名-按消费类型排名")
     @GetMapping(value = "findRankByCostType")
-    public R<FindRankByCostTypeEntity> findRankByCostType(AccountCostVo accountCostVo) {
+    public R<EchartStackedHorizontalBarOptionEntity> findRankByCostType(AccountCostVo accountCostVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
         accountCostDto.setTenantId(tenantId);
-        FindRankByCostTypeEntity findRankByCostTypeEntity = accountCostService.findRankByCostType(accountCostDto);
-        return R.ok(findRankByCostTypeEntity);
+        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = accountCostService.findRankByCostType(accountCostDto);
+        return R.ok(echartStackedHorizontalBarOptionEntity);
     }
 
 

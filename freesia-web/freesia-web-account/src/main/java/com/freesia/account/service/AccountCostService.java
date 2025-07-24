@@ -4,10 +4,10 @@ import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.FindAccountCostEntity;
 import com.freesia.account.entity.FindPageAccountCostEntity;
-import com.freesia.account.entity.FindRankByCostTypeEntity;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
+import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -95,7 +95,7 @@ public interface AccountCostService {
      * 排名-按消费类型排名
      *
      * @param accountCostDto 查询入参
-     * @return 排名数据
+     * @return 图表数据
      */
-    FindRankByCostTypeEntity findRankByCostType(AccountCostDto accountCostDto);
+    EchartStackedHorizontalBarOptionEntity findRankByCostType(AccountCostDto accountCostDto);
 }

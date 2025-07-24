@@ -15,8 +15,6 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class FindRankByCostTypeEntity extends BaseEntity {
-    @Schema(description = "排名")
-    private Integer rk;
     @Schema(description = "开支类型")
     private String costType;
     @Schema(description = "开支描述")
@@ -25,4 +23,6 @@ public class FindRankByCostTypeEntity extends BaseEntity {
     private String iconUrl;
     @Schema(description = "开销金额")
     private BigDecimal outlay;
+    @Schema(description = "排名")
+    private Integer rk;
 }

@@ -64,3 +64,8 @@ export function findCostSumCalendarNearYear(findCostSumCalendarNearYearVo: FindC
     let params = buildUrlParam(findCostSumCalendarNearYearVo);
     return Http.get("/api/accountCostController/findCostSumCalendarNearYear", params);
 }
+
+export function findRankByCostType(accountCostVo: AccountCostVo) {
+    let params = buildUrlParam(accountCostVo);
+    return Http.get("/api/accountCostController/findRankByCostType", params);
+}

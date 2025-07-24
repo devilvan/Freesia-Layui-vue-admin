@@ -20,6 +20,9 @@ import com.freesia.constant.Constants;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
+import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
+import com.freesia.oss.pojo.OssFactory;
+import com.freesia.oss.pojo.OssHandler;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
@@ -87,8 +90,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Override
     public AccountCostDto saveUpdate(AccountCostDto accountCostDto) {
         Long costId = accountCostDto.getId();
+        OssHandler ossHandler = OssFactory.getInstance();
+        accountCostDto.setIcon(ossHandler.convertDomain2Endpoint(accountCostDto.getIcon()));
         AccountCostPo accountCostPo = UCopy.copyDto2Po(accountCostDto, AccountCostPo.class);
-        UCopy.halfCopy(accountCostDto, accountCostPo);
         Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
         List<Long> accountCostUserIdList = accountCostDto.getAccountCostUserIdList();
         // 新增
@@ -261,8 +265,11 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     @Override
-    public FindRankByCostTypeEntity findRankByCostType(AccountCostDto accountCostDto) {
-        return accountCostMapper.findRankByCostType(accountCostDto);
+    public EchartStackedHorizontalBarOptionEntity findRankByCostType(AccountCostDto accountCostDto) {
+        EchartStackedHorizontalBarOptionEntity entity = new EchartStackedHorizontalBarOptionEntity();
+        List<FindRankByCostTypeEntity> findRankByCostTypeEntityList = accountCostMapper.findRankByCostType(accountCostDto);
+
+        return entity;
     }
 
     private EchartCalendarOptionEntity buildEchartCalendarOptionEntity(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList, AccountCostDto accountCostDto) {
