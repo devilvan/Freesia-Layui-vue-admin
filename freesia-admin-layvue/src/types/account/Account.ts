@@ -51,6 +51,33 @@ export interface FindCostLineChartVo extends AccountCostVo {
 export interface FindCostSumCalendarNearYearVo extends AccountCostVo {
 }
 
+export interface EchartStackedHorizontalBarOptionEntity {
+    /**
+     * Y轴键
+     */
+    yAxis?: string[],
+    /**
+     * X轴值
+     */
+    series?: Series[]
+
+}
+
+/**
+ * Y轴值
+ */
+interface Series {
+    /**
+     * 名称
+     */
+    name?: string,
+    /**
+     * 值
+     */
+    value?: number[]
+}
+
+
 export enum DateScope {
     /**
      * 周

@@ -97,6 +97,8 @@ import {findBudgetCapacity} from "@/api/account/AccountBudget";
 import {AccountBudgetVo, EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
 import * as echarts from "echarts";
 import {findRankByCostType} from "@/api/account/Account";
+import {AccountCostVo, EchartStackedHorizontalBarOptionEntity} from "@/types/account/Account";
+import {R} from "@/types/Result";
 
 /*INIT*/
 onMounted(() => {
@@ -118,6 +120,7 @@ onBeforeUnmount(() => {
 /* VAR*/
 const currentIndex = ref('0')
 const accountBudgetVo = ref<AccountBudgetVo>({});
+const accountCostVo = ref<AccountCostVo>({});
 const echartCapacityOptionEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
 const weekCostRankRef = ref();
 let weekCostRankChart: echarts.ECharts | null = null;
@@ -125,105 +128,52 @@ let weekCostRankChart: echarts.ECharts | null = null;
 
 /*FUNCTION*/
 function doWeekCostRank() {
-  let option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        // Use axis to trigger tooltip
-        type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
-      }
-    },
-    legend: {},
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'value'
-    },
-    yAxis: {
-      type: 'category',
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    },
-    series: [
-      {
-        name: 'Direct',
-        type: 'bar',
-        stack: 'total',
-        label: {
-          show: true
+  findRankByCostType(accountCostVo.value).then((res: R<EchartStackedHorizontalBarOptionEntity>) => {
+    if (res.code === 200) {
+      let echartStackedHorizontalBarOptionEntity: EchartStackedHorizontalBarOptionEntity | undefined = res.data;
+      let series = echartStackedHorizontalBarOptionEntity?.series?.map(item => {
+        return {
+          name: item.name,
+          type: 'bar',
+          stack: 'total',
+          label: {
+            show: true
+          },
+          emphasis: {
+            focus: 'series'
+          },
+          data: item.value
+        }
+      })
+      console.log(series);
+      let option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            // Use axis to trigger tooltip
+            type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
+          }
         },
-        emphasis: {
-          focus: 'series'
+        legend: {},
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
         },
-        data: [320, 302, 301, 334, 390, 330, 320]
-      },
-      {
-        name: 'Mail Ad',
-        type: 'bar',
-        stack: 'total',
-        label: {
-          show: true
+        xAxis: {
+          type: 'value'
         },
-        emphasis: {
-          focus: 'series'
+        yAxis: {
+          type: 'category',
+          data: echartStackedHorizontalBarOptionEntity?.yAxis
         },
-        data: [120, 132, 101, 134, 90, 230, 210]
-      },
-      {
-        name: 'Affiliate Ad',
-        type: 'bar',
-        stack: 'total',
-        label: {
-          show: true
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [220, 182, 191, 234, 290, 330, 310]
-      },
-      {
-        name: 'Video Ad',
-        type: 'bar',
-        stack: 'total',
-        label: {
-          show: true
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [150, 212, 201, 154, 190, 330, 410]
-      },
-      {
-        name: 'Search Engine',
-        type: 'bar',
-        stack: 'total',
-        label: {
-          show: true
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [820, 832, 901, 934, 1290, 1330, 1320]
-      },
-      {
-        name: 'Direct7',
-        type: 'bar',
-        stack: 'total',
-        label: {
-          show: true
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: [320, 302]
-      },
-    ]
-  };
-  weekCostRankChart = echarts.init(weekCostRankRef.value);
-  weekCostRankChart.setOption(option)
+        series: series
+      };
+      weekCostRankChart = echarts.init(weekCostRankRef.value);
+      weekCostRankChart.setOption(option)
+    }
+  })
 }
 
 /*FUNCTION*/

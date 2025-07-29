@@ -25,4 +25,6 @@ public class FindRankByCostTypeEntity extends BaseEntity {
     private BigDecimal outlay;
     @Schema(description = "排名")
     private Integer rk;
+    @Schema(description = "日期标识")
+    private String dateSign;
 }
