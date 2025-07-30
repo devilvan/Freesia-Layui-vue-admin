@@ -637,10 +637,10 @@
                T.COST_DESC,
                T.OUTLAY,
                T.DATE_SIGN,
-               DENSE_RANK() OVER ( PARTITION BY T.DATE_SIGN ORDER BY T.OUTLAY DESC ) AS RK
+               DENSE_RANK() OVER (ORDER BY T.DATE_SIGN DESC ) AS RK
         FROM (SELECT AC.COST_TYPE,
                      AC.COST_DESC,
-                     CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 0), 2, '0')) as DATE_SIGN,
+                     CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 1), 2, '0')) as DATE_SIGN,
                      ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
                                                       WHEN (SELECT COUNT(1)
@@ -660,13 +660,13 @@
                 AND AC.PAYMENT_SIGN = 'EXPENSES'
                 AND AC.TENANT_ID = #{accountCost.tenantId}
                 AND AC.USER_ID = #{accountCost.userId}
-                AND AC.PAYMENT_TIME >= DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
+                AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
 
               UNION ALL
 
               SELECT AC.COST_TYPE,
                      AC.COST_DESC,
-                     CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 0), 2, '0')) as DATE_SIGN,
+                     CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 1), 2, '0')) as DATE_SIGN,
                      ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
                                                       WHEN (SELECT COUNT(1)
@@ -686,8 +686,8 @@
                 AND AC.TENANT_ID = #{accountCost.tenantId}
                 AND ACU.USER_ID = #{accountCost.userId}
                 AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
-                AND AC.PAYMENT_TIME >= DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)) T
-        GROUP BY T.COST_TYPE
-        ORDER BY T.DATE_SIGN DESC, RK
+                AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)) T
+        GROUP BY T.COST_TYPE, T.DATE_SIGN
+        ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
     </select>
 </mapper>

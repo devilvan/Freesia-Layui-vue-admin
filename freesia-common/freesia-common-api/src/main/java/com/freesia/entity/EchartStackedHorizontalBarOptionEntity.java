@@ -1,6 +1,9 @@
 package com.freesia.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +18,7 @@ public class EchartStackedHorizontalBarOptionEntity {
     /**
      * Y轴键
      */
+    @JsonProperty(value = "yAxis")
     private List<String> yAxis;
     /**
      * X轴值
@@ -25,6 +29,8 @@ public class EchartStackedHorizontalBarOptionEntity {
      * Y轴值
      */
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Series {
         /**
          * 名称

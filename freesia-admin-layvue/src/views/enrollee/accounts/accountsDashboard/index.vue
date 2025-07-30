@@ -145,24 +145,24 @@ function doWeekCostRank() {
           data: item.value
         }
       })
-      console.log(series);
       let option = {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            // Use axis to trigger tooltip
-            type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
-          }
+            type: 'shadow',
+            animation: true,
+          },
         },
         legend: {},
         grid: {
           left: '3%',
-          right: '4%',
+          right: '3%',
           bottom: '3%',
           containLabel: true
         },
+
         xAxis: {
-          type: 'value'
+          type: 'value',
         },
         yAxis: {
           type: 'category',

@@ -79,9 +79,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             StringBuilder sb = new StringBuilder();
             income = income.setScale(2, RoundingMode.HALF_UP);
             expenses = expenses.setScale(2, RoundingMode.HALF_UP);
-            sb.append("总计").append(income.subtract(expenses, MathContext.UNLIMITED)).append("元")
-                    .append("，支出：").append(expenses).append("元")
-                    .append("，收入：").append(income).append("元");
+            sb.append("总计").append(income.subtract(expenses, MathContext.UNLIMITED)).append("元").append("，支出：").append(expenses).append("元").append("，收入：").append(income).append("元");
             accountCostExportEntity.setStatistic(sb.toString());
         }
     }
@@ -175,11 +173,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
 
     @Override
     public EchartPieOptionEntity findCostTypeRatePie(AccountCostDto accountCostDto) {
-        String cacheKey = "findCostTypeRatePie:" +
-                accountCostDto.getUserId() + "@" +
-                accountCostDto.getTenantId() + "@" +
-                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" +
-                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
+        String cacheKey = "findCostTypeRatePie:" + accountCostDto.getUserId() + "@" + accountCostDto.getTenantId() + "@" + Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" + Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
         EchartPieOptionEntity echartPieOptionEntityCache = URedis.get(cacheKey);
         if (UEmpty.isNotNull(echartPieOptionEntityCache)) {
             return echartPieOptionEntityCache;
@@ -218,12 +212,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         } else {
             throw new AccountException("charts.line.dateScope.invalid", new Object[]{dateScope});
         }
-        String cacheKey = "findCostLineChart:" +
-                UString.join("@",
-                        String.valueOf(accountCostDto.getUserId()),
-                        String.valueOf(accountCostDto.getTenantId()),
-                        dateScope,
-                        formatPaymentTimeFrom, formatPaymentTimeTo, accountCostDto.getCostType());
+        String cacheKey = "findCostLineChart:" + UString.join("@", String.valueOf(accountCostDto.getUserId()), String.valueOf(accountCostDto.getTenantId()), dateScope, formatPaymentTimeFrom, formatPaymentTimeTo, accountCostDto.getCostType());
         EchartLineOptionEntity echartLineOptionCache = URedis.get(cacheKey);
         if (UEmpty.isNotNull(echartLineOptionCache)) {
             return echartLineOptionCache;
@@ -247,11 +236,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
 
     @Override
     public EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto) {
-        String cacheKey = "findCostSumCalendarNearYear:" +
-                accountCostDto.getUserId() + "@" +
-                accountCostDto.getTenantId() + "@" +
-                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" +
-                Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
+        String cacheKey = "findCostSumCalendarNearYear:" + accountCostDto.getUserId() + "@" + accountCostDto.getTenantId() + "@" + Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" + Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
         EchartCalendarOptionEntity echartCalendarOptionEntityCache = URedis.get(cacheKey);
         if (UEmpty.isNotNull(echartCalendarOptionEntityCache)) {
             return echartCalendarOptionEntityCache;
@@ -268,30 +253,33 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public EchartStackedHorizontalBarOptionEntity findRankByCostType(AccountCostDto accountCostDto) {
         EchartStackedHorizontalBarOptionEntity entity = new EchartStackedHorizontalBarOptionEntity();
         List<FindRankByCostTypeEntity> findRankByCostTypeEntityList = accountCostMapper.findRankByCostType(accountCostDto);
-        if (UEmpty.isNotEmpty(findRankByCostTypeEntityList)) {
-            Map<String, List<FindRankByCostTypeEntity>> groupingByCostTypeMapList = findRankByCostTypeEntityList.stream()
-                    .collect(Collectors.groupingBy(FindRankByCostTypeEntity::getCostType));
-            List<EchartStackedHorizontalBarOptionEntity.Series> seriesList = new ArrayList<>();
-            Set<Map.Entry<String, List<FindRankByCostTypeEntity>>> entrySet = groupingByCostTypeMapList.entrySet();
-            for (Map.Entry<String, List<FindRankByCostTypeEntity>> entry : entrySet) {
-                String costType = entry.getKey();
-                List<FindRankByCostTypeEntity> list = entry.getValue();
-                List<BigDecimal> outLayList = list.stream()
-                        .map(FindRankByCostTypeEntity::getOutlay)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-                EchartStackedHorizontalBarOptionEntity.Series series = new EchartStackedHorizontalBarOptionEntity.Series();
-                series.setName(costType);
-                series.setValue(outLayList);
-                seriesList.add(series);
+        Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList = findRankByCostTypeEntityList.stream().collect(Collectors.groupingBy(FindRankByCostTypeEntity::getDateSign));
+        Set<Map.Entry<String, List<FindRankByCostTypeEntity>>> entrySet = groupingByDateSignMapList.entrySet();
+        Map<String, List<BigDecimal>> resultMap = new HashMap<>(16);
+        for (Map.Entry<String, List<FindRankByCostTypeEntity>> entry : entrySet) {
+            List<FindRankByCostTypeEntity> groupingDateSignList = entry.getValue();
+            for (FindRankByCostTypeEntity item : groupingDateSignList) {
+                resultMap.computeIfAbsent(item.getCostType(), e -> {
+                    int size = entrySet.size();
+                    List<BigDecimal> list = new ArrayList<>(size);
+                    for (int i = 0; i < size; i++) {
+                        list.add(i, null);
+                    }
+                    return list;
+                }).add(item.getRk() - 1, item.getOutlay());
             }
-            List<String> dateSignList = findRankByCostTypeEntityList.stream()
-                    .map(FindRankByCostTypeEntity::getDateSign)
-                    .distinct()
-                    .collect(Collectors.toList());
-            entity.setYAxis(dateSignList);
-            entity.setSeries(seriesList);
         }
+        List<EchartStackedHorizontalBarOptionEntity.Series> seriesList = new ArrayList<>();
+        resultMap.forEach((k, v) -> {
+            EchartStackedHorizontalBarOptionEntity.Series series = new EchartStackedHorizontalBarOptionEntity.Series(k, v);
+            seriesList.add(series);
+        });
+        List<EchartStackedHorizontalBarOptionEntity.Series> sortedList = seriesList.stream()
+                .sorted(Comparator.comparing(item -> item.getValue().stream().filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)))
+                .collect(Collectors.toList());
+        List<String> dateSignList = findRankByCostTypeEntityList.stream().map(FindRankByCostTypeEntity::getDateSign).distinct().collect(Collectors.toList());
+        entity.setYAxis(dateSignList);
+        entity.setSeries(sortedList);
         return entity;
     }
 
@@ -299,10 +287,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         EchartCalendarOptionEntity echartCalendarOptionEntity = new EchartCalendarOptionEntity();
         if (UEmpty.isNotEmpty(findCostSumCalendarNearYearEntityList)) {
             List<List<String>> series = buildSeries(findCostSumCalendarNearYearEntityList);
-            BigDecimal maxValue = findCostSumCalendarNearYearEntityList.stream()
-                    .map(FindCostSumCalendarNearYearEntity::getOutlay)
-                    .max(BigDecimal::compareTo)
-                    .orElse(BigDecimal.ZERO);
+            BigDecimal maxValue = findCostSumCalendarNearYearEntityList.stream().map(FindCostSumCalendarNearYearEntity::getOutlay).max(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
             echartCalendarOptionEntity.setMaxValue(maxValue);
             String paymentTimeFrom = Constants.SDF_YMD.format(accountCostDto.getPaymentTimeFrom());
             String paymentTimeTo = Constants.SDF_YMD.format(accountCostDto.getPaymentTimeTo());
