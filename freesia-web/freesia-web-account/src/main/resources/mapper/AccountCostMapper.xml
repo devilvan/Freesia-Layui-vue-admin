@@ -635,7 +635,7 @@
     <select id="findRankByCostType" resultType="com.freesia.account.entity.FindRankByCostTypeEntity">
         SELECT T.COST_TYPE,
                T.COST_DESC,
-               T.OUTLAY,
+               SUM(T.OUTLAY)                                  AS OUTLAY,
                T.DATE_SIGN,
                DENSE_RANK() OVER (ORDER BY T.DATE_SIGN DESC ) AS RK
         FROM (SELECT AC.COST_TYPE,
@@ -661,6 +661,8 @@
                 AND AC.TENANT_ID = #{accountCost.tenantId}
                 AND AC.USER_ID = #{accountCost.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
+              GROUP BY AC.COST_TYPE,
+                       AC.PAYMENT_TIME
 
               UNION ALL
 
@@ -686,7 +688,9 @@
                 AND AC.TENANT_ID = #{accountCost.tenantId}
                 AND ACU.USER_ID = #{accountCost.userId}
                 AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
-                AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)) T
+                AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
+              GROUP BY AC.COST_TYPE,
+                       AC.PAYMENT_TIME) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
         ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
     </select>
