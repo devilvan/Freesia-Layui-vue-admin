@@ -99,6 +99,7 @@ import * as echarts from "echarts";
 import {findRankByCostType} from "@/api/account/Account";
 import {AccountCostVo, EchartStackedHorizontalBarOptionEntity} from "@/types/account/Account";
 import {R} from "@/types/Result";
+import {add} from "@layui/layui-vue/types/component/inputNumber/math";
 
 /*INIT*/
 onMounted(() => {
@@ -123,6 +124,7 @@ const accountBudgetVo = ref<AccountBudgetVo>({});
 const accountCostVo = ref<AccountCostVo>({});
 const echartCapacityOptionEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
 const weekCostRankRef = ref();
+const monthCostRankRef = ref();
 let weekCostRankChart: echarts.ECharts | null = null;
 /* VAR*/
 
@@ -149,9 +151,24 @@ function doWeekCostRank() {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'shadow',
+            type: 'cross',
             animation: true,
           },
+          formatter: function (params: any, ticket: string, callback: (ticket: string, html: string) => {}) {
+            params = params.filter((item: any) => item.value).sort((i1: any, i2:any) => i2.value - i1.value)
+            console.log(params)
+            let out = `<div style="width: 200px">${params[0]?.axisValue}</div>`;
+            let totalAmount = params.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value, 0);
+            params.forEach((item: any) => {
+              const percent = ((item.data / totalAmount) * 100).toFixed(2);
+              out += `<div>${item.marker} ${item.seriesName}：
+                        <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;">${item.data}</span>
+                        <span style="border-radius:10px;">(${percent}%)</span>
+                      </div>`
+            })
+            out += `<div>总金额：${totalAmount.toFixed(2)}元</div>`
+            return out;
+          }
         },
         legend: {},
         grid: {
