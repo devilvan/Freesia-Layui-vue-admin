@@ -662,7 +662,7 @@
                 AND AC.USER_ID = #{accountCost.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
               GROUP BY AC.COST_TYPE,
-                       DATE_SIGN
+                       AC.PAYMENT_TIME
 
               UNION ALL
 
@@ -690,7 +690,7 @@
                 AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
               GROUP BY AC.COST_TYPE,
-                       DATE_SIGN) T
+                       AC.PAYMENT_TIME) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
         ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
     </select>
@@ -726,7 +726,7 @@
                 AND AC.PAYMENT_TIME <![CDATA[>=]]>
                     DATE_SUB(DATE_SUB(CURDATE(), interval DAYOFWEEK(CURDATE()) - 1 day), interval 3 MONTH)
               GROUP BY AC.COST_TYPE,
-                       DATE_SIGN
+                       AC.PAYMENT_TIME
 
               UNION ALL
 
@@ -755,7 +755,7 @@
                 AND AC.PAYMENT_TIME <![CDATA[>=]]>
                     DATE_SUB(DATE_SUB(CURDATE(), interval DAYOFWEEK(CURDATE()) - 1 day), interval 3 MONTH)
               GROUP BY AC.COST_TYPE,
-                       DATE_SIGN) T
+                       AC.PAYMENT_TIME) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
         ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
     </select>
