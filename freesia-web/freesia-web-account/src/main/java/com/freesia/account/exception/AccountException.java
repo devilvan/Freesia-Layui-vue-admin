@@ -14,6 +14,10 @@ public class AccountException extends ServiceException {
     @Serial
     private static final long serialVersionUID = -6844820033582191781L;
 
+    public AccountException(String code) {
+        super(AccountModule.ACCOUNT_MANAGEMENT, code, null);
+    }
+
     public AccountException(String code, Object[] args) {
         super(AccountModule.ACCOUNT_MANAGEMENT, code, args);
     }

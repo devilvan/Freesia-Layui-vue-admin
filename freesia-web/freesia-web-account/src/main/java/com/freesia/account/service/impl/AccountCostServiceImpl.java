@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.FindCostLineChartDto;
+import com.freesia.account.dto.FindRankByCostTypeDto;
 import com.freesia.account.entity.*;
 import com.freesia.account.exception.AccountException;
 import com.freesia.account.mapper.AccountCostMapper;
@@ -198,21 +200,21 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     @Override
-    public EchartLineOptionEntity findCostLineChart(AccountCostDto accountCostDto) {
-        String dateScope = accountCostDto.getDateScope();
+    public EchartLineOptionEntity findCostLineChart(FindCostLineChartDto findCostLineChartDto) {
+        String dateScope = findCostLineChartDto.getDateScope();
         String formatPaymentTimeFrom;
         String formatPaymentTimeTo = null;
         if (DateScope.WEEK.getCode().equals(dateScope)) {
-            formatPaymentTimeFrom = Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom());
-            formatPaymentTimeTo = Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
+            formatPaymentTimeFrom = Constants.SDF_YMDHMS.format(findCostLineChartDto.getPaymentTimeFrom());
+            formatPaymentTimeTo = Constants.SDF_YMDHMS.format(findCostLineChartDto.getPaymentTimeTo());
         } else if (DateScope.MONTH.getCode().equals(dateScope)) {
-            formatPaymentTimeFrom = accountCostDto.getYear() + "-" + StrUtil.fillBefore(String.valueOf(accountCostDto.getMonth()), '0', 2);
+            formatPaymentTimeFrom = findCostLineChartDto.getYear() + "-" + StrUtil.fillBefore(String.valueOf(findCostLineChartDto.getMonth()), '0', 2);
         } else if (DateScope.YEAR.getCode().equals(dateScope)) {
-            formatPaymentTimeFrom = String.valueOf(accountCostDto.getYear());
+            formatPaymentTimeFrom = String.valueOf(findCostLineChartDto.getYear());
         } else {
-            throw new AccountException("charts.line.dateScope.invalid", new Object[]{dateScope});
+            throw new AccountException("dateScope.invalid", new Object[]{dateScope});
         }
-        String cacheKey = "findCostLineChart:" + UString.join("@", String.valueOf(accountCostDto.getUserId()), String.valueOf(accountCostDto.getTenantId()), dateScope, formatPaymentTimeFrom, formatPaymentTimeTo, accountCostDto.getCostType());
+        String cacheKey = "findCostLineChart:" + UString.join("@", String.valueOf(findCostLineChartDto.getUserId()), String.valueOf(findCostLineChartDto.getTenantId()), dateScope, formatPaymentTimeFrom, formatPaymentTimeTo, findCostLineChartDto.getCostType());
         EchartLineOptionEntity echartLineOptionCache = URedis.get(cacheKey);
         if (UEmpty.isNotNull(echartLineOptionCache)) {
             return echartLineOptionCache;
@@ -221,13 +223,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         new EchartLineOptionEntity();
         EchartLineOptionEntity echartLineOptionEntity;
         if (DateScope.WEEK.getCode().equals(dateScope)) {
-            findCostLineChartEntityList = accountCostMapper.findWeekCostLineChart(accountCostDto);
+            findCostLineChartEntityList = accountCostMapper.findWeekCostLineChart(findCostLineChartDto);
             echartLineOptionEntity = buildEchartLineOptionEntity(findCostLineChartEntityList);
         } else if (DateScope.MONTH.getCode().equals(dateScope)) {
-            findCostLineChartEntityList = accountCostMapper.findMonthCostLineChart(accountCostDto);
+            findCostLineChartEntityList = accountCostMapper.findMonthCostLineChart(findCostLineChartDto);
             echartLineOptionEntity = buildEchartLineOptionEntity(findCostLineChartEntityList);
         } else {
-            findCostLineChartEntityList = accountCostMapper.findYearCostLineChart(accountCostDto);
+            findCostLineChartEntityList = accountCostMapper.findYearCostLineChart(findCostLineChartDto);
             echartLineOptionEntity = buildEchartLineOptionEntity(findCostLineChartEntityList);
         }
         URedis.set(cacheKey, echartLineOptionEntity, Duration.ofSeconds(30));
@@ -244,15 +246,34 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList = accountCostMapper.findCostSumCalendarNearYear(accountCostDto);
         EchartCalendarOptionEntity echartCalendarOptionEntity = buildEchartCalendarOptionEntity(findCostSumCalendarNearYearEntityList, accountCostDto);
         if (UEmpty.isNotNull(echartCalendarOptionEntity)) {
-            URedis.set(cacheKey, echartCalendarOptionEntity, Duration.ofSeconds(60));
+            URedis.set(cacheKey, echartCalendarOptionEntity, Duration.ofHours(4));
         }
         return echartCalendarOptionEntity;
     }
 
     @Override
-    public EchartStackedHorizontalBarOptionEntity findRankByCostType(AccountCostDto accountCostDto) {
+    public EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto) {
+        String cacheKey = "findRankByCostType:" + findRankByCostTypeDto.getUserId() + "@" + findRankByCostTypeDto.getTenantId() + "@" + findRankByCostTypeDto.getDateScope();
+        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
+        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
+            return echartStackedHorizontalBarOptionEntity;
+        }
+        String dateScope = findRankByCostTypeDto.getDateScope();
+        List<FindRankByCostTypeEntity> findRankByCostTypeEntityList = null;
+        if (DateScope.WEEK.getCode().equals(dateScope)) {
+            findRankByCostTypeEntityList = accountCostMapper.findWeekRankByCostType(findRankByCostTypeDto);
+        } else if (DateScope.MONTH.getCode().equals(dateScope)) {
+            findRankByCostTypeEntityList = accountCostMapper.findMonthRankByCostType(findRankByCostTypeDto);
+        }
+        EchartStackedHorizontalBarOptionEntity entity = buildEchartStackedHorizontalBarOptionEntity(Optional.ofNullable(findRankByCostTypeEntityList).orElseGet(ArrayList::new));
+        if (UEmpty.isNotNull(entity)) {
+            URedis.set(cacheKey, entity, Duration.ofHours(4));
+        }
+        return entity;
+    }
+
+    private static EchartStackedHorizontalBarOptionEntity buildEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {
         EchartStackedHorizontalBarOptionEntity entity = new EchartStackedHorizontalBarOptionEntity();
-        List<FindRankByCostTypeEntity> findRankByCostTypeEntityList = accountCostMapper.findRankByCostType(accountCostDto);
         Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList = findRankByCostTypeEntityList.stream().collect(Collectors.groupingBy(FindRankByCostTypeEntity::getDateSign));
         Set<Map.Entry<String, List<FindRankByCostTypeEntity>>> entrySet = groupingByDateSignMapList.entrySet();
         Map<String, List<BigDecimal>> resultMap = new HashMap<>(16);

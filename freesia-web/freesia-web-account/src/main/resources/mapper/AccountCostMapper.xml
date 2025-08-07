@@ -632,7 +632,7 @@
               GROUP BY AC.ID) T
         GROUP BY DATE_FORMAT(T.PAYMENT_TIME, '%Y-%m-%d')
     </select>
-    <select id="findRankByCostType" resultType="com.freesia.account.entity.FindRankByCostTypeEntity">
+    <select id="findWeekRankByCostType" resultType="com.freesia.account.entity.FindRankByCostTypeEntity">
         SELECT T.COST_TYPE,
                T.COST_DESC,
                SUM(T.OUTLAY)                                  AS OUTLAY,
@@ -662,7 +662,7 @@
                 AND AC.USER_ID = #{accountCost.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
               GROUP BY AC.COST_TYPE,
-                       AC.PAYMENT_TIME
+                       DATE_SIGN
 
               UNION ALL
 
@@ -690,7 +690,72 @@
                 AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
                 AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
               GROUP BY AC.COST_TYPE,
-                       AC.PAYMENT_TIME) T
+                       DATE_SIGN) T
+        GROUP BY T.COST_TYPE, T.DATE_SIGN
+        ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
+    </select>
+    <select id="findMonthRankByCostType" resultType="com.freesia.account.entity.FindRankByCostTypeEntity">
+        SELECT T.COST_TYPE,
+               T.COST_DESC,
+               SUM(T.OUTLAY)                                  AS OUTLAY,
+               T.DATE_SIGN,
+               DENSE_RANK() OVER (ORDER BY T.DATE_SIGN DESC ) AS RK
+        FROM (SELECT AC.COST_TYPE,
+                     AC.COST_DESC,
+                     DATE_FORMAT(AC.PAYMENT_TIME, '%y%m') as DATE_SIGN,
+                     ROUND(IFNULL(AC.OUTLAY, 0) /
+                           CASE
+
+                                                      WHEN (SELECT COUNT(1)
+                                                            FROM account_cost_user ACU
+                                                            WHERE 1 = 1
+                                                              AND ACU.COST_ID = AC.ID) = 0 THEN
+                                                          1
+                                                      ELSE (SELECT COUNT(1)
+                                                            FROM account_cost_user ACU
+                                                            WHERE 1 = 1
+                                                              AND ACU.COST_ID = AC.ID) END
+                         , 2)                              AS OUTLAY
+              FROM account_cost AC
+                       LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+              WHERE 1 = 1
+                AND AC.LOGIC_DEL = 0
+                AND AC.PAYMENT_SIGN = 'EXPENSES'
+                AND AC.TENANT_ID = #{accountCost.tenantId}
+                AND AC.USER_ID = #{accountCost.userId}
+                AND AC.PAYMENT_TIME <![CDATA[>=]]>
+                    DATE_SUB(DATE_SUB(CURDATE(), interval DAYOFWEEK(CURDATE()) - 1 day), interval 3 MONTH)
+              GROUP BY AC.COST_TYPE,
+                       DATE_SIGN
+
+              UNION ALL
+
+              SELECT AC.COST_TYPE,
+                     AC.COST_DESC,
+                     DATE_FORMAT(AC.PAYMENT_TIME, '%y%m') as DATE_SIGN,
+                     ROUND(IFNULL(AC.OUTLAY, 0) / CASE
+
+                                                      WHEN (SELECT COUNT(1)
+                                                            FROM account_cost_user ACU
+                                                            WHERE 1 = 1
+                                                              AND ACU.COST_ID = AC.ID) = 0 THEN
+                                                          1
+                                                      ELSE (SELECT COUNT(1)
+                                                            FROM account_cost_user ACU
+                                                            WHERE 1 = 1
+                                                              AND ACU.COST_ID = AC.ID) END
+                         , 2)                              AS OUTLAY
+              FROM account_cost AC
+                       LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+              WHERE 1 = 1
+                AND AC.PAYMENT_SIGN = 'EXPENSES'
+                AND AC.TENANT_ID = #{accountCost.tenantId}
+                AND ACU.USER_ID = #{accountCost.userId}
+                AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
+                AND AC.PAYMENT_TIME <![CDATA[>=]]>
+                    DATE_SUB(DATE_SUB(CURDATE(), interval DAYOFWEEK(CURDATE()) - 1 day), interval 3 MONTH)
+              GROUP BY AC.COST_TYPE,
+                       DATE_SIGN) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
         ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
     </select>

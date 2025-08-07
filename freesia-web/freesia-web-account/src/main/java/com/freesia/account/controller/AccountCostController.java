@@ -8,12 +8,19 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.constant.MenuPermission;
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.entity.*;
+import com.freesia.account.dto.FindCostLineChartDto;
+import com.freesia.account.dto.FindRankByCostTypeDto;
+import com.freesia.account.entity.AccountCostExportEntity;
+import com.freesia.account.entity.AccountCostImportEntity;
+import com.freesia.account.entity.FindAccountCostEntity;
+import com.freesia.account.entity.FindPageAccountCostEntity;
+import com.freesia.account.exception.AccountException;
 import com.freesia.account.listener.AccountsImportListener;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.vo.AccountCostVo;
 import com.freesia.account.vo.FindCostLineChartVo;
 import com.freesia.account.vo.FindCostSumCalendarNearYearVo;
+import com.freesia.account.vo.FindRankByCostTypeVo;
 import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
 import com.freesia.entity.EchartCalendarOptionEntity;
@@ -239,46 +246,46 @@ public class AccountCostController extends BaseController {
                 .orElse(DateScope.WEEK);
         String code = dateScope.getCode();
         findCostLineChartVo.setDateScope(code);
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostLineChartVo, AccountCostDto.class);
-        accountCostDto.setUserId(userId);
-        accountCostDto.setTenantId(tenantId);
+        FindCostLineChartDto findCostLineChartDto = UCopy.copyVo2Dto(findCostLineChartVo, FindCostLineChartDto.class);
+        findCostLineChartDto.setUserId(userId);
+        findCostLineChartDto.setTenantId(tenantId);
         String dateValue = findCostLineChartVo.getDateValue();
         if (DateScope.WEEK.getCode().equals(code)) {
             Date[] dates = defaultDateRange(7);
-            accountCostDto.setPaymentTimeFrom(dates[0]);
-            accountCostDto.setPaymentTimeTo(dates[1]);
+            findCostLineChartDto.setPaymentTimeFrom(dates[0]);
+            findCostLineChartDto.setPaymentTimeTo(dates[1]);
         }
         if (UEmpty.isEmpty(dateValue)) {
             if (DateScope.MONTH.getCode().equals(code)) {
                 Date date = new Date();
                 int month = UCalendar.getMonth(date);
                 int year = UCalendar.getYear(date);
-                accountCostDto.setYear(year);
-                accountCostDto.setMonth(month);
+                findCostLineChartDto.setYear(year);
+                findCostLineChartDto.setMonth(month);
             } else if (DateScope.YEAR.getCode().equals(code)) {
                 Date date = new Date();
                 int year = UCalendar.getYear(date);
-                accountCostDto.setYear(year);
+                findCostLineChartDto.setYear(year);
             }
         } else {
             String[] yearMonth = dateValue.split("-");
             if (DateScope.YEAR.getCode().equals(code)) {
                 if (yearMonth.length == 1) {
-                    accountCostDto.setYear(Integer.parseInt(yearMonth[0]));
+                    findCostLineChartDto.setYear(Integer.parseInt(yearMonth[0]));
                 } else {
                     throw new ServiceException(UMessage.message("account.query.year.invalid", String.join(",", yearMonth)));
                 }
             }
             if (DateScope.MONTH.getCode().equals(code)) {
                 if (yearMonth.length == 2) {
-                    accountCostDto.setYear(Integer.parseInt(yearMonth[0]));
-                    accountCostDto.setMonth(Integer.parseInt(yearMonth[1]));
+                    findCostLineChartDto.setYear(Integer.parseInt(yearMonth[0]));
+                    findCostLineChartDto.setMonth(Integer.parseInt(yearMonth[1]));
                 } else {
                     throw new ServiceException(UMessage.message("account.query.month.invalid", String.join(",", yearMonth)));
                 }
             }
         }
-        EchartLineOptionEntity echartLineOptionEntity = accountCostService.findCostLineChart(accountCostDto);
+        EchartLineOptionEntity echartLineOptionEntity = accountCostService.findCostLineChart(findCostLineChartDto);
         return R.ok(echartLineOptionEntity);
     }
 
@@ -300,13 +307,17 @@ public class AccountCostController extends BaseController {
 
     @Operation(summary = "排名-按消费类型排名")
     @GetMapping(value = "findRankByCostType")
-    public R<EchartStackedHorizontalBarOptionEntity> findRankByCostType(AccountCostVo accountCostVo) {
+    public R<EchartStackedHorizontalBarOptionEntity> findRankByCostType(FindRankByCostTypeVo findRankByCostTypeVo) {
+        String dateScope = findRankByCostTypeVo.getDateScope();
+        if (UEmpty.isEmpty(dateScope) || null == DateScope.getInstanceByCode(dateScope)) {
+            throw new AccountException("dateScope.invalid", new Object[] {dateScope});
+        }
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
-        accountCostDto.setUserId(userId);
-        accountCostDto.setTenantId(tenantId);
-        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = accountCostService.findRankByCostType(accountCostDto);
+        FindRankByCostTypeDto findRankByCostTypeDto = UCopy.copyVo2Dto(findRankByCostTypeVo, FindRankByCostTypeDto.class);
+        findRankByCostTypeDto.setUserId(userId);
+        findRankByCostTypeDto.setTenantId(tenantId);
+        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = accountCostService.findRankByCostType(findRankByCostTypeDto);
         return R.ok(echartStackedHorizontalBarOptionEntity);
     }
 

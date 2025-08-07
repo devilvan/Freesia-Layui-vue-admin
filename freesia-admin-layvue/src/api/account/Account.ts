@@ -6,7 +6,7 @@ import {
     AccountCostEntity,
     AccountCostVo, EchartStackedHorizontalBarOptionEntity,
     FindCostLineChartVo,
-    FindCostSumCalendarNearYearVo
+    FindCostSumCalendarNearYearVo, FindRankByCostTypeVo
 } from "../../types/account/Account";
 import {AccountBudgetVo} from "../../types/account/AccountBudget";
 
@@ -65,7 +65,7 @@ export function findCostSumCalendarNearYear(findCostSumCalendarNearYearVo: FindC
     return Http.get("/api/accountCostController/findCostSumCalendarNearYear", params);
 }
 
-export function findRankByCostType(accountCostVo: AccountCostVo): Promise<R<EchartStackedHorizontalBarOptionEntity>> {
-    let params = buildUrlParam(accountCostVo);
+export function findRankByCostType(findRankByCostTypeVo: FindRankByCostTypeVo): Promise<R<EchartStackedHorizontalBarOptionEntity>> {
+    let params = buildUrlParam(findRankByCostTypeVo);
     return Http.get("/api/accountCostController/findRankByCostType", params);
 }

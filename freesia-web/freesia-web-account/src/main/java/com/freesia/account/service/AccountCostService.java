@@ -1,6 +1,8 @@
 package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.FindCostLineChartDto;
+import com.freesia.account.dto.FindRankByCostTypeDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.FindAccountCostEntity;
 import com.freesia.account.entity.FindPageAccountCostEntity;
@@ -81,7 +83,7 @@ public interface AccountCostService {
      * @param accountCostDto 入参
      * @return 结果集
      */
-    EchartLineOptionEntity findCostLineChart(AccountCostDto accountCostDto);
+    EchartLineOptionEntity findCostLineChart(FindCostLineChartDto findCostLineChartDto);
 
     /**
      * 日历-查询近一年支出
@@ -97,5 +99,5 @@ public interface AccountCostService {
      * @param accountCostDto 查询入参
      * @return 图表数据
      */
-    EchartStackedHorizontalBarOptionEntity findRankByCostType(AccountCostDto accountCostDto);
+    EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto);
 }

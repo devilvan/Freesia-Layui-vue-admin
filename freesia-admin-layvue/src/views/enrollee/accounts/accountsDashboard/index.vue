@@ -1,17 +1,17 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
-    <BudgetStatistic :dataSource="echartCapacityOptionEntityList"></BudgetStatistic>
+    <BudgetStatistic :dataSource="echartCapacityOptionEntityList"/>
     <lay-row space="20">
       <lay-col md="12">
         <CostTypeRatePie></CostTypeRatePie>
       </lay-col>
       <lay-col md="12">
-        <AccountBudget :dataSource="echartCapacityOptionEntityList"></AccountBudget>
+        <AccountBudget :dataSource="echartCapacityOptionEntityList"/>
       </lay-col>
     </lay-row>
     <lay-row :space="20">
       <lay-col md="24">
-        <CostCountCalendarNearYear></CostCountCalendarNearYear>
+        <CostCountCalendarNearYear/>
       </lay-col>
     </lay-row>
     <lay-row :space="20">
@@ -22,11 +22,12 @@
           </lay-col>
           <lay-col :md="24">
             <lay-card>
-              <lay-tab type="brief" v-model="currentIndex">
+              <lay-tab type="brief" v-model="currentIndex" @change="doWeekCostRank">
                 <lay-tab-item title="周消费排名" id="0">
                   <div ref="weekCostRankRef" style="height: 600px"></div>
                 </lay-tab-item>
                 <lay-tab-item title="月消费排名" id="1">
+                  <div ref="monthCostRankRef" style="height: 600px"></div>
                 </lay-tab-item>
               </lay-tab>
             </lay-card>
@@ -92,14 +93,14 @@ export default {
 </script>
 <script lang="ts" setup>
 import {onBeforeUnmount, onMounted, ref} from 'vue'
-import BudgetStatistic from "./BudgetStatistic.vue";
 import {findBudgetCapacity} from "@/api/account/AccountBudget";
 import {AccountBudgetVo, EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
 import * as echarts from "echarts";
 import {findRankByCostType} from "@/api/account/Account";
-import {AccountCostVo, EchartStackedHorizontalBarOptionEntity} from "@/types/account/Account";
+import {DateScope, EchartStackedHorizontalBarOptionEntity, FindRankByCostTypeVo} from "@/types/account/Account";
 import {R} from "@/types/Result";
 import {add} from "@layui/layui-vue/types/component/inputNumber/math";
+import {layer} from "@layui/layui-vue";
 
 /*INIT*/
 onMounted(() => {
@@ -115,22 +116,31 @@ onBeforeUnmount(() => {
   if (weekCostRankChart) {
     weekCostRankChart.dispose();
   }
+  if (monthCostRankChart) {
+    monthCostRankChart.dispose();
+  }
 });
 /*INIT*/
 
 /* VAR*/
 const currentIndex = ref('0')
 const accountBudgetVo = ref<AccountBudgetVo>({});
-const accountCostVo = ref<AccountCostVo>({});
+const findRankByCostTypeVo = ref<FindRankByCostTypeVo>({});
 const echartCapacityOptionEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
 const weekCostRankRef = ref();
 const monthCostRankRef = ref();
 let weekCostRankChart: echarts.ECharts | null = null;
+let monthCostRankChart: echarts.ECharts | null = null;
 /* VAR*/
 
 /*FUNCTION*/
 function doWeekCostRank() {
-  findRankByCostType(accountCostVo.value).then((res: R<EchartStackedHorizontalBarOptionEntity>) => {
+  if (currentIndex.value === '0') {
+    findRankByCostTypeVo.value.dateScope = DateScope.WEEK
+  } else if (currentIndex.value === '1') {
+    findRankByCostTypeVo.value.dateScope = DateScope.MONTH
+  }
+  findRankByCostType(findRankByCostTypeVo.value).then((res: R<EchartStackedHorizontalBarOptionEntity>) => {
     if (res.code === 200) {
       let echartStackedHorizontalBarOptionEntity: EchartStackedHorizontalBarOptionEntity | undefined = res.data;
       let series = echartStackedHorizontalBarOptionEntity?.series?.map(item => {
@@ -155,18 +165,17 @@ function doWeekCostRank() {
             animation: true,
           },
           formatter: function (params: any, ticket: string, callback: (ticket: string, html: string) => {}) {
-            params = params.filter((item: any) => item.value).sort((i1: any, i2:any) => i2.value - i1.value)
-            console.log(params)
-            let out = `<div style="width: 200px">${params[0]?.axisValue}</div>`;
+            params = params.filter((item: any) => item.value).sort((i1: any, i2: any) => i2.value - i1.value)
+            let out = `<div style="width: 200px;font-size: 12pt">${params[0]?.axisValue}</div></br>`;
             let totalAmount = params.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value, 0);
             params.forEach((item: any) => {
               const percent = ((item.data / totalAmount) * 100).toFixed(2);
               out += `<div>${item.marker} ${item.seriesName}：
-                        <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;">${item.data}</span>
-                        <span style="border-radius:10px;">(${percent}%)</span>
+                        <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${item.color}">${item.data}</span>
+                        <span style="border-radius:10px;font-weight:bold;color:${item.color}">(${percent}%)</span>
                       </div>`
             })
-            out += `<div>总金额：${totalAmount.toFixed(2)}元</div>`
+            out += `</br><div style="font-weight:bold">总金额：${totalAmount.toFixed(2)}元</div>`
             return out;
           }
         },
@@ -187,9 +196,17 @@ function doWeekCostRank() {
         },
         series: series
       };
-      weekCostRankChart = echarts.init(weekCostRankRef.value);
-      weekCostRankChart.setOption(option)
+      if (currentIndex.value === '0') {
+        weekCostRankChart = echarts.init(weekCostRankRef.value);
+        weekCostRankChart.setOption(option)
+      } else if (currentIndex.value === '1') {
+        monthCostRankChart = echarts.init(monthCostRankRef.value);
+        monthCostRankChart.setOption(option)
+      }
+
     }
+  }).catch(e => {
+    layer.confirm(e.message)
   })
 }
 
