@@ -136,8 +136,10 @@ let monthCostRankChart: echarts.ECharts | null = null;
 /*FUNCTION*/
 function doWeekCostRank() {
   if (currentIndex.value === '0') {
+    if (weekCostRankChart !== null) return;
     findRankByCostTypeVo.value.dateScope = DateScope.WEEK
   } else if (currentIndex.value === '1') {
+    if (monthCostRankChart !== null) return;
     findRankByCostTypeVo.value.dateScope = DateScope.MONTH
   }
   findRankByCostType(findRankByCostTypeVo.value).then((res: R<EchartStackedHorizontalBarOptionEntity>) => {

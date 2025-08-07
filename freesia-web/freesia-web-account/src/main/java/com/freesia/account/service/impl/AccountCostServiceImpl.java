@@ -255,9 +255,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto) {
         String cacheKey = "findRankByCostType:" + findRankByCostTypeDto.getUserId() + "@" + findRankByCostTypeDto.getTenantId() + "@" + findRankByCostTypeDto.getDateScope();
         EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
-        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
-            return echartStackedHorizontalBarOptionEntity;
-        }
+//        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
+//            return echartStackedHorizontalBarOptionEntity;
+//        }
         String dateScope = findRankByCostTypeDto.getDateScope();
         List<FindRankByCostTypeEntity> findRankByCostTypeEntityList = null;
         if (DateScope.WEEK.getCode().equals(dateScope)) {
@@ -266,9 +266,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             findRankByCostTypeEntityList = accountCostMapper.findMonthRankByCostType(findRankByCostTypeDto);
         }
         EchartStackedHorizontalBarOptionEntity entity = buildEchartStackedHorizontalBarOptionEntity(Optional.ofNullable(findRankByCostTypeEntityList).orElseGet(ArrayList::new));
-        if (UEmpty.isNotNull(entity)) {
-            URedis.set(cacheKey, entity, Duration.ofHours(4));
-        }
+//        if (UEmpty.isNotNull(entity)) {
+//            URedis.set(cacheKey, entity, Duration.ofHours(4));
+//        }
         return entity;
     }
 
