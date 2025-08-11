@@ -240,14 +240,14 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto) {
         String cacheKey = "findCostSumCalendarNearYear:" + accountCostDto.getUserId() + "@" + accountCostDto.getTenantId() + "@" + Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" + Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
         EchartCalendarOptionEntity echartCalendarOptionEntityCache = URedis.get(cacheKey);
-        if (UEmpty.isNotNull(echartCalendarOptionEntityCache)) {
-            return echartCalendarOptionEntityCache;
-        }
+//        if (UEmpty.isNotNull(echartCalendarOptionEntityCache)) {
+//            return echartCalendarOptionEntityCache;
+//        }
         List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList = accountCostMapper.findCostSumCalendarNearYear(accountCostDto);
         EchartCalendarOptionEntity echartCalendarOptionEntity = buildEchartCalendarOptionEntity(findCostSumCalendarNearYearEntityList, accountCostDto);
-        if (UEmpty.isNotNull(echartCalendarOptionEntity)) {
-            URedis.set(cacheKey, echartCalendarOptionEntity, Duration.ofHours(4));
-        }
+//        if (UEmpty.isNotNull(echartCalendarOptionEntity)) {
+//            URedis.set(cacheKey, echartCalendarOptionEntity, Duration.ofHours(4));
+//        }
         return echartCalendarOptionEntity;
     }
 

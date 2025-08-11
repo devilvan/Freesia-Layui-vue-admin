@@ -26,6 +26,10 @@
               <option name="containerPort" value="8570" />
               <option name="hostPort" value="8570" />
             </DockerPortBindingImpl>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="3658" />
+              <option name="hostPort" value="3658" />
+            </DockerPortBindingImpl>
           </list>
         </option>
         <option name="commandLineOptions" value="--network freesia-net --restart=always" />
@@ -47,6 +51,10 @@
             <DockerVolumeBindingImpl>
               <option name="containerPath" value="/var/dump" />
               <option name="hostPath" value="/home/freesia/dump/freesia-server" />
+            </DockerVolumeBindingImpl>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/home/arthas-boot.jar" />
+              <option name="hostPath" value="/home/freesia/data/freesia-server/arthas-boot.jar" />
             </DockerVolumeBindingImpl>
           </list>
         </option>
