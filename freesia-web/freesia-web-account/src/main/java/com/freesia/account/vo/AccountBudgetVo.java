@@ -1,14 +1,15 @@
 package com.freesia.account.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Evad.Wu
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "开销-预算表 值对象")
 public class AccountBudgetVo extends BaseVo {
     @Schema(description = "预算描述")
@@ -44,4 +46,7 @@ public class AccountBudgetVo extends BaseVo {
     @Schema(description = "备注")
     @JsonAlias(value = {"remark"})
     private String remark;
+    @Schema(description = "是否统计所有账本")
+    @JsonAlias(value = {"allTenantFlag"})
+    private Boolean allTenantFlag = false;
 }

@@ -22,6 +22,7 @@ import {onBeforeUnmount, onMounted, ref} from "vue";
 import {FindCostSumCalendarNearYearVo} from "@/types/account/Account";
 import * as echarts from "echarts";
 import {findCostSumCalendarNearYear} from "@/api/account/Account";
+import {useAccountCostStore} from "@/store/accountCost";
 
 /*INIT*/
 const props = defineProps({
@@ -45,6 +46,7 @@ onBeforeUnmount(() => {
 /*DESTROY*/
 
 /*VAR*/
+const accountCostStore = useAccountCostStore()
 const costCountCalendarNearYearTitle = props.title
 const findCostSumCalendarNearYearQueryVo = ref<FindCostSumCalendarNearYearVo>({});
 const costSumCalendarNearYearRef = ref(null);
@@ -59,6 +61,7 @@ let costSumCalendarNearYear: echarts.ECharts | null = null;
  * 查询日历图
  */
 function doFindCostSumCalendarNearYear() {
+  findCostSumCalendarNearYearQueryVo.value.allTenantFlag = accountCostStore.allTenantFlag
   findCostSumCalendarNearYear(findCostSumCalendarNearYearQueryVo.value).then((res: any) => {
     if (res.code === 200) {
       let data = res.data;

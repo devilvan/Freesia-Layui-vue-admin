@@ -45,6 +45,7 @@ import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,6 +64,7 @@ import java.util.Optional;
  * @Description 开销表 控制器
  * @date 2024-12-14
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/accountCostController")
@@ -120,11 +122,15 @@ public class AccountCostController extends BaseController {
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_INDEX)
     public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostVo accountCostVo, PageQuery pageQuery) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        if (!accountCostVo.getAllTenantFlag()) {
+            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            accountCostVo.setTenantId(tenantId);
+        } else {
+            accountCostVo.setTenantId(null);
+        }
         Date[] dateRange = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS, UString.SEPARATOR);
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
-        accountCostDto.setTenantId(tenantId);
         accountCostDto.setPaymentTimeFrom(dateRange[0]);
         accountCostDto.setPaymentTimeTo(dateRange[1]);
         return accountCostService.findPageAccountCost(accountCostDto, pageQuery);
@@ -182,7 +188,6 @@ public class AccountCostController extends BaseController {
             UExcel.read(file.getInputStream(), AccountCostImportEntity.class, ExcelSuffix.getInstanceBySuffix(suffix).getExcelTypeEnum(),
                     new AccountsImportListener<>(accountCostService), 0, null);
         } catch (IOException e) {
-            e.printStackTrace();
             R<Void> failed = R.failed();
             failed.setMsg(UMessage.message("file.upload.failed"));
             return failed;
@@ -202,9 +207,13 @@ public class AccountCostController extends BaseController {
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EXPORT)
     public void accountsExport(AccountCostVo accountsExportVo, HttpServletResponse response) throws IOException {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        if (!accountsExportVo.getAllTenantFlag()) {
+            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            accountsExportVo.setTenantId(tenantId);
+        } else {
+            accountsExportVo.setTenantId(null);
+        }
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountsExportVo, AccountCostDto.class);
-        accountCostDto.setTenantId(tenantId);
         accountCostDto.setUserId(userId);
         Date[] dates = parseDateRange(accountsExportVo.getPaymentTimeRange());
         accountCostDto.setPaymentTimeFrom(dates[0]);
@@ -216,11 +225,15 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "饼图-查询各类型开销比例")
     @GetMapping(value = "findCostTypeRatePie")
     public R<EchartPieOptionEntity> findCostTypeRatePie(AccountCostVo accountCostVo) {
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        if (!accountCostVo.getAllTenantFlag()) {
+            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            accountCostVo.setTenantId(tenantId);
+        } else {
+            accountCostVo.setTenantId(null);
+        }
+        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
-        accountCostDto.setTenantId(tenantId);
         if (UEmpty.isEmpty(accountCostVo.getPaymentTimeRange())) {
             Date[] dates = defaultDateRange(7);
             accountCostDto.setPaymentTimeFrom(dates[0]);
@@ -239,8 +252,13 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findCostLineChart")
     public R<EchartLineOptionEntity> findCostLineChart(FindCostLineChartVo findCostLineChartVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
-        findCostLineChartVo = Optional.ofNullable(findCostLineChartVo).orElseGet(FindCostLineChartVo::new);
+        if (!findCostLineChartVo.getAllTenantFlag()) {
+            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            findCostLineChartVo.setTenantId(tenantId);
+        } else {
+            findCostLineChartVo.setTenantId(null);
+        }
+        Optional.of(findCostLineChartVo).orElseGet(FindCostLineChartVo::new);
         DateScope dateScope = Optional.of(findCostLineChartVo)
                 .map(m -> DateScope.getInstanceByCode(m.getDateScope()))
                 .orElse(DateScope.WEEK);
@@ -248,7 +266,6 @@ public class AccountCostController extends BaseController {
         findCostLineChartVo.setDateScope(code);
         FindCostLineChartDto findCostLineChartDto = UCopy.copyVo2Dto(findCostLineChartVo, FindCostLineChartDto.class);
         findCostLineChartDto.setUserId(userId);
-        findCostLineChartDto.setTenantId(tenantId);
         String dateValue = findCostLineChartVo.getDateValue();
         if (DateScope.WEEK.getCode().equals(code)) {
             Date[] dates = defaultDateRange(7);
@@ -294,10 +311,14 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findCostSumCalendarNearYear")
     public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNearYearVo findCostSumCalendarNearYearVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        if (!findCostSumCalendarNearYearVo.getAllTenantFlag()) {
+            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            findCostSumCalendarNearYearVo.setTenantId(tenantId);
+        } else {
+            findCostSumCalendarNearYearVo.setTenantId(null);
+        }
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostSumCalendarNearYearVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
-        accountCostDto.setTenantId(tenantId);
         Date[] dates = defaultDateRange(365);
         accountCostDto.setPaymentTimeFrom(dates[0]);
         accountCostDto.setPaymentTimeTo(dates[1]);
@@ -313,20 +334,21 @@ public class AccountCostController extends BaseController {
             throw new AccountException("dateScope.invalid", new Object[]{dateScope});
         }
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        if (!findRankByCostTypeVo.getAllTenantFlag()) {
+            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            findRankByCostTypeVo.setTenantId(tenantId);
+        } else {
+            findRankByCostTypeVo.setTenantId(null);
+        }
         FindRankByCostTypeDto findRankByCostTypeDto = UCopy.copyVo2Dto(findRankByCostTypeVo, FindRankByCostTypeDto.class);
         findRankByCostTypeDto.setUserId(userId);
-        findRankByCostTypeDto.setTenantId(tenantId);
         EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = accountCostService.findRankByCostType(findRankByCostTypeDto);
         return R.ok(echartStackedHorizontalBarOptionEntity);
     }
 
-    @Idempotent(interval = "PT10S")
     @Operation(summary = "排名-按消费类型排名")
     @PostMapping(value = "refreshCache")
     public R<Void> refreshCache() {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         accountCostService.refreshCache();
         return R.ok();
     }
@@ -371,8 +393,12 @@ public class AccountCostController extends BaseController {
         List<AccountCostDto> accountCostDtoList = new ArrayList<>();
         accountCostVoList.forEach(accountCostVo -> {
             AccountCostDto accountCostDto = new AccountCostDto();
+            if (!accountCostVo.getAllTenantFlag()) {
+                accountCostVo.setTenantId(tenantId);
+            } else {
+                accountCostVo.setTenantId(null);
+            }
             UCopy.fullCopy(accountCostVo, accountCostDto);
-            accountCostDto.setTenantId(tenantId);
             accountCostDto.setUserId(userId);
             accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
             accountCostDtoList.add(accountCostDto);
@@ -389,8 +415,12 @@ public class AccountCostController extends BaseController {
     private AccountCostDto pre2Save(AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
-        accountCostDto.setTenantId(tenantId);
+        if (!accountCostVo.getAllTenantFlag()) {
+            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            accountCostDto.setTenantId(tenantId);
+        } else {
+            accountCostDto.setTenantId(null);
+        }
         accountCostDto.setUserId(userId);
         accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
         return accountCostDto;

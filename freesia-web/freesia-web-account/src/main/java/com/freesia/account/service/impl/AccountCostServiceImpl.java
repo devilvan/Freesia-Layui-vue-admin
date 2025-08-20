@@ -23,6 +23,7 @@ import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
 import com.freesia.exception.UserException;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.oss.pojo.OssFactory;
 import com.freesia.oss.pojo.OssHandler;
 import com.freesia.pojo.PageQuery;
@@ -276,6 +277,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     @Override
+    @Idempotent(interval = "PT10S")
     public void refreshCache() {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
@@ -283,11 +285,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         String findCostLineChartCacheKey = "findCostLineChart:" + userId + "@" + tenantId + '*';
         String findCostSumCalendarNearYearCacheKey = "findCostSumCalendarNearYear:" + userId + "@" + tenantId + '*';
         String findRankByCostTypeCacheKey = "findRankByCostType:" + userId + "@" + tenantId + '*';
+        String findBudgetCapacityCacheKey = "findBudgetCapacity:" + userId + "@" + tenantId + '*';
         List<String> keyList = new ArrayList<>();
         keyList.addAll(URedis.scan(findCostTypeRatePieCacheKey));
         keyList.addAll(URedis.scan(findCostLineChartCacheKey));
         keyList.addAll(URedis.scan(findCostSumCalendarNearYearCacheKey));
         keyList.addAll(URedis.scan(findRankByCostTypeCacheKey));
+        keyList.addAll(URedis.scan(findBudgetCapacityCacheKey));
         URedis.delete(keyList);
     }
 

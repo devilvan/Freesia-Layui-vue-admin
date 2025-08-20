@@ -50,4 +50,8 @@ public class AccountCostVo extends BaseVo {
     @Schema(description = "关联用户ID集合")
     @JsonAlias(value = {"accountCostUserIdList"})
     private List<Long> accountCostUserIdList;
+    @Schema(description = "是否统计所有账本")
+    @JsonAlias(value = {"allTenantFlag"})
+    private Boolean allTenantFlag = false;
+
 }

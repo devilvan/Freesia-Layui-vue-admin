@@ -7,6 +7,7 @@ export interface AccountBudgetVo extends BaseVo {
     durationTo?: Date;
     budgetType?: string;
     remark?: string;
+    allTenantFlag?: boolean
 }
 
 export interface AccountBudgetEntity extends BaseEntity {

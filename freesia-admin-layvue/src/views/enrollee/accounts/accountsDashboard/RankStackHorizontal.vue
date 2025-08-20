@@ -27,6 +27,7 @@ import * as echarts from "echarts";
 import {findRankByCostType} from "@/api/account/Account";
 import {R} from "@/types/Result";
 import {layer} from "@layui/layui-vue";
+import {useAccountCostStore} from "@/store/accountCost";
 
 /*INIT*/
 const props = defineProps({
@@ -53,6 +54,7 @@ onBeforeUnmount(() => {
 /*DESTROY*/
 
 /*VAR*/
+const accountCostStore = useAccountCostStore()
 const currentIndex = ref('0')
 const weekCostRankRef = ref();
 const monthCostRankRef = ref();
@@ -65,14 +67,15 @@ const findRankByCostTypeVo = ref<FindRankByCostTypeVo>({});
 /*FUNCTION*/
 function doFindCostRank() {
   if (currentIndex.value === '0') {
-    if (weekCostRankChart !== null) return ;
+    if (weekCostRankChart !== null) return;
     findRankByCostTypeVo.value.dateScope = DateScope.WEEK
   } else if (currentIndex.value === '1') {
-    if (monthCostRankChart !== null) return ;
+    if (monthCostRankChart !== null) return;
     findRankByCostTypeVo.value.dateScope = DateScope.MONTH
   } else {
     return;
   }
+  findRankByCostTypeVo.value.allTenantFlag = accountCostStore.allTenantFlag
   findRankByCostType(findRankByCostTypeVo.value).then((res: R<EchartStackedHorizontalBarOptionEntity>) => {
     if (res.code === 200) {
       let echartStackedHorizontalBarOptionEntity: EchartStackedHorizontalBarOptionEntity | undefined = res.data;

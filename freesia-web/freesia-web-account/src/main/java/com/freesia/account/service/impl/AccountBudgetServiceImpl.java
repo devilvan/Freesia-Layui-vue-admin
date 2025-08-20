@@ -124,7 +124,7 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
         }
         String cacheKey = "findBudgetCapacity:" +
                 findBudgetCapacityDto.getUserId() + "@" +
-                findBudgetCapacityDto.getTenantId() + "@";
+                findBudgetCapacityDto.getTenantId();
         List<EchartCapacityOptionEntity> echartCapacityOptionEntityListCache = URedis.get(cacheKey);
         if (UEmpty.isNotNull(echartCapacityOptionEntityListCache)) {
             return echartCapacityOptionEntityListCache;

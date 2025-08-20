@@ -29,6 +29,7 @@ import {AccountCostVo} from "@/types/account/Account";
 import {buildRange, defaultShortcuts} from "@/util/UDate";
 import * as echarts from "echarts";
 import {findCostTypeRatePie} from "@/api/account/Account";
+import {useAccountCostStore} from "@/store/accountCost";
 
 /*INIT*/
 const props = defineProps({
@@ -53,6 +54,7 @@ onBeforeUnmount(() => {
 /*DESTROY*/
 
 /*VAR*/
+const accountCostStore = useAccountCostStore()
 const costTypeRatePieTitle = props.title
 const costTypeRatePieRef = ref();
 const findCostTypeRatePieQueryVo = ref<AccountCostVo>({});
@@ -74,6 +76,7 @@ function doChangeFindCostTypeRatePie() {
  * 查询饼图
  */
 function doFindCostTypeRatePie() {
+  findCostTypeRatePieQueryVo.value.allTenantFlag = accountCostStore.allTenantFlag
   findCostTypeRatePie(findCostTypeRatePieQueryVo.value).then((res: any) => {
     if (res.code === 200) {
       let data = res.data

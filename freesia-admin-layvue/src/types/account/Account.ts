@@ -17,6 +17,7 @@ export interface AccountCostVo extends BaseVo {
     status?: boolean;
     iconName?: string;
     iconPartition?: string;
+    allTenantFlag?: boolean
 }
 
 export interface AccountCostEntity extends BaseEntity {

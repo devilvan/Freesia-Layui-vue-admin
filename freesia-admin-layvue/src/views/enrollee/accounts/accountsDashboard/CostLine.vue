@@ -64,6 +64,7 @@ import {findListSelectCostType} from "@/api/common/icon/template/IconTemplateHea
 import {R} from "@/types/Result";
 import {LaySelectEntity} from "@/types/Common";
 import {layer} from "@layui/layui-vue";
+import {useAccountCostStore} from "@/store/accountCost";
 
 /*INIT*/
 const props = defineProps({
@@ -95,6 +96,7 @@ onBeforeUnmount(() => {
 /*DESTROY*/
 
 /*VAR*/
+const accountCostStore = useAccountCostStore()
 const costLineChartTitle = props.title
 const weekCostLineChartRef = ref();
 const monthCostLineChartRef = ref();
@@ -118,6 +120,7 @@ function doFindCostLineChart() {
   //     return;
   //   }
   // }
+  findCostLineChartQueryVo.value.allTenantFlag = accountCostStore.allTenantFlag
   findCostLineChart(findCostLineChartQueryVo.value).then((res: any) => {
     if (res.code === 200) {
       let data = res.data;

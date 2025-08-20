@@ -44,9 +44,7 @@ public class AccountBudgetController extends BaseController {
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody AccountBudgetVo accountBudgetVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
-        accountBudgetDto.setTenantId(tenantId);
         accountBudgetDto.setUserId(userId);
         accountBudgetService.saveUpdate(accountBudgetDto);
         return R.ok();
@@ -115,12 +113,16 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "容量图-根据预算日期类型查询")
     @GetMapping(value = "findBudgetCapacity")
     public R<List<EchartCapacityOptionEntity>> findBudgetCapacity(FindBudgetCapacityVo findBudgetCapacityVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        if (!findBudgetCapacityVo.getAllTenantFlag()) {
+            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            findBudgetCapacityVo.setTenantId(tenantId);
+        } else {
+            findBudgetCapacityVo.setTenantId(null);
+        }
         FindBudgetCapacityDto findBudgetCapacityDto = new FindBudgetCapacityDto();
         UCopy.fullCopy(findBudgetCapacityVo, findBudgetCapacityDto);
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         findBudgetCapacityDto.setUserId(userId);
-        findBudgetCapacityDto.setTenantId(tenantId);
         List<EchartCapacityOptionEntity> echartCapacityOptionEntityList = accountBudgetService.findBudgetCapacity(findBudgetCapacityDto);
         return R.ok(echartCapacityOptionEntityList);
     }

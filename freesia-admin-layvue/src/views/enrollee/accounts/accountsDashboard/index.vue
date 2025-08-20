@@ -108,9 +108,14 @@ function doRefreshCache() {
       {
         text: '确定',
         callback: () => {
-          refreshCache().then(r => r)
+          refreshCache().then((res: any) => {
+            if (res.code === 200) {
+              window.location.reload()
+            }
+          }).catch(e => {
+            layer.confirm(e, {icon: 2})
+          })
           layer.closeAll()
-          window.location.reload()
         }
       },
       {
