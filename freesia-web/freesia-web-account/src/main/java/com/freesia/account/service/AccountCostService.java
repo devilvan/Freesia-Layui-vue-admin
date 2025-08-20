@@ -100,4 +100,9 @@ public interface AccountCostService {
      * @return 图表数据
      */
     EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto);
+
+    /**
+     * 刷新图表缓存
+     */
+    void refreshCache();
 }

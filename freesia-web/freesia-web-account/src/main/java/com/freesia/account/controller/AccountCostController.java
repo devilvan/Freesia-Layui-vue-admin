@@ -310,7 +310,7 @@ public class AccountCostController extends BaseController {
     public R<EchartStackedHorizontalBarOptionEntity> findRankByCostType(FindRankByCostTypeVo findRankByCostTypeVo) {
         String dateScope = findRankByCostTypeVo.getDateScope();
         if (UEmpty.isEmpty(dateScope) || null == DateScope.getInstanceByCode(dateScope)) {
-            throw new AccountException("dateScope.invalid", new Object[] {dateScope});
+            throw new AccountException("dateScope.invalid", new Object[]{dateScope});
         }
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
@@ -319,6 +319,16 @@ public class AccountCostController extends BaseController {
         findRankByCostTypeDto.setTenantId(tenantId);
         EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = accountCostService.findRankByCostType(findRankByCostTypeDto);
         return R.ok(echartStackedHorizontalBarOptionEntity);
+    }
+
+    @Idempotent(interval = "PT10S")
+    @Operation(summary = "排名-按消费类型排名")
+    @PostMapping(value = "refreshCache")
+    public R<Void> refreshCache() {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        accountCostService.refreshCache();
+        return R.ok();
     }
 
 

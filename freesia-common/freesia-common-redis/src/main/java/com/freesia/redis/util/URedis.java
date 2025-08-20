@@ -3,9 +3,13 @@ package com.freesia.redis.util;
 import cn.hutool.core.convert.Convert;
 import com.freesia.util.USpring;
 import lombok.NonNull;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +23,22 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({"unchecked", "unused"})
 public class URedis {
     private static final RedisTemplate<String, Object> REDIS_TEMPLATE = USpring.getBean("freesiaRedisTemplate");
+
+    public static List<String> scan(String pattern) {
+        // 用于存储结果的列表
+        List<String> keyList = new ArrayList<>();
+        REDIS_TEMPLATE.execute((RedisCallback<Object>) connection -> {
+            ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(10).build();
+            try (Cursor<byte[]> cursor = connection.scan(scanOptions)) { // 使用try-with-resources自动关闭游标
+                while (cursor.hasNext()) {
+                    String key = new String(cursor.next());
+                    keyList.add(key);
+                }
+            }
+            return null;
+        }, true);
+        return keyList;
+    }
 
     /**
      * 发布消息
@@ -322,6 +342,16 @@ public class URedis {
      */
     public static boolean delete(String key) {
         return Convert.toBool(REDIS_TEMPLATE.delete(key), false);
+    }
+
+    /**
+     * 批量删除key
+     *
+     * @param key 待删除的key
+     * @return 删除成功/失败
+     */
+    public static Long delete(Collection<String> keyList) {
+        return Convert.toLong(REDIS_TEMPLATE.delete(keyList), 0L);
     }
 
     /**

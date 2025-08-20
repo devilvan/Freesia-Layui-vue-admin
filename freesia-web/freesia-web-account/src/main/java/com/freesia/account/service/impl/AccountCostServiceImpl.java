@@ -22,11 +22,14 @@ import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
+import com.freesia.exception.UserException;
 import com.freesia.oss.pojo.OssFactory;
 import com.freesia.oss.pojo.OssHandler;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
+import com.freesia.satoken.util.USecurity;
+import com.freesia.tenant.exception.TenantException;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UStream;
@@ -270,6 +273,22 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
 //            URedis.set(cacheKey, entity, Duration.ofHours(4));
 //        }
         return entity;
+    }
+
+    @Override
+    public void refreshCache() {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        String findCostTypeRatePieCacheKey = "findCostTypeRatePie:" + userId + "@" + tenantId + '*';
+        String findCostLineChartCacheKey = "findCostLineChart:" + userId + "@" + tenantId + '*';
+        String findCostSumCalendarNearYearCacheKey = "findCostSumCalendarNearYear:" + userId + "@" + tenantId + '*';
+        String findRankByCostTypeCacheKey = "findRankByCostType:" + userId + "@" + tenantId + '*';
+        List<String> keyList = new ArrayList<>();
+        keyList.addAll(URedis.scan(findCostTypeRatePieCacheKey));
+        keyList.addAll(URedis.scan(findCostLineChartCacheKey));
+        keyList.addAll(URedis.scan(findCostSumCalendarNearYearCacheKey));
+        keyList.addAll(URedis.scan(findRankByCostTypeCacheKey));
+        URedis.delete(keyList);
     }
 
     private static EchartStackedHorizontalBarOptionEntity buildEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {

@@ -69,3 +69,7 @@ export function findRankByCostType(findRankByCostTypeVo: FindRankByCostTypeVo): 
     let params = buildUrlParam(findRankByCostTypeVo);
     return Http.get("/api/accountCostController/findRankByCostType", params);
 }
+
+export function refreshCache(): Promise<void> {
+    return Http.post("/api/accountCostController/refreshCache");
+}
