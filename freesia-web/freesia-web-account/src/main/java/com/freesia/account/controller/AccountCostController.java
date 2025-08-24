@@ -36,6 +36,7 @@ import com.freesia.exception.UserException;
 import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.oss.exception.OssException;
 import com.freesia.oss.util.UOssFile;
+import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
@@ -133,6 +134,7 @@ public class AccountCostController extends BaseController {
         accountCostDto.setUserId(userId);
         accountCostDto.setPaymentTimeFrom(dateRange[0]);
         accountCostDto.setPaymentTimeTo(dateRange[1]);
+        accountCostDto.setCostTypeList(accountCostVo.getCostTypeList());
         return accountCostService.findPageAccountCost(accountCostDto, pageQuery);
     }
 
@@ -351,6 +353,19 @@ public class AccountCostController extends BaseController {
     public R<Void> refreshCache() {
         accountCostService.refreshCache();
         return R.ok();
+    }
+
+    @Operation(summary = "查询开销类型查询选择框")
+    @GetMapping(value = "findSelectCostTypeList")
+    public R<List<LaySelect>> findSelectCostTypeList(AccountCostVo accountCostVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        accountCostDto.setUserId(userId);
+        Date[] dateRange = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS, UString.SEPARATOR);
+        accountCostDto.setPaymentTimeFrom(dateRange[0]);
+        accountCostDto.setPaymentTimeTo(dateRange[1]);
+        List<LaySelect> laySelectList = accountCostService.findSelectCostTypeList(accountCostDto);
+        return R.ok(laySelectList);
     }
 
 

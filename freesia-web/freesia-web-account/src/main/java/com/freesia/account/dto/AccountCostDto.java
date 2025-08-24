@@ -54,4 +54,6 @@ public class AccountCostDto extends BaseDto {
      */
     @Schema(description = "时间范围")
     private String dateScope;
+    @Schema(description = "开销类型")
+    private List<String> costTypeList;
 }

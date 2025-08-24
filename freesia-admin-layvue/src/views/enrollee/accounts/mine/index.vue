@@ -28,7 +28,7 @@
               <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
                                :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
                                :shortcuts="defaultShortcuts" simple :default-time="dateRangeDefaultTime"
-                               @change="changePaymentTimeDoSelect"></lay-date-picker>
+                               @change="change()"></lay-date-picker>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -44,6 +44,22 @@
                     :items="paymentSignSelectList"
                     :allow-clear="true"
                     placeholder="请选择"
+                ></lay-select>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="开销类型：" prop="type">
+                <lay-select
+                    style="width: 100%"
+                    size="sm"
+                    v-model="searchQuery.costTypeList"
+                    :options="selectCostTypeList"
+                    :items="selectCostTypeList"
+                    :allow-clear="true"
+                    placeholder="请选择"
+                    :show-search="true"
+                    :multiple="true"
+                    @change="change()"
                 ></lay-select>
               </lay-form-item>
             </lay-col>
@@ -322,14 +338,14 @@ export default {
 <script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {PageQuery} from "@/types/Common";
+import {LaySelectEntity, PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {
   deleteAccountCost,
   findPageAccountCost,
   findAccountCost,
   saveUpdate,
-  accountsImport, accountsExport
+  accountsImport, accountsExport, findSelectCostTypeList
 } from "@/api/account/Account";
 import router from "@/router";
 import {Operate} from "@/types/Constants";
@@ -351,6 +367,7 @@ import {CommonIconTemplateDetailVo, FindTreeIconTreeTypeEntity} from "@/types/co
 import {findCustomIconTemplateDetail} from "@/api/common/icon/template/IconTemplateDetail";
 import {preview} from "@/util/UImage";
 import {useAppStore} from "@/store/app";
+import {findListSelectCostType} from "@/api/common/icon/template/IconTemplateHeader";
 
 /* INIT*/
 onMounted(async () => {
@@ -372,6 +389,11 @@ onMounted(async () => {
   }).catch(e => {
     layer.msg(e.msg)
   });
+  findSelectCostTypeList(searchQuery.value).then((res: R<LaySelectEntity[]>) => {
+    selectCostTypeList.value = res.data
+  }).catch(e => {
+    layer.confirm(e.message)
+  })
   loadDataSource()
 })
 /* INIT*/
@@ -481,6 +503,7 @@ const userModalTableRef = ref();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const expandCollapseFlag = ref<boolean>(false);
 const findCommonIconPickerDataSource = ref<Map<string, Array<FindCommonIconEntity>>>()
+const selectCostTypeList = ref<LaySelectEntity[]>([]);
 const openKeys = ref<string[]>([]);
 /* VAR*/
 
@@ -740,10 +763,6 @@ const handleConfirm = (selectKeys: string[], rows: [], tableRef: object) => {
   accountCostVo.value.accountCostUserIdList = selectKeys
   userModalSelectedKeys.value = []
 };
-
-function changePaymentTimeDoSelect(value: any) {
-  change()
-}
 
 function changeExpandCollapseFlag() {
   expandCollapseFlag.value = !expandCollapseFlag.value

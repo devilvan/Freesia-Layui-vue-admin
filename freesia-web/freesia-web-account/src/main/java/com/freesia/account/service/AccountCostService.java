@@ -10,6 +10,7 @@ import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
+import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -105,4 +106,12 @@ public interface AccountCostService {
      * 刷新图表缓存
      */
     void refreshCache();
+
+    /**
+     * 查询开销类型查询选择框
+     *
+     * @param accountCostDto 查询参数
+     * @return 结果集
+     */
+    List<LaySelect> findSelectCostTypeList(AccountCostDto accountCostDto);
 }

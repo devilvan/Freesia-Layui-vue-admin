@@ -1,5 +1,5 @@
 import Http from "../Http";
-import {PageQuery} from "../../types/Common";
+import {LaySelectEntity, PageQuery} from "../../types/Common";
 import {R, TableResult} from "../../types/Result";
 import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
 import {
@@ -72,4 +72,9 @@ export function findRankByCostType(findRankByCostTypeVo: FindRankByCostTypeVo): 
 
 export function refreshCache(): Promise<void> {
     return Http.post("/api/accountCostController/refreshCache");
+}
+
+export function findSelectCostTypeList(accountCostVo: AccountCostVo): Promise<R<LaySelectEntity[]>> {
+    let params = buildUrlParam(accountCostVo);
+    return Http.get("/api/accountCostController/findSelectCostTypeList", params);
 }

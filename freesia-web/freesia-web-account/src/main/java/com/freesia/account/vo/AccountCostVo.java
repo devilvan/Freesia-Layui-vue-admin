@@ -53,5 +53,8 @@ public class AccountCostVo extends BaseVo {
     @Schema(description = "是否统计所有账本")
     @JsonAlias(value = {"allTenantFlag"})
     private Boolean allTenantFlag = false;
+    @Schema(description = "开销类型")
+    @JsonAlias(value = {"costTypeList"})
+    private List<String> costTypeList;
 
 }

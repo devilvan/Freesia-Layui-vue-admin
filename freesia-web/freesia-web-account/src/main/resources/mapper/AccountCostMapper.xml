@@ -27,10 +27,10 @@
         AND AC.USER_ID = #{accountCost.userId}
         AND AC.TENANT_ID = #{accountCost.tenantId}
         <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
-            AND AC.COST_DESC = #{accountCost.costDesc}
+            AND AC.COST_DESC like CONCAT('%', #{accountCost.costDesc}, '%')
         </if>
         <if test="accountCost.remark != null and accountCost.remark != ''">
-            AND AC.REMARK = #{accountCost.remark}
+            AND AC.REMARK LIKE ('%', #{accountCost.remark}, '%')
         </if>
         <if test="accountCost.paymentSign != null and accountCost.paymentSign != ''">
             AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
@@ -38,6 +38,13 @@
         <if test="accountCost.paymentTimeFrom != null and accountCost.paymentTimeTo != null">
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
             AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
+        </if>
+        <if test="accountCost.costTypeList != null and accountCost.costTypeList.size() > 0">
+            AND AC.COST_TYPE IN
+            <foreach collection="accountCost.costTypeList" item="item" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
         </if>
         GROUP BY AC.ID
 
@@ -68,10 +75,10 @@
         AND AC.TENANT_ID = #{accountCost.tenantId}
         AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
         <if test="accountCost.costDesc != null and accountCost.costDesc != ''">
-            AND AC.COST_DESC = #{accountCost.costDesc}
+            AND AC.COST_DESC like CONCAT('%', #{accountCost.costDesc}, '%')
         </if>
         <if test="accountCost.remark != null and accountCost.remark != ''">
-            AND AC.REMARK = #{accountCost.remark}
+            AND AC.REMARK LIKE ('%', #{accountCost.remark}, '%')
         </if>
         <if test="accountCost.paymentSign != null and accountCost.paymentSign != ''">
             AND AC.PAYMENT_SIGN = #{accountCost.paymentSign}
@@ -82,6 +89,13 @@
         <if test="accountCost.paymentTimeFrom != null and accountCost.paymentTimeTo != null">
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
             AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
+        </if>
+        <if test="accountCost.costTypeList != null and accountCost.costTypeList.size() > 0">
+            AND AC.COST_TYPE IN
+            <foreach collection="accountCost.costTypeList" item="item" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
         </if>
         GROUP BY AC.ID
         ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
@@ -780,5 +794,30 @@
         AC.PAYMENT_TIME) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
         ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
+    </select>
+    <select id="findSelectCostTypeList" resultType="com.freesia.account.po.AccountCostPo">
+        SELECT DISTINCT AC.COST_TYPE
+        FROM account_cost AC
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.USER_ID = #{accountCostDto.userId}
+        <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+            AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        </if>
+
+        UNION
+
+        SELECT DISTINCT AC.COST_TYPE
+        FROM account_cost AC
+        LEFT JOIN account_cost_user ACU ON AC.ID = ACU.COST_ID
+        WHERE 1 = 1
+        AND AC.LOGIC_DEL = 0
+        AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
+        AND ACU.USER_ID = #{accountCostDto.userId}
+        <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
+            AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
+            AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
+        </if>
     </select>
 </mapper>

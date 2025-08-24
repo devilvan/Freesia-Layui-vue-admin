@@ -26,6 +26,7 @@ import com.freesia.exception.UserException;
 import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.oss.pojo.OssFactory;
 import com.freesia.oss.pojo.OssHandler;
+import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
@@ -293,6 +294,21 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         keyList.addAll(URedis.scan(findRankByCostTypeCacheKey));
         keyList.addAll(URedis.scan(findBudgetCapacityCacheKey));
         URedis.delete(keyList);
+    }
+
+    @Override
+    public List<LaySelect> findSelectCostTypeList(AccountCostDto accountCostDto) {
+        List<LaySelect> laySelectList = new ArrayList<>();
+        List<AccountCostPo> accountCostPoList = accountCostMapper.findSelectCostTypeList(accountCostDto);
+        if (UEmpty.isNotEmpty(accountCostPoList)) {
+            for (AccountCostPo accountCostPo : accountCostPoList) {
+                LaySelect laySelect = new LaySelect();
+                laySelect.setLabel(accountCostPo.getCostType());
+                laySelect.setValue(accountCostPo.getCostType());
+                laySelectList.add(laySelect);
+            }
+        }
+        return laySelectList;
     }
 
     private static EchartStackedHorizontalBarOptionEntity buildEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {
