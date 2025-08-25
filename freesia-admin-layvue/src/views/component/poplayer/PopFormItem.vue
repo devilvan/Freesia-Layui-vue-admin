@@ -64,23 +64,23 @@ const props = defineProps({
     required: true
   },
   // 已选行号
-  selectedKeys: {
+  values: {
     type: Array,
     default: []
   },
-  selectedLabels: {
+  keys: {
     type: Array,
     default: []
   },
 });
 watch(
-    () => props.selectedLabels,
+    () => props.keys,
     (val) => {
       selectLabels.value = val;
     },
 );
 watch(
-    () => props.selectedKeys,
+    () => props.values,
     (val) => {
       selectKeys.value = val;
     },

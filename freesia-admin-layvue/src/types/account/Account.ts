@@ -19,6 +19,7 @@ export interface AccountCostVo extends BaseVo {
     iconPartition?: string;
     allTenantFlag?: boolean;
     costTypeList?: string[];
+    refUserIdList?: string[];
 }
 
 export interface AccountCostEntity extends BaseEntity {

@@ -63,6 +63,19 @@
                 ></lay-select>
               </lay-form-item>
             </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="关联用户" prop="accountCostUserIdList">
+                <PopFormItem :title="'关联用户'"
+                             v-model="searchQuery.accountCostUserIdList"
+                             :area="['1200px', '700px']"
+                             :columns="userModalColumns"
+                             :modalChange="userModalChange"
+                             :keys="searchQuery.accountCostUserNameList"
+                             :values="searchQuery.accountCostUserIdList"
+                             @confirm="searchQueryHandleConfirm"
+                ></PopFormItem>
+              </lay-form-item>
+            </lay-col>
           </lay-row>
         </lay-transition>
       </lay-form>
@@ -246,8 +259,8 @@
                              :area="['1200px', '700px']"
                              :columns="userModalColumns"
                              :modalChange="userModalChange"
-                             :selectedKeys="accountCostVo.accountCostUserIdList"
-                             :selectedLabels="accountCostVo.accountCostUserNameList"
+                             :keys="accountCostVo.accountCostUserNameList"
+                             :values="accountCostVo.accountCostUserIdList"
                              @confirm="handleConfirm"
                 ></PopFormItem>
               </lay-form-item>
@@ -759,6 +772,12 @@ function changeShowUserModalFlag() {
  * 处理确定事件
  */
 const handleConfirm = (selectKeys: string[], rows: [], tableRef: object) => {
+  accountCostVo.value.accountCostUserNameList = rows?.map(v => v.nickName);
+  accountCostVo.value.accountCostUserIdList = selectKeys
+  userModalSelectedKeys.value = []
+};
+
+const searchQueryHandleConfirm = (selectKeys: string[], rows: [], tableRef: object) => {
   accountCostVo.value.accountCostUserNameList = rows?.map(v => v.nickName);
   accountCostVo.value.accountCostUserIdList = selectKeys
   userModalSelectedKeys.value = []

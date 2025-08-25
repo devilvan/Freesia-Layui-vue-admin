@@ -39,9 +39,16 @@
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
             AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
         </if>
-        <if test="accountCost.costTypeList != null and accountCost.costTypeList.size() > 0">
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCost.costTypeList)">
             AND AC.COST_TYPE IN
             <foreach collection="accountCost.costTypeList" item="item" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCost.accountCostUserIdList)">
+            AND ACU.USER_ID IN
+            <foreach collection="accountCost.accountCostUserIdList" item="item" open="(" close=")"
                      separator=",">
                 #{item}
             </foreach>
@@ -90,9 +97,16 @@
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCost.paymentTimeFrom}
             AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCost.paymentTimeTo}
         </if>
-        <if test="accountCost.costTypeList != null and accountCost.costTypeList.size() > 0">
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCost.costTypeList)">
             AND AC.COST_TYPE IN
             <foreach collection="accountCost.costTypeList" item="item" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCost.accountCostUserIdList)">
+            AND ACU.USER_ID IN
+            <foreach collection="accountCost.accountCostUserIdList" item="item" open="(" close=")"
                      separator=",">
                 #{item}
             </foreach>

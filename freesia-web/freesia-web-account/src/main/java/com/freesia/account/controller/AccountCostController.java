@@ -135,6 +135,7 @@ public class AccountCostController extends BaseController {
         accountCostDto.setPaymentTimeFrom(dateRange[0]);
         accountCostDto.setPaymentTimeTo(dateRange[1]);
         accountCostDto.setCostTypeList(accountCostVo.getCostTypeList());
+        accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
         return accountCostService.findPageAccountCost(accountCostDto, pageQuery);
     }
 
