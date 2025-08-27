@@ -1,9 +1,17 @@
 <template>
   <div style="display: inline-flex; text-align: left">
     <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
-    <div style="padding-left: 10px">
-      <lay-input v-model="selectLabels" :allow-clear="true"
-                 :disabled="true"></lay-input>
+    <div style="padding-left: 10px;">
+<!--      <lay-input v-model="selectLabels" :allow-clear="true"-->
+<!--                 :disabled="true"></lay-input>-->
+      <lay-select
+          style="width: 100%"
+          size="sm"
+          :disabled="true"
+          v-model="selectLabels"
+          :allow-clear="true"
+          :multiple="true"
+      ></lay-select>
     </div>
   </div>
 
@@ -97,7 +105,6 @@ const emit = defineEmits<{
 const showModalFlag = ref(false);
 const loading = ref(false)
 const selectKeys = ref<Array<string>>()
-const selectRows = ref<Array<object>>([])
 const selectLabels = ref<Array<string>>([])
 const dataSource = ref([])
 const modalSearchQuery = ref({});
@@ -131,10 +138,10 @@ function changeShowModalFlag() {
 function confirm() {
   selectKeys.value = selectKeys;
   let checkData = modalTableRef.value.getCheckData();
-  selectLabels.value = checkData.map(v => v.nickName)
+  selectLabels.value = checkData.map((v: any) => v.nickName)
   showModalFlag.value = !showModalFlag.value
-  emit('confirm', selectKeys.value, checkData, modalTableRef);
-  emit('update:modelValue', checkData.map(v => v.id));
+  emit('callback', selectKeys.value, checkData, modalTableRef);
+  emit('update:modelValue', checkData.map((v: any) => v.id));
 }
 
 /*FUNCTION*/

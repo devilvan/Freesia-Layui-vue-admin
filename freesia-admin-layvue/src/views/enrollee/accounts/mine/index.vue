@@ -48,7 +48,7 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="开销类型：" prop="type">
+              <lay-form-item label="开销类型" prop="type">
                 <lay-select
                     style="width: 100%"
                     size="sm"
@@ -65,14 +65,15 @@
             </lay-col>
             <lay-col :md="6">
               <lay-form-item label="关联用户" prop="accountCostUserIdList">
-                <PopFormItem :title="'关联用户'"
-                             v-model="searchQuery.accountCostUserIdList"
-                             :area="['1200px', '700px']"
-                             :columns="userModalColumns"
-                             :modalChange="userModalChange"
-                             :keys="searchQuery.accountCostUserNameList"
-                             :values="searchQuery.accountCostUserIdList"
-                             @confirm="searchQueryHandleConfirm"
+                <PopFormItem
+                    :title="'关联用户'"
+                    v-model="searchQuery.accountCostUserIdList"
+                    :area="['1200px', '700px']"
+                    :columns="userModalColumns"
+                    :modalChange="userModalChange"
+                    :keys="searchQuery.accountCostUserNameList"
+                    :values="searchQuery.accountCostUserIdList"
+                    @confirm="searchQueryHandleConfirm"
                 ></PopFormItem>
               </lay-form-item>
             </lay-col>
