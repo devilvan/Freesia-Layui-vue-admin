@@ -1,5 +1,5 @@
 import Http from "../Http"
-import {AssignRoleVo, AssignDeptVo, SysUserEntity, SysUserVo} from "../../types/system/User";
+import {AssignRoleVo, AssignDeptVo, SysUserEntity, SysUserVo, FindPageSysUserListEntity} from "../../types/system/User";
 import {PageQuery} from "../../types/Common";
 import {buildPageUrlParam} from "../../util/URequest";
 import {TableResult} from "../../types/Result";
@@ -78,7 +78,7 @@ export function avatarUpdate(avatar: string) {
     })
 }
 
-export const findPageSysUserWithoutDataScope = function (searchQuery: SysUserVo, pageQuery: PageQuery) {
+export const findPageSysUserWithoutDataScope = function (searchQuery: SysUserVo, pageQuery: PageQuery) : Promise<TableResult<FindPageSysUserListEntity>>{
     const params = buildPageUrlParam(searchQuery, pageQuery);
     return Http.get('/api/sysUserController/findPageSysUserWithoutDataScope', params)
 }

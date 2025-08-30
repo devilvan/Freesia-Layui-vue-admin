@@ -2,8 +2,6 @@
   <div style="display: inline-flex; text-align: left">
     <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
     <div style="padding-left: 10px;">
-<!--      <lay-input v-model="selectLabels" :allow-clear="true"-->
-<!--                 :disabled="true"></lay-input>-->
       <lay-select
           style="width: 100%"
           size="sm"
@@ -136,7 +134,6 @@ function changeShowModalFlag() {
 
 
 function confirm() {
-  selectKeys.value = selectKeys;
   let checkData = modalTableRef.value.getCheckData();
   selectLabels.value = checkData.map((v: any) => v.nickName)
   showModalFlag.value = !showModalFlag.value

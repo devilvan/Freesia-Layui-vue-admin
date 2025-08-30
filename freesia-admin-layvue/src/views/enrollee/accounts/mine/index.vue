@@ -66,14 +66,13 @@
             <lay-col :md="6">
               <lay-form-item label="关联用户" prop="accountCostUserIdList">
                 <PopFormItem
-                    :title="'关联用户'"
                     v-model="searchQuery.accountCostUserIdList"
+                    :title="'关联用户'"
                     :area="['1200px', '700px']"
                     :columns="userModalColumns"
-                    :modalChange="userModalChange"
                     :keys="searchQuery.accountCostUserNameList"
                     :values="searchQuery.accountCostUserIdList"
-                    @confirm="searchQueryHandleConfirm"
+                    @callback="searchQueryHandleConfirm"
                 ></PopFormItem>
               </lay-form-item>
             </lay-col>
@@ -99,6 +98,7 @@
         :page="pageQuery"
         :height="'550px'"
         :even="false"
+        :resize="true"
         :rowStyle="getRowStyle"
         @change="change"
         @sortChange="sortChange">
@@ -181,7 +181,6 @@
         </lay-button>
         <lay-popconfirm
             content="确定要删除吗?"
-            @cancel="cancel"
             @confirm="confirm(row)">
           <lay-button v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_DELETE]" border="red"
                       border-style="dashed"
@@ -366,22 +365,17 @@ import {Operate} from "@/types/Constants";
 import {AccountCostEntity, AccountCostVo, PaymentSign} from "@/types/account/Account";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {List} from "echarts";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
-import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 import {SysUserEntity, SysUserVo} from "@/types/system/User";
-import {findPageSysUserList, findPageSysUserWithoutDataScope} from "@/api/system/User";
+import {findPageSysUserWithoutDataScope} from "@/api/system/User";
 import app from "@/main";
-import DictScan from "@/views/component/DictScan.vue";
 import IconPicker from "@/views/component/svg/IconPicker.vue";
-import {findCommonIconPicker} from "@/api/common/icon/Icon";
 import {FindCommonIconEntity} from "@/types/common/icon/Icon";
 import {CommonIconTemplateDetailVo, FindTreeIconTreeTypeEntity} from "@/types/common/icon/template/IconTemplateDetail";
 import {findCustomIconTemplateDetail} from "@/api/common/icon/template/IconTemplateDetail";
 import {preview} from "@/util/UImage";
 import {useAppStore} from "@/store/app";
-import {findListSelectCostType} from "@/api/common/icon/template/IconTemplateHeader";
 
 /* INIT*/
 onMounted(async () => {
@@ -432,18 +426,21 @@ const dataSource = ref<Array<AccountCostEntity>>()
 const title = ref('新增')
 const pageQuery = reactive<PageQuery>({
   current: 1,
-  limit: 10
+  limit: 10,
+  limits: [10, 20, 50, 100],
+  hideOnSinglePage: false,
+  layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '开销描述', width: '130px', key: 'costDesc', fixed: 'left'},
+  {title: '开销描述', width: '130px', key: 'costDesc', fixed: 'left', ellipsisTooltipTheme: 'dark'},
   {title: '开销金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '开销标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
   {title: '开支时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
-  {title: '修改时间', width: '150px', key: 'modifyTime', sort: 'desc'},
+  {title: '修改时间', width: '150px', key: 'modifyTime'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
-  {title: '关联用户', width: '150px', key: 'nickNameList', customSlot: 'nickNameList'},
+  {title: '关联用户', width: '200px', key: 'nickNameList', customSlot: 'nickNameList'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -688,10 +685,6 @@ function confirm(row: any) {
       layer.confirm(e.msg, {icon: 2})
     })
   }
-}
-
-function cancel() {
-  layer.msg('您已取消操作')
 }
 
 

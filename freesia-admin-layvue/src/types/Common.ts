@@ -35,6 +35,10 @@ export interface PageQuery {
     current?: number;
     limit?: number;
     total?: number;
+    limits?: number[];
+    ellipsisTooltip?: boolean;
+    layout?: string[];
+    hideOnSinglePage?: boolean;
 }
 
 export interface LaySelectEntity {
