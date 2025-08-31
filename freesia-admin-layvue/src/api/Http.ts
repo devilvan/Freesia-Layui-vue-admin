@@ -3,9 +3,10 @@ import {useUserStore} from "@/store/user";
 import {layer} from '@layui/layui-vue';
 import router from '@/router'
 import {useAppStore} from "@/store/app";
+import {name} from "node-rsa";
 
 export let loginPath: string = '/login'
-const downloadPath = import.meta.env.VITE_APP_DOWNLOAD_PATH;
+export let downloadPath = import.meta.env.VITE_APP_DOWNLOAD_PATH;
 type TAxiosOption = {
     timeout: number;
     baseURL: string;
@@ -63,8 +64,8 @@ class Http {
                             }
                         });
                     layer.notify({
-                        title:"提示",
-                        content:"会话认证失败, 请重新登录"
+                        title: "提示",
+                        content: "会话认证失败, 请重新登录"
                     })
                     userInfoStore.token = ''
                     router.push(loginPath);
@@ -102,11 +103,19 @@ class Http {
                 let contentDisposition = response.headers['content-disposition'];
                 let fileName = 'file'; // 默认文件名
                 if (contentDisposition && contentDisposition.includes('filename=')) {
-                    let uriComponent = contentDisposition
-                        .split('filename=')[1]
-                        .split(';')[0]
-                        .replace(/['"]/g, '');
-                    fileName = decodeURIComponent(uriComponent);
+                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = filenameRegex.exec(contentDisposition);
+                    if (matches != null && matches[1]) {
+                        let filename = matches[1].replace(/['"]/g, '');
+                        // 处理UTF-8编码的文件名
+                        if (filename.includes('%')) {
+                            try {
+                                filename = decodeURIComponent(filename);
+                            } catch (e) {
+                                layer.confirm('Error decoding filename: ' + e, {icon: 3});
+                            }
+                        }
+                    }
                 }
                 let contentType = response.headers["content-type"] as string;
                 const blob = new Blob([responseData], {type: contentType})
@@ -147,6 +156,14 @@ class Http {
     getDownload(id: any): Promise<any> {
         return this.service.request({
             url: downloadPath + id,
+            method: 'get',
+            responseType: 'blob'
+        })
+    }
+
+    downloadUrl(url: any): Promise<any> {
+        return this.service.request({
+            url: url,
             method: 'get',
             responseType: 'blob'
         })

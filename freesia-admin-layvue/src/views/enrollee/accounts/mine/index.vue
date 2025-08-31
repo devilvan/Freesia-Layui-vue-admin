@@ -65,15 +65,45 @@
             </lay-col>
             <lay-col :md="6">
               <lay-form-item label="关联用户" prop="accountCostUserIdList">
-                <PopFormItem
-                    v-model="searchQuery.accountCostUserIdList"
-                    :title="'关联用户'"
-                    :area="['1200px', '700px']"
-                    :columns="userModalColumns"
-                    :keys="searchQuery.accountCostUserNameList"
-                    :values="searchQuery.accountCostUserIdList"
-                    @callback="searchQueryHandleConfirm"
-                ></PopFormItem>
+                <div style="display: inline-flex; text-align: left">
+                  <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
+                  <div style="padding-left: 10px;">
+                    <lay-select
+                        style="width: 100%"
+                        size="sm"
+                        :disabled="true"
+                        v-model="searchQuery.accountCostUserNameList"
+                        :allow-clear="true"
+                        :multiple="true"
+                    ></lay-select>
+                  </div>
+                </div>
+
+                <lay-layer v-model="showModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
+                  <div v-esc-close="toCancelUserModal">
+                    <lay-table
+                        ref="userModalTableRef"
+                        :page="userModalPageQuery"
+                        :columns="userModalColumns"
+                        :loading="userModalLoading"
+                        :data-source="userEntityList"
+                        :height="'550px'"
+                        v-model:selected-keys="searchQuery.accountCostUserIdList"
+                        @change="changeShowModalFlag"
+                    >
+                      <template v-slot:toolbar>
+                        <lay-button size="sm" type="normal" @click="changeShowModalFlag">
+                          <lay-icon class="layui-icon-addition"></lay-icon>
+                          查询
+                        </lay-button>
+                        <lay-button size="sm" type="danger" @click="searchUserModalConfirm">
+                          <lay-icon class="layui-icon-addition"></lay-icon>
+                          确认
+                        </lay-button>
+                      </template>
+                    </lay-table>
+                  </div>
+                </lay-layer>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -254,15 +284,47 @@
             </lay-col>
             <lay-col :md="6">
               <lay-form-item label="关联用户" prop="accountCostUserIdList">
-                <PopFormItem :title="'关联用户'"
-                             v-model="accountCostVo.accountCostUserIdList"
-                             :area="['1200px', '700px']"
-                             :columns="userModalColumns"
-                             :modalChange="userModalChange"
-                             :keys="accountCostVo.accountCostUserNameList"
-                             :values="accountCostVo.accountCostUserIdList"
-                             @confirm="handleConfirm"
-                ></PopFormItem>
+                <lay-col :md="6">
+                  <div style="display: inline-flex; text-align: left">
+                    <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
+                    <div style="padding-left: 10px;">
+                      <lay-select
+                          style="width: 100%"
+                          size="sm"
+                          :disabled="true"
+                          v-model="accountCostVo.accountCostUserNameList"
+                          :allow-clear="true"
+                          :multiple="true"
+                      ></lay-select>
+                    </div>
+                  </div>
+
+                  <lay-layer v-model="showModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
+                    <div v-esc-close="toCancelUserModal">
+                      <lay-table
+                          ref="userModalTableRef"
+                          :page="userModalPageQuery"
+                          :columns="userModalColumns"
+                          :loading="userModalLoading"
+                          :data-source="userEntityList"
+                          :height="'550px'"
+                          v-model:selected-keys="accountCostVo.accountCostUserIdList"
+                          @change="changeShowModalFlag"
+                      >
+                        <template v-slot:toolbar>
+                          <lay-button size="sm" type="normal" @click="changeShowModalFlag">
+                            <lay-icon class="layui-icon-addition"></lay-icon>
+                            查询
+                          </lay-button>
+                          <lay-button size="sm" type="danger" @click="insertUserModalConfirm">
+                            <lay-icon class="layui-icon-addition"></lay-icon>
+                            确认
+                          </lay-button>
+                        </template>
+                      </lay-table>
+                    </div>
+                  </lay-layer>
+                </lay-col>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -306,11 +368,13 @@
           </div>
         </template>
       </lay-upload>
+      <div style="width: 100%;margin-top: 20px; text-align: center; margin-bottom: 20px">
+        <lay-button size="sm" type="primary" @click="toUpload">上传</lay-button>
+        <lay-button size="sm" type="normal" @click="downloadTemplate">下载模板</lay-button>
+        <lay-button size="sm" @click="hideAccountsImportModal">取消</lay-button>
+      </div>
       <div style="width: 100%; text-align: center">
         只能上传小于10MB的文件
-      </div>
-      <div style="width: 100%;margin-top: 20px; text-align: center">
-        <lay-button size="sm" type="primary" @click="toUpload">上传</lay-button>
       </div>
     </lay-layer>
 
@@ -376,6 +440,9 @@ import {CommonIconTemplateDetailVo, FindTreeIconTreeTypeEntity} from "@/types/co
 import {findCustomIconTemplateDetail} from "@/api/common/icon/template/IconTemplateDetail";
 import {preview} from "@/util/UImage";
 import {useAppStore} from "@/store/app";
+import Http from "@/api/Http";
+import {findConfigByKey} from "@/api/system/Config";
+import {SysConfigKey} from "@/types/system/Config";
 
 /* INIT*/
 onMounted(async () => {
@@ -397,6 +464,7 @@ onMounted(async () => {
   }).catch(e => {
     layer.msg(e.msg)
   });
+  doFindPageUser();
   findSelectCostTypeList(searchQuery.value).then((res: R<LaySelectEntity[]>) => {
     selectCostTypeList.value = res.data
   }).catch(e => {
@@ -506,8 +574,6 @@ const userModalColumns = ref([
   {title: '用户名称', key: 'userName'},
   {title: '用户昵称', key: 'nickName'},
   {title: '用户类型', key: 'userType'},
-  {title: '状态', key: 'accountStatus', customSlot: 'accountStatus'},
-  {title: '备注', key: 'remark', customSlot: 'remark'},
 ])
 const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
@@ -516,6 +582,7 @@ const expandCollapseFlag = ref<boolean>(false);
 const findCommonIconPickerDataSource = ref<Map<string, Array<FindCommonIconEntity>>>()
 const selectCostTypeList = ref<LaySelectEntity[]>([]);
 const openKeys = ref<string[]>([]);
+const showModalFlag = ref<Boolean>(false)
 /* VAR*/
 
 /* FUNCTION*/
@@ -756,12 +823,6 @@ function userModalChange() {
   }, 200)
 }
 
-function changeShowUserModalFlag() {
-  userModalChange()
-  userModalSelectedKeys.value = accountCostVo.value.accountCostUserIdList
-  showUserModalFlag.value = true
-}
-
 /**
  * 处理确定事件
  */
@@ -805,6 +866,46 @@ function getRowStyle(row: any, rowIndex: number) {
   if (day === 5) return 'background-color:' + 'rgba(57, 99, 188, 0.4)';
   if (day === 6) return 'background-color:' + 'rgba(153, 138, 219, 0.4)';
   return ''
+}
+
+function changeShowModalFlag() {
+  userModalLoading.value = true
+  setTimeout(() => {
+    doFindPageUser()
+    userModalLoading.value = false
+  }, 200)
+  showModalFlag.value = !showModalFlag.value
+}
+
+function searchUserModalConfirm() {
+  let checkData = userModalTableRef.value.getCheckData();
+  searchQuery.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
+  searchQuery.value.accountCostUserIdList = checkData.map((v: any) => v.id)
+  showModalFlag.value = !showModalFlag.value
+}
+
+function insertUserModalConfirm() {
+  let checkData = userModalTableRef.value.getCheckData();
+  accountCostVo.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
+  accountCostVo.value.accountCostUserIdList = checkData.map((v: any) => v.id)
+  showModalFlag.value = !showModalFlag.value
+}
+
+function toCancelUserModal() {
+  showModalFlag.value = !showModalFlag.value
+}
+
+async function downloadTemplate() {
+  findConfigByKey(SysConfigKey.ACCOUNT_IMPORT_TEMPLATE_URL).then((res: any) => {
+    if (res.code === 200) {
+      Http.downloadUrl(res.data)
+      layer.notify({
+        title: "消息",
+        content: '下载模板成功！',
+        icon: 1,
+      })
+    }
+  })
 }
 
 /* FUNCTION*/

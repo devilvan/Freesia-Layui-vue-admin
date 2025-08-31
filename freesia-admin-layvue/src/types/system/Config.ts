@@ -5,13 +5,21 @@ import {BaseEntity, BaseVo} from "../Common";
  */
 export enum SysConfigKey {
     /**
+     * 账号自助-验证码开关（boolean）
+     */
+    SYS_ACCOUNT_CAPTCHA_ENABLED = "sys.account.captchaEnabled",
+    /**
      * 首页图标URL
      */
     HOME_ICON_URL = "home.icon.url",
     /**
-     * 添加图标URL
+     * Gitee请求提交更新接口URL
      */
-    ADD_ICON_URL = "add.icon.url"
+    GITEE_COMMIT_URL = "gitee.commit.url",
+    /**
+     * 记账导入模板
+     */
+    ACCOUNT_IMPORT_TEMPLATE_URL = "account.import.template.url"
 }
 
 export interface SysConfigVo extends BaseVo {

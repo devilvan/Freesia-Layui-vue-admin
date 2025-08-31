@@ -8,7 +8,7 @@
           <list>
             <DockerEnvVarImpl>
               <option name="name" value="JAVA_OPTS" />
-              <option name="value" value="-Xmx512m -Xms256m -Xlog:gc:/var/log/gc.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/dump/heapdump.bin --add-opens java.base/java.lang.invoke=ALL-UNNAMED" />
+              <option name="value" value="-Xmx256m -Xms256m -Xlog:gc:/var/log/gc.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/dump/heapdump.bin --add-opens java.base/java.lang.invoke=ALL-UNNAMED" />
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="SPRING_CONFIG_LOCATION" />

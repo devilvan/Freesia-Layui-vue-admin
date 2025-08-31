@@ -91,9 +91,6 @@
     <lay-layer v-model="configModalShowFlag" :title="title" :area="['500px']">
       <div style="padding: 20px">
         <lay-form :model="configVo" ref="configFormRef">
-          <lay-form-item label="ID" prop="id" :hidden="true" required>
-            <lay-input v-model="configVo.id" disabled></lay-input>
-          </lay-form-item>
           <lay-form-item label="参数名称" prop="configName" required>
             <lay-input v-model="configVo.configName"></lay-input>
           </lay-form-item>

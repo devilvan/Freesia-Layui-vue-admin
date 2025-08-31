@@ -1,7 +1,6 @@
 package com.freesia.service.impl;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -13,6 +12,7 @@ import com.freesia.constant.*;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.exception.CaptchaException;
 import com.freesia.exception.CaptchaExpireException;
+import com.freesia.exception.ConfigException;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysConfigMapper;
 import com.freesia.net.util.UServlet;
@@ -68,6 +68,9 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
                 .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysConfigPo::getConfigKey, configKey);
         SysConfigPo sysConfigPo = this.getOne(queryWrapper);
+        if (UEmpty.isNull(sysConfigPo)) {
+            throw new ConfigException("config.not.exists", new Object[]{configKey});
+        }
         return UCopy.copyPo2Dto(sysConfigPo, SysConfigDto.class);
     }
 
