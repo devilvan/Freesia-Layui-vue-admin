@@ -28,7 +28,7 @@
               <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
                                :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
                                :shortcuts="defaultShortcuts" simple :default-time="dateRangeDefaultTime"
-                               @change="change()"></lay-date-picker>
+                               @change="change"></lay-date-picker>
             </lay-form-item>
           </lay-col>
         </lay-row>
@@ -465,11 +465,7 @@ onMounted(async () => {
     layer.msg(e.msg)
   });
   doFindPageUser();
-  findSelectCostTypeList(searchQuery.value).then((res: R<LaySelectEntity[]>) => {
-    selectCostTypeList.value = res.data
-  }).catch(e => {
-    layer.confirm(e.message)
-  })
+  doFindSelectCostTypeList();
   loadDataSource()
 })
 /* INIT*/
@@ -606,14 +602,24 @@ function toSearch() {
 }
 
 const change = () => {
+  doFindSelectCostTypeList()
   loading.value = true
   setTimeout(() => {
     loadDataSource()
     loading.value = false
   }, 200)
 }
-const sortChange = (key: any, sort: number) => {
+const sortChange = (key: any, sort: string) => {
   layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
+  if (key === 'paymentTime') {
+    dataSource.value?.sort((a: any, b: any) => {
+      if (sort === 'asc') {
+        return new Date(a.paymentTime).getTime() - new Date(b.paymentTime).getTime();
+      } else {
+        return new Date(b.paymentTime).getTime() - new Date(a.paymentTime).getTime();
+      }
+    })
+  }
 }
 const showExpenseModal = (text: any, row: any) => {
   title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
@@ -905,6 +911,14 @@ async function downloadTemplate() {
         icon: 1,
       })
     }
+  })
+}
+
+function doFindSelectCostTypeList() {
+  findSelectCostTypeList(searchQuery.value).then((res: R<LaySelectEntity[]>) => {
+    selectCostTypeList.value = res.data
+  }).catch(e => {
+    layer.confirm(e.message)
   })
 }
 

@@ -115,7 +115,7 @@
     </div>
 
     <lay-layer v-model="showModalFlag" :area="['1200px']" :title="saveModalTitle">
-      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
+      <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" v-esc-close="toCancel">
         <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" :rules="saveFromRules" label-position="top">
           <lay-row :space="20">
             <lay-col :md="6">
@@ -153,6 +153,14 @@
           </lay-row>
           <lay-row :space="20">
             <lay-col :md="6">
+              <lay-form-item label="备注" prop="remark">
+                <lay-textarea
+                    v-model="saveAccountBudgetVo.remark"
+                    allow-clear
+                ></lay-textarea>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
               <lay-form-item label="时间范围从" style="width: 100%"
                              :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
                              prop="durationFrom" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
@@ -168,14 +176,6 @@
                              :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
                 <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
                                  allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="备注" prop="remark">
-                <lay-textarea
-                    v-model="saveAccountBudgetVo.remark"
-                    allow-clear
-                ></lay-textarea>
               </lay-form-item>
             </lay-col>
           </lay-row>

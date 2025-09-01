@@ -3,8 +3,8 @@
     <template #title>{{ props.title }}</template>
     <lay-row space="20">
       <lay-col v-for="(item, index) in accountBudgetEntityList" :key="index" :md="8">
-        <lay-panel shadow="hover">
-          <div>
+        <lay-card shadow="hover">
+          <div style="padding-bottom: 20px">
             <div style="font-size: 12pt;text-align: center;height: 50px">
               {{ item.name }}
             </div>
@@ -29,7 +29,17 @@
               </div>
             </div>
           </div>
-        </lay-panel>
+          <template #footer>
+            <div class="button-list">
+              <div>
+                <lay-icon type="layui-icon-edit"></lay-icon>设置预算
+              </div>
+              <div>
+                <lay-icon type="layui-icon-chart-screen"></lay-icon>历史数据
+              </div>
+            </div>
+          </template>
+        </lay-card>
       </lay-col>
     </lay-row>
   </lay-card>
@@ -44,7 +54,7 @@ export default {
 
 /*INIT*/
 import {ref, watch} from "vue";
-import {AccountBudgetVo, EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
+import {EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
 
 const props = defineProps({
   title: {
@@ -67,7 +77,6 @@ watch(
 /*INIT*/
 
 /*VAR*/
-const accountBudgetVo = ref<AccountBudgetVo>({});
 const accountBudgetEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
 /*VAR*/
 
@@ -76,4 +85,13 @@ const accountBudgetEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
 </script>
 
 <style scoped>
+.button-list {
+  display: flex;
+}
+
+.button-list > div {
+  flex: 1;
+  text-align: center;
+  color: #909399;
+}
 </style>

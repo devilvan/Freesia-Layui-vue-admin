@@ -6,12 +6,12 @@ import cn.hutool.core.util.ObjectUtil;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.idempotent.annotation.Idempotent;
-import com.freesia.po.SysConfigPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysConfigService;
 import com.freesia.util.UCopy;
 import com.freesia.util.UMessage;
+import com.freesia.util.UString;
 import com.freesia.vo.R;
 import com.freesia.vo.SysConfigVo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -45,9 +46,12 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_INDEX)
     @Operation(summary = "根据系统配置键获取配置值")
     @GetMapping(value = "findConfigByKey")
-    public R<String> findPageSysConfig(@RequestParam String configKey) {
+    public R<String> findPageSysConfig(HttpServletResponse response, @RequestParam String configKey) {
         SysConfigDto sysConfigDto = sysConfigService.findConfigByKey(configKey);
         String configValue = sysConfigDto.getConfigValue();
+        if (UString.isHttp(configValue)) {
+            response.setHeader("Content-Disposition", configValue);
+        }
         return R.ok(configValue);
     }
 
