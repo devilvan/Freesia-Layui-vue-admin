@@ -188,7 +188,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         List<FindCostTypeRatePieEntity> accountCostPoList = accountCostMapper.findCostTypeRatePie(accountCostDto);
         EchartPieOptionEntity echartPieOptionEntity = new EchartPieOptionEntity();
         if (UEmpty.isNotEmpty(accountCostPoList)) {
-            Set<String> legendSet = accountCostPoList.stream().map(FindCostTypeRatePieEntity::getCostType).collect(Collectors.toSet());
+            BigDecimal sumOutlay = accountCostPoList.stream()
+                    .map(FindCostTypeRatePieEntity::getOutlay)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            Set<String> legendSet = accountCostPoList.stream()
+                    .map(FindCostTypeRatePieEntity::getCostType)
+                    .collect(Collectors.toSet());
             echartPieOptionEntity.setLegends(legendSet);
             List<EchartPieOptionEntity.Series> series = new ArrayList<>();
             for (FindCostTypeRatePieEntity findCostTypeRatePieEntity : accountCostPoList) {
@@ -198,6 +204,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 series.add(tmp);
             }
             echartPieOptionEntity.setSeries(series);
+            echartPieOptionEntity.setTotalAmount(sumOutlay);
             URedis.set(cacheKey, echartPieOptionEntity, Duration.ofSeconds(30));
             return echartPieOptionEntity;
         }

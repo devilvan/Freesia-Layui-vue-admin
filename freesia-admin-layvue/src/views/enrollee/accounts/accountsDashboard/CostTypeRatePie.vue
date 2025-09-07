@@ -87,7 +87,13 @@ function doFindCostTypeRatePie() {
         },
         tooltip: {
           trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
+          formatter: function (params: any, ticket: string, callback: (ticket: string, html: string) => {}) {
+            return `<div style="font-weight:bold">总金额：${data.totalAmount.toFixed(2)}元</div></br>
+                      <div>${params.marker} ${params.seriesName}：
+                        <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${params.color}">${params.name}</span>
+                        <span style="border-radius:10px;font-weight:bold;color:${params.color}">(${params.percent}%)</span>
+                      </div>`
+          }
         },
         legend: {
           type: 'scroll',

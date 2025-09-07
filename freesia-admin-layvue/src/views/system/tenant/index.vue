@@ -109,12 +109,12 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="租户名称" prop="name">
+              <lay-form-item label="租户名称" prop="name" required>
                 <lay-input v-model="sysTenantVo.name" :allow-clear="true"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="联系人电话" prop="contactTel">
+              <lay-form-item label="联系人电话" prop="contactTel" required>
                 <lay-input v-model="sysTenantVo.contactTel"></lay-input>
               </lay-form-item>
             </lay-col>

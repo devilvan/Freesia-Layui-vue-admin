@@ -2,6 +2,7 @@ package com.freesia.entity;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,6 +21,10 @@ public class EchartPieOptionEntity {
      * 图表序列（K-V对）
      */
     private List<Series> series;
+    /**
+     * 总金额
+     */
+    private BigDecimal totalAmount;
 
     @Data
     public static class Series {
