@@ -17,6 +17,11 @@ export enum SysConfigKey {
      */
     GITEE_COMMIT_URL = "gitee.commit.url",
     /**
+     * 添加图标URL
+     */
+    ADD_ICON_URL = "add.icon.url",
+
+    /**
      * 记账导入模板
      */
     ACCOUNT_IMPORT_TEMPLATE_URL = "account.import.template.url"
