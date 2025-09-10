@@ -22,7 +22,7 @@
         WHERE 1 = 1
         AND CITH.USER_ID = #{entity.userId}
         AND CITD.ICON_TREE_TYPE = 'L'
-        <if test="com.freesia.util.UEmpty@isNotEmpty(entity.value)">
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(entity.value)">
             AND CITD.NAME = #{entity.value}
         </if>
     </select>

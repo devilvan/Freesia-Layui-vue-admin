@@ -59,4 +59,8 @@ public final class CacheConstant {
      * 防止重复提交 缓存建
      */
     public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";
+    /**
+     * 用户自定义图标 缓存键
+     */
+    public static final String FIND_CACHE_COST_TYPE = "findCacheCostType:";
 }

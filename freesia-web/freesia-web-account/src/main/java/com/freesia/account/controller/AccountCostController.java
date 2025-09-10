@@ -376,11 +376,11 @@ public class AccountCostController extends BaseController {
 
     @Operation(summary = "自动完成-根据输入查询图标类型和URL")
     @GetMapping(value = "findCacheCostType")
-    public R<List<LaySelect>> findCacheCostType(FindCacheCostTypeVo findCacheCostTypeVo) {
+    public R<List<FindCacheCostTypeEntity>> findCacheCostType(FindCacheCostTypeVo findCacheCostTypeVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCacheCostTypeVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
-        List<LaySelect> laySelectList = accountCostService.findCacheCostType(accountCostDto);
+        List<FindCacheCostTypeEntity> laySelectList = accountCostService.findCacheCostType(accountCostDto);
         return R.ok(laySelectList);
     }
 

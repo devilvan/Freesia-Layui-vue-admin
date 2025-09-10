@@ -235,7 +235,10 @@
                     style="width: 100%"
                     v-model="accountCostVo.costDesc"
                     :fetchSuggestions="doFindCacheCostType"
-                    :allow-clear="true"></lay-autocomplete>
+                    :allow-clear="true"
+                    @keydown.enter.stop
+                    @select="doInputIconUrl"
+                ></lay-autocomplete>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
@@ -429,7 +432,13 @@ import {
 } from "@/api/account/Account";
 import router from "@/router";
 import {Operate} from "@/types/Constants";
-import {AccountCostEntity, AccountCostVo, FindCacheCostTypeVo, PaymentSign} from "@/types/account/Account";
+import {
+  AccountCostEntity,
+  AccountCostVo,
+  FindCacheCostTypeEntity,
+  FindCacheCostTypeVo,
+  PaymentSign
+} from "@/types/account/Account";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
@@ -727,7 +736,6 @@ function toSubmit(clickFlag: boolean) {
         }
       })
     }
-    addExpenseFormRef.value.focus();
   })
 }
 
@@ -925,10 +933,28 @@ function doFindSelectCostTypeList() {
 }
 
 function doFindCacheCostType(value: any) {
+  if (!value || value === '') {
+    return ;
+  }
   let vo: FindCacheCostTypeVo = {
     costDesc: value
   }
-  findCacheCostType(vo);
+  return findCacheCostType(vo).then((res: any) => {
+    if (res.code === 200) {
+      return res.data?.map((item: FindCacheCostTypeEntity) => {
+        return {
+          value: item.value,
+          iconUrl: item.iconUrl,
+          disabled: item.disabled
+        }
+      })
+    }
+  });
+}
+
+function doInputIconUrl(entity: FindCacheCostTypeEntity) {
+  accountCostVo.value.icon = entity.iconUrl;
+  accountCostVo.value.costType = entity.value;
 }
 
 /* FUNCTION*/

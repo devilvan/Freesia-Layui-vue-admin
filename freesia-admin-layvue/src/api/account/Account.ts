@@ -4,7 +4,7 @@ import {R, TableResult} from "../../types/Result";
 import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
 import {
     AccountCostEntity,
-    AccountCostVo, EchartStackedHorizontalBarOptionEntity, FindCacheCostTypeVo,
+    AccountCostVo, EchartStackedHorizontalBarOptionEntity, FindCacheCostTypeEntity, FindCacheCostTypeVo,
     FindCostLineChartVo,
     FindCostSumCalendarNearYearVo, FindRankByCostTypeVo
 } from "../../types/account/Account";
@@ -83,7 +83,7 @@ export function findListSelectCostType(): Promise<R<LaySelectEntity[]>> {
     return Http.get("/api/accountCostController/findListSelectCostType");
 }
 
-export function findCacheCostType(vo: FindCacheCostTypeVo): Promise<R<LaySelectEntity[]>> {
+export function findCacheCostType(vo: FindCacheCostTypeVo): Promise<R<FindCacheCostTypeEntity[]>> {
     let params = buildUrlParam(vo)
     return Http.get("/api/accountCostController/findCacheCostType", params);
 }

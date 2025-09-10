@@ -34,10 +34,7 @@ import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.tenant.exception.TenantException;
-import com.freesia.util.UCopy;
-import com.freesia.util.UEmpty;
-import com.freesia.util.UStream;
-import com.freesia.util.UString;
+import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -323,11 +320,21 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     @Override
-    public List<LaySelect> findCacheCostType(AccountCostDto accountCostDto) {
+    public List<FindCacheCostTypeEntity> findCacheCostType(AccountCostDto accountCostDto) {
         FindListSelectCostTypeDto dto = new FindListSelectCostTypeDto();
         dto.setUserId(accountCostDto.getUserId());
         dto.setValue(accountCostDto.getCostDesc());
-        return commonIconTemplateHeaderService.findCacheCostType(dto);
+        List<LaySelect> laySelectList = commonIconTemplateHeaderService.findCacheCostType(dto);
+        List<FindCacheCostTypeEntity> findCacheCostTypeEntityList = UCollection.optimizeInitialCapacityArrayList(laySelectList.size());
+        OssHandler ossHandler = OssFactory.getInstance();
+        for (LaySelect laySelect : laySelectList) {
+            FindCacheCostTypeEntity findCacheCostTypeEntity = new FindCacheCostTypeEntity();
+            findCacheCostTypeEntity.setValue(laySelect.getLabel());
+            findCacheCostTypeEntity.setIconUrl(ossHandler.convertEndpoint2Domain(laySelect.getValue()));
+            findCacheCostTypeEntity.setDisabled(laySelect.getDisabled());
+            findCacheCostTypeEntityList.add(findCacheCostTypeEntity);
+        }
+        return findCacheCostTypeEntityList;
     }
 
     @Override

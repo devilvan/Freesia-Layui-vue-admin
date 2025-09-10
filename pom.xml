@@ -16,10 +16,10 @@
     </parent>
     <groupId>com.freesia</groupId>
     <artifactId>freesia</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <packaging>pom</packaging>
     <properties>
-        <freesia.version>1.4.0</freesia.version>
+        <freesia.version>1.5.0</freesia.version>
         <springboot.version>2.7.0</springboot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>

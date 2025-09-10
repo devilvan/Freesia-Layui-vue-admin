@@ -74,6 +74,12 @@ export interface EchartStackedHorizontalBarOptionEntity {
 
 }
 
+export interface FindCacheCostTypeEntity {
+    value?: string,
+    iconUrl?: string,
+    disabled?: boolean
+}
+
 /**
  * Y轴值
  */
