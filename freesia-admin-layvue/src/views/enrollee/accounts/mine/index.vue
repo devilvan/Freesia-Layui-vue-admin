@@ -234,6 +234,7 @@
                 <lay-autocomplete
                     style="width: 100%"
                     v-model="accountCostVo.costDesc"
+                    :fetchSuggestions="doFindCacheCostType"
                     :allow-clear="true"></lay-autocomplete>
               </lay-form-item>
             </lay-col>
@@ -424,11 +425,11 @@ import {
   findPageAccountCost,
   findAccountCost,
   saveUpdate,
-  accountsImport, accountsExport, findSelectCostTypeList
+  accountsImport, accountsExport, findSelectCostTypeList, findCacheCostType
 } from "@/api/account/Account";
 import router from "@/router";
 import {Operate} from "@/types/Constants";
-import {AccountCostEntity, AccountCostVo, PaymentSign} from "@/types/account/Account";
+import {AccountCostEntity, AccountCostVo, FindCacheCostTypeVo, PaymentSign} from "@/types/account/Account";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
@@ -924,7 +925,10 @@ function doFindSelectCostTypeList() {
 }
 
 function doFindCacheCostType(value: any) {
-
+  let vo: FindCacheCostTypeVo = {
+    costDesc: value
+  }
+  findCacheCostType(vo);
 }
 
 /* FUNCTION*/

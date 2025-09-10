@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
+import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.icon.mapper.CommonIconTemplateHeaderMapper;
 import com.freesia.icon.po.CommonIconTemplateHeaderPo;
 import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
@@ -105,8 +106,13 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
     }
 
     @Override
-    public List<LaySelect> findListSelectCostType(Long userId) {
-        return commonIconTemplateHeaderMapper.findListSelectCostType(userId);
+    public List<LaySelect> findListSelectCostType(FindListSelectCostTypeDto dto) {
+        return commonIconTemplateHeaderMapper.findListSelectCostType(dto);
+    }
+
+    @Override
+    public List<LaySelect> findCacheCostType(FindListSelectCostTypeDto dto) {
+        return commonIconTemplateHeaderMapper.findCacheCostType(dto);
     }
 
     private static List<LaySelect> buildLaySelects(List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList) {

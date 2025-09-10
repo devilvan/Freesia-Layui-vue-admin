@@ -2,6 +2,7 @@ package com.freesia.icon.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.icon.po.CommonIconTemplateHeaderPo;
 import com.freesia.pojo.LaySelect;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,10 +33,18 @@ public interface CommonIconTemplateHeaderMapper extends BaseMapper<CommonIconTem
     boolean findExistsDefaultFlag(@Param(value = "userId") Long userId);
 
     /**
-     * 根据用户ID查询开销类型下拉集合
+     * 查询开销类型下拉集合
      *
-     * @param userId 用户ID
+     * @param dto 查询入参
      * @return 开销类型下拉集合
      */
-    List<LaySelect> findListSelectCostType(@Param(value = "userId") Long userId);
+    List<LaySelect> findListSelectCostType(@Param(value = "entity") FindListSelectCostTypeDto dto);
+
+    /**
+     * 自动完成-根据输入查询图标类型和URL
+     *
+     * @param dto 查询参数
+     * @return 结果集
+     */
+    List<LaySelect> findCacheCostType(@Param(value = "entity") FindListSelectCostTypeDto dto);
 }

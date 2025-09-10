@@ -23,7 +23,7 @@ import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
 import com.freesia.exception.UserException;
-import com.freesia.icon.service.CommonIconService;
+import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.oss.pojo.OssFactory;
@@ -323,8 +323,18 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     @Override
-    public List<FindCacheCostTypeEntity> findCacheCostType(AccountCostDto accountCostDto) {
-        return commonIconTemplateHeaderService.findListSelectCostType(accountCostDto.getUserId());
+    public List<LaySelect> findCacheCostType(AccountCostDto accountCostDto) {
+        FindListSelectCostTypeDto dto = new FindListSelectCostTypeDto();
+        dto.setUserId(accountCostDto.getUserId());
+        dto.setValue(accountCostDto.getCostDesc());
+        return commonIconTemplateHeaderService.findCacheCostType(dto);
+    }
+
+    @Override
+    public List<LaySelect> findListSelectCostType(Long userId) {
+        FindListSelectCostTypeDto dto = new FindListSelectCostTypeDto();
+        dto.setUserId(userId);
+        return commonIconTemplateHeaderService.findListSelectCostType(dto);
     }
 
     private static EchartStackedHorizontalBarOptionEntity buildEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {

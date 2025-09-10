@@ -34,6 +34,10 @@ export interface AccountCostEntity extends BaseEntity {
     accountCostUserName?: string
 }
 
+export interface FindCacheCostTypeVo extends BaseVo {
+    costDesc?: string
+}
+
 export enum PaymentSign {
     /**
      * 支出

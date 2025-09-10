@@ -363,16 +363,26 @@ public class AccountCostController extends BaseController {
         return R.ok(laySelectList);
     }
 
+
+    @Validated
+    @Operation(summary = "根据用户ID查询开销类型下拉集合")
+    @GetMapping(value = "findListSelectCostType")
+    public R<List<LaySelect>> findListSelectCostType() {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        List<LaySelect> laySelectList = accountCostService.findListSelectCostType(userId);
+        return R.ok(laySelectList);
+    }
+
+
     @Operation(summary = "自动完成-根据输入查询图标类型和URL")
     @GetMapping(value = "findCacheCostType")
-    public R<List<FindCacheCostTypeEntity>> findCacheCostType(FindCacheCostTypeVo findCacheCostTypeVo) {
+    public R<List<LaySelect>> findCacheCostType(FindCacheCostTypeVo findCacheCostTypeVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCacheCostTypeVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
-        List<FindCacheCostTypeEntity> findCacheCostTypeEntityList = accountCostService.findCacheCostType(accountCostDto);
-        return R.ok(findCacheCostTypeEntityList);
+        List<LaySelect> laySelectList = accountCostService.findCacheCostType(accountCostDto);
+        return R.ok(laySelectList);
     }
-
 
     /**
      * excel数据流输出到响应体

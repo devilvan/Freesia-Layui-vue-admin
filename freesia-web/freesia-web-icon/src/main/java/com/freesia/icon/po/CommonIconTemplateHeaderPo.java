@@ -4,19 +4,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -56,4 +51,11 @@ public class CommonIconTemplateHeaderPo extends BasePo implements Serializable {
     @TableField(value = "DEFAULT_FLAG")
     @Column(name = "DEFAULT_FLAG", columnDefinition = "BIT(1) COMMENT '默认标识'")
     private Boolean defaultFlag;
+
+    @Schema(description = "图标模板头在头-明细关系中的模板数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = CommonIconTemplateDetailPo.class, mappedBy = "commonIconTemplateHeaderPo", fetch = FetchType.LAZY)
+    private Set<CommonIconTemplateDetailPo> commonIconTemplateDetailPoSet;
 }

@@ -37,7 +37,3 @@ export function findSelectCommonIconHeader(): Promise<R<LaySelectEntity[]>> {
     return Http.get("/common/commonIconTemplateHeaderController/findSelectCommonIconHeader");
 }
 
-export function findListSelectCostType(): Promise<R<LaySelectEntity[]>> {
-    return Http.get("/common/commonIconTemplateHeaderController/findListSelectCostType");
-}
-

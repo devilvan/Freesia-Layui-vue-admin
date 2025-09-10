@@ -1,5 +1,6 @@
 package com.freesia.icon.service;
 
+import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -69,10 +70,18 @@ public interface CommonIconTemplateHeaderService {
     List<LaySelect> findSelectCommonIconHeader(Long userId);
 
     /**
-     * 根据用户ID查询开销类型下拉集合
+     * 查询开销类型下拉集合
      *
-     * @param userId 用户ID
+     * @param dto) 查询参数
      * @return 开销类型下拉集合
      */
-    List<LaySelect> findListSelectCostType(Long userId);
+    List<LaySelect> findListSelectCostType(FindListSelectCostTypeDto dto);
+
+    /**
+     * 自动完成-根据输入查询图标类型和URL
+     *
+     * @param dto 查询参数
+     * @return 结果集
+     */
+    List<LaySelect> findCacheCostType(FindListSelectCostTypeDto dto);
 }

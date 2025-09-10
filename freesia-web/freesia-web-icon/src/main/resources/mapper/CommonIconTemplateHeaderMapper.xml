@@ -14,13 +14,31 @@
                         AND DEFAULT_FLAG = 1)
     </select>
     <select id="findListSelectCostType" resultType="com.freesia.pojo.LaySelect">
-        SELECT DISTINCT(CITD.NAME)    AS `LABEL`,
-                       CITD.NAME      AS `VALUE`,
-                       CITD.LOGIC_DEL AS `DISABLED`
+        SELECT DISTINCT(CITD.NAME) AS `LABEL`,
+        CITD.NAME AS `VALUE`,
+        CITD.LOGIC_DEL AS `DISABLED`
         FROM common_icon_template_header CITH
-                 LEFT JOIN common_icon_template_detail CITD ON CITH.ID = CITD.HEADER_ID
+        LEFT JOIN common_icon_template_detail CITD ON CITH.ID = CITD.HEADER_ID
         WHERE 1 = 1
-          AND CITH.USER_ID = #{userId}
-          AND CITD.ICON_TREE_TYPE = 'L'
+        AND CITH.USER_ID = #{entity.userId}
+        AND CITD.ICON_TREE_TYPE = 'L'
+        <if test="com.freesia.util.UEmpty@isNotEmpty(entity.value)">
+            AND CITD.NAME = #{entity.value}
+        </if>
+    </select>
+    <select id="findCacheCostType" resultType="com.freesia.pojo.LaySelect">
+        SELECT DISTINCT(CITD.NAME) AS `LABEL`,
+        SO.URL AS `VALUE`,
+        CITD.LOGIC_DEL AS `DISABLED`
+        FROM common_icon_template_header CITH
+        LEFT JOIN common_icon_template_detail CITD ON CITH.ID = CITD.HEADER_ID
+        LEFT JOIN common_icon ci on CITD.ICON_ID = CI.ID
+        LEFT JOIN sys_oss SO ON SO.ID = CI.FILE_ID
+        WHERE 1 = 1
+        AND CITH.USER_ID = #{entity.userId}
+        AND CITD.ICON_TREE_TYPE = 'L'
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(entity.value)">
+            AND CITD.NAME LIKE CONCAT('%', #{entity.value}, '%')
+        </if>
     </select>
 </mapper>
