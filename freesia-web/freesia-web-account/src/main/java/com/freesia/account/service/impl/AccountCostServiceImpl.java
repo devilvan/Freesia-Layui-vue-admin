@@ -23,6 +23,8 @@ import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
 import com.freesia.exception.UserException;
+import com.freesia.icon.service.CommonIconService;
+import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.oss.pojo.OssFactory;
 import com.freesia.oss.pojo.OssHandler;
@@ -61,6 +63,8 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     private final AccountCostMapper accountCostMapper;
     private final AccountCostUserRepository accountCostUserRepository;
     private final TransactionTemplate transactionTemplate;
+    private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
+
 
     /**
      * 构建统计行
@@ -316,6 +320,11 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             }
         }
         return laySelectList;
+    }
+
+    @Override
+    public List<FindCacheCostTypeEntity> findCacheCostType(AccountCostDto accountCostDto) {
+        return commonIconTemplateHeaderService.findListSelectCostType(accountCostDto.getUserId());
     }
 
     private static EchartStackedHorizontalBarOptionEntity buildEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {

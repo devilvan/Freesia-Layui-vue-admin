@@ -5,9 +5,6 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.convert.Convert;
 import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
-import com.freesia.exception.ServiceException;
-import com.freesia.exception.UserException;
-import com.freesia.icon.constant.CommonIconModule;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
@@ -21,11 +18,9 @@ import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -136,14 +131,5 @@ public class CommonIconTemplateHeaderController extends BaseController {
         Long userId = USecurity.getUserId();
         List<LaySelect> list = commonIconTemplateHeaderService.findSelectCommonIconHeader(userId);
         return R.ok(list);
-    }
-
-    @Validated
-    @Operation(summary = "根据用户ID查询开销类型下拉集合")
-    @GetMapping(value = "findListSelectCostType")
-    public R<List<LaySelect>> findListSelectCostType() {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        List<LaySelect> laySelectList = commonIconTemplateHeaderService.findListSelectCostType(userId);
-        return R.ok(laySelectList);
     }
 }

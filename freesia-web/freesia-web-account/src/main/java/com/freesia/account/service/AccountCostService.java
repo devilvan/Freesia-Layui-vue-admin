@@ -5,6 +5,7 @@ import com.freesia.account.dto.FindCostLineChartDto;
 import com.freesia.account.dto.FindRankByCostTypeDto;
 import com.freesia.account.entity.AccountCostExportEntity;
 import com.freesia.account.entity.FindAccountCostEntity;
+import com.freesia.account.entity.FindCacheCostTypeEntity;
 import com.freesia.account.entity.FindPageAccountCostEntity;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
@@ -114,4 +115,12 @@ public interface AccountCostService {
      * @return 结果集
      */
     List<LaySelect> findSelectCostTypeList(AccountCostDto accountCostDto);
+
+    /**
+     * 自动完成-根据输入查询图标类型和URL
+     *
+     * @param accountCostDto 查询参数
+     * @return 结果集
+     */
+    List<FindCacheCostTypeEntity> findCacheCostType(AccountCostDto accountCostDto);
 }

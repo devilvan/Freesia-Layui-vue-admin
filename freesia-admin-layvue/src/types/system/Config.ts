@@ -20,7 +20,6 @@ export enum SysConfigKey {
      * 添加图标URL
      */
     ADD_ICON_URL = "add.icon.url",
-
     /**
      * 记账导入模板
      */

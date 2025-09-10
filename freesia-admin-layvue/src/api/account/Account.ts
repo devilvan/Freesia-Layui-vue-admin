@@ -78,3 +78,10 @@ export function findSelectCostTypeList(accountCostVo: AccountCostVo): Promise<R<
     let params = buildUrlParam(accountCostVo);
     return Http.get("/api/accountCostController/findSelectCostTypeList", params);
 }
+
+export function findListSelectCostType(value: string): Promise<R<LaySelectEntity[]>> {
+    let params = {
+        "value": value
+    }
+    return Http.get("/api/accountCostController/findListSelectCostType", params);
+}

@@ -225,14 +225,16 @@
         <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
-              <lay-form-item label="开销描述" prop="costDesc" required>
-                <lay-input ref="addExpenseModalQuickSaveRef" v-model="accountCostVo.costDesc"
-                           :allow-clear="true"></lay-input>
+              <lay-form-item label="开销金额" prop="outlay" required>
+                <lay-input v-model="accountCostVo.outlay" ref="addExpenseModalQuickSaveRef" type="number"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="开销金额" prop="outlay" required>
-                <lay-input v-model="accountCostVo.outlay" type="number"></lay-input>
+              <lay-form-item label="开销描述" prop="costDesc" required>
+                <lay-autocomplete
+                    style="width: 100%"
+                    v-model="accountCostVo.costDesc"
+                    :allow-clear="true"></lay-autocomplete>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
@@ -556,7 +558,6 @@ const accountsExportFromRules = ref({
 })
 const sdf_YMDHMS = 'YYYY-MM-DD HH:mm:ss'
 const sdf_YMDHM = 'YYYY-MM-DD HH:mm'
-const showUserModalFlag = ref<Boolean>(false)
 const addExpenseModalQuickSaveRef = ref()
 const userEntityList = ref<Array<SysUserEntity>>()
 const userModalLoading = ref(false)
@@ -920,6 +921,10 @@ function doFindSelectCostTypeList() {
   }).catch(e => {
     layer.confirm(e.message)
   })
+}
+
+function doFindCacheCostType(value: any) {
+
 }
 
 /* FUNCTION*/

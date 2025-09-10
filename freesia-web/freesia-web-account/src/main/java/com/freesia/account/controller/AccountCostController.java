@@ -10,17 +10,11 @@ import com.freesia.account.constant.MenuPermission;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.dto.FindCostLineChartDto;
 import com.freesia.account.dto.FindRankByCostTypeDto;
-import com.freesia.account.entity.AccountCostExportEntity;
-import com.freesia.account.entity.AccountCostImportEntity;
-import com.freesia.account.entity.FindAccountCostEntity;
-import com.freesia.account.entity.FindPageAccountCostEntity;
+import com.freesia.account.entity.*;
 import com.freesia.account.exception.AccountException;
 import com.freesia.account.listener.AccountsImportListener;
 import com.freesia.account.service.AccountCostService;
-import com.freesia.account.vo.AccountCostVo;
-import com.freesia.account.vo.FindCostLineChartVo;
-import com.freesia.account.vo.FindCostSumCalendarNearYearVo;
-import com.freesia.account.vo.FindRankByCostTypeVo;
+import com.freesia.account.vo.*;
 import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
 import com.freesia.entity.EchartCalendarOptionEntity;
@@ -367,6 +361,16 @@ public class AccountCostController extends BaseController {
         accountCostDto.setPaymentTimeTo(dateRange[1]);
         List<LaySelect> laySelectList = accountCostService.findSelectCostTypeList(accountCostDto);
         return R.ok(laySelectList);
+    }
+
+    @Operation(summary = "自动完成-根据输入查询图标类型和URL")
+    @GetMapping(value = "findCacheCostType")
+    public R<List<FindCacheCostTypeEntity>> findCacheCostType(FindCacheCostTypeVo findCacheCostTypeVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCacheCostTypeVo, AccountCostDto.class);
+        accountCostDto.setUserId(userId);
+        List<FindCacheCostTypeEntity> findCacheCostTypeEntityList = accountCostService.findCacheCostType(accountCostDto);
+        return R.ok(findCacheCostTypeEntityList);
     }
 
 
