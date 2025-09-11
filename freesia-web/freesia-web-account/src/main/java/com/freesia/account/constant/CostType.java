@@ -17,9 +17,25 @@ public enum CostType {
     /**
      * 编码
      */
-    public String code;
+    private final String code;
     /**
      * 描述
      */
-    public String desc;
+    private final String desc;
+
+    /**
+     * 根据编码获取枚举对象
+     *
+     * @param code 编码
+     * @return 枚举对象
+     */
+    public static CostType getInstanceByCode(String code) {
+        CostType[] CostTypes = CostType.values();
+        for (CostType value : CostTypes) {
+            if (value.code.equals(code)) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

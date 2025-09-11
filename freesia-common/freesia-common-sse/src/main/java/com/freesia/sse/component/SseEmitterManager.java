@@ -7,6 +7,7 @@ import com.freesia.redis.util.URedis;
 import com.freesia.sse.constant.SseModule;
 import com.freesia.sse.dto.SseEmitterUTF8;
 import com.freesia.util.UEmpty;
+import com.freesia.util.UMessage;
 import com.freesia.util.UString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -32,6 +33,29 @@ public class SseEmitterManager {
 
     private static SseEmitter.SseEventBuilder event() {
         return SseEmitter.event();
+    }
+
+    /**
+     * 接收心跳-完成连接 定时任务实现
+     */
+    public void sseHeartbeatSchedule() {
+        USER_TOKEN_EMITTER.forEach((id, tokenMap) -> {
+            tokenMap.forEach((token, emitter) -> {
+                try {
+                    // 发送心跳注释行
+                    emitter.send(SseEmitter.event().comment("heartbeat"));
+                } catch (IOException | IllegalStateException e) {
+                    // 发送失败，说明底层连接已失效
+                    log.info(UMessage.message("sse.heartbeat.failed.complete", new Object[]{id, token}));
+                    // 立即执行清理逻辑
+                    emitter.complete();
+                    tokenMap.remove(token);
+                    if (tokenMap.isEmpty()) {
+                        USER_TOKEN_EMITTER.remove(id);
+                    }
+                }
+            });
+        });
     }
 
     /**

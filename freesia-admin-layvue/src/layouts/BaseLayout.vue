@@ -386,7 +386,8 @@ export default {
       eventSource.addEventListener("message", (e: { data: string }) => {
         layer.notify({
           title: "消息",
-          content: e.data
+          content: e.data,
+          time: 10000
         })
       })
     }
