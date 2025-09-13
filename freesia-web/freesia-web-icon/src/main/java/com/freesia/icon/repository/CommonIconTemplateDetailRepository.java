@@ -3,9 +3,11 @@ package com.freesia.icon.repository;
 
 import com.freesia.icon.po.CommonIconTemplateDetailPo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Evad.Wu
@@ -14,4 +16,18 @@ import java.util.List;
  */
 @Repository
 public interface CommonIconTemplateDetailRepository extends JpaRepository<CommonIconTemplateDetailPo, Long> {
+    /**
+     * 删除自定义分组
+     *
+     * @param parentId 图标ID
+     */
+    @Modifying
+    @Query(value = """
+            DELETE FROM CommonIconTemplateDetailPo detail
+            where 1=1
+            and detail.logicDel = false
+            and (detail.id = :parentId or detail.parentId = :parentId)
+            """)
+    @Transactional(rollbackFor = Exception.class)
+    void deleteGrouping(@Param("parentId") Long parentId);
 }

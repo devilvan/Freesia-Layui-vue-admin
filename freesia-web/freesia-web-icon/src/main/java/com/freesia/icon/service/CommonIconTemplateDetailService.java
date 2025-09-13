@@ -87,4 +87,11 @@ public interface CommonIconTemplateDetailService {
      * @return 结果集
      */
     Map<String, List<FindTreeIconTreeTypeEntity>> findCustomIconTemplateDetail(CommonIconTemplateDetailDto dto);
+
+    /**
+     * 删除自定义分组
+     *
+     * @param commonIconTemplateDetailDto 删除条件
+     */
+    void deleteGrouping(CommonIconTemplateDetailDto commonIconTemplateDetailDto);
 }

@@ -48,3 +48,10 @@ export function findCustomIconTemplateDetail(vo: CommonIconTemplateDetailVo): Pr
     let params = buildUrlParam(vo);
     return Http.get("/common/commonIconTemplateDetailController/findCustomIconTemplateDetail", params);
 }
+
+export function deleteGrouping(parentId: string): Promise<R<Map<string, string>>> {
+    let params = {
+        parentId: parentId
+    };
+    return Http.delete("/common/commonIconTemplateDetailController/deleteGrouping", params);
+}

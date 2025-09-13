@@ -145,4 +145,14 @@ public class CommonIconTemplateDetailController extends BaseController {
         return R.ok(map);
     }
 
+    @Operation(summary = "删除自定义分组")
+    @DeleteMapping(value = "deleteGrouping")
+//    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
+    public R<Void> deleteGrouping(@RequestParam(value = "parentId") Long parentId) {
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = new CommonIconTemplateDetailDto();
+        commonIconTemplateDetailDto.setParentId(parentId);
+        commonIconTemplateDetailService.deleteGrouping(commonIconTemplateDetailDto);
+        return R.ok();
+    }
+
 }

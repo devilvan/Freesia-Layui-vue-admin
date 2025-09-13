@@ -4,7 +4,7 @@
       <lay-form @keydown.enter.prevent="toSearch" :model="searchQuery" label-position="top">
         <lay-row :space="20">
           <lay-col :md="6">
-            <lay-form-item label="开销描述">
+            <lay-form-item label="描述">
               <lay-input
                   v-model="searchQuery.costDesc"
                   :allow-clear="true"
@@ -14,7 +14,7 @@
             </lay-form-item>
           </lay-col>
           <lay-col :md="6">
-            <lay-form-item label="开销备注">
+            <lay-form-item label="备注">
               <lay-input
                   v-model="searchQuery.remark"
                   :allow-clear="true"
@@ -24,7 +24,7 @@
             </lay-form-item>
           </lay-col>
           <lay-col :md="12">
-            <lay-form-item label="开销时间">
+            <lay-form-item label="时间">
               <lay-date-picker style="width: 100%" v-model="searchQuery.paymentTimeRange" allow-clear range
                                :format="sdf_YMDHMS" :inputFormat="sdf_YMDHMS" type="datetime"
                                :shortcuts="defaultShortcuts" simple :default-time="dateRangeDefaultTime"
@@ -35,7 +35,7 @@
         <lay-transition>
           <lay-row :space="20" v-if="expandCollapseFlag">
             <lay-col :md="6">
-              <lay-form-item label="开销标识">
+              <lay-form-item label="标识">
                 <lay-select
                     style="width: 100%"
                     size="sm"
@@ -48,7 +48,7 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="开销类型" prop="type">
+              <lay-form-item label="类型" prop="type">
                 <lay-select
                     style="width: 100%"
                     size="sm"
@@ -225,12 +225,12 @@
         <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
           <lay-row space="20">
             <lay-col :md="6">
-              <lay-form-item label="开销金额" prop="outlay" required>
+              <lay-form-item label="金额" prop="outlay" required>
                 <lay-input v-model="accountCostVo.outlay" ref="addExpenseModalQuickSaveRef" type="number"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="开销描述" prop="costDesc" required>
+              <lay-form-item label="描述" prop="costDesc" required>
                 <lay-autocomplete
                     style="width: 100%"
                     v-model="accountCostVo.costDesc"
@@ -258,7 +258,7 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="开销标识" prop="paymentSign" required>
+              <lay-form-item label="标识" prop="paymentSign" required>
                 <lay-select
                     size="sm"
                     style="width: 100%"
@@ -273,7 +273,7 @@
           </lay-row>
           <lay-row space="20">
             <lay-col :md="6">
-              <lay-form-item label="开销时间" prop="paymentTime">
+              <lay-form-item label="时间" prop="paymentTime">
                 <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
                                  :shortcuts="singleShortcuts" :inputFormat="sdf_YMDHM"
                                  style="width: 100%" simple></lay-date-picker>
@@ -509,11 +509,11 @@ const pageQuery = reactive<PageQuery>({
 })
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '开销描述', width: '130px', key: 'costDesc', fixed: 'left', ellipsisTooltipTheme: 'dark'},
-  {title: '开销金额', width: '130px', key: 'outlay', sort: 'desc'},
-  {title: '开支类型', width: '130px', key: 'icon', customSlot: 'iconType'},
-  {title: '开销标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
-  {title: '开支时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
+  {title: '描述', width: '130px', key: 'costDesc', fixed: 'left', ellipsisTooltipTheme: 'dark'},
+  {title: '金额', width: '130px', key: 'outlay', sort: 'desc'},
+  {title: '类型', width: '130px', key: 'icon', customSlot: 'iconType'},
+  {title: '标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
+  {title: '时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
   {title: '修改时间', width: '150px', key: 'modifyTime'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
   {title: '关联用户', width: '200px', key: 'nickNameList', customSlot: 'nickNameList'},

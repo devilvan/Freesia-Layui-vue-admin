@@ -91,6 +91,7 @@ function doFindCostTypeRatePie() {
             return `<div style="font-weight:bold">总金额：${data.totalAmount.toFixed(2)}元</div></br>
                       <div>${params.marker} ${params.seriesName}：
                         <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${params.color}">${params.name}</span>
+                        <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${params.color}">${params.value}元</span>
                         <span style="border-radius:10px;font-weight:bold;color:${params.color}">(${params.percent}%)</span>
                       </div>`
           }

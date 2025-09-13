@@ -124,4 +124,10 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
                 });
         return result;
     }
+
+    @Override
+    public void deleteGrouping(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
+        Long parentId = commonIconTemplateDetailDto.getParentId();
+        commonIconTemplateDetailRepository.deleteGrouping(parentId);
+    }
 }

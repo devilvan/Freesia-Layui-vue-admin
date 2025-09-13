@@ -15,24 +15,31 @@
   </lay-panel>
   <lay-collapse v-model="openKeys">
     <div v-for="[key, value] in dataSource" :key="key">
-      <lay-collapse-item :title="key" :id="key">
-        <ul class="site-doc-icon">
-          <li v-for="(item, index) of value" :key="index">
-            <lay-tooltip :visible="false" trigger="hover" :content="item.name">
-              <lay-dropdown :trigger="triggerType" alignPoint>
-                <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>
-                <template #content>
-                  <lay-dropdown-menu>
-                    <lay-dropdown-menu-item @click="showSingleSaveIconModal(Operate.EDIT, item)">编辑
-                    </lay-dropdown-menu-item>
-                    <lay-dropdown-menu-item @click="deleteIcon(item)">删除</lay-dropdown-menu-item>
-                  </lay-dropdown-menu>
-                </template>
-              </lay-dropdown>
-            </lay-tooltip>
-          </li>
-        </ul>
-      </lay-collapse-item>
+      <lay-dropdown :trigger="'contextMenu'" alignPoint>
+        <lay-collapse-item :title="key" :id="key">
+          <ul class="site-doc-icon">
+            <li v-for="(item, index) of value" :key="index">
+              <lay-tooltip :visible="false" trigger="hover" :content="item.name">
+                <lay-dropdown :trigger="triggerType" alignPoint>
+                  <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>
+                  <template #content>
+                    <lay-dropdown-menu>
+                      <lay-dropdown-menu-item @click="showSingleSaveIconModal(Operate.EDIT, item)">编辑
+                      </lay-dropdown-menu-item>
+                      <lay-dropdown-menu-item @click="deleteIcon(item)">删除</lay-dropdown-menu-item>
+                    </lay-dropdown-menu>
+                  </template>
+                </lay-dropdown>
+              </lay-tooltip>
+            </li>
+          </ul>
+        </lay-collapse-item>
+        <template #content>
+          <lay-dropdown-menu>
+            <lay-dropdown-menu-item @click="deleteGroup(value)">删除</lay-dropdown-menu-item>
+          </lay-dropdown-menu>
+        </template>
+      </lay-dropdown>
     </div>
   </lay-collapse>
 
@@ -253,7 +260,7 @@ import {
   CommonIconTemplateDetailVo, FindMaxOrderNumVo, FindTreeIconTreeTypeEntity, IconTreeType
 } from "@/types/common/icon/template/IconTemplateDetail";
 import {
-  deleteCommonIconTemplateDetail, findCommonIconTemplateDetail,
+  deleteCommonIconTemplateDetail, deleteGrouping, findCommonIconTemplateDetail,
   findCustomIconTemplateDetail, findGrouping, findMaxOrderNum,
   findTreeIconTreeType,
   saveUpdate, saveUpdateBatch
@@ -270,6 +277,7 @@ import {LaySelectEntity} from "@/types/Common";
 import {preview} from "@/util/UImage";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
+import {deleteSysTenant} from "@/api/system/Tenant";
 
 /* INIT*/
 onMounted(async () => {
@@ -611,6 +619,39 @@ function doFindGrouping() {
   findGrouping(param).then((res: R<Map<string, string>>) => {
     findGroupingList.value = res.data;
   })
+}
+
+function deleteGroup(value: []) {
+  if (value) {
+    if (value.length > 0) {
+      let parentId = value[0].parentId;
+      layer.confirm('您确认删除所有选中的分组和图标吗？', {
+        title: '提示',
+        btn: [
+          {
+            text: '确定',
+            callback: (id: any) => {
+              deleteGrouping(parentId).then((res: any) => {
+                if (res.code === 200) {
+                  layer.msg('删除成功')
+                }
+                loadDataSource();
+              }).catch(e => {
+                layer.confirm(e.msg, {icon: 2})
+              })
+              layer.close(id)
+            }
+          },
+          {
+            text: '取消',
+            callback: (id: any) => {
+              layer.close(id)
+            }
+          }
+        ]
+      })
+    }
+  }
 }
 
 /* FUNCTION*/
