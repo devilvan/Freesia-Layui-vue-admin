@@ -59,11 +59,6 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  // 链表值
-  dataSource: {
-    type: Array,
-    required: true
-  },
   // 查询方法
   modalChange: {
     type: Function,
