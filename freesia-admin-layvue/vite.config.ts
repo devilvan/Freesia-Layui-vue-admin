@@ -18,6 +18,11 @@ export default defineConfig(({mode, command}) => {
             host: '0.0.0.0',
             port: 8700
         },
+        build: {
+            rollupOptions: {
+                external: ['lodash', 'axios'], // 将 lodash 和 axios 标记为外部模块
+            },
+        },
         resolve: {
             // https://cn.vitejs.dev/config/#resolve-alias
             alias: {
