@@ -92,6 +92,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     }
 
     @Override
+    public List<SysUserDto> findUserByIdList(List<Long> userIdList) {
+        List<SysUserPo> sysUserPoList = Optional.of(sysUserRepository.findAllById(userIdList)).orElseGet(ArrayList::new);
+        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+    }
+
+    @Override
     public boolean checkUserNameUnique(SysUserDto sysUserDto) {
         SysUserPo sysUserPo = new SysUserPo();
         UCopy.fullCopy(sysUserDto, sysUserPo);

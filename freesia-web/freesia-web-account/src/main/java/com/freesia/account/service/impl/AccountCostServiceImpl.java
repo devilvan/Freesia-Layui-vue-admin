@@ -18,6 +18,7 @@ import com.freesia.account.repository.AccountCostRepository;
 import com.freesia.account.repository.AccountCostUserRepository;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.constant.Constants;
+import com.freesia.dto.SysUserDto;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
@@ -33,6 +34,10 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.service.SysUserService;
+import com.freesia.sse.constant.SseTopic;
+import com.freesia.sse.dto.SseMessageDto;
+import com.freesia.sse.util.USse;
 import com.freesia.tenant.exception.TenantException;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +66,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     private final AccountCostUserRepository accountCostUserRepository;
     private final TransactionTemplate transactionTemplate;
     private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
+    private final SysUserService sysUserService;
 
 
     /**
@@ -94,6 +100,8 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
 
     @Override
     public AccountCostDto saveUpdate(AccountCostDto accountCostDto) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        SysUserDto sysUserDto = sysUserService.findUserById(userId);
         Long costId = accountCostDto.getId();
         OssHandler ossHandler = OssFactory.getInstance();
         accountCostDto.setIcon(ossHandler.convertDomain2Endpoint(accountCostDto.getIcon()));
@@ -109,6 +117,20 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                     AccountCostUserPo accountCostUserPo = new AccountCostUserPo(new AccountCostUserPk(afterInsertAccountCostPo.getId(), accountCostUserId));
                     accountCostUserPoSet.add(accountCostUserPo);
                 }
+                List<Long> publishIdList = accountCostUserIdList
+                        .stream()
+                        .filter(item -> !item.equals(userId))
+                        .collect(Collectors.toList());
+                // 构建消息
+                SseMessageDto sseMessageDto = new SseMessageDto();
+                sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
+                sseMessageDto.setUserIdList(publishIdList);
+                sseMessageDto.setContent(UMessage.message("account.notice.add", new Object[]{
+                        Objects.requireNonNull(sysUserDto).getNickName(),
+                        afterInsertAccountCostPo.getOutlay(),
+                        afterInsertAccountCostPo.getCostType(),
+                        Objects.requireNonNull(CostType.getInstanceByCode(afterInsertAccountCostPo.getPaymentSign())).getDesc()}));
+                USse.publish(sseMessageDto);
             }
             accountCostUserRepository.saveAll(accountCostUserPoSet);
             return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
@@ -128,6 +150,23 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 accountCostUserRepository.saveAll(accountCostUserPoSet);
                 return accountCostRepository.save(accountCostPo);
             });
+            if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+                if (UEmpty.isNotNull(afterTransactionSaveAccountCostPo)) {
+                    List<Long> publishIdList = accountCostUserIdList
+                            .stream()
+                            .filter(item -> !item.equals(userId))
+                            .collect(Collectors.toList());
+                    SseMessageDto sseMessageDto = new SseMessageDto();
+                    sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
+                    sseMessageDto.setUserIdList(publishIdList);
+                    sseMessageDto.setContent(UMessage.message("account.notice.modify", new Object[]{
+                            Objects.requireNonNull(sysUserDto).getNickName(),
+                            afterTransactionSaveAccountCostPo.getOutlay(),
+                            afterTransactionSaveAccountCostPo.getCostType(),
+                            Objects.requireNonNull(CostType.getInstanceByCode(afterTransactionSaveAccountCostPo.getPaymentSign())).getDesc()}));
+                    USse.publish(sseMessageDto);
+                }
+            }
             return UCopy.copyPo2Dto(afterTransactionSaveAccountCostPo, AccountCostDto.class);
         }
     }

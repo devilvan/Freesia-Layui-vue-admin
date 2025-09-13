@@ -61,6 +61,14 @@ public interface SysUserService {
     SysUserDto findUserById(Long userId);
 
     /**
+     * 根据用户ID集合查询用户
+     *
+     * @param userIdList 用户ID集合
+     * @return 用户信息
+     */
+    List<SysUserDto> findUserByIdList(List<Long> userIdList);
+
+    /**
      * 验证该用户是否已存在
      *
      * @param sysUserDto 待验证的用户信息
