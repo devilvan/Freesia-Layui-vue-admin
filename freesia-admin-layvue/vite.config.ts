@@ -19,12 +19,35 @@ export default defineConfig(({mode, command}) => {
             port: 8700
         },
         build: {
+            // 减少内存使用的配置
+            chunkSizeWarningLimit: 1000,
             rollupOptions: {
-                onwarn() {
-                    // 完全忽略所有警告
-                    return
+                output: {
+                    manualChunks(id) {
+                        // 手动分块，减少内存压力
+                        if (id.includes('node_modules')) {
+                            return 'vendor'
+                        }
+                    }
                 },
+                onwarn(warning, defaultHandler) {
+                    // 忽略所有警告，减少内存使用
+                    if (warning.code === 'UNRESOLVED_IMPORT' || warning.code === 'CIRCULAR_DEPENDENCY') {
+                        return
+                    }
+                    defaultHandler(warning)
+                }
             },
+            // 关闭sourcemap可以节省大量内存
+            sourcemap: false,
+            // 使用更轻量级的minifier
+            minify: 'terser',
+            terserOptions: {
+                compress: {
+                    drop_console: true,
+                    drop_debugger: true
+                }
+            }
         },
         resolve: {
             // https://cn.vitejs.dev/config/#resolve-alias
