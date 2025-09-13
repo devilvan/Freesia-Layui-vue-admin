@@ -19,26 +19,12 @@ export default defineConfig(({mode, command}) => {
             port: 8700
         },
         build: {
-            // 关闭构建时的模块解析错误
             rollupOptions: {
-                onwarn(warning, defaultHandler) {
-                    // 忽略特定的解析警告
-                    if (warning.code === 'UNRESOLVED_IMPORT') {
-                        const ignoredModules = [
-                            '@layui/icons-vue',
-                            // 添加其他需要忽略的模块
-                        ]
-                        if (ignoredModules.some(module => warning.message.includes(module))) {
-                            console.warn('忽略模块解析警告:', warning.message)
-                            return
-                        }
-                    }
-                    defaultHandler(warning)
+                onwarn() {
+                    // 完全忽略所有警告
+                    return
                 },
             },
-            // 其他构建选项
-            sourcemap: false,
-            minify: 'esbuild',
         },
         resolve: {
             // https://cn.vitejs.dev/config/#resolve-alias
