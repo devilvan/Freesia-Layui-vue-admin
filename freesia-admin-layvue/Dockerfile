@@ -3,6 +3,8 @@ FROM node:18 as build-stage
 ## 设置编码
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
+# 设置内容限制
+ENV NODE_OPTIONS="--max_old_space_size=512"
 # 设置工作目录
 WORKDIR /
 # 复制 package.json 和 yarn.lock 文件
