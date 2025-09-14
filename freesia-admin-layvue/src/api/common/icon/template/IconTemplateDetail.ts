@@ -44,7 +44,7 @@ export function findGrouping(vo: CommonIconTemplateDetailVo): Promise<R<Map<stri
     return Http.get("/common/commonIconTemplateDetailController/findGrouping", params);
 }
 
-export function findCustomIconTemplateDetail(vo: CommonIconTemplateDetailVo): Promise<R<Record<string, FindTreeIconTreeTypeEntity[]>>> {
+export function findCustomIconTemplateDetail(vo: CommonIconTemplateDetailVo): Promise<R<FindTreeIconTreeTypeEntity[]>> {
     let params = buildUrlParam(vo);
     return Http.get("/common/commonIconTemplateDetailController/findCustomIconTemplateDetail", params);
 }

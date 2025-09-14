@@ -14,19 +14,19 @@
     </lay-button>
   </lay-panel>
   <lay-collapse v-model="openKeys">
-    <div v-for="[key, value] in dataSource" :key="key">
+    <div v-for="(item, index) in dataSource" :key="item.name">
       <lay-dropdown :trigger="'contextMenu'" alignPoint>
-        <lay-collapse-item :title="key" :id="key">
+        <lay-collapse-item :title="item.name" :id="item.name">
           <ul class="site-doc-icon">
-            <li v-for="(item, index) of value" :key="index">
-              <lay-tooltip :visible="false" trigger="hover" :content="item.name">
+            <li v-if="item.children" v-for="(cItem, cIndex) of item.children" :key="cIndex">
+              <lay-tooltip :visible="false" trigger="hover" :content="cItem.name">
                 <lay-dropdown :trigger="triggerType" alignPoint>
-                  <SvgIcon :name="item.url" :desc="item.name"></SvgIcon>
+                  <SvgIcon :name="cItem.url" :desc="cItem.name"></SvgIcon>
                   <template #content>
                     <lay-dropdown-menu>
-                      <lay-dropdown-menu-item @click="showSingleSaveIconModal(Operate.EDIT, item)">编辑
+                      <lay-dropdown-menu-item @click="showSingleSaveIconModal(Operate.EDIT, cItem)">编辑
                       </lay-dropdown-menu-item>
-                      <lay-dropdown-menu-item @click="deleteIcon(item)">删除</lay-dropdown-menu-item>
+                      <lay-dropdown-menu-item @click="deleteIcon(cItem)">删除</lay-dropdown-menu-item>
                     </lay-dropdown-menu>
                   </template>
                 </lay-dropdown>
@@ -36,7 +36,8 @@
         </lay-collapse-item>
         <template #content>
           <lay-dropdown-menu>
-            <lay-dropdown-menu-item @click="deleteGroup(value)">删除</lay-dropdown-menu-item>
+            <lay-dropdown-menu-item @click="showSaveGroupingModal(Operate.EDIT, item)">编辑</lay-dropdown-menu-item>
+            <lay-dropdown-menu-item @click="deleteGroup(key, item)">删除</lay-dropdown-menu-item>
           </lay-dropdown-menu>
         </template>
       </lay-dropdown>
@@ -278,6 +279,7 @@ import {preview} from "@/util/UImage";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
 import {deleteSysTenant} from "@/api/system/Tenant";
+import {refresh} from "@/util/UCommon";
 
 /* INIT*/
 onMounted(async () => {
@@ -295,7 +297,7 @@ onMounted(async () => {
 /* VAR*/
 const $route = useRoute();
 const headerId = ref<string>('');
-const dataSource = ref<Map<string, FindTreeIconTreeTypeEntity[]>>()
+const dataSource = ref<FindTreeIconTreeTypeEntity[]>()
 const findCommonIconPickerDataSource = ref<Map<string, Array<FindCommonIconEntity>>>()
 const loading = ref(true)
 const openKeys = ref<string[]>([]);
@@ -344,14 +346,9 @@ const loadDataSource = () => {
   let param: CommonIconTemplateDetailVo = {
     headerId: headerId.value
   }
-  findCustomIconTemplateDetail(param).then((res: R<Record<string, FindTreeIconTreeTypeEntity[]>>) => {
-    dataSource.value = new Map(Object.entries(res.data));
-    let temp: string[] = []
-    dataSource.value?.forEach((value, key) => {
-      if (value && value.length > 0) {
-        temp.push(key)
-      }
-    })
+  findCustomIconTemplateDetail(param).then((res: R<FindTreeIconTreeTypeEntity[]>) => {
+    dataSource.value = res.data;
+    let temp: string[] = res.data?.map((item: any) => item.name)
     openKeys.value = temp;
   }).catch(e => {
     layer.msg(e.msg)
@@ -359,11 +356,13 @@ const loadDataSource = () => {
 }
 
 function showSaveGroupingModal(title: string, row: any) {
+  console.log(title, row)
   saveGroupTitle.value = Operate.ADD === title ? "新增" : Operate.EDIT === title ? "编辑" : "";
   if (row != null) {
-    saveGroupTitle.value = {...row}
+    saveGroupVo.value = {...row}
   }
   if (Operate.EDIT === title) {
+    saveGroupModalFlag.value = true
   } else if (Operate.ADD === title) {
     saveGroupVo.value = {}
     saveGroupModalFlag.value = true
@@ -483,9 +482,7 @@ function saveGroup() {
   saveGroupVo.value.grouping = saveGroupVo.value?.name
   saveGroupVo.value.iconTreeType = IconTreeType.R;
   saveUpdate(saveGroupVo.value).then((res: R<void>) => {
-    change()
-    doFindGrouping();
-    hideSaveGroupingModal()
+    refresh()
   })
 }
 
@@ -621,36 +618,33 @@ function doFindGrouping() {
   })
 }
 
-function deleteGroup(value: []) {
-  if (value) {
-    if (value.length > 0) {
-      let parentId = value[0].parentId;
-      layer.confirm('您确认删除所有选中的分组和图标吗？', {
-        title: '提示',
-        btn: [
-          {
-            text: '确定',
-            callback: (id: any) => {
-              deleteGrouping(parentId).then((res: any) => {
-                if (res.code === 200) {
-                  layer.msg('删除成功')
-                }
-                loadDataSource();
-              }).catch(e => {
-                layer.confirm(e.msg, {icon: 2})
-              })
-              layer.close(id)
-            }
-          },
-          {
-            text: '取消',
-            callback: (id: any) => {
-              layer.close(id)
-            }
+function deleteGroup(key: string, value: any) {
+  if (value.parentId === '-1') {
+    layer.confirm('您确认删除所有选中的分组和图标吗？', {
+      title: '提示',
+      btn: [
+        {
+          text: '确定',
+          callback: (id: any) => {
+            deleteGrouping(value.id).then((res: any) => {
+              if (res.code === 200) {
+                layer.msg('删除成功')
+              }
+              loadDataSource();
+            }).catch(e => {
+              layer.confirm(e.msg, {icon: 2})
+            })
+            layer.close(id)
           }
-        ]
-      })
-    }
+        },
+        {
+          text: '取消',
+          callback: (id: any) => {
+            layer.close(id)
+          }
+        }
+      ]
+    })
   }
 }
 

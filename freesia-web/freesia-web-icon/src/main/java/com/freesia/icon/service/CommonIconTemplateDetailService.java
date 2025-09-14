@@ -8,7 +8,6 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -86,7 +85,7 @@ public interface CommonIconTemplateDetailService {
      * @param dto 查询入参
      * @return 结果集
      */
-    Map<String, List<FindTreeIconTreeTypeEntity>> findCustomIconTemplateDetail(CommonIconTemplateDetailDto dto);
+    List<FindTreeIconTreeTypeEntity> findCustomIconTemplateDetail(CommonIconTemplateDetailDto dto);
 
     /**
      * 删除自定义分组

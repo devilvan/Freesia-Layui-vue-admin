@@ -4,7 +4,6 @@ import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconEntity;
@@ -24,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -100,29 +99,9 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
     }
 
     @Override
-    public Map<String, List<FindTreeIconTreeTypeEntity>> findCustomIconTemplateDetail(CommonIconTemplateDetailDto dto) {
+    public List<FindTreeIconTreeTypeEntity> findCustomIconTemplateDetail(CommonIconTemplateDetailDto dto) {
         List<FindTreeIconTreeTypeEntity> list = commonIconTemplateDetailMapper.findCustomIconTemplateDetail(dto);
-        // 首先创建一个parentId到父项name的映射
-        Map<Long, String> parentIdToNameMap = list.stream()
-                .filter(item -> AdminConstant.MENU_TOP_PARENT_ID.equals(item.getParentId()))
-                .collect(Collectors.toMap(FindTreeIconTreeTypeEntity::getId, FindTreeIconTreeTypeEntity::getName));
-        // 获取所有父项name
-        Set<String> allParentNames = new HashSet<>(parentIdToNameMap.values());
-        // 创建结果Map，先初始化所有父项
-        Map<String, List<FindTreeIconTreeTypeEntity>> result = allParentNames.stream()
-                .collect(Collectors.toMap(
-                        name -> name,
-                        name -> new ArrayList<>()
-                ));
-        // 填充子项
-        list.stream()
-                .filter(item -> !AdminConstant.MENU_TOP_PARENT_ID.equals(item.getParentId()))
-                .filter(item -> parentIdToNameMap.containsKey(item.getParentId()))
-                .forEach(item -> {
-                    String parentName = parentIdToNameMap.get(item.getParentId());
-                    result.get(parentName).add(item);
-                });
-        return result;
+        return UTree.buildTree(list);
     }
 
     @Override

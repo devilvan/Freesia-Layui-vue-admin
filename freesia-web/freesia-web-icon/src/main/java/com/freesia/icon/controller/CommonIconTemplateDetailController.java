@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -139,10 +138,10 @@ public class CommonIconTemplateDetailController extends BaseController {
     @Operation(summary = "查询自定义分组Map")
     @GetMapping(value = "findCustomIconTemplateDetail")
 //    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
-    public R<Map<String, List<FindTreeIconTreeTypeEntity>>> findCustomIconTemplateDetail(CommonIconTemplateDetailVo vo) {
+    public R<List<FindTreeIconTreeTypeEntity>> findCustomIconTemplateDetail(CommonIconTemplateDetailVo vo) {
         CommonIconTemplateDetailDto dto = UCopy.copyVo2Dto(vo, CommonIconTemplateDetailDto.class);
-        Map<String, List<FindTreeIconTreeTypeEntity>> map = commonIconTemplateDetailService.findCustomIconTemplateDetail(dto);
-        return R.ok(map);
+        List<FindTreeIconTreeTypeEntity> list = commonIconTemplateDetailService.findCustomIconTemplateDetail(dto);
+        return R.ok(list);
     }
 
     @Operation(summary = "删除自定义分组")
