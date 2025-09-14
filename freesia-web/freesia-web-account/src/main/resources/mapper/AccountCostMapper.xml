@@ -716,9 +716,9 @@
             AND AC.TENANT_ID = #{accountCost.tenantId}
         </if>
         AND AC.USER_ID = #{accountCost.userId}
-        AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
-        GROUP BY AC.COST_TYPE,
-        AC.PAYMENT_TIME
+        AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE_SUB(CURDATE(), INTERVAL 3 WEEK), INTERVAL
+        WEEKDAY(DATE_SUB(CURDATE(), INTERVAL 3 WEEK)) DAY)
+        GROUP BY AC.ID,AC.COST_TYPE
 
         UNION ALL
 
@@ -746,9 +746,9 @@
         </if>
         AND ACU.USER_ID = #{accountCost.userId}
         AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
-        AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE(NOW()), INTERVAL 3 WEEK)
-        GROUP BY AC.COST_TYPE,
-        AC.PAYMENT_TIME) T
+        AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE_SUB(CURDATE(), INTERVAL 3 WEEK), INTERVAL
+        WEEKDAY(DATE_SUB(CURDATE(), INTERVAL 3 WEEK)) DAY)
+        GROUP BY AC.ID,AC.COST_TYPE) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
         ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
     </select>
@@ -775,12 +775,8 @@
             AND AC.TENANT_ID = #{accountCost.tenantId}
         </if>
         AND AC.USER_ID = #{accountCost.userId}
-        AND AC.PAYMENT_TIME >= DATE_SUB(
-        DATE_SUB(CURDATE(), INTERVAL DAYOFWEEK(CURDATE()) - 1 DAY),
-        INTERVAL 3 MONTH
-        )
-        GROUP BY AC.COST_TYPE,
-        AC.PAYMENT_TIME
+        AND AC.PAYMENT_TIME >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-01')
+        GROUP BY AC.ID,AC.COST_TYPE
 
         UNION ALL
 
@@ -801,11 +797,8 @@
         </if>
         AND ACU.USER_ID = #{accountCost.userId}
         AND AC.USER_ID <![CDATA[<>]]> #{accountCost.userId}
-        AND AC.PAYMENT_TIME >= DATE_SUB(
-        DATE_SUB(CURDATE(), INTERVAL DAYOFWEEK(CURDATE()) - 1 DAY),
-        INTERVAL 3 MONTH)
-        GROUP BY AC.COST_TYPE,
-        AC.PAYMENT_TIME) T
+        AND AC.PAYMENT_TIME >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-01')
+        GROUP BY AC.ID,AC.COST_TYPE) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
         ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
     </select>
