@@ -1,27 +1,30 @@
 <template>
   <lay-collapse v-model="props.openKeys">
-    <div v-for="[key, value] in props.dataSource" :key="key">
-      <lay-collapse-item :title="key" :id="key">
-        <!--        <ul class="site-doc-icon">-->
-        <!--          <li v-for="(item, index) of value" :key="index">-->
-        <!--            &lt;!&ndash;            <lay-tooltip :visible="false" trigger="hover" :content="item.name">&ndash;&gt;-->
-        <!--            <SvgIcon @click="selectIcon" :name="item.url" :desc="item.name"></SvgIcon>-->
-        <!--            &lt;!&ndash;            </lay-tooltip>&ndash;&gt;-->
-        <!--          </li>-->
-        <!--        </ul>-->
-        <lay-row>
-          <lay-col :md="3" v-for="(item, index) of value">
-            <lay-checkcard-group :single="true" v-model="checkCardGroupKey" @change="selectIcon(item)">
-              <lay-tooltip :visible="false" trigger="hover" :content="item.name">
-                <lay-checkcard style="width: 120px; height: 120px" class="checkCard" :cover="item.url" v-model="item.id"
-                               :value="item.id"
+    <div v-for="(item, index) in dataSource" :key="item.name">
+      <!--      <lay-checkcard-group :single="true" v-model="checkCardGroupKey" @change="selectIcon(item)">-->
+      <!--      </lay-checkcard-group>-->
+      <!--        <ul class="site-doc-icon">-->
+      <!--          <li v-if="item.children" v-for="(cItem, cIndex) of item.children" :key="cIndex">-->
+      <!--            <lay-tooltip :visible="false" trigger="hover" :content="cItem.name">-->
+      <!--              <SvgIcon :name="cItem.url" :desc="cItem.name"></SvgIcon>-->
+      <!--            </lay-tooltip>-->
+      <!--          </li>-->
+      <!--        </ul>-->
+      <lay-row>
+        <lay-collapse-item :title="item.name" :id="item.name">
+          <lay-col :md="3" v-for="(cItem, index) of item.children">
+            <lay-checkcard-group :single="true" v-model="checkCardGroupKey" @change="selectIcon(cItem)">
+              <lay-tooltip :visible="false" trigger="hover" :content="cItem.name">
+                <lay-checkcard style="width: 120px; height: 120px" class="checkCard" :cover="cItem.url"
+                               v-model="cItem.id"
+                               :value="cItem.id"
                 ></lay-checkcard>
-                <div class="container-desc">{{ item.name }}</div>
+                <div class="container-desc">{{ cItem.name }}</div>
               </lay-tooltip>
             </lay-checkcard-group>
           </lay-col>
-        </lay-row>
-      </lay-collapse-item>
+        </lay-collapse-item>
+      </lay-row>
     </div>
   </lay-collapse>
 </template>
@@ -30,11 +33,12 @@
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
 import {ref} from "vue";
 import {FindCommonIconEntity} from "@/types/common/icon/Icon";
+import {Operate} from "@/types/Constants";
 
 /*INIT*/
 const props = defineProps({
   dataSource: {
-    type: Map,
+    type: [],
     required: true
   },
   openKeys: {
@@ -130,7 +134,7 @@ function selectIcon(layIcon: any) {
 }
 
 .container-desc {
-  padding: 0 20%;
+  padding: 0 30%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

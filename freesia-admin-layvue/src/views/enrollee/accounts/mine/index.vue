@@ -464,13 +464,11 @@ onMounted(async () => {
   let param: CommonIconTemplateDetailVo = {
     headerId: useStore.commonIconHeader
   }
-  findCustomIconTemplateDetail(param).then((res: R<Record<string, FindTreeIconTreeTypeEntity[]>>) => {
-    findCommonIconPickerDataSource.value = new Map(Object.entries(res.data));
+  findCustomIconTemplateDetail(param).then((res: R<FindTreeIconTreeTypeEntity[]>) => {
+    findCommonIconPickerDataSource.value = res.data;
     let temp: string[] = []
-    findCommonIconPickerDataSource.value?.forEach((value, key) => {
-      if (value && value.length > 0) {
-        temp.push(key)
-      }
+    findCommonIconPickerDataSource.value?.forEach((res: any) => {
+        temp.push(res.name)
     })
     openKeys.value = temp;
   }).catch(e => {
@@ -586,7 +584,7 @@ const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const expandCollapseFlag = ref<boolean>(false);
-const findCommonIconPickerDataSource = ref<Map<string, Array<FindCommonIconEntity>>>()
+const findCommonIconPickerDataSource = ref<Array<FindCommonIconEntity>>()
 const selectCostTypeList = ref<LaySelectEntity[]>([]);
 const openKeys = ref<string[]>([]);
 const showModalFlag = ref<Boolean>(false)
