@@ -30,7 +30,7 @@ public class ThreadPoolConfig {
     @Bean(value = "threadPoolTaskExecutor")
     public ThreadPoolTaskExecutor buildThreadPoolTaskExecutor() {
         ArrayBlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(1024);
-        ThreadFactory threadFactory = ThreadFactoryBuilder.create().setNamePrefix("freesia-threadPoolTaskExecutor").build();
+        ThreadFactory threadFactory = ThreadFactoryBuilder.create().setNamePrefix("freesia-threadPoolTaskExecutor-").build();
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(AVAILABLE_PROCESSORS);
         threadPoolTaskExecutor.setMaxPoolSize(AVAILABLE_PROCESSORS * 2);

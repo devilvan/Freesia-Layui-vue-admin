@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
-import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.dto.SysNoticeDto;
+import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
 import com.freesia.notice.mapper.SysNoticeMapper;
 import com.freesia.notice.po.SysNoticePo;
@@ -13,7 +13,6 @@ import com.freesia.notice.repository.SysNoticeRepository;
 import com.freesia.notice.service.SysNoticeService;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
     @Override
     public SysNoticeDto saveUpdate(SysNoticeDto sysNoticeDto) {
         SysNoticePo sysNoticePo = UCopy.copyDto2Po(sysNoticeDto, SysNoticePo.class);
-        sysNoticePo.setPublisherId(USecurity.getUserId());
         SysNoticePo po = sysNoticeRepository.saveAndFlush(sysNoticePo);
         return UCopy.copyPo2Dto(po, SysNoticeDto.class);
     }

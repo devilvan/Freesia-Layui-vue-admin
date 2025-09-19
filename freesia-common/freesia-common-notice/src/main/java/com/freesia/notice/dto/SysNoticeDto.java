@@ -2,10 +2,12 @@ package com.freesia.notice.dto;
 
 import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
@@ -32,4 +34,8 @@ public class SysNoticeDto extends BaseDto {
     private Long publisherId;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "已读标识（0-未读;1-已读）")
+    private Boolean readFlag;
+    @Schema(description = "用户ID")
+    private Long userId;
 }

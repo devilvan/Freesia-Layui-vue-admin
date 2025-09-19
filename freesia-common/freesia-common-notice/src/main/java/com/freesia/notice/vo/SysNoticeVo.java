@@ -45,4 +45,8 @@ public class SysNoticeVo extends BaseVo {
     @Schema(description = "备注")
     @JsonAlias(value = {"remark"})
     private String remark;
+    @Schema(description = "已读标识（0-未读;1-已读）")
+    private Boolean readFlag;
+    @Schema(description = "用户ID")
+    private Long userId;
 }

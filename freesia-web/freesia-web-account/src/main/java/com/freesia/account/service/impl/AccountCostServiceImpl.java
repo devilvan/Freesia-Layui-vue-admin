@@ -27,6 +27,8 @@ import com.freesia.exception.UserException;
 import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.notice.constant.SysNoticeType;
+import com.freesia.notice.util.UNotice;
 import com.freesia.oss.pojo.OssFactory;
 import com.freesia.oss.pojo.OssHandler;
 import com.freesia.pojo.LaySelect;
@@ -125,12 +127,23 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 SseMessageDto sseMessageDto = new SseMessageDto();
                 sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
                 sseMessageDto.setUserIdList(publishIdList);
-                sseMessageDto.setContent(UMessage.message("account.notice.add", new Object[]{
+                String message = UMessage.message("account.notice.add", new Object[]{
                         Objects.requireNonNull(sysUserDto).getNickName(),
                         afterInsertAccountCostPo.getOutlay(),
                         afterInsertAccountCostPo.getCostType(),
-                        Objects.requireNonNull(CostType.getInstanceByCode(afterInsertAccountCostPo.getPaymentSign())).getDesc()}));
+                        Objects.requireNonNull(CostType.getInstanceByCode(afterInsertAccountCostPo.getPaymentSign())).getDesc()});
+                sseMessageDto.setContent(message);
                 USse.publish(sseMessageDto);
+                for (Long publicId : publishIdList) {
+                    UNotice.recordSysNotice(dto -> {
+                        dto.setTitle(UMessage.message("account.notice.cost.allocation"));
+                        dto.setType(SysNoticeType.NOTICE.getCode());
+                        dto.setContent(message);
+                        dto.setUserId(publicId);
+                        return dto;
+                    });
+                }
+
             }
             accountCostUserRepository.saveAll(accountCostUserPoSet);
             return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
@@ -159,12 +172,22 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                     SseMessageDto sseMessageDto = new SseMessageDto();
                     sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
                     sseMessageDto.setUserIdList(publishIdList);
-                    sseMessageDto.setContent(UMessage.message("account.notice.modify", new Object[]{
+                    String message = UMessage.message("account.notice.modify", new Object[]{
                             Objects.requireNonNull(sysUserDto).getNickName(),
                             afterTransactionSaveAccountCostPo.getOutlay(),
                             afterTransactionSaveAccountCostPo.getCostType(),
-                            Objects.requireNonNull(CostType.getInstanceByCode(afterTransactionSaveAccountCostPo.getPaymentSign())).getDesc()}));
+                            Objects.requireNonNull(CostType.getInstanceByCode(afterTransactionSaveAccountCostPo.getPaymentSign())).getDesc()});
+                    sseMessageDto.setContent(message);
                     USse.publish(sseMessageDto);
+                    for (Long publishId : publishIdList) {
+                        UNotice.recordSysNotice(dto -> {
+                            dto.setTitle(UMessage.message("account.notice.cost.allocation"));
+                            dto.setType(SysNoticeType.NOTICE.getCode());
+                            dto.setContent(message);
+                            dto.setUserId(publishId);
+                            return dto;
+                        });
+                    }
                 }
             }
             return UCopy.copyPo2Dto(afterTransactionSaveAccountCostPo, AccountCostDto.class);
@@ -292,14 +315,14 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public EchartCalendarOptionEntity findCostSumCalendarNearYear(AccountCostDto accountCostDto) {
         String cacheKey = "findCostSumCalendarNearYear:" + accountCostDto.getUserId() + "@" + accountCostDto.getTenantId() + "@" + Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeFrom()) + "@" + Constants.SDF_YMDHMS.format(accountCostDto.getPaymentTimeTo());
         EchartCalendarOptionEntity echartCalendarOptionEntityCache = URedis.get(cacheKey);
-//        if (UEmpty.isNotNull(echartCalendarOptionEntityCache)) {
-//            return echartCalendarOptionEntityCache;
-//        }
+        if (UEmpty.isNotNull(echartCalendarOptionEntityCache)) {
+            return echartCalendarOptionEntityCache;
+        }
         List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList = accountCostMapper.findCostSumCalendarNearYear(accountCostDto);
         EchartCalendarOptionEntity echartCalendarOptionEntity = buildEchartCalendarOptionEntity(findCostSumCalendarNearYearEntityList, accountCostDto);
-//        if (UEmpty.isNotNull(echartCalendarOptionEntity)) {
-//            URedis.set(cacheKey, echartCalendarOptionEntity, Duration.ofHours(4));
-//        }
+        if (UEmpty.isNotNull(echartCalendarOptionEntity)) {
+            URedis.set(cacheKey, echartCalendarOptionEntity, Duration.ofHours(4));
+        }
         return echartCalendarOptionEntity;
     }
 
@@ -307,9 +330,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto) {
         String cacheKey = "findRankByCostType:" + findRankByCostTypeDto.getUserId() + "@" + findRankByCostTypeDto.getTenantId() + "@" + findRankByCostTypeDto.getDateScope();
         EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
-//        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
-//            return echartStackedHorizontalBarOptionEntity;
-//        }
+        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
+            return echartStackedHorizontalBarOptionEntity;
+        }
         String dateScope = findRankByCostTypeDto.getDateScope();
         List<FindRankByCostTypeEntity> findRankByCostTypeEntityList = null;
         if (DateScope.WEEK.getCode().equals(dateScope)) {
@@ -318,9 +341,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             findRankByCostTypeEntityList = accountCostMapper.findMonthRankByCostType(findRankByCostTypeDto);
         }
         EchartStackedHorizontalBarOptionEntity entity = buildEchartStackedHorizontalBarOptionEntity(Optional.ofNullable(findRankByCostTypeEntityList).orElseGet(ArrayList::new));
-//        if (UEmpty.isNotNull(entity)) {
-//            URedis.set(cacheKey, entity, Duration.ofHours(4));
-//        }
+        if (UEmpty.isNotNull(entity)) {
+            URedis.set(cacheKey, entity, Duration.ofHours(4));
+        }
         return entity;
     }
 
