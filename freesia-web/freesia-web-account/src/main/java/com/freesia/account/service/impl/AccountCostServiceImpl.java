@@ -27,6 +27,7 @@ import com.freesia.exception.UserException;
 import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.notice.constant.SysNoticeCategory;
 import com.freesia.notice.constant.SysNoticeType;
 import com.freesia.notice.util.UNotice;
 import com.freesia.oss.pojo.OssFactory;
@@ -140,6 +141,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                         dto.setType(SysNoticeType.NOTICE.getCode());
                         dto.setContent(message);
                         dto.setUserId(publicId);
+                        dto.setCategory(SysNoticeCategory.ACCOUNT.getCode());
                         return dto;
                     });
                 }
@@ -185,6 +187,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                             dto.setType(SysNoticeType.NOTICE.getCode());
                             dto.setContent(message);
                             dto.setUserId(publishId);
+                            dto.setCategory(SysNoticeCategory.ACCOUNT.getCode());
                             return dto;
                         });
                     }

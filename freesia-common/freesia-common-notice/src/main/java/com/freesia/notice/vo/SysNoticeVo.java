@@ -49,4 +49,8 @@ public class SysNoticeVo extends BaseVo {
     private Boolean readFlag;
     @Schema(description = "用户ID")
     private Long userId;
+    @Schema(description = "消息所属类别")
+    private String category;
+    @Schema(description = "摘要")
+    private String excerpt;
 }

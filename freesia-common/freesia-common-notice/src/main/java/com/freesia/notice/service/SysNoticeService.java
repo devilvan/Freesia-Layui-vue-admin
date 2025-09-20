@@ -2,6 +2,8 @@ package com.freesia.notice.service;
 
 import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
+import com.freesia.notice.dto.MarkReadDto;
+import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.notice.dto.SysNoticeDto;
@@ -60,4 +62,19 @@ public interface SysNoticeService {
      * @return 公告集合
      */
     List<FindPublishedAnnouncementEntity> findPublishedAnnouncement();
+
+    /**
+     * 查询未读消息/公告数量
+     *
+     * @param sysNoticeVo 查询条件
+     * @return 未读消息/公告数量
+     */
+    Integer findUnreadCount(SysNoticeVo sysNoticeVo);
+
+    /**
+     * 标记已读
+     *
+     * @param markReadDto 入参
+     */
+    Integer markRead(MarkReadDto markReadDto);
 }

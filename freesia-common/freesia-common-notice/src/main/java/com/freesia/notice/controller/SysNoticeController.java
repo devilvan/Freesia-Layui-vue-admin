@@ -1,13 +1,18 @@
 package com.freesia.notice.controller;
 
 import com.freesia.controller.BaseController;
-import com.freesia.notice.entity.FindPageSysNoticeEntity;
+import com.freesia.exception.ServiceException;
+import com.freesia.notice.constant.NoticeModule;
+import com.freesia.notice.constant.SysNoticeType;
 import com.freesia.notice.dto.SysNoticeDto;
+import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
 import com.freesia.notice.service.SysNoticeService;
+import com.freesia.notice.dto.MarkReadDto;
 import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.sse.component.SseEmitterManager;
 import com.freesia.sse.constant.SseTopic;
 import com.freesia.sse.dto.SseMessageDto;
@@ -20,10 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -111,6 +113,10 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "查询消息公告表分页信息")
     @GetMapping(value = "findPageSysNotice")
     public TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeVo sysNoticeVo, PageQuery pageQuery) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        if (SysNoticeType.NOTICE.getCode().equals(sysNoticeVo.getType())) {
+            sysNoticeVo.setUserId(userId);
+        }
         SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
         Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
         if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
@@ -157,5 +163,37 @@ public class SysNoticeController extends BaseController {
     public R<Void> deleteSysNotice(@RequestBody List<Long> idList) {
         sysNoticeService.deleteSysNotice(idList);
         return R.ok();
+    }
+
+    /**
+     * 查询未读消息/公告数量
+     *
+     * @param sysNoticeVo 主键
+     * @return 形式返回
+     */
+    @Operation(summary = "查询未读消息/公告数量")
+    @GetMapping(value = "findUnreadCount")
+    public R<Integer> findUnreadCount(SysNoticeVo sysNoticeVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        if (SysNoticeType.NOTICE.getCode().equals(sysNoticeVo.getType())) {
+            sysNoticeVo.setUserId(userId);
+        }
+        Integer count = sysNoticeService.findUnreadCount(sysNoticeVo);
+        return R.ok(count);
+    }
+
+    /**
+     * 标记已读
+     *
+     * @param markReadDto 入参
+     * @return 形式返回
+     */
+    @Operation(summary = "标记已读")
+    @PostMapping(value = "markRead")
+    public R<Integer> markRead(@RequestBody MarkReadDto markReadDto) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        markReadDto.setUserId(userId);
+        Integer count = sysNoticeService.markRead(markReadDto);
+        return R.ok(count);
     }
 }

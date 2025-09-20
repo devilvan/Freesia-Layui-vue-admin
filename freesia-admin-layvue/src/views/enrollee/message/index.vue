@@ -16,61 +16,105 @@
       <template #title>
         系统公告
         <div style="width: 40px; margin-left: 20px; display: inline-block">
-          <div v-if="messageInfo.system > 0" class="corner-mark">
-            {{ messageInfo.system }}
+          <div v-if="announcementUnreadCount > 0" class="corner-mark">
+            {{ announcementUnreadCount }}
           </div>
         </div>
       </template>
-      <SysNotice/>
+      <Announcement @callback="changeAnnouncementUnreadCount"/>
     </lay-tab-item>
     <lay-tab-item id="user">
       <template #title>
-        用户私信
+        消息通知
         <div style="width: 40px; margin-left: 20px; display: inline-block">
-          <div v-if="messageInfo.user > 0" class="corner-mark">
-            {{ messageInfo.user }}
+          <div v-if="noticeUnreadCount > 0" class="corner-mark">
+            {{ noticeUnreadCount }}
           </div>
         </div>
       </template>
-      <table-content key="user"/>
+      <Notice @callback="changeNoticeUnreadCount"/>
     </lay-tab-item>
-    <lay-tab-item id="todo">
-      <template #title>
-        待办事项
-        <div style="width: 40px; margin-left: 20px; display: inline-block">
-          <div v-if="messageInfo.todo > 0" class="corner-mark">
-            {{ messageInfo.todo }}
-          </div>
-        </div>
-      </template>
-      <table-content key="todo"/>
-    </lay-tab-item>
+    <!--    <lay-tab-item id="todo">-->
+    <!--      <template #title>-->
+    <!--        待办事项-->
+    <!--        <div style="width: 40px; margin-left: 20px; display: inline-block">-->
+    <!--          <div v-if="messageInfo.todo > 0" class="corner-mark">-->
+    <!--            {{ messageInfo.todo }}-->
+    <!--          </div>-->
+    <!--        </div>-->
+    <!--      </template>-->
+    <!--      <table-content key="todo"/>-->
+    <!--    </lay-tab-item>-->
   </lay-tab>
 </template>
+
 <script lang="ts">
-import {ref} from 'vue'
-import tableContent from './table.vue'
-import SysNotice from "@/views/enrollee/message/sysNotice.vue";
-
+/**
+ * 创建组件时要添加name，否则在使用keep-alive时就会失效
+ */
 export default {
-  components: {
-    SysNotice,
-    tableContent
-  },
-  setup() {
-    const currentTab = ref('system')
-    const messageInfo = ref({
-      system: 3,
-      user: 0,
-      todo: 11
-    })
+  name: "Message",
+};
+</script>
+<script lang="ts" setup>
+import {onMounted, ref} from 'vue'
+import tableContent from './table.vue'
+import {SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
+import {findUnreadCount} from "@/api/system/Notice";
+import Notice from "@/views/enrollee/message/notice.vue";
+import Announcement from "@/views/enrollee/message/announcement.vue";
 
-    return {
-      currentTab,
-      messageInfo
-    }
+/*INIT*/
+onMounted(() => {
+  doFindAnnouncementUnreadCount();
+  doFindNoticeUnreadCount()
+})
+/*INIT*/
+
+/*VAR*/
+const currentTab = ref('system')
+const messageInfo = ref({
+  system: 3,
+  user: 0,
+  todo: 11
+})
+const announcementUnreadCount = ref<number>();
+const noticeUnreadCount = ref<number>();
+/*VAR*/
+
+/*FUNCTION*/
+
+function doFindAnnouncementUnreadCount() {
+  let params: SysNoticeVo = {
+    type: SysNoticeType.ANNOUNCEMENT
   }
+  findUnreadCount(params).then((res: any) => {
+    if (res.code === 200) {
+      announcementUnreadCount.value = res.data
+    }
+  })
 }
+
+function doFindNoticeUnreadCount() {
+  let params: SysNoticeVo = {
+    type: SysNoticeType.NOTICE
+  }
+  findUnreadCount(params).then((res: any) => {
+    if (res.code === 200) {
+      noticeUnreadCount.value = res.data
+    }
+  })
+}
+
+function changeAnnouncementUnreadCount(count: number) {
+  announcementUnreadCount.value = count;
+}
+
+function changeNoticeUnreadCount(count: number) {
+  noticeUnreadCount.value = count;
+}
+
+/*FUNCTION*/
 </script>
 
 <style scoped>
@@ -80,7 +124,7 @@ export default {
   padding: 0 5px;
   color: #fff;
   line-height: 16px;
-  background-color: #f5222d;
+  background-color: var(--global-primary-color);
   border-radius: 14px;
 }
 </style>

@@ -63,14 +63,38 @@
         SN.CONTENT,
         SN.PUBLISHER_ID,
         SN.REMARK,
-        SU.NICK_NAME AS PUBLISHER_NAME
+        SU.NICK_NAME AS PUBLISHER_NAME,
+        SN.USER_ID,
+        SN.CATEGORY,
+        SN.READ_FLAG,
+        SN.EXCERPT
         FROM sys_notice sn
         LEFT JOIN sys_user su on su.id = sn.PUBLISHER_ID
         WHERE 1 = 1
         AND SN.LOGIC_DEL = 0
+        <if test="sysNoticeDto.userId != null and sysNoticeDto.userId != 0">
+            AND SN.USER_ID = #{sysNoticeDto.userId}
+        </if>
         <if test="sysNoticeDto.id != null and sysNoticeDto.id != 0">
             AND SN.ID = #{sysNoticeDto.id}
         </if>
+        <if test="sysNoticeDto.type != null and sysNoticeDto.type">
+            AND SN.TYPE = #{sysNoticeDto.type}
+        </if>
         order by SN.ID desc
+    </select>
+    <select id="findUnreadCount" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sys_notice SN
+        WHERE 1=1
+        AND SN.LOGIC_DEL = 0
+        AND SN.READ_FLAG = 0
+        <if test="sysNoticeDto.userId != null and sysNoticeDto.userId != 0">
+            AND SN.USER_ID = #{sysNoticeDto.userId}
+        </if>
+        <if test="sysNoticeDto.type != null and sysNoticeDto.type">
+            AND SN.TYPE = #{sysNoticeDto.type}
+        </if>
+        order by SN.MODIFY_TIME desc
     </select>
 </mapper>

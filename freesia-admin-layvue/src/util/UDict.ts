@@ -53,7 +53,11 @@ export enum Constants {
     /**
      * 通知类型
      */
-    SYS_NOTICE_TYPE = "SYS_NOTICE_TYPE"
+    SYS_NOTICE_TYPE = "SYS_NOTICE_TYPE",
+    /**
+     * 消息所属模块
+     */
+    SYS_NOTICE_CATEGORY = "SYS_NOTICE_CATEGORY",
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {

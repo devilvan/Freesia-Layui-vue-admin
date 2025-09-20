@@ -34,4 +34,11 @@ public interface SysNoticeMapper extends BaseMapper<SysNoticePo> {
      * @return 分页信息
      */
     Page<FindPageSysNoticeEntity> findPageSysNotice(@Param(value = "sysNoticeDto") SysNoticeDto sysNoticeDto, @Param(value = "page") Page<SysNoticePo> pageQuery);
+
+    /**
+     * 查询未读消息/公告数量
+     * @param sysNoticeDto 查询条件
+     * @return 未读消息/公告数量
+     */
+    Integer findUnreadCount(@Param(value = "sysNoticeDto") SysNoticeDto sysNoticeDto);
 }

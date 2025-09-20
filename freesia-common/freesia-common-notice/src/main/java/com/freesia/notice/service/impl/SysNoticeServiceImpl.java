@@ -11,6 +11,8 @@ import com.freesia.notice.mapper.SysNoticeMapper;
 import com.freesia.notice.po.SysNoticePo;
 import com.freesia.notice.repository.SysNoticeRepository;
 import com.freesia.notice.service.SysNoticeService;
+import com.freesia.notice.dto.MarkReadDto;
+import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
@@ -71,9 +73,24 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
         for (FindPublishedAnnouncementEntity entity : findPublishedAnnouncementEntityList) {
             String content = entity.getContent();
             if (UEmpty.isNotEmpty(content)) {
-                entity.setContent("【" + entity.getTypeName() + "】" +content);
+                entity.setContent("【" + entity.getTypeName() + "】" + content);
             }
         }
         return findPublishedAnnouncementEntityList;
+    }
+
+    @Override
+    public Integer findUnreadCount(SysNoticeVo sysNoticeVo) {
+        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+        return sysNoticeMapper.findUnreadCount(sysNoticeDto);
+    }
+
+    @Override
+    public Integer markRead(MarkReadDto markReadDto) {
+        sysNoticeRepository.markRead(markReadDto);
+        SysNoticeDto sysNoticeDto = new SysNoticeDto();
+        sysNoticeDto.setType(markReadDto.getType());
+        sysNoticeDto.setUserId(markReadDto.getUserId());
+        return sysNoticeMapper.findUnreadCount(sysNoticeDto);
     }
 }
