@@ -42,4 +42,8 @@ public class SysNoticeDto extends BaseDto {
     private String category;
     @Schema(description = "摘要")
     private String excerpt;
+    @Schema(description = "创建时间从")
+    private Date createTimeFrom;
+    @Schema(description = "创建时间到")
+    private Date createTimeTo;
 }

@@ -135,9 +135,6 @@
               </lay-fullscreen>
             </lay-menu-item>
             <lay-menu-item>
-              <lay-icon type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
-            </lay-menu-item>
-            <lay-menu-item>
                 <global-message-tab :flag="flag" @callback="callbackFunc">
                   <lay-badge type="rim" position="bottom-right" :value="unreadCount">
                   <lay-icon
@@ -165,6 +162,9 @@
                   </lay-dropdown-menu>
                 </template>
               </lay-dropdown>
+            </lay-menu-item>
+            <lay-menu-item>
+              <lay-icon type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
               <lay-icon type="layui-icon-read" title="接口文档" @click="toDoc"></lay-icon>
@@ -405,6 +405,7 @@ export default {
 
     function doFindUnreadCount() {
       let params: SysNoticeVo = {
+        type: SysNoticeType.NOTICE
       }
       findUnreadCount(params).then((res: any) => {
         if (res.code === 200) {

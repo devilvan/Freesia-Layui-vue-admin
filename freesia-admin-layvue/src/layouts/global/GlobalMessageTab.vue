@@ -15,7 +15,7 @@
           <div style="width: 100%; height: 100%; overflow: hidden">
             <div
                 class="inform-item"
-                v-for="(item, index) in informList"
+                v-for="(item, index) in noticeList"
                 :key="index"
                 @dblclick="doMarkRead(item, index)"
             >
@@ -32,10 +32,10 @@
                 </div>
               </div>
               <div class="inform-item-readFlag">
-                <div v-show="informList[index].readFlag">
+                <div v-show="noticeList[index].readFlag">
                   <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
                 </div>
-                <div v-show="!informList[index].readFlag">
+                <div v-show="!noticeList[index].readFlag">
                   <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
                 </div>
               </div>
@@ -108,6 +108,8 @@ import {findListSysNotice, findPageSysNotice, findUnreadCount, markRead} from "@
 import {R, TableResult} from "@/types/Result";
 import {PageQuery} from "@/types/Common";
 import {useAppStore} from "@/store/app";
+import {layer} from "@layui/layui-vue";
+import {buildRange} from "@/util/UDate";
 
 interface MessageTabProps {
   flag: boolean
@@ -140,7 +142,7 @@ const emit = defineEmits(['callback']);
 /*VAR*/
 const appStore = useAppStore()
 const manualRef = ref()
-const informList = ref<SysNoticeEntity[]>()
+const noticeList = ref<SysNoticeEntity[]>()
 const privateLetteList = ref([
   {
     img: 'avatar1.png',
@@ -205,10 +207,13 @@ const searchQuery = ref<SysNoticeVo>({});
 
 /*FUNCTION*/
 function loadDataSource() {
+  let createTime: string[] = buildRange(7)
   searchQuery.value.type = SysNoticeType.NOTICE
+  searchQuery.value.createTimeFrom = new Date(createTime[0])
+  searchQuery.value.createTimeTo = new Date(createTime[1])
   findListSysNotice(searchQuery.value).then((res: R<SysNoticeEntity[]>) => {
     if (res.code === 200) {
-      informList.value = res.data;
+      noticeList.value = res.data;
     }
   });
 }
@@ -244,11 +249,17 @@ function doMarkRead(item: any, idx: number) {
   markRead(param).then((res: any) => {
     if (SysNoticeType.NOTICE === type) {
       noticeUnreadCount.value = res.data;
-      informList.value[idx].readFlag = true
+      noticeList.value[idx].readFlag = true
     } else if (SysNoticeType.ANNOUNCEMENT === type) {
       announcementUnreadCount.value = res.data
     }
     emit('callback', calculateSumCount())
+    layer.notify({
+      title: "成功",
+      content: "标记已读成功",
+      area: ['300px', '100px'],
+      time: 5000
+    })
   })
 }
 
@@ -256,9 +267,6 @@ function calculateSumCount(): number {
   let sumCount = 0;
   if (noticeUnreadCount && noticeUnreadCount.value) {
     sumCount += noticeUnreadCount.value
-  }
-  if (announcementUnreadCount && announcementUnreadCount.value) {
-    sumCount += announcementUnreadCount.value
   }
   return sumCount
 }

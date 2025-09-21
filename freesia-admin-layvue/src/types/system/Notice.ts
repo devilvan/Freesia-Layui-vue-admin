@@ -8,8 +8,8 @@ export enum SysNoticeType {
 export interface SysNoticeVo extends BaseVo {
     title?: string;
     type?: string;
-    effectiveTimeFrom?: string;
-    effectiveTimeTo?: string;
+    effectiveTimeFrom?: Date;
+    effectiveTimeTo?: Date;
     content?: string;
     publisherId?: string;
     remark?: string;
@@ -17,6 +17,8 @@ export interface SysNoticeVo extends BaseVo {
     userId?: string;
     category?: string;
     excerpt?: string;
+    createTimeFrom?: Date;
+    createTimeTo?: Date;
 }
 
 export interface SysNoticeEntity extends BaseEntity {
