@@ -9,6 +9,11 @@ export function findPageSysNotice(searchQuery: SysNoticeVo, pageQuery: PageQuery
     return Http.get("/api/sysNoticeController/findPageSysNotice", params);
 }
 
+export function findListSysNotice(searchQuery: SysNoticeVo): Promise<R<SysNoticeEntity[]>> {
+    let params = buildUrlParam(searchQuery);
+    return Http.get("/api/sysNoticeController/findListSysNotice", params);
+}
+
 export function findSysNotice(searchQuery: SysNoticeVo): Promise<R<SysNoticeEntity>> {
     let params = buildUrlParam(searchQuery);
     return Http.get("/api/sysNoticeController/findSysNotice", params);

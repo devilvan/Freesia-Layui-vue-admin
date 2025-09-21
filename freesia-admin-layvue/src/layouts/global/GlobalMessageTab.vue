@@ -1,28 +1,42 @@
 <template>
   <lay-dropdown
-    updateAtScroll
-    ref="manualRef"
-    :clickOutsideToClose="true"
-    :clickToClose="false"
-    placement="bottom"
+      updateAtScroll
+      ref="manualRef"
+      :clickOutsideToClose="true"
+      :clickToClose="false"
+      :blurToClose="true"
+      placement="bottom"
+      :trigger="'hover'"
   >
     <slot></slot>
     <template #content>
       <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
-        <lay-tab-item :title="`通知(${informList.length})`" id="1">
+        <lay-tab-item :title="`通知(${noticeUnreadCount})`" id="1">
           <div style="width: 100%; height: 100%; overflow: hidden">
             <div
-              class="inform-item"
-              v-for="(item, index) in informList"
-              :key="index"
+                class="inform-item"
+                v-for="(item, index) in informList"
+                :key="index"
+                @dblclick="doMarkRead(item, index)"
             >
               <div class="inform-item-icon">
-                <img src="../../assets/messageSlot/info1.png" alt="" />
+                <img src="@/assets/messageSlot/info1.png" alt=""/>
               </div>
               <div class="inform-item-text">
                 <div>{{ item.title }}</div>
+                <lay-tooltip :visible="false" :content="item.content">
+                  <div class="oneRow" :title="item.content">{{ item.content }}</div>
+                </lay-tooltip>
                 <div class="inform-item-time">
-                  {{ item.time }}
+                  {{ item.createTime }}
+                </div>
+              </div>
+              <div class="inform-item-readFlag">
+                <div v-show="informList[index].readFlag">
+                  <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
+                </div>
+                <div v-show="!informList[index].readFlag">
+                  <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
                 </div>
               </div>
             </div>
@@ -31,12 +45,12 @@
         <lay-tab-item :title="`私信(${privateLetteList.length})`" id="2">
           <div style="width: 100%; height: 100%; overflow: hidden">
             <div
-              class="inform-item privateLette-item"
-              v-for="(item, index) in privateLetteList"
-              :key="index"
+                class="inform-item privateLette-item"
+                v-for="(item, index) in privateLetteList"
+                :key="index"
             >
               <div class="inform-item-icon">
-                <img src="../../assets/messageSlot/avatar1.png" alt="" />
+                <img src="../../assets/messageSlot/avatar1.png" alt=""/>
               </div>
               <div class="inform-item-text">
                 <div>{{ item.title }}</div>
@@ -53,9 +67,9 @@
         <lay-tab-item :title="`待办(${todoList.length})`" id="3">
           <div style="width: 100%; height: 100%; overflow: hidden">
             <div
-              class="inform-item todo-item"
-              v-for="(item, index) in todoList"
-              :key="index"
+                class="inform-item todo-item"
+                v-for="(item, index) in todoList"
+                :key="index"
             >
               <div class="todo-title">
                 <div style="flex: 1">
@@ -88,41 +102,45 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-const manualRef = ref()
+import {onMounted, reactive, ref, watch} from 'vue'
+import {MarkReadVo, SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
+import {findListSysNotice, findPageSysNotice, findUnreadCount, markRead} from "@/api/system/Notice";
+import {R, TableResult} from "@/types/Result";
+import {PageQuery} from "@/types/Common";
+import {useAppStore} from "@/store/app";
+
 interface MessageTabProps {
   flag: boolean
 }
+
+/*INIT*/
+onMounted(() => {
+  doFindAnnouncementUnreadCount();
+  doFindNoticeUnreadCount()
+  loadDataSource()
+})
+
 const props = withDefaults(defineProps<MessageTabProps>(), {
   flag: false
 })
-const informList = ref([
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  }
-])
+watch(
+    () => props.flag,
+    (newVal) => {
+      if (newVal) {
+        manualRef.value.show()
+      } else {
+        manualRef.value.hide()
+      }
+    }
+)
+
+const emit = defineEmits(['callback']);
+/*INIT*/
+
+/*VAR*/
+const appStore = useAppStore()
+const manualRef = ref()
+const informList = ref<SysNoticeEntity[]>()
 const privateLetteList = ref([
   {
     img: 'avatar1.png',
@@ -180,16 +198,84 @@ const todoList = ref([
 ])
 
 const currentIndex = ref('1')
-watch(
-  () => props.flag,
-  (newVal) => {
-    if (newVal == true) {
-      manualRef.value.show()
-    } else {
-      manualRef.value.hide()
+const announcementUnreadCount = ref<number>();
+const noticeUnreadCount = ref<number>();
+const searchQuery = ref<SysNoticeVo>({});
+/*VAR*/
+
+/*FUNCTION*/
+function loadDataSource() {
+  searchQuery.value.type = SysNoticeType.NOTICE
+  findListSysNotice(searchQuery.value).then((res: R<SysNoticeEntity[]>) => {
+    if (res.code === 200) {
+      informList.value = res.data;
     }
+  });
+}
+
+function doFindAnnouncementUnreadCount() {
+  let params: SysNoticeVo = {
+    type: SysNoticeType.ANNOUNCEMENT
   }
-)
+  findUnreadCount(params).then((res: any) => {
+    if (res.code === 200) {
+      announcementUnreadCount.value = res.data
+    }
+  })
+}
+
+function doFindNoticeUnreadCount() {
+  let params: SysNoticeVo = {
+    type: SysNoticeType.NOTICE
+  }
+  findUnreadCount(params).then((res: any) => {
+    if (res.code === 200) {
+      noticeUnreadCount.value = res.data
+    }
+  })
+}
+
+function doMarkRead(item: any, idx: number) {
+  let type = item.type;
+  let param: MarkReadVo = {
+    idList: new Array(item.id),
+    type: type
+  }
+  markRead(param).then((res: any) => {
+    if (SysNoticeType.NOTICE === type) {
+      noticeUnreadCount.value = res.data;
+      informList.value[idx].readFlag = true
+    } else if (SysNoticeType.ANNOUNCEMENT === type) {
+      announcementUnreadCount.value = res.data
+    }
+    emit('callback', calculateSumCount())
+  })
+}
+
+function calculateSumCount(): number {
+  let sumCount = 0;
+  if (noticeUnreadCount && noticeUnreadCount.value) {
+    sumCount += noticeUnreadCount.value
+  }
+  if (announcementUnreadCount && announcementUnreadCount.value) {
+    sumCount += announcementUnreadCount.value
+  }
+  return sumCount
+}
+
+function getRowStyle(row: any, rowIndex: number) {
+  const day = new Date(row.paymentTime).getDay();
+  if (day === 0) return 'background-color:' + 'rgba(255, 154, 158, 0.4)';
+  if (day === 1) return 'background-color:' + 'rgba(255, 87, 34, 0.4)';
+  if (day === 2) return 'background-color:' + 'rgba(255, 184, 0, 0.4)';
+  if (day === 3) return 'background-color:' + 'rgba(54, 179, 104, 0.4)';
+  if (day === 4) return 'background-color:' + 'rgba(45, 140, 240, 0.4)';
+  if (day === 5) return 'background-color:' + 'rgba(57, 99, 188, 0.4)';
+  if (day === 6) return 'background-color:' + 'rgba(153, 138, 219, 0.4)';
+  return ''
+}
+
+/*FUNCTION*/
 </script>
 
 
@@ -197,8 +283,8 @@ watch(
 .inform-item {
   box-sizing: border-box;
   display: flex;
-  width: 320px;
-  height: 60px;
+  width: 600px;
+  height: 80px;
   color: #222222;
   font-size: 14px;
   padding: 0 20px;
@@ -210,13 +296,24 @@ watch(
     height: 100%;
     line-height: 60px;
     text-align: center;
+
     > img {
       width: 28px;
       height: 28px;
       vertical-align: middle;
     }
   }
+
+  .inform-item-readFlag {
+    display: inline-block;
+    width: 60px;
+    height: 100%;
+    line-height: 60px;
+    text-align: center;
+  }
+
   .inform-item-text {
+    width: 60%;
     box-sizing: border-box;
     display: inline-block;
     flex: 1;
@@ -229,6 +326,7 @@ watch(
     }
   }
 }
+
 .inform-item:hover {
   background-color: #fafafa;
 }
@@ -236,23 +334,35 @@ watch(
 .privateLette-item {
   height: 80px;
 }
+
 .todo-item {
   box-sizing: border-box;
   padding: 0 10px;
 }
+
 .todo-title {
   width: 100%;
   display: flex;
   line-height: 30px;
 }
+
 .todo-tags {
   width: 100px;
   text-align: right;
   line-height: 60px;
 }
+
 .todo-item-time {
   line-height: 20px;
   color: #ada4a4;
   font-size: 12px;
+}
+
+.oneRow {
+  width: 450px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 </style>

@@ -13,6 +13,10 @@ export interface SysNoticeVo extends BaseVo {
     content?: string;
     publisherId?: string;
     remark?: string;
+    readFlag?: boolean;
+    userId?: string;
+    category?: string;
+    excerpt?: string;
 }
 
 export interface SysNoticeEntity extends BaseEntity {
@@ -23,6 +27,10 @@ export interface SysNoticeEntity extends BaseEntity {
     content?: string;
     publisherId?: string;
     remark?: string;
+    readFlag?: boolean;
+    userId?: string;
+    category?: string;
+    excerpt?: string;
 }
 
 export interface MarkReadVo {

@@ -162,7 +162,7 @@
 }
 
 .oneRow {
-    width: 180px;
+    width: 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

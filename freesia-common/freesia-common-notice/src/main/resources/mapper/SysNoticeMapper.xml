@@ -45,7 +45,7 @@
           AND SN.EFFECTIVE_TIME_TO IS NULL
           AND NOW() <![CDATA[>=]]> SN.EFFECTIVE_TIME_FROM
     </select>
-    <select id="findPageSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
+    <sql id="findPageSysNotice">
         SELECT
         SN.ID,
         SN.CREATOR,
@@ -82,6 +82,9 @@
             AND SN.TYPE = #{sysNoticeDto.type}
         </if>
         order by SN.ID desc
+    </sql>
+    <select id="findPageSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
+        <include refid="findPageSysNotice" />
     </select>
     <select id="findUnreadCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
@@ -95,6 +98,8 @@
         <if test="sysNoticeDto.type != null and sysNoticeDto.type">
             AND SN.TYPE = #{sysNoticeDto.type}
         </if>
-        order by SN.MODIFY_TIME desc
+    </select>
+    <select id="findListSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
+        <include refid="findPageSysNotice" />
     </select>
 </mapper>

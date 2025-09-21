@@ -1,12 +1,12 @@
 package com.freesia.notice.service;
 
+import com.freesia.notice.dto.MarkReadDto;
+import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
-import com.freesia.notice.dto.MarkReadDto;
 import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.notice.dto.SysNoticeDto;
 
 import java.util.List;
 
@@ -77,4 +77,12 @@ public interface SysNoticeService {
      * @param markReadDto 入参
      */
     Integer markRead(MarkReadDto markReadDto);
+
+    /**
+     * 查询消息公告表集合
+     *
+     * @param sysNoticeDto 查询条件
+     * @return 消息公告表集合
+     */
+    List<FindPageSysNoticeEntity> findListSysNotice(SysNoticeDto sysNoticeDto);
 }

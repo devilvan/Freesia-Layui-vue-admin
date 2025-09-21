@@ -138,12 +138,14 @@
               <lay-icon type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
-              <global-message-tab :flag="flag">
-                <lay-icon
-                    type="layui-icon-notice"
-                    @click="changeDropdown"
-                ></lay-icon>
-              </global-message-tab>
+                <global-message-tab :flag="flag" @callback="callbackFunc">
+                  <lay-badge type="rim" position="bottom-right" :value="unreadCount">
+                  <lay-icon
+                      type="layui-icon-notice"
+                      @click="changeDropdown"
+                  ></lay-icon>
+                  </lay-badge>
+                </global-message-tab>
             </lay-menu-item>
             <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
@@ -238,8 +240,8 @@ import {sseDisconnect} from "../api/Login";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
 import {R} from "@/types/Result";
-import {findPublishedAnnouncement} from "@/api/system/Notice";
-import {SysNoticeEntity} from "@/types/system/Notice";
+import {findPublishedAnnouncement, findUnreadCount} from "@/api/system/Notice";
+import {SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
 
 export interface AnnouncementContent {
   id?: string,
@@ -284,6 +286,7 @@ export default {
       changeSelectedKey,
       changeOpenKeys
     } = useMenu()
+    const unreadCount = ref<number>(0)
 
     onMounted(() => {
       if (document.body.clientWidth < 768) {
@@ -307,6 +310,7 @@ export default {
           announcementContentList.value.push(announcementContent)
         })
       })
+      doFindUnreadCount();
     })
 
     const changeVisible = () => {
@@ -399,6 +403,20 @@ export default {
       layer.photos(option)
     }
 
+    function doFindUnreadCount() {
+      let params: SysNoticeVo = {
+      }
+      findUnreadCount(params).then((res: any) => {
+        if (res.code === 200) {
+          unreadCount.value = res.data
+        }
+      })
+    }
+
+    function callbackFunc(count: number) {
+      unreadCount.value = count
+    }
+
     return {
       sideWidth,
       mainSelectedKey,
@@ -431,7 +449,10 @@ export default {
       bootstrapImageUrl,
       preview,
       announcementList,
-      announcementContentList
+      announcementContentList,
+      doFindUnreadCount,
+      unreadCount,
+      callbackFunc
     }
   }
 }

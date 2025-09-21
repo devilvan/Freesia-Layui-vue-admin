@@ -127,6 +127,29 @@ public class SysNoticeController extends BaseController {
     }
 
     /**
+     * 查询消息公告表集合
+     *
+     * @param sysNoticeVo 查询条件
+     * @return 形式返回
+     */
+    @Operation(summary = "查询消息公告表集合")
+    @GetMapping(value = "findListSysNotice")
+    public R<List<FindPageSysNoticeEntity>> findListSysNotice(SysNoticeVo sysNoticeVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        if (SysNoticeType.NOTICE.getCode().equals(sysNoticeVo.getType())) {
+            sysNoticeVo.setUserId(userId);
+        }
+        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+        Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
+        if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
+            sysNoticeDto.setEffectiveTimeFrom(effectiveTime[0]);
+            sysNoticeDto.setEffectiveTimeTo(effectiveTime[1]);
+        }
+        List<FindPageSysNoticeEntity> findPageSysNoticeEntityList = sysNoticeService.findListSysNotice(sysNoticeDto);
+        return R.ok(findPageSysNoticeEntityList);
+    }
+
+    /**
      * 条件查询消息公告表
      *
      * @param sysNoticeVo 查询条件

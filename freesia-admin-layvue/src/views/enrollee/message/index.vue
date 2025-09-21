@@ -12,18 +12,7 @@
       v-model="currentTab"
       tabPosition="left"
   >
-    <lay-tab-item id="system">
-      <template #title>
-        系统公告
-        <div style="width: 40px; margin-left: 20px; display: inline-block">
-          <div v-if="announcementUnreadCount > 0" class="corner-mark">
-            {{ announcementUnreadCount }}
-          </div>
-        </div>
-      </template>
-      <Announcement @callback="changeAnnouncementUnreadCount"/>
-    </lay-tab-item>
-    <lay-tab-item id="user">
+    <lay-tab-item id="notice">
       <template #title>
         消息通知
         <div style="width: 40px; margin-left: 20px; display: inline-block">
@@ -33,6 +22,17 @@
         </div>
       </template>
       <Notice @callback="changeNoticeUnreadCount"/>
+    </lay-tab-item>
+    <lay-tab-item id="announcement">
+      <template #title>
+        系统公告
+        <div style="width: 40px; margin-left: 20px; display: inline-block">
+          <div v-if="announcementUnreadCount > 0" class="corner-mark">
+            {{ announcementUnreadCount }}
+          </div>
+        </div>
+      </template>
+      <Announcement @callback="changeAnnouncementUnreadCount"/>
     </lay-tab-item>
     <!--    <lay-tab-item id="todo">-->
     <!--      <template #title>-->
@@ -72,7 +72,7 @@ onMounted(() => {
 /*INIT*/
 
 /*VAR*/
-const currentTab = ref('system')
+const currentTab = ref('notice')
 const messageInfo = ref({
   system: 3,
   user: 0,

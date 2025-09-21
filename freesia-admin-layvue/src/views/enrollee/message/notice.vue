@@ -21,6 +21,14 @@
     <template #category="{ row }">
       <dict-tag :options="sysNoticeCategorySelect" :value="row.category"/>
     </template>
+    <template #readFlag="{ row }">
+      <div v-show="row.readFlag">
+        <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
+      </div>
+      <div v-show="!row.readFlag">
+        <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
+      </div>
+    </template>
     <template v-slot:toolbar>
       <lay-button size="sm" type="warm" @click="doMarkRead(SysNoticeType.NOTICE)">标记已读</lay-button>
       <lay-button size="sm" type="normal" @click="showSaveModal(Operate.ADD, null)">新增</lay-button>
@@ -142,7 +150,7 @@ const emit = defineEmits(['callback']);
 /*INIT*/
 
 /*VAR*/
-const currentTab = ref('system')
+const currentTab = ref('notice')
 const messageInfo = ref({
   system: 3,
   user: 0,
@@ -160,6 +168,7 @@ const columns = ref([
   {title: '选项', width: '50px', type: 'checkbox', fixed: 'left'},
   {title: '标题', width: '80px', key: 'title'},
   {title: '内容', width: '260px', key: 'content', customSlot: 'content'},
+  {title: '状态', width: '60px', key: 'readFlag', customSlot: 'readFlag'},
   {title: '发布人', width: '100px', key: 'publisherName'},
   {title: '发布时间', width: '150px', key: 'createTime'},
   {title: '所属模块', width: '80px', key: 'category', customSlot: 'category'},
@@ -183,6 +192,7 @@ const sysNoticeCategorySelectList = ref<any[]>();
 const sdf_ymdhms = 'YYYY-MM-DD HH:mm:ss'
 // const sdf_000000 = 'YYYY-MM-DD 00:00:00'
 // const sdf_235959 = 'YYYY-MM-DD 23:59:59'
+const dataSource = ref<SysNoticeEntity[]>();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const saveGroupFormRef = ref()
 const noticeTableRef = ref()
@@ -202,9 +212,6 @@ const sortChange = (key: any, sort: any) => {
       `字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`
   )
 }
-
-const dataSource = ref<SysNoticeEntity[]>();
-
 function toRemove() {
   if (selectedKeys.value.length == 0) {
     layer.msg('您未选择数据，请先选择要删除的数据', {icon: 3, time: 2000})
@@ -318,6 +325,7 @@ function doMarkRead(type: SysNoticeType) {
         icon: 1,
         area: ['300px', '100px']
       })
+      change()
     }
   })
 }

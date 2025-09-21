@@ -93,4 +93,9 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
         sysNoticeDto.setUserId(markReadDto.getUserId());
         return sysNoticeMapper.findUnreadCount(sysNoticeDto);
     }
+
+    @Override
+    public List<FindPageSysNoticeEntity> findListSysNotice(SysNoticeDto sysNoticeDto) {
+        return sysNoticeMapper.findListSysNotice(sysNoticeDto);
+    }
 }

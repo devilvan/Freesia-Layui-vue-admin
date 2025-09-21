@@ -142,6 +142,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                         dto.setContent(message);
                         dto.setUserId(publicId);
                         dto.setCategory(SysNoticeCategory.ACCOUNT.getCode());
+                        dto.setExcerpt(message);
                         return dto;
                     });
                 }
@@ -188,6 +189,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                             dto.setContent(message);
                             dto.setUserId(publishId);
                             dto.setCategory(SysNoticeCategory.ACCOUNT.getCode());
+                            dto.setExcerpt(message);
                             return dto;
                         });
                     }
