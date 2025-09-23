@@ -4,11 +4,12 @@ import com.freesia.controller.BaseController;
 import com.freesia.exception.ServiceException;
 import com.freesia.notice.constant.NoticeModule;
 import com.freesia.notice.constant.SysNoticeType;
+import com.freesia.notice.dto.MarkReadDto;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
+import com.freesia.notice.exception.NoticeException;
 import com.freesia.notice.service.SysNoticeService;
-import com.freesia.notice.dto.MarkReadDto;
 import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
@@ -52,40 +53,52 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "保存消息公告表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysNoticeVo sysNoticeVo) {
-        Date effectiveTimeFrom = sysNoticeVo.getEffectiveTimeFrom();
-        Date effectiveTimeTo = sysNoticeVo.getEffectiveTimeTo();
-        // 生效时间从 -> 生效时间到
-        Calendar calendar = UCalendar.getInstance();
-        if (effectiveTimeFrom != null && effectiveTimeTo != null) {
-            calendar.setTime(effectiveTimeFrom);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            sysNoticeVo.setEffectiveTimeFrom(calendar.getTime());
-            calendar.setTime(effectiveTimeTo);
-            calendar.set(Calendar.HOUR_OF_DAY, 23);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 59);
-            calendar.set(Calendar.MILLISECOND, 999);
-            sysNoticeVo.setEffectiveTimeTo(calendar.getTime());
-        } else if (effectiveTimeFrom != null) {
-            // 生效时间从 -> 长期
-            calendar.setTime(effectiveTimeFrom);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            sysNoticeVo.setEffectiveTimeFrom(calendar.getTime());
+        String type = sysNoticeVo.getType();
+        SysNoticeType sysNoticeType = SysNoticeType.getInstanceByCode(type);
+        if (UEmpty.isNull(sysNoticeType)) {
+            throw new NoticeException("notice.type.invalid", new Object[]{sysNoticeType});
         }
-        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
-        scheduledThreadPoolExecutor.schedule(() -> {
-            SseMessageDto sseMessageDto = new SseMessageDto();
-            sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
-            sseMessageDto.setContent(sysNoticeDto.getContent());
-            sseEmitterManager.publishAll(sseMessageDto);
-        }, 5, TimeUnit.SECONDS);
-        sysNoticeService.saveUpdate(sysNoticeDto);
+        SysNoticeDto sysNoticeDto;
+        if (sysNoticeType.equals(SysNoticeType.ANNOUNCEMENT)) {
+            Date effectiveTimeFrom = sysNoticeVo.getEffectiveTimeFrom();
+            Date effectiveTimeTo = sysNoticeVo.getEffectiveTimeTo();
+            // 生效时间从 -> 生效时间到
+            Calendar calendar = UCalendar.getInstance();
+            if (effectiveTimeFrom != null && effectiveTimeTo != null) {
+                calendar.setTime(effectiveTimeFrom);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                sysNoticeVo.setEffectiveTimeFrom(calendar.getTime());
+                calendar.setTime(effectiveTimeTo);
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                calendar.set(Calendar.MILLISECOND, 999);
+                sysNoticeVo.setEffectiveTimeTo(calendar.getTime());
+            } else if (effectiveTimeFrom != null) {
+                // 生效时间从 -> 长期
+                calendar.setTime(effectiveTimeFrom);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                sysNoticeVo.setEffectiveTimeFrom(calendar.getTime());
+            }
+            sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+            scheduledThreadPoolExecutor.schedule(() -> {
+                SseMessageDto sseMessageDto = new SseMessageDto();
+                sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
+                sseMessageDto.setContent(sysNoticeDto.getContent());
+                sseEmitterManager.publishAll(sseMessageDto);
+            }, 5, TimeUnit.SECONDS);
+        } else {
+            sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+        }
+        if (UEmpty.isNotNull(sysNoticeDto)) {
+            sysNoticeService.saveUpdate(sysNoticeDto);
+        }
         return R.ok();
     }
 
