@@ -391,7 +391,7 @@ export default {
         layer.notify({
           title: "消息",
           content: e.data,
-          time: 10000
+          time: 10000,
         })
       })
     }

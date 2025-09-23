@@ -6,6 +6,7 @@
       :loading="loading"
       :default-toolbar="true"
       :data-source="dataSource"
+      :rowStyle="getRowStyle"
       v-model:selected-keys="selectedKeys"
       @change="change"
       @sortChange="sortChange"
@@ -308,12 +309,15 @@ function doMarkRead(type: SysNoticeType) {
       layer.notify({
         title: "成功",
         content: "标记已读成功",
-        area: ['300px', '100px']
       })
     }
   })
 }
 
+function getRowStyle(row: any, rowIndex: number) {
+  if (row.readFlag) return 'color:' + '#c2c2c2';
+  return ''
+}
 /*FUNCTION*/
 </script>
 

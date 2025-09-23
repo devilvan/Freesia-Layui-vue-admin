@@ -17,12 +17,12 @@
                 class="inform-item"
                 v-for="(item, index) in noticeList"
                 :key="index"
-                @dblclick="doMarkRead(item, index)"
+                @click="doMarkRead(item, index)"
             >
               <div class="inform-item-icon">
                 <img src="@/assets/messageSlot/info1.png" alt=""/>
               </div>
-              <div class="inform-item-text">
+              <div class="inform-item-text" :style="getRowStyle(item, index)">
                 <div>{{ item.title }}</div>
                 <lay-tooltip :visible="false" :content="item.content">
                   <div class="oneRow" :title="item.content">{{ item.content }}</div>
@@ -241,6 +241,15 @@ function doFindNoticeUnreadCount() {
 }
 
 function doMarkRead(item: any, idx: number) {
+  if (item.readFlag) {
+    layer.notify({
+      title: "成功",
+      content: "标记已读成功",
+      time: 5000,
+      icon: 1,
+    })
+    return ;
+  }
   let type = item.type;
   let param: MarkReadVo = {
     idList: new Array(item.id),
@@ -257,8 +266,8 @@ function doMarkRead(item: any, idx: number) {
     layer.notify({
       title: "成功",
       content: "标记已读成功",
-      area: ['300px', '100px'],
-      time: 5000
+      time: 5000,
+      icon: 1,
     })
   })
 }
@@ -272,14 +281,7 @@ function calculateSumCount(): number {
 }
 
 function getRowStyle(row: any, rowIndex: number) {
-  const day = new Date(row.paymentTime).getDay();
-  if (day === 0) return 'background-color:' + 'rgba(255, 154, 158, 0.4)';
-  if (day === 1) return 'background-color:' + 'rgba(255, 87, 34, 0.4)';
-  if (day === 2) return 'background-color:' + 'rgba(255, 184, 0, 0.4)';
-  if (day === 3) return 'background-color:' + 'rgba(54, 179, 104, 0.4)';
-  if (day === 4) return 'background-color:' + 'rgba(45, 140, 240, 0.4)';
-  if (day === 5) return 'background-color:' + 'rgba(57, 99, 188, 0.4)';
-  if (day === 6) return 'background-color:' + 'rgba(153, 138, 219, 0.4)';
+  if (row.readFlag) return 'color:' + '#c2c2c2';
   return ''
 }
 
