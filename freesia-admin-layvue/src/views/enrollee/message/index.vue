@@ -16,8 +16,8 @@
       <template #title>
         消息通知
         <div style="width: 40px; margin-left: 20px; display: inline-block">
-          <div v-if="noticeUnreadCount > 0" class="corner-mark">
-            {{ noticeUnreadCount }}
+          <div v-if="userStore.noticeCount && userStore.noticeCount > 0" class="corner-mark">
+            {{ userStore.noticeCount }}
           </div>
         </div>
       </template>
@@ -27,8 +27,8 @@
       <template #title>
         系统公告
         <div style="width: 40px; margin-left: 20px; display: inline-block">
-          <div v-if="announcementUnreadCount > 0" class="corner-mark">
-            {{ announcementUnreadCount }}
+          <div v-if="userStore.announcementCount && userStore.announcementCount > 0" class="corner-mark">
+            {{ userStore.announcementCount }}
           </div>
         </div>
       </template>
@@ -63,6 +63,7 @@ import {SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
 import {findUnreadCount} from "@/api/system/Notice";
 import Notice from "@/views/enrollee/message/notice.vue";
 import Announcement from "@/views/enrollee/message/announcement.vue";
+import {useUserStore} from "@/store/user";
 
 /*INIT*/
 onMounted(() => {
@@ -72,14 +73,13 @@ onMounted(() => {
 /*INIT*/
 
 /*VAR*/
+const userStore = useUserStore()
 const currentTab = ref('notice')
 const messageInfo = ref({
   system: 3,
   user: 0,
   todo: 11
 })
-const announcementUnreadCount = ref<number>();
-const noticeUnreadCount = ref<number>();
 /*VAR*/
 
 /*FUNCTION*/
@@ -90,7 +90,7 @@ function doFindAnnouncementUnreadCount() {
   }
   findUnreadCount(params).then((res: any) => {
     if (res.code === 200) {
-      announcementUnreadCount.value = res.data
+      userStore.announcementCount = res.data
     }
   })
 }
@@ -101,17 +101,17 @@ function doFindNoticeUnreadCount() {
   }
   findUnreadCount(params).then((res: any) => {
     if (res.code === 200) {
-      noticeUnreadCount.value = res.data
+      userStore.noticeCount = res.data
     }
   })
 }
 
 function changeAnnouncementUnreadCount(count: number) {
-  announcementUnreadCount.value = count;
+  userStore.announcementCount = count;
 }
 
 function changeNoticeUnreadCount(count: number) {
-  noticeUnreadCount.value = count;
+  userStore.noticeCount = count;
 }
 
 /*FUNCTION*/

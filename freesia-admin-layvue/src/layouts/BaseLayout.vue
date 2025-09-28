@@ -135,14 +135,14 @@
               </lay-fullscreen>
             </lay-menu-item>
             <lay-menu-item>
-                <global-message-tab :flag="flag" @callback="callbackFunc">
-                  <lay-badge type="rim" position="bottom-right" :value="unreadCount">
+              <global-message-tab :flag="flag" @callback="callbackFunc">
+                <lay-badge type="rim" position="bottom-right" :value="userInfoStore.unreadCount">
                   <lay-icon
                       type="layui-icon-notice"
                       @click="changeDropdown"
                   ></lay-icon>
-                  </lay-badge>
-                </global-message-tab>
+                </lay-badge>
+              </global-message-tab>
             </lay-menu-item>
             <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
@@ -286,7 +286,6 @@ export default {
       changeSelectedKey,
       changeOpenKeys
     } = useMenu()
-    const unreadCount = ref<number>(0)
 
     onMounted(() => {
       if (document.body.clientWidth < 768) {
@@ -409,13 +408,14 @@ export default {
       }
       findUnreadCount(params).then((res: any) => {
         if (res.code === 200) {
-          unreadCount.value = res.data
+          userInfoStore.noticeCount = res.data
         }
+        userInfoStore.unreadCount = userInfoStore.noticeCount
       })
     }
 
     function callbackFunc(count: number) {
-      unreadCount.value = count
+      userInfoStore.unreadCount = count
     }
 
     return {
@@ -452,7 +452,6 @@ export default {
       announcementList,
       announcementContentList,
       doFindUnreadCount,
-      unreadCount,
       callbackFunc
     }
   }

@@ -10,6 +10,8 @@ import {RouterComponent} from "../types/Menu";
 import {reloadSysTenant} from "../api/system/Tenant";
 import {useTabStore} from "../layouts/composable/useTabStore";
 import {loginPath} from "../api/Http";
+import {findUnreadCount} from "@/api/system/Notice";
+import {SysNoticeVo} from "@/types/system/Notice";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
@@ -33,7 +35,10 @@ export const useUserStore = defineStore({
             menus: [],
             roles: [],
             sidebarRoutes: [{}],
-            sysTenantDtoList: [{}]
+            sysTenantDtoList: [{}],
+            noticeCount: 0,
+            announcementCount: 0,
+            unreadCount: 0
         }
     },
     actions: {
