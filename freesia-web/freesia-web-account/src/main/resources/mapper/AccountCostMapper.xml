@@ -691,10 +691,17 @@
         T.COST_DESC,
         SUM(T.OUTLAY) AS OUTLAY,
         T.DATE_SIGN,
+        T.WEEK_START,
+        T.WEEK_END,
         DENSE_RANK() OVER (ORDER BY T.DATE_SIGN DESC ) AS RK
         FROM (SELECT AC.COST_TYPE,
         AC.COST_DESC,
         CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 1), 2, '0')) as DATE_SIGN,
+        STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ) AS WEEK_START,
+        DATE_ADD(
+        STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ),
+        INTERVAL 6 DAY
+        ) AS WEEK_END,
         ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
         WHEN (SELECT COUNT(1)
@@ -725,6 +732,11 @@
         SELECT AC.COST_TYPE,
         AC.COST_DESC,
         CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 1), 2, '0')) as DATE_SIGN,
+        STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ) AS WEEK_START,
+        DATE_ADD(
+        STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ),
+        INTERVAL 6 DAY
+        ) AS WEEK_END,
         ROUND(IFNULL(AC.OUTLAY, 0) / CASE
 
         WHEN (SELECT COUNT(1)
