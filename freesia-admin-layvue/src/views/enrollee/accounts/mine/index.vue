@@ -87,7 +87,6 @@
                         :columns="userModalColumns"
                         :loading="userModalLoading"
                         :data-source="userEntityList"
-                        :height="'550px'"
                         v-model:selected-keys="searchQuery.accountCostUserIdList"
                         @change="changeShowModalFlag"
                     >
@@ -126,7 +125,6 @@
         :default-toolbar="true"
         :loading="loading"
         :page="pageQuery"
-        :height="'550px'"
         :even="false"
         :resize="true"
         :rowStyle="getRowStyle"
@@ -313,7 +311,6 @@
                           :columns="userModalColumns"
                           :loading="userModalLoading"
                           :data-source="userEntityList"
-                          :height="'550px'"
                           v-model:selected-keys="accountCostVo.accountCostUserIdList"
                           @change="changeShowModalFlag"
                       >
