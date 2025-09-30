@@ -5,8 +5,11 @@
       <lay-col v-for="(item, index) in accountBudgetEntityList" :key="index" :md="8">
         <lay-card shadow="hover">
           <div style="padding-bottom: 20px">
-            <div style="font-size: 12pt;text-align: center;height: 50px">
+            <div style="font-size: 12pt;text-align: center;height: 30px">
               {{ item.name }}
+            </div>
+            <div v-if="item.durationFrom" style="font-size: 10pt;text-align: center;height: 30px">
+              {{item.durationFrom}} - {{item.durationTo}}
             </div>
             <div style="font-size: 20pt">
               <div style="display: flex;justify-content: center" :style="
