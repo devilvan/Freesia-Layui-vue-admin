@@ -335,10 +335,10 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Override
     public EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto) {
         String cacheKey = "findRankByCostType:" + findRankByCostTypeDto.getUserId() + "@" + findRankByCostTypeDto.getTenantId() + "@" + findRankByCostTypeDto.getDateScope();
-//        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
-//        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
-//            return echartStackedHorizontalBarOptionEntity;
-//        }
+        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
+        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
+            return echartStackedHorizontalBarOptionEntity;
+        }
         String dateScope = findRankByCostTypeDto.getDateScope();
         List<FindRankByCostTypeEntity> findRankByCostTypeEntityList = null;
         EchartStackedHorizontalBarOptionEntity entity = null;
@@ -349,9 +349,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             findRankByCostTypeEntityList = accountCostMapper.findMonthRankByCostType(findRankByCostTypeDto);
             entity = buildMonthEchartStackedHorizontalBarOptionEntity(Optional.ofNullable(findRankByCostTypeEntityList).orElseGet(ArrayList::new));
         }
-//        if (UEmpty.isNotNull(entity)) {
-//            URedis.set(cacheKey, entity, Duration.ofHours(4));
-//        }
+        if (UEmpty.isNotNull(entity)) {
+            URedis.set(cacheKey, entity, Duration.ofHours(4));
+        }
         return entity;
     }
 
@@ -418,32 +418,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         EchartStackedHorizontalBarOptionEntity entity = new EchartStackedHorizontalBarOptionEntity();
         Function<FindRankByCostTypeEntity, String> groupingWeekStartEnd = item -> item.getWeekStart() + "\n" + item.getWeekEnd();
         Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList = findRankByCostTypeEntityList.stream().collect(Collectors.groupingBy(groupingWeekStartEnd));
-        Set<Map.Entry<String, List<FindRankByCostTypeEntity>>> entrySet = groupingByDateSignMapList.entrySet();
-        Map<String, List<BigDecimal>> resultMap = new HashMap<>(16);
-        for (Map.Entry<String, List<FindRankByCostTypeEntity>> entry : entrySet) {
-            List<FindRankByCostTypeEntity> groupingDateSignList = entry.getValue();
-            for (FindRankByCostTypeEntity item : groupingDateSignList) {
-                resultMap.computeIfAbsent(item.getCostType(), e -> {
-                    int size = entrySet.size();
-                    List<BigDecimal> list = new ArrayList<>(size);
-                    for (int i = 0; i < size; i++) {
-                        list.add(i, null);
-                    }
-                    return list;
-                }).add(item.getRk() - 1, item.getOutlay());
-            }
-        }
-        List<EchartStackedHorizontalBarOptionEntity.Series> seriesList = new ArrayList<>();
-        resultMap.forEach((k, v) -> {
-            EchartStackedHorizontalBarOptionEntity.Series series = new EchartStackedHorizontalBarOptionEntity.Series(k, v);
-            seriesList.add(series);
-        });
-        List<EchartStackedHorizontalBarOptionEntity.Series> sortedList = seriesList.stream()
-                .sorted(Comparator.comparing(item -> item.getValue().stream()
-                        .filter(Objects::nonNull)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-                ))
-                .collect(Collectors.toList());
+        List<EchartStackedHorizontalBarOptionEntity.Series> sortedList = buildSortedSeries(groupingByDateSignMapList);
         List<String> dateSignList = findRankByCostTypeEntityList.stream()
                 .map(groupingWeekStartEnd)
                 .distinct()
@@ -456,6 +431,17 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     private static EchartStackedHorizontalBarOptionEntity buildMonthEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {
         EchartStackedHorizontalBarOptionEntity entity = new EchartStackedHorizontalBarOptionEntity();
         Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList = findRankByCostTypeEntityList.stream().collect(Collectors.groupingBy(FindRankByCostTypeEntity::getDateSign));
+        List<EchartStackedHorizontalBarOptionEntity.Series> sortedList = buildSortedSeries(groupingByDateSignMapList);
+        List<String> dateSignList = findRankByCostTypeEntityList.stream()
+                .map(FindRankByCostTypeEntity::getDateSign)
+                .distinct()
+                .collect(Collectors.toList());
+        entity.setYAxis(dateSignList);
+        entity.setSeries(sortedList);
+        return entity;
+    }
+
+    private static List<EchartStackedHorizontalBarOptionEntity.Series> buildSortedSeries(Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList) {
         Set<Map.Entry<String, List<FindRankByCostTypeEntity>>> entrySet = groupingByDateSignMapList.entrySet();
         Map<String, List<BigDecimal>> resultMap = new HashMap<>(16);
         for (Map.Entry<String, List<FindRankByCostTypeEntity>> entry : entrySet) {
@@ -476,19 +462,12 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             EchartStackedHorizontalBarOptionEntity.Series series = new EchartStackedHorizontalBarOptionEntity.Series(k, v);
             seriesList.add(series);
         });
-        List<EchartStackedHorizontalBarOptionEntity.Series> sortedList = seriesList.stream()
+        return seriesList.stream()
                 .sorted(Comparator.comparing(item -> item.getValue().stream()
                         .filter(Objects::nonNull)
                         .reduce(BigDecimal.ZERO, BigDecimal::add)
                 ))
                 .collect(Collectors.toList());
-        List<String> dateSignList = findRankByCostTypeEntityList.stream()
-                .map(FindRankByCostTypeEntity::getDateSign)
-                .distinct()
-                .collect(Collectors.toList());
-        entity.setYAxis(dateSignList);
-        entity.setSeries(sortedList);
-        return entity;
     }
 
     private EchartCalendarOptionEntity buildEchartCalendarOptionEntity(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList, AccountCostDto accountCostDto) {
