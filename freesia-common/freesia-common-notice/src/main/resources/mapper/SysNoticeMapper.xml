@@ -12,6 +12,7 @@
         WHERE 1 = 1
           AND SN.LOGIC_DEL = 0
           AND SN.TYPE = 'ANNOUNCEMENT'
+          AND SN.USER_ID IS NULL
           AND SN.EFFECTIVE_TIME_FROM IS NULL
           AND SN.EFFECTIVE_TIME_TO IS NULL
 
@@ -26,6 +27,7 @@
         WHERE 1 = 1
           AND SN.LOGIC_DEL = 0
           AND SN.TYPE = 'ANNOUNCEMENT'
+          AND SN.USER_ID IS NULL
           AND SN.EFFECTIVE_TIME_FROM IS NOT NULL
           AND SN.EFFECTIVE_TIME_TO IS NOT NULL
           and NOW() BETWEEN SN.EFFECTIVE_TIME_FROM AND SN.EFFECTIVE_TIME_TO
@@ -41,6 +43,7 @@
         WHERE 1 = 1
           AND SN.LOGIC_DEL = 0
           AND SN.TYPE = 'ANNOUNCEMENT'
+          AND SN.USER_ID IS NULL
           and SN.EFFECTIVE_TIME_FROM IS NOT NULL
           AND SN.EFFECTIVE_TIME_TO IS NULL
           AND NOW() <![CDATA[>=]]> SN.EFFECTIVE_TIME_FROM
@@ -87,7 +90,7 @@
         order by SN.ID desc
     </sql>
     <select id="findPageSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
-        <include refid="findPageSysNotice" />
+        <include refid="findPageSysNotice"/>
     </select>
     <select id="findUnreadCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
@@ -103,6 +106,20 @@
         </if>
     </select>
     <select id="findListSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
-        <include refid="findPageSysNotice" />
+        <include refid="findPageSysNotice"/>
+    </select>
+    <select id="findExistsAnnouncement" resultType="java.lang.Long">
+        SELECT ID
+        FROM sys_notice SN
+        where 1=1
+        AND SN.LOGIC_DEL = 0
+        AND SN.TYPE = 'ANNOUNCEMENT'
+        AND SN.USER_ID = #{sysNoticeDto.userId}
+        <if test="sysNoticeDto.idList != null and sysNoticeDto.idList.size() > 0">
+            AND SN.ID IN
+            <foreach collection="sysNoticeDto.idList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
     </select>
 </mapper>

@@ -85,4 +85,11 @@ public interface SysNoticeService {
      * @return 消息公告表集合
      */
     List<FindPageSysNoticeEntity> findListSysNotice(SysNoticeDto sysNoticeDto);
+
+    /**
+     * 用户登录时检查是否生成用户未读的公告数据，无则生成
+     *
+     * @param userId 用户ID
+     */
+    void checkSaveAnnouncement(Long userId);
 }

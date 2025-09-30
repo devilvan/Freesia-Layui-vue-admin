@@ -50,4 +50,12 @@ public interface SysNoticeMapper extends BaseMapper<SysNoticePo> {
      * @return 消息公告表集合
      */
     List<FindPageSysNoticeEntity> findListSysNotice(@Param(value = "sysNoticeDto") SysNoticeDto sysNoticeDto);
+
+    /**
+     * 根据用户ID查询是否有未生成的公告
+     *
+     * @param sysNoticeDto 查询参数
+     * @return 是否生成
+     */
+    List<Long> findExistsAnnouncement(@Param(value = "sysNoticeDto") SysNoticeDto sysNoticeDto);
 }

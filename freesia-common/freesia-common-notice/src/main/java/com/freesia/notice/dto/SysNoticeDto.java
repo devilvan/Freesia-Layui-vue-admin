@@ -1,13 +1,17 @@
 package com.freesia.notice.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -46,4 +50,6 @@ public class SysNoticeDto extends BaseDto {
     private Date createTimeFrom;
     @Schema(description = "创建时间到")
     private Date createTimeTo;
+    @Schema(description = "主键集合")
+    private List<Long> idList;
 }

@@ -53,7 +53,9 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "保存消息公告表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysNoticeVo sysNoticeVo) {
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
         String type = sysNoticeVo.getType();
+        sysNoticeVo.setPublisherId(userId);
         SysNoticeType sysNoticeType = SysNoticeType.getInstanceByCode(type);
         if (UEmpty.isNull(sysNoticeType)) {
             throw new NoticeException("notice.type.invalid", new Object[]{sysNoticeType});
@@ -127,9 +129,7 @@ public class SysNoticeController extends BaseController {
     @GetMapping(value = "findPageSysNotice")
     public TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeVo sysNoticeVo, PageQuery pageQuery) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
-        if (SysNoticeType.NOTICE.getCode().equals(sysNoticeVo.getType())) {
-            sysNoticeVo.setUserId(userId);
-        }
+        sysNoticeVo.setUserId(userId);
         SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
         Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
         if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
@@ -149,9 +149,7 @@ public class SysNoticeController extends BaseController {
     @GetMapping(value = "findListSysNotice")
     public R<List<FindPageSysNoticeEntity>> findListSysNotice(SysNoticeVo sysNoticeVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
-        if (SysNoticeType.NOTICE.getCode().equals(sysNoticeVo.getType())) {
-            sysNoticeVo.setUserId(userId);
-        }
+        sysNoticeVo.setUserId(userId);
         SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
         Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
         if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
@@ -211,9 +209,7 @@ public class SysNoticeController extends BaseController {
     @GetMapping(value = "findUnreadCount")
     public R<Integer> findUnreadCount(SysNoticeVo sysNoticeVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
-        if (SysNoticeType.NOTICE.getCode().equals(sysNoticeVo.getType())) {
-            sysNoticeVo.setUserId(userId);
-        }
+        sysNoticeVo.setUserId(userId);
         Integer count = sysNoticeService.findUnreadCount(sysNoticeVo);
         return R.ok(count);
     }

@@ -99,6 +99,15 @@ export const useUserStore = defineStore({
             if (code === 200) {
                 this.sysTenantDtoList = data
             }
+        },
+        async calculateSumCount() {
+            this.unreadCount = 0;
+            if (this.announcementCount) {
+                this.unreadCount += this.announcementCount
+            }
+            if (this.noticeCount) {
+                this.unreadCount += this.noticeCount
+            }
         }
     },
     persist: {
@@ -106,8 +115,6 @@ export const useUserStore = defineStore({
         paths: ['token', 'userInfo', 'permissions', 'roles', 'sysTenantDtoList'],
     }
 })
-
-function clearUserStore() {}
 
 
 function filterAsyncRouter(asyncRouterMap: any, lastRouter = false, type = false) {

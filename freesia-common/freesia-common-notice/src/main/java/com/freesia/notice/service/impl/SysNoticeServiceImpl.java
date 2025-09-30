@@ -1,9 +1,11 @@
 package com.freesia.notice.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
+import com.freesia.dto.BaseDto;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
@@ -18,10 +20,13 @@ import com.freesia.pojo.TableResult;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -97,5 +102,35 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
     @Override
     public List<FindPageSysNoticeEntity> findListSysNotice(SysNoticeDto sysNoticeDto) {
         return sysNoticeMapper.findListSysNotice(sysNoticeDto);
+    }
+
+    @Override
+    @Async("threadPoolTaskExecutor")
+    public void checkSaveAnnouncement(Long userId) {
+        List<FindPublishedAnnouncementEntity> publishedAnnouncementList = sysNoticeMapper.findPublishedAnnouncement();
+        if (UEmpty.isNotEmpty(publishedAnnouncementList)) {
+            List<Long> announcementIdList = publishedAnnouncementList.stream().map(BaseDto::getId).toList();
+            SysNoticeDto sysNoticeDto = new SysNoticeDto();
+            sysNoticeDto.setUserId(userId);
+            sysNoticeDto.setIdList(announcementIdList);
+            List<Long> existsIdList = sysNoticeMapper.findExistsAnnouncement(sysNoticeDto);
+            // 取差集
+            List<Long> disjunctionIdList = new ArrayList<>(CollUtil.disjunction(announcementIdList, existsIdList));
+            if (UEmpty.isNotEmpty(disjunctionIdList)) {
+                // 如果不存在则生成
+                List<SysNoticePo> sysNoticePoList = sysNoticeRepository.findAllById(disjunctionIdList);
+                sysNoticePoList = sysNoticePoList.stream().peek(item -> {
+                    item.setId(null);
+                    item.setCreator(null);
+                    item.setCreateTime(null);
+                    item.setModifier(null);
+                    item.setModifyTime(null);
+                    item.setTenantId(null);
+                    item.setUserId(userId);
+                    item.setReadFlag(false);
+                }).collect(Collectors.toList());
+                sysNoticeRepository.saveAll(sysNoticePoList);
+            }
+        }
     }
 }

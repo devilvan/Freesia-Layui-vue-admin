@@ -8,6 +8,7 @@ export enum SysNoticeType {
 export interface SysNoticeVo extends BaseVo {
     title?: string;
     type?: string;
+    effectiveTime?: Date[];
     effectiveTimeFrom?: Date;
     effectiveTimeTo?: Date;
     content?: string;

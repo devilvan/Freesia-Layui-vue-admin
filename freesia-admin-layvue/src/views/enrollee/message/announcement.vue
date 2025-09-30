@@ -17,7 +17,7 @@
       </lay-tooltip>
     </template>
     <template #effectiveTime="{ row }">
-      {{ row.effectiveTimeFrom }} - {{ row.effectiveTimeTo }}
+      {{ formatDate(row.effectiveTimeFrom, YMS) }} - {{ formatDate(row.effectiveTimeTo, YMS) }}
     </template>
     <template v-slot:toolbar>
       <lay-button size="sm" type="warm" @click="doMarkRead(SysNoticeType.ANNOUNCEMENT)">标记已读</lay-button>
@@ -104,24 +104,20 @@ export default {
 import {ref, watch, reactive, onMounted} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {Operate} from "@/types/Constants";
-import {findMenuListByUserId} from "@/api/system/Menu";
 import {
   deleteSysNotice,
   findPageSysNotice,
   findSysNotice,
-  findUnreadCount,
   markRead,
   saveUpdate
 } from "@/api/system/Notice";
 import {MarkReadVo, SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {defaultShortcuts, singleShortcuts} from "@/util/UDate";
+import {formatDateTime, singleShortcuts, YMS} from "@/util/UDate";
 import {R, TableResult} from "@/types/Result";
 import {PageQuery} from "@/types/Common";
-import {deleteAccountCost, findAccountCost} from "@/api/account/Account";
-import {IconTreeType} from "@/types/common/icon/template/IconTemplateDetail";
-import {saveUpdateBatch} from "@/api/common/icon/template/IconTemplateDetail";
+import {useUserStore} from "@/store/user";
 
 /*INIT*/
 onMounted(async () => {
@@ -138,12 +134,7 @@ const emit = defineEmits(['callback']);
 /*INIT*/
 
 /*VAR*/
-const currentTab = ref('system')
-const messageInfo = ref({
-  system: 3,
-  user: 0,
-  todo: 11
-})
+const userStore = useUserStore();
 const selectedKeys = ref<string[]>([])
 const pageQuery = reactive<PageQuery>({
   current: 1,
@@ -156,7 +147,7 @@ const columns = ref([
   {title: '选项', width: '50px', type: 'checkbox', fixed: 'left'},
   {title: '标题', width: '80px', key: 'title'},
   {title: '内容', width: '260px', key: 'content', customSlot: 'content'},
-  {title: '生效时间', width: '120px', key: 'effectiveTime', customSlot: 'effectiveTime'},
+  {title: '生效时间', width: '180px', key: 'effectiveTime', customSlot: 'effectiveTime'},
   {title: '发布人', width: '100px', key: 'publisherName'},
   {title: '发布时间', width: '150px', key: 'createTime'},
   {
@@ -238,6 +229,7 @@ function loadDataSource() {
       pageQuery.total = res.total;
       dataSource.value = res.rows;
     }
+    userStore.calculateSumCount()
   });
 }
 
@@ -299,6 +291,10 @@ function confirmDelete(row: any) {
 }
 
 function doMarkRead(type: SysNoticeType) {
+  if (selectedKeys.value.length < 1) {
+    layer.msg("请选择数据", {icon: 3})
+    return;
+  }
   let params: MarkReadVo = {
     idList: announcementTableRef.value.getCheckData()?.map((item: SysNoticeEntity) => item.id),
     type: type
@@ -311,6 +307,7 @@ function doMarkRead(type: SysNoticeType) {
         content: "标记已读成功",
       })
     }
+    change()
   })
 }
 
@@ -318,6 +315,13 @@ function getRowStyle(row: any, rowIndex: number) {
   if (row.readFlag) return 'color:' + '#c2c2c2';
   return ''
 }
+
+function formatDate(date: Date, pattern: string) {
+  if (date) {
+    return formatDateTime(new Date(date), pattern)
+  }
+}
+
 /*FUNCTION*/
 </script>
 

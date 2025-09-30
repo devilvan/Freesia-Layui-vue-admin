@@ -133,6 +133,7 @@ import {PageQuery} from "@/types/Common";
 import {deleteAccountCost, findAccountCost} from "@/api/account/Account";
 import {IconTreeType} from "@/types/common/icon/template/IconTemplateDetail";
 import {saveUpdateBatch} from "@/api/common/icon/template/IconTemplateDetail";
+import {useUserStore} from "@/store/user";
 
 /*INIT*/
 onMounted(async () => {
@@ -181,6 +182,7 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+const userStore = useUserStore();
 const loading = ref(true)
 const operate = ref<string>(Operate.ADD)
 const saveModalFlag = ref<boolean>(false)
@@ -252,6 +254,7 @@ function loadDataSource() {
       pageQuery.total = res.total;
       dataSource.value = res.rows;
     }
+    userStore.calculateSumCount()
   });
 }
 
@@ -313,6 +316,10 @@ function confirmDelete(row: any) {
 }
 
 function doMarkRead(type: SysNoticeType) {
+  if (selectedKeys.value.length < 1) {
+    layer.msg("请选择数据", {icon: 3})
+    return;
+  }
   let params: MarkReadVo = {
     idList: noticeTableRef.value.getCheckData()?.map((item: SysNoticeEntity) => item.id),
     type: type
