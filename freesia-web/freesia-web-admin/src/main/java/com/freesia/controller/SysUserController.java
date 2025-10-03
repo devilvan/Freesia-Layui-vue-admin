@@ -56,6 +56,16 @@ public class SysUserController extends BaseController {
         return sysUserService.findPageSysUserList(sysUserDto, pageQuery);
     }
 
+    @Operation(summary = "获取用户列表分页")
+    @GetMapping("findListSysUserById")
+    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
+    public R<List<FindPageSysUserListEntity>> findListSysUserById(@RequestParam(value = "idList") List<Long> idList) {
+        SysUserDto sysUserDto = new SysUserDto();
+        sysUserDto.setIdList(idList);
+        List<FindPageSysUserListEntity> list = sysUserService.findListSysUserById(idList);
+        return R.ok(list);
+    }
+
     @Operation(summary = "获取部门下的用户")
     @GetMapping("findPageSysUserByDept")
     public TableResult<FindPageSysUserByDeptEntity> findPageSysUserByDept(SysUserVo sysUserVo, PageQuery pageQuery) {

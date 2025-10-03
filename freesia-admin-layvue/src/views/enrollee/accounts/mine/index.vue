@@ -220,120 +220,152 @@
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" v-esc-close="expenseModalClose">
-        <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
-          <lay-row space="20">
-            <lay-col :md="6">
-              <lay-form-item label="金额" prop="outlay" required>
-                <lay-input v-model="accountCostVo.outlay" ref="addExpenseModalQuickSaveRef" type="number"></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="描述" prop="costDesc" required>
-                <lay-autocomplete
-                    style="width: 100%"
-                    v-model="accountCostVo.costDesc"
-                    :fetchSuggestions="doFindCacheCostType"
-                    :allow-clear="true"
-                    @keydown.enter.stop
-                    @select="doInputIconUrl"
-                ></lay-autocomplete>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="图标" prop="icon" required>
-                <lay-row>
-                  <lay-col md="4">
-                    <lay-avatar v-if="!accountCostVo.icon" class="iconContainer"
-                                @click="changeSelectTypeModal"></lay-avatar>
-                    <lay-avatar v-else class="iconContainer" :src="accountCostVo.icon"
-                                @click="changeSelectTypeModal"></lay-avatar>
-                  </lay-col>
-                  <lay-col md="20"
-                           style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
-                    图标：{{ accountCostVo.costType }}
-                  </lay-col>
-                </lay-row>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="标识" prop="paymentSign" required>
-                <lay-select
-                    size="sm"
-                    style="width: 100%"
-                    v-model="accountCostVo.paymentSign"
-                    :options="paymentSignSelectList"
-                    :items="paymentSignSelectList"
-                    :allow-clear="true"
-                    placeholder="请选择"
-                ></lay-select>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
-          <lay-row space="20">
-            <lay-col :md="6">
-              <lay-form-item label="时间" prop="paymentTime">
-                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
-                                 :shortcuts="singleShortcuts" :inputFormat="sdf_YMDHM"
-                                 style="width: 100%" simple></lay-date-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="备注" prop="remark">
-                <lay-textarea
-                    v-model="accountCostVo.remark"
-                    allow-clear
-                    placeholder="请输入备注"
-                ></lay-textarea>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="关联用户" prop="accountCostUserIdList">
-                <lay-col :md="6">
-                  <div style="display: inline-flex; text-align: left">
-                    <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
-                    <div style="padding-left: 10px;">
-                      <lay-select
-                          style="width: 100%"
-                          size="sm"
-                          :disabled="true"
-                          v-model="accountCostVo.accountCostUserNameList"
-                          :allow-clear="true"
-                          :multiple="true"
-                      ></lay-select>
+        <div style="margin-bottom: 10px">
+          <lay-step :active="addExpenseActive" center>
+            <lay-step-item title="记账" content="First step"></lay-step-item>
+            <lay-step-item v-if="accountCostVo.accountCostUserIdList" title="分摊"
+                           content="Second step"></lay-step-item>
+          </lay-step>
+        </div>
+        <!-- 步骤一：记账-->
+        <div v-show="addExpenseActive === 0">
+          <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
+            <lay-row space="20">
+              <lay-col :md="6">
+                <lay-form-item label="金额" prop="outlay" required>
+                  <lay-input v-model="accountCostVo.outlay" ref="addExpenseModalQuickSaveRef"
+                             type="number"></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="描述" prop="costDesc" required>
+                  <lay-autocomplete
+                      style="width: 100%"
+                      v-model="accountCostVo.costDesc"
+                      :fetchSuggestions="doFindCacheCostType"
+                      :allow-clear="true"
+                      @keydown.enter.stop
+                      @select="doInputIconUrl"
+                  ></lay-autocomplete>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="图标" prop="icon" required>
+                  <lay-row>
+                    <lay-col md="4">
+                      <lay-avatar v-if="!accountCostVo.icon" class="iconContainer"
+                                  @click="changeSelectTypeModal"></lay-avatar>
+                      <lay-avatar v-else class="iconContainer" :src="accountCostVo.icon"
+                                  @click="changeSelectTypeModal"></lay-avatar>
+                    </lay-col>
+                    <lay-col md="20"
+                             style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
+                      图标：{{ accountCostVo.costType }}
+                    </lay-col>
+                  </lay-row>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="标识" prop="paymentSign" required>
+                  <lay-select
+                      size="sm"
+                      style="width: 100%"
+                      v-model="accountCostVo.paymentSign"
+                      :options="paymentSignSelectList"
+                      :items="paymentSignSelectList"
+                      :allow-clear="true"
+                      placeholder="请选择"
+                  ></lay-select>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
+            <lay-row space="20">
+              <lay-col :md="6">
+                <lay-form-item label="时间" prop="paymentTime">
+                  <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
+                                   :shortcuts="singleShortcuts" :inputFormat="sdf_YMDHM"
+                                   style="width: 100%" simple></lay-date-picker>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="备注" prop="remark">
+                  <lay-textarea
+                      v-model="accountCostVo.remark"
+                      allow-clear
+                      placeholder="请输入备注"
+                  ></lay-textarea>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="关联用户" prop="accountCostUserIdList">
+                  <lay-col :md="6">
+                    <div style="display: inline-flex; text-align: left">
+                      <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
+                      <div style="padding-left: 10px;">
+                        <lay-select
+                            style="width: 100%"
+                            size="sm"
+                            :disabled="true"
+                            v-model="accountCostVo.accountCostUserNameList"
+                            :allow-clear="true"
+                            :multiple="true"
+                        ></lay-select>
+                      </div>
                     </div>
-                  </div>
 
-                  <lay-layer v-model="showModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
-                    <div v-esc-close="toCancelUserModal">
-                      <lay-table
-                          ref="userModalTableRef"
-                          :page="userModalPageQuery"
-                          :columns="userModalColumns"
-                          :loading="userModalLoading"
-                          :data-source="userEntityList"
-                          v-model:selected-keys="accountCostVo.accountCostUserIdList"
-                          @change="changeShowModalFlag"
-                      >
-                        <template v-slot:toolbar>
-                          <lay-button size="sm" type="normal" @click="changeShowModalFlag">
-                            <lay-icon class="layui-icon-addition"></lay-icon>
-                            查询
-                          </lay-button>
-                          <lay-button size="sm" type="danger" @click="insertUserModalConfirm">
-                            <lay-icon class="layui-icon-addition"></lay-icon>
-                            确认
-                          </lay-button>
-                        </template>
-                      </lay-table>
-                    </div>
-                  </lay-layer>
-                </lay-col>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
-        </lay-form>
+                    <lay-layer v-model="showModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
+                      <div v-esc-close="toCancelUserModal">
+                        <lay-table
+                            ref="userModalTableRef"
+                            :page="userModalPageQuery"
+                            :columns="userModalColumns"
+                            :loading="userModalLoading"
+                            :data-source="userEntityList"
+                            v-model:selected-keys="accountCostVo.accountCostUserIdList"
+                            @change="changeShowModalFlag"
+                        >
+                          <template v-slot:toolbar>
+                            <lay-button size="sm" type="normal" @click="changeShowModalFlag">
+                              <lay-icon class="layui-icon-addition"></lay-icon>
+                              查询
+                            </lay-button>
+                            <lay-button size="sm" type="danger" @click="insertUserModalConfirm">
+                              <lay-icon class="layui-icon-addition"></lay-icon>
+                              确认
+                            </lay-button>
+                          </template>
+                        </lay-table>
+                      </div>
+                    </lay-layer>
+                  </lay-col>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
+          </lay-form>
+        </div>
+        <!-- 步骤二：分摊-->
+        <div v-if="addExpenseActive === 1">
+          <lay-table
+              ref="expenseAllocationTableRef"
+              :columns="expenseAllocationColumns"
+              :loading="expenseAllocationModalLoading"
+              :data-source="accountCostVo.expenseAllocationUserList"
+          >
+            <template #amount="{ row }">
+              <lay-input v-model="row.amount" type="number"/>
+            </template>
+          </lay-table>
+        </div>
         <div style="width: 100%; text-align: right">
-          <lay-button size="sm" type="primary" @click="toSubmit(true)">保存</lay-button>
+          <lay-button v-show="accountCostVo.accountCostUserIdList && addExpenseActive === 0" size="sm" type="primary"
+                      @click="toNext()">下一步
+          </lay-button>
+          <lay-button v-show="accountCostVo.accountCostUserIdList && addExpenseActive === 1" size="sm" type="primary"
+                      @click="toPrevious">上一步
+          </lay-button>
+          <lay-button v-show="!accountCostVo.accountCostUserIdList || addExpenseActive === 1" size="sm" type="primary"
+                      @click="toSubmit(true)">保存
+          </lay-button>
           <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
@@ -440,8 +472,8 @@ import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
-import {SysUserEntity, SysUserVo} from "@/types/system/User";
-import {findPageSysUserWithoutDataScope} from "@/api/system/User";
+import {FindPageSysUserListEntity, SysUserEntity, SysUserVo} from "@/types/system/User";
+import {findListSysUserById, findPageSysUserWithoutDataScope} from "@/api/system/User";
 import app from "@/main";
 import IconPicker from "@/views/component/svg/IconPicker.vue";
 import {FindCommonIconEntity} from "@/types/common/icon/Icon";
@@ -465,7 +497,7 @@ onMounted(async () => {
     findCommonIconPickerDataSource.value = res.data;
     let temp: string[] = []
     findCommonIconPickerDataSource.value?.forEach((res: any) => {
-        temp.push(res.name)
+      temp.push(res.name)
     })
     openKeys.value = temp;
   }).catch(e => {
@@ -492,6 +524,7 @@ const accountCostVo = ref<AccountCostVo>({
   accountCostUserNameList: [],
 })
 const addExpenseFormRef = ref(null)
+const expenseAllocationTableRef = ref(null)
 const addExpenseModalShowFlag = ref(false)
 const dataSource = ref<Array<AccountCostEntity>>()
 const title = ref('新增')
@@ -566,17 +599,23 @@ const sdf_YMDHM = 'YYYY-MM-DD HH:mm'
 const addExpenseModalQuickSaveRef = ref()
 const userEntityList = ref<Array<SysUserEntity>>()
 const userModalLoading = ref(false)
+const expenseAllocationModalLoading = ref(false)
 const userModalSelectedKeys = ref<Array<string>>([])
 const userModalPageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const userModalColumns = ref([
+const userModalColumns = [
   {title: '选项', type: 'checkbox', fixed: 'left'},
   {title: '用户名称', key: 'userName'},
   {title: '用户昵称', key: 'nickName'},
   {title: '用户类型', key: 'userType'},
-])
+]
+const expenseAllocationColumns = [
+  {title: '用户名称', key: 'userName'},
+  {title: '用户昵称', key: 'nickName'},
+  {title: '分摊金额', key: 'amount', customSlot: 'amount'},
+]
 const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
@@ -585,6 +624,7 @@ const findCommonIconPickerDataSource = ref<Array<FindCommonIconEntity>>()
 const selectCostTypeList = ref<LaySelectEntity[]>([]);
 const openKeys = ref<string[]>([]);
 const showModalFlag = ref<Boolean>(false)
+const addExpenseActive = ref(0)
 /* VAR*/
 
 /* FUNCTION*/
@@ -596,8 +636,12 @@ const loadDataSource = () => {
 }
 
 function toReset() {
-  accountCostVo.value = {
-    status: false,
+  if (addExpenseActive.value === 0) {
+    accountCostVo.value = {
+      status: false,
+    }
+  } else if (addExpenseActive.value === 1) {
+    accountCostVo.value.expenseAllocationUserList = [];
   }
 }
 
@@ -929,7 +973,7 @@ function doFindSelectCostTypeList() {
 
 function doFindCacheCostType(value: any) {
   if (!value || value === '') {
-    return ;
+    return;
   }
   let vo: FindCacheCostTypeVo = {
     costDesc: value
@@ -950,6 +994,25 @@ function doFindCacheCostType(value: any) {
 function doInputIconUrl(entity: FindCacheCostTypeEntity) {
   accountCostVo.value.icon = entity.iconUrl;
   accountCostVo.value.costType = entity.value;
+}
+
+function toNext() {
+  addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      addExpenseActive.value = addExpenseActive.value + 1
+      if (accountCostVo.value.accountCostUserIdList) {
+        findListSysUserById(accountCostVo.value.accountCostUserIdList).then((res: any) => {
+          if (res.code === 200) {
+            accountCostVo.value.expenseAllocationUserList = res.data
+          }
+        })
+      }
+    }
+  })
+}
+
+function toPrevious() {
+  addExpenseActive.value = addExpenseActive.value - 1
 }
 
 /* FUNCTION*/

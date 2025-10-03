@@ -20,6 +20,13 @@ export interface AccountCostVo extends BaseVo {
     allTenantFlag?: boolean;
     costTypeList?: string[];
     refUserIdList?: string[];
+    expenseAllocationUserList?: ExpenseAllocationUser[]
+}
+
+export interface ExpenseAllocationUser {
+    id: string,
+    userName: string,
+    amount: number,
 }
 
 export interface AccountCostEntity extends BaseEntity {
@@ -32,6 +39,7 @@ export interface AccountCostEntity extends BaseEntity {
     remark?: string;
     accountCostUserId?: string
     accountCostUserName?: string
+    expenseAllocationUserList: ExpenseAllocationUser[]
 }
 
 export interface FindCacheCostTypeVo extends BaseVo {

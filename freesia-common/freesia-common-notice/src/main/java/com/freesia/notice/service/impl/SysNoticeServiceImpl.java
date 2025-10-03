@@ -115,7 +115,7 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
             sysNoticeDto.setIdList(announcementIdList);
             List<Long> existsIdList = sysNoticeMapper.findExistsAnnouncement(sysNoticeDto);
             // 取差集
-            List<Long> disjunctionIdList = new ArrayList<>(CollUtil.disjunction(announcementIdList, existsIdList));
+            List<Long> disjunctionIdList = new ArrayList<>(CollUtil.disjunction(existsIdList, announcementIdList));
             if (UEmpty.isNotEmpty(disjunctionIdList)) {
                 // 如果不存在则生成
                 List<SysNoticePo> sysNoticePoList = sysNoticeRepository.findAllById(disjunctionIdList);
