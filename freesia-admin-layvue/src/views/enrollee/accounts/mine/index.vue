@@ -364,7 +364,7 @@
               :data-source="accountCostVo.accountCostUserAllocVoList"
           >
             <template #amount="{ row }">
-              <lay-input-number v-model="row.amount" precision="2"/>
+              <lay-input-number v-model="row.amount" precision="2" min="0"/>
             </template>
             <template #allocFlag="{ row }">
               <lay-switch v-model="row.allocFlag"></lay-switch>
@@ -579,7 +579,7 @@ const expenseFromRules = ref({
   outlay: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
       if (value <= 0) {
-        callback(new Error("金额不能为0"));
+        callback(new Error("金额必须大于0"));
       } else {
         return true;
       }
@@ -958,6 +958,11 @@ function changeShowModalFlag() {
 
 function searchUserModalConfirm() {
   let checkData = userModalTableRef.value.getCheckData();
+  if (checkData && checkData.length <= 1) {
+    // 必须选择超过一个用户
+    layer.msg('关联用户数量需要大于1个', {icon: 3})
+    return ;
+  }
   searchQuery.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
   searchQuery.value.accountCostUserIdList = checkData.map((v: any) => v.id)
   showModalFlag.value = !showModalFlag.value
@@ -965,6 +970,11 @@ function searchUserModalConfirm() {
 
 function insertUserModalConfirm() {
   let checkData = userModalTableRef.value.getCheckData();
+  if (checkData && checkData.length <= 1) {
+    // 必须选择超过一个用户
+    layer.msg('关联用户数量需要大于1个', {icon: 3})
+    return ;
+  }
   accountCostVo.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
   accountCostVo.value.accountCostUserIdList = checkData.map((v: any) => v.id)
   showModalFlag.value = !showModalFlag.value
@@ -1023,6 +1033,12 @@ function doInputIconUrl(entity: FindCacheCostTypeEntity) {
 function toNext() {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
+      if (accountCostVo.value.accountCostUserIdList && addExpenseActive.value === 0) {
+        if (accountCostVo.value.paymentSign !== PaymentSign.EXPENSES) {
+          layer.msg('关联用户后进入费用分摊要求标识为【支出】', {icon: 3})
+          return;
+        }
+      }
       addExpenseActive.value = 1
       if (accountCostVo.value.accountCostUserIdList) {
         if (Operate.ADD === operate.value || Operate.COPY === operate.value) {
@@ -1100,6 +1116,7 @@ function allocRetainAmount() {
     layer.msg('分摊数据不合法，请联系管理员', {icon: 3})
   }
 }
+
 /* FUNCTION*/
 </script>
 
