@@ -234,7 +234,7 @@
               <lay-col :md="6">
                 <lay-form-item label="金额" prop="outlay" required>
                   <lay-input v-model="accountCostVo.outlay" ref="addExpenseModalQuickSaveRef"
-                             type="number"></lay-input>
+                             type="number" precision="2"></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
@@ -345,6 +345,18 @@
         </div>
         <!-- 步骤二：分摊-->
         <div v-if="addExpenseActive === 1">
+          <lay-card>
+            <div class="middle">
+              <h1 style="padding:20px 15px; font-family: sans-serif">
+                <lay-count-up :end-val="accountCostVo.outlay" prefix="总金额：¥ "></lay-count-up>
+              </h1>
+            </div>
+            <div class="middle">
+              <h1 style="font-family: sans-serif; font-size: 12pt; color: #bbbbbb">
+                提示：若所有费用金额为0或不填写，则默认平分金额
+              </h1>
+            </div>
+          </lay-card>
           <lay-table
               ref="expenseAllocationTableRef"
               :columns="expenseAllocationColumns"
@@ -352,10 +364,13 @@
               :data-source="accountCostVo.accountCostUserAllocVoList"
           >
             <template #amount="{ row }">
-              <lay-input v-model="row.amount" type="number"/>
+              <lay-input-number v-model="row.amount" precision="2"/>
             </template>
             <template #allocFlag="{ row }">
               <lay-switch v-model="row.allocFlag"></lay-switch>
+            </template>
+            <template v-slot:toolbar>
+              <lay-button size="sm" type="normal" @click="allocRetainAmount">分摊剩余金额</lay-button>
             </template>
           </lay-table>
         </div>
@@ -618,7 +633,7 @@ const userModalColumns = [
 const expenseAllocationColumns = [
   {title: '用户名称', key: 'userName'},
   {title: '用户昵称', key: 'nickName'},
-  {title: '分摊金额', key: 'amount', customSlot: 'amount'},
+  {title: '分摊金额', key: 'amount', customSlot: 'amount', totalRow: true},
   {title: '分摊标识', key: 'allocFlag', customSlot: 'allocFlag'},
 ]
 const userModalSearchQuery = ref<SysUserVo>({})
@@ -1010,20 +1025,21 @@ function toNext() {
     if (isValidate) {
       addExpenseActive.value = 1
       if (accountCostVo.value.accountCostUserIdList) {
-        if (Operate.ADD === operate.value) {
+        if (Operate.ADD === operate.value || Operate.COPY === operate.value) {
           // 新增则查询用户
-          findListSysUserById(accountCostVo.value.accountCostUserIdList).then((res: any) => {
-            if (res.code === 200) {
-              accountCostVo.value.accountCostUserAllocVoList = res.data
-            }
-          })
+          doFindListSysUserById();
         } else if (Operate.EDIT === operate.value) {
           // 修改则查询费用分摊
           if (accountCostVo.value.id) {
             findListAllocByCostId(accountCostVo.value.id).then((res: any) => {
               if (res.code === 200) {
                 accountCostVo.value.accountCostUserAllocVoList = res.data
+                if (!res.data || res.data.length == 0) {
+                  // 如果是先创建了非分摊的数据，修改时关联了用户，则按照新增的逻辑处理
+                  doFindListSysUserById()
+                }
               }
+
             })
           }
         }
@@ -1032,10 +1048,58 @@ function toNext() {
   })
 }
 
+function doFindListSysUserById() {
+  findListSysUserById(accountCostVo.value.accountCostUserIdList).then((res: any) => {
+    if (res.code === 200) {
+      accountCostVo.value.accountCostUserAllocVoList = res.data
+    }
+  })
+}
+
 function toPrevious() {
   addExpenseActive.value = addExpenseActive.value - 1
 }
 
+function allocRetainAmount() {
+  let outlay = accountCostVo.value.outlay || 0
+  // 先查询填写了金额的行，与总金额计算差值
+  let accountCostUserAllocVoList = accountCostVo.value.accountCostUserAllocVoList;
+  if (accountCostUserAllocVoList && accountCostUserAllocVoList.length > 0) {
+    let existAllocList = accountCostUserAllocVoList.filter(item => {
+      return item.amount && item.amount > 0
+    })
+    let avgAmount = outlay / accountCostUserAllocVoList.length;
+    if (!existAllocList || existAllocList.length === 0) {
+      // 如果都没填写，则直接平分
+      if (avgAmount > 0) {
+        accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
+          item.amount = avgAmount
+          outlay = outlay - avgAmount;
+        })
+      }
+    } else if (existAllocList && existAllocList.length !== accountCostUserAllocVoList.length) {
+      // 部分赋值，则减去赋值的金额后再平分给未赋值的数据
+      let notExistAllocList = accountCostUserAllocVoList.filter(item => {
+        return !item.amount || item.amount === 0
+      })
+      existAllocList.forEach(item => {
+        outlay -= item.amount || 0
+      })
+      avgAmount = outlay / notExistAllocList.length
+      accountCostVo.value.accountCostUserAllocVoList.filter(item => {
+        return !item.amount || item.amount === 0
+      }).forEach(item => {
+        item.amount = avgAmount
+        outlay = outlay - avgAmount;
+      })
+    }
+    if (outlay > 0) {
+      accountCostVo.value.accountCostUserAllocVoList[0].amount += outlay;
+    }
+  } else {
+    layer.msg('分摊数据不合法，请联系管理员', {icon: 3})
+  }
+}
 /* FUNCTION*/
 </script>
 
@@ -1043,5 +1107,10 @@ function toPrevious() {
 .iconContainer {
   width: 40px;
   height: 40px;
+}
+
+.middle {
+  display: flex;
+  justify-content: center;
 }
 </style>

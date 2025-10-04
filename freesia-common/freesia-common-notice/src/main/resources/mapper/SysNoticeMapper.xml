@@ -70,7 +70,8 @@
         SN.USER_ID,
         SN.CATEGORY,
         SN.READ_FLAG,
-        SN.EXCERPT
+        SN.EXCERPT,
+        SN.ANNOUNCEMENT_ID
         FROM sys_notice sn
         LEFT JOIN sys_user su on su.id = sn.PUBLISHER_ID
         WHERE 1 = 1
@@ -115,9 +116,9 @@
         AND SN.LOGIC_DEL = 0
         AND SN.TYPE = 'ANNOUNCEMENT'
         AND SN.USER_ID = #{sysNoticeDto.userId}
-        <if test="sysNoticeDto.idList != null and sysNoticeDto.idList.size() > 0">
-            AND SN.ID IN
-            <foreach collection="sysNoticeDto.idList" item="item" open="(" close=")" separator=",">
+        <if test="sysNoticeDto.announcementIdList != null and sysNoticeDto.announcementIdList.size() > 0">
+            AND SN.ANNOUNCEMENT_ID IN
+            <foreach collection="sysNoticeDto.announcementIdList" item="item" open="(" close=")" separator=",">
                 #{item}
             </foreach>
         </if>

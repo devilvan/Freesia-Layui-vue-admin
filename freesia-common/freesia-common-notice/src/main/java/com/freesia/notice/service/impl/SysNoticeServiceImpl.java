@@ -112,24 +112,28 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
             List<Long> announcementIdList = publishedAnnouncementList.stream().map(BaseDto::getId).toList();
             SysNoticeDto sysNoticeDto = new SysNoticeDto();
             sysNoticeDto.setUserId(userId);
-            sysNoticeDto.setIdList(announcementIdList);
+            sysNoticeDto.setAnnouncementIdList(announcementIdList);
             List<Long> existsIdList = sysNoticeMapper.findExistsAnnouncement(sysNoticeDto);
-            // 取差集
-            List<Long> disjunctionIdList = new ArrayList<>(CollUtil.disjunction(existsIdList, announcementIdList));
-            if (UEmpty.isNotEmpty(disjunctionIdList)) {
-                // 如果不存在则生成
-                List<SysNoticePo> sysNoticePoList = sysNoticeRepository.findAllById(disjunctionIdList);
-                sysNoticePoList = sysNoticePoList.stream().peek(item -> {
-                    item.setId(null);
-                    item.setCreator(null);
-                    item.setCreateTime(null);
-                    item.setModifier(null);
-                    item.setModifyTime(null);
-                    item.setTenantId(null);
-                    item.setUserId(userId);
-                    item.setReadFlag(false);
-                }).collect(Collectors.toList());
-                sysNoticeRepository.saveAll(sysNoticePoList);
+            // 判断是否有新的公告
+            if (existsIdList.size() < announcementIdList.size()) {
+                // 取差集
+                List<Long> disjunctionIdList = new ArrayList<>(CollUtil.disjunction(existsIdList, announcementIdList));
+                if (UEmpty.isNotEmpty(disjunctionIdList)) {
+                    // 如果不存在则生成
+                    List<SysNoticePo> sysNoticePoList = sysNoticeRepository.findAllById(disjunctionIdList);
+                    sysNoticePoList = sysNoticePoList.stream().peek(item -> {
+                        item.setAnnouncementId(item.getId());
+                        item.setId(null);
+                        item.setCreator(null);
+                        item.setCreateTime(null);
+                        item.setModifier(null);
+                        item.setModifyTime(null);
+                        item.setTenantId(null);
+                        item.setUserId(userId);
+                        item.setReadFlag(false);
+                    }).collect(Collectors.toList());
+                    sysNoticeRepository.saveAll(sysNoticePoList);
+                }
             }
         }
     }

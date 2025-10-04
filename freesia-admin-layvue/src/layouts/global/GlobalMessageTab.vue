@@ -238,6 +238,7 @@ function doMarkRead(item: any, idx: number) {
       noticeList.value[idx].readFlag = true
     } else if (SysNoticeType.ANNOUNCEMENT === type) {
       userStore.announcementCount = res.data
+      announcementList.value[idx].readFlag = true
     }
     userStore.calculateSumCount()
     emit('callback', userStore.unreadCount)

@@ -46,10 +46,12 @@ public class SysNoticeDto extends BaseDto {
     private String category;
     @Schema(description = "摘要")
     private String excerpt;
+    @Schema(description = "公告ID")
+    private Long announcementId;
     @Schema(description = "创建时间从")
     private Date createTimeFrom;
     @Schema(description = "创建时间到")
     private Date createTimeTo;
-    @Schema(description = "主键集合")
-    private List<Long> idList;
+    @Schema(description = "公告ID集合")
+    private List<Long> announcementIdList;
 }

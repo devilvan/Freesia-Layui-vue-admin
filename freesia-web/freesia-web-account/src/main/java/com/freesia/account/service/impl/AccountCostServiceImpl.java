@@ -139,7 +139,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
                     sumAmount = sumAmount.add(Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO));
                 }
-                if (UEmpty.isNotNull(outlay)) {
+                if (UEmpty.isNotNull(outlay) && outlay.compareTo(BigDecimal.ZERO) > 0) {
                     saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterInsertAccountCostPo, accountCostUserAllocDtoList, outlay, sumAmount);
                 } else {
                     throw new AccountException("account.cost.amount.invalid");
@@ -186,7 +186,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
                     sumAmount = sumAmount.add(Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO));
                 }
-                if (UEmpty.isNotNull(outlay) && UEmpty.isNotNull(afterInsertAccountCostPo)) {
+                if (UEmpty.isNotNull(afterInsertAccountCostPo) && UEmpty.isNotNull(outlay) && outlay.compareTo(BigDecimal.ZERO) > 0) {
                     saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterInsertAccountCostPo, accountCostUserAllocDtoList, outlay, sumAmount);
                 } else {
                     throw new AccountException("account.cost.amount.invalid");
@@ -213,7 +213,19 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     }
 
     private List<AccountCostUserAllocDto> saveBatchAccountCostUserAllocDto(List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList, AccountCostPo afterInsertAccountCostPo, List<AccountCostUserAllocDto> accountCostUserAllocDtoList, BigDecimal outlay, BigDecimal sumAmount) {
-        if (sumAmount.compareTo(BigDecimal.ZERO) == 0) {
+        BigDecimal[] integerDivideResultArr = UCalculate.integerDivide(outlay, accountCostUserAllocDtoList.size());
+        BigDecimal reduce = Arrays.stream(integerDivideResultArr).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (outlay.compareTo(reduce) == 0) {
+            // 如果总金额和分摊总金额匹配，则直接保存
+            for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
+                accountCostUserAllocDto.setCostId(afterInsertAccountCostPo.getId());
+                accountCostUserAllocDto.setUserId(accountCostUserAllocDto.getUserId());
+                accountCostUserAllocDto.setTenantId(USecurity.getTenantId());
+                accountCostUserAllocDto.setOperateTime(new Date());
+            }
+            saveAccountCostUserAllocDtoList = accountCostUserAllocDtoList;
+            accountCostUserAllocService.saveUpdateBatch(saveAccountCostUserAllocDtoList);
+        } else if (sumAmount.compareTo(BigDecimal.ZERO) == 0) {
             // 如果总金额不为0，但是各分摊为0，则默认平分
             int size = accountCostUserAllocDtoList.size();
             BigDecimal amount = outlay.divide(new BigDecimal(size), 4, RoundingMode.FLOOR);
@@ -228,13 +240,6 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 accountCostUserAllocDto.setAllocFlag(true);
                 saveAccountCostUserAllocDtoList.add(accountCostUserAllocDto);
             }
-            accountCostUserAllocService.saveUpdateBatch(saveAccountCostUserAllocDtoList);
-        } else if (outlay.compareTo(sumAmount) == 0) {
-            // 如果总金额和分摊总金额匹配，则直接保存
-            for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
-                accountCostUserAllocDto.setOperateTime(new Date());
-            }
-            saveAccountCostUserAllocDtoList = accountCostUserAllocDtoList;
             accountCostUserAllocService.saveUpdateBatch(saveAccountCostUserAllocDtoList);
         } else {
             // 如果总金额和分摊总金额不匹配，则提示失败
