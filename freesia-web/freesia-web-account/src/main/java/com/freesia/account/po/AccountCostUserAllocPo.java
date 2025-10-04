@@ -53,14 +53,4 @@ public class AccountCostUserAllocPo extends BasePo implements Serializable {
     @TableField(value = "ALLOC_FLAG")
     @Column(name = "ALLOC_FLAG", columnDefinition = "BIT(1) COMMENT '是否分摊（0-否，1-是）'")
     private Boolean allocFlag;
-    @Schema(description = "开支、用户关系表-费用分摊表对应的开支、用户关系")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @TableField(exist = false)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "COST_ID", referencedColumnName = "COST_ID", insertable = false, updatable = false),
-            @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
-    })
-    private AccountCostUserPo accountCostUserPo;
 }

@@ -73,15 +73,6 @@ public class AccountCostPo extends BasePo implements Serializable {
     @TableField(value = "USER_ID")
     @Column(name = "USER_ID", columnDefinition = "BIGINT(20) COMMENT '用户ID'")
     private Long userId;
-    /**
-     * accountCost控制tenant-user关联
-     */
-    @Schema(description = "开销在开销-用户关系表中的数据")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @TableField(exist = false)
-    @OneToMany(targetEntity = AccountCostUserPo.class, mappedBy = "accountCostPo", fetch = FetchType.LAZY)
-    private Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>(0);
     @Schema(description = "开销对应的用户")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

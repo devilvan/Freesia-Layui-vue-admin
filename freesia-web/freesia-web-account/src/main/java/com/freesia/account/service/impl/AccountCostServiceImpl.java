@@ -14,10 +14,7 @@ import com.freesia.account.entity.*;
 import com.freesia.account.exception.AccountException;
 import com.freesia.account.mapper.AccountCostMapper;
 import com.freesia.account.po.AccountCostPo;
-import com.freesia.account.po.AccountCostUserPk;
-import com.freesia.account.po.AccountCostUserPo;
 import com.freesia.account.repository.AccountCostRepository;
-import com.freesia.account.repository.AccountCostUserRepository;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.service.AccountCostUserAllocService;
 import com.freesia.constant.Constants;
@@ -70,7 +67,6 @@ import java.util.stream.Collectors;
 public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, AccountCostPo> implements AccountCostService {
     private final AccountCostRepository accountCostRepository;
     private final AccountCostMapper accountCostMapper;
-    private final AccountCostUserRepository accountCostUserRepository;
     private final TransactionTemplate transactionTemplate;
     private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
     private final SysUserService sysUserService;
@@ -115,21 +111,11 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         accountCostDto.setIcon(ossHandler.convertDomain2Endpoint(accountCostDto.getIcon()));
         AccountCostPo accountCostPo = UCopy.copyDto2Po(accountCostDto, AccountCostPo.class);
         UCopy.halfCopy(accountCostDto, accountCostPo);
-        Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
         List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList = new ArrayList<>();
         List<Long> accountCostUserIdList = accountCostDto.getAccountCostUserIdList();
         // 新增
         if (UEmpty.isNull(costId)) {
             AccountCostPo afterInsertAccountCostPo = accountCostRepository.save(accountCostPo);
-            if (UEmpty.isNotEmpty(accountCostUserIdList)) {
-                for (Long accountCostUserId : accountCostUserIdList) {
-                    AccountCostUserPo accountCostUserPo = new AccountCostUserPo(new AccountCostUserPk(afterInsertAccountCostPo.getId(), accountCostUserId));
-                    accountCostUserPoSet.add(accountCostUserPo);
-                }
-                if (UEmpty.isNotEmpty(accountCostUserPoSet)) {
-                    accountCostUserRepository.saveAll(accountCostUserPoSet);
-                }
-            }
             // 20251003-Bliss 添加费用分摊步骤
             List<AccountCostUserAllocDto> accountCostUserAllocDtoList = accountCostDto.getAccountCostUserAllocDtoList();
             if (UEmpty.isNotEmpty(accountCostUserAllocDtoList)) {
@@ -166,15 +152,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 // 修改
                 if (UEmpty.isNotNull(costId)) {
                     accountCostUserAllocService.deleteAccountCostUserAllocByCostId(Collections.singletonList(costId));
-                    accountCostUserRepository.deleteByCostId(costId);
                 }
-                if (UEmpty.isNotEmpty(accountCostUserIdList)) {
-                    for (Long accountCostUserId : accountCostUserIdList) {
-                        AccountCostUserPo accountCostUserPo = new AccountCostUserPo(new AccountCostUserPk(accountCostPo.getId(), accountCostUserId));
-                        accountCostUserPoSet.add(accountCostUserPo);
-                    }
-                }
-                accountCostUserRepository.saveAll(accountCostUserPoSet);
                 return accountCostRepository.save(accountCostPo);
             });
             // 20251003-Bliss 添加费用分摊步骤
@@ -269,14 +247,11 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Transactional(rollbackFor = Exception.class)
     public void deleteAccountCost(List<Long> idList) {
         List<AccountCostPo> accountCostPoList = accountCostRepository.findAllById(idList);
-        Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
         List<Long> costIdList = UCollection.optimizeInitialCapacityArrayList(accountCostPoList.size());
         for (AccountCostPo accountCostPo : accountCostPoList) {
-            accountCostUserPoSet.addAll(accountCostPo.getAccountCostUserPoSet());
             costIdList.add(accountCostPo.getId());
         }
         accountCostUserAllocService.deleteAccountCostUserAllocByCostId(costIdList);
-        accountCostUserRepository.deleteAllInBatch(accountCostUserPoSet);
         accountCostRepository.deleteAllByIdInBatch(idList);
     }
 
