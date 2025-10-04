@@ -83,10 +83,3 @@ export const findPageSysUserWithoutDataScope = function (searchQuery: SysUserVo,
     const params = buildPageUrlParam(searchQuery, pageQuery);
     return Http.get('/api/sysUserController/findPageSysUserWithoutDataScope', params)
 }
-
-export function findListSysUserById(idList: string[]) : Promise<R<FindPageSysUserListEntity[]>>{
-    let params = {
-        idList: idList
-    };
-    return Http.get('/api/sysUserController/findListSysUserById', params)
-}

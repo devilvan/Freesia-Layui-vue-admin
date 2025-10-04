@@ -349,10 +349,13 @@
               ref="expenseAllocationTableRef"
               :columns="expenseAllocationColumns"
               :loading="expenseAllocationModalLoading"
-              :data-source="accountCostVo.expenseAllocationUserList"
+              :data-source="accountCostVo.accountCostUserAllocVoList"
           >
             <template #amount="{ row }">
               <lay-input v-model="row.amount" type="number"/>
+            </template>
+            <template #allocFlag="{ row }">
+              <lay-switch v-model="row.allocFlag"></lay-switch>
             </template>
           </lay-table>
         </div>
@@ -366,7 +369,7 @@
           <lay-button v-show="!accountCostVo.accountCostUserIdList || addExpenseActive === 1" size="sm" type="primary"
                       @click="toSubmit(true)">保存
           </lay-button>
-          <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
+          <lay-button v-show="addExpenseActive === 0" size="sm" type="primary" @click="toReset">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -473,7 +476,7 @@ import {SysDictValueEntity} from "@/types/system/Dict";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 import {FindPageSysUserListEntity, SysUserEntity, SysUserVo} from "@/types/system/User";
-import {findListSysUserById, findPageSysUserWithoutDataScope} from "@/api/system/User";
+import {findPageSysUserWithoutDataScope} from "@/api/system/User";
 import app from "@/main";
 import IconPicker from "@/views/component/svg/IconPicker.vue";
 import {FindCommonIconEntity} from "@/types/common/icon/Icon";
@@ -484,6 +487,7 @@ import {useAppStore} from "@/store/app";
 import Http from "@/api/Http";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
+import {findListAllocByCostId, findListSysUserById} from "@/api/account/AccountCostUserAlloc";
 
 /* INIT*/
 onMounted(async () => {
@@ -615,6 +619,7 @@ const expenseAllocationColumns = [
   {title: '用户名称', key: 'userName'},
   {title: '用户昵称', key: 'nickName'},
   {title: '分摊金额', key: 'amount', customSlot: 'amount'},
+  {title: '分摊标识', key: 'allocFlag', customSlot: 'allocFlag'},
 ]
 const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
@@ -625,6 +630,7 @@ const selectCostTypeList = ref<LaySelectEntity[]>([]);
 const openKeys = ref<string[]>([]);
 const showModalFlag = ref<Boolean>(false)
 const addExpenseActive = ref(0)
+const operate = ref<Operate>();
 /* VAR*/
 
 /* FUNCTION*/
@@ -636,12 +642,8 @@ const loadDataSource = () => {
 }
 
 function toReset() {
-  if (addExpenseActive.value === 0) {
-    accountCostVo.value = {
-      status: false,
-    }
-  } else if (addExpenseActive.value === 1) {
-    accountCostVo.value.expenseAllocationUserList = [];
+  accountCostVo.value = {
+    status: false,
   }
 }
 
@@ -672,6 +674,8 @@ const sortChange = (key: any, sort: string) => {
   }
 }
 const showExpenseModal = (text: any, row: any) => {
+  addExpenseActive.value = 0;
+  operate.value = text;
   title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
   if (row != null) {
     accountCostVo.value = {...row}
@@ -748,6 +752,10 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
+      if (accountCostVo.value.accountCostUserIdList && addExpenseActive.value === 0) {
+        toNext()
+        return;
+      }
       let id = accountCostVo.value.id;
       saveUpdate(accountCostVo.value).then((res: any) => {
         if (res.code === 200) {
@@ -772,6 +780,7 @@ function toSubmit(clickFlag: boolean) {
               addExpenseModalQuickSaveRef.value.focus();
             }
           }
+          addExpenseActive.value = 0
         }
       })
     }
@@ -999,13 +1008,25 @@ function doInputIconUrl(entity: FindCacheCostTypeEntity) {
 function toNext() {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      addExpenseActive.value = addExpenseActive.value + 1
+      addExpenseActive.value = 1
       if (accountCostVo.value.accountCostUserIdList) {
-        findListSysUserById(accountCostVo.value.accountCostUserIdList).then((res: any) => {
-          if (res.code === 200) {
-            accountCostVo.value.expenseAllocationUserList = res.data
+        if (Operate.ADD === operate.value) {
+          // 新增则查询用户
+          findListSysUserById(accountCostVo.value.accountCostUserIdList).then((res: any) => {
+            if (res.code === 200) {
+              accountCostVo.value.accountCostUserAllocVoList = res.data
+            }
+          })
+        } else if (Operate.EDIT === operate.value) {
+          // 修改则查询费用分摊
+          if (accountCostVo.value.id) {
+            findListAllocByCostId(accountCostVo.value.id).then((res: any) => {
+              if (res.code === 200) {
+                accountCostVo.value.accountCostUserAllocVoList = res.data
+              }
+            })
           }
-        })
+        }
       }
     }
   })

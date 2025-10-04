@@ -46,13 +46,12 @@ public class AccountCostUserPo extends RelationPo {
     @ManyToOne(targetEntity = AccountCostPo.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "COST_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private AccountCostPo accountCostPo;
-    @Schema(description = "开支-用户关系表对应的用户")
+    @Schema(description = "开支、用户关系表-费用分摊表对应的费用分摊")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
-    @ManyToOne(targetEntity = SysUserPo.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", referencedColumnName = "ID", insertable = false, updatable = false)
-    private SysUserPo sysUserPo;
+    @OneToOne(mappedBy = "accountCostUserPo", fetch = FetchType.LAZY)
+    private AccountCostUserAllocPo accountCostUserAllocPo;
 
     public AccountCostUserPo(AccountCostUserPk accountCostUserPk) {
         this.accountCostUserPk = accountCostUserPk;

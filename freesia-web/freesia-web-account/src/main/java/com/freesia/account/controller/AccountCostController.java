@@ -8,6 +8,7 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.constant.MenuPermission;
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindCostLineChartDto;
 import com.freesia.account.dto.FindRankByCostTypeDto;
 import com.freesia.account.entity.*;
@@ -453,6 +454,11 @@ public class AccountCostController extends BaseController {
         }
         accountCostDto.setUserId(userId);
         accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
+        List<AccountCostUserAllocVo> accountCostUserAllocVoList = accountCostVo.getAccountCostUserAllocVoList();
+        if (UEmpty.isNotEmpty((accountCostUserAllocVoList))) {
+            List<AccountCostUserAllocDto> accountCostUserAllocDtoList = UCopy.fullCopyList(accountCostUserAllocVoList, AccountCostUserAllocDto.class);
+            accountCostDto.setAccountCostUserAllocDtoList(accountCostUserAllocDtoList);
+        }
         return accountCostDto;
     }
 }

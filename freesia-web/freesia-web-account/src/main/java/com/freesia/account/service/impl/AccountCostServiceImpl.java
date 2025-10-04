@@ -1,11 +1,13 @@
 package com.freesia.account.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindCostLineChartDto;
 import com.freesia.account.dto.FindRankByCostTypeDto;
 import com.freesia.account.entity.*;
@@ -17,6 +19,7 @@ import com.freesia.account.po.AccountCostUserPo;
 import com.freesia.account.repository.AccountCostRepository;
 import com.freesia.account.repository.AccountCostUserRepository;
 import com.freesia.account.service.AccountCostService;
+import com.freesia.account.service.AccountCostUserAllocService;
 import com.freesia.constant.Constants;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.EchartCalendarOptionEntity;
@@ -71,6 +74,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     private final TransactionTemplate transactionTemplate;
     private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
     private final SysUserService sysUserService;
+    private final AccountCostUserAllocService accountCostUserAllocService;
 
 
     /**
@@ -112,6 +116,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         AccountCostPo accountCostPo = UCopy.copyDto2Po(accountCostDto, AccountCostPo.class);
         UCopy.halfCopy(accountCostDto, accountCostPo);
         Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
+        List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList = new ArrayList<>();
         List<Long> accountCostUserIdList = accountCostDto.getAccountCostUserIdList();
         // 新增
         if (UEmpty.isNull(costId)) {
@@ -121,41 +126,46 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                     AccountCostUserPo accountCostUserPo = new AccountCostUserPo(new AccountCostUserPk(afterInsertAccountCostPo.getId(), accountCostUserId));
                     accountCostUserPoSet.add(accountCostUserPo);
                 }
-                List<Long> publishIdList = accountCostUserIdList
-                        .stream()
-                        .filter(item -> !item.equals(userId))
-                        .collect(Collectors.toList());
-                // 构建消息
-                SseMessageDto sseMessageDto = new SseMessageDto();
-                sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
-                sseMessageDto.setUserIdList(publishIdList);
-                String message = UMessage.message("account.notice.add", new Object[]{
-                        Objects.requireNonNull(sysUserDto).getNickName(),
-                        afterInsertAccountCostPo.getOutlay(),
-                        afterInsertAccountCostPo.getCostType(),
-                        Objects.requireNonNull(CostType.getInstanceByCode(afterInsertAccountCostPo.getPaymentSign())).getDesc()});
-                sseMessageDto.setContent(message);
-                USse.publish(sseMessageDto);
-                for (Long publicId : publishIdList) {
-                    UNotice.recordSysNotice(dto -> {
-                        dto.setTitle(UMessage.message("account.notice.cost.allocation"));
-                        dto.setType(SysNoticeType.NOTICE.getCode());
-                        dto.setContent(message);
-                        dto.setUserId(publicId);
-                        dto.setCategory(SysNoticeCategory.ACCOUNT.getCode());
-                        dto.setExcerpt(message);
-                        return dto;
-                    });
+                if (UEmpty.isNotEmpty(accountCostUserPoSet)) {
+                    accountCostUserRepository.saveAll(accountCostUserPoSet);
                 }
-
             }
-            accountCostUserRepository.saveAll(accountCostUserPoSet);
+            // 20251003-Bliss 添加费用分摊步骤
+            List<AccountCostUserAllocDto> accountCostUserAllocDtoList = accountCostDto.getAccountCostUserAllocDtoList();
+            if (UEmpty.isNotEmpty(accountCostUserAllocDtoList)) {
+                BigDecimal outlay = accountCostDto.getOutlay();
+                // 判断金额是否合法
+                BigDecimal sumAmount = BigDecimal.ZERO;
+                for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
+                    sumAmount = sumAmount.add(Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO));
+                }
+                if (UEmpty.isNotNull(outlay)) {
+                    saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterInsertAccountCostPo, accountCostUserAllocDtoList, outlay, sumAmount);
+                } else {
+                    throw new AccountException("account.cost.amount.invalid");
+                }
+                if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+                    List<Long> publishIdList = accountCostUserIdList
+                            .stream()
+                            .filter(item -> !item.equals(userId))
+                            .collect(Collectors.toList());
+                    AccountCostUserAllocDto accountCostUserAllocDto = saveAccountCostUserAllocDtoList.stream()
+                            .filter(item -> Objects.equals(item.getUserId(), userId))
+                            .findFirst().orElseGet(AccountCostUserAllocDto::new);
+                    if (UEmpty.isNotEmpty(saveAccountCostUserAllocDtoList) && UEmpty.isNotNull(accountCostUserAllocDto)) {
+                        buildPublishMessage(publishIdList, "account.notice.add", sysUserDto, afterInsertAccountCostPo, accountCostUserAllocDto);
+                    } else {
+                        buildPublishMessage(publishIdList, "account.notice.add", sysUserDto, afterInsertAccountCostPo, null);
+                    }
+                }
+            }
             return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
         } else {
             // 独立事务更新
-            AccountCostPo afterTransactionSaveAccountCostPo = transactionTemplate.execute(status -> {
+            AccountCostPo afterInsertAccountCostPo = transactionTemplate.execute(status -> {
                 // 修改
                 if (UEmpty.isNotNull(costId)) {
+                    accountCostUserAllocService.deleteAccountCostUserAllocByCostId(Collections.singletonList(costId));
                     accountCostUserRepository.deleteByCostId(costId);
                 }
                 if (UEmpty.isNotEmpty(accountCostUserIdList)) {
@@ -167,37 +177,70 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 accountCostUserRepository.saveAll(accountCostUserPoSet);
                 return accountCostRepository.save(accountCostPo);
             });
-            if (UEmpty.isNotEmpty(accountCostUserIdList)) {
-                if (UEmpty.isNotNull(afterTransactionSaveAccountCostPo)) {
-                    List<Long> publishIdList = accountCostUserIdList
-                            .stream()
-                            .filter(item -> !item.equals(userId))
-                            .collect(Collectors.toList());
-                    SseMessageDto sseMessageDto = new SseMessageDto();
-                    sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
-                    sseMessageDto.setUserIdList(publishIdList);
-                    String message = UMessage.message("account.notice.modify", new Object[]{
-                            Objects.requireNonNull(sysUserDto).getNickName(),
-                            afterTransactionSaveAccountCostPo.getOutlay(),
-                            afterTransactionSaveAccountCostPo.getCostType(),
-                            Objects.requireNonNull(CostType.getInstanceByCode(afterTransactionSaveAccountCostPo.getPaymentSign())).getDesc()});
-                    sseMessageDto.setContent(message);
-                    USse.publish(sseMessageDto);
-                    for (Long publishId : publishIdList) {
-                        UNotice.recordSysNotice(dto -> {
-                            dto.setTitle(UMessage.message("account.notice.cost.allocation"));
-                            dto.setType(SysNoticeType.NOTICE.getCode());
-                            dto.setContent(message);
-                            dto.setUserId(publishId);
-                            dto.setCategory(SysNoticeCategory.ACCOUNT.getCode());
-                            dto.setExcerpt(message);
-                            return dto;
-                        });
+            // 20251003-Bliss 添加费用分摊步骤
+            List<AccountCostUserAllocDto> accountCostUserAllocDtoList = accountCostDto.getAccountCostUserAllocDtoList();
+            if (UEmpty.isNotEmpty(accountCostUserAllocDtoList)) {
+                BigDecimal outlay = accountCostDto.getOutlay();
+                // 判断金额是否合法
+                BigDecimal sumAmount = BigDecimal.ZERO;
+                for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
+                    sumAmount = sumAmount.add(Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO));
+                }
+                if (UEmpty.isNotNull(outlay) && UEmpty.isNotNull(afterInsertAccountCostPo)) {
+                    saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterInsertAccountCostPo, accountCostUserAllocDtoList, outlay, sumAmount);
+                } else {
+                    throw new AccountException("account.cost.amount.invalid");
+                }
+                if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+                    if (UEmpty.isNotNull(afterInsertAccountCostPo)) {
+                        List<Long> publishIdList = accountCostUserIdList
+                                .stream()
+                                .filter(item -> !item.equals(userId))
+                                .collect(Collectors.toList());
+                        AccountCostUserAllocDto accountCostUserAllocDto = saveAccountCostUserAllocDtoList.stream()
+                                .filter(item -> Objects.equals(item.getUserId(), userId))
+                                .findFirst().orElseGet(AccountCostUserAllocDto::new);
+                        if (UEmpty.isNotEmpty(saveAccountCostUserAllocDtoList) && UEmpty.isNotNull(accountCostUserAllocDto)) {
+                            buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterInsertAccountCostPo, accountCostUserAllocDto);
+                        } else {
+                            buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterInsertAccountCostPo, null);
+                        }
                     }
                 }
             }
-            return UCopy.copyPo2Dto(afterTransactionSaveAccountCostPo, AccountCostDto.class);
+            return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
         }
+    }
+
+    private List<AccountCostUserAllocDto> saveBatchAccountCostUserAllocDto(List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList, AccountCostPo afterInsertAccountCostPo, List<AccountCostUserAllocDto> accountCostUserAllocDtoList, BigDecimal outlay, BigDecimal sumAmount) {
+        if (sumAmount.compareTo(BigDecimal.ZERO) == 0) {
+            // 如果总金额不为0，但是各分摊为0，则默认平分
+            int size = accountCostUserAllocDtoList.size();
+            BigDecimal amount = outlay.divide(new BigDecimal(size), 4, RoundingMode.FLOOR);
+            for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
+                accountCostUserAllocDto.setCostId(afterInsertAccountCostPo.getId());
+                accountCostUserAllocDto.setUserId(accountCostUserAllocDto.getUserId());
+                accountCostUserAllocDto.setTenantId(USecurity.getTenantId());
+                // 确保无法整除的情况下可以使用
+                outlay = outlay.subtract(amount);
+                accountCostUserAllocDto.setAmount(amount);
+                accountCostUserAllocDto.setOperateTime(new Date());
+                accountCostUserAllocDto.setAllocFlag(true);
+                saveAccountCostUserAllocDtoList.add(accountCostUserAllocDto);
+            }
+            accountCostUserAllocService.saveUpdateBatch(saveAccountCostUserAllocDtoList);
+        } else if (outlay.compareTo(sumAmount) == 0) {
+            // 如果总金额和分摊总金额匹配，则直接保存
+            for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
+                accountCostUserAllocDto.setOperateTime(new Date());
+            }
+            saveAccountCostUserAllocDtoList = accountCostUserAllocDtoList;
+            accountCostUserAllocService.saveUpdateBatch(saveAccountCostUserAllocDtoList);
+        } else {
+            // 如果总金额和分摊总金额不匹配，则提示失败
+            throw new AccountException("account.cost.amount.not.match");
+        }
+        return saveAccountCostUserAllocDtoList;
     }
 
     @Override
@@ -222,9 +265,12 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public void deleteAccountCost(List<Long> idList) {
         List<AccountCostPo> accountCostPoList = accountCostRepository.findAllById(idList);
         Set<AccountCostUserPo> accountCostUserPoSet = new HashSet<>();
+        List<Long> costIdList = UCollection.optimizeInitialCapacityArrayList(accountCostPoList.size());
         for (AccountCostPo accountCostPo : accountCostPoList) {
             accountCostUserPoSet.addAll(accountCostPo.getAccountCostUserPoSet());
+            costIdList.add(accountCostPo.getId());
         }
+        accountCostUserAllocService.deleteAccountCostUserAllocByCostId(costIdList);
         accountCostUserRepository.deleteAllInBatch(accountCostUserPoSet);
         accountCostRepository.deleteAllByIdInBatch(idList);
     }
@@ -412,6 +458,44 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         FindListSelectCostTypeDto dto = new FindListSelectCostTypeDto();
         dto.setUserId(userId);
         return commonIconTemplateHeaderService.findListSelectCostType(dto);
+    }
+
+    /**
+     * 构建、发布信息
+     *
+     * @param publishIdList            消息接收用户ID
+     * @param code                     消息i18n编码
+     * @param sysUserDto               用户信息
+     * @param afterInsertAccountCostPo 插入记账数据响应实体
+     * @param accountCostUserAllocDto  费用分摊实体
+     */
+    private static void buildPublishMessage(List<Long> publishIdList, String code, SysUserDto sysUserDto, AccountCostPo afterInsertAccountCostPo, AccountCostUserAllocDto accountCostUserAllocDto) {
+        // 构建消息
+        SseMessageDto sseMessageDto = new SseMessageDto();
+        sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
+        sseMessageDto.setUserIdList(publishIdList);
+        BigDecimal outlay = afterInsertAccountCostPo.getOutlay();
+        // 20251003-Bliss 消息接收人通知分摊金额
+        if (UEmpty.isNotNull(accountCostUserAllocDto)) {
+            outlay = Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO);
+        }
+        String message = UMessage.message(code, Objects.requireNonNull(sysUserDto).getNickName(),
+                outlay,
+                afterInsertAccountCostPo.getCostType(),
+                Objects.requireNonNull(CostType.getInstanceByCode(afterInsertAccountCostPo.getPaymentSign())).getDesc());
+        sseMessageDto.setContent(message);
+        USse.publish(sseMessageDto);
+        for (Long publicId : publishIdList) {
+            UNotice.recordSysNotice(dto -> {
+                dto.setTitle(UMessage.message("account.notice.cost.allocation"));
+                dto.setType(SysNoticeType.NOTICE.getCode());
+                dto.setContent(message);
+                dto.setUserId(publicId);
+                dto.setCategory(SysNoticeCategory.ACCOUNT.getCode());
+                dto.setExcerpt(message);
+                return dto;
+            });
+        }
     }
 
     private static EchartStackedHorizontalBarOptionEntity buildWeekEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {

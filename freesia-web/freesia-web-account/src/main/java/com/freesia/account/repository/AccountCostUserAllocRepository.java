@@ -1,8 +1,7 @@
 package com.freesia.account.repository;
 
 
-import com.freesia.account.po.AccountCostUserPk;
-import com.freesia.account.po.AccountCostUserPo;
+import com.freesia.account.po.AccountCostUserAllocPo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,22 +10,24 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Evad.Wu
- * @Description 开销-用户关联表 持久层
- * @date 2025-02-28
+ * @Description 费用分摊表 持久层
+ * @date 2025-10-03
  */
 @Repository
-public interface AccountCostUserRepository extends JpaRepository<AccountCostUserPo, AccountCostUserPk> {
+public interface AccountCostUserAllocRepository extends JpaRepository<AccountCostUserAllocPo, Long> {
     /**
-     * 根据开支ID 删除开销-用户关联表
+     * 根据记账ID删除
      *
-     * @param costId 开支ID
+     * @param costIdList 记账ID
      */
     @Modifying
     @Query(value = """
-                DELETE FROM AccountCostUserPo WHERE accountCostUserPk.costId = :costId
+                DELETE FROM AccountCostUserAllocPo WHERE costId IN (:costIdList)
             """)
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    void deleteByCostId(@Param("costId") Long costId);
+    void deleteAccountCostUserAllocByCostId(@Param(value = "costIdList") List<Long> costIdList);
 }
