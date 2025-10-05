@@ -20,7 +20,7 @@
         GROUP_CONCAT(SU.ID) AS SU_ID,
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
@@ -75,7 +75,7 @@
         GROUP_CONCAT(SU.ID) AS SU_ID,
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         INNER JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
@@ -133,7 +133,7 @@
         GROUP_CONCAT(SU.ID) AS SU_ID,
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
@@ -164,7 +164,7 @@
         GROUP_CONCAT(SU.ID) AS SU_ID,
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         INNER JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
@@ -231,18 +231,7 @@
         T.CREATE_TIME,
         T.PAYMENT_TIME_GROUPING_KEY
         FROM (SELECT AC.COST_DESC,
-        ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         AC.COST_TYPE,
         AC.PAYMENT_SIGN,
         SDV.VALUE_NAME AS PAYMENT_SIGN_NAME,
@@ -253,6 +242,7 @@
         DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME_GROUPING_KEY
         FROM account_cost AC
         LEFT JOIN SYS_DICT_VALUE SDV
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         ON SDV.DICT_KEY = 'PAYMENT_SIGN'
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
@@ -268,18 +258,7 @@
         UNION ALL
 
         SELECT AC.COST_DESC,
-        ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         AC.COST_TYPE,
         AC.PAYMENT_SIGN,
         SDV.VALUE_NAME AS PAYMENT_SIGN_NAME,
@@ -289,8 +268,8 @@
         AC.CREATE_TIME,
         DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME_GROUPING_KEY
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
         LEFT JOIN SYS_DICT_VALUE SDV
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         ON SDV.DICT_KEY = 'PAYMENT_SIGN'
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
@@ -314,18 +293,10 @@
         (
         SELECT
         AC.COST_TYPE,
-        ROUND(
-        IFNULL( AC.OUTLAY, 0 ) /
-        CASE
-
-        WHEN ( SELECT COUNT( 1 ) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID ) = 0 THEN
-        1 ELSE ( SELECT COUNT( 1 ) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID )
-        END,
-        2
-        ) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM
         account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         WHERE 1=1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -343,19 +314,11 @@
 
         SELECT
         AC.COST_TYPE,
-        ROUND(
-        IFNULL( AC.OUTLAY, 0 ) /
-        CASE
-
-        WHEN ( SELECT COUNT( 1 ) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID ) = 0 THEN
-        1 ELSE ( SELECT COUNT( 1 ) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID )
-        END,
-        2
-        ) AS OUTLAY
-
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM
         account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1=1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -386,21 +349,11 @@
         CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
         ) AS X_AXIS
         FROM DateSeries ds
-        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        LEFT JOIN (SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -415,21 +368,11 @@
         </if>
         GROUP BY AC.ID
         UNION ALL
-        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -450,12 +393,6 @@
         GROUP BY ds.date
         ORDER BY DS.DATE
     </select>
-    <sql id="findMonthCostLineChartRef">
-        SELECT AC.OUTLAY AS OUTLAY,
-               AC.PAYMENT_TIME
-        FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
-    </sql>
     <select id="findMonthCostLineChart" resultType="com.freesia.account.entity.FindCostLineChartEntity">
         WITH RECURSIVE DATESERIES AS (SELECT CONCAT(#{accountCostDto.year}, '-', LPAD(#{accountCostDto.month}, 2, '0'),
         '-01') AS date
@@ -478,21 +415,11 @@
         CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
         ) AS X_AXIS
         FROM DateSeries ds
-        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        LEFT JOIN (SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -509,21 +436,11 @@
 
         UNION ALL
 
-        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -561,21 +478,11 @@
         CONCAT(STR_TO_DATE(DS.DATE, '%Y-%m-%d'), '(', SDV.VALUE_NAME, ')')
         ) AS X_AXIS
         FROM DateSeries ds
-        LEFT JOIN (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        LEFT JOIN (SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -591,21 +498,11 @@
 
         UNION ALL
 
-        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         AC.PAYMENT_TIME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -630,22 +527,12 @@
         SELECT SUM(T.OUTLAY) AS OUTLAY,
         T.PAYMENT_TIME,
         T.X_AXIS
-        FROM (SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        FROM (SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
         DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS X_AXIS
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.PAYMENT_SIGN = 'EXPENSES'
         <if test="accountCostDto.tenantId != null">
@@ -658,22 +545,12 @@
 
         UNION ALL
 
-        SELECT ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
         DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS PAYMENT_TIME,
         DATE_FORMAT(AC.PAYMENT_TIME, '%Y-%m-%d') AS X_AXIS
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.PAYMENT_SIGN = 'EXPENSES'
         <if test="accountCostDto.tenantId != null">
@@ -702,20 +579,10 @@
         STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ),
         INTERVAL 6 DAY
         ) AS WEEK_END,
-        ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -737,20 +604,10 @@
         STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ),
         INTERVAL 6 DAY
         ) AS WEEK_END,
-        ROUND(IFNULL(AC.OUTLAY, 0) / CASE
-
-        WHEN (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) = 0 THEN
-        1
-        ELSE (SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID) END
-        , 2) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.PAYMENT_SIGN = 'EXPENSES'
         <if test="accountCost.tenantId != null">
@@ -762,7 +619,7 @@
         WEEKDAY(DATE_SUB(CURDATE(), INTERVAL 3 WEEK)) DAY)
         GROUP BY AC.ID,AC.COST_TYPE) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
-        ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
+        ORDER BY T.DATE_SIGN DESC, OUTLAY DESC
     </select>
     <select id="findMonthRankByCostType" resultType="com.freesia.account.entity.FindRankByCostTypeEntity">
         SELECT T.COST_TYPE,
@@ -773,13 +630,10 @@
         FROM (SELECT AC.COST_TYPE,
         AC.COST_DESC,
         DATE_FORMAT(AC.PAYMENT_TIME, '%y%m') AS DATE_SIGN,
-        ROUND(IFNULL(AC.OUTLAY, 0) / IFNULL(NULLIF((SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID), 0), 1)
-        , 2) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -795,13 +649,10 @@
         SELECT AC.COST_TYPE,
         AC.COST_DESC,
         DATE_FORMAT(AC.PAYMENT_TIME, '%y%m') AS DATE_SIGN,
-        ROUND(IFNULL(AC.OUTLAY, 0) / IFNULL(NULLIF((SELECT COUNT(1)
-        FROM account_cost_user_alloc ACUA
-        WHERE 1 = 1
-        AND ACUA.COST_ID = AC.ID), 0), 1)
-        , 2) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.PAYMENT_SIGN = 'EXPENSES'
         <if test="accountCost.tenantId != null">
@@ -812,7 +663,7 @@
         AND AC.PAYMENT_TIME >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-01')
         GROUP BY AC.ID,AC.COST_TYPE) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
-        ORDER BY T.DATE_SIGN DESC, T.OUTLAY DESC
+        ORDER BY T.DATE_SIGN DESC, OUTLAY DESC
     </select>
     <select id="findSelectCostTypeList" resultType="com.freesia.account.po.AccountCostPo">
         SELECT DISTINCT AC.COST_TYPE
@@ -829,7 +680,8 @@
 
         SELECT DISTINCT AC.COST_TYPE
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}

@@ -28,21 +28,12 @@
         </if>
     </select>
     <select id="findDayBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                              AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                CONCAT(CURDATE(), ' 00:00:00') AS DURATION_FROM,
                CONCAT(CURDATE(), ' 23:59:59') AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -52,21 +43,12 @@
 
         UNION ALL
 
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                              AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                CONCAT(CURDATE(), ' 00:00:00') AS DURATION_FROM,
                CONCAT(CURDATE(), ' 23:59:59') AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -76,17 +58,7 @@
         GROUP BY AC.ID
     </select>
     <select id="findWeekBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                                                                              AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY)        AS OUTLAY,
                DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)                           AS DURATION_FROM,
                DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AS DURATION_TO
         FROM account_cost AC
@@ -102,21 +74,12 @@
 
         UNION ALL
 
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                              AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY)        AS OUTLAY,
                DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)                           AS DURATION_FROM,
                DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -127,21 +90,12 @@
         GROUP BY AC.ID
     </select>
     <select id="findMonthBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                              AS OUTLAY,
-               DATE_FORMAT(CURDATE(), '%Y-%m-01') AS DURATION_FROM,
-               LAST_DAY(CURDATE())                AS DURATION_TO
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+               DATE_FORMAT(CURDATE(), '%Y-%m-01')                                      AS DURATION_FROM,
+               LAST_DAY(CURDATE())                                                     AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -151,21 +105,12 @@
 
         UNION ALL
 
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                              AS OUTLAY,
+        SELECT ACUA.AMOUNT                        AS OUTLAY,
                DATE_FORMAT(CURDATE(), '%Y-%m-01') AS DURATION_FROM,
                LAST_DAY(CURDATE())                AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -175,21 +120,12 @@
         GROUP BY AC.ID
     </select>
     <select id="findYearBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                              AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                DATE_FORMAT(CURDATE(), '%Y-01-01') AS DURATION_FROM,
                DATE_FORMAT(CURDATE(), '%Y-12-31') AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.USER_ID = #{findBudgetCapacityDto.userId}
@@ -199,21 +135,12 @@
 
         UNION ALL
 
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                              AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                DATE_FORMAT(CURDATE(), '%Y-01-01') AS DURATION_FROM,
                DATE_FORMAT(CURDATE(), '%Y-12-31') AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
@@ -223,21 +150,12 @@
         GROUP BY AC.ID
     </select>
     <select id="findCustomBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                                     AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -247,21 +165,12 @@
 
         UNION ALL
 
-        SELECT ROUND(
-                       IFNULL(AC.OUTLAY, 0) /
-                       CASE
-
-                           WHEN (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID) = 0
-                               THEN
-                               1
-                           ELSE (SELECT COUNT(1) FROM account_cost_user_alloc ACUA WHERE 1 = 1 AND ACUA.COST_ID = AC.ID)
-                           END,
-                       2
-               )                                     AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'

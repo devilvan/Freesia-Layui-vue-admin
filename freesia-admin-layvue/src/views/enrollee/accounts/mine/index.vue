@@ -508,7 +508,7 @@ import {findListAllocByCostId, findListSysUserById} from "@/api/account/AccountC
 onMounted(async () => {
   paymentSignSelect.value = await loadSysDictValue(Constants.PAYMENT_SIGN)
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
-  searchQuery.value.paymentTimeRange = buildRange(7)
+  searchQuery.value.paymentTimeRange = buildRange(6)
   let param: CommonIconTemplateDetailVo = {
     headerId: useStore.commonIconHeader
   }
@@ -854,7 +854,7 @@ function hideAccountsImportModal() {
 }
 
 function showAccountsExportModal() {
-  accountsExportVo.value.paymentTimeRange = buildRange(7)
+  accountsExportVo.value.paymentTimeRange = buildRange(6)
   showAccountsExportModalFlag.value = true
 }
 
@@ -882,7 +882,7 @@ function doExport() {
 
 function queryFormReset() {
   searchQuery.value = {}
-  searchQuery.value.paymentTimeRange = buildRange(7)
+  searchQuery.value.paymentTimeRange = buildRange(6)
 }
 
 function doFindPageUser() {

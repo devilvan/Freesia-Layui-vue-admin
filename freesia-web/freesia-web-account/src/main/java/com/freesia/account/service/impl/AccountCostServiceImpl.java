@@ -295,7 +295,10 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             for (FindCostTypeRatePieEntity findCostTypeRatePieEntity : accountCostPoList) {
                 EchartPieOptionEntity.Series tmp = new EchartPieOptionEntity.Series();
                 tmp.setName(findCostTypeRatePieEntity.getCostType());
-                tmp.setValue(findCostTypeRatePieEntity.getOutlay().setScale(2, RoundingMode.HALF_UP).toString());
+                BigDecimal outlay = findCostTypeRatePieEntity.getOutlay();
+                if (UEmpty.isNotNull(outlay)) {
+                    tmp.setValue(outlay.setScale(2, RoundingMode.HALF_UP).toString());
+                }
                 series.add(tmp);
             }
             echartPieOptionEntity.setSeries(series);
@@ -362,9 +365,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     public EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto) {
         String cacheKey = "findRankByCostType:" + findRankByCostTypeDto.getUserId() + "@" + findRankByCostTypeDto.getTenantId() + "@" + findRankByCostTypeDto.getDateScope();
         EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
-        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
-            return echartStackedHorizontalBarOptionEntity;
-        }
+//        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
+//            return echartStackedHorizontalBarOptionEntity;
+//        }
         String dateScope = findRankByCostTypeDto.getDateScope();
         List<FindRankByCostTypeEntity> findRankByCostTypeEntityList = null;
         EchartStackedHorizontalBarOptionEntity entity = null;
@@ -375,9 +378,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             findRankByCostTypeEntityList = accountCostMapper.findMonthRankByCostType(findRankByCostTypeDto);
             entity = buildMonthEchartStackedHorizontalBarOptionEntity(Optional.ofNullable(findRankByCostTypeEntityList).orElseGet(ArrayList::new));
         }
-        if (UEmpty.isNotNull(entity)) {
-            URedis.set(cacheKey, entity, Duration.ofHours(4));
-        }
+//        if (UEmpty.isNotNull(entity)) {
+//            URedis.set(cacheKey, entity, Duration.ofHours(4));
+//        }
         return entity;
     }
 
@@ -518,7 +521,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                         list.add(i, null);
                     }
                     return list;
-                }).add(item.getRk() - 1, item.getOutlay());
+                }).add(item.getRk() - 1, item.getOutlay().setScale(2, RoundingMode.FLOOR));
             }
         }
         List<EchartStackedHorizontalBarOptionEntity.Series> seriesList = new ArrayList<>();
@@ -538,7 +541,11 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         EchartCalendarOptionEntity echartCalendarOptionEntity = new EchartCalendarOptionEntity();
         if (UEmpty.isNotEmpty(findCostSumCalendarNearYearEntityList)) {
             List<List<String>> series = buildSeries(findCostSumCalendarNearYearEntityList);
-            BigDecimal maxValue = findCostSumCalendarNearYearEntityList.stream().map(FindCostSumCalendarNearYearEntity::getOutlay).max(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
+            BigDecimal maxValue = findCostSumCalendarNearYearEntityList.stream()
+                    .map(FindCostSumCalendarNearYearEntity::getOutlay)
+                    .filter(Objects::nonNull)
+                    .max(BigDecimal::compareTo)
+                    .orElse(BigDecimal.ZERO);
             echartCalendarOptionEntity.setMaxValue(maxValue);
             String paymentTimeFrom = Constants.SDF_YMD.format(accountCostDto.getPaymentTimeFrom());
             String paymentTimeTo = Constants.SDF_YMD.format(accountCostDto.getPaymentTimeTo());
@@ -551,10 +558,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     private static List<List<String>> buildSeries(List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYearEntityList) {
         List<List<String>> series = new ArrayList<>();
         for (FindCostSumCalendarNearYearEntity findCostSumCalendarNearYearEntity : findCostSumCalendarNearYearEntityList) {
-            BigDecimal outlay = findCostSumCalendarNearYearEntity.getOutlay().setScale(2, RoundingMode.HALF_UP);
-            String paymentTime = findCostSumCalendarNearYearEntity.getPaymentTime();
-            List<String> seriesList = Arrays.asList(paymentTime, outlay.toString());
-            series.add(seriesList);
+            BigDecimal outlay = findCostSumCalendarNearYearEntity.getOutlay();
+            if (UEmpty.isNotNull(outlay)) {
+                outlay = outlay.setScale(2, RoundingMode.HALF_UP);
+                String paymentTime = findCostSumCalendarNearYearEntity.getPaymentTime();
+                List<String> seriesList = Arrays.asList(paymentTime, outlay.toString());
+                series.add(seriesList);
+            }
         }
         return series;
     }

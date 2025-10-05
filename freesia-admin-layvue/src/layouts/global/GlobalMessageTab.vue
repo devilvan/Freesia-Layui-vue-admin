@@ -182,7 +182,7 @@ function loadDataSource() {
       announcementList.value = res.data;
     }
     // 查询消息
-    let createTime: string[] = buildRange(7)
+    let createTime: string[] = buildRange(6)
     searchQuery.value.type = SysNoticeType.NOTICE
     searchQuery.value.createTimeFrom = new Date(createTime[0])
     searchQuery.value.createTimeTo = new Date(createTime[1])

@@ -40,7 +40,7 @@ const props = defineProps({
   },
 });
 onMounted(() => {
-  findCostTypeRatePieQueryVo.value.paymentTimeRange = buildRange(7)
+  findCostTypeRatePieQueryVo.value.paymentTimeRange = buildRange(6)
   doFindCostTypeRatePie()
 })
 /*INIT*/
