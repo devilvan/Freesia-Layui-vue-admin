@@ -111,7 +111,6 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         accountCostDto.setIcon(ossHandler.convertDomain2Endpoint(accountCostDto.getIcon()));
         AccountCostPo accountCostPo = UCopy.copyDto2Po(accountCostDto, AccountCostPo.class);
         UCopy.halfCopy(accountCostDto, accountCostPo);
-        List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList = new ArrayList<>();
         List<Long> accountCostUserIdList = accountCostDto.getAccountCostUserIdList();
         // 新增
         if (UEmpty.isNull(costId)) {
@@ -125,6 +124,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
                     sumAmount = sumAmount.add(Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO));
                 }
+                List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList = new ArrayList<>();
                 if (UEmpty.isNotNull(outlay) && outlay.compareTo(BigDecimal.ZERO) > 0) {
                     saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterInsertAccountCostPo, accountCostUserAllocDtoList, outlay, sumAmount);
                 } else {
@@ -148,52 +148,59 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
         } else {
             // 独立事务更新
-            AccountCostPo afterInsertAccountCostPo = transactionTemplate.execute(status -> {
+            AccountCostPo afterInsertAccountCostPo = accountCostRepository.save(accountCostPo);
+            transactionTemplate.execute(status -> {
                 // 修改
                 if (UEmpty.isNotNull(costId)) {
                     accountCostUserAllocService.deleteAccountCostUserAllocByCostId(Collections.singletonList(costId));
                 }
-                return accountCostRepository.save(accountCostPo);
-            });
-            // 20251003-Bliss 添加费用分摊步骤
-            List<AccountCostUserAllocDto> accountCostUserAllocDtoList = accountCostDto.getAccountCostUserAllocDtoList();
-            if (UEmpty.isNotEmpty(accountCostUserAllocDtoList)) {
-                BigDecimal outlay = accountCostDto.getOutlay();
-                // 判断金额是否合法
-                BigDecimal sumAmount = BigDecimal.ZERO;
-                for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
-                    sumAmount = sumAmount.add(Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO));
-                }
-                if (UEmpty.isNotNull(afterInsertAccountCostPo) && UEmpty.isNotNull(outlay) && outlay.compareTo(BigDecimal.ZERO) > 0) {
-                    saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterInsertAccountCostPo, accountCostUserAllocDtoList, outlay, sumAmount);
-                } else {
-                    throw new AccountException("account.cost.amount.invalid");
-                }
-                if (UEmpty.isNotEmpty(accountCostUserIdList)) {
-                    if (UEmpty.isNotNull(afterInsertAccountCostPo)) {
-                        List<Long> publishIdList = accountCostUserIdList
-                                .stream()
-                                .filter(item -> !item.equals(userId))
-                                .collect(Collectors.toList());
-                        AccountCostUserAllocDto accountCostUserAllocDto = saveAccountCostUserAllocDtoList.stream()
-                                .filter(item -> Objects.equals(item.getUserId(), userId))
-                                .findFirst().orElseGet(AccountCostUserAllocDto::new);
-                        if (UEmpty.isNotEmpty(saveAccountCostUserAllocDtoList) && UEmpty.isNotNull(accountCostUserAllocDto)) {
-                            buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterInsertAccountCostPo, accountCostUserAllocDto);
-                        } else {
-                            buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterInsertAccountCostPo, null);
+                // 20251003-Bliss 添加费用分摊步骤
+                List<AccountCostUserAllocDto> accountCostUserAllocDtoList = accountCostDto.getAccountCostUserAllocDtoList();
+                if (UEmpty.isNotEmpty(accountCostUserAllocDtoList)) {
+                    BigDecimal outlay = accountCostDto.getOutlay();
+                    // 判断金额是否合法
+                    BigDecimal sumAmount = BigDecimal.ZERO;
+                    for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
+                        sumAmount = sumAmount.add(Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO));
+                    }
+                    List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList = new ArrayList<>();
+                    if (UEmpty.isNotNull(afterInsertAccountCostPo) && UEmpty.isNotNull(outlay) && outlay.compareTo(BigDecimal.ZERO) > 0) {
+                        saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterInsertAccountCostPo, accountCostUserAllocDtoList, outlay, sumAmount);
+                    } else {
+                        throw new AccountException("account.cost.amount.invalid");
+                    }
+                    if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+                        if (UEmpty.isNotNull(afterInsertAccountCostPo)) {
+                            List<Long> publishIdList = accountCostUserIdList
+                                    .stream()
+                                    .filter(item -> !item.equals(userId))
+                                    .collect(Collectors.toList());
+                            AccountCostUserAllocDto accountCostUserAllocDto = saveAccountCostUserAllocDtoList.stream()
+                                    .filter(item -> Objects.equals(item.getUserId(), userId))
+                                    .findFirst().orElseGet(AccountCostUserAllocDto::new);
+                            if (UEmpty.isNotEmpty(saveAccountCostUserAllocDtoList) && UEmpty.isNotNull(accountCostUserAllocDto)) {
+                                buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterInsertAccountCostPo, accountCostUserAllocDto);
+                            } else {
+                                buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterInsertAccountCostPo, null);
+                            }
                         }
                     }
                 }
-            }
+                return status;
+            });
             return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
         }
     }
 
-    private List<AccountCostUserAllocDto> saveBatchAccountCostUserAllocDto(List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList, AccountCostPo afterInsertAccountCostPo, List<AccountCostUserAllocDto> accountCostUserAllocDtoList, BigDecimal outlay, BigDecimal sumAmount) {
-        BigDecimal[] integerDivideResultArr = UCalculate.integerDivide(outlay, accountCostUserAllocDtoList.size());
+    private List<AccountCostUserAllocDto> saveBatchAccountCostUserAllocDto(
+            List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList,
+            AccountCostPo afterInsertAccountCostPo,
+            List<AccountCostUserAllocDto> accountCostUserAllocDtoList,
+            BigDecimal outlay,
+            BigDecimal sumAmount) {
+        BigDecimal[] integerDivideResultArr = UCalculate.integerDivide(sumAmount, accountCostUserAllocDtoList.size());
         BigDecimal reduce = Arrays.stream(integerDivideResultArr).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (outlay.compareTo(reduce) == 0) {
+        if (outlay.compareTo(reduce) >= 0) {
             // 如果总金额和分摊总金额匹配，则直接保存
             for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
                 accountCostUserAllocDto.setCostId(afterInsertAccountCostPo.getId());
@@ -206,18 +213,29 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         } else if (sumAmount.compareTo(BigDecimal.ZERO) == 0) {
             // 如果总金额不为0，但是各分摊为0，则默认平分
             int size = accountCostUserAllocDtoList.size();
-            BigDecimal amount = outlay.divide(new BigDecimal(size), 4, RoundingMode.FLOOR);
+            BigDecimal amountInteger = outlay.divideToIntegralValue(BigDecimal.valueOf(size));
+            BigDecimal remainder = outlay.remainder(BigDecimal.valueOf(size));
             for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
                 accountCostUserAllocDto.setCostId(afterInsertAccountCostPo.getId());
                 accountCostUserAllocDto.setUserId(accountCostUserAllocDto.getUserId());
                 accountCostUserAllocDto.setTenantId(USecurity.getTenantId());
-                // 确保无法整除的情况下可以使用
-                outlay = outlay.subtract(amount);
-                accountCostUserAllocDto.setAmount(amount);
+                accountCostUserAllocDto.setAmount(amountInteger);
                 accountCostUserAllocDto.setOperateTime(new Date());
                 accountCostUserAllocDto.setAllocFlag(true);
-                saveAccountCostUserAllocDtoList.add(accountCostUserAllocDto);
             }
+            if (remainder.compareTo(BigDecimal.ZERO) > 0) {
+                int reminderInteger = remainder.intValue();
+                BigDecimal reminderReminder = remainder.subtract(new BigDecimal(reminderInteger));
+                for (int i = 0; i < reminderInteger; i++) {
+                    AccountCostUserAllocDto accountCostUserAllocDto = accountCostUserAllocDtoList.get(i);
+                    accountCostUserAllocDto.setAmount(accountCostUserAllocDto.getAmount().add(BigDecimal.ONE));
+                }
+                if (reminderReminder.compareTo(BigDecimal.ZERO) > 0) {
+                    AccountCostUserAllocDto accountCostUserAllocDto = accountCostUserAllocDtoList.get(accountCostUserAllocDtoList.size() - 1);
+                    accountCostUserAllocDto.setAmount(accountCostUserAllocDto.getAmount().add(reminderReminder));
+                }
+            }
+            saveAccountCostUserAllocDtoList = accountCostUserAllocDtoList;
             accountCostUserAllocService.saveUpdateBatch(saveAccountCostUserAllocDtoList);
         } else {
             // 如果总金额和分摊总金额不匹配，则提示失败

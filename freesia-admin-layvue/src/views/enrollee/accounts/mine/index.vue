@@ -348,7 +348,7 @@
           <lay-card>
             <div class="middle">
               <h1 style="padding:20px 15px; font-family: sans-serif">
-                <lay-count-up :end-val="accountCostVo.outlay" prefix="总金额：¥ "></lay-count-up>
+                <lay-count-up :end-val="accountCostVo.outlay" prefix="总金额：¥ " :decimalPlaces="2"></lay-count-up>
               </h1>
             </div>
             <div class="middle">
@@ -503,6 +503,8 @@ import Http from "@/api/Http";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
 import {findListAllocByCostId, findListSysUserById} from "@/api/account/AccountCostUserAlloc";
+import {AccountCostUserAllocVo} from "@/types/account/AccountCostUserAlloc";
+import {deleteCommonIcon} from "@/api/common/icon/Icon";
 
 /* INIT*/
 onMounted(async () => {
@@ -764,6 +766,36 @@ function toRemove() {
   })
 }
 
+function doSaveUpdate(clickFlag: boolean) {
+  let id = accountCostVo.value.id;
+  saveUpdate(accountCostVo.value).then((res: any) => {
+    if (res.code === 200) {
+      loadDataSource();
+      layer.msg('保存成功！', {icon: 1, time: 1000})
+      let paymentTime = accountCostVo.value.paymentTime;
+      accountCostVo.value = {};
+      if (clickFlag) {
+        addExpenseModalShowFlag.value = false
+      } else {
+        accountCostVo.value.paymentTime = paymentTime
+        let isDefaultPaymentSignSelect = paymentSignSelectList.value.find((paymentSignSelect: SysDictValueEntity) => {
+          return paymentSignSelect.isDefault
+        });
+        if (isDefaultPaymentSignSelect) {
+          accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
+        }
+        // 如果是修改+回车，则关闭窗口
+        if (id) {
+          addExpenseModalShowFlag.value = false
+        } else {
+          addExpenseModalQuickSaveRef.value.focus();
+        }
+      }
+      addExpenseActive.value = 0
+    }
+  })
+}
+
 function toSubmit(clickFlag: boolean) {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
@@ -771,33 +803,37 @@ function toSubmit(clickFlag: boolean) {
         toNext()
         return;
       }
-      let id = accountCostVo.value.id;
-      saveUpdate(accountCostVo.value).then((res: any) => {
-        if (res.code === 200) {
-          loadDataSource();
-          layer.msg('保存成功！', {icon: 1, time: 1000})
-          let paymentTime = accountCostVo.value.paymentTime;
-          accountCostVo.value = {};
-          if (clickFlag) {
-            addExpenseModalShowFlag.value = false
-          } else {
-            accountCostVo.value.paymentTime = paymentTime
-            let isDefaultPaymentSignSelect = paymentSignSelectList.value.find((paymentSignSelect: SysDictValueEntity) => {
-              return paymentSignSelect.isDefault
-            });
-            if (isDefaultPaymentSignSelect) {
-              accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
-            }
-            // 如果是修改+回车，则关闭窗口
-            if (id) {
-              addExpenseModalShowFlag.value = false
-            } else {
-              addExpenseModalQuickSaveRef.value.focus();
-            }
-          }
-          addExpenseActive.value = 0
+      if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
+        // 计算费用分摊合计金额是否超过总金额
+        let totalAmount = accountCostVo.value.accountCostUserAllocVoList
+            .reduce((sum: number, item: AccountCostUserAllocVo) => sum += item.amount || 0, 0);
+        let outlay = accountCostVo.value.outlay;
+        if (!outlay || totalAmount > outlay) {
+          layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
+          return ;
+        } else {
+          layer.confirm('您还有' + (outlay - totalAmount) + '金额未分摊', {
+            title: '提示',
+            btn: [
+              {
+                text: '确定',
+                callback: (id: any) => {
+                  doSaveUpdate(clickFlag);
+                  layer.close(id)
+                }
+              },
+              {
+                text: '取消',
+                callback: (id: any) => {
+                  layer.close(id)
+                }
+              }
+            ]
+          })
+          return ;
         }
-      })
+      }
+      doSaveUpdate(clickFlag);
     }
   })
 }
@@ -1078,21 +1114,32 @@ function toPrevious() {
 
 function allocRetainAmount() {
   let outlay = accountCostVo.value.outlay || 0
+  if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
+    // 计算费用分摊合计金额是否超过总金额
+    let totalAmount = accountCostVo.value.accountCostUserAllocVoList
+        .reduce((sum: number, item: AccountCostUserAllocVo) => sum += item.amount || 0, 0);
+    if (!outlay || totalAmount > outlay) {
+      layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
+      return ;
+    }
+  }
   // 先查询填写了金额的行，与总金额计算差值
   let accountCostUserAllocVoList = accountCostVo.value.accountCostUserAllocVoList;
   if (accountCostUserAllocVoList && accountCostUserAllocVoList.length > 0) {
     let existAllocList = accountCostUserAllocVoList.filter(item => {
       return item.amount && item.amount > 0
     })
-    let avgAmount = outlay / accountCostUserAllocVoList.length;
+    let totalAmount = existAllocList.reduce((sum: number, item: AccountCostUserAllocVo) => sum += item.amount || 0, 0);
+    let avgAmountInteger = Math.floor(totalAmount / accountCostUserAllocVoList.length) || 0;
+    let avgAmountReminder = totalAmount % accountCostUserAllocVoList.length || 0;
     if (!existAllocList || existAllocList.length === 0) {
       // 如果都没填写，则直接平分
-      if (avgAmount > 0) {
+      if (avgAmountInteger > 0) {
         accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
-          item.amount = avgAmount
-          outlay = outlay - avgAmount;
+          item.amount = avgAmountInteger
         })
       }
+      setAvgAmountReminder(avgAmountReminder);
     } else if (existAllocList && existAllocList.length !== accountCostUserAllocVoList.length) {
       // 部分赋值，则减去赋值的金额后再平分给未赋值的数据
       let notExistAllocList = accountCostUserAllocVoList.filter(item => {
@@ -1101,22 +1148,32 @@ function allocRetainAmount() {
       existAllocList.forEach(item => {
         outlay -= item.amount || 0
       })
-      avgAmount = outlay / notExistAllocList.length
+      avgAmountInteger = (outlay / notExistAllocList.length).toFixed(2) || 0
       accountCostVo.value.accountCostUserAllocVoList.filter(item => {
         return !item.amount || item.amount === 0
       }).forEach(item => {
-        item.amount = avgAmount
-        outlay = outlay - avgAmount;
+        item.amount = avgAmountInteger
+        outlay = outlay - avgAmountInteger;
       })
-    }
-    if (outlay > 0) {
-      accountCostVo.value.accountCostUserAllocVoList[0].amount += outlay;
+      setAvgAmountReminder(avgAmountReminder);
     }
   } else {
     layer.msg('分摊数据不合法，请联系管理员', {icon: 3})
   }
 }
 
+function setAvgAmountReminder(avgAmountReminder: number) {
+  if (avgAmountReminder > 0) {
+    let reminderInteger = Math.floor(avgAmountReminder);
+    let reminderReminder = avgAmountReminder - reminderInteger;
+    for (let i = 0; i < reminderInteger; i++) {
+      accountCostVo.value.accountCostUserAllocVoList[i].amount += 1;
+    }
+    if (reminderReminder > 0) {
+      accountCostVo.value.accountCostUserAllocVoList[accountCostVo.value.accountCostUserAllocVoList.length - 1].amount += reminderReminder;
+    }
+  }
+}
 /* FUNCTION*/
 </script>
 
