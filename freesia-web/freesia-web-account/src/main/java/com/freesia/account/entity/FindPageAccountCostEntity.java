@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -36,4 +37,15 @@ public class FindPageAccountCostEntity extends AccountCostDto {
      */
     @Schema(description = "用户昵称")
     private String acNickName;
+    /**
+     * 分摊金额
+     */
+    @Schema(description = "分摊金额")
+    private BigDecimal allocAmount;
+    /**
+     * 分摊状态
+     */
+    @Schema(description = "分摊状态")
+    private String allocStatus;
+
 }

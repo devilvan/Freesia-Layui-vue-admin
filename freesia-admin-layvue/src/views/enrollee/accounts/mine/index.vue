@@ -561,11 +561,13 @@ const columns = ref([
   {title: '描述', width: '130px', key: 'costDesc', fixed: 'left', ellipsisTooltipTheme: 'dark'},
   {title: '金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '类型', width: '130px', key: 'icon', customSlot: 'iconType'},
-  {title: '标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
+  {title: '标识', width: '80px', key: 'paymentSign', customSlot: 'paymentSign'},
   {title: '时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
   {title: '修改时间', width: '150px', key: 'modifyTime'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
   {title: '关联用户', width: '200px', key: 'nickNameList', customSlot: 'nickNameList'},
+  {title: '分摊金额', width: '130px', key: 'allocAmount'},
+  {title: '分摊状态', width: '130px', key: 'allocStatus'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -805,14 +807,15 @@ function toSubmit(clickFlag: boolean) {
       }
       if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
         // 计算费用分摊合计金额是否超过总金额
-        let totalAmount = accountCostVo.value.accountCostUserAllocVoList
-            .reduce((sum: number, item: AccountCostUserAllocVo) => sum += item.amount || 0, 0);
+        let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
+            .reduce((sum: number, item: AccountCostUserAllocVo) => sum + (item.amount || 0), 0).toFixed(2);
         let outlay = accountCostVo.value.outlay;
+        let subtract = ((outlay || 0) - totalAmount).toFixed(2);
         if (!outlay || totalAmount > outlay) {
           layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
           return ;
-        } else {
-          layer.confirm('您还有' + (outlay - totalAmount) + '金额未分摊', {
+        } else if (subtract > 0) {
+          layer.confirm('您还有' + subtract + '金额未分摊', {
             title: '提示',
             btn: [
               {
@@ -1116,8 +1119,8 @@ function allocRetainAmount() {
   let outlay = accountCostVo.value.outlay || 0
   if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
     // 计算费用分摊合计金额是否超过总金额
-    let totalAmount = accountCostVo.value.accountCostUserAllocVoList
-        .reduce((sum: number, item: AccountCostUserAllocVo) => sum += item.amount || 0, 0);
+    let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
+        .reduce((sum: number, item: AccountCostUserAllocVo) => sum + (item.amount || 0), 0).toFixed(2);
     if (!outlay || totalAmount > outlay) {
       layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
       return ;
@@ -1129,7 +1132,7 @@ function allocRetainAmount() {
     let existAllocList = accountCostUserAllocVoList.filter(item => {
       return item.amount && item.amount > 0
     })
-    let totalAmount = existAllocList.reduce((sum: number, item: AccountCostUserAllocVo) => sum += item.amount || 0, 0);
+    let totalAmount: number = existAllocList.reduce((sum: number, item: AccountCostUserAllocVo) => sum + (item.amount || 0), 0).toFixed(2);
     let avgAmountInteger = Math.floor(totalAmount / accountCostUserAllocVoList.length) || 0;
     let avgAmountReminder = totalAmount % accountCostUserAllocVoList.length || 0;
     if (!existAllocList || existAllocList.length === 0) {

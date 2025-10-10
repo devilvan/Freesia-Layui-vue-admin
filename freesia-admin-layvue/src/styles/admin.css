@@ -172,3 +172,13 @@
 .easy-wrap {
     display: inline-block;
 }
+
+/* 在全局样式文件中添加 */
+.layui-scroll-y .layui-scroll-y-content::-webkit-scrollbar {
+    display: block !important;
+}
+
+/* 或者更具体的选择器 */
+body .layui-scroll-y ::-webkit-scrollbar {
+    display: block !important;
+}
