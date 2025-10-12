@@ -348,7 +348,8 @@
           <lay-card>
             <div class="middle">
               <h1 style="padding:20px 15px; font-family: sans-serif">
-                <lay-count-up :end-val="accountCostVo.outlay" prefix="总金额：¥ " :decimalPlaces="2"></lay-count-up>
+                总金额：{{ accountCostVo.outlay }}¥
+                <!--                <lay-count-up prefix="总金额：¥ " :decimalPlaces="2"></lay-count-up>-->
               </h1>
             </div>
             <div class="middle">
@@ -808,12 +809,12 @@ function toSubmit(clickFlag: boolean) {
       if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
         // 计算费用分摊合计金额是否超过总金额
         let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
-            .reduce((sum: number, item: AccountCostUserAllocVo) => sum + (item.amount || 0), 0).toFixed(2);
+            .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
         let outlay = accountCostVo.value.outlay;
         let subtract = ((outlay || 0) - totalAmount).toFixed(2);
         if (!outlay || totalAmount > outlay) {
           layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
-          return ;
+          return;
         } else if (subtract > 0) {
           layer.confirm('您还有' + subtract + '金额未分摊', {
             title: '提示',
@@ -833,7 +834,7 @@ function toSubmit(clickFlag: boolean) {
               }
             ]
           })
-          return ;
+          return;
         }
       }
       doSaveUpdate(clickFlag);
@@ -1000,7 +1001,7 @@ function searchUserModalConfirm() {
   if (checkData && checkData.length <= 1) {
     // 必须选择超过一个用户
     layer.msg('关联用户数量需要大于1个', {icon: 3})
-    return ;
+    return;
   }
   searchQuery.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
   searchQuery.value.accountCostUserIdList = checkData.map((v: any) => v.id)
@@ -1012,7 +1013,7 @@ function insertUserModalConfirm() {
   if (checkData && checkData.length <= 1) {
     // 必须选择超过一个用户
     layer.msg('关联用户数量需要大于1个', {icon: 3})
-    return ;
+    return;
   }
   accountCostVo.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
   accountCostVo.value.accountCostUserIdList = checkData.map((v: any) => v.id)
@@ -1079,6 +1080,7 @@ function toNext() {
         }
       }
       addExpenseActive.value = 1
+      console.log(accountCostVo.value.outlay)
       if (accountCostVo.value.accountCostUserIdList) {
         if (Operate.ADD === operate.value || Operate.COPY === operate.value) {
           // 新增则查询用户
@@ -1120,10 +1122,10 @@ function allocRetainAmount() {
   if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
     // 计算费用分摊合计金额是否超过总金额
     let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
-        .reduce((sum: number, item: AccountCostUserAllocVo) => sum + (item.amount || 0), 0).toFixed(2);
+        .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
     if (!outlay || totalAmount > outlay) {
       layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
-      return ;
+      return;
     }
   }
   // 先查询填写了金额的行，与总金额计算差值
@@ -1132,7 +1134,8 @@ function allocRetainAmount() {
     let existAllocList = accountCostUserAllocVoList.filter(item => {
       return item.amount && item.amount > 0
     })
-    let totalAmount: number = existAllocList.reduce((sum: number, item: AccountCostUserAllocVo) => sum + (item.amount || 0), 0).toFixed(2);
+    let totalAmount: number = existAllocList
+        .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
     let avgAmountInteger = Math.floor(totalAmount / accountCostUserAllocVoList.length) || 0;
     let avgAmountReminder = totalAmount % accountCostUserAllocVoList.length || 0;
     if (!existAllocList || existAllocList.length === 0) {
@@ -1177,6 +1180,7 @@ function setAvgAmountReminder(avgAmountReminder: number) {
     }
   }
 }
+
 /* FUNCTION*/
 </script>
 
