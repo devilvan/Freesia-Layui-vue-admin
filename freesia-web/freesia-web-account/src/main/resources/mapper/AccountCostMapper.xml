@@ -24,9 +24,9 @@
         WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) IS NULL THEN
         NULL
         WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%1%' THEN
-        ''
+        'UNFINISHED'
         WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%0%' THEN
-        '成功' ELSE '部分成功'
+        'FINISHED' ELSE 'PART'
         END AS ALLOC_STATUS
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
@@ -88,9 +88,9 @@
         WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) IS NULL THEN
         NULL
         WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%1%' THEN
-        '未成功'
+        'UNFINISHED'
         WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%0%' THEN
-        '成功' ELSE '部分成功'
+        'FINISHED' ELSE 'PART'
         END AS ALLOC_STATUS
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
@@ -236,6 +236,7 @@
         <result property="acNickName" column="AC_NICK_NAME"/>
         <result property="accountCostUserId" column="SU_ID"/>
         <result property="accountCostUserName" column="NICK_NAME"/>
+        <result property="allocStatus" column="ALLOC_STATUS"/>
     </resultMap>
     <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
         SELECT T.COST_DESC,

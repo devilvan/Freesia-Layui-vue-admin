@@ -130,6 +130,9 @@
         :rowStyle="getRowStyle"
         @change="change"
         @sortChange="sortChange">
+      <template #allocStatus="{ row }">
+        <dict-scan :options="allocStatusSelect" :value="row.allocStatus"/>
+      </template>
       <template #nickNameList="{ row }">
         <lay-tooltip :visible="false" trigger="hover" :content='row.accountCostUserName'>
           <div class="oneRow">{{ row.accountCostUserName }}</div>
@@ -511,6 +514,7 @@ import {deleteCommonIcon} from "@/api/common/icon/Icon";
 onMounted(async () => {
   paymentSignSelect.value = await loadSysDictValue(Constants.PAYMENT_SIGN)
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
+  allocStatusSelect.value = await loadSysDictValue(Constants.ALLOC_STATUS)
   searchQuery.value.paymentTimeRange = buildRange(6)
   let param: CommonIconTemplateDetailVo = {
     headerId: useStore.commonIconHeader
@@ -537,6 +541,7 @@ const $ACCOUNT_MENU_PERMISSION = app.config.globalProperties.$ACCOUNT_MENU_PERMI
 const $router = router;
 const paymentSignSelect = ref<Array<SysDictValueEntity>>();
 const paymentSignSelectList = ref<any[]>();
+const allocStatusSelect = ref<Array<SysDictValueEntity>>();
 const searchQuery = ref<AccountCostVo>({})
 const loading = ref(false)
 const selectedKeys = ref<Array<string>>([])
@@ -568,7 +573,7 @@ const columns = ref([
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
   {title: '关联用户', width: '200px', key: 'nickNameList', customSlot: 'nickNameList'},
   {title: '分摊金额', width: '130px', key: 'allocAmount'},
-  {title: '分摊状态', width: '130px', key: 'allocStatus'},
+  {title: '分摊状态', width: '130px', key: 'allocStatus', customSlot: 'allocStatus'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {
     title: '操作',
@@ -809,8 +814,9 @@ function toSubmit(clickFlag: boolean) {
       if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
         // 计算费用分摊合计金额是否超过总金额
         let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
-            .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
-        let outlay = accountCostVo.value.outlay;
+            .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0)
+            .toFixed(2);
+        let outlay = parseFloat(accountCostVo.value.outlay).toFixed(2);
         let subtract = ((outlay || 0) - totalAmount).toFixed(2);
         if (!outlay || totalAmount > outlay) {
           layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
