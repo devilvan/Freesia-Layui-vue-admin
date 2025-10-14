@@ -1194,6 +1194,7 @@ function setAvgAmountReminder(avgAmountReminder: number) {
       accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
         if (!item.amount || item.amount === 0) {
           item.amount += Number(reminderInteger);
+          return ;
         }
       })
     }
