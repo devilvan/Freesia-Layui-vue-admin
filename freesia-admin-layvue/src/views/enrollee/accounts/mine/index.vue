@@ -821,6 +821,8 @@ function toSubmit(clickFlag: boolean) {
         if (!outlay || totalAmount > outlay) {
           layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
           return;
+        } else if (totalAmount == 0) {
+          doSaveUpdate(clickFlag);
         } else if (subtract > 0) {
           layer.confirm('您还有' + subtract + '金额未分摊', {
             title: '提示',
@@ -843,7 +845,6 @@ function toSubmit(clickFlag: boolean) {
           return;
         }
       }
-      doSaveUpdate(clickFlag);
     }
   })
 }
@@ -1142,13 +1143,14 @@ function allocRetainAmount() {
     })
     let totalAmount: number = existAllocList
         .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
+    totalAmount = outlay - totalAmount
     let avgAmountInteger = Math.floor(totalAmount / accountCostUserAllocVoList.length) || 0;
-    let avgAmountReminder = totalAmount % accountCostUserAllocVoList.length || 0;
+    let avgAmountReminder = (totalAmount % accountCostUserAllocVoList.length || 0).toFixed(2);
     if (!existAllocList || existAllocList.length === 0) {
       // 如果都没填写，则直接平分
       if (avgAmountInteger > 0) {
         accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
-          item.amount = avgAmountInteger
+          item.amount = Number(avgAmountInteger)
         })
       }
       setAvgAmountReminder(avgAmountReminder);
@@ -1164,7 +1166,7 @@ function allocRetainAmount() {
       accountCostVo.value.accountCostUserAllocVoList.filter(item => {
         return !item.amount || item.amount === 0
       }).forEach(item => {
-        item.amount = avgAmountInteger
+        item.amount = Number(avgAmountInteger)
         outlay = outlay - avgAmountInteger;
       })
       setAvgAmountReminder(avgAmountReminder);
@@ -1178,11 +1180,22 @@ function setAvgAmountReminder(avgAmountReminder: number) {
   if (avgAmountReminder > 0) {
     let reminderInteger = Math.floor(avgAmountReminder);
     let reminderReminder = avgAmountReminder - reminderInteger;
-    for (let i = 0; i < reminderInteger; i++) {
-      accountCostVo.value.accountCostUserAllocVoList[i].amount += 1;
-    }
     if (reminderReminder > 0) {
-      accountCostVo.value.accountCostUserAllocVoList[accountCostVo.value.accountCostUserAllocVoList.length - 1].amount += reminderReminder;
+      let length = accountCostVo.value.accountCostUserAllocVoList.length;
+      for (let i = length - 1; i > 0; i--) {
+        let amount = accountCostVo.value.accountCostUserAllocVoList[i].amount;
+        if (!amount || amount === 0) {
+          accountCostVo.value.accountCostUserAllocVoList[i].amount += Number(reminderReminder.toFixed(2));
+          break;
+        }
+      }
+    }
+    for (let i = 0; i < reminderInteger; i++) {
+      accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
+        if (!item.amount || item.amount === 0) {
+          item.amount += Number(reminderInteger);
+        }
+      })
     }
   }
 }

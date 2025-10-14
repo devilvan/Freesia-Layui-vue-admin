@@ -200,7 +200,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             BigDecimal sumAmount) {
         BigDecimal[] integerDivideResultArr = UCalculate.integerDivide(sumAmount, accountCostUserAllocDtoList.size());
         BigDecimal reduce = Arrays.stream(integerDivideResultArr).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (outlay.compareTo(reduce) >= 0) {
+        if (outlay.compareTo(reduce) == 0) {
             // 如果总金额和分摊总金额匹配，则直接保存
             for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
                 accountCostUserAllocDto.setCostId(afterInsertAccountCostPo.getId());
