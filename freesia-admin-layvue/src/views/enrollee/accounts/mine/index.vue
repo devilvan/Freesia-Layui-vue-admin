@@ -1127,7 +1127,7 @@ function toPrevious() {
 }
 
 function allocRetainAmount() {
-  let outlay = accountCostVo.value.outlay || 0
+  let outlay: number = accountCostVo.value.outlay || 0
   if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
     // 计算费用分摊合计金额是否超过总金额
     let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
@@ -1165,13 +1165,13 @@ function allocRetainAmount() {
         outlay -= item.amount || 0
       })
       avgAmountInteger = (outlay / notExistAllocList.length).toFixed(2) || 0
-      accountCostVo.value.accountCostUserAllocVoList.filter(item => {
-        return !item.amount || item.amount === 0
-      }).forEach(item => {
+      notExistAllocList.forEach(item => {
         item.amount = Number(avgAmountInteger)
         outlay = outlay - avgAmountInteger;
       })
-      setAvgAmountReminder(avgAmountReminder);
+      if (parseFloat(outlay).toFixed(2) != 0) {
+        setAvgAmountReminder(avgAmountReminder);
+      }
     }
   } else {
     layer.msg('分摊数据不合法，请联系管理员', {icon: 3})
@@ -1194,17 +1194,22 @@ function setAvgAmountReminder(avgAmountReminder: number) {
         }
       }
       if (reminderReminder > 0) {
-        // 如果没有金额为0的数据，则分摊给第一条数据
-        accountCostVo.value.accountCostUserAllocVoList[0].amount += Number(reminderReminder.toFixed(2));
+        // 如果没有金额为0的数据，则分摊给最后一条数据
+        accountCostVo.value.accountCostUserAllocVoList[accountCostVo.value.accountCostUserAllocVoList.length - 1].amount += Number(reminderReminder.toFixed(2));
       }
     }
+    let tmp = 0;
     for (let i = 0; i < reminderInteger; i++) {
       accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
         if (!item.amount || item.amount === 0) {
           item.amount += Number(reminderInteger);
+          tmp += reminderInteger
           return ;
         }
       })
+    }
+    if (tmp !== reminderInteger) {
+      accountCostVo.value.accountCostUserAllocVoList[0].amount += Number(reminderInteger)
     }
   }
 }
