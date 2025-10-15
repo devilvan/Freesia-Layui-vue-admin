@@ -823,6 +823,7 @@ function toSubmit(clickFlag: boolean) {
           return;
         } else if (totalAmount == 0) {
           doSaveUpdate(clickFlag);
+          return ;
         } else if (subtract > 0) {
           layer.confirm('您还有' + subtract + '金额未分摊', {
             title: '提示',
@@ -845,6 +846,7 @@ function toSubmit(clickFlag: boolean) {
           return;
         }
       }
+      doSaveUpdate(clickFlag);
     }
   })
 }
@@ -1184,10 +1186,16 @@ function setAvgAmountReminder(avgAmountReminder: number) {
       let length = accountCostVo.value.accountCostUserAllocVoList.length;
       for (let i = length - 1; i > 0; i--) {
         let amount = accountCostVo.value.accountCostUserAllocVoList[i].amount;
+        // 余数分配给金额为0的数据
         if (!amount || amount === 0) {
           accountCostVo.value.accountCostUserAllocVoList[i].amount += Number(reminderReminder.toFixed(2));
+          reminderReminder = 0
           break;
         }
+      }
+      if (reminderReminder > 0) {
+        // 如果没有金额为0的数据，则分摊给第一条数据
+        accountCostVo.value.accountCostUserAllocVoList[0].amount += Number(reminderReminder.toFixed(2));
       }
     }
     for (let i = 0; i < reminderInteger; i++) {
