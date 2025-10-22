@@ -198,9 +198,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             List<AccountCostUserAllocDto> accountCostUserAllocDtoList,
             BigDecimal outlay,
             BigDecimal sumAmount) {
-        BigDecimal[] integerDivideResultArr = UCalculate.integerDivide(sumAmount, accountCostUserAllocDtoList.size());
+        BigDecimal[] integerDivideResultArr = UCalculate.split(sumAmount, accountCostUserAllocDtoList.size());
         BigDecimal reduce = Arrays.stream(integerDivideResultArr).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (outlay.compareTo(reduce) >= 0) {
+        if (UCalculate.validateResult(outlay, integerDivideResultArr)) {
             // 如果总金额和分摊总金额匹配，则直接保存
             for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
                 accountCostUserAllocDto.setCostId(afterInsertAccountCostPo.getId());
@@ -212,28 +212,16 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             accountCostUserAllocService.saveUpdateBatch(saveAccountCostUserAllocDtoList);
         } else if (sumAmount.compareTo(BigDecimal.ZERO) == 0) {
             // 如果总金额不为0，但是各分摊为0，则默认平分
+            integerDivideResultArr = UCalculate.split(outlay, accountCostUserAllocDtoList.size());
             int size = accountCostUserAllocDtoList.size();
-            BigDecimal amountInteger = outlay.divideToIntegralValue(BigDecimal.valueOf(size));
-            BigDecimal remainder = outlay.remainder(BigDecimal.valueOf(size));
-            for (AccountCostUserAllocDto accountCostUserAllocDto : accountCostUserAllocDtoList) {
+            for (int i = 0; i < accountCostUserAllocDtoList.size(); i++) {
+                AccountCostUserAllocDto accountCostUserAllocDto = accountCostUserAllocDtoList.get(i);
                 accountCostUserAllocDto.setCostId(afterInsertAccountCostPo.getId());
                 accountCostUserAllocDto.setUserId(accountCostUserAllocDto.getUserId());
                 accountCostUserAllocDto.setTenantId(USecurity.getTenantId());
-                accountCostUserAllocDto.setAmount(amountInteger);
+                accountCostUserAllocDto.setAmount(integerDivideResultArr[i]);
                 accountCostUserAllocDto.setOperateTime(new Date());
                 accountCostUserAllocDto.setAllocFlag(true);
-            }
-            if (remainder.compareTo(BigDecimal.ZERO) > 0) {
-                int reminderInteger = remainder.intValue();
-                BigDecimal reminderReminder = remainder.subtract(new BigDecimal(reminderInteger));
-                for (int i = 0; i < reminderInteger; i++) {
-                    AccountCostUserAllocDto accountCostUserAllocDto = accountCostUserAllocDtoList.get(i);
-                    accountCostUserAllocDto.setAmount(accountCostUserAllocDto.getAmount().add(BigDecimal.ONE));
-                }
-                if (reminderReminder.compareTo(BigDecimal.ZERO) > 0) {
-                    AccountCostUserAllocDto accountCostUserAllocDto = accountCostUserAllocDtoList.get(accountCostUserAllocDtoList.size() - 1);
-                    accountCostUserAllocDto.setAmount(accountCostUserAllocDto.getAmount().add(reminderReminder));
-                }
             }
             saveAccountCostUserAllocDtoList = accountCostUserAllocDtoList;
             accountCostUserAllocService.saveUpdateBatch(saveAccountCostUserAllocDtoList);

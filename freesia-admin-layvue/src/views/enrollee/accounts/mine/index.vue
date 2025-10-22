@@ -569,7 +569,7 @@ const columns = ref([
   {title: '类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '标识', width: '80px', key: 'paymentSign', customSlot: 'paymentSign'},
   {title: '分摊金额', width: '130px', key: 'allocAmount'},
-  {title: '分摊状态', width: '130px', key: 'allocStatus', customSlot: 'allocStatus'},
+  {title: '分摊状态', width: '60px', key: 'allocStatus', customSlot: 'allocStatus'},
   {title: '时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
   {title: '修改时间', width: '150px', key: 'modifyTime'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
@@ -823,7 +823,7 @@ function toSubmit(clickFlag: boolean) {
           return;
         } else if (totalAmount == 0) {
           doSaveUpdate(clickFlag);
-          return ;
+          return;
         } else if (subtract > 0) {
           layer.confirm('您还有' + subtract + '金额未分摊', {
             title: '提示',
@@ -1089,7 +1089,6 @@ function toNext() {
         }
       }
       addExpenseActive.value = 1
-      console.log(accountCostVo.value.outlay)
       if (accountCostVo.value.accountCostUserIdList) {
         if (Operate.ADD === operate.value || Operate.COPY === operate.value) {
           // 新增则查询用户
@@ -1118,12 +1117,50 @@ function doFindListSysUserById() {
   findListSysUserById(accountCostVo.value.accountCostUserIdList).then((res: any) => {
     if (res.code === 200) {
       accountCostVo.value.accountCostUserAllocVoList = res.data
+      accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
+        item.allocFlag = true;
+      })
     }
   })
 }
 
 function toPrevious() {
   addExpenseActive.value = addExpenseActive.value - 1
+}
+
+function splitNumber(total: number, parts: number) : number[]{
+  // 参数验证
+  if (parts <= 0 || !Number.isInteger(parts)) {
+    throw new Error('份数必须是正整数');
+  }
+
+  if (total < 0) {
+    throw new Error('总金额不能为负数');
+  }
+
+  // 将数字转换为整数（乘以100）以避免浮点数精度问题
+  const totalCents = Math.round(total * 100);
+
+  // 计算每份的基本值（整数部分）
+  const baseValue = Math.floor(totalCents / parts);
+
+  // 计算余数（需要分配的小数部分）
+  const remainder = totalCents % parts;
+
+  const result: number[] = [];
+
+  // 生成拆分结果
+  for (let i = 0; i < parts; i++) {
+    if (i < remainder) {
+      // 前remainder份多分配1分钱
+      result.push((baseValue + 1) / 100);
+    } else {
+      // 剩余的份数分配基本值
+      result.push(baseValue / 100);
+    }
+  }
+
+  return result;
 }
 
 function allocRetainAmount() {
@@ -1146,16 +1183,15 @@ function allocRetainAmount() {
     let totalAmount: number = existAllocList
         .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
     totalAmount = outlay - totalAmount
-    let avgAmountInteger = Math.floor(totalAmount / accountCostUserAllocVoList.length) || 0;
-    let avgAmountReminder = (totalAmount % accountCostUserAllocVoList.length || 0).toFixed(2);
     if (!existAllocList || existAllocList.length === 0) {
       // 如果都没填写，则直接平分
-      if (avgAmountInteger > 0) {
-        accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
-          item.amount = Number(avgAmountInteger)
-        })
+      let numbers = splitNumber(totalAmount, accountCostUserAllocVoList.length);
+      if (numbers.length > 0) {
+        let length = accountCostVo.value.accountCostUserAllocVoList.length;
+        for (let i = 0; i < length; i++) {
+          accountCostVo.value.accountCostUserAllocVoList[i].amount = numbers[i];
+        }
       }
-      setAvgAmountReminder(avgAmountReminder);
     } else if (existAllocList && existAllocList.length !== accountCostUserAllocVoList.length) {
       // 部分赋值，则减去赋值的金额后再平分给未赋值的数据
       let notExistAllocList = accountCostUserAllocVoList.filter(item => {
@@ -1164,13 +1200,13 @@ function allocRetainAmount() {
       existAllocList.forEach(item => {
         outlay -= item.amount || 0
       })
-      avgAmountInteger = (outlay / notExistAllocList.length).toFixed(2) || 0
-      notExistAllocList.forEach(item => {
-        item.amount = Number(avgAmountInteger)
-        outlay = outlay - avgAmountInteger;
-      })
-      if (parseFloat(outlay).toFixed(2) != 0) {
-        setAvgAmountReminder(avgAmountReminder);
+      let numbers = splitNumber(outlay, notExistAllocList.length);
+      for (let i = 0; i < numbers.length; i++) {
+        notExistAllocList.forEach(item => {
+          if (!item.amount || item.amount == 0) {
+            item.amount = numbers[i];
+          }
+        })
       }
     }
   } else {
@@ -1204,7 +1240,7 @@ function setAvgAmountReminder(avgAmountReminder: number) {
         if (!item.amount || item.amount === 0) {
           item.amount += Number(reminderInteger);
           tmp += reminderInteger
-          return ;
+          return;
         }
       })
     }
