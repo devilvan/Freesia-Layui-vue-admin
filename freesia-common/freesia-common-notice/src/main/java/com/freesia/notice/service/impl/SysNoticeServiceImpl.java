@@ -93,10 +93,13 @@ public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice
     @Override
     public Integer markRead(MarkReadDto markReadDto) {
         sysNoticeRepository.markRead(markReadDto);
-        SysNoticeDto sysNoticeDto = new SysNoticeDto();
-        sysNoticeDto.setType(markReadDto.getType());
-        sysNoticeDto.setUserId(markReadDto.getUserId());
-        return sysNoticeMapper.findUnreadCount(sysNoticeDto);
+        SysNoticeVo sysNoticeVo = new SysNoticeVo();
+        sysNoticeVo.setType(markReadDto.getType());
+        sysNoticeVo.setUserId(markReadDto.getUserId());
+        sysNoticeVo.setCreateTimeFrom(markReadDto.getCreateTimeFrom());
+        sysNoticeVo.setCreateTimeTo(markReadDto.getCreateTimeTo());
+        // 查询未读消息和近7天的数据，过滤超过7天的已读消息
+        return this.findUnreadCount(sysNoticeVo);
     }
 
     @Override

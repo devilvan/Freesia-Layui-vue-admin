@@ -210,6 +210,10 @@ public class SysNoticeController extends BaseController {
     public R<Integer> findUnreadCount(SysNoticeVo sysNoticeVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
         sysNoticeVo.setUserId(userId);
+        // 20251022-Bliss 查询未读消息和近7天的数据，过滤超过7天的已读消息
+        Date[] defaultCreateTime = defaultDateRange(6);
+        sysNoticeVo.setCreateTimeFrom(defaultCreateTime[0]);
+        sysNoticeVo.setCreateTimeTo(defaultCreateTime[1]);
         Integer count = sysNoticeService.findUnreadCount(sysNoticeVo);
         return R.ok(count);
     }
@@ -225,6 +229,9 @@ public class SysNoticeController extends BaseController {
     public R<Integer> markRead(@RequestBody MarkReadDto markReadDto) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
         markReadDto.setUserId(userId);
+        Date[] defaultCreateTime = defaultDateRange(6);
+        markReadDto.setCreateTimeFrom(defaultCreateTime[0]);
+        markReadDto.setCreateTimeTo(defaultCreateTime[1]);
         Integer count = sysNoticeService.markRead(markReadDto);
         return R.ok(count);
     }

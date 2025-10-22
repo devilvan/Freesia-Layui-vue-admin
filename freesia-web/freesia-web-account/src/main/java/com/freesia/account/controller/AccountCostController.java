@@ -233,7 +233,7 @@ public class AccountCostController extends BaseController {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
         if (UEmpty.isEmpty(accountCostVo.getPaymentTimeRange())) {
-            Date[] dates = defaultDateRange(7);
+            Date[] dates = defaultDateRange(6);
             accountCostDto.setPaymentTimeFrom(dates[0]);
             accountCostDto.setPaymentTimeTo(dates[1]);
         } else {
@@ -266,7 +266,7 @@ public class AccountCostController extends BaseController {
         findCostLineChartDto.setUserId(userId);
         String dateValue = findCostLineChartVo.getDateValue();
         if (DateScope.WEEK.getCode().equals(code)) {
-            Date[] dates = defaultDateRange(7);
+            Date[] dates = defaultDateRange(6);
             findCostLineChartDto.setPaymentTimeFrom(dates[0]);
             findCostLineChartDto.setPaymentTimeTo(dates[1]);
         }

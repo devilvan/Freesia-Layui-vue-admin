@@ -1,7 +1,9 @@
 package com.freesia.notice.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -11,16 +13,14 @@ import java.util.List;
  */
 @Data
 public class MarkReadDto {
-    /**
-     * 主键集合
-     */
+    @Schema(description = "主键集合")
     private List<Long> idList;
-    /**
-     * 消息类型
-     */
+    @Schema(description = "消息类型")
     private String type;
-    /**
-     * 用户ID
-     */
+    @Schema(description = "用户ID")
     private Long userId;
+    @Schema(description = "创建时间从")
+    private Date createTimeFrom;
+    @Schema(description = "创建时间到")
+    private Date createTimeTo;
 }

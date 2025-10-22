@@ -105,6 +105,9 @@
         <if test="sysNoticeDto.type != null and sysNoticeDto.type != ''">
             AND SN.TYPE = #{sysNoticeDto.type}
         </if>
+        <if test="sysNoticeDto.createTimeFrom != null and sysNoticeDto.createTimeTo != null">
+            AND SN.CREATE_TIME BETWEEN #{sysNoticeDto.createTimeFrom} AND #{sysNoticeDto.createTimeTo}
+        </if>
     </select>
     <select id="findListSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
         <include refid="findPageSysNotice"/>

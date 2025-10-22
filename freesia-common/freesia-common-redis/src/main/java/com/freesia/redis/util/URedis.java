@@ -347,7 +347,7 @@ public class URedis {
     /**
      * 批量删除key
      *
-     * @param key 待删除的key
+     * @param keyList 待删除的key
      * @return 删除成功/失败
      */
     public static Long delete(Collection<String> keyList) {

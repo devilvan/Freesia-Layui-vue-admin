@@ -242,6 +242,7 @@ import {SysConfigKey} from "@/types/system/Config";
 import {R} from "@/types/Result";
 import {findPublishedAnnouncement, findUnreadCount} from "@/api/system/Notice";
 import {SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
+import {buildRange} from "@/util/UDate";
 
 export interface AnnouncementContent {
   id?: string,
@@ -403,14 +404,17 @@ export default {
     }
 
     function doFindUnreadCount() {
+      let createTime: string[] = buildRange(6)
       let params: SysNoticeVo = {
-        type: SysNoticeType.NOTICE
+        type: SysNoticeType.NOTICE,
+        createTimeFrom: new Date(createTime[0]),
+        createTimeTo: new Date(createTime[1])
       }
       findUnreadCount(params).then((res: any) => {
         if (res.code === 200) {
           userInfoStore.noticeCount = res.data
+          userInfoStore.unreadCount = userInfoStore.noticeCount
         }
-        userInfoStore.unreadCount = userInfoStore.noticeCount
       })
     }
 

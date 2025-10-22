@@ -175,17 +175,17 @@ const searchQuery = ref<SysNoticeVo>({});
 
 /*FUNCTION*/
 function loadDataSource() {
+  let createTime: string[] = buildRange(6)
   // 查询公告
   searchQuery.value.type = SysNoticeType.ANNOUNCEMENT
+  searchQuery.value.createTimeFrom = new Date(createTime[0])
+  searchQuery.value.createTimeTo = new Date(createTime[1])
   findListSysNotice(searchQuery.value).then((res: R<SysNoticeEntity[]>) => {
     if (res.code === 200) {
       announcementList.value = res.data;
     }
     // 查询消息
-    let createTime: string[] = buildRange(6)
     searchQuery.value.type = SysNoticeType.NOTICE
-    searchQuery.value.createTimeFrom = new Date(createTime[0])
-    searchQuery.value.createTimeTo = new Date(createTime[1])
     findListSysNotice(searchQuery.value).then((res1: R<SysNoticeEntity[]>) => {
       if (res1.code === 200) {
         noticeList.value = res1.data;
