@@ -48,7 +48,7 @@
           AND SN.EFFECTIVE_TIME_TO IS NULL
           AND NOW() <![CDATA[>=]]> SN.EFFECTIVE_TIME_FROM
     </select>
-    <sql id="findPageSysNotice">
+    <select id="findPageSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
         SELECT
         SN.ID,
         SN.CREATOR,
@@ -89,9 +89,6 @@
             AND SN.CREATE_TIME BETWEEN #{sysNoticeDto.createTimeFrom} AND #{sysNoticeDto.createTimeTo}
         </if>
         order by SN.ID desc
-    </sql>
-    <select id="findPageSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
-        <include refid="findPageSysNotice"/>
     </select>
     <select id="findUnreadCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
@@ -110,7 +107,52 @@
         </if>
     </select>
     <select id="findListSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
-        <include refid="findPageSysNotice"/>
+        SELECT
+        SN.ID,
+        SN.CREATOR,
+        SN.CREATE_TIME,
+        SN.MODIFIER,
+        SN.MODIFY_TIME,
+        SN.LOGIC_DEL,
+        SN.REC_VER,
+        SN.BUILD_IN,
+        SN.TENANT_ID,
+        SN.TITLE,
+        SN.TYPE,
+        SN.EFFECTIVE_TIME_FROM,
+        SN.EFFECTIVE_TIME_TO,
+        SN.CONTENT,
+        SN.PUBLISHER_ID,
+        SN.REMARK,
+        SU.NICK_NAME AS PUBLISHER_NAME,
+        SN.USER_ID,
+        SN.CATEGORY,
+        SN.READ_FLAG,
+        SN.EXCERPT,
+        SN.ANNOUNCEMENT_ID
+        FROM sys_notice sn
+        LEFT JOIN sys_user su on su.id = sn.PUBLISHER_ID
+        WHERE 1 = 1
+        AND SN.LOGIC_DEL = 0
+        <choose>
+            <when test="sysNoticeDto.createTimeFrom != null and sysNoticeDto.createTimeTo != null">
+                AND (SN.READ_FLAG = 0 or (SN.READ_FLAG = 1 AND SN.CREATE_TIME BETWEEN #{sysNoticeDto.createTimeFrom} AND
+                #{sysNoticeDto.createTimeTo}))
+            </when>
+            <otherwise>
+                AND SN.READ_FLAG = 0
+            </otherwise>
+        </choose>
+        <if test="sysNoticeDto.userId != null and sysNoticeDto.userId != 0">
+            AND SN.USER_ID = #{sysNoticeDto.userId}
+        </if>
+        <if test="sysNoticeDto.id != null and sysNoticeDto.id != 0">
+            AND SN.ID = #{sysNoticeDto.id}
+        </if>
+        <if test="sysNoticeDto.type != null and sysNoticeDto.type != ''">
+            AND SN.TYPE = #{sysNoticeDto.type}
+        </if>
+        order by SN.ID desc
     </select>
     <select id="findExistsAnnouncement" resultType="java.lang.Long">
         SELECT ID
@@ -118,7 +160,7 @@
         where 1=1
         AND SN.LOGIC_DEL = 0
         AND SN.TYPE = 'ANNOUNCEMENT'
-        AND SN.USER_ID = #{sysNoticeDto.userId}
+        AND SN.USER_ID = #{sysNo0ticeDto.userId}
         <if test="sysNoticeDto.announcementIdList != null and sysNoticeDto.announcementIdList.size() > 0">
             AND SN.ANNOUNCEMENT_ID IN
             <foreach collection="sysNoticeDto.announcementIdList" item="item" open="(" close=")" separator=",">
