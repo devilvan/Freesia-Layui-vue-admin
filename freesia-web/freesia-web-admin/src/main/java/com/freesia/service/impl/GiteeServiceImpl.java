@@ -37,7 +37,7 @@ public class GiteeServiceImpl implements GiteeService {
 
     @Override
     public Map<String, List<FindGiteeCommitsEntity>> findGiteeCommits() {
-        GiteeCommitsRequestParamDto giteeCommitsRequestParamDto = new GiteeCommitsRequestParamDto("761a2ac6f63f1943c595bb2bcb3abc30", 1, 20);
+        GiteeCommitsRequestParamDto giteeCommitsRequestParamDto = new GiteeCommitsRequestParamDto("", 1, 20);
         Map<String, Object> params = UJSON.parseObject(UJSON.toJSONString(giteeCommitsRequestParamDto), new TypeReference<Map<String, Object>>() {
         });
         HttpClientDto httpClientDto = HttpBuilder.create().setHttpRequest(RequestMethod.GET, giteeProperties.getCommits().getUrl(), params).build();
@@ -53,7 +53,7 @@ public class GiteeServiceImpl implements GiteeService {
     public GiteeOauthTokenResponseDto requestGiteeOauthToken() {
         GiteeOauthTokenRequestDto giteeOauthTokenRequestDto = new GiteeOauthTokenRequestDto();
         giteeOauthTokenRequestDto.setGrantType("password");
-        giteeOauthTokenRequestDto.setUserName("1005338848@qq.com");
+        giteeOauthTokenRequestDto.setUserName("账号（邮箱）");
         giteeOauthTokenRequestDto.setScope(
                 GiteeOauthTokenRequestDto.Scope.USER_INFO,
                 GiteeOauthTokenRequestDto.Scope.PULL_REQUESTS,
