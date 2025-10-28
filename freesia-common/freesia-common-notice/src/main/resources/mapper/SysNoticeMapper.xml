@@ -157,7 +157,7 @@
         where 1=1
         AND SN.LOGIC_DEL = 0
         AND SN.TYPE = 'ANNOUNCEMENT'
-        AND SN.USER_ID = #{sysNo0ticeDto.userId}
+        AND SN.USER_ID = #{sysNoticeDto.userId}
         <if test="sysNoticeDto.announcementIdList != null and sysNoticeDto.announcementIdList.size() > 0">
             AND SN.ANNOUNCEMENT_ID IN
             <foreach collection="sysNoticeDto.announcementIdList" item="item" open="(" close=")" separator=",">

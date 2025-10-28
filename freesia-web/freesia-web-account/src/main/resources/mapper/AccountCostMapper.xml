@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.account.mapper.AccountCostMapper">
+    <resultMap id="findPageAccountCostResultMap" type="com.freesia.account.entity.FindPageAccountCostEntity">
+        <id property="id" column="ID"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifier" column="MODIFIER"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+        <result property="logicDel" column="LOGIC_DEL"/>
+        <result property="recVer" column="REC_VER"/>
+        <result property="buildIn" column="BUILD_IN"/>
+        <result property="tenantId" column="TENANT_ID"/>
+        <result property="costDesc" column="COST_DESC"/>
+        <result property="outlay" column="OUTLAY"/>
+        <result property="costType" column="COST_TYPE"/>
+        <result property="paymentSign" column="PAYMENT_SIGN"/>
+        <result property="paymentTime" column="PAYMENT_TIME"/>
+        <result property="icon" column="ICON"/>
+        <result property="remark" column="REMARK"/>
+        <result property="userId" column="USER_ID"/>
+        <collection property="allocList"
+                    ofType="com.freesia.account.entity.FindPageAccountCostEntity$Alloc"
+                    select="findAllocList"
+                    column="{costId=ID}">
+        </collection>
+    </resultMap>
     <select id="findPageAccountCost" resultMap="findPageAccountCostResultMap">
-        SELECT AC.ID,
+        SELECT
+        AC.ID,
         AC.CREATE_TIME,
         AC.MODIFY_TIME,
         AC.LOGIC_DEL,
@@ -15,19 +40,7 @@
         AC.PAYMENT_TIME,
         AC.ICON,
         AC.REMARK,
-        AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
-        GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME,
-        ACUA.AMOUNT AS ALLOC_AMOUNT,
-        CASE
-        WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) IS NULL THEN
-        NULL
-        WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%1%' THEN
-        'UNFINISHED'
-        WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%0%' THEN
-        'FINISHED' ELSE 'PART'
-        END AS ALLOC_STATUS
+        AC.USER_ID
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
@@ -55,18 +68,12 @@
                 #{item}
             </foreach>
         </if>
-        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCost.accountCostUserIdList)">
-            AND ACUA.USER_ID IN
-            <foreach collection="accountCost.accountCostUserIdList" item="item" open="(" close=")"
-                     separator=",">
-                #{item}
-            </foreach>
-        </if>
         GROUP BY AC.ID
 
         UNION ALL
 
-        SELECT AC.ID,
+        SELECT
+        AC.ID,
         AC.CREATE_TIME,
         AC.MODIFY_TIME,
         AC.LOGIC_DEL,
@@ -79,22 +86,8 @@
         AC.PAYMENT_TIME,
         AC.ICON,
         AC.REMARK,
-        AC.USER_ID,
-        (SELECT NICK_NAME FROM SYS_USER WHERE ID = AC.USER_ID) AS AC_NICK_NAME,
-        GROUP_CONCAT(SU.ID) AS SU_ID,
-        GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME,
-        ACUA.AMOUNT AS ALLOC_AMOUNT,
-        CASE
-        WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) IS NULL THEN
-        NULL
-        WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%1%' THEN
-        'UNFINISHED'
-        WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%0%' THEN
-        'FINISHED' ELSE 'PART'
-        END AS ALLOC_STATUS
+        AC.USER_ID
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
-        INNER JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCost.tenantId}
@@ -122,16 +115,81 @@
                 #{item}
             </foreach>
         </if>
-        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCost.accountCostUserIdList)">
-            AND ACUA.USER_ID IN
-            <foreach collection="accountCost.accountCostUserIdList" item="item" open="(" close=")"
-                     separator=",">
-                #{item}
-            </foreach>
-        </if>
+<!--        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCost.accountCostUserIdList)">-->
+<!--            AND ACUA.USER_ID IN-->
+<!--            <foreach collection="accountCost.accountCostUserIdList" item="item" open="(" close=")"-->
+<!--                     separator=",">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--        </if>-->
         GROUP BY AC.ID
         ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
     </select>
+    <resultMap id="findAllocListResultMap" type="com.freesia.account.entity.FindPageAccountCostEntity$Alloc">
+        <id property="costId" column="COST_ID"/>
+        <result property="id" column="ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="amount" column="AMOUNT"/>
+        <result property="operateTime" column="OPERATE_TIME"/>
+        <result property="allocFlag" column="ACUA_ALLOC_FLAG"/>
+        <association property="user" column="USER_ID">
+            <id property="id" column="SU_ID"/>
+            <result property="userName" column="USER_NAME" />
+            <result property="nickName" column="NICK_NAME" />
+        </association>
+    </resultMap>
+    <select id="findAllocList" resultMap="findAllocListResultMap">
+        SELECT alloc.ID,
+               alloc.COST_ID,
+               alloc.USER_ID,
+               alloc.AMOUNT,
+               alloc.OPERATE_TIME,
+               alloc.ALLOC_FLAG,
+               SU.ID AS SU_ID,
+               SU.USER_NAME,
+               SU.NICK_NAME
+        FROM account_cost_user_alloc alloc
+                 LEFT JOIN sys_user SU on alloc.USER_ID = SU.id
+        where alloc.LOGIC_DEL = 0
+          and alloc.COST_ID = #{costId}
+          and su.ID = #{userId}
+    </select>
+    <resultMap id="findUserListResultMap" type="com.freesia.account.entity.FindPageAccountCostEntity$Alloc$User">
+        <id property="id" column="ID"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="nickName" column="NICK_NAME"/>
+    </resultMap>
+    <select id="findUserList" resultMap="findUserListResultMap">
+        SELECT ID,
+               USER_NAME,
+               NICK_NAME
+        FROM SYS_USER
+        WHERE LOGIC_DEL = 0
+          AND ID = #{userId}
+    </select>
+
+    <resultMap id="findAccountCostResultMap" type="com.freesia.account.entity.FindAccountCostEntity">
+        <id property="id" column="ID"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifier" column="MODIFIER"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+        <result property="logicDel" column="LOGIC_DEL"/>
+        <result property="recVer" column="REC_VER"/>
+        <result property="buildIn" column="BUILD_IN"/>
+        <result property="tenantId" column="TENANT_ID"/>
+        <result property="costDesc" column="COST_DESC"/>
+        <result property="outlay" column="OUTLAY"/>
+        <result property="costType" column="COST_TYPE"/>
+        <result property="paymentSign" column="PAYMENT_SIGN"/>
+        <result property="paymentTime" column="PAYMENT_TIME"/>
+        <result property="icon" column="ICON"/>
+        <result property="remark" column="REMARK"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="acNickName" column="AC_NICK_NAME"/>
+        <result property="accountCostUserId" column="SU_ID"/>
+        <result property="accountCostUserName" column="NICK_NAME"/>
+    </resultMap>
     <select id="findAccountCost" resultMap="findAccountCostResultMap">
         SELECT AC.ID,
         AC.CREATE_TIME,
@@ -193,51 +251,6 @@
         </if>
         GROUP BY AC.ID
     </select>
-    <resultMap id="findAccountCostResultMap" type="com.freesia.account.entity.FindAccountCostEntity">
-        <id property="id" column="ID"/>
-        <result property="creator" column="CREATOR"/>
-        <result property="createTime" column="CREATE_TIME"/>
-        <result property="modifier" column="MODIFIER"/>
-        <result property="modifyTime" column="MODIFY_TIME"/>
-        <result property="logicDel" column="LOGIC_DEL"/>
-        <result property="recVer" column="REC_VER"/>
-        <result property="buildIn" column="BUILD_IN"/>
-        <result property="tenantId" column="TENANT_ID"/>
-        <result property="costDesc" column="COST_DESC"/>
-        <result property="outlay" column="OUTLAY"/>
-        <result property="costType" column="COST_TYPE"/>
-        <result property="paymentSign" column="PAYMENT_SIGN"/>
-        <result property="paymentTime" column="PAYMENT_TIME"/>
-        <result property="icon" column="ICON"/>
-        <result property="remark" column="REMARK"/>
-        <result property="userId" column="USER_ID"/>
-        <result property="acNickName" column="AC_NICK_NAME"/>
-        <result property="accountCostUserId" column="SU_ID"/>
-        <result property="accountCostUserName" column="NICK_NAME"/>
-    </resultMap>
-    <resultMap id="findPageAccountCostResultMap" type="com.freesia.account.entity.FindPageAccountCostEntity">
-        <id property="id" column="ID"/>
-        <result property="creator" column="CREATOR"/>
-        <result property="createTime" column="CREATE_TIME"/>
-        <result property="modifier" column="MODIFIER"/>
-        <result property="modifyTime" column="MODIFY_TIME"/>
-        <result property="logicDel" column="LOGIC_DEL"/>
-        <result property="recVer" column="REC_VER"/>
-        <result property="buildIn" column="BUILD_IN"/>
-        <result property="tenantId" column="TENANT_ID"/>
-        <result property="costDesc" column="COST_DESC"/>
-        <result property="outlay" column="OUTLAY"/>
-        <result property="costType" column="COST_TYPE"/>
-        <result property="paymentSign" column="PAYMENT_SIGN"/>
-        <result property="paymentTime" column="PAYMENT_TIME"/>
-        <result property="icon" column="ICON"/>
-        <result property="remark" column="REMARK"/>
-        <result property="userId" column="USER_ID"/>
-        <result property="acNickName" column="AC_NICK_NAME"/>
-        <result property="accountCostUserId" column="SU_ID"/>
-        <result property="accountCostUserName" column="NICK_NAME"/>
-        <result property="allocStatus" column="ALLOC_STATUS"/>
-    </resultMap>
     <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
         SELECT T.COST_DESC,
         T.OUTLAY,
@@ -593,14 +606,15 @@
         FROM (SELECT AC.COST_TYPE,
         AC.COST_DESC,
         CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 1), 2, '0')) as DATE_SIGN,
-        STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ) AS WEEK_START,
+        STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ) AS
+        WEEK_START,
         DATE_ADD(
         STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ),
         INTERVAL 6 DAY
         ) AS WEEK_END,
         IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM account_cost AC
-                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
@@ -618,14 +632,15 @@
         SELECT AC.COST_TYPE,
         AC.COST_DESC,
         CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 1), 2, '0')) as DATE_SIGN,
-        STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ) AS WEEK_START,
+        STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ) AS
+        WEEK_START,
         DATE_ADD(
         STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ),
         INTERVAL 6 DAY
         ) AS WEEK_END,
         IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM account_cost AC
-                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -651,7 +666,7 @@
         DATE_FORMAT(AC.PAYMENT_TIME, '%y%m') AS DATE_SIGN,
         IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM account_cost AC
-                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
@@ -670,7 +685,7 @@
         DATE_FORMAT(AC.PAYMENT_TIME, '%y%m') AS DATE_SIGN,
         IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
         FROM account_cost AC
-                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
         AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -699,7 +714,7 @@
 
         SELECT DISTINCT AC.COST_TYPE
         FROM account_cost AC
-                LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
