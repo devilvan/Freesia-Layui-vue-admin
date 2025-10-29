@@ -108,7 +108,7 @@ export function toDay(text: string, days: number) {
  */
 export const defaultShortcuts = [
     within("近三天", 3),
-    within("近一周", 7),
+    within("近一周", 6),
     within("近一个月", 30),
     within("近两个月", 60),
     within("近三个月", 90)

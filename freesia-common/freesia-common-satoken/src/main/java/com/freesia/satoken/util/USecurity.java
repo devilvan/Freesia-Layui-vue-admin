@@ -10,6 +10,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.AdminConstant;
 import com.freesia.constant.Constants;
+import com.freesia.function.Modifier;
 import com.freesia.net.util.UServlet;
 import com.freesia.satoken.constant.DeviceType;
 import com.freesia.satoken.model.LoginUserModel;
@@ -34,22 +35,6 @@ import java.util.Optional;
 public class USecurity {
     public static final String LOGIN_USER_KEY = "loginUser";
     public static final String USER_KEY = "userId";
-
-    /**
-     * 修改器
-     *
-     * @param <T> 入参泛型
-     */
-    @FunctionalInterface
-    public interface Modifier<T> {
-        /**
-         * 修改器实现
-         *
-         * @param obj 待修改的对象
-         * @return 执行修改方法后的对象
-         */
-        T modify(T obj);
-    }
 
     /**
      * 获取当前用户的token信息

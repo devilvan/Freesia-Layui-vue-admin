@@ -11,6 +11,7 @@ import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.net.util.UServlet;
+import com.freesia.notice.service.SysNoticeService;
 import com.freesia.po.SysDeptPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.po.SysUserPo;
@@ -49,6 +50,7 @@ public class SysLoginServiceImpl implements SysLoginService {
     private final SysUserService sysUserService;
     private final SysRoleService sysRoleService;
     private final SysMenuService sysMenuService;
+    private final SysNoticeService sysNoticeService;
 
 
     @Override
@@ -82,6 +84,8 @@ public class SysLoginServiceImpl implements SysLoginService {
             dto.setUserIdList(List.of(userId));
             USse.publish(dto);
         }, 5, TimeUnit.SECONDS);
+        // 20250930-Bliss 用户登录时检查是否生成用户未读的公告数据，无则生成
+        sysNoticeService.checkSaveAnnouncement(userId);
         return StpUtil.getTokenValue();
     }
 

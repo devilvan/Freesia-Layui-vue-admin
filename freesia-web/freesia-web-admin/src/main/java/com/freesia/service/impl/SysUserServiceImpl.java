@@ -35,6 +35,7 @@ import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
+import com.freesia.vo.R;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -297,6 +298,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
         Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserWithoutDataScope(pageQuery.build(), sysUserPoWrapper);
         return TableResult.build(page);
+    }
+
+    @Override
+    public List<FindPageSysUserListEntity> findListSysUserById(List<Long> idList) {
+        Wrapper<SysUserPo> wrapper = new LambdaQueryWrapper<SysUserPo>()
+                .eq(SysUserPo::getLogicDel, false)
+                .in(SysUserPo::getId, idList);
+        List<SysUserPo> sysUserPoList = sysUserMapper.selectList(wrapper);
+        if (UEmpty.isNotEmpty(sysUserPoList)) {
+            return UCopy.fullCopyList(sysUserPoList, FindPageSysUserListEntity.class);
+        }
+        return null;
     }
 
     private Wrapper<SysUserPo> buildFindPageSysUserWrapper(SysUserDto sysUserDto) {

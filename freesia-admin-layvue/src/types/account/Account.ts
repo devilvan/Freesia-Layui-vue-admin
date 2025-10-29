@@ -1,9 +1,10 @@
 import {BaseEntity, BaseVo} from "../Common";
 import {SysUserEntity} from "../system/User";
+import {AccountCostUserAllocVo} from "@/types/account/AccountCostUserAlloc";
 
 export interface AccountCostVo extends BaseVo {
     costDesc?: string;
-    outlay?: string;
+    outlay?: number;
     costType?: string;
     paymentSign?: string;
     paymentTime?: Date;
@@ -20,11 +21,12 @@ export interface AccountCostVo extends BaseVo {
     allTenantFlag?: boolean;
     costTypeList?: string[];
     refUserIdList?: string[];
+    accountCostUserAllocVoList?: AccountCostUserAllocVo[]
 }
 
 export interface AccountCostEntity extends BaseEntity {
     costDesc?: string;
-    outlay?: string;
+    outlay?: number;
     type?: string;
     paymentSign?: string;
     paymentTime?: Date;
@@ -32,6 +34,9 @@ export interface AccountCostEntity extends BaseEntity {
     remark?: string;
     accountCostUserId?: string
     accountCostUserName?: string
+    accountCostUserAllocVoList?: AccountCostUserAllocVo[],
+    allocAmount?: number,
+    allocStatus?: string
 }
 
 export interface FindCacheCostTypeVo extends BaseVo {

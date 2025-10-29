@@ -2,8 +2,9 @@ import Http from "../Http"
 import {AssignRoleVo, AssignDeptVo, SysUserEntity, SysUserVo, FindPageSysUserListEntity} from "../../types/system/User";
 import {PageQuery} from "../../types/Common";
 import {buildPageUrlParam} from "../../util/URequest";
-import {TableResult} from "../../types/Result";
+import {R, TableResult} from "../../types/Result";
 import {SysTenantVo} from "../../types/system/Tenant";
+import {List} from "echarts";
 
 export const findPageSysUserList = function (searchQuery: SysUserVo, pageQuery: PageQuery) {
     const params = buildPageUrlParam(searchQuery, pageQuery);

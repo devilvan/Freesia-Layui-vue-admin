@@ -154,7 +154,7 @@
 }
 
 .table-box {
-    /*height: 700px;*/
+    height: 700px;
     width: 100%;
     border-radius: 4px;
     box-sizing: border-box;
@@ -162,7 +162,7 @@
 }
 
 .oneRow {
-    width: 180px;
+    width: 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -171,4 +171,14 @@
 
 .easy-wrap {
     display: inline-block;
+}
+
+/* 在全局样式文件中添加 */
+.layui-scroll-y .layui-scroll-y-content::-webkit-scrollbar {
+    display: block !important;
+}
+
+/* 或者更具体的选择器 */
+body .layui-scroll-y ::-webkit-scrollbar {
+    display: block !important;
 }

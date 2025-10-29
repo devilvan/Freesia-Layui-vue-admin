@@ -16,8 +16,4 @@ public class FindPageSysNoticeEntity extends SysNoticeDto {
      * 发布人名称
      */
     private String publisherName;
-    /**
-     * 通知类型名称
-     */
-    private String typeName;
 }

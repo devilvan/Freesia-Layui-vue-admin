@@ -127,6 +127,11 @@
                 <artifactId>freesia-common-notice</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-web-api</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

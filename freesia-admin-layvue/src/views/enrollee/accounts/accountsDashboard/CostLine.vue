@@ -141,6 +141,7 @@ function changeDateScope(dateScope: string) {
 }
 
 function showWeekCostLineChart(data: any) {
+  let series = data.series[0].data.map((item: number) => item.toFixed(2));
   let option = {
     title: {
       text: costLineChartTitle,
@@ -170,7 +171,7 @@ function showWeekCostLineChart(data: any) {
     },
     series: [
       {
-        data: data.series[0].data,
+        data: series,
         type: 'line',
         stack: 'Total',
         areaStyle: {},
@@ -194,6 +195,7 @@ function showWeekCostLineChart(data: any) {
 }
 
 function showMonthCostLineChart(data: any) {
+  let series = data.series[0].data.map((item: number) => item.toFixed(2));
   let option = {
     title: {
       text: costLineChartTitle,
@@ -223,7 +225,7 @@ function showMonthCostLineChart(data: any) {
     },
     series: [
       {
-        data: data.series[0].data,
+        data: series,
         type: 'line',
         areaStyle: {},
         emphasis: {
@@ -246,6 +248,7 @@ function showMonthCostLineChart(data: any) {
 }
 
 function showYearCostLineChart(data: any) {
+  let series = data.series[0].data.map((item: number) => item.toFixed(2));
   let option = {
     title: {
       text: costLineChartTitle,
@@ -275,7 +278,7 @@ function showYearCostLineChart(data: any) {
     },
     series: [
       {
-        data: data.series[0].data,
+        data: series,
         type: 'line',
         areaStyle: {},
         emphasis: {
@@ -309,8 +312,6 @@ function changeCostType(value: any) {
   findCostLineChartQueryVo.value.costType = value;
   doFindCostLineChart();
 }
-
-
 
 /*FUNCTION*/
 

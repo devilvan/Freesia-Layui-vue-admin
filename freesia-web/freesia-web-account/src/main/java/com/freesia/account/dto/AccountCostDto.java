@@ -1,6 +1,7 @@
 package com.freesia.account.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.freesia.account.vo.AccountCostUserAllocVo;
 import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import com.freesia.oss.annotation.Domain;
@@ -56,4 +57,6 @@ public class AccountCostDto extends BaseDto {
     private String dateScope;
     @Schema(description = "开销类型")
     private List<String> costTypeList;
+    @Schema(description = "费用分摊数据")
+    private List<AccountCostUserAllocDto> accountCostUserAllocDtoList;
 }

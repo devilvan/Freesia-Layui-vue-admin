@@ -1,11 +1,17 @@
 package com.freesia.notice.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -32,4 +38,20 @@ public class SysNoticeDto extends BaseDto {
     private Long publisherId;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "已读标识（0-未读;1-已读）")
+    private Boolean readFlag;
+    @Schema(description = "用户ID")
+    private Long userId;
+    @Schema(description = "消息所属类别")
+    private String category;
+    @Schema(description = "摘要")
+    private String excerpt;
+    @Schema(description = "公告ID")
+    private Long announcementId;
+    @Schema(description = "创建时间从")
+    private Date createTimeFrom;
+    @Schema(description = "创建时间到")
+    private Date createTimeTo;
+    @Schema(description = "公告ID集合")
+    private List<Long> announcementIdList;
 }

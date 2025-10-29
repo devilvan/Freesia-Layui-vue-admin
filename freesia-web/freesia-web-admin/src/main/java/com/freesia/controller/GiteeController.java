@@ -1,6 +1,5 @@
 package com.freesia.controller;
 
-import cn.dev33.satoken.annotation.SaIgnore;
 import com.freesia.dto.GiteeOauthTokenResponseDto;
 import com.freesia.entity.FindGiteeCommitsEntity;
 import com.freesia.service.GiteeService;
@@ -27,7 +26,6 @@ import java.util.Map;
 public class GiteeController extends BaseController {
     private final GiteeService giteeService;
 
-    @SaIgnore
     @Operation(summary = "请求Gitee提交更新记录")
     @GetMapping(value = "findGiteeCommits")
     public R<Map<String, List<FindGiteeCommitsEntity>>> findGiteeCommits() {

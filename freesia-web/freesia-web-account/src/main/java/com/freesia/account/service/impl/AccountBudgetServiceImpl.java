@@ -29,6 +29,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Evad.Wu
@@ -190,15 +191,17 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
     private EchartCapacityOptionEntity buildEchartCapacityOptionEntity(List<FindBudgetCapacityEntity> findBudgetCapacityEntityList, AccountBudgetPo accountBudgetPo) {
         EchartCapacityOptionEntity echartCapacityOptionEntity = new EchartCapacityOptionEntity();
         FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
-        double sumOutlay = findBudgetCapacityEntityList.stream().mapToDouble(item -> item.getOutlay().doubleValue()).sum();
-        BigDecimal rate = new BigDecimal(sumOutlay)
-                .divide(accountBudgetPo.getOutlay(), 2, RoundingMode.HALF_UP)
+        BigDecimal sumOutlay = findBudgetCapacityEntityList.stream()
+                .map(AccountBudgetDto::getOutlay)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal rate = sumOutlay.divide(accountBudgetPo.getOutlay(), 2, RoundingMode.HALF_UP)
                 .setScale(2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(100));
         echartCapacityOptionEntity.setName(accountBudgetPo.getBudgetDesc());
         echartCapacityOptionEntity.setValue(rate);
         echartCapacityOptionEntity.setBudget(accountBudgetPo.getOutlay());
-        echartCapacityOptionEntity.setOutlay(new BigDecimal(sumOutlay).setScale(2, RoundingMode.HALF_UP));
+        echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
         echartCapacityOptionEntity.setBudgetType(accountBudgetPo.getBudgetType());
         // 如果是自定义类型，则赋值自定义的时间范围
         if (BudgetType.CUSTOM.getCode().equals(accountBudgetPo.getBudgetType())) {

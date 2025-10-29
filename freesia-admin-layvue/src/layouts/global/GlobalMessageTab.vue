@@ -1,82 +1,101 @@
 <template>
   <lay-dropdown
-    updateAtScroll
-    ref="manualRef"
-    :clickOutsideToClose="true"
-    :clickToClose="false"
-    placement="bottom"
+      updateAtScroll
+      ref="manualRef"
+      :clickOutsideToClose="true"
+      :clickToClose="false"
+      :blurToClose="true"
+      placement="bottom"
+      :trigger="'hover'"
   >
     <slot></slot>
     <template #content>
       <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
-        <lay-tab-item :title="`通知(${informList.length})`" id="1">
+        <lay-tab-item :title="`通知(${userStore.noticeCount})`" id="1">
           <div style="width: 100%; height: 100%; overflow: hidden">
             <div
-              class="inform-item"
-              v-for="(item, index) in informList"
-              :key="index"
+                class="inform-item"
+                v-for="(item, index) in noticeList"
+                :key="index"
+                @click="doMarkRead(item, index)"
             >
               <div class="inform-item-icon">
-                <img src="../../assets/messageSlot/info1.png" alt="" />
+                <img src="@/assets/messageSlot/info1.png" alt=""/>
               </div>
-              <div class="inform-item-text">
+              <div class="inform-item-text" :style="getRowStyle(item, index)">
                 <div>{{ item.title }}</div>
+                <div class="oneRow" :title="item.content">{{ item.content }}</div>
                 <div class="inform-item-time">
-                  {{ item.time }}
+                  {{ item.createTime }}
+                </div>
+              </div>
+              <div class="inform-item-readFlag">
+                <div v-show="noticeList[index].readFlag">
+                  <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
+                </div>
+                <div v-show="!noticeList[index].readFlag">
+                  <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
                 </div>
               </div>
             </div>
           </div>
         </lay-tab-item>
-        <lay-tab-item :title="`私信(${privateLetteList.length})`" id="2">
+        <lay-tab-item :title="`公告(${userStore.announcementCount})`" id="2">
           <div style="width: 100%; height: 100%; overflow: hidden">
             <div
-              class="inform-item privateLette-item"
-              v-for="(item, index) in privateLetteList"
-              :key="index"
+                class="inform-item privateLette-item"
+                v-for="(item, index) in announcementList"
+                :key="index"
+                @click="doMarkRead(item, index)"
             >
               <div class="inform-item-icon">
-                <img src="../../assets/messageSlot/avatar1.png" alt="" />
+                <img src="@/assets/messageSlot/info2.png" alt=""/>
               </div>
-              <div class="inform-item-text">
+              <div class="inform-item-text" :style="getRowStyle(item, index)">
                 <div>{{ item.title }}</div>
+                <div class="oneRow" :title="item.content">{{ item.content }}</div>
                 <div class="inform-item-time">
-                  {{ item.content }}
+                  {{ item.createTime }}
                 </div>
-                <div class="inform-item-time">
-                  {{ item.time }}
+              </div>
+              <div class="inform-item-readFlag">
+                <div v-show="announcementList[index].readFlag">
+                  <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
+                </div>
+                <div v-show="!announcementList[index].readFlag">
+                  <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
                 </div>
               </div>
             </div>
           </div>
         </lay-tab-item>
-        <lay-tab-item :title="`待办(${todoList.length})`" id="3">
-          <div style="width: 100%; height: 100%; overflow: hidden">
-            <div
-              class="inform-item todo-item"
-              v-for="(item, index) in todoList"
-              :key="index"
-            >
-              <div class="todo-title">
-                <div style="flex: 1">
-                  {{ item.title }}
-                  <div class="inform-item-time todo-item-time">
-                    {{ item.time }}
-                  </div>
-                </div>
-                <div v-show="item.type == '未开始'" class="todo-tags">
-                  <lay-tag color="#6e6e6e" variant="light">未开始</lay-tag>
-                </div>
-                <div v-show="item.type == '进行中'" class="todo-tags">
-                  <lay-tag color="#2dc570" variant="light">进行中</lay-tag>
-                </div>
-                <div v-show="item.type == '即将到期'" class="todo-tags">
-                  <lay-tag color="#F5319D" variant="light">即将到期</lay-tag>
-                </div>
-              </div>
-            </div>
-          </div>
-        </lay-tab-item>
+        <!--        <lay-tab-item :title="`待办(${todoList.length})`" id="3">-->
+        <!--          <div style="width: 100%; height: 100%; overflow: hidden">-->
+        <!--            <div-->
+        <!--                class="inform-item todo-item"-->
+        <!--                v-for="(item, index) in todoList"-->
+        <!--                :key="index"-->
+        <!--            >-->
+        <!--              <div class="todo-title">-->
+        <!--                <div style="flex: 1">-->
+        <!--                  {{ item.title }}-->
+        <!--                  <div class="inform-item-time todo-item-time">-->
+        <!--                    {{ item.time }}-->
+        <!--                  </div>-->
+        <!--                </div>-->
+        <!--                <div v-show="item.type == '未开始'" class="todo-tags">-->
+        <!--                  <lay-tag color="#6e6e6e" variant="light">未开始</lay-tag>-->
+        <!--                </div>-->
+        <!--                <div v-show="item.type == '进行中'" class="todo-tags">-->
+        <!--                  <lay-tag color="#2dc570" variant="light">进行中</lay-tag>-->
+        <!--                </div>-->
+        <!--                <div v-show="item.type == '即将到期'" class="todo-tags">-->
+        <!--                  <lay-tag color="#F5319D" variant="light">即将到期</lay-tag>-->
+        <!--                </div>-->
+        <!--              </div>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--        </lay-tab-item>-->
       </lay-tab>
     </template>
   </lay-dropdown>
@@ -88,79 +107,50 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-const manualRef = ref()
+import {onMounted, reactive, ref, watch} from 'vue'
+import {MarkReadVo, SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
+import {findListSysNotice, findPageSysNotice, findUnreadCount, markRead} from "@/api/system/Notice";
+import {R, TableResult} from "@/types/Result";
+import {PageQuery} from "@/types/Common";
+import {useAppStore} from "@/store/app";
+import {layer} from "@layui/layui-vue";
+import {buildRange} from "@/util/UDate";
+import {useUserStore} from "@/store/user";
+
 interface MessageTabProps {
   flag: boolean
 }
+
+/*INIT*/
+onMounted(async () => {
+  doFindAnnouncementUnreadCount();
+  doFindNoticeUnreadCount()
+  loadDataSource()
+})
+
 const props = withDefaults(defineProps<MessageTabProps>(), {
   flag: false
 })
-const informList = ref([
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: '../assets/messageSlot/info1.png',
-    title: '您有一条新的通知',
-    time: '2021-08-09 12:00:00'
-  }
-])
-const privateLetteList = ref([
-  {
-    img: 'avatar1.png',
-    title: '速尔 评论了 你的日志',
-    content: '写的不错，以后向你学习哦~',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: 'avatar2.png',
-    title: '速尔 评论了 你的日志',
-    content: '写的不错，以后向你学习哦~',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: 'avatar3.png',
-    title: '速尔 评论了 你的日志',
-    content: '写的不错，以后向你学习哦~',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: 'avatar4.png',
-    title: '速尔 评论了 你的日志',
-    content: '写的不错，以后向你学习哦~',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: 'avatar5.png',
-    title: '速尔 评论了 你的日志',
-    content: '写的不错，以后向你学习哦~',
-    time: '2021-08-09 12:00:00'
-  },
-  {
-    img: 'avatar6.png',
-    title: '速尔 评论了 你的日志',
-    content: '写的不错，以后向你学习哦~',
-    time: '2021-08-09 12:00:00'
-  }
-])
+watch(
+    () => props.flag,
+    (newVal) => {
+      if (newVal) {
+        manualRef.value.show()
+      } else {
+        manualRef.value.hide()
+      }
+    }
+)
+
+const emit = defineEmits(['callback']);
+/*INIT*/
+
+/*VAR*/
+const appStore = useAppStore()
+const userStore = useUserStore()
+const manualRef = ref()
+const noticeList = ref<SysNoticeEntity[]>()
+const announcementList = ref<SysNoticeEntity[]>()
 const todoList = ref([
   {
     title: '张三的请假审批',
@@ -180,16 +170,94 @@ const todoList = ref([
 ])
 
 const currentIndex = ref('1')
-watch(
-  () => props.flag,
-  (newVal) => {
-    if (newVal == true) {
-      manualRef.value.show()
-    } else {
-      manualRef.value.hide()
+const searchQuery = ref<SysNoticeVo>({});
+/*VAR*/
+
+/*FUNCTION*/
+function loadDataSource() {
+  let createTime: string[] = buildRange(6)
+  // 查询公告
+  searchQuery.value.type = SysNoticeType.ANNOUNCEMENT
+  searchQuery.value.createTimeFrom = new Date(createTime[0])
+  searchQuery.value.createTimeTo = new Date(createTime[1])
+  findListSysNotice(searchQuery.value).then((res: R<SysNoticeEntity[]>) => {
+    if (res.code === 200) {
+      announcementList.value = res.data;
     }
+    // 查询消息
+    searchQuery.value.type = SysNoticeType.NOTICE
+    findListSysNotice(searchQuery.value).then((res1: R<SysNoticeEntity[]>) => {
+      if (res1.code === 200) {
+        noticeList.value = res1.data;
+      }
+      userStore.calculateSumCount()
+    });
+  });
+}
+
+function doFindAnnouncementUnreadCount() {
+  let params: SysNoticeVo = {
+    type: SysNoticeType.ANNOUNCEMENT
   }
-)
+  findUnreadCount(params).then((res: any) => {
+    if (res.code === 200) {
+      userStore.announcementCount = res.data
+    }
+  })
+}
+
+function doFindNoticeUnreadCount() {
+  let params: SysNoticeVo = {
+    type: SysNoticeType.NOTICE
+  }
+  findUnreadCount(params).then((res: any) => {
+    if (res.code === 200) {
+      userStore.noticeCount = res.data
+    }
+  })
+}
+
+function doMarkRead(item: any, idx: number) {
+  if (item.readFlag) {
+    layer.notify({
+      title: "成功",
+      content: "标记已读成功",
+      time: 5000,
+      icon: 1,
+    })
+    return;
+  }
+  let type = item.type;
+  let param: MarkReadVo = {
+    idList: new Array(item.id),
+    type: type
+  }
+  markRead(param).then((res: any) => {
+    if (SysNoticeType.NOTICE === type) {
+      userStore.noticeCount = res.data;
+      noticeList.value[idx].readFlag = true
+    } else if (SysNoticeType.ANNOUNCEMENT === type) {
+      userStore.announcementCount = res.data
+      announcementList.value[idx].readFlag = true
+    }
+    userStore.calculateSumCount()
+    emit('callback', userStore.unreadCount)
+    layer.notify({
+      title: "成功",
+      content: "标记已读成功",
+      time: 5000,
+      icon: 1,
+    })
+  })
+}
+
+
+function getRowStyle(row: any, rowIndex: number) {
+  if (row.readFlag) return 'color:' + '#c2c2c2';
+  return ''
+}
+
+/*FUNCTION*/
 </script>
 
 
@@ -197,8 +265,8 @@ watch(
 .inform-item {
   box-sizing: border-box;
   display: flex;
-  width: 320px;
-  height: 60px;
+  width: 500px;
+  height: 80px;
   color: #222222;
   font-size: 14px;
   padding: 0 20px;
@@ -210,13 +278,24 @@ watch(
     height: 100%;
     line-height: 60px;
     text-align: center;
+
     > img {
       width: 28px;
       height: 28px;
       vertical-align: middle;
     }
   }
+
+  .inform-item-readFlag {
+    display: inline-block;
+    width: 60px;
+    height: 100%;
+    line-height: 60px;
+    text-align: center;
+  }
+
   .inform-item-text {
+    width: 60%;
     box-sizing: border-box;
     display: inline-block;
     flex: 1;
@@ -229,6 +308,7 @@ watch(
     }
   }
 }
+
 .inform-item:hover {
   background-color: #fafafa;
 }
@@ -236,23 +316,35 @@ watch(
 .privateLette-item {
   height: 80px;
 }
+
 .todo-item {
   box-sizing: border-box;
   padding: 0 10px;
 }
+
 .todo-title {
   width: 100%;
   display: flex;
   line-height: 30px;
 }
+
 .todo-tags {
   width: 100px;
   text-align: right;
   line-height: 60px;
 }
+
 .todo-item-time {
   line-height: 20px;
   color: #ada4a4;
   font-size: 12px;
+}
+
+.oneRow {
+  width: 350px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 </style>

@@ -26,5 +26,9 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-sse</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-web-api</artifactId>
+        </dependency>
     </dependencies>
 </project>

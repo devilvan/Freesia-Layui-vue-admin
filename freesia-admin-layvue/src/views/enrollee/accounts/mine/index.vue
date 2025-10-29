@@ -87,7 +87,6 @@
                         :columns="userModalColumns"
                         :loading="userModalLoading"
                         :data-source="userEntityList"
-                        :height="'550px'"
                         v-model:selected-keys="searchQuery.accountCostUserIdList"
                         @change="changeShowModalFlag"
                     >
@@ -126,12 +125,14 @@
         :default-toolbar="true"
         :loading="loading"
         :page="pageQuery"
-        :height="'550px'"
         :even="false"
         :resize="true"
         :rowStyle="getRowStyle"
         @change="change"
         @sortChange="sortChange">
+      <template #allocStatus="{ row }">
+        <dict-scan :options="allocStatusSelect" :value="row.allocStatus"/>
+      </template>
       <template #nickNameList="{ row }">
         <lay-tooltip :visible="false" trigger="hover" :content='row.accountCostUserName'>
           <div class="oneRow">{{ row.accountCostUserName }}</div>
@@ -222,122 +223,172 @@
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" v-esc-close="expenseModalClose">
-        <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
-          <lay-row space="20">
-            <lay-col :md="6">
-              <lay-form-item label="金额" prop="outlay" required>
-                <lay-input v-model="accountCostVo.outlay" ref="addExpenseModalQuickSaveRef" type="number"></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="描述" prop="costDesc" required>
-                <lay-autocomplete
-                    style="width: 100%"
-                    v-model="accountCostVo.costDesc"
-                    :fetchSuggestions="doFindCacheCostType"
-                    :allow-clear="true"
-                    @keydown.enter.stop
-                    @select="doInputIconUrl"
-                ></lay-autocomplete>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="图标" prop="icon" required>
-                <lay-row>
-                  <lay-col md="4">
-                    <lay-avatar v-if="!accountCostVo.icon" class="iconContainer"
-                                @click="changeSelectTypeModal"></lay-avatar>
-                    <lay-avatar v-else class="iconContainer" :src="accountCostVo.icon"
-                                @click="changeSelectTypeModal"></lay-avatar>
-                  </lay-col>
-                  <lay-col md="20"
-                           style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
-                    图标：{{ accountCostVo.costType }}
-                  </lay-col>
-                </lay-row>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="标识" prop="paymentSign" required>
-                <lay-select
-                    size="sm"
-                    style="width: 100%"
-                    v-model="accountCostVo.paymentSign"
-                    :options="paymentSignSelectList"
-                    :items="paymentSignSelectList"
-                    :allow-clear="true"
-                    placeholder="请选择"
-                ></lay-select>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
-          <lay-row space="20">
-            <lay-col :md="6">
-              <lay-form-item label="时间" prop="paymentTime">
-                <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
-                                 :shortcuts="singleShortcuts" :inputFormat="sdf_YMDHM"
-                                 style="width: 100%" simple></lay-date-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="备注" prop="remark">
-                <lay-textarea
-                    v-model="accountCostVo.remark"
-                    allow-clear
-                    placeholder="请输入备注"
-                ></lay-textarea>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="关联用户" prop="accountCostUserIdList">
-                <lay-col :md="6">
-                  <div style="display: inline-flex; text-align: left">
-                    <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
-                    <div style="padding-left: 10px;">
-                      <lay-select
-                          style="width: 100%"
-                          size="sm"
-                          :disabled="true"
-                          v-model="accountCostVo.accountCostUserNameList"
-                          :allow-clear="true"
-                          :multiple="true"
-                      ></lay-select>
+        <div style="margin-bottom: 10px">
+          <lay-step :active="addExpenseActive" center>
+            <lay-step-item title="记账" content="First step"></lay-step-item>
+            <lay-step-item v-if="accountCostVo.accountCostUserIdList" title="分摊"
+                           content="Second step"></lay-step-item>
+          </lay-step>
+        </div>
+        <!-- 步骤一：记账-->
+        <div v-show="addExpenseActive === 0">
+          <lay-form ref="addExpenseFormRef" :model="accountCostVo" :rules="expenseFromRules" label-position="top">
+            <lay-row space="20">
+              <lay-col :md="6">
+                <lay-form-item label="金额" prop="outlay" required>
+                  <lay-input v-model="accountCostVo.outlay" ref="addExpenseModalQuickSaveRef"
+                             type="number" precision="2"></lay-input>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="描述" prop="costDesc" required>
+                  <lay-autocomplete
+                      style="width: 100%"
+                      v-model="accountCostVo.costDesc"
+                      :fetchSuggestions="doFindCacheCostType"
+                      :allow-clear="true"
+                      @keydown.enter.stop
+                      @select="doInputIconUrl"
+                  ></lay-autocomplete>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="图标" prop="icon" required>
+                  <lay-row>
+                    <lay-col md="4">
+                      <lay-avatar v-if="!accountCostVo.icon" class="iconContainer"
+                                  @click="changeSelectTypeModal"></lay-avatar>
+                      <lay-avatar v-else class="iconContainer" :src="accountCostVo.icon"
+                                  @click="changeSelectTypeModal"></lay-avatar>
+                    </lay-col>
+                    <lay-col md="20"
+                             style="justify-content: center; align-items: center; font-size: 10pt; line-height: 40px">
+                      图标：{{ accountCostVo.costType }}
+                    </lay-col>
+                  </lay-row>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="标识" prop="paymentSign" required>
+                  <lay-select
+                      size="sm"
+                      style="width: 100%"
+                      v-model="accountCostVo.paymentSign"
+                      :options="paymentSignSelectList"
+                      :items="paymentSignSelectList"
+                      :allow-clear="true"
+                      placeholder="请选择"
+                  ></lay-select>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
+            <lay-row space="20">
+              <lay-col :md="6">
+                <lay-form-item label="时间" prop="paymentTime">
+                  <lay-date-picker v-model="accountCostVo.paymentTime" allow-clear type="datetime"
+                                   :shortcuts="singleShortcuts" :inputFormat="sdf_YMDHM"
+                                   style="width: 100%" simple></lay-date-picker>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="备注" prop="remark">
+                  <lay-textarea
+                      v-model="accountCostVo.remark"
+                      allow-clear
+                      placeholder="请输入备注"
+                  ></lay-textarea>
+                </lay-form-item>
+              </lay-col>
+              <lay-col :md="6">
+                <lay-form-item label="关联用户" prop="accountCostUserIdList">
+                  <lay-col :md="6">
+                    <div style="display: inline-flex; text-align: left">
+                      <lay-button size="sm" type="primary" @click="changeShowModalFlag">选择</lay-button>
+                      <div style="padding-left: 10px;">
+                        <lay-select
+                            style="width: 100%"
+                            size="sm"
+                            :disabled="true"
+                            v-model="accountCostVo.accountCostUserNameList"
+                            :allow-clear="true"
+                            :multiple="true"
+                        ></lay-select>
+                      </div>
                     </div>
-                  </div>
 
-                  <lay-layer v-model="showModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
-                    <div v-esc-close="toCancelUserModal">
-                      <lay-table
-                          ref="userModalTableRef"
-                          :page="userModalPageQuery"
-                          :columns="userModalColumns"
-                          :loading="userModalLoading"
-                          :data-source="userEntityList"
-                          :height="'550px'"
-                          v-model:selected-keys="accountCostVo.accountCostUserIdList"
-                          @change="changeShowModalFlag"
-                      >
-                        <template v-slot:toolbar>
-                          <lay-button size="sm" type="normal" @click="changeShowModalFlag">
-                            <lay-icon class="layui-icon-addition"></lay-icon>
-                            查询
-                          </lay-button>
-                          <lay-button size="sm" type="danger" @click="insertUserModalConfirm">
-                            <lay-icon class="layui-icon-addition"></lay-icon>
-                            确认
-                          </lay-button>
-                        </template>
-                      </lay-table>
-                    </div>
-                  </lay-layer>
-                </lay-col>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
-        </lay-form>
+                    <lay-layer v-model="showModalFlag" :title="'关联用户'" :area="['1200px', '700px']">
+                      <div v-esc-close="toCancelUserModal">
+                        <lay-table
+                            ref="userModalTableRef"
+                            :page="userModalPageQuery"
+                            :columns="userModalColumns"
+                            :loading="userModalLoading"
+                            :data-source="userEntityList"
+                            v-model:selected-keys="accountCostVo.accountCostUserIdList"
+                            @change="changeShowModalFlag"
+                        >
+                          <template v-slot:toolbar>
+                            <lay-button size="sm" type="normal" @click="changeShowModalFlag">
+                              <lay-icon class="layui-icon-addition"></lay-icon>
+                              查询
+                            </lay-button>
+                            <lay-button size="sm" type="danger" @click="insertUserModalConfirm">
+                              <lay-icon class="layui-icon-addition"></lay-icon>
+                              确认
+                            </lay-button>
+                          </template>
+                        </lay-table>
+                      </div>
+                    </lay-layer>
+                  </lay-col>
+                </lay-form-item>
+              </lay-col>
+            </lay-row>
+          </lay-form>
+        </div>
+        <!-- 步骤二：分摊-->
+        <div v-if="addExpenseActive === 1">
+          <lay-card>
+            <div class="middle">
+              <h1 style="padding:20px 15px; font-family: sans-serif">
+                总金额：{{ accountCostVo.outlay }}¥
+                <!--                <lay-count-up prefix="总金额：¥ " :decimalPlaces="2"></lay-count-up>-->
+              </h1>
+            </div>
+            <div class="middle">
+              <h1 style="font-family: sans-serif; font-size: 12pt; color: #bbbbbb">
+                提示：若所有费用金额为0或不填写，则默认平分金额
+              </h1>
+            </div>
+          </lay-card>
+          <lay-table
+              ref="expenseAllocationTableRef"
+              :columns="expenseAllocationColumns"
+              :loading="expenseAllocationModalLoading"
+              :data-source="accountCostVo.accountCostUserAllocVoList"
+          >
+            <template #amount="{ row }">
+              <lay-input-number v-model="row.amount" precision="2" min="0"/>
+            </template>
+            <template #allocFlag="{ row }">
+              <lay-switch v-model="row.allocFlag"></lay-switch>
+            </template>
+            <template v-slot:toolbar>
+              <lay-button size="sm" type="normal" @click="allocRetainAmount">分摊剩余金额</lay-button>
+            </template>
+          </lay-table>
+        </div>
         <div style="width: 100%; text-align: right">
-          <lay-button size="sm" type="primary" @click="toSubmit(true)">保存</lay-button>
-          <lay-button size="sm" type="primary" @click="toReset">重置</lay-button>
+          <lay-button v-show="accountCostVo.accountCostUserIdList && addExpenseActive === 0" size="sm" type="primary"
+                      @click="toNext()">下一步
+          </lay-button>
+          <lay-button v-show="accountCostVo.accountCostUserIdList && addExpenseActive === 1" size="sm" type="primary"
+                      @click="toPrevious">上一步
+          </lay-button>
+          <lay-button v-show="!accountCostVo.accountCostUserIdList || addExpenseActive === 1" size="sm" type="primary"
+                      @click="toSubmit(true)">保存
+          </lay-button>
+          <lay-button v-show="addExpenseActive === 0" size="sm" type="primary" @click="toReset">重置</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -443,7 +494,7 @@ import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
-import {SysUserEntity, SysUserVo} from "@/types/system/User";
+import {FindPageSysUserListEntity, SysUserEntity, SysUserVo} from "@/types/system/User";
 import {findPageSysUserWithoutDataScope} from "@/api/system/User";
 import app from "@/main";
 import IconPicker from "@/views/component/svg/IconPicker.vue";
@@ -455,22 +506,24 @@ import {useAppStore} from "@/store/app";
 import Http from "@/api/Http";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
+import {findListAllocByCostId, findListSysUserById} from "@/api/account/AccountCostUserAlloc";
+import {AccountCostUserAllocVo} from "@/types/account/AccountCostUserAlloc";
+import {deleteCommonIcon} from "@/api/common/icon/Icon";
 
 /* INIT*/
 onMounted(async () => {
   paymentSignSelect.value = await loadSysDictValue(Constants.PAYMENT_SIGN)
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
-  searchQuery.value.paymentTimeRange = buildRange(7)
+  allocStatusSelect.value = await loadSysDictValue(Constants.ALLOC_STATUS)
+  searchQuery.value.paymentTimeRange = buildRange(6)
   let param: CommonIconTemplateDetailVo = {
     headerId: useStore.commonIconHeader
   }
-  findCustomIconTemplateDetail(param).then((res: R<Record<string, FindTreeIconTreeTypeEntity[]>>) => {
-    findCommonIconPickerDataSource.value = new Map(Object.entries(res.data));
+  findCustomIconTemplateDetail(param).then((res: R<FindTreeIconTreeTypeEntity[]>) => {
+    findCommonIconPickerDataSource.value = res.data;
     let temp: string[] = []
-    findCommonIconPickerDataSource.value?.forEach((value, key) => {
-      if (value && value.length > 0) {
-        temp.push(key)
-      }
+    findCommonIconPickerDataSource.value?.forEach((res: any) => {
+      temp.push(res.name)
     })
     openKeys.value = temp;
   }).catch(e => {
@@ -488,6 +541,7 @@ const $ACCOUNT_MENU_PERMISSION = app.config.globalProperties.$ACCOUNT_MENU_PERMI
 const $router = router;
 const paymentSignSelect = ref<Array<SysDictValueEntity>>();
 const paymentSignSelectList = ref<any[]>();
+const allocStatusSelect = ref<Array<SysDictValueEntity>>();
 const searchQuery = ref<AccountCostVo>({})
 const loading = ref(false)
 const selectedKeys = ref<Array<string>>([])
@@ -497,6 +551,7 @@ const accountCostVo = ref<AccountCostVo>({
   accountCostUserNameList: [],
 })
 const addExpenseFormRef = ref(null)
+const expenseAllocationTableRef = ref(null)
 const addExpenseModalShowFlag = ref(false)
 const dataSource = ref<Array<AccountCostEntity>>()
 const title = ref('新增')
@@ -512,7 +567,9 @@ const columns = ref([
   {title: '描述', width: '130px', key: 'costDesc', fixed: 'left', ellipsisTooltipTheme: 'dark'},
   {title: '金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '类型', width: '130px', key: 'icon', customSlot: 'iconType'},
-  {title: '标识', width: '130px', key: 'paymentSign', customSlot: 'paymentSign'},
+  {title: '标识', width: '80px', key: 'paymentSign', customSlot: 'paymentSign'},
+  {title: '分摊金额', width: '130px', key: 'allocAmount'},
+  {title: '分摊状态', width: '80px', key: 'allocStatus', customSlot: 'allocStatus'},
   {title: '时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
   {title: '修改时间', width: '150px', key: 'modifyTime'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
@@ -532,7 +589,7 @@ const expenseFromRules = ref({
   outlay: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
       if (value <= 0) {
-        callback(new Error("金额不能为0"));
+        callback(new Error("金额必须大于0"));
       } else {
         return true;
       }
@@ -571,25 +628,34 @@ const sdf_YMDHM = 'YYYY-MM-DD HH:mm'
 const addExpenseModalQuickSaveRef = ref()
 const userEntityList = ref<Array<SysUserEntity>>()
 const userModalLoading = ref(false)
+const expenseAllocationModalLoading = ref(false)
 const userModalSelectedKeys = ref<Array<string>>([])
 const userModalPageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const userModalColumns = ref([
+const userModalColumns = [
   {title: '选项', type: 'checkbox', fixed: 'left'},
   {title: '用户名称', key: 'userName'},
   {title: '用户昵称', key: 'nickName'},
   {title: '用户类型', key: 'userType'},
-])
+]
+const expenseAllocationColumns = [
+  {title: '用户名称', key: 'userName'},
+  {title: '用户昵称', key: 'nickName'},
+  {title: '分摊金额', key: 'amount', customSlot: 'amount', totalRow: true},
+  {title: '分摊标识', key: 'allocFlag', customSlot: 'allocFlag'},
+]
 const userModalSearchQuery = ref<SysUserVo>({})
 const userModalTableRef = ref();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const expandCollapseFlag = ref<boolean>(false);
-const findCommonIconPickerDataSource = ref<Map<string, Array<FindCommonIconEntity>>>()
+const findCommonIconPickerDataSource = ref<Array<FindCommonIconEntity>>()
 const selectCostTypeList = ref<LaySelectEntity[]>([]);
 const openKeys = ref<string[]>([]);
 const showModalFlag = ref<Boolean>(false)
+const addExpenseActive = ref(0)
+const operate = ref<Operate>();
 /* VAR*/
 
 /* FUNCTION*/
@@ -633,6 +699,8 @@ const sortChange = (key: any, sort: string) => {
   }
 }
 const showExpenseModal = (text: any, row: any) => {
+  addExpenseActive.value = 0;
+  operate.value = text;
   title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
   if (row != null) {
     accountCostVo.value = {...row}
@@ -706,35 +774,79 @@ function toRemove() {
   })
 }
 
+function doSaveUpdate(clickFlag: boolean) {
+  let id = accountCostVo.value.id;
+  saveUpdate(accountCostVo.value).then((res: any) => {
+    if (res.code === 200) {
+      loadDataSource();
+      layer.msg('保存成功！', {icon: 1, time: 1000})
+      let paymentTime = accountCostVo.value.paymentTime;
+      accountCostVo.value = {};
+      if (clickFlag) {
+        addExpenseModalShowFlag.value = false
+      } else {
+        accountCostVo.value.paymentTime = paymentTime
+        let isDefaultPaymentSignSelect = paymentSignSelectList.value.find((paymentSignSelect: SysDictValueEntity) => {
+          return paymentSignSelect.isDefault
+        });
+        if (isDefaultPaymentSignSelect) {
+          accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
+        }
+        // 如果是修改+回车，则关闭窗口
+        if (id) {
+          addExpenseModalShowFlag.value = false
+        } else {
+          addExpenseModalQuickSaveRef.value.focus();
+        }
+      }
+      addExpenseActive.value = 0
+    }
+  })
+}
+
 function toSubmit(clickFlag: boolean) {
   addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      let id = accountCostVo.value.id;
-      saveUpdate(accountCostVo.value).then((res: any) => {
-        if (res.code === 200) {
-          loadDataSource();
-          layer.msg('保存成功！', {icon: 1, time: 1000})
-          let paymentTime = accountCostVo.value.paymentTime;
-          accountCostVo.value = {};
-          if (clickFlag) {
-            addExpenseModalShowFlag.value = false
-          } else {
-            accountCostVo.value.paymentTime = paymentTime
-            let isDefaultPaymentSignSelect = paymentSignSelectList.value.find((paymentSignSelect: SysDictValueEntity) => {
-              return paymentSignSelect.isDefault
-            });
-            if (isDefaultPaymentSignSelect) {
-              accountCostVo.value.paymentSign = isDefaultPaymentSignSelect.value;
-            }
-            // 如果是修改+回车，则关闭窗口
-            if (id) {
-              addExpenseModalShowFlag.value = false
-            } else {
-              addExpenseModalQuickSaveRef.value.focus();
-            }
-          }
+      if (accountCostVo.value.accountCostUserIdList && addExpenseActive.value === 0) {
+        toNext()
+        return;
+      }
+      if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
+        // 计算费用分摊合计金额是否超过总金额
+        let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
+            .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0)
+            .toFixed(2);
+        let outlay = parseFloat(accountCostVo.value.outlay).toFixed(2);
+        let subtract = ((outlay || 0) - totalAmount).toFixed(2);
+        if (!outlay || totalAmount > outlay) {
+          layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
+          return;
+        } else if (totalAmount == 0) {
+          doSaveUpdate(clickFlag);
+          return;
+        } else if (subtract > 0) {
+          layer.confirm('您还有' + subtract + '金额未分摊', {
+            title: '提示',
+            btn: [
+              {
+                text: '确定',
+                callback: (id: any) => {
+                  doSaveUpdate(clickFlag);
+                  layer.close(id)
+                }
+              },
+              {
+                text: '取消',
+                callback: (id: any) => {
+                  layer.close(id)
+                }
+              }
+            ]
+          })
+          return;
         }
-      })
+      }
+      doSaveUpdate(clickFlag);
     }
   })
 }
@@ -791,7 +903,7 @@ function hideAccountsImportModal() {
 }
 
 function showAccountsExportModal() {
-  accountsExportVo.value.paymentTimeRange = buildRange(7)
+  accountsExportVo.value.paymentTimeRange = buildRange(6)
   showAccountsExportModalFlag.value = true
 }
 
@@ -819,7 +931,7 @@ function doExport() {
 
 function queryFormReset() {
   searchQuery.value = {}
-  searchQuery.value.paymentTimeRange = buildRange(7)
+  searchQuery.value.paymentTimeRange = buildRange(6)
 }
 
 function doFindPageUser() {
@@ -895,6 +1007,11 @@ function changeShowModalFlag() {
 
 function searchUserModalConfirm() {
   let checkData = userModalTableRef.value.getCheckData();
+  if (checkData && checkData.length <= 1) {
+    // 必须选择超过一个用户
+    layer.msg('关联用户数量需要大于1个', {icon: 3})
+    return;
+  }
   searchQuery.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
   searchQuery.value.accountCostUserIdList = checkData.map((v: any) => v.id)
   showModalFlag.value = !showModalFlag.value
@@ -902,6 +1019,11 @@ function searchUserModalConfirm() {
 
 function insertUserModalConfirm() {
   let checkData = userModalTableRef.value.getCheckData();
+  if (checkData && checkData.length <= 1) {
+    // 必须选择超过一个用户
+    layer.msg('关联用户数量需要大于1个', {icon: 3})
+    return;
+  }
   accountCostVo.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
   accountCostVo.value.accountCostUserIdList = checkData.map((v: any) => v.id)
   showModalFlag.value = !showModalFlag.value
@@ -934,7 +1056,7 @@ function doFindSelectCostTypeList() {
 
 function doFindCacheCostType(value: any) {
   if (!value || value === '') {
-    return ;
+    return;
   }
   let vo: FindCacheCostTypeVo = {
     costDesc: value
@@ -957,6 +1079,177 @@ function doInputIconUrl(entity: FindCacheCostTypeEntity) {
   accountCostVo.value.costType = entity.value;
 }
 
+function toNext() {
+  addExpenseFormRef.value.validate((isValidate: any, model: any, errors: any) => {
+    if (isValidate) {
+      if (accountCostVo.value.accountCostUserIdList && addExpenseActive.value === 0) {
+        if (accountCostVo.value.paymentSign !== PaymentSign.EXPENSES) {
+          layer.msg('关联用户后进入费用分摊要求标识为【支出】', {icon: 3})
+          return;
+        }
+      }
+      addExpenseActive.value = 1
+      if (accountCostVo.value.accountCostUserIdList) {
+        if (Operate.ADD === operate.value || Operate.COPY === operate.value) {
+          // 新增则查询用户
+          doFindListSysUserById();
+        } else if (Operate.EDIT === operate.value) {
+          // 修改则查询费用分摊
+          if (accountCostVo.value.id) {
+            findListAllocByCostId(accountCostVo.value.id).then((res: any) => {
+              if (res.code === 200) {
+                accountCostVo.value.accountCostUserAllocVoList = res.data
+                if (!res.data || res.data.length == 0) {
+                  // 如果是先创建了非分摊的数据，修改时关联了用户，则按照新增的逻辑处理
+                  doFindListSysUserById()
+                }
+              }
+
+            })
+          }
+        }
+      }
+    }
+  })
+}
+
+function doFindListSysUserById() {
+  findListSysUserById(accountCostVo.value.accountCostUserIdList).then((res: any) => {
+    if (res.code === 200) {
+      accountCostVo.value.accountCostUserAllocVoList = res.data
+      accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
+        item.allocFlag = true;
+      })
+    }
+  })
+}
+
+function toPrevious() {
+  addExpenseActive.value = addExpenseActive.value - 1
+}
+
+function splitNumber(total: number, parts: number) : number[]{
+  // 参数验证
+  if (parts <= 0 || !Number.isInteger(parts)) {
+    throw new Error('份数必须是正整数');
+  }
+
+  if (total < 0) {
+    throw new Error('总金额不能为负数');
+  }
+
+  // 将数字转换为整数（乘以100）以避免浮点数精度问题
+  const totalCents = Math.round(total * 100);
+
+  // 计算每份的基本值（整数部分）
+  const baseValue = Math.floor(totalCents / parts);
+
+  // 计算余数（需要分配的小数部分）
+  const remainder = totalCents % parts;
+
+  const result: number[] = [];
+
+  // 生成拆分结果
+  for (let i = 0; i < parts; i++) {
+    if (i < remainder) {
+      // 前remainder份多分配1分钱
+      result.push((baseValue + 1) / 100);
+    } else {
+      // 剩余的份数分配基本值
+      result.push(baseValue / 100);
+    }
+  }
+
+  return result;
+}
+
+function allocRetainAmount() {
+  let outlay: number = accountCostVo.value.outlay || 0
+  if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
+    // 计算费用分摊合计金额是否超过总金额
+    let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
+        .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
+    if (!outlay || totalAmount > outlay) {
+      layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
+      return;
+    }
+  }
+  // 先查询填写了金额的行，与总金额计算差值
+  let accountCostUserAllocVoList = accountCostVo.value.accountCostUserAllocVoList;
+  if (accountCostUserAllocVoList && accountCostUserAllocVoList.length > 0) {
+    let existAllocList = accountCostUserAllocVoList.filter(item => {
+      return item.amount && item.amount > 0
+    })
+    let totalAmount: number = existAllocList
+        .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
+    totalAmount = outlay - totalAmount
+    if (!existAllocList || existAllocList.length === 0) {
+      // 如果都没填写，则直接平分
+      let numbers = splitNumber(totalAmount, accountCostUserAllocVoList.length);
+      if (numbers.length > 0) {
+        let length = accountCostVo.value.accountCostUserAllocVoList.length;
+        for (let i = 0; i < length; i++) {
+          accountCostVo.value.accountCostUserAllocVoList[i].amount = numbers[i];
+        }
+      }
+    } else if (existAllocList && existAllocList.length !== accountCostUserAllocVoList.length) {
+      // 部分赋值，则减去赋值的金额后再平分给未赋值的数据
+      let notExistAllocList = accountCostUserAllocVoList.filter(item => {
+        return !item.amount || item.amount === 0
+      })
+      existAllocList.forEach(item => {
+        outlay -= item.amount || 0
+      })
+      let numbers = splitNumber(outlay, notExistAllocList.length);
+      for (let i = 0; i < numbers.length; i++) {
+        notExistAllocList.forEach(item => {
+          if (!item.amount || item.amount == 0) {
+            item.amount = numbers[i];
+          }
+        })
+      }
+    }
+  } else {
+    layer.msg('分摊数据不合法，请联系管理员', {icon: 3})
+  }
+}
+
+function setAvgAmountReminder(avgAmountReminder: number) {
+  if (avgAmountReminder > 0) {
+    let reminderInteger = Math.floor(avgAmountReminder);
+    let reminderReminder = avgAmountReminder - reminderInteger;
+    if (reminderReminder > 0) {
+      let length = accountCostVo.value.accountCostUserAllocVoList.length;
+      for (let i = length - 1; i > 0; i--) {
+        let amount = accountCostVo.value.accountCostUserAllocVoList[i].amount;
+        // 余数分配给金额为0的数据
+        if (!amount || amount === 0) {
+          accountCostVo.value.accountCostUserAllocVoList[i].amount += Number(reminderReminder.toFixed(2));
+          reminderReminder = 0
+          break;
+        }
+      }
+      if (reminderReminder > 0) {
+        // 如果没有金额为0的数据，则分摊给最后一条数据
+        accountCostVo.value.accountCostUserAllocVoList[accountCostVo.value.accountCostUserAllocVoList.length - 1].amount += Number(reminderReminder.toFixed(2));
+      }
+    }
+    let tmp = 0;
+    for (let i = 0; i < reminderInteger; i++) {
+      accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
+        if (!item.amount || item.amount === 0) {
+          item.amount += Number(reminderInteger);
+          tmp += reminderInteger
+          return;
+        }
+      })
+    }
+    if (tmp !== reminderInteger) {
+      accountCostVo.value.accountCostUserAllocVoList[0].amount += Number(reminderInteger)
+    }
+  }
+}
+
 /* FUNCTION*/
 </script>
 
@@ -964,5 +1257,10 @@ function doInputIconUrl(entity: FindCacheCostTypeEntity) {
 .iconContainer {
   width: 40px;
   height: 40px;
+}
+
+.middle {
+  display: flex;
+  justify-content: center;
 }
 </style>

@@ -28,7 +28,7 @@ public class URedis {
         // 用于存储结果的列表
         List<String> keyList = new ArrayList<>();
         REDIS_TEMPLATE.execute((RedisCallback<Object>) connection -> {
-            ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(10).build();
+            ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(1000).build();
             try (Cursor<byte[]> cursor = connection.scan(scanOptions)) { // 使用try-with-resources自动关闭游标
                 while (cursor.hasNext()) {
                     String key = new String(cursor.next());
@@ -347,7 +347,7 @@ public class URedis {
     /**
      * 批量删除key
      *
-     * @param key 待删除的key
+     * @param keyList 待删除的key
      * @return 删除成功/失败
      */
     public static Long delete(Collection<String> keyList) {

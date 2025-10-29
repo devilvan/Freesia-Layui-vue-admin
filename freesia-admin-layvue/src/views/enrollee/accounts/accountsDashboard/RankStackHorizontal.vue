@@ -107,7 +107,7 @@ function doFindCostRank() {
             params.forEach((item: any) => {
               const percent = ((item.data / totalAmount) * 100).toFixed(2);
               out += `<div>${item.marker} ${item.seriesName}：
-                        <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${item.color}">${item.data}</span>
+                        <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${item.color}">${item.data?.toFixed(2)}</span>
                         <span style="border-radius:10px;font-weight:bold;color:${item.color}">(${percent}%)</span>
                       </div>`
             })

@@ -14,10 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -40,21 +37,32 @@ public class SseEmitterManager {
      */
     public void sseHeartbeatSchedule() {
         USER_TOKEN_EMITTER.forEach((id, tokenMap) -> {
-            tokenMap.forEach((token, emitter) -> {
+            // 使用迭代器以便在遍历时安全地移除元素
+            Iterator<Map.Entry<String, SseEmitter>> tokenIterator = tokenMap.entrySet().iterator();
+            while (tokenIterator.hasNext()) {
+                Map.Entry<String, SseEmitter> map = tokenIterator.next();
+                String token = map.getKey();
+                SseEmitter emitter = map.getValue();
                 try {
                     // 发送心跳注释行
                     emitter.send(SseEmitter.event().comment("heartbeat"));
                 } catch (IOException | IllegalStateException e) {
                     // 发送失败，说明底层连接已失效
-                    log.info(UMessage.message("sse.heartbeat.failed.complete", new Object[]{id, token}));
-                    // 立即执行清理逻辑
-                    emitter.complete();
-                    tokenMap.remove(token);
-                    if (tokenMap.isEmpty()) {
-                        USER_TOKEN_EMITTER.remove(id);
+                    log.info(UMessage.message("sse.heartbeat.failed.complete", id, token));
+                    // ！！！ 关键：使用 try-catch 屏蔽所有清理过程中的异常 ！！！
+                    try {
+                        // 1. 尝试显式完成它（最佳实践）
+                        emitter.complete();
+                    } catch (Exception ignored) {
+                        // 忽略所有完成时的异常：IllegalStateException, IOException 等
                     }
+                    tokenIterator.remove();
                 }
-            });
+            }
+            if (tokenMap.isEmpty()) {
+                USER_TOKEN_EMITTER.remove(id);
+                log.info(UMessage.message("sse.remove.empty.token", id));
+            }
         });
     }
 

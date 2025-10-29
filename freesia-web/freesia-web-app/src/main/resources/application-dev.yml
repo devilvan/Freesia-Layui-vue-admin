@@ -71,7 +71,6 @@ freesia:
         - SYS_OSS_CONFIG
         - DATESERIES
         - ACCOUNT_COST
-        - ACCOUNT_COST_USER
         - COMMON_ICON
         - COMMON_ICON_TEMPLATE_HEADER
         - COMMON_ICON_TEMPLATE_DETAIL

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.account.mapper.AccountCostUserAllocMapper">
+    <select id="findListAllocByCostId" resultType="com.freesia.account.dto.FindListSysUserByIdDto">
+        SELECT acua.ID,
+               acua.LOGIC_DEL,
+               acua.REC_VER,
+               acua.TENANT_ID,
+               acua.COST_ID,
+               acua.USER_ID,
+               acua.AMOUNT,
+               acua.OPERATE_TIME,
+               acua.ALLOC_FLAG,
+               su.USER_NAME,
+               su.NICK_NAME
+        FROM account_cost_user_alloc acua
+                 LEFT JOIN sys_user su on acua.USER_ID = SU.ID
+        WHERE 1 = 1
+          AND acua.LOGIC_DEL = 0
+          AND acua.COST_ID = #{dto.costId}
+        ORDER BY acua.ID
+    </select>
+</mapper>

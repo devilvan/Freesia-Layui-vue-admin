@@ -1,25 +1,37 @@
 <template>
   <lay-table
+      ref="noticeTableRef"
       :page="pageQuery"
       :columns="columns"
       :loading="loading"
       :default-toolbar="true"
       :data-source="dataSource"
+      :rowStyle="getRowStyle"
       v-model:selected-keys="selectedKeys"
       @change="change"
       @sortChange="sortChange"
   >
     <template #content="{ row }">
       <lay-tooltip :visible="false" trigger="hover" :content="row.content">
-        <div class="oneRow">{{ row.content }}</div>
+        <div>{{ row.content }}</div>
       </lay-tooltip>
     </template>
     <template #effectiveTime="{ row }">
       {{ row.effectiveTimeFrom }} - {{ row.effectiveTimeTo }}
     </template>
+    <template #category="{ row }">
+      <dict-tag :options="sysNoticeCategorySelect" :value="row.category"/>
+    </template>
+    <template #readFlag="{ row }">
+      <div v-show="row.readFlag">
+        <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
+      </div>
+      <div v-show="!row.readFlag">
+        <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
+      </div>
+    </template>
     <template v-slot:toolbar>
-      <lay-button size="sm" type="primary">标记已读</lay-button>
-      <lay-button size="sm" type="warm">标记已读</lay-button>
+      <lay-button size="sm" type="warm" @click="doMarkRead(SysNoticeType.NOTICE)">标记已读</lay-button>
       <lay-button size="sm" type="normal" @click="showSaveModal(Operate.ADD, null)">新增</lay-button>
       <lay-button size="sm" type="danger" @click="toRemove">删除</lay-button>
     </template>
@@ -96,7 +108,7 @@
 <script lang="ts">
 
 export default {
-  name: 'SysNotice'
+  name: 'Notice'
 }
 </script>
 <script lang="ts" setup>
@@ -104,8 +116,15 @@ import {ref, watch, reactive, onMounted} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {Operate} from "@/types/Constants";
 import {findMenuListByUserId} from "@/api/system/Menu";
-import {deleteSysNotice, findPageSysNotice, findSysNotice, saveUpdate} from "@/api/system/Notice";
-import {SysNoticeEntity, SysNoticeVo} from "@/types/system/Notice";
+import {
+  deleteSysNotice,
+  findPageSysNotice,
+  findSysNotice,
+  findUnreadCount,
+  markRead,
+  saveUpdate
+} from "@/api/system/Notice";
+import {MarkReadVo, SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {defaultShortcuts, singleShortcuts} from "@/util/UDate";
@@ -114,20 +133,26 @@ import {PageQuery} from "@/types/Common";
 import {deleteAccountCost, findAccountCost} from "@/api/account/Account";
 import {IconTreeType} from "@/types/common/icon/template/IconTemplateDetail";
 import {saveUpdateBatch} from "@/api/common/icon/template/IconTemplateDetail";
+import {useUserStore} from "@/store/user";
 
 /*INIT*/
 onMounted(async () => {
   sysNoticeTypeSelect.value = await loadSysDictValue(Constants.SYS_NOTICE_TYPE)
   sysNoticeTypeSelectList.value = await sysDictValueSelect(sysNoticeTypeSelect.value)
+  sysNoticeCategorySelect.value = await loadSysDictValue(Constants.SYS_NOTICE_CATEGORY)
+  sysNoticeCategorySelectList.value = await sysDictValueSelect(sysNoticeCategorySelect.value)
   setTimeout(() => {
     loading.value = false
     loadDataSource()
   }, 200)
 })
+
+// 监听 props.modelValue 的变化
+const emit = defineEmits(['callback']);
 /*INIT*/
 
 /*VAR*/
-const currentTab = ref('system')
+const currentTab = ref('notice')
 const messageInfo = ref({
   system: 3,
   user: 0,
@@ -136,16 +161,19 @@ const messageInfo = ref({
 const selectedKeys = ref<string[]>([])
 const pageQuery = reactive<PageQuery>({
   current: 1,
-  limit: 10
+  limit: 10,
+  limits: [10, 20, 50, 100],
+  hideOnSinglePage: false,
+  layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })
 const columns = ref([
   {title: '选项', width: '50px', type: 'checkbox', fixed: 'left'},
   {title: '标题', width: '80px', key: 'title'},
   {title: '内容', width: '260px', key: 'content', customSlot: 'content'},
-  {title: '通知类型', width: '80px', key: 'typeName'},
-  {title: '生效时间', width: '120px', key: 'effectiveTime', customSlot: 'effectiveTime'},
+  {title: '状态', width: '60px', key: 'readFlag', customSlot: 'readFlag'},
   {title: '发布人', width: '100px', key: 'publisherName'},
   {title: '发布时间', width: '150px', key: 'createTime'},
+  {title: '所属模块', width: '80px', key: 'category', customSlot: 'category'},
   {
     title: '操作',
     width: '150px',
@@ -154,6 +182,7 @@ const columns = ref([
     fixed: 'right'
   }
 ])
+const userStore = useUserStore();
 const loading = ref(true)
 const operate = ref<string>(Operate.ADD)
 const saveModalFlag = ref<boolean>(false)
@@ -161,11 +190,15 @@ const searchQuery = ref<SysNoticeVo>({});
 const saveVo = ref<SysNoticeVo>({});
 const sysNoticeTypeSelect = ref<Array<SysDictValueEntity>>();
 const sysNoticeTypeSelectList = ref<any[]>();
+const sysNoticeCategorySelect = ref<Array<SysDictValueEntity>>();
+const sysNoticeCategorySelectList = ref<any[]>();
 const sdf_ymdhms = 'YYYY-MM-DD HH:mm:ss'
 // const sdf_000000 = 'YYYY-MM-DD 00:00:00'
 // const sdf_235959 = 'YYYY-MM-DD 23:59:59'
+const dataSource = ref<SysNoticeEntity[]>();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const saveGroupFormRef = ref()
+const noticeTableRef = ref()
 /*VAR*/
 
 /*FUNCTION*/
@@ -182,9 +215,6 @@ const sortChange = (key: any, sort: any) => {
       `字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`
   )
 }
-
-const dataSource = ref<SysNoticeEntity[]>();
-
 function toRemove() {
   if (selectedKeys.value.length == 0) {
     layer.msg('您未选择数据，请先选择要删除的数据', {icon: 3, time: 2000})
@@ -218,8 +248,13 @@ function toRemove() {
 }
 
 function loadDataSource() {
+  searchQuery.value.type = SysNoticeType.NOTICE
   findPageSysNotice(searchQuery.value, pageQuery).then((res: TableResult<SysNoticeEntity>) => {
-    dataSource.value = res.rows;
+    if (res.code === 200) {
+      pageQuery.total = res.total;
+      dataSource.value = res.rows;
+    }
+    userStore.calculateSumCount()
   });
 }
 
@@ -280,6 +315,32 @@ function confirmDelete(row: any) {
   }
 }
 
+function doMarkRead(type: SysNoticeType) {
+  if (selectedKeys.value.length < 1) {
+    layer.msg("请选择数据", {icon: 3})
+    return;
+  }
+  let params: MarkReadVo = {
+    idList: noticeTableRef.value.getCheckData()?.map((item: SysNoticeEntity) => item.id),
+    type: type
+  }
+  markRead(params).then((res: any) => {
+    if (res.code === 200) {
+      emit('callback', res.data)
+      layer.notify({
+        title: "成功",
+        content: "标记已读成功",
+        icon: 1,
+      })
+      change()
+    }
+  })
+}
+
+function getRowStyle(row: any, rowIndex: number) {
+  if (row.readFlag) return 'color:' + '#c2c2c2';
+  return ''
+}
 /*FUNCTION*/
 </script>
 

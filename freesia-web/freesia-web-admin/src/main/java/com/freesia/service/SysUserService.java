@@ -200,4 +200,12 @@ public interface SysUserService {
      * @return 用户列表的分页对象
      */
     TableResult<FindPageSysUserListEntity> findPageSysUserWithoutDataScope(SysUserDto sysUserDto, PageQuery pageQuery);
+
+    /**
+     * 根据用户ID查询用户列表
+     *
+     * @param idList id集合
+     * @return 用户列表
+     */
+    List<FindPageSysUserListEntity> findListSysUserById(List<Long> idList);
 }

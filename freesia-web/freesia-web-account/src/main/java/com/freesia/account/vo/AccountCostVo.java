@@ -56,5 +56,7 @@ public class AccountCostVo extends BaseVo {
     @Schema(description = "开销类型")
     @JsonAlias(value = {"costTypeList"})
     private List<String> costTypeList;
-
+    @Schema(description = "费用分摊数据")
+    @JsonAlias(value = {"accountCostUserAllocVoList"})
+    private List<AccountCostUserAllocVo> accountCostUserAllocVoList;
 }

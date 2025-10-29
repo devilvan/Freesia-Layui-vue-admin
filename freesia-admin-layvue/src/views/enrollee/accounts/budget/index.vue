@@ -51,7 +51,6 @@
           :default-toolbar="defaultToolbarFlag"
           :loading="loading.value"
           :page="pageQuery"
-          :height="'550px'"
           :even="evenFlag"
           @change="change"
           @sortChange="sortChange">

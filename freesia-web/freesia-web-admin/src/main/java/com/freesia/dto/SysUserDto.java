@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -50,4 +51,6 @@ public class SysUserDto extends BaseDto {
     private Date createTimeFrom;
     @Schema(description = "创建时间（从）")
     private Date createTimeTo;
+    @Schema(description = "主键集合")
+    private List<Long> idList;
 }

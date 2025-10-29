@@ -20,7 +20,6 @@
         :columns="props.columns"
         :loading="loading"
         :data-source="dataSource"
-        :height="'550px'"
         v-model:selected-keys="selectKeys"
         @change="changeShowModalFlag"
     >

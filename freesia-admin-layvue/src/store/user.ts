@@ -10,6 +10,8 @@ import {RouterComponent} from "../types/Menu";
 import {reloadSysTenant} from "../api/system/Tenant";
 import {useTabStore} from "../layouts/composable/useTabStore";
 import {loginPath} from "../api/Http";
+import {findUnreadCount} from "@/api/system/Notice";
+import {SysNoticeVo} from "@/types/system/Notice";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
@@ -33,7 +35,10 @@ export const useUserStore = defineStore({
             menus: [],
             roles: [],
             sidebarRoutes: [{}],
-            sysTenantDtoList: [{}]
+            sysTenantDtoList: [{}],
+            noticeCount: 0,
+            announcementCount: 0,
+            unreadCount: 0
         }
     },
     actions: {
@@ -94,6 +99,15 @@ export const useUserStore = defineStore({
             if (code === 200) {
                 this.sysTenantDtoList = data
             }
+        },
+        async calculateSumCount() {
+            this.unreadCount = 0;
+            if (this.announcementCount) {
+                this.unreadCount += this.announcementCount
+            }
+            if (this.noticeCount) {
+                this.unreadCount += this.noticeCount
+            }
         }
     },
     persist: {
@@ -101,8 +115,6 @@ export const useUserStore = defineStore({
         paths: ['token', 'userInfo', 'permissions', 'roles', 'sysTenantDtoList'],
     }
 })
-
-function clearUserStore() {}
 
 
 function filterAsyncRouter(asyncRouterMap: any, lastRouter = false, type = false) {

@@ -8,6 +8,7 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.constant.MenuPermission;
 import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindCostLineChartDto;
 import com.freesia.account.dto.FindRankByCostTypeDto;
 import com.freesia.account.entity.*;
@@ -232,7 +233,7 @@ public class AccountCostController extends BaseController {
         AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
         accountCostDto.setUserId(userId);
         if (UEmpty.isEmpty(accountCostVo.getPaymentTimeRange())) {
-            Date[] dates = defaultDateRange(7);
+            Date[] dates = defaultDateRange(6);
             accountCostDto.setPaymentTimeFrom(dates[0]);
             accountCostDto.setPaymentTimeTo(dates[1]);
         } else {
@@ -265,7 +266,7 @@ public class AccountCostController extends BaseController {
         findCostLineChartDto.setUserId(userId);
         String dateValue = findCostLineChartVo.getDateValue();
         if (DateScope.WEEK.getCode().equals(code)) {
-            Date[] dates = defaultDateRange(7);
+            Date[] dates = defaultDateRange(6);
             findCostLineChartDto.setPaymentTimeFrom(dates[0]);
             findCostLineChartDto.setPaymentTimeTo(dates[1]);
         }
@@ -453,6 +454,11 @@ public class AccountCostController extends BaseController {
         }
         accountCostDto.setUserId(userId);
         accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
+        List<AccountCostUserAllocVo> accountCostUserAllocVoList = accountCostVo.getAccountCostUserAllocVoList();
+        if (UEmpty.isNotEmpty((accountCostUserAllocVoList))) {
+            List<AccountCostUserAllocDto> accountCostUserAllocDtoList = UCopy.fullCopyList(accountCostUserAllocVoList, AccountCostUserAllocDto.class);
+            accountCostDto.setAccountCostUserAllocDtoList(accountCostUserAllocDtoList);
+        }
         return accountCostDto;
     }
 }

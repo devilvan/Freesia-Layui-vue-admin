@@ -65,4 +65,24 @@ public class SysNoticePo extends BasePo implements Serializable {
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(128) COMMENT '备注'")
     private String remark;
+    @Schema(description = "已读标识（0-未读;1-已读）")
+    @TableField(value = "READ_FLAG")
+    @Column(name = "READ_FLAG", columnDefinition = "TINYINT(1) DEFAULT 0 COMMENT '已读标识（0-未读;1-已读）'")
+    private Boolean readFlag;
+    @Schema(description = "用户ID")
+    @TableField(value = "USER_ID")
+    @Column(name = "USER_ID", columnDefinition = "BIGINT(19) NOT NULL COMMENT '用户ID'")
+    private Long userId;
+    @Schema(description = "消息所属类别")
+    @TableField(value = "CATEGORY")
+    @Column(name = "CATEGORY", columnDefinition = "VARCHAR(16) COMMENT '消息所属类别'")
+    private String category;
+    @Schema(description = "摘要")
+    @TableField(value = "EXCERPT")
+    @Column(name = "EXCERPT", columnDefinition = "TEXT COMMENT '消息所属类别'")
+    private String excerpt;
+    @Schema(description = "公告ID")
+    @TableField(value = "ANNOUNCEMENT_ID")
+    @Column(name = "ANNOUNCEMENT_ID", columnDefinition = "BIGINT(19) COMMENT '公告ID'")
+    private Long announcementId;
 }

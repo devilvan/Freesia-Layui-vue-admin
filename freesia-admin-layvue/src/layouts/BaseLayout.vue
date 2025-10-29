@@ -135,14 +135,13 @@
               </lay-fullscreen>
             </lay-menu-item>
             <lay-menu-item>
-              <lay-icon type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
-            </lay-menu-item>
-            <lay-menu-item>
-              <global-message-tab :flag="flag">
-                <lay-icon
-                    type="layui-icon-notice"
-                    @click="changeDropdown"
-                ></lay-icon>
+              <global-message-tab :flag="flag" @callback="callbackFunc">
+                <lay-badge type="rim" position="bottom-right" :value="userInfoStore.unreadCount">
+                  <lay-icon
+                      type="layui-icon-notice"
+                      @click="changeDropdown"
+                  ></lay-icon>
+                </lay-badge>
               </global-message-tab>
             </lay-menu-item>
             <lay-menu-item>
@@ -163,6 +162,9 @@
                   </lay-dropdown-menu>
                 </template>
               </lay-dropdown>
+            </lay-menu-item>
+            <lay-menu-item>
+              <lay-icon type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
               <lay-icon type="layui-icon-read" title="接口文档" @click="toDoc"></lay-icon>
@@ -238,8 +240,9 @@ import {sseDisconnect} from "../api/Login";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
 import {R} from "@/types/Result";
-import {findPublishedAnnouncement} from "@/api/system/Notice";
-import {SysNoticeEntity} from "@/types/system/Notice";
+import {findPublishedAnnouncement, findUnreadCount} from "@/api/system/Notice";
+import {SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
+import {buildRange} from "@/util/UDate";
 
 export interface AnnouncementContent {
   id?: string,
@@ -307,6 +310,7 @@ export default {
           announcementContentList.value.push(announcementContent)
         })
       })
+      doFindUnreadCount();
     })
 
     const changeVisible = () => {
@@ -387,7 +391,7 @@ export default {
         layer.notify({
           title: "消息",
           content: e.data,
-          time: 10000
+          time: 10000,
         })
       })
     }
@@ -397,6 +401,25 @@ export default {
         imgList: [{src: path, alt: '不要停下来啊'}]
       };
       layer.photos(option)
+    }
+
+    function doFindUnreadCount() {
+      let createTime: string[] = buildRange(6)
+      let params: SysNoticeVo = {
+        type: SysNoticeType.NOTICE,
+        createTimeFrom: new Date(createTime[0]),
+        createTimeTo: new Date(createTime[1])
+      }
+      findUnreadCount(params).then((res: any) => {
+        if (res.code === 200) {
+          userInfoStore.noticeCount = res.data
+          userInfoStore.unreadCount = userInfoStore.noticeCount
+        }
+      })
+    }
+
+    function callbackFunc(count: number) {
+      userInfoStore.unreadCount = count
     }
 
     return {
@@ -431,7 +454,9 @@ export default {
       bootstrapImageUrl,
       preview,
       announcementList,
-      announcementContentList
+      announcementContentList,
+      doFindUnreadCount,
+      callbackFunc
     }
   }
 }
@@ -450,9 +475,9 @@ export default {
 }
 
 /*鼠标经过背景色，增加了improtant，否则设置无效*/
-.layui-header .layui-nav-item .layui-icon:hover {
-  background: whitesmoke !important;
-}
+//.layui-header .layui-nav-item .layui-icon:hover {
+//  background: #00f7de !important;
+//}
 
 /*面包屑颜色兼容*/
 .layui-header .layui-nav-item .layui-breadcrumb a {

@@ -56,6 +56,7 @@ public class SysUserController extends BaseController {
         return sysUserService.findPageSysUserList(sysUserDto, pageQuery);
     }
 
+
     @Operation(summary = "获取部门下的用户")
     @GetMapping("findPageSysUserByDept")
     public TableResult<FindPageSysUserByDeptEntity> findPageSysUserByDept(SysUserVo sysUserVo, PageQuery pageQuery) {
