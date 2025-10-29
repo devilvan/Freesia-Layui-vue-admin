@@ -70,19 +70,19 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
     /**
      * 查询开销表分页信息
      *
-     * @param accountCost 入参
+     * @param accountCostDto 入参
      * @param page        分页参数
      * @return 分页数据
      */
-    Page<FindPageAccountCostEntity> findPageAccountCost(@Param("accountCost") AccountCostDto accountCost, @Param("page") Page<AccountCostPo> page);
+    Page<FindPageAccountCostEntity> findPageAccountCost(@Param("accountCostDto") AccountCostDto accountCostDto, @Param("page") Page<AccountCostPo> page);
 
     /**
      * 条件查询开销表
      *
-     * @param accountCost 入参
+     * @param accountCostDto 入参
      * @return 结果集
      */
-    FindAccountCostEntity findAccountCost(@Param("accountCost") AccountCostDto accountCost);
+    FindAccountCostEntity findAccountCost(@Param("accountCostDto") AccountCostDto accountCostDto);
 
     /**
      * 排名-按周消费类型排名
@@ -90,7 +90,7 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @param accountCostDto 查询入参
      * @return 排名数据
      */
-    List<FindRankByCostTypeEntity> findWeekRankByCostType(@Param("accountCost") FindRankByCostTypeDto accountCostDto);
+    List<FindRankByCostTypeEntity> findWeekRankByCostType(@Param("accountCostDto") FindRankByCostTypeDto accountCostDto);
 
     /**
      * 排名-按月消费类型排名
@@ -98,7 +98,7 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @param accountCostDto 查询入参
      * @return 排名数据
      */
-    List<FindRankByCostTypeEntity> findMonthRankByCostType(@Param("accountCost") FindRankByCostTypeDto accountCostDto);
+    List<FindRankByCostTypeEntity> findMonthRankByCostType(@Param("accountCostDto") FindRankByCostTypeDto accountCostDto);
 
     /**
      * 查询开销类型查询选择框

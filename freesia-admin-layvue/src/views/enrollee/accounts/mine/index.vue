@@ -569,7 +569,7 @@ const columns = ref([
   {title: '类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '标识', width: '80px', key: 'paymentSign', customSlot: 'paymentSign'},
   {title: '分摊金额', width: '130px', key: 'allocAmount'},
-  {title: '分摊状态', width: '60px', key: 'allocStatus', customSlot: 'allocStatus'},
+  {title: '分摊状态', width: '80px', key: 'allocStatus', customSlot: 'allocStatus'},
   {title: '时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
   {title: '修改时间', width: '150px', key: 'modifyTime'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
