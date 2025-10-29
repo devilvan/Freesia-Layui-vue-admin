@@ -126,13 +126,14 @@
         ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
     </select>
     <resultMap id="findAllocListResultMap" type="com.freesia.account.entity.FindPageAccountCostEntity$Alloc">
-        <id property="costId" column="COST_ID"/>
+<!--        <id property="costId" column="COST_ID"/>-->
         <result property="id" column="ID"/>
+        <result property="costId" column="COST_ID"/>
         <result property="userId" column="USER_ID"/>
         <result property="amount" column="AMOUNT"/>
         <result property="operateTime" column="OPERATE_TIME"/>
-        <result property="allocFlag" column="ACUA_ALLOC_FLAG"/>
-        <association property="user" column="USER_ID">
+        <result property="allocFlag" column="ALLOC_FLAG"/>
+        <association property="user">
             <id property="id" column="SU_ID"/>
             <result property="userName" column="USER_NAME" />
             <result property="nickName" column="NICK_NAME" />
@@ -152,7 +153,6 @@
                  LEFT JOIN sys_user SU on alloc.USER_ID = SU.id
         where alloc.LOGIC_DEL = 0
           and alloc.COST_ID = #{costId}
-          and su.ID = #{userId}
     </select>
     <resultMap id="findUserListResultMap" type="com.freesia.account.entity.FindPageAccountCostEntity$Alloc$User">
         <id property="id" column="ID"/>

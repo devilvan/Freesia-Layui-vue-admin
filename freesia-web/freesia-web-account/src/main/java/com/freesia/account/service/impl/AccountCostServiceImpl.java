@@ -246,10 +246,23 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                 for (FindPageAccountCostEntity entity : records) {
                     List<FindPageAccountCostEntity.Alloc> allocList = entity.getAllocList();
                     if (UEmpty.isNotEmpty(allocList)) {
-                        String allocStatus = this.setAllocStatus(allocList);
-                        BigDecimal allocAmount = this.setAllocAmount(allocList, userId);
+                        String allocStatus = this.buildAllocStatus(allocList);
+                        BigDecimal allocAmount = this.buildAllocAmount(allocList, userId);
                         entity.setAllocStatus(allocStatus);
                         entity.setAllocAmount(allocAmount);
+
+                        List<String> nickNameList = new ArrayList<>();
+                        List<String> userIdStrList = new ArrayList<>();
+                        for (FindPageAccountCostEntity.Alloc alloc : allocList) {
+                            FindPageAccountCostEntity.Alloc.User user = alloc.getUser();
+                            if (user.getId().equals(userId)) {
+                                entity.setAcNickName(user.getNickName());
+                            }
+                            nickNameList.add(user.getNickName());
+                            userIdStrList.add(String.valueOf(user.getId()));
+                        }
+                        entity.setAccountCostUserId(UString.join(userIdStrList, ","));
+                        entity.setAccountCostUserName(UString.join(nickNameList, ","));
                     }
                 }
             }
@@ -258,7 +271,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         return TableResult.build();
     }
 
-    private BigDecimal setAllocAmount(List<FindPageAccountCostEntity.Alloc> allocList, Long userId) {
+    private BigDecimal buildAllocAmount(List<FindPageAccountCostEntity.Alloc> allocList, Long userId) {
         BigDecimal allocAmount = null;
         FindPageAccountCostEntity.Alloc alloc = allocList.stream()
                 .filter(item -> userId.equals(item.getUserId()))
@@ -270,23 +283,23 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         return allocAmount;
     }
 
-    private String setAllocStatus(List<FindPageAccountCostEntity.Alloc> allocList) {
-        boolean hasTrue = allocList.stream()
-                .allMatch(FindPageAccountCostEntity.Alloc::getAllocFlag);
-        boolean hasFalse = allocList.stream()
-                .map(FindPageAccountCostEntity.Alloc::getAllocFlag)
-                .anyMatch(b -> !b);
-        if (hasTrue && hasFalse) {
-            // 部分分摊
-            return AllocStatus.PART.getCode();
-        } else if (hasTrue) {
-            // 完全分摊
-            return AllocStatus.FINISHED.getCode();
-        } else if (hasFalse) {
+    private String buildAllocStatus(List<FindPageAccountCostEntity.Alloc> allocList) {
+        boolean allNullFlag = allocList.stream()
+                .noneMatch(FindPageAccountCostEntity.Alloc::getAllocFlag);
+        if (allNullFlag) {
             // 未分摊
             return AllocStatus.UNFINISHED.getCode();
+        } else {
+            boolean allTrueFlag = allocList.stream()
+                    .allMatch(FindPageAccountCostEntity.Alloc::getAllocFlag);
+            if (allTrueFlag) {
+                // 完全分摊
+                return AllocStatus.FINISHED.getCode();
+            } else {
+                // 部分分摊
+                return AllocStatus.PART.getCode();
+            }
         }
-        return null;
     }
 
     @Override
