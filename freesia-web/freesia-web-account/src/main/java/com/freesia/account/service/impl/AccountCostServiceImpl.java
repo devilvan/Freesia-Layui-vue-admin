@@ -4,10 +4,12 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.freesia.account.constant.AllocStatus;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.constant.DateScope;
-import com.freesia.account.dto.*;
+import com.freesia.account.dto.AccountCostDto;
+import com.freesia.account.dto.AccountCostUserAllocDto;
+import com.freesia.account.dto.FindCostLineChartDto;
+import com.freesia.account.dto.FindRankByCostTypeDto;
 import com.freesia.account.entity.*;
 import com.freesia.account.exception.AccountException;
 import com.freesia.account.mapper.AccountCostMapper;
@@ -239,67 +241,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Override
     public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostDto accountCost, PageQuery pageQuery) {
         Page<FindPageAccountCostEntity> pagePo = accountCostMapper.findPageAccountCost(accountCost, pageQuery.build());
-        Long userId = USecurity.getUserId();
-        if (pagePo != null) {
-            List<FindPageAccountCostEntity> records = pagePo.getRecords();
-            if (UEmpty.isNotEmpty(records)) {
-                for (FindPageAccountCostEntity entity : records) {
-                    List<FindPageAccountCostEntity.Alloc> allocList = entity.getAllocList();
-                    if (UEmpty.isNotEmpty(allocList)) {
-                        String allocStatus = this.buildAllocStatus(allocList);
-                        BigDecimal allocAmount = this.buildAllocAmount(allocList, userId);
-                        entity.setAllocStatus(allocStatus);
-                        entity.setAllocAmount(allocAmount);
-
-                        List<String> nickNameList = new ArrayList<>();
-                        List<String> userIdStrList = new ArrayList<>();
-                        for (FindPageAccountCostEntity.Alloc alloc : allocList) {
-                            FindPageAccountCostEntity.Alloc.User user = alloc.getUser();
-                            if (user.getId().equals(userId)) {
-                                entity.setAcNickName(user.getNickName());
-                            }
-                            nickNameList.add(user.getNickName());
-                            userIdStrList.add(String.valueOf(user.getId()));
-                        }
-                        entity.setAccountCostUserId(UString.join(userIdStrList, ","));
-                        entity.setAccountCostUserName(UString.join(nickNameList, ","));
-                    }
-                }
-            }
-            return TableResult.build(pagePo);
-        }
-        return TableResult.build();
-    }
-
-    private BigDecimal buildAllocAmount(List<FindPageAccountCostEntity.Alloc> allocList, Long userId) {
-        BigDecimal allocAmount = null;
-        FindPageAccountCostEntity.Alloc alloc = allocList.stream()
-                .filter(item -> userId.equals(item.getUserId()))
-                .findFirst()
-                .orElse(null);
-        if (alloc != null) {
-            allocAmount = alloc.getAmount();
-        }
-        return allocAmount;
-    }
-
-    private String buildAllocStatus(List<FindPageAccountCostEntity.Alloc> allocList) {
-        boolean allNullFlag = allocList.stream()
-                .noneMatch(FindPageAccountCostEntity.Alloc::getAllocFlag);
-        if (allNullFlag) {
-            // 未分摊
-            return AllocStatus.UNFINISHED.getCode();
-        } else {
-            boolean allTrueFlag = allocList.stream()
-                    .allMatch(FindPageAccountCostEntity.Alloc::getAllocFlag);
-            if (allTrueFlag) {
-                // 完全分摊
-                return AllocStatus.FINISHED.getCode();
-            } else {
-                // 部分分摊
-                return AllocStatus.PART.getCode();
-            }
-        }
+        return TableResult.build(pagePo);
     }
 
     @Override

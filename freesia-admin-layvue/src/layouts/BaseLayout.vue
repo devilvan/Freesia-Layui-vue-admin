@@ -475,9 +475,9 @@ export default {
 }
 
 /*鼠标经过背景色，增加了improtant，否则设置无效*/
-.layui-header .layui-nav-item .layui-icon:hover {
-  background: whitesmoke !important;
-}
+//.layui-header .layui-nav-item .layui-icon:hover {
+//  background: #00f7de !important;
+//}
 
 /*面包屑颜色兼容*/
 .layui-header .layui-nav-item .layui-breadcrumb a {
