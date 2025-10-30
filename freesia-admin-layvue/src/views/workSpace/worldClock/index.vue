@@ -12,6 +12,7 @@
           <div class="sunrise">
             <object style="height: 40px" :data="'/svg/sunrise.svg'" type="image/svg+xml"></object>
             <div>09:30</div>
+          </div>
           <div class="sunset">
             <object style="height: 40px" :data="'/svg/sunset.svg'" type="image/svg+xml"></object>
             <div>18:30</div>
