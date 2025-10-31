@@ -2,36 +2,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>freesia-web</artifactId>
         <groupId>com.freesia</groupId>
+        <artifactId>freesia-web</artifactId>
         <version>1.5.0</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>freesia-web-account</artifactId>
+    <artifactId>freesia-web-worldclock</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.freesia</groupId>
             <artifactId>freesia-web-admin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.freesia</groupId>
-            <artifactId>freesia-web-icon</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.freesia</groupId>
-            <artifactId>freesia-web-worldclock</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.freesia</groupId>
-            <artifactId>freesia-common-notice</artifactId>
         </dependency>
     </dependencies>
 </project>

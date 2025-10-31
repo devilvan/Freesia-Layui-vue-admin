@@ -18,6 +18,7 @@
         <module>freesia-web-admin</module>
         <module>freesia-web-account</module>
         <module>freesia-web-icon</module>
+        <module>freesia-web-worldclock</module>
     </modules>
 
     <dependencyManagement>
@@ -46,6 +47,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-web-icon</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-web-worldclock</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
             <!--基础模块-->
