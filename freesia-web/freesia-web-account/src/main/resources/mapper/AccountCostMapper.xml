@@ -35,7 +35,6 @@
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         AND AC.TENANT_ID = #{accountCostDto.tenantId}
         <if test="accountCostDto.costDesc != null and accountCostDto.costDesc != ''">
             AND AC.COST_DESC like CONCAT('%', #{accountCostDto.costDesc}, '%')
@@ -102,7 +101,7 @@
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCostDto.tenantId}
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.costDesc != null and accountCostDto.costDesc != ''">
             AND AC.COST_DESC like CONCAT('%', #{accountCostDto.costDesc}, '%')
         </if>
@@ -161,7 +160,6 @@
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCostDto.userId}
         AND AC.TENANT_ID = #{accountCostDto.tenantId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         <if test="accountCostDto.id != null and accountCostDto.id != 0">
             AND AC.ID = #{accountCostDto.id}
         </if>
@@ -193,7 +191,7 @@
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCostDto.tenantId}
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.id != null and accountCostDto.id != 0">
             AND ACUA.COST_ID = #{accountCostDto.id}
         </if>
@@ -276,7 +274,6 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
         AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
         GROUP BY AC.ID
@@ -305,7 +302,7 @@
         </if>
         
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
         AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
         GROUP BY AC.ID) T
@@ -331,7 +328,6 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
             AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
@@ -354,7 +350,7 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.paymentTimeFrom != null and accountCostDto.paymentTimeTo != null">
             AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
             AND AC.PAYMENT_TIME <![CDATA[<=]]>  #{accountCostDto.paymentTimeTo}
@@ -389,7 +385,6 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
         AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
         <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
@@ -409,7 +404,7 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
         AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
         <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
@@ -456,7 +451,6 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
             AND AC.COST_TYPE = #{accountCostDto.costType}
         </if>
@@ -478,7 +472,7 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
             AND AC.COST_TYPE = #{accountCostDto.costType}
         </if>
@@ -520,7 +514,6 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
             AND AC.COST_TYPE = #{accountCostDto.costType}
         </if>
@@ -541,7 +534,7 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
             AND AC.COST_TYPE = #{accountCostDto.costType}
         </if>
@@ -570,7 +563,6 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
         AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
         GROUP BY AC.ID
@@ -590,7 +582,7 @@
         </if>
         
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         AND AC.PAYMENT_TIME <![CDATA[>=]]> #{accountCostDto.paymentTimeFrom}
         AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
         GROUP BY AC.ID) T
@@ -624,7 +616,6 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE_SUB(CURDATE(), INTERVAL 3 WEEK), INTERVAL
         WEEKDAY(DATE_SUB(CURDATE(), INTERVAL 3 WEEK)) DAY)
         GROUP BY AC.ID,AC.COST_TYPE
@@ -651,7 +642,7 @@
         </if>
         
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE_SUB(CURDATE(), INTERVAL 3 WEEK), INTERVAL
         WEEKDAY(DATE_SUB(CURDATE(), INTERVAL 3 WEEK)) DAY)
         GROUP BY AC.ID,AC.COST_TYPE) T
@@ -678,7 +669,6 @@
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
         AND AC.PAYMENT_TIME >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-01')
         GROUP BY AC.ID,AC.COST_TYPE
 
@@ -698,7 +688,7 @@
         </if>
         
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND (ACUA.USER_ID IS NULL OR ACUA.USER_ID = #{accountCostDto.userId} )
+        AND ACUA.USER_ID = #{accountCostDto.userId}
         AND AC.PAYMENT_TIME >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-01')
         GROUP BY AC.ID,AC.COST_TYPE) T
         GROUP BY T.COST_TYPE, T.DATE_SIGN
