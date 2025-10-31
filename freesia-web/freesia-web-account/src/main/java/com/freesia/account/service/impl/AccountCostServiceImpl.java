@@ -109,7 +109,7 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         Long costId = accountCostDto.getId();
         OssHandler ossHandler = OssFactory.getInstance();
         accountCostDto.setIcon(ossHandler.convertDomain2Endpoint(accountCostDto.getIcon()));
-        AccountCostPo accountCostPo = UCopy.copyDto2Po(accountCostDto, AccountCostPo.class);
+        AccountCostPo accountCostPo = new AccountCostPo();
         UCopy.halfCopy(accountCostDto, accountCostPo);
         List<Long> accountCostUserIdList = accountCostDto.getAccountCostUserIdList();
         // 新增
@@ -148,8 +148,8 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
         } else {
             // 独立事务更新
-            AccountCostPo afterInsertAccountCostPo = accountCostRepository.save(accountCostPo);
-            transactionTemplate.execute(status -> {
+            AccountCostPo afterInsertAccountCostPo = transactionTemplate.execute(status -> {
+                AccountCostPo afterSavePo = accountCostRepository.save(accountCostPo);
                 // 修改
                 if (UEmpty.isNotNull(costId)) {
                     accountCostUserAllocService.deleteAccountCostUserAllocByCostId(Collections.singletonList(costId));
@@ -164,13 +164,13 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                         sumAmount = sumAmount.add(Convert.toBigDecimal(accountCostUserAllocDto.getAmount(), BigDecimal.ZERO));
                     }
                     List<AccountCostUserAllocDto> saveAccountCostUserAllocDtoList = new ArrayList<>();
-                    if (UEmpty.isNotNull(afterInsertAccountCostPo) && UEmpty.isNotNull(outlay) && outlay.compareTo(BigDecimal.ZERO) > 0) {
-                        saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterInsertAccountCostPo, accountCostUserAllocDtoList, outlay, sumAmount);
+                    if (UEmpty.isNotNull(afterSavePo) && UEmpty.isNotNull(outlay) && outlay.compareTo(BigDecimal.ZERO) > 0) {
+                        saveAccountCostUserAllocDtoList = saveBatchAccountCostUserAllocDto(saveAccountCostUserAllocDtoList, afterSavePo, accountCostUserAllocDtoList, outlay, sumAmount);
                     } else {
                         throw new AccountException("account.cost.amount.invalid");
                     }
                     if (UEmpty.isNotEmpty(accountCostUserIdList)) {
-                        if (UEmpty.isNotNull(afterInsertAccountCostPo)) {
+                        if (UEmpty.isNotNull(afterSavePo)) {
                             List<Long> publishIdList = accountCostUserIdList
                                     .stream()
                                     .filter(item -> !item.equals(userId))
@@ -179,14 +179,14 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
                                     .filter(item -> Objects.equals(item.getUserId(), userId))
                                     .findFirst().orElseGet(AccountCostUserAllocDto::new);
                             if (UEmpty.isNotEmpty(saveAccountCostUserAllocDtoList) && UEmpty.isNotNull(accountCostUserAllocDto)) {
-                                buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterInsertAccountCostPo, accountCostUserAllocDto);
+                                buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterSavePo, accountCostUserAllocDto);
                             } else {
-                                buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterInsertAccountCostPo, null);
+                                buildPublishMessage(publishIdList, "account.notice.modify", sysUserDto, afterSavePo, null);
                             }
                         }
                     }
                 }
-                return status;
+                return afterSavePo;
             });
             return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
         }
