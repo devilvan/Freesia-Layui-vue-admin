@@ -12,11 +12,13 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.io.Serial;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * @author Evad.Wu
@@ -43,15 +45,15 @@ public class WorldClockSunriseSunsetPo extends BasePo implements Serializable {
     @Schema(description = "日期")
     @TableField(value = "DATE")
     @Column(name = "DATE", columnDefinition = "DATE NOT NULL COMMENT '日期'")
-    private Date date;
+    private LocalDate date;
     @Schema(description = "日出时间")
     @TableField(value = "SUNRISE_TIME")
     @Column(name = "SUNRISE_TIME", columnDefinition = "TIME NOT NULL COMMENT '日出时间'")
-    private Date sunriseTime;
+    private LocalTime sunriseTime;
     @Schema(description = "日落时间")
     @TableField(value = "SUNSET_TIME")
     @Column(name = "SUNSET_TIME", columnDefinition = "TIME NOT NULL COMMENT '日落时间'")
-    private Date sunsetTime;
+    private LocalTime sunsetTime;
     @Schema(description = "日长时间（分钟）")
     @TableField(value = "DAY_LENGTH_MINUTES")
     @Column(name = "DAY_LENGTH_MINUTES", columnDefinition = "INT(10) NOT NULL COMMENT '日长时间（分钟）'")

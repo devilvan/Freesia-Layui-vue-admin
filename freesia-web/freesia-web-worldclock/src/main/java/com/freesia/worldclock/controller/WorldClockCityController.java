@@ -1,17 +1,19 @@
 package com.freesia.worldclock.controller;
 
+import com.freesia.controller.BaseController;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.worldclock.vo.WorldClockCityVo;
-import com.freesia.worldclock.dto.WorldClockCityDto;
-import com.freesia.worldclock.service.WorldClockCityService;
-import com.freesia.controller.BaseController;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
+import com.freesia.worldclock.dto.FindCitySunriseSunsetReqDto;
+import com.freesia.worldclock.dto.WorldClockCityDto;
+import com.freesia.worldclock.entity.FindCitySunriseSunsetEntity;
+import com.freesia.worldclock.service.WorldClockCityService;
+import com.freesia.worldclock.vo.WorldClockCityVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class WorldClockCityController extends BaseController {
     /**
      * 保存城市表信息
      *
-     * @param worldClockCityVo    待保存对象
+     * @param worldClockCityVo 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存城市表信息")
@@ -44,7 +46,7 @@ public class WorldClockCityController extends BaseController {
     /**
      * 批量保存城市表信息
      *
-     * @param worldClockCityVoList    待保存对象
+     * @param worldClockCityVoList 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存城市表信息")
@@ -59,7 +61,7 @@ public class WorldClockCityController extends BaseController {
      * 查询城市表分页信息
      *
      * @param worldClockCityVo 查询条件
-     * @param pageQuery   分页条件
+     * @param pageQuery        分页条件
      * @return 形式返回
      */
     @Operation(summary = "查询城市表分页信息")
@@ -94,5 +96,19 @@ public class WorldClockCityController extends BaseController {
     public R<Void> deleteWorldClockCity(@RequestBody List<Long> idList) {
         worldClockCityService.deleteWorldClockCity(idList);
         return R.ok();
+    }
+
+
+    /**
+     * 条件查询城市日出日落时间表
+     *
+     * @param worldClockSunriseSunsetVo 查询条件
+     * @return 形式返回
+     */
+    @Operation(summary = "条件查询城市日出日落时间表")
+    @GetMapping(value = "findCitySunriseSunset")
+    public R<List<FindCitySunriseSunsetEntity>> findCitySunriseSunset(FindCitySunriseSunsetReqDto findCitySunriseSunsetReqDto) {
+        List<FindCitySunriseSunsetEntity> findCitySunriseSunsetEntityList = worldClockCityService.findCitySunriseSunset(findCitySunriseSunsetReqDto);
+        return R.ok(findCitySunriseSunsetEntityList);
     }
 }

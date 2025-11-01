@@ -1,4 +1,67 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.worldclock.mapper.WorldClockCityMapper">
+    <sql id="allColumns">
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        CITY_NAME,
+        COUNTRY_CODE,
+        TIMEZONE,
+        LATITUDE,
+        LONGITUDE
+    </sql>
+    <select id="findListWorldClockCity" resultType="com.freesia.worldclock.po.WorldClockCityPo">
+        SELECT ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        CITY_NAME,
+        COUNTRY_CODE,
+        TIMEZONE,
+        LATITUDE,
+        LONGITUDE
+        FROM world_clock_city
+        WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}
+        </if>
+    </select>
+
+    <select id="findCitySunriseSunset" resultType="com.freesia.worldclock.entity.FindCitySunriseSunsetEntity">
+        SELECT
+        city.ID AS CITY_ID,
+        city.CITY_NAME,
+        city.TIMEZONE,
+        ss.ID AS SUNRISE_SUNSET_ID,
+        ss.date,
+        ss.sunrise_time,
+        ss.sunset_time,
+        ss.day_length_minutes
+        FROM world_clock_city city
+        LEFT JOIN world_clock_sunrise_sunset ss ON city.ID = SS.CITY_ID
+        WHERE city.LOGIC_DEL = 0
+        and ss.LOGIC_DEL = 0
+        AND ss.DATE = DATE(#{dto.date})
+        <if test="dto.id != null">
+            AND ss.CITY_ID = #{dto.id}
+        </if>
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(dto.cityNameList)">
+            AND city.CITY_NAME IN
+            <foreach collection="dto.cityNameList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 </mapper>

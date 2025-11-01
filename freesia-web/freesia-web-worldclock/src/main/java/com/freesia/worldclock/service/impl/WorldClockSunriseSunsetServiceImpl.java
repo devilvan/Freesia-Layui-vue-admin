@@ -6,18 +6,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.worldclock.dto.WorldClockSunriseSunsetDto;
-import com.freesia.worldclock.po.WorldClockSunriseSunsetPo;
-import com.freesia.worldclock.service.WorldClockSunriseSunsetService;
-import com.freesia.worldclock.mapper.WorldClockSunriseSunsetMapper;
-import com.freesia.worldclock.repository.WorldClockSunriseSunsetRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.worldclock.dto.WorldClockSunriseSunsetDto;
+import com.freesia.worldclock.mapper.WorldClockSunriseSunsetMapper;
+import com.freesia.worldclock.po.WorldClockSunriseSunsetPo;
+import com.freesia.worldclock.repository.WorldClockSunriseSunsetRepository;
+import com.freesia.worldclock.service.WorldClockSunriseSunsetService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -29,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WorldClockSunriseSunsetServiceImpl extends ServiceImpl<WorldClockSunriseSunsetMapper, WorldClockSunriseSunsetPo> implements WorldClockSunriseSunsetService {
     private final WorldClockSunriseSunsetRepository worldClockSunriseSunsetRepository;
+    private final WorldClockSunriseSunsetMapper worldClockSunriseSunsetMapper;
 
     @Override
     public WorldClockSunriseSunsetDto saveUpdate(WorldClockSunriseSunsetDto worldClockSunriseSunsetDto) {

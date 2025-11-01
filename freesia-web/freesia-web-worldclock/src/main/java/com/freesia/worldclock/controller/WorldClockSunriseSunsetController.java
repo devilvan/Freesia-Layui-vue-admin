@@ -1,17 +1,17 @@
 package com.freesia.worldclock.controller;
 
+import com.freesia.controller.BaseController;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.worldclock.vo.WorldClockSunriseSunsetVo;
-import com.freesia.worldclock.dto.WorldClockSunriseSunsetDto;
-import com.freesia.worldclock.service.WorldClockSunriseSunsetService;
-import com.freesia.controller.BaseController;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
+import com.freesia.worldclock.dto.WorldClockSunriseSunsetDto;
+import com.freesia.worldclock.service.WorldClockSunriseSunsetService;
+import com.freesia.worldclock.vo.WorldClockSunriseSunsetVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     /**
      * 保存日出日落时间表信息
      *
-     * @param worldClockSunriseSunsetVo    待保存对象
+     * @param worldClockSunriseSunsetVo 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存日出日落时间表信息")
@@ -44,7 +44,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     /**
      * 批量保存日出日落时间表信息
      *
-     * @param worldClockSunriseSunsetVoList    待保存对象
+     * @param worldClockSunriseSunsetVoList 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存日出日落时间表信息")
@@ -59,7 +59,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
      * 查询日出日落时间表分页信息
      *
      * @param worldClockSunriseSunsetVo 查询条件
-     * @param pageQuery   分页条件
+     * @param pageQuery                 分页条件
      * @return 形式返回
      */
     @Operation(summary = "查询日出日落时间表分页信息")

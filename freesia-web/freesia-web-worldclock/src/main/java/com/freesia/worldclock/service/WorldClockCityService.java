@@ -2,7 +2,9 @@ package com.freesia.worldclock.service;
 
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.worldclock.dto.FindCitySunriseSunsetReqDto;
 import com.freesia.worldclock.dto.WorldClockCityDto;
+import com.freesia.worldclock.entity.FindCitySunriseSunsetEntity;
 
 import java.util.List;
 
@@ -32,7 +34,7 @@ public interface WorldClockCityService {
      * 查询城市表信息
      *
      * @param worldClockCityDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery         分页条件
      * @return 分页信息
      */
     TableResult<WorldClockCityDto> findPageWorldClockCity(WorldClockCityDto worldClockCityDto, PageQuery pageQuery);
@@ -51,4 +53,23 @@ public interface WorldClockCityService {
      * @param idList 主键
      */
     void deleteWorldClockCity(List<Long> idList);
+
+    void generateYearlyDataForAllCities(int year);
+
+    /**
+     * 条件查询城市
+     *
+     * @param worldClockCityDto 查询条件
+     * @return 结果集
+     */
+    List<WorldClockCityDto> findListWorldClockCity(WorldClockCityDto worldClockCityDto);
+
+
+    /**
+     * 条件查询城市日出日落时间表信息
+     *
+     * @param findCitySunriseSunsetReqDto 查询条件
+     * @return 结果集
+     */
+    List<FindCitySunriseSunsetEntity> findCitySunriseSunset(FindCitySunriseSunsetReqDto findCitySunriseSunsetReqDto);
 }

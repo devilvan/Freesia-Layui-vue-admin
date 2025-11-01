@@ -3,6 +3,7 @@ package com.freesia.worldclock.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -14,13 +15,13 @@ import java.time.ZonedDateTime;
  * @date 2025-10-31
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SunriseSunsetCalculator {
+public class SunriseSunsetCalculatorUtil {
     /**
      * 计算指定日期和位置的日出日落时间
      * 使用简化版的天文学算法
      */
     public static SunriseSunsetResult calculateSunriseSunset(
-            double latitude, double longitude, LocalDate date, String timezone) {
+            BigDecimal latitude, BigDecimal longitude, LocalDate date, String timezone) {
 
         // 转换为时区时间
         ZoneId zoneId = ZoneId.of(timezone);
@@ -30,11 +31,11 @@ public class SunriseSunsetCalculator {
         double julianDate = calculateJulianDate(zonedDate);
 
         // 计算太阳位置
-        double solarNoon = calculateSolarNoon(julianDate, longitude);
+        double solarNoon = calculateSolarNoon(julianDate, longitude.doubleValue());
         double declination = calculateSolarDeclination(julianDate);
 
         // 计算日出日落时间（时角）
-        double hourAngle = calculateHourAngle(latitude, declination);
+        double hourAngle = calculateHourAngle(latitude.doubleValue(), declination);
 
         // 转换为当地时间
         double sunrise = solarNoon - hourAngle;

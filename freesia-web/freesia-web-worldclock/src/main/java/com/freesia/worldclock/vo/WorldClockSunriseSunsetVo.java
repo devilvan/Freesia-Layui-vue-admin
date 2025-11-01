@@ -1,14 +1,14 @@
 package com.freesia.worldclock.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * @author Evad.Wu
@@ -25,13 +25,13 @@ public class WorldClockSunriseSunsetVo extends BaseVo {
     private Long cityId;
     @Schema(description = "日期")
     @JsonAlias(value = {"date"})
-    private Date date;
+    private LocalDate date;
     @Schema(description = "日出时间")
     @JsonAlias(value = {"sunriseTime"})
-    private Date sunriseTime;
+    private LocalTime sunriseTime;
     @Schema(description = "日落时间")
     @JsonAlias(value = {"sunsetTime"})
-    private Date sunsetTime;
+    private LocalTime sunsetTime;
     @Schema(description = "日长时间（分钟）")
     @JsonAlias(value = {"dayLengthMinutes"})
     private Integer dayLengthMinutes;

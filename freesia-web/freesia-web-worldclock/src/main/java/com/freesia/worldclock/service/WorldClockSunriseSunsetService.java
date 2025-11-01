@@ -32,7 +32,7 @@ public interface WorldClockSunriseSunsetService {
      * 查询日出日落时间表信息
      *
      * @param worldClockSunriseSunsetDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery                  分页条件
      * @return 分页信息
      */
     TableResult<WorldClockSunriseSunsetDto> findPageWorldClockSunriseSunset(WorldClockSunriseSunsetDto worldClockSunriseSunsetDto, PageQuery pageQuery);
