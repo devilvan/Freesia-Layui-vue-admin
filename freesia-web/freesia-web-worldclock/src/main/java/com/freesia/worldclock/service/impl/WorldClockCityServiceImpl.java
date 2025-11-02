@@ -21,6 +21,9 @@ import com.freesia.worldclock.util.SunriseSunsetCalculatorUtil;
 import com.freesia.worldclock.util.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -150,6 +153,10 @@ public class WorldClockCityServiceImpl extends ServiceImpl<WorldClockCityMapper,
 
 
     @Override
+    @Caching(
+            cacheable = {@Cacheable(value = "findCitySunriseSunset", key = "#findCitySunriseSunsetReqDto.id + '@' + #findCitySunriseSunsetReqDto.date")},
+            put = {@CachePut(value = "findCitySunriseSunset", key = "#findCitySunriseSunsetReqDto.id + '@' + #findCitySunriseSunsetReqDto.date")}
+    )
     public List<FindCitySunriseSunsetEntity> findCitySunriseSunset(FindCitySunriseSunsetReqDto findCitySunriseSunsetReqDto) {
         List<FindCitySunriseSunsetEntity> findCitySunriseSunsetEntityList = worldClockCityMapper.findCitySunriseSunset(findCitySunriseSunsetReqDto);
         if (UEmpty.isNotEmpty(findCitySunriseSunsetEntityList)) {

@@ -1,7 +1,9 @@
 package com.freesia.worldclock.dto;
 
+import com.freesia.constant.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +18,7 @@ public class FindCitySunriseSunsetReqDto {
     @Schema(description = "城市ID")
     private Long id;
     @Schema(description = "日期")
+    @DateTimeFormat(pattern = Constants.YMD)
     private LocalDate date;
     @Schema(description = "城市名称")
     private List<String> cityNameList;

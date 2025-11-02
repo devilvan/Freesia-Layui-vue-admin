@@ -5,17 +5,21 @@
       <div v-for="clock in clocks" :key="clock.timezone" class="clock-card">
         <div class="location">
           <lay-avatar size="lg" :src="clock.flag"></lay-avatar>
-          {{ clock.location }}
+          {{ clock.title }}
         </div>
         <div class="time">{{ clock.time }}:{{ clock.seconds < 10 ? '0' + clock.seconds : clock.seconds }}</div>
         <div class="sunRiseSet">
           <div class="sunrise">
             <object style="height: 40px" :data="'/svg/sunrise.svg'" type="image/svg+xml"></object>
-            <div>09:30</div>
+            <div>{{ clock.sunriseTimeLocal }}</div>
+          </div>
+          <div class="sunrise_sunset_middle">
+            <div>日出日落时间</div>
+            <div>日长：{{ clock.dayLengthMinutes }}分钟</div>
           </div>
           <div class="sunset">
             <object style="height: 40px" :data="'/svg/sunset.svg'" type="image/svg+xml"></object>
-            <div>18:30</div>
+            <div>{{ clock.sunsetTimeLocal }}</div>
           </div>
         </div>
         <div class="timezone">{{ clock.timezone }}</div>
@@ -33,23 +37,28 @@ export default {
 
 <script lang="ts" setup>
 import {onMounted, onBeforeUnmount, reactive, ref} from 'vue';
-import {Clock} from "@/types/workSpace/WorldClock";
+import {Clock, FindCitySunriseSunsetEntity, FindCitySunriseSunsetReqDto} from "@/types/workSpace/WorldClock";
 import * as echarts from "echarts";
+import {findCitySunriseSunset} from "@/api/worldclock/WorldClock";
+import {formatDateTime} from "@/util/UDate";
+import {R} from "@/types/Result";
 
 
 /*INIT*/
 onMounted(() => {
-  clocks.forEach(clock => {
+  clocks.value.forEach(clock => {
     // 初始更新
     updateClock(clock);
     // doBuildSunProgress();
     // 为每个时钟设置独立的定时器
     clock.timer = window.setInterval(() => updateClock(clock), 1000);
   });
+  // 条件查询城市日出日落时间表
+  doFindCitySunriseSunset();
 });
 
 onBeforeUnmount(() => {
-  clocks.forEach(clock => {
+  clocks.value.forEach(clock => {
     if (clock.timer) {
       clearInterval(clock.timer);
     }
@@ -58,19 +67,24 @@ onBeforeUnmount(() => {
 /*INIT*/
 
 /*VAR*/
-const clocks = reactive<Clock[]>([
-  {location: '上海', timezone: 'Asia/Shanghai', flag: '/flag/China.svg'},
-  {location: '东京', timezone: 'Asia/Tokyo', flag: '/flag/Japan.svg'},
-  {location: '伦敦', timezone: 'Europe/London', flag: '/flag/Britain.svg'},
-  {location: '柏林', timezone: 'Europe/Berlin', flag: '/flag/Germany.svg'},
-  {location: '纽约（美东）', timezone: 'America/New_York', flag: '/flag/United States.svg'},
-  {location: '丹佛（美中）', timezone: 'America/Denver', flag: '/flag/United States.svg'},
-  {location: '洛杉矶（美西）', timezone: 'America/Los_Angeles', flag: '/flag/United States.svg'},
-  {location: '悉尼', timezone: 'Australia/Sydney', flag: '/flag/Australia.svg'},
-  {location: '布宜诺斯艾利斯', timezone: 'America/Argentina/Buenos_Aires', flag: '/flag/Argentina.svg'},
-  {location: '圣地亚哥', timezone: 'America/Santiago', flag: '/flag/Chile.svg'},
-  {location: '利雅得', timezone: 'Asia/Riyadh', flag: '/flag/Saudi.svg'},
-  {location: '约翰内斯堡', timezone: 'Africa/Johannesburg', flag: '/flag/South Africa.svg'},
+const clocks = ref<Clock[]>([
+  {title: '北京', location: '北京', timezone: 'Asia/Shanghai', flag: '/flag/China.svg'},
+  {title: '东京', location: '东京', timezone: 'Asia/Tokyo', flag: '/flag/Japan.svg'},
+  {title: '伦敦', location: '伦敦', timezone: 'Europe/London', flag: '/flag/Britain.svg'},
+  {title: '柏林', location: '柏林', timezone: 'Europe/Berlin', flag: '/flag/Germany.svg'},
+  {title: '纽约（美东）', location: '纽约', timezone: 'America/New_York', flag: '/flag/United States.svg'},
+  {title: '丹佛（美中）', location: '丹佛', timezone: 'America/Denver', flag: '/flag/United States.svg'},
+  {title: '洛杉矶（美西）', location: '洛杉矶', timezone: 'America/Los_Angeles', flag: '/flag/United States.svg'},
+  {title: '悉尼', location: '悉尼', timezone: 'Australia/Sydney', flag: '/flag/Australia.svg'},
+  {
+    title: '布宜诺斯艾利斯',
+    location: '布宜诺斯艾利斯',
+    timezone: 'America/Argentina/Buenos_Aires',
+    flag: '/flag/Argentina.svg'
+  },
+  {title: '圣地亚哥', location: '圣地亚哥', timezone: 'America/Santiago', flag: '/flag/Chile.svg'},
+  {title: '利雅得', location: '利雅得', timezone: 'Asia/Riyadh', flag: '/flag/Saudi.svg'},
+  {title: '约翰内斯堡', location: '约翰内斯堡', timezone: 'Africa/Johannesburg', flag: '/flag/South Africa.svg'},
 ].map(clock => ({
   ...clock,
   time: '',
@@ -108,6 +122,30 @@ const updateClock = (clock: Clock) => {
   };
   clock.date = new Intl.DateTimeFormat('zh-CN', dateOptions).format(now);
 };
+
+function doFindCitySunriseSunset() {
+  let today = formatDateTime(new Date(), 'yyyy-MM-dd');
+  let cityNameList = clocks.value.map(item => item.location);
+  let params: FindCitySunriseSunsetReqDto = {
+    date: today,
+    cityNameList: cityNameList
+  }
+  findCitySunriseSunset(params).then((res: R<FindCitySunriseSunsetEntity[]>) => {
+    if (res.code === 200) {
+      let data = res.data;
+      data?.forEach((item: FindCitySunriseSunsetEntity, index: number) => {
+        let clock = clocks.value.find(i => i.location === item.cityName);
+        if (clock) {
+          clock.sunRiseTime = item.sunriseTime
+          clock.sunSetTime = item.sunsetTime
+          clock.sunriseTimeLocal = item.sunriseTimeLocal
+          clock.sunsetTimeLocal = item.sunsetTimeLocal
+          clock.dayLengthMinutes = item.dayLengthMinutes
+        }
+      })
+    }
+  })
+}
 
 /*FUNCTION*/
 </script>
@@ -185,6 +223,13 @@ h2 {
 
 .sunrise, .sunset {
   text-align: center;
+}
+
+.sunrise_sunset_middle {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
 }
 
 .date {

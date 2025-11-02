@@ -75,6 +75,13 @@ spring:
         enabled: false
 ---
 spring:
+  cache:
+    type: redis
+    redis:
+      # 过期时间（毫秒）
+      time-to-live: 86400000
+---
+spring:
   mvc:
     pathmatch:
       matching-strategy: PATH_PATTERN_PARSER

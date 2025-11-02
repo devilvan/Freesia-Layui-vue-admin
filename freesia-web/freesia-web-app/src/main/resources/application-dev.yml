@@ -76,6 +76,8 @@ freesia:
         - COMMON_ICON_TEMPLATE_HEADER
         - COMMON_ICON_TEMPLATE_DETAIL
         - SYS_NOTICE
+        - WORLD_CLOCK_CITY
+        - WORLD_CLOCK_SUNRISE_SUNSET
 ---
 login.password:
   # 密码最大错误次数
