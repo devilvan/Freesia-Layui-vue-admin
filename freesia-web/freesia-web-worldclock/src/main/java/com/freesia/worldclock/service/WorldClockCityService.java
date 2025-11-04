@@ -54,6 +54,19 @@ public interface WorldClockCityService {
      */
     void deleteWorldClockCity(List<Long> idList);
 
+    /**
+     * 根据年份、城市ID生成日出日落时间
+     *
+     * @param cityId 城市ID
+     * @param year   年份
+     */
+    void generateYearlyDataForCity(Long cityId, int year);
+
+    /**
+     * 根据年份生成所有城市的日出日落时间
+     *
+     * @param year 年份
+     */
     void generateYearlyDataForAllCities(int year);
 
     /**

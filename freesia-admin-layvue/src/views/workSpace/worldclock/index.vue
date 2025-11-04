@@ -82,7 +82,9 @@ const clocks = ref<Clock[]>([
     timezone: 'America/Argentina/Buenos_Aires',
     flag: '/flag/Argentina.svg'
   },
-  {title: '圣地亚哥', location: '圣地亚哥', timezone: 'America/Santiago', flag: '/flag/Chile.svg'},
+  // {title: '圣地亚哥', location: '圣地亚哥', timezone: 'America/Santiago', flag: '/flag/Chile.svg'},
+  {title: '马德里', location: '马德里', timezone: 'Europe/Madrid', flag: '/flag/Spanish.svg'},
+
   {title: '利雅得', location: '利雅得', timezone: 'Asia/Riyadh', flag: '/flag/Saudi.svg'},
   {title: '约翰内斯堡', location: '约翰内斯堡', timezone: 'Africa/Johannesburg', flag: '/flag/South Africa.svg'},
 ].map(clock => ({
