@@ -136,17 +136,20 @@
             </lay-menu-item>
             <lay-menu-item>
               <global-message-tab :flag="flag" @callback="callbackFunc">
-                <lay-badge type="rim" position="bottom-right" :value="userInfoStore.unreadCount">
-                  <lay-icon
-                      type="layui-icon-notice"
-                      @click="changeDropdown"
+                <div class="divBadgeIcon">
+                  <lay-icon style="font-size: 14pt;padding: 0"
+                            type="layui-icon-notice"
+                            @click="changeDropdown"
                   ></lay-icon>
-                </lay-badge>
+                  <lay-badge style="position: absolute; top: 7px; right: 7px" type="rim" position="top-right"
+                             :value="userInfoStore.unreadCount">
+                  </lay-badge>
+                </div>
               </global-message-tab>
             </lay-menu-item>
             <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
-                <lay-icon type="layui-icon-website"></lay-icon>
+                <lay-icon style="font-size: 14pt" type="layui-icon-website"></lay-icon>
                 <template #content>
                   <lay-dropdown-menu>
                     <lay-dropdown-menu-item
@@ -164,10 +167,10 @@
               </lay-dropdown>
             </lay-menu-item>
             <lay-menu-item>
-              <lay-icon type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
+              <lay-icon style="font-size: 14pt" type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
-              <lay-icon type="layui-icon-read" title="接口文档" @click="toDoc"></lay-icon>
+              <lay-icon style="font-size: 14pt" type="layui-icon-read" title="接口文档" @click="toDoc"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
@@ -189,7 +192,7 @@
               </lay-dropdown>
             </lay-menu-item>
             <lay-menu-item @click="changeVisible">
-              <lay-icon type="layui-icon-more-vertical"></lay-icon>
+              <lay-icon style="font-size: 14pt" type="layui-icon-more-vertical"></lay-icon>
             </lay-menu-item>
           </lay-menu>
         </lay-header>
@@ -474,10 +477,6 @@ export default {
   color: darkgray;
 }
 
-/*鼠标经过背景色，增加了improtant，否则设置无效*/
-//.layui-header .layui-nav-item .layui-icon:hover {
-//  background: #00f7de !important;
-//}
 
 /*面包屑颜色兼容*/
 .layui-header .layui-nav-item .layui-breadcrumb a {
@@ -491,6 +490,9 @@ export default {
 /*图标默认颜色修复，指定 .layui-icon 去掉improtant，否则无法设置图标其他颜色*/
 .layui-header .layui-nav-item .layui-icon {
   color: #666;
+  /*扩大图标尺寸与所在容器大小一致，默认大小导致鼠标必须点击图标才能触发事件效果*/
+  //height: 50px;
+  padding: 20px;
 }
 
 /*取消默认a标签的padding:0 20px，否则扩大图标后容器变形*/
@@ -498,15 +500,11 @@ export default {
   padding: 0 !important;
 }
 
-/*扩大图标尺寸与所在容器大小一致，默认大小导致鼠标必须点击图标才能触发事件效果*/
-.layui-header .layui-nav-item .layui-icon {
-  height: 50px;
-  padding: 20px;
-}
-
 /*增加鼠标经过图标时改变图标颜色，颜色为当前系统主题色*/
 .layui-header .layui-nav-item .layui-icon:hover {
   color: var(--global-primary-color) !important;
+  // 鼠标经过背景色，增加了improtant，否则设置无效
+  background: whitesmoke !important;
 }
 
 .grey-mode {
@@ -615,5 +613,21 @@ export default {
       line-height: 32px !important;
     }
   }
+}
+
+.divBadgeIcon {
+  padding-left: 20px;
+  padding-right: 20px;
+  align-content: center;
+  justify-content: center
+}
+
+.divBadgeIcon:hover {
+  // 鼠标经过背景色，增加了improtant，否则设置无效
+  background: whitesmoke !important;
+}
+
+.divBadgeIcon:hover > .layui-icon {
+  color: var(--global-primary-color) !important;
 }
 </style>
