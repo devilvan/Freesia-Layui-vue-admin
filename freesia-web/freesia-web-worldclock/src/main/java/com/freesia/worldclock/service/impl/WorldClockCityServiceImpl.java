@@ -154,8 +154,8 @@ public class WorldClockCityServiceImpl extends ServiceImpl<WorldClockCityMapper,
 
     @Override
     @Caching(
-            cacheable = {@Cacheable(value = "findCitySunriseSunset", key = "#findCitySunriseSunsetReqDto.id + '@' + #findCitySunriseSunsetReqDto.date")},
-            put = {@CachePut(value = "findCitySunriseSunset", key = "#findCitySunriseSunsetReqDto.id + '@' + #findCitySunriseSunsetReqDto.date")}
+            cacheable = {@Cacheable(value = "findCitySunriseSunset", key = "#findCitySunriseSunsetReqDto.date")},
+            put = {@CachePut(value = "findCitySunriseSunset", key = "#findCitySunriseSunsetReqDto.date")}
     )
     public List<FindCitySunriseSunsetEntity> findCitySunriseSunset(FindCitySunriseSunsetReqDto findCitySunriseSunsetReqDto) {
         List<FindCitySunriseSunsetEntity> findCitySunriseSunsetEntityList = worldClockCityMapper.findCitySunriseSunset(findCitySunriseSunsetReqDto);

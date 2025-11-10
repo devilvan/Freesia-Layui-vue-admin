@@ -398,10 +398,10 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Override
     public EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto) {
         String cacheKey = "findRankByCostType:" + findRankByCostTypeDto.getUserId() + "@" + findRankByCostTypeDto.getTenantId() + "@" + findRankByCostTypeDto.getDateScope();
-        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
-        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
-            return echartStackedHorizontalBarOptionEntity;
-        }
+//        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
+//        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
+//            return echartStackedHorizontalBarOptionEntity;
+//        }
         String dateScope = findRankByCostTypeDto.getDateScope();
         List<FindRankByCostTypeEntity> findRankByCostTypeEntityList;
         EchartStackedHorizontalBarOptionEntity entity = null;
@@ -412,9 +412,9 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
             findRankByCostTypeEntityList = accountCostMapper.findMonthRankByCostType(findRankByCostTypeDto);
             entity = buildMonthEchartStackedHorizontalBarOptionEntity(Optional.ofNullable(findRankByCostTypeEntityList).orElseGet(ArrayList::new));
         }
-        if (UEmpty.isNotNull(entity)) {
-            URedis.set(cacheKey, entity, Duration.ofHours(4));
-        }
+//        if (UEmpty.isNotNull(entity)) {
+//            URedis.set(cacheKey, entity, Duration.ofHours(4));
+//        }
         return entity;
     }
 
@@ -547,15 +547,15 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
         Map<String, List<BigDecimal>> resultMap = new HashMap<>(16);
         for (Map.Entry<String, List<FindRankByCostTypeEntity>> entry : entrySet) {
             List<FindRankByCostTypeEntity> groupingDateSignList = entry.getValue();
+            int size = entrySet.size();
             for (FindRankByCostTypeEntity item : groupingDateSignList) {
                 resultMap.computeIfAbsent(item.getCostType(), e -> {
-                    int size = entrySet.size();
                     List<BigDecimal> list = new ArrayList<>(size);
                     for (int i = 0; i < size; i++) {
                         list.add(i, null);
                     }
                     return list;
-                }).add(item.getRk() - 1, item.getOutlay().setScale(2, RoundingMode.FLOOR));
+                }).set(item.getRk() - 1, item.getOutlay().setScale(2, RoundingMode.FLOOR));
             }
         }
         List<EchartStackedHorizontalBarOptionEntity.Series> seriesList = new ArrayList<>();
