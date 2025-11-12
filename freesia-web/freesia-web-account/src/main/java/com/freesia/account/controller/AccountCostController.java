@@ -130,7 +130,15 @@ public class AccountCostController extends BaseController {
         accountCostDto.setPaymentTimeFrom(dateRange[0]);
         accountCostDto.setPaymentTimeTo(dateRange[1]);
         accountCostDto.setCostTypeList(accountCostVo.getCostTypeList());
-        accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
+        List<Long> accountCostUserIdList = accountCostVo.getAccountCostUserIdList();
+        if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+            // 20251112-Bliss 关联用户查询时必须包含本人，防止其他账本用户查询不属于自己的数据
+            if (accountCostUserIdList.contains(userId)) {
+                accountCostDto.setAccountCostUserIdList(accountCostUserIdList);
+            } else {
+                throw new AccountException("account.user.not.contains.mine");
+            }
+        }
         return accountCostService.findPageAccountCost(accountCostDto, pageQuery);
     }
 

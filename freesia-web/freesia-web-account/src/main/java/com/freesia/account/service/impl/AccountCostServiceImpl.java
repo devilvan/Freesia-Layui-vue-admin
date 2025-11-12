@@ -41,7 +41,6 @@ import com.freesia.service.SysUserService;
 import com.freesia.sse.constant.SseTopic;
 import com.freesia.sse.dto.SseMessageDto;
 import com.freesia.sse.util.USse;
-import com.freesia.tenant.exception.TenantException;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -422,12 +421,11 @@ public class AccountCostServiceImpl extends ServiceImpl<AccountCostMapper, Accou
     @Idempotent(interval = "PT10S")
     public void refreshCache() {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
-        String findCostTypeRatePieCacheKey = "findCostTypeRatePie:" + userId + "@" + tenantId + '*';
-        String findCostLineChartCacheKey = "findCostLineChart:" + userId + "@" + tenantId + '*';
-        String findCostSumCalendarNearYearCacheKey = "findCostSumCalendarNearYear:" + userId + "@" + tenantId + '*';
-        String findRankByCostTypeCacheKey = "findRankByCostType:" + userId + "@" + tenantId + '*';
-        String findBudgetCapacityCacheKey = "findBudgetCapacity:" + userId + "@" + tenantId + '*';
+        String findCostTypeRatePieCacheKey = "findCostTypeRatePie:" + userId + '*';
+        String findCostLineChartCacheKey = "findCostLineChart:" + userId + '*';
+        String findCostSumCalendarNearYearCacheKey = "findCostSumCalendarNearYear:" + userId + '*';
+        String findRankByCostTypeCacheKey = "findRankByCostType:" + userId + '*';
+        String findBudgetCapacityCacheKey = "findBudgetCapacity:" + userId + '*';
         List<String> keyList = new ArrayList<>();
         keyList.addAll(URedis.scan(findCostTypeRatePieCacheKey));
         keyList.addAll(URedis.scan(findCostLineChartCacheKey));
