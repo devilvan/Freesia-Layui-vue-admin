@@ -102,7 +102,7 @@ public class WorldClockCityController extends BaseController {
     /**
      * 条件查询城市日出日落时间表
      *
-     * @param worldClockSunriseSunsetVo 查询条件
+     * @param findCitySunriseSunsetReqDto 查询条件
      * @return 形式返回
      */
     @Operation(summary = "条件查询城市日出日落时间表")

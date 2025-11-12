@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.redis.util.URedis;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.worldclock.dto.FindCitySunriseSunsetReqDto;
@@ -21,16 +22,16 @@ import com.freesia.worldclock.util.SunriseSunsetCalculatorUtil;
 import com.freesia.worldclock.util.TimeZoneConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Evad.Wu
@@ -153,24 +154,38 @@ public class WorldClockCityServiceImpl extends ServiceImpl<WorldClockCityMapper,
 
 
     @Override
-    @Caching(
-            cacheable = {@Cacheable(value = "findCitySunriseSunset", key = "#findCitySunriseSunsetReqDto.date")},
-            put = {@CachePut(value = "findCitySunriseSunset", key = "#findCitySunriseSunsetReqDto.date")}
-    )
     public List<FindCitySunriseSunsetEntity> findCitySunriseSunset(FindCitySunriseSunsetReqDto findCitySunriseSunsetReqDto) {
-        List<FindCitySunriseSunsetEntity> findCitySunriseSunsetEntityList = worldClockCityMapper.findCitySunriseSunset(findCitySunriseSunsetReqDto);
+        String cacheKey = "findCitySunriseSunset:" + findCitySunriseSunsetReqDto.getDate();
+        List<String> cityNameList = findCitySunriseSunsetReqDto.getCityNameList();
+        List<FindCitySunriseSunsetEntity> findCitySunriseSunsetEntityList = URedis.get(cacheKey);
         if (UEmpty.isNotEmpty(findCitySunriseSunsetEntityList)) {
-            for (FindCitySunriseSunsetEntity record : findCitySunriseSunsetEntityList) {
-                // 转换为当地时间
-                String timezone = record.getTimezone();
-                LocalTime sunriseLocal = TimeZoneConverter.utcToLocalTime(record.getSunriseTime(), record.getDate(), timezone);
-                LocalTime sunsetLocal = TimeZoneConverter.utcToLocalTime(record.getSunsetTime(), record.getDate(), timezone);
-                // 计算当地日长
-                int dayLength = TimeZoneConverter.calculateLocalDayLength(sunriseLocal, sunsetLocal);
-                record.setSunriseTimeLocal(sunriseLocal);
-                record.setSunsetTimeLocal(sunsetLocal);
-                record.setDayLengthMinutes(dayLength);
-            }
+            findCitySunriseSunsetEntityList = filterCityNameList(cityNameList, findCitySunriseSunsetEntityList);
+            return findCitySunriseSunsetEntityList;
+        }
+        findCitySunriseSunsetEntityList = Optional.ofNullable(worldClockCityMapper.findCitySunriseSunset(findCitySunriseSunsetReqDto))
+                .orElseGet(ArrayList::new);
+        for (FindCitySunriseSunsetEntity record : findCitySunriseSunsetEntityList) {
+            // 转换为当地时间
+            String timezone = record.getTimezone();
+            LocalTime sunriseLocal = TimeZoneConverter.utcToLocalTime(record.getSunriseTime(), record.getDate(), timezone);
+            LocalTime sunsetLocal = TimeZoneConverter.utcToLocalTime(record.getSunsetTime(), record.getDate(), timezone);
+            // 计算当地日长
+            int dayLength = TimeZoneConverter.calculateLocalDayLength(sunriseLocal, sunsetLocal);
+            record.setSunriseTimeLocal(sunriseLocal);
+            record.setSunsetTimeLocal(sunsetLocal);
+            record.setDayLengthMinutes(dayLength);
+        }
+        if (UEmpty.isNotEmpty(findCitySunriseSunsetEntityList)) {
+            URedis.set(cacheKey, findCitySunriseSunsetEntityList, Duration.ofDays(1));
+        }
+        return filterCityNameList(cityNameList, findCitySunriseSunsetEntityList);
+    }
+
+    private static List<FindCitySunriseSunsetEntity> filterCityNameList(List<String> cityNameList, List<FindCitySunriseSunsetEntity> findCitySunriseSunsetEntityList) {
+        if (UEmpty.isNotEmpty(cityNameList)) {
+            findCitySunriseSunsetEntityList = findCitySunriseSunsetEntityList.stream()
+                    .filter(item -> cityNameList.contains(item.getCityName()))
+                    .collect(Collectors.toList());
         }
         return findCitySunriseSunsetEntityList;
     }

@@ -57,11 +57,5 @@
         <if test="dto.id != null">
             AND ss.CITY_ID = #{dto.id}
         </if>
-        <if test="@com.freesia.util.UEmpty@isNotEmpty(dto.cityNameList)">
-            AND city.CITY_NAME IN
-            <foreach collection="dto.cityNameList" item="item" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
-        </if>
     </select>
 </mapper>
