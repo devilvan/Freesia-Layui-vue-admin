@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.CommonTodoMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.po.CommonTodoPo">
+        <id column="ID" property="id" />
+        <result column="CREATOR" property="creator" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="MODIFIER" property="modifier" />
+        <result column="MODIFY_TIME" property="modifyTime" />
+        <result column="LOGIC_DEL" property="logicDel" />
+        <result column="REC_VER" property="recVer" />
+        <result column="BUILD_IN" property="buildIn" />
+        <result column="TENANT_ID" property="tenantId" />
+        <result column="USER_ID" property="userId" />
+        <result column="TITLE" property="title" />
+        <result column="DESC" property="desc" />
+        <result column="CONTENT" property="content" />
+        <result column="DUE_TIME" property="dueTime" />
+        <result column="REMINDER_SEND_FLAG" property="reminderSendFlag" />
+        <result column="PRIORITY" property="priority" />
+        <result column="REMARK" property="remark" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID,USER_ID, TITLE, DESC, CONTENT, DUE_TIME, REMINDER_SEND_FLAG, PRIORITY, REMARK
+    </sql>
+    <select id="findPageCommonTodo" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM COMMON_TODO
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.userId != null">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.desc != null and dto.desc != ''">
+            AND DESC = #{dto.desc}
+        </if>
+        <if test="dto.content != null and dto.content != ''">
+            AND CONTENT = #{dto.content}
+        </if>
+        <if test="dto.dueTime != null">
+            AND DUE_TIME = #{dto.dueTime}
+        </if>
+        <if test="dto.reminderSendFlag != null">
+            AND REMINDER_SEND_FLAG = #{dto.reminderSendFlag}
+        </if>
+        <if test="dto.priority != null">
+            AND PRIORITY = #{dto.priority}
+        </if>
+        <if test="dto.remark != null and dto.remark != ''">
+            AND REMARK = #{dto.remark}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findListCommonTodo" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM COMMON_TODO
+        WHERE LOGIC_DEL = 0
+        <if test="dto.userId != null">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.desc != null and dto.desc != ''">
+            AND DESC = #{dto.desc}
+        </if>
+        <if test="dto.content != null and dto.content != ''">
+            AND CONTENT = #{dto.content}
+        </if>
+        <if test="dto.dueTime != null">
+            AND DUE_TIME = #{dto.dueTime}
+        </if>
+        <if test="dto.reminderSendFlag != null">
+            AND REMINDER_SEND_FLAG = #{dto.reminderSendFlag}
+        </if>
+        <if test="dto.priority != null">
+            AND PRIORITY = #{dto.priority}
+        </if>
+        <if test="dto.remark != null and dto.remark != ''">
+            AND REMARK = #{dto.remark}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO COMMON_TODO
+        (
+            USER_ID, 
+            TITLE, 
+            DESC, 
+            CONTENT, 
+            DUE_TIME, 
+            REMINDER_SEND_FLAG, 
+            PRIORITY, 
+            REMARK
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.userId}, 
+                #{item.title}, 
+                #{item.desc}, 
+                #{item.content}, 
+                #{item.dueTime}, 
+                #{item.reminderSendFlag}, 
+                #{item.priority}, 
+                #{item.remark}
+            )
+        </foreach>
+    </insert>
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE COMMON_TODO
+            <set>
+            <if test="item.userId != null">
+                USER_ID = #{item.userId},
+            </if>
+            <if test="item.title != null and item.title != ''">
+                TITLE = #{item.title},
+            </if>
+            <if test="item.desc != null and item.desc != ''">
+                DESC = #{item.desc},
+            </if>
+            <if test="item.content != null and item.content != ''">
+                CONTENT = #{item.content},
+            </if>
+            <if test="item.dueTime != null">
+                DUE_TIME = #{item.dueTime},
+            </if>
+            <if test="item.reminderSendFlag != null">
+                REMINDER_SEND_FLAG = #{item.reminderSendFlag},
+            </if>
+            <if test="item.priority != null">
+                PRIORITY = #{item.priority},
+            </if>
+            <if test="item.remark != null and item.remark != ''">
+                REMARK = #{item.remark},
+            </if>
+            MODIFY_TIME = NOW()
+            </set>
+            WHERE LOGIC_DEL = 0 AND ID = #{item.id}
+        </foreach>
+    </update>
+</mapper>

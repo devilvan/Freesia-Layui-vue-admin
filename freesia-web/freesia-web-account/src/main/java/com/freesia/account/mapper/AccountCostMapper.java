@@ -71,7 +71,7 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * 查询开销表分页信息
      *
      * @param accountCostDto 入参
-     * @param page        分页参数
+     * @param page           分页参数
      * @return 分页数据
      */
     Page<FindPageAccountCostEntity> findPageAccountCost(@Param("accountCostDto") AccountCostDto accountCostDto, @Param("page") Page<AccountCostPo> page);
