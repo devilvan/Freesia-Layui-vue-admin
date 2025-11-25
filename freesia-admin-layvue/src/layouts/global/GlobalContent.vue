@@ -11,7 +11,18 @@
           </keep-alive>
         </lay-scroll>
       </div>
-      <lay-backtop :showHeight="700" :color="backTopColor" :bgcolor="'#F6F6F6'" :circle="true"></lay-backtop>
+      <lay-tooltip trigger="hover" content="待办事项" position="left">
+        <lay-backtop @click="changeDrawer" :showHeight="0" :bottom="100" :bgcolor="backTopColor" circle disabled>
+          <lay-badge type="rim" value="10" position="top-right">
+            <lay-icon type="layui-icon-success" size="50px"></lay-icon>
+          </lay-badge>
+        </lay-backtop>
+      </lay-tooltip>
+      <lay-tooltip trigger="hover" content="返回顶部" position="left">
+        <lay-backtop :showHeight="700" :bgcolor="backTopColor" :circle="true">
+          <lay-icon type="layui-icon-top" size="50px"></lay-icon>
+        </lay-backtop>
+      </lay-tooltip>
     </router-view>
   </div>
 </template>
@@ -21,15 +32,39 @@ import {useAppStore} from '@/store/app'
 import {useTabStore} from "../composable/useTabStore";
 import {useUserStore} from "@/store/user";
 import {formatDateTime} from '@/util/UDate'
+import {h, ref} from "vue";
+import TodoModal from "@/layouts/global/TodoModal.vue";
+import {layer} from "@layui/layui-vue";
 
 const appStore = useAppStore()
 const $tab = useTabStore()
 const $userInfo = useUserStore().userInfo;
-const backTopColor = appStore.themeVariable['--global-checked-color']
+const backTopColor = ref(appStore.themeVariable['--global-primary-color'])
+const todoModalFlag = ref<boolean>(false)
+const drawerId = ref();
 
 function getContent() {
   return $userInfo.userName + ' ' + formatDateTime(new Date(), 'yyyy-MM-dd HH:mm:ss')
 }
+
+function changeDrawer() {
+  if (!drawerId.value) {
+    drawerId.value = layer.drawer({
+      title: "代办事项",
+      area: ['600px', '100%'],
+      content: h(TodoModal),
+      close: () => closeDrawer()
+    })
+  } else {
+    closeDrawer()
+  }
+}
+
+function closeDrawer() {
+  layer.close(drawerId.value);
+  drawerId.value = null
+}
+
 </script>
 
 <style scoped>

@@ -1,109 +1,41 @@
 <template>
-  <lay-dropdown
-      updateAtScroll
-      ref="manualRef"
-      :clickOutsideToClose="true"
-      :clickToClose="false"
-      :blurToClose="true"
-      placement="bottom"
-      :trigger="'hover'"
-  >
-    <slot></slot>
-    <template #content>
-      <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
-        <lay-tab-item :title="`通知(${userStore.noticeCount})`" id="1">
-          <div style="width: 100%; height: 100%; overflow: hidden">
-            <div
-                class="inform-item"
-                v-for="(item, index) in noticeList"
-                :key="index"
-                @click="doMarkRead(item, index)"
-            >
-              <div class="inform-item-icon">
-                <img src="@/assets/messageSlot/info1.png" alt=""/>
+  <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
+    <lay-tab-item :title="`待办事项(${todoList.length})`" id="1">
+      <div style="width: 100%; height: 100%; overflow: hidden">
+        <div
+            class="inform-item todo-item"
+            v-for="(item, index) in todoList"
+            :key="index"
+        >
+          <div class="todo-title">
+            <div style="flex: 1">
+              <div class="oneRow" :title="item.title">
+                {{ item.title }}
               </div>
-              <div class="inform-item-text" :style="getRowStyle(item, index)">
-                <div>{{ item.title }}</div>
-                <div class="oneRow" :title="item.content">{{ item.content }}</div>
-                <div class="inform-item-time">
-                  {{ item.createTime }}
-                </div>
-              </div>
-              <div class="inform-item-readFlag">
-                <div v-show="noticeList[index].readFlag">
-                  <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
-                </div>
-                <div v-show="!noticeList[index].readFlag">
-                  <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
-                </div>
+              <div class="inform-item-time todo-item-time">
+                <lay-icon type="layui-icon-notice"></lay-icon>
+                {{ item.time }}
               </div>
             </div>
-          </div>
-        </lay-tab-item>
-        <lay-tab-item :title="`公告(${userStore.announcementCount})`" id="2">
-          <div style="width: 100%; height: 100%; overflow: hidden">
-            <div
-                class="inform-item privateLette-item"
-                v-for="(item, index) in announcementList"
-                :key="index"
-                @click="doMarkRead(item, index)"
-            >
-              <div class="inform-item-icon">
-                <img src="@/assets/messageSlot/info2.png" alt=""/>
-              </div>
-              <div class="inform-item-text" :style="getRowStyle(item, index)">
-                <div>{{ item.title }}</div>
-                <div class="oneRow" :title="item.content">{{ item.content }}</div>
-                <div class="inform-item-time">
-                  {{ item.createTime }}
-                </div>
-              </div>
-              <div class="inform-item-readFlag">
-                <div v-show="announcementList[index].readFlag">
-                  <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
-                </div>
-                <div v-show="!announcementList[index].readFlag">
-                  <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
-                </div>
-              </div>
+            <div v-show="item.type == '未开始'" class="todo-tags">
+              <lay-tag color="#6e6e6e" variant="light">未开始</lay-tag>
+            </div>
+            <div v-show="item.type == '进行中'" class="todo-tags">
+              <lay-tag color="#2dc570" variant="light">进行中</lay-tag>
+            </div>
+            <div v-show="item.type == '即将到期'" class="todo-tags">
+              <lay-tag color="#F5319D" variant="light">即将到期</lay-tag>
             </div>
           </div>
-        </lay-tab-item>
-        <!--        <lay-tab-item :title="`待办(${todoList.length})`" id="3">-->
-        <!--          <div style="width: 100%; height: 100%; overflow: hidden">-->
-        <!--            <div-->
-        <!--                class="inform-item todo-item"-->
-        <!--                v-for="(item, index) in todoList"-->
-        <!--                :key="index"-->
-        <!--            >-->
-        <!--              <div class="todo-title">-->
-        <!--                <div style="flex: 1">-->
-        <!--                  {{ item.title }}-->
-        <!--                  <div class="inform-item-time todo-item-time">-->
-        <!--                    {{ item.time }}-->
-        <!--                  </div>-->
-        <!--                </div>-->
-        <!--                <div v-show="item.type == '未开始'" class="todo-tags">-->
-        <!--                  <lay-tag color="#6e6e6e" variant="light">未开始</lay-tag>-->
-        <!--                </div>-->
-        <!--                <div v-show="item.type == '进行中'" class="todo-tags">-->
-        <!--                  <lay-tag color="#2dc570" variant="light">进行中</lay-tag>-->
-        <!--                </div>-->
-        <!--                <div v-show="item.type == '即将到期'" class="todo-tags">-->
-        <!--                  <lay-tag color="#F5319D" variant="light">即将到期</lay-tag>-->
-        <!--                </div>-->
-        <!--              </div>-->
-        <!--            </div>-->
-        <!--          </div>-->
-        <!--        </lay-tab-item>-->
-      </lay-tab>
-    </template>
-  </lay-dropdown>
+        </div>
+      </div>
+    </lay-tab-item>
+  </lay-tab>
 </template>
 
 <script lang='ts'>
 export default {
-  name: 'MessageTab'
+  name: 'TodoModal'
 }
 </script>
 <script setup lang="ts">
@@ -128,19 +60,6 @@ onMounted(async () => {
   loadDataSource()
 })
 
-const props = withDefaults(defineProps<MessageTabProps>(), {
-  flag: false
-})
-watch(
-    () => props.flag,
-    (newVal) => {
-      if (newVal) {
-        manualRef.value.show()
-      } else {
-        manualRef.value.hide()
-      }
-    }
-)
 
 const emit = defineEmits(['callback']);
 /*INIT*/
@@ -148,12 +67,11 @@ const emit = defineEmits(['callback']);
 /*VAR*/
 const appStore = useAppStore()
 const userStore = useUserStore()
-const manualRef = ref()
 const noticeList = ref<SysNoticeEntity[]>()
 const announcementList = ref<SysNoticeEntity[]>()
 const todoList = ref([
   {
-    title: '张三的请假审批',
+    title: '张三的请假审批AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaa',
     type: '未开始',
     time: '张三在 08-09 12:00:00 提交的请假...'
   },
@@ -265,7 +183,7 @@ function getRowStyle(row: any, rowIndex: number) {
 .inform-item {
   box-sizing: border-box;
   display: flex;
-  width: 500px;
+  width: 100%;
   height: 80px;
   color: #222222;
   font-size: 14px;
@@ -313,20 +231,15 @@ function getRowStyle(row: any, rowIndex: number) {
   background-color: #fafafa;
 }
 
-.privateLette-item {
-  height: 80px;
-}
-
 .todo-item {
   box-sizing: border-box;
   padding: 0 10px;
 }
 
 .todo-title {
-  width: 80%;
+  width: 100%;
   display: flex;
   line-height: 30px;
-  text-overflow: ellipsis;
 }
 
 .todo-tags {
@@ -336,16 +249,18 @@ function getRowStyle(row: any, rowIndex: number) {
 }
 
 .todo-item-time {
-  line-height: 20px;
+  line-height: 30px;
   color: #ada4a4;
   font-size: 12px;
 }
 
 .oneRow {
   width: 350px;
+  margin-top: 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
 }
+
 </style>
