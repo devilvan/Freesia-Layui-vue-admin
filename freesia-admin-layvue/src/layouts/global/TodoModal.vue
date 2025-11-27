@@ -1,34 +1,39 @@
 <template>
   <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
     <lay-tab-item :title="`待办事项(${todoList.length})`" id="1">
-      <div style="width: 100%; height: 100%; overflow: hidden">
-        <div
-            class="inform-item todo-item"
-            v-for="(item, index) in todoList"
-            :key="index"
-        >
-          <div class="todo-title">
-            <div style="flex: 1">
-              <div class="oneRow" :title="item.title">
-                {{ item.title }}
-              </div>
-              <div class="inform-item-time todo-item-time">
-                <lay-icon type="layui-icon-notice"></lay-icon>
-                {{ item.time }}
-              </div>
+      <lay-card class="inform-item todo-item"
+                v-for="(item, index) in todoList"
+                :key="index">
+        <div class="todo-title">
+          <div style="line-height: 60px">
+            <lay-checkbox name="like" skin="primary" v-model="item.title" value="1"
+                          @change="toggleStatus"></lay-checkbox>
+          </div>
+          <div style="flex: 1">
+            <div class="oneRow" :title="item.title">
+              {{ item.title }}
             </div>
-            <div v-show="item.type == '未开始'" class="todo-tags">
-              <lay-tag color="#6e6e6e" variant="light">未开始</lay-tag>
+            <div class="inform-item-time todo-item-time">
+              <lay-tooltip content="设置提醒时间" position="bottom">
+                <lay-icon class="notice" type="layui-icon-notice" size="lg"></lay-icon>
+              </lay-tooltip>
+              {{ item.time }}
             </div>
-            <div v-show="item.type == '进行中'" class="todo-tags">
-              <lay-tag color="#2dc570" variant="light">进行中</lay-tag>
-            </div>
-            <div v-show="item.type == '即将到期'" class="todo-tags">
-              <lay-tag color="#F5319D" variant="light">即将到期</lay-tag>
-            </div>
+            <lay-date-picker v-model="item.paymentTime" allow-clear type="datetime"
+                             :shortcuts="singleShortcuts" :inputFormat="sdf_YMDHM"
+                             style="width: 100%" simple></lay-date-picker>
+          </div>
+          <div v-show="item.type == '未开始'" class="todo-tags">
+            <lay-tag color="#6e6e6e" variant="light">未开始</lay-tag>
+          </div>
+          <div v-show="item.type == '进行中'" class="todo-tags">
+            <lay-tag color="#2dc570" variant="light">进行中</lay-tag>
+          </div>
+          <div v-show="item.type == '即将到期'" class="todo-tags">
+            <lay-tag color="#F5319D" variant="light">即将到期</lay-tag>
           </div>
         </div>
-      </div>
+      </lay-card>
     </lay-tab-item>
   </lay-tab>
 </template>
@@ -46,7 +51,7 @@ import {R, TableResult} from "@/types/Result";
 import {PageQuery} from "@/types/Common";
 import {useAppStore} from "@/store/app";
 import {layer} from "@layui/layui-vue";
-import {buildRange} from "@/util/UDate";
+import {buildRange, defaultShortcuts, singleShortcuts, YMD_HMS} from "@/util/UDate";
 import {useUserStore} from "@/store/user";
 
 interface MessageTabProps {
@@ -55,16 +60,14 @@ interface MessageTabProps {
 
 /*INIT*/
 onMounted(async () => {
-  doFindAnnouncementUnreadCount();
-  doFindNoticeUnreadCount()
   loadDataSource()
 })
-
 
 const emit = defineEmits(['callback']);
 /*INIT*/
 
 /*VAR*/
+const sdf_YMDHM = 'YYYY-MM-DD HH:mm'
 const appStore = useAppStore()
 const userStore = useUserStore()
 const noticeList = ref<SysNoticeEntity[]>()
@@ -73,17 +76,20 @@ const todoList = ref([
   {
     title: '张三的请假审批AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaa',
     type: '未开始',
-    time: '张三在 08-09 12:00:00 提交的请假...'
+    time: '张三在 08-09 12:00:00 提交的请假...',
+    paymentTime: '2025-11-27 23:01'
   },
   {
     title: '考试监管',
     type: '进行中',
-    time: '考试监管在 08-09 12:00:00 之前打卡'
+    time: '考试监管在 08-09 12:00:00 之前打卡',
+    paymentTime: '2025-11-27 23:01'
   },
   {
     title: '注册新仓库',
     type: '即将到期',
-    time: '需要在 08-09 12:00:00 之前完成'
+    time: '需要在 08-09 12:00:00 之前完成',
+    paymentTime: '2025-11-27 23:01'
   }
 ])
 
@@ -113,66 +119,8 @@ function loadDataSource() {
   });
 }
 
-function doFindAnnouncementUnreadCount() {
-  let params: SysNoticeVo = {
-    type: SysNoticeType.ANNOUNCEMENT
-  }
-  findUnreadCount(params).then((res: any) => {
-    if (res.code === 200) {
-      userStore.announcementCount = res.data
-    }
-  })
-}
+function toggleStatus() {
 
-function doFindNoticeUnreadCount() {
-  let params: SysNoticeVo = {
-    type: SysNoticeType.NOTICE
-  }
-  findUnreadCount(params).then((res: any) => {
-    if (res.code === 200) {
-      userStore.noticeCount = res.data
-    }
-  })
-}
-
-function doMarkRead(item: any, idx: number) {
-  if (item.readFlag) {
-    layer.notify({
-      title: "成功",
-      content: "标记已读成功",
-      time: 5000,
-      icon: 1,
-    })
-    return;
-  }
-  let type = item.type;
-  let param: MarkReadVo = {
-    idList: new Array(item.id),
-    type: type
-  }
-  markRead(param).then((res: any) => {
-    if (SysNoticeType.NOTICE === type) {
-      userStore.noticeCount = res.data;
-      noticeList.value[idx].readFlag = true
-    } else if (SysNoticeType.ANNOUNCEMENT === type) {
-      userStore.announcementCount = res.data
-      announcementList.value[idx].readFlag = true
-    }
-    userStore.calculateSumCount()
-    emit('callback', userStore.unreadCount)
-    layer.notify({
-      title: "成功",
-      content: "标记已读成功",
-      time: 5000,
-      icon: 1,
-    })
-  })
-}
-
-
-function getRowStyle(row: any, rowIndex: number) {
-  if (row.readFlag) return 'color:' + '#c2c2c2';
-  return ''
 }
 
 /*FUNCTION*/
@@ -182,7 +130,6 @@ function getRowStyle(row: any, rowIndex: number) {
 <style lang="less" scoped>
 .inform-item {
   box-sizing: border-box;
-  display: flex;
   width: 100%;
   height: 80px;
   color: #222222;
@@ -263,4 +210,12 @@ function getRowStyle(row: any, rowIndex: number) {
   text-align: left;
 }
 
+.notice {
+  margin-right: 10px;
+}
+
+.notice:hover {
+  color: var(--global-primary-color) !important;
+  cursor: pointer;
+}
 </style>

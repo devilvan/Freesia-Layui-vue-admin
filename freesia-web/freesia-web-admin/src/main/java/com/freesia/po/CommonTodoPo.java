@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 待办事项表 映射
- * @date 2025-11-20
+ * @date 2025-11-27
  */
 @Setter
 @Getter
@@ -52,6 +52,10 @@ public class CommonTodoPo extends BasePo implements Serializable {
     @TableField(value = "CONTENT")
     @Column(name = "CONTENT", columnDefinition = "TEXT(65,535) NOT NULL COMMENT '内容'")
     private String content;
+    @Schema(description = "状态（UNFINISHED-未完成；FINISHED-已完成）")
+    @TableField(value = "STATUS")
+    @Column(name = "STATUS", columnDefinition = "VARCHAR(16) COMMENT '状态（UNFINISHED-未完成；FINISHED-已完成）'")
+    private String status;
     @Schema(description = "提醒时间")
     @TableField(value = "DUE_TIME")
     @Column(name = "DUE_TIME", columnDefinition = "DATETIME COMMENT '提醒时间'")

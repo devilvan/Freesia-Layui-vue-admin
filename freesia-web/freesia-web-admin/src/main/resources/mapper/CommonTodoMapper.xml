@@ -15,13 +15,14 @@
         <result column="TITLE" property="title" />
         <result column="DESC" property="desc" />
         <result column="CONTENT" property="content" />
+        <result column="STATUS" property="status" />
         <result column="DUE_TIME" property="dueTime" />
         <result column="REMINDER_SEND_FLAG" property="reminderSendFlag" />
         <result column="PRIORITY" property="priority" />
         <result column="REMARK" property="remark" />
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID,USER_ID, TITLE, DESC, CONTENT, DUE_TIME, REMINDER_SEND_FLAG, PRIORITY, REMARK
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID,USER_ID, TITLE, DESC, CONTENT, STATUS, DUE_TIME, REMINDER_SEND_FLAG, PRIORITY, REMARK
     </sql>
     <select id="findPageCommonTodo" resultMap="BaseResultMap">
         SELECT
@@ -40,6 +41,9 @@
         </if>
         <if test="dto.content != null and dto.content != ''">
             AND CONTENT = #{dto.content}
+        </if>
+        <if test="dto.status != null and dto.status != ''">
+            AND STATUS = #{dto.status}
         </if>
         <if test="dto.dueTime != null">
             AND DUE_TIME = #{dto.dueTime}
@@ -72,6 +76,9 @@
         <if test="dto.content != null and dto.content != ''">
             AND CONTENT = #{dto.content}
         </if>
+        <if test="dto.status != null and dto.status != ''">
+            AND STATUS = #{dto.status}
+        </if>
         <if test="dto.dueTime != null">
             AND DUE_TIME = #{dto.dueTime}
         </if>
@@ -93,6 +100,7 @@
             TITLE, 
             DESC, 
             CONTENT, 
+            STATUS, 
             DUE_TIME, 
             REMINDER_SEND_FLAG, 
             PRIORITY, 
@@ -105,6 +113,7 @@
                 #{item.title}, 
                 #{item.desc}, 
                 #{item.content}, 
+                #{item.status}, 
                 #{item.dueTime}, 
                 #{item.reminderSendFlag}, 
                 #{item.priority}, 
@@ -127,6 +136,9 @@
             </if>
             <if test="item.content != null and item.content != ''">
                 CONTENT = #{item.content},
+            </if>
+            <if test="item.status != null and item.status != ''">
+                STATUS = #{item.status},
             </if>
             <if test="item.dueTime != null">
                 DUE_TIME = #{item.dueTime},

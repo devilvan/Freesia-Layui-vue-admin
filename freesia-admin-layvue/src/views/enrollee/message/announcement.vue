@@ -17,7 +17,7 @@
       </lay-tooltip>
     </template>
     <template #effectiveTime="{ row }">
-      {{ formatDate(row.effectiveTimeFrom, YMS) }} - {{ formatDate(row.effectiveTimeTo, YMS) }}
+      {{ formatDate(row.effectiveTimeFrom, YMD) }} - {{ formatDate(row.effectiveTimeTo, YMD) }}
     </template>
     <template v-slot:toolbar>
       <lay-button size="sm" type="warm" @click="doMarkRead(SysNoticeType.ANNOUNCEMENT)">标记已读</lay-button>
@@ -114,7 +114,7 @@ import {
 import {MarkReadVo, SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {formatDateTime, singleShortcuts, YMS} from "@/util/UDate";
+import {formatDateTime, singleShortcuts, YMD} from "@/util/UDate";
 import {R, TableResult} from "@/types/Result";
 import {PageQuery} from "@/types/Common";
 import {useUserStore} from "@/store/user";

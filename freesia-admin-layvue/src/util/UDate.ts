@@ -1,5 +1,5 @@
-export const YMS = 'yyyy-MM-dd';
-export const YMS_HMS = 'yyyy-MM-dd HH:mm:ss';
+export const YMD = 'yyyy-MM-dd';
+export const YMD_HMS = 'yyyy-MM-dd HH:mm:ss';
 
 /**
  * 根据日期获取星期
@@ -63,7 +63,7 @@ export function buildRange(days: number) {
     // start.setTime(start.getTime() - 3600 * 1000 * 24 * days)
     start.setHours(0, 0, 0)
     start.setDate(start.getDate() - days)
-    return [formatDateTime(start, YMS_HMS), formatDateTime(end, YMS_HMS)]
+    return [formatDateTime(start, YMD_HMS), formatDateTime(end, YMD_HMS)]
 }
 
 /**

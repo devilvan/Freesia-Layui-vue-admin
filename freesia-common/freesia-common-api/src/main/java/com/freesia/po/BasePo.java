@@ -66,7 +66,7 @@ public abstract class BasePo implements Serializable {
     @TableField(value = "MODIFY_TIME", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "修改时间")
     private Date modifyTime;
-    @Column(name = "", columnDefinition = "TINYINT DEFAULT 0 COMMENT '逻辑删除'")
+    @Column(name = "LOGIC_DEL", columnDefinition = "TINYINT DEFAULT 0 COMMENT '逻辑删除'")
     @TableField(value = "LOGIC_DEL", fill = FieldFill.INSERT)
     @Schema(description = "逻辑删除")
     private Boolean logicDel;

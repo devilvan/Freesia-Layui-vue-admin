@@ -58,11 +58,11 @@ public class CodeGenerator {
             generateVo(dataBaseDto);
             generateDto(dataBaseDto);
             generatePo(dataBaseDto);
-            generateController(dataBaseDto);
-            generateService(dataBaseDto);
-            generateServiceImpl(dataBaseDto);
-            generateRepository(dataBaseDto);
-            generateMapper(dataBaseDto);
+//            generateController(dataBaseDto);
+//            generateService(dataBaseDto);
+//            generateServiceImpl(dataBaseDto);
+//            generateRepository(dataBaseDto);
+//            generateMapper(dataBaseDto);
             generateMapperXml(dataBaseDto);
         }
     }
