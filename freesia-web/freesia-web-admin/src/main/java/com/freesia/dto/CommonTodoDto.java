@@ -1,11 +1,12 @@
 package com.freesia.dto;
 
-import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
@@ -31,7 +32,7 @@ public class CommonTodoDto extends BaseDto {
     @Schema(description = "提醒时间")
     private Date dueTime;
     @Schema(description = "发送提醒标识（0-否；1-是）")
-    private Integer reminderSendFlag;
+    private Boolean reminderSendFlag;
     @Schema(description = "优先级（0-高；1-中；2-低）")
     private Integer priority;
     @Schema(description = "备注")

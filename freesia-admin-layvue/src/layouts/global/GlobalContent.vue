@@ -40,7 +40,6 @@ const appStore = useAppStore()
 const $tab = useTabStore()
 const $userInfo = useUserStore().userInfo;
 const backTopColor = ref(appStore.themeVariable['--global-primary-color'])
-const todoModalFlag = ref<boolean>(false)
 const drawerId = ref();
 
 function getContent() {
@@ -52,7 +51,7 @@ function changeDrawer() {
     drawerId.value = layer.drawer({
       title: "代办事项",
       area: ['600px', '100%'],
-      content: h(TodoModal),
+      content: h(TodoModal, {data: {}}),
       close: () => closeDrawer()
     })
   } else {

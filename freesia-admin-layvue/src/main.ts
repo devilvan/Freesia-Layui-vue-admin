@@ -17,6 +17,7 @@ import 'virtual:svg-icons-register'
 import SvgIcon from "./views/component/svg/SvgIcon.vue";
 import {AccountMenuPermission} from "./types/account/AccountPermission";
 import escClose from "@/directives/escClose";
+import layer from "@layui/layui-vue";
 // 导入 svgIcon
 
 /**
@@ -32,6 +33,7 @@ app.config.globalProperties.$ACCOUNT_MENU_PERMISSION = AccountMenuPermission
 app.use(LayJsonSchemaForm)
 app.use(Store);
 app.use(Router);
+app.use(layer);
 app.component("DictTag", DictTag)
 app.component("DictScan", DictScan)
 app.component("InnerLink", InnerLink)

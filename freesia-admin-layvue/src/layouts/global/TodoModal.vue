@@ -7,29 +7,44 @@
         <div class="todo-title">
           <div style="line-height: 60px">
             <lay-checkbox name="like" skin="primary" v-model="item.title" value="1"
-                          @change="toggleStatus"></lay-checkbox>
+                          @change="toggleStatus">
+            </lay-checkbox>
           </div>
           <div style="flex: 1">
             <div class="oneRow" :title="item.title">
-              {{ item.title }}
+              <h2>{{ item.title }}</h2>
+            </div>
+            <div class="oneRow desc" :title="item.title">
+              <h3>{{ item.desc }}</h3>
             </div>
             <div class="inform-item-time todo-item-time">
-              <lay-tooltip content="设置提醒时间" position="bottom">
-                <lay-icon class="notice" type="layui-icon-notice" size="lg"></lay-icon>
+              <lay-tooltip content="设置提醒时间" position="top">
+                <lay-dropdown
+                    updateAtScroll
+                    :clickOutsideToClose="true"
+                    :clickToClose="false"
+                    :blurToClose="true"
+                    placement="bottom"
+                    :trigger="'click'"
+                >
+                  <lay-date-picker style="width: 60%"
+                                   :static="true"
+                                   type="datetime"
+                                   v-model="item.dueTime"
+                                   :format="sdf_YMDHM" :inputFormat="sdf_YMDHM"
+                                   placeholder="设置提醒时间"
+                                   allow-clear></lay-date-picker>
+                </lay-dropdown>
               </lay-tooltip>
-              {{ item.time }}
             </div>
-            <lay-date-picker v-model="item.paymentTime" allow-clear type="datetime"
-                             :shortcuts="singleShortcuts" :inputFormat="sdf_YMDHM"
-                             style="width: 100%" simple></lay-date-picker>
           </div>
-          <div v-show="item.type == '未开始'" class="todo-tags">
+          <div v-show="item.status == '未开始'" class="todo-tags">
             <lay-tag color="#6e6e6e" variant="light">未开始</lay-tag>
           </div>
-          <div v-show="item.type == '进行中'" class="todo-tags">
+          <div v-show="item.status == '进行中'" class="todo-tags">
             <lay-tag color="#2dc570" variant="light">进行中</lay-tag>
           </div>
-          <div v-show="item.type == '即将到期'" class="todo-tags">
+          <div v-show="item.status == '即将到期'" class="todo-tags">
             <lay-tag color="#F5319D" variant="light">即将到期</lay-tag>
           </div>
         </div>
@@ -44,26 +59,23 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {onMounted, reactive, ref, watch} from 'vue'
-import {MarkReadVo, SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
-import {findListSysNotice, findPageSysNotice, findUnreadCount, markRead} from "@/api/system/Notice";
-import {R, TableResult} from "@/types/Result";
-import {PageQuery} from "@/types/Common";
+import {onMounted, ref, watch} from 'vue'
+import {SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
+import {findListSysNotice} from "@/api/system/Notice";
+import {R} from "@/types/Result";
 import {useAppStore} from "@/store/app";
-import {layer} from "@layui/layui-vue";
-import {buildRange, defaultShortcuts, singleShortcuts, YMD_HMS} from "@/util/UDate";
+import {buildRange,} from "@/util/UDate";
 import {useUserStore} from "@/store/user";
+import {CommonTodoVo} from "@/types/common/todo/Icon";
 
-interface MessageTabProps {
-  flag: boolean
-}
 
 /*INIT*/
 onMounted(async () => {
-  loadDataSource()
+  // loadDataSource()
 })
 
-const emit = defineEmits(['callback']);
+
+// const emit = defineEmits(['callback']);
 /*INIT*/
 
 /*VAR*/
@@ -72,24 +84,24 @@ const appStore = useAppStore()
 const userStore = useUserStore()
 const noticeList = ref<SysNoticeEntity[]>()
 const announcementList = ref<SysNoticeEntity[]>()
-const todoList = ref([
+const todoList = ref<CommonTodoVo[]>([
   {
     title: '张三的请假审批AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaa',
-    type: '未开始',
-    time: '张三在 08-09 12:00:00 提交的请假...',
-    paymentTime: '2025-11-27 23:01'
+    desc: '张三的请假审批AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaa',
+    status: '未开始',
+    dueTime: new Date()
   },
   {
     title: '考试监管',
-    type: '进行中',
-    time: '考试监管在 08-09 12:00:00 之前打卡',
-    paymentTime: '2025-11-27 23:01'
+    desc: '考试监管',
+    status: '进行中',
+    dueTime: new Date()
   },
   {
     title: '注册新仓库',
-    type: '即将到期',
-    time: '需要在 08-09 12:00:00 之前完成',
-    paymentTime: '2025-11-27 23:01'
+    desc: '注册新仓库',
+    status: '即将到期',
+    dueTime: new Date()
   }
 ])
 
@@ -131,10 +143,8 @@ function toggleStatus() {
 .inform-item {
   box-sizing: border-box;
   width: 100%;
-  height: 80px;
   color: #222222;
   font-size: 14px;
-  padding: 0 20px;
   border-bottom: 1px solid #f3f3f3;
 
   .inform-item-icon {
@@ -167,7 +177,7 @@ function toggleStatus() {
     padding: 10px 0 0 10px;
 
     .inform-item-time {
-      margin-top: 6px;
+      margin-top: 10px;
       color: #ada4a4;
       font-size: 12px;
     }
@@ -180,7 +190,6 @@ function toggleStatus() {
 
 .todo-item {
   box-sizing: border-box;
-  padding: 0 10px;
 }
 
 .todo-title {
@@ -199,11 +208,12 @@ function toggleStatus() {
   line-height: 30px;
   color: #ada4a4;
   font-size: 12px;
+  margin: 0 10px;
 }
 
 .oneRow {
   width: 350px;
-  margin-top: 5px;
+  margin: 0 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -217,5 +227,13 @@ function toggleStatus() {
 .notice:hover {
   color: var(--global-primary-color) !important;
   cursor: pointer;
+}
+
+.title {
+  font-size: 16pt;
+}
+
+.desc {
+  color: grey;
 }
 </style>
