@@ -46,6 +46,14 @@ public interface ${dataBaseDto.className}Service {
     ${dataBaseDto.className}Dto find${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
 
     /**
+     * 条件查询${dataBaseDto.comment}信息
+     *
+     * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
+     * @return ${dataBaseDto.comment}信息
+     */
+    List<${dataBaseDto.className}Dto> findList${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
+
+    /**
      * 删除${dataBaseDto.comment}信息
      *
      * @param idList 主键

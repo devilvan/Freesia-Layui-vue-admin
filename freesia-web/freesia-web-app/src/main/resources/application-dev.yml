@@ -78,6 +78,7 @@ freesia:
         - SYS_NOTICE
         - WORLD_CLOCK_CITY
         - WORLD_CLOCK_SUNRISE_SUNSET
+        - COMMON_TODO
 ---
 login.password:
   # 密码最大错误次数

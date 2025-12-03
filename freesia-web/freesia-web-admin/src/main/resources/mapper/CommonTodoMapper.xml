@@ -13,7 +13,7 @@
         <result column="TENANT_ID" property="tenantId" />
         <result column="USER_ID" property="userId" />
         <result column="TITLE" property="title" />
-        <result column="DESC" property="desc" />
+        <result column="TODO_DESC" property="todoDesc" />
         <result column="CONTENT" property="content" />
         <result column="STATUS" property="status" />
         <result column="DUE_TIME" property="dueTime" />
@@ -22,7 +22,7 @@
         <result column="REMARK" property="remark" />
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID,USER_ID, TITLE, DESC, CONTENT, STATUS, DUE_TIME, REMINDER_SEND_FLAG, PRIORITY, REMARK
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID,USER_ID, TITLE, TODO_DESC, CONTENT, STATUS, DUE_TIME, REMINDER_SEND_FLAG, PRIORITY, REMARK
     </sql>
     <select id="findPageCommonTodo" resultMap="BaseResultMap">
         SELECT
@@ -36,8 +36,8 @@
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
         </if>
-        <if test="dto.desc != null and dto.desc != ''">
-            AND DESC = #{dto.desc}
+        <if test="dto.todoDesc != null and dto.todoDesc != ''">
+            AND TODO_DESC = #{dto.todoDesc}
         </if>
         <if test="dto.content != null and dto.content != ''">
             AND CONTENT = #{dto.content}
@@ -70,8 +70,8 @@
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
         </if>
-        <if test="dto.desc != null and dto.desc != ''">
-            AND DESC = #{dto.desc}
+        <if test="dto.todoDesc != null and dto.todoDesc != ''">
+            AND TODO_DESC = #{dto.todoDesc}
         </if>
         <if test="dto.content != null and dto.content != ''">
             AND CONTENT = #{dto.content}
@@ -98,7 +98,7 @@
         (
             USER_ID, 
             TITLE, 
-            DESC, 
+            TODO_DESC, 
             CONTENT, 
             STATUS, 
             DUE_TIME, 
@@ -111,7 +111,7 @@
             (
                 #{item.userId}, 
                 #{item.title}, 
-                #{item.desc}, 
+                #{item.todoDesc}, 
                 #{item.content}, 
                 #{item.status}, 
                 #{item.dueTime}, 
@@ -131,8 +131,8 @@
             <if test="item.title != null and item.title != ''">
                 TITLE = #{item.title},
             </if>
-            <if test="item.desc != null and item.desc != ''">
-                DESC = #{item.desc},
+            <if test="item.todoDesc != null and item.todoDesc != ''">
+                TODO_DESC = #{item.todoDesc},
             </if>
             <if test="item.content != null and item.content != ''">
                 CONTENT = #{item.content},

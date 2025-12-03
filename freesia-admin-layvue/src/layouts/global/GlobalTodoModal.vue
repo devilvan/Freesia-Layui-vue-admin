@@ -1,8 +1,18 @@
 <template>
-  <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
-    <lay-tab-item :title="`待办事项(${todoList.length})`" id="1">
+  <lay-tab type="brief" v-model="currentIndex">
+    <lay-tab-item :title="`待办事项(${commonTodoList.length})`" id="1">
+      <lay-card class="inform-item todo-item">
+        <lay-button
+            border="green"
+            border-style="dashed"
+            :fluid="true"
+            style="margin: 10px;width: 100%;height: 100px"
+        >
+          <lay-icon style="font-size: 36pt" type="layui-icon-add-one"></lay-icon>
+        </lay-button>
+      </lay-card>
       <lay-card class="inform-item todo-item"
-                v-for="(item, index) in todoList"
+                v-for="(item, index) in commonTodoList"
                 :key="index">
         <div class="todo-title">
           <div style="line-height: 60px">
@@ -12,10 +22,10 @@
           </div>
           <div style="flex: 1">
             <div class="oneRow" :title="item.title">
-              <h2>{{ item.title }}</h2>
+              <h3>{{ item.title }}</h3>
             </div>
             <div class="oneRow desc" :title="item.title">
-              <h3>{{ item.desc }}</h3>
+              <h4>{{ item.desc }}</h4>
             </div>
             <div class="inform-item-time todo-item-time">
               <lay-tooltip content="设置提醒时间" position="top">
@@ -28,7 +38,7 @@
                     :trigger="'click'"
                 >
                   <lay-date-picker style="width: 60%"
-                                   :static="true"
+                                   size="sm"
                                    type="datetime"
                                    v-model="item.dueTime"
                                    :format="sdf_YMDHM" :inputFormat="sdf_YMDHM"
@@ -55,7 +65,7 @@
 
 <script lang='ts'>
 export default {
-  name: 'TodoModal'
+  name: 'GlobalTodoModal'
 }
 </script>
 <script setup lang="ts">
@@ -66,12 +76,17 @@ import {R} from "@/types/Result";
 import {useAppStore} from "@/store/app";
 import {buildRange,} from "@/util/UDate";
 import {useUserStore} from "@/store/user";
-import {CommonTodoVo} from "@/types/common/todo/Icon";
+import {CommonTodoEntity, CommonTodoVo} from "@/types/common/todo/Todo";
+import {findListCommonTodo} from "@/api/common/todo/Todo";
+import {findConfigByKey} from "@/api/system/Config";
+import {SysConfigKey} from "@/types/system/Config";
+import Http from "@/api/Http";
+import {layer} from "@layui/layui-vue";
 
 
 /*INIT*/
 onMounted(async () => {
-  // loadDataSource()
+  loadDataSource()
 })
 
 
@@ -82,9 +97,7 @@ onMounted(async () => {
 const sdf_YMDHM = 'YYYY-MM-DD HH:mm'
 const appStore = useAppStore()
 const userStore = useUserStore()
-const noticeList = ref<SysNoticeEntity[]>()
-const announcementList = ref<SysNoticeEntity[]>()
-const todoList = ref<CommonTodoVo[]>([
+const commonTodoList = ref<CommonTodoEntity[]>([
   {
     title: '张三的请假审批AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaa',
     desc: '张三的请假审批AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaa',
@@ -106,29 +119,16 @@ const todoList = ref<CommonTodoVo[]>([
 ])
 
 const currentIndex = ref('1')
-const searchQuery = ref<SysNoticeVo>({});
+const searchQuery = ref<CommonTodoVo>({});
+const addIconUrl = ref('')
 /*VAR*/
 
 /*FUNCTION*/
 function loadDataSource() {
-  let createTime: string[] = buildRange(6)
-  // 查询公告
-  searchQuery.value.type = SysNoticeType.ANNOUNCEMENT
-  searchQuery.value.createTimeFrom = new Date(createTime[0])
-  searchQuery.value.createTimeTo = new Date(createTime[1])
-  findListSysNotice(searchQuery.value).then((res: R<SysNoticeEntity[]>) => {
+  findListCommonTodo(searchQuery.value).then((res: R<CommonTodoEntity[]>) => {
     if (res.code === 200) {
-      announcementList.value = res.data;
     }
-    // 查询消息
-    searchQuery.value.type = SysNoticeType.NOTICE
-    findListSysNotice(searchQuery.value).then((res1: R<SysNoticeEntity[]>) => {
-      if (res1.code === 200) {
-        noticeList.value = res1.data;
-      }
-      userStore.calculateSumCount()
-    });
-  });
+  })
 }
 
 function toggleStatus() {

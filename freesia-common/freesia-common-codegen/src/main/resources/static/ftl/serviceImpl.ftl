@@ -63,6 +63,13 @@ public class ${dataBaseDto.className}ServiceImpl extends ServiceImpl<${dataBaseD
     }
 
     @Override
+    public List<${dataBaseDto.className}Dto> findList${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto) {
+        LambdaQueryWrapper<${dataBaseDto.className}Po> wrapper = new LambdaQueryWrapper<${dataBaseDto.className}Po>()
+            .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED);
+        return UCopy.fullCopyList(list(wrapper), ${dataBaseDto.className}Dto.class);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete${dataBaseDto.className}(List<Long> idList) {
         removeBatchByIds(idList);

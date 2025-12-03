@@ -33,8 +33,8 @@ import {useTabStore} from "../composable/useTabStore";
 import {useUserStore} from "@/store/user";
 import {formatDateTime} from '@/util/UDate'
 import {h, ref} from "vue";
-import TodoModal from "@/layouts/global/TodoModal.vue";
 import {layer} from "@layui/layui-vue";
+import GlobalTodoModal from "@/layouts/global/GlobalTodoModal.vue";
 
 const appStore = useAppStore()
 const $tab = useTabStore()
@@ -51,7 +51,7 @@ function changeDrawer() {
     drawerId.value = layer.drawer({
       title: "代办事项",
       area: ['600px', '100%'],
-      content: h(TodoModal, {data: {}}),
+      content: h(GlobalTodoModal),
       close: () => closeDrawer()
     })
   } else {

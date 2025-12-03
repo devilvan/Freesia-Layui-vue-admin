@@ -79,8 +79,22 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @GetMapping(value = "find${dataBaseDto.className}")
     public R<${dataBaseDto.className}Dto> find${dataBaseDto.className}(${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo) {
         ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
-        ${dataBaseDto.className}Dto tableResult = ${dataBaseDto.className?uncap_first}Service.find${dataBaseDto.className}(${dataBaseDto.className?uncap_first}Dto);
-        return R.ok(tableResult);
+        ${dataBaseDto.className?uncap_first}Dto = ${dataBaseDto.className?uncap_first}Service.find${dataBaseDto.className}(${dataBaseDto.className?uncap_first}Dto);
+        return R.ok(${dataBaseDto.className?uncap_first}Dto);
+    }
+
+    /**
+    * 条件查询${dataBaseDto.comment}
+    *
+    * @param ${dataBaseDto.className?uncap_first}Vo 查询条件
+    * @return 形式返回
+    */
+    @Operation(summary = "条件查询${dataBaseDto.comment}")
+    @GetMapping(value = "findList${dataBaseDto.className}")
+    public R<List<${dataBaseDto.className}Dto>> findList${dataBaseDto.className}(${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo) {
+        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
+        List<${dataBaseDto.className}Dto> ${dataBaseDto.className?uncap_first}DtoList = ${dataBaseDto.className?uncap_first}Service.findList${dataBaseDto.className}(${dataBaseDto.className?uncap_first}Dto);
+        return R.ok(${dataBaseDto.className?uncap_first}DtoList);
     }
 
     /**

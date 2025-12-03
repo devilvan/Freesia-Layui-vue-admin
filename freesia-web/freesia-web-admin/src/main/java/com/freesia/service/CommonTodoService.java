@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 待办事项表 业务逻辑接口
- * @date 2025-11-20
+ * @date 2025-12-03
  */
 public interface CommonTodoService {
     /**
@@ -44,6 +44,14 @@ public interface CommonTodoService {
      * @return 待办事项表信息
      */
     CommonTodoDto findCommonTodo(CommonTodoDto commonTodoDto);
+
+    /**
+     * 条件查询待办事项表信息
+     *
+     * @param commonTodoDto 查询条件
+     * @return 待办事项表信息
+     */
+    List<CommonTodoDto> findListCommonTodo(CommonTodoDto commonTodoDto);
 
     /**
      * 删除待办事项表信息

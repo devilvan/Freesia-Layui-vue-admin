@@ -25,3 +25,4 @@ export interface CommonTodoEntity extends BaseEntity {
     priority?: number;
     remark?: string;
 }
+
