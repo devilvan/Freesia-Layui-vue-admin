@@ -281,7 +281,7 @@ const remove = () => {
   layer.msg(selectedKeys.value, {area: '50%'})
 }
 const changeTenantModalFlag = (text: any, row: any) => {
-  title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
+  title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : Operate.COPY === text ? "复制" : "";
   if (row != null) {
     sysTenantVo.value = {...row}
   }

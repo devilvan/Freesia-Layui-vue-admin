@@ -701,7 +701,7 @@ const sortChange = (key: any, sort: string) => {
 const showExpenseModal = (text: any, row: any) => {
   addExpenseActive.value = 0;
   operate.value = text;
-  title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
+  title.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : Operate.COPY === text ? "复制" : "";
   if (row != null) {
     accountCostVo.value = {...row}
   }

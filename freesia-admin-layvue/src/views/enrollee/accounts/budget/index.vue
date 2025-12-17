@@ -320,7 +320,7 @@ function queryFormReset() {
  * 显示新增/修改/复制弹窗
  */
 const showSaveModal = (text: any, row: any) => {
-  saveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : "";
+  saveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : Operate.COPY === text ? "复制" : "";
   if (row != null) {
     saveAccountBudgetVo.value = {...row}
   }
