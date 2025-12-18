@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 待办事项表 映射
- * @date 2025-12-03
+ * @date 2025-12-18
  */
 @Setter
 @Getter
@@ -44,10 +44,6 @@ public class CommonTodoPo extends BasePo implements Serializable {
     @TableField(value = "TITLE")
     @Column(name = "TITLE", columnDefinition = "VARCHAR(128) COMMENT '标题'")
     private String title;
-    @Schema(description = "描述（副标题）")
-    @TableField(value = "TODO_DESC")
-    @Column(name = "TODO_DESC", columnDefinition = "VARCHAR(128) COMMENT '描述（副标题）'")
-    private String todoDesc;
     @Schema(description = "内容")
     @TableField(value = "CONTENT")
     @Column(name = "CONTENT", columnDefinition = "TEXT(65,535) NOT NULL COMMENT '内容'")
@@ -68,8 +64,4 @@ public class CommonTodoPo extends BasePo implements Serializable {
     @TableField(value = "PRIORITY")
     @Column(name = "PRIORITY", columnDefinition = "INT(10) COMMENT '优先级（0-高；1-中；2-低）'")
     private Integer priority;
-    @Schema(description = "备注")
-    @TableField(value = "REMARK")
-    @Column(name = "REMARK", columnDefinition = "VARCHAR(128) COMMENT '备注'")
-    private String remark;
 }

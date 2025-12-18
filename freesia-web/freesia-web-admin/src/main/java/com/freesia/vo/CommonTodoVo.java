@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 待办事项表 值对象
- * @date 2025-12-03
+ * @date 2025-12-18
  */
 @Data
 @NoArgsConstructor
@@ -26,9 +26,6 @@ public class CommonTodoVo extends BaseVo {
     @Schema(description = "标题")
     @JsonAlias(value = {"title"})
     private String title;
-    @Schema(description = "描述（副标题）")
-    @JsonAlias(value = {"todoDesc"})
-    private String todoDesc;
     @Schema(description = "内容")
     @JsonAlias(value = {"content"})
     private String content;
@@ -44,7 +41,4 @@ public class CommonTodoVo extends BaseVo {
     @Schema(description = "优先级（0-高；1-中；2-低）")
     @JsonAlias(value = {"priority"})
     private Integer priority;
-    @Schema(description = "备注")
-    @JsonAlias(value = {"remark"})
-    private String remark;
 }

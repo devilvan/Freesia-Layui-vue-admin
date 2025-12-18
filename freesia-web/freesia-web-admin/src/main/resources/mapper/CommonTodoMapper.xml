@@ -13,16 +13,14 @@
         <result column="TENANT_ID" property="tenantId" />
         <result column="USER_ID" property="userId" />
         <result column="TITLE" property="title" />
-        <result column="TODO_DESC" property="todoDesc" />
         <result column="CONTENT" property="content" />
         <result column="STATUS" property="status" />
         <result column="DUE_TIME" property="dueTime" />
         <result column="REMINDER_SEND_FLAG" property="reminderSendFlag" />
         <result column="PRIORITY" property="priority" />
-        <result column="REMARK" property="remark" />
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID,USER_ID, TITLE, TODO_DESC, CONTENT, STATUS, DUE_TIME, REMINDER_SEND_FLAG, PRIORITY, REMARK
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID,USER_ID, TITLE, CONTENT, STATUS, DUE_TIME, REMINDER_SEND_FLAG, PRIORITY
     </sql>
     <select id="findPageCommonTodo" resultMap="BaseResultMap">
         SELECT
@@ -35,9 +33,6 @@
         </if>
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
-        </if>
-        <if test="dto.todoDesc != null and dto.todoDesc != ''">
-            AND TODO_DESC = #{dto.todoDesc}
         </if>
         <if test="dto.content != null and dto.content != ''">
             AND CONTENT = #{dto.content}
@@ -53,9 +48,6 @@
         </if>
         <if test="dto.priority != null">
             AND PRIORITY = #{dto.priority}
-        </if>
-        <if test="dto.remark != null and dto.remark != ''">
-            AND REMARK = #{dto.remark}
         </if>
         ORDER BY create_time DESC
     </select>
@@ -70,9 +62,6 @@
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
         </if>
-        <if test="dto.todoDesc != null and dto.todoDesc != ''">
-            AND TODO_DESC = #{dto.todoDesc}
-        </if>
         <if test="dto.content != null and dto.content != ''">
             AND CONTENT = #{dto.content}
         </if>
@@ -88,9 +77,6 @@
         <if test="dto.priority != null">
             AND PRIORITY = #{dto.priority}
         </if>
-        <if test="dto.remark != null and dto.remark != ''">
-            AND REMARK = #{dto.remark}
-        </if>
         ORDER BY MODIFY_TIME DESC
     </select>
     <insert id="insertBatch" parameterType="java.util.List">
@@ -98,26 +84,22 @@
         (
             USER_ID, 
             TITLE, 
-            TODO_DESC, 
             CONTENT, 
             STATUS, 
             DUE_TIME, 
             REMINDER_SEND_FLAG, 
-            PRIORITY, 
-            REMARK
+            PRIORITY
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
             (
                 #{item.userId}, 
                 #{item.title}, 
-                #{item.todoDesc}, 
                 #{item.content}, 
                 #{item.status}, 
                 #{item.dueTime}, 
                 #{item.reminderSendFlag}, 
-                #{item.priority}, 
-                #{item.remark}
+                #{item.priority}
             )
         </foreach>
     </insert>
@@ -130,9 +112,6 @@
             </if>
             <if test="item.title != null and item.title != ''">
                 TITLE = #{item.title},
-            </if>
-            <if test="item.todoDesc != null and item.todoDesc != ''">
-                TODO_DESC = #{item.todoDesc},
             </if>
             <if test="item.content != null and item.content != ''">
                 CONTENT = #{item.content},
@@ -148,9 +127,6 @@
             </if>
             <if test="item.priority != null">
                 PRIORITY = #{item.priority},
-            </if>
-            <if test="item.remark != null and item.remark != ''">
-                REMARK = #{item.remark},
             </if>
             MODIFY_TIME = NOW()
             </set>

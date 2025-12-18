@@ -6,14 +6,14 @@
             border="green"
             border-style="dashed"
             :fluid="true"
-            style="margin: 10px;width: 100%;height: 100px"
-        >
-          <lay-icon style="font-size: 36pt" type="layui-icon-add-one"></lay-icon>
+            style="margin: 10px;width: 98%;height: 50px"
+            @click="changeAddModal(Operate.ADD, null)">
+          <lay-icon style="font-size: 24pt" type="layui-icon-add-one"></lay-icon>
         </lay-button>
       </lay-card>
       <lay-card class="inform-item todo-item"
                 v-for="(item, index) in commonTodoList"
-                :key="index">
+                :key="index" @click="changeAddModal(Operate.EDIT, item)">
         <div class="todo-title">
           <div style="line-height: 60px">
             <lay-checkbox name="like" skin="primary" v-model="item.title" value="1"
@@ -27,39 +27,43 @@
             <div class="oneRow desc" :title="item.title">
               <h4>{{ item.desc }}</h4>
             </div>
-            <div class="inform-item-time todo-item-time">
-              <lay-tooltip content="设置提醒时间" position="top">
-                <lay-dropdown
-                    updateAtScroll
-                    :clickOutsideToClose="true"
-                    :clickToClose="false"
-                    :blurToClose="true"
-                    placement="bottom"
-                    :trigger="'click'"
-                >
-                  <lay-date-picker style="width: 60%"
-                                   size="sm"
-                                   type="datetime"
-                                   v-model="item.dueTime"
-                                   :format="sdf_YMDHM" :inputFormat="sdf_YMDHM"
-                                   placeholder="设置提醒时间"
-                                   allow-clear></lay-date-picker>
-                </lay-dropdown>
-              </lay-tooltip>
+            <div v-show="item.dueTime" class="oneRow" :title="item.title">
+              <span>提醒时间：{{ item.dueTime ? formatDateTime(item.dueTime, "yyyy-MM-dd HH:mm") : null }}</span>
             </div>
-          </div>
-          <div v-show="item.status == '未开始'" class="todo-tags">
-            <lay-tag color="#6e6e6e" variant="light">未开始</lay-tag>
-          </div>
-          <div v-show="item.status == '进行中'" class="todo-tags">
-            <lay-tag color="#2dc570" variant="light">进行中</lay-tag>
-          </div>
-          <div v-show="item.status == '即将到期'" class="todo-tags">
-            <lay-tag color="#F5319D" variant="light">即将到期</lay-tag>
           </div>
         </div>
       </lay-card>
     </lay-tab-item>
+    <lay-layer v-model="showCommonTodoAddModalFlag" :title="commonTodoAddModalTitle">
+      <div style="padding: 20px" v-esc-close="toCancel">
+        <lay-form ref="commonTodoAddModalRef" :model="commonTodoAddVo" :rules="commonTodoAddFromRules"
+                  label-position="top">
+          <lay-row space="20">
+            <lay-col :md="24">
+              <lay-form-item label="标题" prop="title" required>
+              </lay-form-item>
+              <lay-form-item label="内容" prop="content" required>
+              </lay-form-item>
+              <lay-form-item label="提醒时间" prop="dueTime">
+                <lay-date-picker style="width: 100%"
+                                 size="sm"
+                                 type="datetime"
+                                 v-model="commonTodoAddVo.dueTime"
+                                 :format="sdf_YMDHM" :inputFormat="sdf_YMDHM"
+                                 placeholder="设置提醒时间"
+                                 allow-clear></lay-date-picker>
+              </lay-form-item>
+              <lay-form-item label="优先级" prop="priority">
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+        </lay-form>
+        <div style="width: 100%; text-align: right">
+          <lay-button size="sm" type="primary" @click="doExport">确定</lay-button>
+          <lay-button size="sm" @click="toCancel">取消</lay-button>
+        </div>
+      </div>
+    </lay-layer>
   </lay-tab>
 </template>
 
@@ -69,19 +73,14 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
-import {SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
-import {findListSysNotice} from "@/api/system/Notice";
+import {onMounted, ref} from 'vue'
 import {R} from "@/types/Result";
 import {useAppStore} from "@/store/app";
-import {buildRange,} from "@/util/UDate";
+import {defaultShortcuts, formatDateTime,} from "@/util/UDate";
 import {useUserStore} from "@/store/user";
 import {CommonTodoEntity, CommonTodoVo} from "@/types/common/todo/Todo";
 import {findListCommonTodo} from "@/api/common/todo/Todo";
-import {findConfigByKey} from "@/api/system/Config";
-import {SysConfigKey} from "@/types/system/Config";
-import Http from "@/api/Http";
-import {layer} from "@layui/layui-vue";
+import {Operate} from "@/types/Constants";
 
 
 /*INIT*/
@@ -108,7 +107,6 @@ const commonTodoList = ref<CommonTodoEntity[]>([
     title: '考试监管',
     desc: '考试监管',
     status: '进行中',
-    dueTime: new Date()
   },
   {
     title: '注册新仓库',
@@ -120,7 +118,11 @@ const commonTodoList = ref<CommonTodoEntity[]>([
 
 const currentIndex = ref('1')
 const searchQuery = ref<CommonTodoVo>({});
-const addIconUrl = ref('')
+const commonTodoAddVo = ref<CommonTodoVo>({})
+const commonTodoAddFromRules = ref()
+const commonTodoAddModalRef = ref()
+const commonTodoAddModalTitle = ref('新增')
+const showCommonTodoAddModalFlag = ref<Boolean>(false);
 /*VAR*/
 
 /*FUNCTION*/
@@ -133,6 +135,23 @@ function loadDataSource() {
 
 function toggleStatus() {
 
+}
+
+function changeAddModal(title: Operate, row: any) {
+  commonTodoAddModalTitle.value = Operate.ADD === title ? "新增" : Operate.EDIT === title ? "编辑" : Operate.COPY === title ? "复制" : "";
+  showCommonTodoAddModalFlag.value = !showCommonTodoAddModalFlag.value
+}
+
+function toCancel() {
+  showCommonTodoAddModalFlag.value = false
+}
+
+function addHandler() {
+  commonTodoList.value.unshift({
+    title: '考试监管',
+    desc: '考试监管',
+    dueTime: new Date()
+  },);
 }
 
 /*FUNCTION*/

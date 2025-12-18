@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 待办事项表 数据传输对象
- * @date 2025-12-03
+ * @date 2025-12-18
  */
 @Data
 @NoArgsConstructor
@@ -22,8 +22,6 @@ public class CommonTodoDto extends BaseDto {
     private Long userId;
     @Schema(description = "标题")
     private String title;
-    @Schema(description = "描述（副标题）")
-    private String todoDesc;
     @Schema(description = "内容")
     private String content;
     @Schema(description = "状态（UNFINISHED-未完成；FINISHED-已完成）")
@@ -34,6 +32,4 @@ public class CommonTodoDto extends BaseDto {
     private Integer reminderSendFlag;
     @Schema(description = "优先级（0-高；1-中；2-低）")
     private Integer priority;
-    @Schema(description = "备注")
-    private String remark;
 }
