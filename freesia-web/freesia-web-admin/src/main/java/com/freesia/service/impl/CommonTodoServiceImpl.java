@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
 import com.freesia.dto.CommonTodoDto;
+import com.freesia.exception.UserException;
 import com.freesia.mapper.CommonTodoMapper;
 import com.freesia.po.CommonTodoPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.CommonTodoRepository;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.service.CommonTodoService;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -31,11 +34,10 @@ public class CommonTodoServiceImpl extends ServiceImpl<CommonTodoMapper, CommonT
 
     @Override
     public CommonTodoDto saveUpdate(CommonTodoDto commonTodoDto) {
-        CommonTodoPo commonTodoPo = new CommonTodoPo();
-        UCopy.fullCopy(commonTodoDto, commonTodoPo);
-        CommonTodoDto resultDto = new CommonTodoDto();
-        UCopy.fullCopy(commonTodoRepository.saveAndFlush(commonTodoPo), resultDto);
-        return resultDto;
+        CommonTodoPo commonTodoPo = UCopy.copyDto2Po(commonTodoDto, CommonTodoPo.class);
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        commonTodoPo.setUserId(userId);
+        return UCopy.copyPo2Dto(commonTodoRepository.saveAndFlush(commonTodoPo), CommonTodoDto.class);
     }
 
     @Override

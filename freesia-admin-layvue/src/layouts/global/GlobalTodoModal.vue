@@ -16,7 +16,7 @@
                 :key="index" @click="changeAddModal(Operate.EDIT, item)">
         <div class="todo-title">
           <div style="line-height: 60px">
-            <lay-checkbox name="like" skin="primary" v-model="item.title" value="1"
+            <lay-checkbox name="like" skin="primary" v-model="item.status" value="1"
                           @change="toggleStatus">
             </lay-checkbox>
           </div>
@@ -25,41 +25,43 @@
               <h3>{{ item.title }}</h3>
             </div>
             <div class="oneRow desc" :title="item.title">
-              <h4>{{ item.desc }}</h4>
+              <h4>{{ item.content }}</h4>
             </div>
             <div v-show="item.dueTime" class="oneRow" :title="item.title">
               <span>提醒时间：{{ item.dueTime ? formatDateTime(item.dueTime, "yyyy-MM-dd HH:mm") : null }}</span>
             </div>
           </div>
+          <dict-tag :options="todoStatusSelectList" :value="item.status"/>
         </div>
       </lay-card>
     </lay-tab-item>
-    <lay-layer v-model="showCommonTodoAddModalFlag" :title="commonTodoAddModalTitle">
+    <lay-layer v-model="showCommonTodoAddModalFlag" :title="commonTodoAddModalTitle" :area="['600px']">
       <div style="padding: 20px" v-esc-close="toCancel">
         <lay-form ref="commonTodoAddModalRef" :model="commonTodoAddVo" :rules="commonTodoAddFromRules"
                   label-position="top">
           <lay-row space="20">
             <lay-col :md="24">
               <lay-form-item label="标题" prop="title" required>
+                <lay-input v-model="commonTodoAddVo.title" :allow-clear="true" show-count :maxlength="128"></lay-input>
               </lay-form-item>
               <lay-form-item label="内容" prop="content" required>
+                <lay-textarea v-model="commonTodoAddVo.content" :allow-clear="true"></lay-textarea>
               </lay-form-item>
               <lay-form-item label="提醒时间" prop="dueTime">
-                <lay-date-picker style="width: 100%"
-                                 size="sm"
-                                 type="datetime"
-                                 v-model="commonTodoAddVo.dueTime"
-                                 :format="sdf_YMDHM" :inputFormat="sdf_YMDHM"
-                                 placeholder="设置提醒时间"
+                <lay-date-picker style="width: 100%" size="sm" type="datetime" v-model="commonTodoAddVo.dueTime"
+                                 :format="sdf_YMDHM" :inputFormat="sdf_YMDHM" placeholder="设置提醒时间"
                                  allow-clear></lay-date-picker>
               </lay-form-item>
               <lay-form-item label="优先级" prop="priority">
+                <lay-radio v-model="commonTodoAddVo.priority" name="action" value="0">高</lay-radio>
+                <lay-radio v-model="commonTodoAddVo.priority" name="action" value="1">中</lay-radio>
+                <lay-radio v-model="commonTodoAddVo.priority" name="action" value="2">低</lay-radio>
               </lay-form-item>
             </lay-col>
           </lay-row>
         </lay-form>
         <div style="width: 100%; text-align: right">
-          <lay-button size="sm" type="primary" @click="doExport">确定</lay-button>
+          <lay-button size="sm" type="primary" @click="doSaveCommonTodo">确定</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -79,12 +81,17 @@ import {useAppStore} from "@/store/app";
 import {defaultShortcuts, formatDateTime,} from "@/util/UDate";
 import {useUserStore} from "@/store/user";
 import {CommonTodoEntity, CommonTodoVo} from "@/types/common/todo/Todo";
-import {findListCommonTodo} from "@/api/common/todo/Todo";
+import {findListCommonTodo, saveUpdate} from "@/api/common/todo/Todo";
 import {Operate} from "@/types/Constants";
+import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {SysDictValueEntity} from "@/types/system/Dict";
+import DictTag from "@/views/component/DictTag.vue";
 
 
 /*INIT*/
 onMounted(async () => {
+  todoStatusSelect.value = await loadSysDictValue(Constants.TODO_STATUS)
+  todoStatusSelectList.value = await sysDictValueSelect(todoStatusSelect.value)
   loadDataSource()
 })
 
@@ -123,12 +130,16 @@ const commonTodoAddFromRules = ref()
 const commonTodoAddModalRef = ref()
 const commonTodoAddModalTitle = ref('新增')
 const showCommonTodoAddModalFlag = ref<Boolean>(false);
+const todoStatusSelect = ref<Array<SysDictValueEntity>>();
+const todoStatusSelectList = ref<any[]>();
+
 /*VAR*/
 
 /*FUNCTION*/
 function loadDataSource() {
   findListCommonTodo(searchQuery.value).then((res: R<CommonTodoEntity[]>) => {
     if (res.code === 200) {
+      commonTodoList.value = res.data
     }
   })
 }
@@ -138,6 +149,7 @@ function toggleStatus() {
 }
 
 function changeAddModal(title: Operate, row: any) {
+  commonTodoAddVo.value = {}
   commonTodoAddModalTitle.value = Operate.ADD === title ? "新增" : Operate.EDIT === title ? "编辑" : Operate.COPY === title ? "复制" : "";
   showCommonTodoAddModalFlag.value = !showCommonTodoAddModalFlag.value
 }
@@ -152,6 +164,15 @@ function addHandler() {
     desc: '考试监管',
     dueTime: new Date()
   },);
+}
+
+function doSaveCommonTodo() {
+  saveUpdate(commonTodoAddVo.value).then((res: R<void>) => {
+    if (res.code === 200) {
+      commonTodoAddVo.value = {}
+      toCancel();
+    }
+  })
 }
 
 /*FUNCTION*/

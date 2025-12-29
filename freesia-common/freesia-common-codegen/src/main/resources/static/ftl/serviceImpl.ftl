@@ -32,11 +32,10 @@ public class ${dataBaseDto.className}ServiceImpl extends ServiceImpl<${dataBaseD
 
     @Override
     public ${dataBaseDto.className}Dto saveUpdate(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto) {
-        ${dataBaseDto.className}Po ${dataBaseDto.className?uncap_first}Po = new ${dataBaseDto.className}Po();
-        UCopy.fullCopy(${dataBaseDto.className?uncap_first}Dto, ${dataBaseDto.className?uncap_first}Po);
-        ${dataBaseDto.className}Dto resultDto = new ${dataBaseDto.className}Dto();
         UCopy.fullCopy(${dataBaseDto.className?uncap_first}Repository.saveAndFlush(${dataBaseDto.className?uncap_first}Po), resultDto);
         return resultDto;
+        ${dataBaseDto.className}Po ${dataBaseDto.className?uncap_first}Po = UCopy.copyDto2Po(${dataBaseDto.className?uncap_first}Dto, ${dataBaseDto.className?uncap_first}Po.class);
+        return UCopy.copyPo2Dto(${dataBaseDto.className?uncap_first}Repository.saveAndFlush(${dataBaseDto.className?uncap_first}Po), ${dataBaseDto.className}Dto.class);
     }
 
     @Override

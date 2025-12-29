@@ -61,7 +61,11 @@ export enum Constants {
     /**
      * 费用分摊状态
      */
-    ALLOC_STATUS = "ALLOC_STATUS"
+    ALLOC_STATUS = "ALLOC_STATUS",
+    /**
+     * 待办事项状态
+     */
+    TODO_STATUS = "TODO_STATUS"
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {
