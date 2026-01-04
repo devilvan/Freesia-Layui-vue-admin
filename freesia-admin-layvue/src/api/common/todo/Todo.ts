@@ -32,7 +32,6 @@ export function findCacheCommonTodoById(id: string): Promise<R<CommonTodoEntity>
     return Http.get("/common/commonTodoController/findCacheCommonTodoById", params);
 }
 
-export function deleteCommonTodo(id: string, code: string) {
-    let params = {id: id, code: code};
-    return Http.delete("/common/commonTodoController/deleteCommonTodo", params);
+export function deleteCommonTodo(idList: Array<string>) {
+    return Http.post("/common/commonTodoController/deleteCommonTodo", idList);
 }

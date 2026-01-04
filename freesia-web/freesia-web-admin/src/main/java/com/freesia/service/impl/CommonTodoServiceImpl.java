@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * @author Evad.Wu
  * @Description 待办事项表 业务逻辑类
- * @date 2025-12-03
+ * @date 2026-01-04
  */
 @Service
 @RequiredArgsConstructor
@@ -58,15 +58,15 @@ public class CommonTodoServiceImpl extends ServiceImpl<CommonTodoMapper, CommonT
     @Override
     public CommonTodoDto findCommonTodo(CommonTodoDto commonTodoDto) {
         LambdaQueryWrapper<CommonTodoPo> wrapper = new LambdaQueryWrapper<CommonTodoPo>()
-            .eq(CommonTodoPo::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(commonTodoDto.getId()), CommonTodoPo::getId, commonTodoDto.getId());
+                .eq(CommonTodoPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(commonTodoDto.getId()), CommonTodoPo::getId, commonTodoDto.getId());
         return UCopy.copyPo2Dto(getOne(wrapper), CommonTodoDto.class);
     }
 
     @Override
     public List<CommonTodoDto> findListCommonTodo(CommonTodoDto commonTodoDto) {
         LambdaQueryWrapper<CommonTodoPo> wrapper = new LambdaQueryWrapper<CommonTodoPo>()
-            .eq(CommonTodoPo::getLogicDel, FlagConstant.DISABLED);
+                .eq(CommonTodoPo::getLogicDel, FlagConstant.DISABLED);
         return UCopy.fullCopyList(list(wrapper), CommonTodoDto.class);
     }
 

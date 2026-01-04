@@ -1,16 +1,19 @@
 package com.freesia.dto;
 
-import com.freesia.dto.BaseDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.freesia.constant.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
  * @Description 待办事项表 数据传输对象
- * @date 2025-12-18
+ * @date 2026-01-04
  */
 @Data
 @NoArgsConstructor
@@ -24,9 +27,10 @@ public class CommonTodoDto extends BaseDto {
     private String title;
     @Schema(description = "内容")
     private String content;
-    @Schema(description = "状态（UNFINISHED-未完成；FINISHED-已完成）")
-    private String status;
+    @Schema(description = "状态（0-未完成；1-已完成）")
+    private Boolean status;
     @Schema(description = "提醒时间")
+    @JsonFormat(pattern = Constants.YMD_HM)
     private Date dueTime;
     @Schema(description = "发送提醒标识（0-否；1-是）")
     private Integer reminderSendFlag;

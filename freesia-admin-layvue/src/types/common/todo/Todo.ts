@@ -7,7 +7,7 @@ export interface CommonTodoVo extends BaseVo {
     title?: string;
     desc?: string;
     content?: string;
-    status?: string;
+    status?: boolean;
     dueTime?: Date;
     reminderSendFlag?: boolean;
     priority?: number;
@@ -19,7 +19,7 @@ export interface CommonTodoEntity extends BaseEntity {
     title?: string;
     desc?: string;
     content?: string;
-    status?: string;
+    status?: boolean;
     dueTime?: Date;
     reminderSendFlag?: boolean;
     priority?: number;
