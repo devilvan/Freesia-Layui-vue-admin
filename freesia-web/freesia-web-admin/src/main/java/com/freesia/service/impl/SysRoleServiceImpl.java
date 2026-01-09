@@ -48,7 +48,6 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRolePo
     private final TransactionTemplate transactionTemplate;
     private final SysRoleRepository sysRoleRepository;
     private final SysMenuRepository sysMenuRepository;
-    private final SysUserRepository sysUserRepository;
     private final SysRoleMapper sysRoleMapper;
     private final SysUserRoleRepository sysUserRoleRepository;
     private final SysRoleMenuRepository sysRoleMenuRepository;
@@ -57,17 +56,17 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRolePo
 
     @Override
     protected JpaRepository<SysRolePo, Long> getRepository() {
-        return null;
+        return sysRoleRepository;
     }
 
     @Override
     protected Class<SysRoleDto> getDtoClass() {
-        return null;
+        return SysRoleDto.class;
     }
 
     @Override
     protected Class<SysRolePo> getPoClass() {
-        return null;
+        return SysRolePo.class;
     }
 
     @Override

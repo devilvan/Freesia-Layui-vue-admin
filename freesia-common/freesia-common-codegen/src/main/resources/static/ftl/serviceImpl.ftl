@@ -27,48 +27,28 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class ${dataBaseDto.className}ServiceImpl extends ServiceImpl<${dataBaseDto.className}Mapper, ${dataBaseDto.className}Po> implements ${dataBaseDto.className}Service {
+public class ${dataBaseDto.className}ServiceImpl extends BaseServiceImpl<${dataBaseDto.className}Mapper, ${dataBaseDto.className}Po, ${dataBaseDto.className}Dto> implements ${dataBaseDto.className}Service {
     private final ${dataBaseDto.className}Repository ${dataBaseDto.className?uncap_first}Repository;
 
     @Override
-    public ${dataBaseDto.className}Dto saveUpdate(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto) {
-        ${dataBaseDto.className}Po ${dataBaseDto.className?uncap_first}Po = UCopy.copyDto2Po(${dataBaseDto.className?uncap_first}Dto, ${dataBaseDto.className}Po.class);
-        return UCopy.copyPo2Dto(${dataBaseDto.className?uncap_first}Repository.saveAndFlush(${dataBaseDto.className?uncap_first}Po), ${dataBaseDto.className}Dto.class);
+    protected JpaRepository<${dataBaseDto.className}Po, Long> getRepository() {
+    return ${dataBaseDto.className?uncap_first}Repository;
     }
 
     @Override
-    public List<${dataBaseDto.className}Dto> saveUpdateBatch(List<${dataBaseDto.className}Dto> list) {
-        List<${dataBaseDto.className}Po> ${dataBaseDto.className?uncap_first}PoList = UCopy.fullCopyList(list, ${dataBaseDto.className}Po.class);
-        return UCopy.fullCopyList(${dataBaseDto.className?uncap_first}Repository.saveAllAndFlush(${dataBaseDto.className?uncap_first}PoList), ${dataBaseDto.className}Dto.class);
+    protected Class<${dataBaseDto.className}Dto> getDtoClass() {
+        return ${dataBaseDto.className}Dto.class;
     }
 
     @Override
-    public TableResult<${dataBaseDto.className}Dto> findPage${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto, PageQuery pageQuery) {
-        LambdaQueryWrapper<${dataBaseDto.className}Po> wrapper = new LambdaQueryWrapper<${dataBaseDto.className}Po>()
-                .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}Dto.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}Dto.getId());
-        Page<${dataBaseDto.className}Po> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, ${dataBaseDto.className}Dto.class));
+    protected Class<${dataBaseDto.className}Po> getPoClass() {
+        return ${dataBaseDto.className}Po.class;
     }
 
     @Override
-    public ${dataBaseDto.className}Dto find${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto) {
-        LambdaQueryWrapper<${dataBaseDto.className}Po> wrapper = new LambdaQueryWrapper<${dataBaseDto.className}Po>()
+    protected Wrapper<WorldClockSunriseSunsetPo> buildQueryWrapper(@NonNull ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto) {
+        return new LambdaQueryWrapper<WorldClockSunriseSunsetPo>()
             .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED)
             .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}Dto.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}Dto.getId());
-        return UCopy.copyPo2Dto(getOne(wrapper), ${dataBaseDto.className}Dto.class);
-    }
-
-    @Override
-    public List<${dataBaseDto.className}Dto> findList${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto) {
-        LambdaQueryWrapper<${dataBaseDto.className}Po> wrapper = new LambdaQueryWrapper<${dataBaseDto.className}Po>()
-            .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED);
-        return UCopy.fullCopyList(list(wrapper), ${dataBaseDto.className}Dto.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void delete${dataBaseDto.className}(List<Long> idList) {
-        removeBatchByIds(idList);
     }
 }

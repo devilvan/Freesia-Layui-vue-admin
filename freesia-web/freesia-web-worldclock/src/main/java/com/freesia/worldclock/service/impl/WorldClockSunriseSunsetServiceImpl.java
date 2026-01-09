@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 public class WorldClockSunriseSunsetServiceImpl extends BaseServiceImpl<WorldClockSunriseSunsetMapper, WorldClockSunriseSunsetPo, WorldClockSunriseSunsetDto> implements WorldClockSunriseSunsetService {
     private final WorldClockSunriseSunsetRepository worldClockSunriseSunsetRepository;
 
-
     @Override
     protected JpaRepository<WorldClockSunriseSunsetPo, Long> getRepository() {
         return worldClockSunriseSunsetRepository;
