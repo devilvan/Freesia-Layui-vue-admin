@@ -35,7 +35,7 @@ public interface ${dataBaseDto.className}Service {
      * @param pageQuery    分页条件
      * @return 分页信息
      */
-    TableResult<${dataBaseDto.className}Dto> findPage${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto, PageQuery pageQuery);
+    TableResult<${dataBaseDto.className}Dto> findPage(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto, PageQuery pageQuery);
 
     /**
      * 条件查询${dataBaseDto.comment}信息
@@ -43,7 +43,7 @@ public interface ${dataBaseDto.className}Service {
      * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
      * @return ${dataBaseDto.comment}信息
      */
-    ${dataBaseDto.className}Dto find${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
+    ${dataBaseDto.className}Dto findOne(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
 
     /**
      * 条件查询${dataBaseDto.comment}信息
@@ -51,12 +51,12 @@ public interface ${dataBaseDto.className}Service {
      * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
      * @return ${dataBaseDto.comment}信息
      */
-    List<${dataBaseDto.className}Dto> findList${dataBaseDto.className}(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
+    List<${dataBaseDto.className}Dto> findList(${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
 
     /**
      * 删除${dataBaseDto.comment}信息
      *
      * @param idList 主键
      */
-    void delete${dataBaseDto.className}(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 }
