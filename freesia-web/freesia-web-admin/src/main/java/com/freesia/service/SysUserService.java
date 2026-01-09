@@ -26,7 +26,7 @@ public interface SysUserService {
      * @param sysUserDto 控制层处理后的数据传输对象
      * @return 保存回调对象
      */
-    SysUserPo saveUpdate(SysUserDto sysUserDto);
+    SysUserDto saveUpdate(SysUserDto sysUserDto);
 
     /**
      * 批量保存
@@ -34,7 +34,7 @@ public interface SysUserService {
      * @param list 控制层处理后的数据传输对象集合
      * @return 保存回调对象
      */
-    List<SysUserPo> saveUpdateBatch(List<SysUserDto> list);
+    List<SysUserDto> saveUpdateBatch(List<SysUserDto> list);
 
     /**
      * 根据用户名查询用户信息，判断用户是否存在、是否停用

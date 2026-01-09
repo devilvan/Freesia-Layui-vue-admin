@@ -35,7 +35,7 @@ public interface WorldClockSunriseSunsetService {
      * @param pageQuery                  分页条件
      * @return 分页信息
      */
-    TableResult<WorldClockSunriseSunsetDto> findPageWorldClockSunriseSunset(WorldClockSunriseSunsetDto worldClockSunriseSunsetDto, PageQuery pageQuery);
+    TableResult<WorldClockSunriseSunsetDto> findPage(WorldClockSunriseSunsetDto worldClockSunriseSunsetDto, PageQuery pageQuery);
 
     /**
      * 条件查询日出日落时间表信息
@@ -43,12 +43,12 @@ public interface WorldClockSunriseSunsetService {
      * @param worldClockSunriseSunsetDto 查询条件
      * @return 日出日落时间表信息
      */
-    WorldClockSunriseSunsetDto findWorldClockSunriseSunset(WorldClockSunriseSunsetDto worldClockSunriseSunsetDto);
+    WorldClockSunriseSunsetDto findOne(WorldClockSunriseSunsetDto worldClockSunriseSunsetDto);
 
     /**
      * 删除日出日落时间表信息
      *
      * @param idList 主键
      */
-    void deleteWorldClockSunriseSunset(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 }

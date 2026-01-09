@@ -38,7 +38,7 @@ public interface CommonIconTemplateDetailService {
      * @param pageQuery                   分页条件
      * @return 分页信息
      */
-    TableResult<CommonIconTemplateDetailDto> findPageCommonIconTemplateDetail(CommonIconTemplateDetailDto commonIconTemplateDetailDto, PageQuery pageQuery);
+    TableResult<CommonIconTemplateDetailDto> findPage(CommonIconTemplateDetailDto commonIconTemplateDetailDto, PageQuery pageQuery);
 
     /**
      * 条件查询通用图标模板表信息
@@ -53,7 +53,7 @@ public interface CommonIconTemplateDetailService {
      *
      * @param idList 主键
      */
-    void deleteCommonIconTemplateDetail(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 
     /**
      * 查询通用图标模板明细的节点数据

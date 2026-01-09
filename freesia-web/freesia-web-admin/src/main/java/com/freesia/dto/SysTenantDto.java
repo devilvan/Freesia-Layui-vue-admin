@@ -47,4 +47,6 @@ public class SysTenantDto extends BaseDto {
     @Schema(description = "营业时间（从）")
     @JsonFormat(pattern = Constants.YM)
     private Date businessHoursFrom;
+    @Schema(description = "客户ID")
+    private Long userId;
 }

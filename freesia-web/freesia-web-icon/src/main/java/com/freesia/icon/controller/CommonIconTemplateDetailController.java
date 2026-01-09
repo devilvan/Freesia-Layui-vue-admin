@@ -72,7 +72,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @GetMapping(value = "findPageCommonIconTemplateDetail")
     public TableResult<CommonIconTemplateDetailDto> findPageCommonIconTemplateDetail(CommonIconTemplateDetailVo commonIconTemplateDetailVo, PageQuery pageQuery) {
         CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
-        return commonIconTemplateDetailService.findPageCommonIconTemplateDetail(commonIconTemplateDetailDto, pageQuery);
+        return commonIconTemplateDetailService.findPage(commonIconTemplateDetailDto, pageQuery);
     }
 
     /**
@@ -98,7 +98,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @Operation(summary = "删除通用图标模板表")
     @PostMapping(value = "deleteCommonIconTemplateDetail")
     public R<Void> deleteCommonIconTemplateDetail(@RequestBody List<Long> idList) {
-        commonIconTemplateDetailService.deleteCommonIconTemplateDetail(idList);
+        commonIconTemplateDetailService.deleteBatch(idList);
         return R.ok();
     }
 

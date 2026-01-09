@@ -69,7 +69,7 @@ public class SysDictController extends BaseController {
     public TableResult<SysDictValueDto> findPageSysDictValue(SysDictVo sysDictValueVo, PageQuery pageQuery) {
         SysDictValueDto sysDictValueDto = new SysDictValueDto();
         UCopy.fullCopy(sysDictValueVo, sysDictValueDto);
-        return sysDictValueService.findPageSysDictValue(sysDictValueDto, pageQuery);
+        return sysDictValueService.findPage(sysDictValueDto, pageQuery);
     }
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_INDEX)
@@ -78,7 +78,7 @@ public class SysDictController extends BaseController {
     public R<List<SysDictValueDto>> findSysDictValueList(@Valid SysDictVo sysDictValueVo) {
         SysDictValueDto sysDictValueDto = new SysDictValueDto();
         UCopy.fullCopy(sysDictValueVo, sysDictValueDto);
-        List<SysDictValueDto> sysDictValueDtoList = sysDictValueService.findSysDictValueList(sysDictValueDto);
+        List<SysDictValueDto> sysDictValueDtoList = sysDictValueService.findList(sysDictValueDto);
         return R.ok(sysDictValueDtoList);
     }
 

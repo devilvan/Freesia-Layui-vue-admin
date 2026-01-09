@@ -38,7 +38,7 @@ public interface SysOssService {
      * @param pageQuery 分页条件
      * @return 分页信息
      */
-    TableResult<SysOssDto> findPageSysOss(SysOssDto sysOssDto, PageQuery pageQuery);
+    TableResult<SysOssDto> findPage(SysOssDto sysOssDto, PageQuery pageQuery);
 
     /**
      * 条件查询OSS对象存储表信息
@@ -46,14 +46,14 @@ public interface SysOssService {
      * @param sysOssDto 查询条件
      * @return OSS对象存储表信息
      */
-    SysOssDto findSysOss(SysOssDto sysOssDto);
+    SysOssDto findOne(SysOssDto sysOssDto);
 
     /**
      * 删除OSS对象存储表信息
      *
      * @param idList 主键
      */
-    void deleteSysOss(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 
     /**
      * 上传文件

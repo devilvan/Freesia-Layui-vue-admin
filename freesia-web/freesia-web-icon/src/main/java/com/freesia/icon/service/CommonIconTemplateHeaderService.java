@@ -37,7 +37,7 @@ public interface CommonIconTemplateHeaderService {
      * @param pageQuery                   分页条件
      * @return 分页信息
      */
-    TableResult<CommonIconTemplateHeaderDto> findPageCommonIconTemplateHeader(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto, PageQuery pageQuery);
+    TableResult<CommonIconTemplateHeaderDto> findPage(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto, PageQuery pageQuery);
 
     /**
      * 条件查询通用图标模板头表信息
@@ -45,14 +45,14 @@ public interface CommonIconTemplateHeaderService {
      * @param commonIconTemplateHeaderDto 查询条件
      * @return 通用图标模板头表信息
      */
-    CommonIconTemplateHeaderDto findCommonIconTemplateHeader(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto);
+    CommonIconTemplateHeaderDto findOne(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto);
 
     /**
      * 删除通用图标模板头表信息
      *
      * @param idList 主键
      */
-    void deleteCommonIconTemplateHeader(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 
     /**
      * 查询最大排序号

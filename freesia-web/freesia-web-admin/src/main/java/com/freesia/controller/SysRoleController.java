@@ -67,7 +67,9 @@ public class SysRoleController extends BaseController {
     @Operation(summary = "根据ID查询角色")
     @GetMapping(value = "findRoleById")
     public R<SysRoleDto> findRoleById(@RequestParam Long roleId) {
-        SysRoleDto sysRoleDto = sysRoleService.findRoleById(roleId);
+        SysRoleDto sysRoleDto = new SysRoleDto();
+        sysRoleDto.setId(roleId);
+        sysRoleDto = sysRoleService.findOne(sysRoleDto);
         return R.ok(sysRoleDto);
     }
 
@@ -138,7 +140,7 @@ public class SysRoleController extends BaseController {
         String status = saveRoleVo.getStatus();
         saveRoleVo.setStatus(FlagConstant.TRUE.equals(status) ? FlagConstant.ENABLED : FlagConstant.DISABLED);
         SysRoleDto sysRoleDto = UCopy.copyVo2Dto(saveRoleVo, SysRoleDto.class);
-        sysRoleDto = sysRoleService.saveRole(sysRoleDto);
+        sysRoleDto = sysRoleService.saveUpdate(sysRoleDto);
         return R.ok(sysRoleDto);
     }
 

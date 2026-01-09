@@ -68,7 +68,9 @@ public class SysDeptController extends BaseController {
         LoginUserModel loginUser = USecurity.getLoginUser();
         Long deptId = Optional.ofNullable(loginUser).map(LoginUserModel::getDeptId)
                 .orElseThrow(() -> new DeptException("dept.id.required", new Object[] {}));
-        SysDeptDto sysDeptDto = sysDeptService.findDeptById(deptId);
+        SysDeptDto sysDeptDto = new SysDeptDto();
+        sysDeptDto.setId(deptId);
+        sysDeptDto = sysDeptService.findOne(sysDeptDto);
         return R.ok(sysDeptDto);
     }
 

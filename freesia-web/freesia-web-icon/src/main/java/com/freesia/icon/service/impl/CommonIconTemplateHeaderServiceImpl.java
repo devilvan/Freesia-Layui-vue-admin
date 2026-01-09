@@ -3,8 +3,6 @@ package com.freesia.icon.service.impl;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.dto.FindListSelectCostTypeDto;
@@ -14,14 +12,14 @@ import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.po.BasePo;
 import com.freesia.pojo.LaySelect;
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +31,33 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconTemplateHeaderMapper, CommonIconTemplateHeaderPo> implements CommonIconTemplateHeaderService {
+public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonIconTemplateHeaderMapper, CommonIconTemplateHeaderPo, CommonIconTemplateHeaderDto> implements CommonIconTemplateHeaderService {
     private final CommonIconTemplateHeaderRepository commonIconTemplateHeaderRepository;
     private final CommonIconTemplateHeaderMapper commonIconTemplateHeaderMapper;
+
+
+    @Override
+    protected JpaRepository<CommonIconTemplateHeaderPo, Long> getRepository() {
+        return commonIconTemplateHeaderRepository;
+    }
+
+    @Override
+    protected Class<CommonIconTemplateHeaderDto> getDtoClass() {
+        return CommonIconTemplateHeaderDto.class;
+    }
+
+    @Override
+    protected Class<CommonIconTemplateHeaderPo> getPoClass() {
+        return CommonIconTemplateHeaderPo.class;
+    }
+
+    @Override
+    protected Wrapper<CommonIconTemplateHeaderPo> buildQueryWrapper(@NonNull CommonIconTemplateHeaderDto commonIconTemplateHeaderDto) {
+        return new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()
+                .eq(CommonIconTemplateHeaderPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(CommonIconTemplateHeaderPo::getUserId, USecurity.getUserId())
+                .eq(UEmpty.isNotEmpty(commonIconTemplateHeaderDto.getId()), CommonIconTemplateHeaderPo::getId, commonIconTemplateHeaderDto.getId());
+    }
 
     @Override
     public CommonIconTemplateHeaderDto saveUpdate(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto) {
@@ -58,37 +80,6 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
         CommonIconTemplateHeaderDto resultDto = new CommonIconTemplateHeaderDto();
         UCopy.fullCopy(commonIconTemplateHeaderRepository.saveAndFlush(commonIconTemplateHeaderPo), resultDto);
         return resultDto;
-    }
-
-    @Override
-    public List<CommonIconTemplateHeaderDto> saveUpdateBatch(List<CommonIconTemplateHeaderDto> list) {
-        List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList = UCopy.fullCopyList(list, CommonIconTemplateHeaderPo.class);
-        return UCopy.fullCopyList(commonIconTemplateHeaderRepository.saveAllAndFlush(commonIconTemplateHeaderPoList), CommonIconTemplateHeaderDto.class);
-    }
-
-    @Override
-    public TableResult<CommonIconTemplateHeaderDto> findPageCommonIconTemplateHeader(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto, PageQuery pageQuery) {
-        LambdaQueryWrapper<CommonIconTemplateHeaderPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()
-                .eq(CommonIconTemplateHeaderPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(CommonIconTemplateHeaderPo::getUserId, USecurity.getUserId())
-                .eq(UEmpty.isNotEmpty(commonIconTemplateHeaderDto.getId()), CommonIconTemplateHeaderPo::getId, commonIconTemplateHeaderDto.getId());
-        Page<CommonIconTemplateHeaderPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPage(pagePo, CommonIconTemplateHeaderDto.class));
-    }
-
-    @Override
-    public CommonIconTemplateHeaderDto findCommonIconTemplateHeader(CommonIconTemplateHeaderDto commonIconTemplateHeaderDto) {
-        LambdaQueryWrapper<CommonIconTemplateHeaderPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateHeaderPo>()
-                .eq(CommonIconTemplateHeaderPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(CommonIconTemplateHeaderPo::getUserId, USecurity.getUserId())
-                .eq(UEmpty.isNotEmpty(commonIconTemplateHeaderDto.getId()), CommonIconTemplateHeaderPo::getId, commonIconTemplateHeaderDto.getId());
-        return UCopy.copyPo2Dto(getOne(wrapper), CommonIconTemplateHeaderDto.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteCommonIconTemplateHeader(List<Long> idList) {
-        removeBatchByIds(idList);
     }
 
     @Override
@@ -115,7 +106,7 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
         return commonIconTemplateHeaderMapper.findCacheCostType(dto);
     }
 
-    private static List<LaySelect> buildLaySelects(List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList) {
+    private List<LaySelect> buildLaySelects(List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList) {
         List<LaySelect> laySelectList = new ArrayList<>();
         if (UEmpty.isNotEmpty(commonIconTemplateHeaderPoList)) {
             for (CommonIconTemplateHeaderPo commonIconTemplateHeaderPo : commonIconTemplateHeaderPoList) {

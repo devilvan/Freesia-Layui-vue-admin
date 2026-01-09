@@ -55,7 +55,7 @@ public class SysDictKeyServiceImpl extends BaseServiceImpl<SysDictKeyMapper, Sys
     }
 
     @Override
-    protected Wrapper<SysDictKeyPo> buildLambdaQueryWrapper(@NonNull SysDictKeyDto dto) {
+    protected Wrapper<SysDictKeyPo> buildQueryWrapper(@NonNull SysDictKeyDto dto) {
         return null;
     }
 

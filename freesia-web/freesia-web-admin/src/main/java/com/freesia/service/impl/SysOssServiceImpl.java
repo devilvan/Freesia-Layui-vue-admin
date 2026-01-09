@@ -4,7 +4,6 @@ import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
@@ -28,8 +27,10 @@ import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
 import com.freesia.util.USpring;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,33 +51,49 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> implements SysOssService {
+public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssPo, SysOssDto> implements SysOssService {
     private final SysOssRepository sysOssRepository;
+
+
+    @Override
+    protected JpaRepository<SysOssPo, Long> getRepository() {
+        return sysOssRepository;
+    }
+
+    @Override
+    protected Class<SysOssDto> getDtoClass() {
+        return SysOssDto.class;
+    }
+
+    @Override
+    protected Class<SysOssPo> getPoClass() {
+        return SysOssPo.class;
+    }
+
+    @Override
+    protected Wrapper<SysOssPo> buildQueryWrapper(@NonNull SysOssDto dto) {
+        return new LambdaQueryWrapper<SysOssPo>()
+                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(dto.getId()), SysOssPo::getId, dto.getId())
+                .eq(SysOssPo::getTempFlag, false)
+                .orderByDesc(SysOssPo::getCreateTime);
+    }
 
     @Override
     @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS, message = "oss.save")
     public SysOssDto saveUpdate(SysOssDto sysOssDto) {
-        SysOssPo sysOssPo = new SysOssPo();
-        UCopy.fullCopy(sysOssDto, sysOssPo);
-        SysOssDto resultDto = new SysOssDto();
-        UCopy.fullCopy(sysOssRepository.saveAndFlush(sysOssPo), resultDto);
-        return resultDto;
+        return super.saveUpdate(sysOssDto);
     }
 
     @Override
     @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS, message = "oss.save")
     public List<SysOssDto> saveUpdateBatch(List<SysOssDto> list) {
-        List<SysOssPo> sysOssPoList = UCopy.fullCopyList(list, SysOssPo.class);
-        return UCopy.fullCopyList(sysOssRepository.saveAllAndFlush(sysOssPoList), SysOssDto.class);
+        return super.saveUpdateBatch(list);
     }
 
     @Override
-    public TableResult<SysOssDto> findPageSysOss(SysOssDto sysOss, PageQuery pageQuery) {
-        LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
-                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysOss.getId()), SysOssPo::getId, sysOss.getId())
-                .eq(SysOssPo::getTempFlag, false)
-                .orderByDesc(SysOssPo::getCreateTime);
+    public TableResult<SysOssDto> findPage(SysOssDto sysOssDto, PageQuery pageQuery) {
+        Wrapper<SysOssPo> wrapper = buildQueryWrapper(sysOssDto);
         Page<SysOssPo> pagePo = page(pageQuery.build(), wrapper);
         pagePo = Optional.ofNullable(pagePo).orElseGet(pageQuery::build);
         Optional.of(pagePo).map(Page::getRecords).ifPresent(records -> {
@@ -89,18 +106,9 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     }
 
     @Override
-    public SysOssDto findSysOss(SysOssDto sysOss) {
-        LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
-                .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysOss.getId()), SysOssPo::getId, sysOss.getId())
-                .eq(SysOssPo::getTempFlag, false);
-        return UCopy.copyPo2Dto(getOne(wrapper), SysOssDto.class);
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.DELETE_OSS, message = "oss.delete")
-    public void deleteSysOss(List<Long> idList) {
+    public void deleteBatch(List<Long> idList) {
         if (UEmpty.isNotEmpty(idList)) {
             Wrapper<SysOssPo> queryWrapper = new LambdaQueryWrapper<SysOssPo>()
                     .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)
@@ -110,7 +118,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
                 OssHandler ossHandler = OssFactory.getInstance(sysOssPo.getService());
                 ossHandler.delete(ossHandler.convertEndpoint2Domain(sysOssPo.getUrl()));
             }
-            removeBatchByIds(idList);
+            super.deleteBatch(idList);
         }
     }
 
@@ -270,6 +278,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void initDeleteTempFile() {
         LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
                 .select(SysOssPo::getId)
@@ -277,7 +286,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
                 .eq(SysOssPo::getTempFlag, true);
         List<SysOssPo> sysOssPoList = this.list(wrapper);
         List<Long> idList = sysOssPoList.stream().map(BasePo::getId).collect(Collectors.toList());
-        deleteSysOss(idList);
+        this.deleteBatch(idList);
     }
 
     /**

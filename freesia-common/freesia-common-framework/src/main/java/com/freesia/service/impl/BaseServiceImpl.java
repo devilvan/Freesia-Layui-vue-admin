@@ -73,9 +73,23 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      * @return 分页格式响应
      */
     public TableResult<DTO> findPage(DTO dto, PageQuery pageQuery) {
-        Wrapper<PO> wrapper = buildLambdaQueryWrapper(dto);
-        Page<PO> page = page(pageQuery.build(), wrapper);
-        return TableResult.build(converterFactory.getConverter(getPoClass(), getDtoClass()).convertPage(page));
+        return findPage(dto, pageQuery, buildQueryWrapper(dto));
+    }
+
+    /**
+     * 分页查询（模板方法）
+     *
+     * @param dto       DTO
+     * @param pageQuery 分页参数
+     * @param wrapper   查询条件
+     * @return 分页格式响应
+     */
+    public TableResult<DTO> findPage(DTO dto, PageQuery pageQuery, Wrapper<PO> wrapper) {
+        if (wrapper != null) {
+            Page<PO> page = page(pageQuery.build(), wrapper);
+            return TableResult.build(converterFactory.getConverter(getPoClass(), getDtoClass()).convertPage(page));
+        }
+        return TableResult.build();
     }
 
     /**
@@ -85,8 +99,21 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      * @return 查询结果
      */
     public DTO findOne(DTO dto) {
-        Wrapper<PO> wrapper = buildLambdaQueryWrapper(dto);
-        return converterFactory.getConverter(getPoClass(), getDtoClass()).convert(getOne(wrapper));
+        return findOne(dto, buildQueryWrapper(dto));
+    }
+
+    /**
+     * 单个查询（模板方法）
+     *
+     * @param dto     DTO
+     * @param wrapper 查询条件
+     * @return 查询结果
+     */
+    public DTO findOne(DTO dto, Wrapper<PO> wrapper) {
+        if (wrapper != null) {
+            return converterFactory.getConverter(getPoClass(), getDtoClass()).convert(getOne(wrapper));
+        }
+        return null;
     }
 
     /**
@@ -96,8 +123,21 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      * @return 查询结果
      */
     public List<DTO> findList(DTO dto) {
-        Wrapper<PO> wrapper = buildLambdaQueryWrapper(dto);
-        return converterFactory.getConverter(getPoClass(), getDtoClass()).convertBatch(list(wrapper));
+        return findList(dto, buildQueryWrapper(dto));
+    }
+
+    /**
+     * 列表查询（模板方法）
+     *
+     * @param dto     DTO
+     * @param wrapper 查询条件
+     * @return 查询结果
+     */
+    public List<DTO> findList(DTO dto, Wrapper<PO> wrapper) {
+        if (wrapper != null) {
+            return converterFactory.getConverter(getPoClass(), getDtoClass()).convertBatch(list(wrapper));
+        }
+        return null;
     }
 
     /**
@@ -121,7 +161,7 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      */
     protected abstract Class<PO> getPoClass();
 
-    protected abstract Wrapper<PO> buildLambdaQueryWrapper(@NonNull DTO dto);
+    protected abstract Wrapper<PO> buildQueryWrapper(@NonNull DTO dto);
 
     /**
      * 保存前置钩子函数，子类可选择重写

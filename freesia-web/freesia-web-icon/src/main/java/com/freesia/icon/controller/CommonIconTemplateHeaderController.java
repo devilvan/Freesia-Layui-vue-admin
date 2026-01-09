@@ -84,7 +84,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_INDEX})
     public TableResult<CommonIconTemplateHeaderDto> findPageCommonIconTemplateHeader(CommonIconTemplateHeaderVo commonIconTemplateHeaderVo, PageQuery pageQuery) {
         CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
-        return commonIconTemplateHeaderService.findPageCommonIconTemplateHeader(commonIconTemplateHeaderDto, pageQuery);
+        return commonIconTemplateHeaderService.findPage(commonIconTemplateHeaderDto, pageQuery);
     }
 
     /**
@@ -98,7 +98,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_INDEX})
     public R<CommonIconTemplateHeaderDto> findCommonIconTemplateHeader(CommonIconTemplateHeaderVo commonIconTemplateHeaderVo) {
         CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
-        CommonIconTemplateHeaderDto tableResult = commonIconTemplateHeaderService.findCommonIconTemplateHeader(commonIconTemplateHeaderDto);
+        CommonIconTemplateHeaderDto tableResult = commonIconTemplateHeaderService.findOne(commonIconTemplateHeaderDto);
         return R.ok(tableResult);
     }
 
@@ -113,7 +113,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
     @PostMapping(value = "deleteCommonIconTemplateHeader")
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_DELETE})
     public R<Void> deleteCommonIconTemplateHeader(@RequestBody List<Long> idList) {
-        commonIconTemplateHeaderService.deleteCommonIconTemplateHeader(idList);
+        commonIconTemplateHeaderService.deleteBatch(idList);
         return R.ok();
     }
 

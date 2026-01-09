@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
 import com.freesia.dto.AssignButtonDto;
@@ -30,8 +29,10 @@ import com.freesia.repository.SysRoleMenuRepository;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysMenuService;
 import com.freesia.util.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
 @Valid
 @Service
 @RequiredArgsConstructor
-public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> implements SysMenuService {
+public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuPo, SysMenuDto> implements SysMenuService {
     private static final String PREFIX = "/";
     private static final String NO_REDIRECT = "noRedirect";
     private static final String COMPONENT_REGEX = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$";
@@ -58,16 +59,25 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     private final SysRoleMapper sysRoleMapper;
     private final SysRoleMenuRepository sysRoleMenuRepository;
 
+
     @Override
-    public SysMenuDto saveUpdate(SysMenuDto sysMenuDto) {
-        SysMenuPo sysMenuPo = UCopy.copyDto2Po(sysMenuDto, SysMenuPo.class);
-        return UCopy.copyPo2Dto(sysMenuRepository.saveAndFlush(sysMenuPo), SysMenuDto.class);
+    protected JpaRepository<SysMenuPo, Long> getRepository() {
+        return sysMenuRepository;
     }
 
     @Override
-    public List<SysMenuDto> saveUpdateBatch(List<SysMenuDto> list) {
-        List<SysMenuPo> sysMenuPoList = UCopy.fullCopyList(list, SysMenuPo.class);
-        return UCopy.fullCopyList(sysMenuRepository.saveAllAndFlush(sysMenuPoList), SysMenuDto.class);
+    protected Class<SysMenuDto> getDtoClass() {
+        return SysMenuDto.class;
+    }
+
+    @Override
+    protected Class<SysMenuPo> getPoClass() {
+        return SysMenuPo.class;
+    }
+
+    @Override
+    protected Wrapper<SysMenuPo> buildQueryWrapper(@NonNull SysMenuDto dto) {
+        return null;
     }
 
     @Override
@@ -300,18 +310,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
     }
 
     @Override
-    public SysMenuDto findMenuByParentId(Long parentId) {
-        LambdaQueryWrapper<SysMenuPo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysMenuPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(SysMenuPo::getId, parentId)
-                .eq(SysMenuPo::getMenuType, MenuType.MENU.getType());
-        SysMenuPo sysMenuPo = Optional.ofNullable(this.getOne(wrapper)).orElseGet(SysMenuPo::new);
-        return UCopy.copyPo2Dto(sysMenuPo, SysMenuDto.class);
-    }
-
-    @Override
     @LogRecord(module = MenuModule.MENU_MANAGEMENT, subModule = MenuModule.SubModule.SAVE_MENU, message = "menu.save")
-    public SysMenuDto saveMenu(SysMenuDto sysMenuDto) {
+    public SysMenuDto saveUpdate(SysMenuDto sysMenuDto) {
         //前端解析menu列表ID的逻辑不要处理后半部分
         if (UEmpty.isEmpty(sysMenuDto.getId())) {
             String component = checkComponent(sysMenuDto.getComponent());
@@ -336,7 +336,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
                 sysMenuDto.setComponent(AdminConstant.INNER_COMPONENT);
             }
         }
-        return saveUpdate(sysMenuDto);
+        return super.saveUpdate(sysMenuDto);
     }
 
     @Override
@@ -355,12 +355,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
 
     @Override
     public List<SysMenuDto> findAllSysButton(SysMenuDto sysMenuDto) {
-        LambdaQueryWrapper<SysMenuPo> queryWrapper = new LambdaQueryWrapper<SysMenuPo>()
-                .eq(SysMenuPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(SysMenuPo::getMenuType, MenuType.BUTTON.getType())
-                .eq(SysMenuPo::getParentId, sysMenuDto.getId())
-                .likeRight(UEmpty.isNotEmpty(sysMenuDto.getMenuName()), SysMenuPo::getMenuName, sysMenuDto.getMenuName())
-                .orderByAsc(SysMenuPo::getOrderNum);
         List<SysMenuPo> sysMenuPoList = sysMenuMapper.findAllSysButton(sysMenuDto, USecurity.isAdmin());
         return UCopy.fullCopyList(sysMenuPoList, SysMenuDto.class);
     }
@@ -507,7 +501,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuPo> im
      * @param sysMenuDto 前端表单数据
      */
     private void checkAddButton(SysMenuDto sysMenuDto) {
-        SysMenuDto findMenuByParentIdDto = findMenuByParentId(sysMenuDto.getParentId());
+        LambdaQueryWrapper<SysMenuPo> wrapper = new LambdaQueryWrapper<SysMenuPo>()
+                .eq(SysMenuPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(SysMenuPo::getId, sysMenuDto.getParentId())
+                .eq(SysMenuPo::getMenuType, MenuType.MENU.getType());
+        SysMenuDto findMenuByParentIdDto = findOne(sysMenuDto, wrapper);
         if (ObjectUtil.isNull(findMenuByParentIdDto.getId())) {
             throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.button.find.parent.failed", new Object[]{sysMenuDto.getMenuName(), sysMenuDto.getParentId()});
         }

@@ -1,12 +1,12 @@
 package com.freesia.notice.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
-import com.freesia.convert.ConverterFactory;
 import com.freesia.dto.BaseDto;
+import com.freesia.notice.dto.MarkReadDto;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.entity.FindPageSysNoticeEntity;
 import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
@@ -14,16 +14,17 @@ import com.freesia.notice.mapper.SysNoticeMapper;
 import com.freesia.notice.po.SysNoticePo;
 import com.freesia.notice.repository.SysNoticeRepository;
 import com.freesia.notice.service.SysNoticeService;
-import com.freesia.notice.dto.MarkReadDto;
 import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,42 +37,37 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNoticePo> implements SysNoticeService {
+public class SysNoticeServiceImpl extends BaseServiceImpl<SysNoticeMapper, SysNoticePo, SysNoticeDto> implements SysNoticeService {
     private final SysNoticeRepository sysNoticeRepository;
     private final SysNoticeMapper sysNoticeMapper;
-    private final ConverterFactory converterFactory;
+
 
     @Override
-    public SysNoticeDto saveUpdate(SysNoticeDto sysNoticeDto) {
-        SysNoticePo sysNoticePo = UCopy.copyDto2Po(sysNoticeDto, SysNoticePo.class);
-        SysNoticePo po = sysNoticeRepository.saveAndFlush(sysNoticePo);
-        return converterFactory.getConverter(SysNoticePo.class, SysNoticeDto.class).convert(po);
+    protected JpaRepository<SysNoticePo, Long> getRepository() {
+        return sysNoticeRepository;
     }
 
     @Override
-    public List<SysNoticeDto> saveUpdateBatch(List<SysNoticeDto> list) {
-        List<SysNoticePo> sysNoticePoList = UCopy.fullCopyList(list, SysNoticePo.class);
-        return converterFactory.getConverter(SysNoticePo.class, SysNoticeDto.class).convertBatch(sysNoticeRepository.saveAllAndFlush(sysNoticePoList));
+    protected Class<SysNoticeDto> getDtoClass() {
+        return SysNoticeDto.class;
+    }
+
+    @Override
+    protected Class<SysNoticePo> getPoClass() {
+        return SysNoticePo.class;
+    }
+
+    @Override
+    protected Wrapper<SysNoticePo> buildQueryWrapper(@NonNull SysNoticeDto sysNoticeDto) {
+        return new LambdaQueryWrapper<SysNoticePo>()
+                .eq(SysNoticePo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(sysNoticeDto.getId()), SysNoticePo::getId, sysNoticeDto.getId());
     }
 
     @Override
     public TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeDto sysNoticeDto, PageQuery pageQuery) {
         Page<FindPageSysNoticeEntity> pagePo = sysNoticeMapper.findPageSysNotice(sysNoticeDto, pageQuery.build());
         return TableResult.build(pagePo);
-    }
-
-    @Override
-    public SysNoticeDto findSysNotice(SysNoticeDto sysNoticeDto) {
-        LambdaQueryWrapper<SysNoticePo> wrapper = new LambdaQueryWrapper<SysNoticePo>()
-                .eq(SysNoticePo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysNoticeDto.getId()), SysNoticePo::getId, sysNoticeDto.getId());
-        return UCopy.copyPo2Dto(getOne(wrapper), SysNoticeDto.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteSysNotice(List<Long> idList) {
-        removeBatchByIds(idList);
     }
 
     @Override

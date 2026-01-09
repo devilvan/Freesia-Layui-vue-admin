@@ -37,7 +37,7 @@ public interface WorldClockCityService {
      * @param pageQuery         分页条件
      * @return 分页信息
      */
-    TableResult<WorldClockCityDto> findPageWorldClockCity(WorldClockCityDto worldClockCityDto, PageQuery pageQuery);
+    TableResult<WorldClockCityDto> findPage(WorldClockCityDto worldClockCityDto, PageQuery pageQuery);
 
     /**
      * 条件查询城市表信息
@@ -45,14 +45,14 @@ public interface WorldClockCityService {
      * @param worldClockCityDto 查询条件
      * @return 城市表信息
      */
-    WorldClockCityDto findWorldClockCity(WorldClockCityDto worldClockCityDto);
+    WorldClockCityDto findOne(WorldClockCityDto worldClockCityDto);
 
     /**
      * 删除城市表信息
      *
      * @param idList 主键
      */
-    void deleteWorldClockCity(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 
     /**
      * 根据年份、城市ID生成日出日落时间
@@ -75,7 +75,7 @@ public interface WorldClockCityService {
      * @param worldClockCityDto 查询条件
      * @return 结果集
      */
-    List<WorldClockCityDto> findListWorldClockCity(WorldClockCityDto worldClockCityDto);
+    List<WorldClockCityDto> findList(WorldClockCityDto worldClockCityDto);
 
 
     /**

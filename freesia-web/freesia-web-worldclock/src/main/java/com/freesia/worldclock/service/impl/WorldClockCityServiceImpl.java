@@ -1,12 +1,10 @@
 package com.freesia.worldclock.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
+import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.worldclock.dto.FindCitySunriseSunsetReqDto;
@@ -20,10 +18,11 @@ import com.freesia.worldclock.service.WorldClockCityService;
 import com.freesia.worldclock.service.WorldClockSunriseSunsetService;
 import com.freesia.worldclock.util.SunriseSunsetCalculatorUtil;
 import com.freesia.worldclock.util.TimeZoneConverter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -41,47 +40,32 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class WorldClockCityServiceImpl extends ServiceImpl<WorldClockCityMapper, WorldClockCityPo> implements WorldClockCityService {
+public class WorldClockCityServiceImpl extends BaseServiceImpl<WorldClockCityMapper, WorldClockCityPo, WorldClockCityDto> implements WorldClockCityService {
     private final WorldClockCityRepository worldClockCityRepository;
     private final WorldClockCityMapper worldClockCityMapper;
     private final WorldClockSunriseSunsetService worldClockSunriseSunsetService;
 
+
     @Override
-    public WorldClockCityDto saveUpdate(WorldClockCityDto worldClockCityDto) {
-        WorldClockCityPo worldClockCityPo = new WorldClockCityPo();
-        UCopy.fullCopy(worldClockCityDto, worldClockCityPo);
-        WorldClockCityDto resultDto = new WorldClockCityDto();
-        UCopy.fullCopy(worldClockCityRepository.saveAndFlush(worldClockCityPo), resultDto);
-        return resultDto;
+    protected JpaRepository<WorldClockCityPo, Long> getRepository() {
+        return worldClockCityRepository;
     }
 
     @Override
-    public List<WorldClockCityDto> saveUpdateBatch(List<WorldClockCityDto> list) {
-        List<WorldClockCityPo> worldClockCityPoList = UCopy.fullCopyList(list, WorldClockCityPo.class);
-        return UCopy.fullCopyList(worldClockCityRepository.saveAllAndFlush(worldClockCityPoList), WorldClockCityDto.class);
+    protected Class<WorldClockCityDto> getDtoClass() {
+        return WorldClockCityDto.class;
     }
 
     @Override
-    public TableResult<WorldClockCityDto> findPageWorldClockCity(WorldClockCityDto worldClockCityDto, PageQuery pageQuery) {
-        LambdaQueryWrapper<WorldClockCityPo> wrapper = new LambdaQueryWrapper<WorldClockCityPo>()
+    protected Class<WorldClockCityPo> getPoClass() {
+        return WorldClockCityPo.class;
+    }
+
+    @Override
+    protected Wrapper<WorldClockCityPo> buildQueryWrapper(@NonNull WorldClockCityDto worldClockCityDto) {
+        return new LambdaQueryWrapper<WorldClockCityPo>()
                 .eq(WorldClockCityPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(worldClockCityDto.getId()), WorldClockCityPo::getId, worldClockCityDto.getId());
-        Page<WorldClockCityPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPage(pagePo, WorldClockCityDto.class));
-    }
-
-    @Override
-    public WorldClockCityDto findWorldClockCity(WorldClockCityDto worldClockCityDto) {
-        LambdaQueryWrapper<WorldClockCityPo> wrapper = new LambdaQueryWrapper<WorldClockCityPo>()
-                .eq(WorldClockCityPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(worldClockCityDto.getId()), WorldClockCityPo::getId, worldClockCityDto.getId());
-        return UCopy.copyPo2Dto(getOne(wrapper), WorldClockCityDto.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteWorldClockCity(List<Long> idList) {
-        removeBatchByIds(idList);
     }
 
     /**
@@ -90,6 +74,7 @@ public class WorldClockCityServiceImpl extends ServiceImpl<WorldClockCityMapper,
      * @param cityId 城市ID
      * @param year   年份
      */
+    @Override
     public void generateYearlyDataForCity(Long cityId, int year) {
         // 获取城市信息
         WorldClockCityPo city = getById(cityId);
@@ -139,7 +124,7 @@ public class WorldClockCityServiceImpl extends ServiceImpl<WorldClockCityMapper,
     @Override
     public void generateYearlyDataForAllCities(int year) {
         WorldClockCityDto worldClockCityDto = new WorldClockCityDto();
-        List<WorldClockCityDto> worldClockCityPoList = findListWorldClockCity(worldClockCityDto);
+        List<WorldClockCityDto> worldClockCityPoList = this.findList(worldClockCityDto);
         for (WorldClockCityDto dto : worldClockCityPoList) {
             generateYearlyDataForCity(dto.getId(), year);
         }
@@ -147,7 +132,7 @@ public class WorldClockCityServiceImpl extends ServiceImpl<WorldClockCityMapper,
     }
 
     @Override
-    public List<WorldClockCityDto> findListWorldClockCity(WorldClockCityDto worldClockCityDto) {
+    public List<WorldClockCityDto> findList(WorldClockCityDto worldClockCityDto) {
         List<WorldClockCityPo> worldClockCityPoList = worldClockCityMapper.findListWorldClockCity(worldClockCityDto);
         return UCopy.fullCopyList(worldClockCityPoList, WorldClockCityDto.class);
     }

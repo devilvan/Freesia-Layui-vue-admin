@@ -1,8 +1,8 @@
 package com.freesia.account.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.account.constant.BudgetType;
 import com.freesia.account.dto.AccountBudgetDto;
 import com.freesia.account.dto.FindBudgetCapacityDto;
@@ -17,11 +17,13 @@ import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
+import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -38,9 +40,33 @@ import java.util.Objects;
  */
 @Service
 @RequiredArgsConstructor
-public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, AccountBudgetPo> implements AccountBudgetService {
+public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMapper, AccountBudgetPo, AccountBudgetDto> implements AccountBudgetService {
     private final AccountBudgetRepository accountBudgetRepository;
     private final AccountBudgetMapper accountBudgetMapper;
+
+
+    @Override
+    protected JpaRepository<AccountBudgetPo, Long> getRepository() {
+        return accountBudgetRepository;
+    }
+
+    @Override
+    protected Class<AccountBudgetDto> getDtoClass() {
+        return AccountBudgetDto.class;
+    }
+
+    @Override
+    protected Class<AccountBudgetPo> getPoClass() {
+        return AccountBudgetPo.class;
+    }
+
+    @Override
+    protected Wrapper<AccountBudgetPo> buildQueryWrapper(@NonNull AccountBudgetDto accountBudgetDto) {
+        return new LambdaQueryWrapper<AccountBudgetPo>()
+                .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(AccountBudgetPo::getUserId, accountBudgetDto.getUserId())
+                .eq(UEmpty.isNotEmpty(accountBudgetDto.getId()), AccountBudgetPo::getId, accountBudgetDto.getId());
+    }
 
     @Override
     public AccountBudgetDto saveUpdate(AccountBudgetDto accountBudgetDto) {
@@ -66,17 +92,8 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
     }
 
     @Override
-    public List<AccountBudgetDto> saveUpdateBatch(List<AccountBudgetDto> list) {
-        List<AccountBudgetPo> accountBudgetPoList = UCopy.fullCopyList(list, AccountBudgetPo.class);
-        return UCopy.fullCopyList(accountBudgetRepository.saveAllAndFlush(accountBudgetPoList), AccountBudgetDto.class);
-    }
-
-    @Override
-    public TableResult<AccountBudgetDto> findPageAccountBudget(AccountBudgetDto accountBudget, PageQuery pageQuery) {
-        LambdaQueryWrapper<AccountBudgetPo> wrapper = new LambdaQueryWrapper<AccountBudgetPo>()
-                .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(AccountBudgetPo::getUserId, accountBudget.getUserId())
-                .eq(UEmpty.isNotEmpty(accountBudget.getId()), AccountBudgetPo::getId, accountBudget.getId());
+    public TableResult<AccountBudgetDto> findPage(AccountBudgetDto accountBudget, PageQuery pageQuery) {
+        Wrapper<AccountBudgetPo> wrapper = buildQueryWrapper(accountBudget);
         Page<AccountBudgetPo> pagePo = page(pageQuery.build(), wrapper);
         if (pagePo != null) {
             List<AccountBudgetPo> records = pagePo.getRecords();
@@ -99,21 +116,6 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
             return TableResult.build(UCopy.convertPage(pagePo, AccountBudgetDto.class));
         }
         return TableResult.build();
-    }
-
-    @Override
-    public AccountBudgetDto findAccountBudget(AccountBudgetDto accountBudget) {
-        LambdaQueryWrapper<AccountBudgetPo> wrapper = new LambdaQueryWrapper<AccountBudgetPo>()
-                .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(AccountBudgetPo::getUserId, accountBudget.getUserId())
-                .eq(UEmpty.isNotEmpty(accountBudget.getId()), AccountBudgetPo::getId, accountBudget.getId());
-        return UCopy.copyPo2Dto(getOne(wrapper), AccountBudgetDto.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteAccountBudget(List<Long> idList) {
-        removeBatchByIds(idList);
     }
 
     @Override

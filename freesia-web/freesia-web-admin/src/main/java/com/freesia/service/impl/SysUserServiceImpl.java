@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
@@ -35,7 +34,9 @@ import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -50,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> implements SysUserService {
+public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo, SysUserDto> implements SysUserService {
     private final TransactionTemplate transactionTemplate;
     private final LoginPasswordProperties loginPasswordProperties;
     private final SysUserRepository sysUserRepository;
@@ -59,17 +60,43 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     private final SysTenantService sysTenantService;
     private final SysUserRoleRepository sysUserRoleRepository;
 
+
     @Override
-    public SysUserPo saveUpdate(SysUserDto sysUserDto) {
-        SysUserPo sysUserPo = new SysUserPo();
-        UCopy.fullCopy(sysUserDto, sysUserPo);
-        return sysUserRepository.saveAndFlush(sysUserPo);
+    protected JpaRepository<SysUserPo, Long> getRepository() {
+        return sysUserRepository;
     }
 
     @Override
-    public List<SysUserPo> saveUpdateBatch(List<SysUserDto> list) {
-        List<SysUserPo> sysUserPoList = UCopy.fullCopyList(list, SysUserPo.class);
-        return sysUserRepository.saveAllAndFlush(sysUserPoList);
+    protected Class<SysUserDto> getDtoClass() {
+        return SysUserDto.class;
+    }
+
+    @Override
+    protected Class<SysUserPo> getPoClass() {
+        return SysUserPo.class;
+    }
+
+    @Override
+    protected Wrapper<SysUserPo> buildQueryWrapper(@NonNull SysUserDto sysUserDto) {
+        return USql.buildQueryWrapper(() -> Wrappers.<SysUserPo>query()
+                .eq("U.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
+                .eq("STU.TENANT_ID", USecurity.getTenantId())
+                .like(ObjectUtil.isNotNull(sysUserDto.getNickName()), "U.NICK_NAME", sysUserDto.getNickName())
+                .likeRight(ObjectUtil.isNotNull(sysUserDto.getUserName()), "U.USER_NAME", sysUserDto.getUserName())
+                .likeRight(ObjectUtil.isNotNull(sysUserDto.getEmail()), "U.EMAIL", sysUserDto.getEmail())
+                .likeRight(ObjectUtil.isNotNull(sysUserDto.getTelNo()), "U.TEL_NO", sysUserDto.getTelNo())
+                .between(ObjectUtil.isNotNull(sysUserDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysUserDto.getCreateTimeTo()),
+                        "U.CREATE_TIME", sysUserDto.getCreateTimeFrom(), sysUserDto.getCreateTimeTo())
+                .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
+                    List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
+                            .select(SysDeptPo::getId)
+                            .apply(DataBaseHelper.findInSet(sysUserDto.getDeptId(), "ancestors"))
+                    );
+                    List<Long> deptIdList = UStream.toList(sysDeptPoList, SysDeptPo::getId);
+                    deptIdList.add(sysUserDto.getDeptId());
+                    m.in("U.DEPT_ID", deptIdList);
+                }));
     }
 
     @Override
@@ -113,9 +140,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserDto sysUserDto, PageQuery pageQuery) {
-        OssHandler ossHandler = OssFactory.getInstance();
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
-        Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
+        Wrapper<SysUserPo> sysUserPoWrapper = buildQueryWrapper(sysUserDto);
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserList(pageQuery.build(), sysUserPoWrapper);
         return TableResult.build(page);
     }
@@ -292,9 +318,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
 
     @Override
     public TableResult<FindPageSysUserListEntity> findPageSysUserWithoutDataScope(SysUserDto sysUserDto, PageQuery pageQuery) {
-        OssHandler ossHandler = OssFactory.getInstance();
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
-        Wrapper<SysUserPo> sysUserPoWrapper = buildFindPageSysUserWrapper(sysUserDto);
+        Wrapper<SysUserPo> sysUserPoWrapper = buildQueryWrapper(sysUserDto);
         Page<FindPageSysUserListEntity> page = sysUserMapper.findPageSysUserWithoutDataScope(pageQuery.build(), sysUserPoWrapper);
         return TableResult.build(page);
     }
@@ -309,28 +334,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
             return UCopy.fullCopyList(sysUserPoList, FindPageSysUserListEntity.class);
         }
         return null;
-    }
-
-    private Wrapper<SysUserPo> buildFindPageSysUserWrapper(SysUserDto sysUserDto) {
-        return USql.buildQueryWrapper(() -> Wrappers.<SysUserPo>query()
-                .eq("U.LOGIC_DEL", FlagConstant.DISABLED)
-                .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
-                .eq("STU.TENANT_ID", USecurity.getTenantId())
-                .like(ObjectUtil.isNotNull(sysUserDto.getNickName()), "U.NICK_NAME", sysUserDto.getNickName())
-                .likeRight(ObjectUtil.isNotNull(sysUserDto.getUserName()), "U.USER_NAME", sysUserDto.getUserName())
-                .likeRight(ObjectUtil.isNotNull(sysUserDto.getEmail()), "U.EMAIL", sysUserDto.getEmail())
-                .likeRight(ObjectUtil.isNotNull(sysUserDto.getTelNo()), "U.TEL_NO", sysUserDto.getTelNo())
-                .between(ObjectUtil.isNotNull(sysUserDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysUserDto.getCreateTimeTo()),
-                        "U.CREATE_TIME", sysUserDto.getCreateTimeFrom(), sysUserDto.getCreateTimeTo())
-                .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
-                    List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
-                            .select(SysDeptPo::getId)
-                            .apply(DataBaseHelper.findInSet(sysUserDto.getDeptId(), "ancestors"))
-                    );
-                    List<Long> deptIdList = UStream.toList(sysDeptPoList, SysDeptPo::getId);
-                    deptIdList.add(sysUserDto.getDeptId());
-                    m.in("U.DEPT_ID", deptIdList);
-                }));
     }
 
     /**

@@ -69,7 +69,7 @@ public class SysOssConfigController extends BaseController {
     @GetMapping(value = "findPageSysOssConfig")
     public TableResult<SysOssConfigDto> findPageSysOssConfig(SysOssConfigVo sysOssConfigVo, PageQuery pageQuery) {
         SysOssConfigDto sysOssConfigDto = UCopy.copyVo2Dto(sysOssConfigVo, SysOssConfigDto.class);
-        return sysOssConfigService.findPageSysOssConfig(sysOssConfigDto, pageQuery);
+        return sysOssConfigService.findPage(sysOssConfigDto, pageQuery);
     }
 
     /**
@@ -82,7 +82,7 @@ public class SysOssConfigController extends BaseController {
     @GetMapping(value = "findSysOssConfig")
     public R<SysOssConfigDto> findSysOssConfig(SysOssConfigVo sysOssConfigVo) {
         SysOssConfigDto sysOssConfigDto = UCopy.copyVo2Dto(sysOssConfigVo, SysOssConfigDto.class);
-        SysOssConfigDto tableResult = sysOssConfigService.findSysOssConfig(sysOssConfigDto);
+        SysOssConfigDto tableResult = sysOssConfigService.findOne(sysOssConfigDto);
         return R.ok(tableResult);
     }
 
@@ -96,7 +96,7 @@ public class SysOssConfigController extends BaseController {
     @Operation(summary = "删除OSS配置信息表")
     @PostMapping(value = "deleteSysOssConfig")
     public R<Void> deleteSysOssConfig(@RequestBody List<Long> idList) {
-        sysOssConfigService.deleteSysOssConfig(idList);
+        sysOssConfigService.deleteBatch(idList);
         return R.ok();
     }
 }

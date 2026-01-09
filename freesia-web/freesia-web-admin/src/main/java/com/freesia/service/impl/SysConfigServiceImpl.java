@@ -57,7 +57,7 @@ public class SysConfigServiceImpl extends BaseServiceImpl<SysConfigMapper, SysCo
     }
 
     @Override
-    protected Wrapper<SysConfigPo> buildLambdaQueryWrapper(@NonNull SysConfigDto dto) {
+    protected Wrapper<SysConfigPo> buildQueryWrapper(@NonNull SysConfigDto dto) {
         return new LambdaQueryWrapper<SysConfigPo>()
                 .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .like(UEmpty.isNotEmpty(dto.getConfigKey()), SysConfigPo::getConfigKey, dto.getConfigKey())

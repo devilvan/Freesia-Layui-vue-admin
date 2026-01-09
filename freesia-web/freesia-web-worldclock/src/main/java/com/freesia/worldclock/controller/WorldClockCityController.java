@@ -68,7 +68,7 @@ public class WorldClockCityController extends BaseController {
     @GetMapping(value = "findPageWorldClockCity")
     public TableResult<WorldClockCityDto> findPageWorldClockCity(WorldClockCityVo worldClockCityVo, PageQuery pageQuery) {
         WorldClockCityDto worldClockCityDto = UCopy.copyVo2Dto(worldClockCityVo, WorldClockCityDto.class);
-        return worldClockCityService.findPageWorldClockCity(worldClockCityDto, pageQuery);
+        return worldClockCityService.findPage(worldClockCityDto, pageQuery);
     }
 
     /**
@@ -81,7 +81,7 @@ public class WorldClockCityController extends BaseController {
     @GetMapping(value = "findWorldClockCity")
     public R<WorldClockCityDto> findWorldClockCity(WorldClockCityVo worldClockCityVo) {
         WorldClockCityDto worldClockCityDto = UCopy.copyVo2Dto(worldClockCityVo, WorldClockCityDto.class);
-        WorldClockCityDto tableResult = worldClockCityService.findWorldClockCity(worldClockCityDto);
+        WorldClockCityDto tableResult = worldClockCityService.findOne(worldClockCityDto);
         return R.ok(tableResult);
     }
 
@@ -94,7 +94,7 @@ public class WorldClockCityController extends BaseController {
     @Operation(summary = "删除城市表")
     @PostMapping(value = "deleteWorldClockCity")
     public R<Void> deleteWorldClockCity(@RequestBody List<Long> idList) {
-        worldClockCityService.deleteWorldClockCity(idList);
+        worldClockCityService.deleteBatch(idList);
         return R.ok();
     }
 

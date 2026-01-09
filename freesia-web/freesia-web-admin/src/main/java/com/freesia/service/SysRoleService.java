@@ -5,7 +5,6 @@ import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
-import com.freesia.po.SysRolePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import org.apache.ibatis.annotations.Param;
@@ -25,7 +24,7 @@ public interface SysRoleService {
      * @param sysRoleDto 控制层处理后的数据传输对象
      * @return 保存回调对象
      */
-    SysRolePo saveUpdate(SysRoleDto sysRoleDto);
+    SysRoleDto saveUpdate(SysRoleDto sysRoleDto);
 
     /**
      * 批量保存
@@ -33,7 +32,7 @@ public interface SysRoleService {
      * @param list 控制层处理后的数据传输对象集合
      * @return 保存回调对象
      */
-    List<SysRolePo> saveUpdateBatch(List<SysRoleDto> list);
+    List<SysRoleDto> saveUpdateBatch(List<SysRoleDto> list);
 
     /**
      * 根据用户ID查询对应的角色权限
@@ -79,12 +78,12 @@ public interface SysRoleService {
     TableResult<SysUserDto> findPageUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery);
 
     /**
-     * 根据ID查询角色
+     * 条件查询角色
      *
-     * @param roleId 角色ID
+     * @param sysRoleDto 角色ID
      * @return 角色
      */
-    SysRoleDto findRoleById(Long roleId);
+    SysRoleDto findOne(SysRoleDto sysRoleDto);
 
     /**
      * 查询未分配该角色的用户列表
@@ -101,7 +100,7 @@ public interface SysRoleService {
      * @param roleId     角色ID
      * @param userIdList 用户列表
      */
-    SysRolePo assignUser(Long roleId, List<Long> userIdList);
+    void assignUser(Long roleId, List<Long> userIdList);
 
     /**
      * 取消分配角色

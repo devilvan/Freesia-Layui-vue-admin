@@ -133,7 +133,7 @@ public class SysMenuController extends BaseController {
         if (UEmpty.isEmpty(path)) {
             sysMenuDto.setPath(null);
         }
-        sysMenuDto = sysMenuService.saveMenu(sysMenuDto);
+        sysMenuDto = sysMenuService.saveUpdate(sysMenuDto);
         return R.ok(sysMenuDto);
     }
 

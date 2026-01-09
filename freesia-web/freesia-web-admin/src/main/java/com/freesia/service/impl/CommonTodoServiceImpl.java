@@ -38,7 +38,7 @@ public class CommonTodoServiceImpl extends BaseServiceImpl<CommonTodoMapper, Com
     }
 
     @Override
-    protected LambdaQueryWrapper<CommonTodoPo> buildLambdaQueryWrapper(@NonNull CommonTodoDto dto) {
+    protected LambdaQueryWrapper<CommonTodoPo> buildQueryWrapper(@NonNull CommonTodoDto dto) {
         return new LambdaQueryWrapper<CommonTodoPo>()
                 .eq(CommonTodoPo::getLogicDel, FlagConstant.DISABLED);
     }

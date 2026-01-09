@@ -47,14 +47,14 @@ public interface SysNoticeService {
      * @param sysNoticeDto 查询条件
      * @return 消息公告表信息
      */
-    SysNoticeDto findSysNotice(SysNoticeDto sysNoticeDto);
+    SysNoticeDto findOne(SysNoticeDto sysNoticeDto);
 
     /**
      * 删除消息公告表信息
      *
      * @param idList 主键
      */
-    void deleteSysNotice(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 
     /**
      * 查询已发布的公告

@@ -78,7 +78,7 @@ public class AccountBudgetController extends BaseController {
         AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         accountBudgetDto.setUserId(userId);
-        return accountBudgetService.findPageAccountBudget(accountBudgetDto, pageQuery);
+        return accountBudgetService.findPage(accountBudgetDto, pageQuery);
     }
 
     /**
@@ -93,7 +93,7 @@ public class AccountBudgetController extends BaseController {
         AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         accountBudgetDto.setUserId(userId);
-        AccountBudgetDto tableResult = accountBudgetService.findAccountBudget(accountBudgetDto);
+        AccountBudgetDto tableResult = accountBudgetService.findOne(accountBudgetDto);
         return R.ok(tableResult);
     }
 
@@ -106,7 +106,7 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "删除开销-预算表")
     @PostMapping(value = "deleteAccountBudget")
     public R<Void> deleteAccountBudget(@RequestBody List<Long> idList) {
-        accountBudgetService.deleteAccountBudget(idList);
+        accountBudgetService.deleteBatch(idList);
         return R.ok();
     }
 

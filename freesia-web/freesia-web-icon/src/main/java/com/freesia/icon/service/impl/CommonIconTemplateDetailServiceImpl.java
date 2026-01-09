@@ -1,9 +1,8 @@
 package com.freesia.icon.service.impl;
 
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconEntity;
@@ -14,14 +13,14 @@ import com.freesia.icon.po.CommonIconTemplateDetailPo;
 import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
 import com.freesia.pojo.LaySelect;
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
+import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UTree;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,15 +32,31 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconTemplateDetailMapper, CommonIconTemplateDetailPo> implements CommonIconTemplateDetailService {
+public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonIconTemplateDetailMapper, CommonIconTemplateDetailPo, CommonIconTemplateDetailDto> implements CommonIconTemplateDetailService {
     private final CommonIconTemplateDetailRepository commonIconTemplateDetailRepository;
     private final CommonIconTemplateDetailMapper commonIconTemplateDetailMapper;
 
+
     @Override
-    public CommonIconTemplateDetailDto saveUpdate(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
-        CommonIconTemplateDetailPo commonIconTemplateDetailPo = UCopy.copyDto2Po(commonIconTemplateDetailDto, CommonIconTemplateDetailPo.class);
-        commonIconTemplateDetailDto = UCopy.copyPo2Dto(commonIconTemplateDetailRepository.saveAndFlush(commonIconTemplateDetailPo), CommonIconTemplateDetailDto.class);
-        return commonIconTemplateDetailDto;
+    protected JpaRepository<CommonIconTemplateDetailPo, Long> getRepository() {
+        return commonIconTemplateDetailRepository;
+    }
+
+    @Override
+    protected Class<CommonIconTemplateDetailDto> getDtoClass() {
+        return CommonIconTemplateDetailDto.class;
+    }
+
+    @Override
+    protected Class<CommonIconTemplateDetailPo> getPoClass() {
+        return CommonIconTemplateDetailPo.class;
+    }
+
+    @Override
+    protected Wrapper<CommonIconTemplateDetailPo> buildQueryWrapper(@NonNull CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
+        return new LambdaQueryWrapper<CommonIconTemplateDetailPo>()
+                .eq(CommonIconTemplateDetailPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(commonIconTemplateDetailDto.getId()), CommonIconTemplateDetailPo::getId, commonIconTemplateDetailDto.getId());
     }
 
     @Override
@@ -62,24 +77,10 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
         return UCopy.fullCopyList(poList, CommonIconTemplateDetailDto.class);
     }
 
-    @Override
-    public TableResult<CommonIconTemplateDetailDto> findPageCommonIconTemplateDetail(CommonIconTemplateDetailDto commonIconTemplateDetailDto, PageQuery pageQuery) {
-        LambdaQueryWrapper<CommonIconTemplateDetailPo> wrapper = new LambdaQueryWrapper<CommonIconTemplateDetailPo>()
-                .eq(CommonIconTemplateDetailPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(commonIconTemplateDetailDto.getId()), CommonIconTemplateDetailPo::getId, commonIconTemplateDetailDto.getId());
-        Page<CommonIconTemplateDetailPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPage(pagePo, CommonIconTemplateDetailDto.class));
-    }
 
     @Override
     public FindCommonIconTemplateDetailEntity findCommonIconTemplateDetail(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
         return commonIconTemplateDetailMapper.findCommonIconTemplateDetail(commonIconTemplateDetailDto);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteCommonIconTemplateDetail(List<Long> idList) {
-        removeBatchByIds(idList);
     }
 
     @Override

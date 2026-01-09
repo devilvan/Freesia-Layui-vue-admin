@@ -36,7 +36,7 @@ public interface SysTenantService {
      * @param pageQuery    分页条件
      * @return 分页信息
      */
-    TableResult<SysTenantDto> findPageSysTenant(SysTenantDto sysTenantDto, PageQuery pageQuery);
+    TableResult<SysTenantDto> findPage(SysTenantDto sysTenantDto, PageQuery pageQuery);
 
     /**
      * 条件查询租户信息表信息
@@ -80,8 +80,8 @@ public interface SysTenantService {
     /**
      * 根据ID查询租户信息
      *
-     * @param tenantId 租户ID
+     * @param sysTenantDto 租户ID
      * @return 租户信息
      */
-    SysTenantDto findSysTenantById(Long tenantId);
+    SysTenantDto findOne(SysTenantDto sysTenantDto);
 }

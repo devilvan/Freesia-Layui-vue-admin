@@ -109,22 +109,6 @@ public interface SysMenuService {
     List<FindTreeMenuSelectEntity> findTreeMenuSelect(Long userId, String menuType);
 
     /**
-     * 根据父菜单ID查询父菜单数据
-     *
-     * @param parentId 父菜单ID
-     * @return 父菜单数据
-     */
-    SysMenuDto findMenuByParentId(Long parentId);
-
-    /**
-     * 保存目录-菜单-按钮信息
-     *
-     * @param sysMenuDto 待保存的菜单数据
-     * @return 保存后的菜单数据
-     */
-    SysMenuDto saveMenu(SysMenuDto sysMenuDto);
-
-    /**
      * 删除目录、菜单、按钮、链接
      *
      * @param id     菜单ID

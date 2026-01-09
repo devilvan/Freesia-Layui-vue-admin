@@ -66,7 +66,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     @GetMapping(value = "findPageWorldClockSunriseSunset")
     public TableResult<WorldClockSunriseSunsetDto> findPageWorldClockSunriseSunset(WorldClockSunriseSunsetVo worldClockSunriseSunsetVo, PageQuery pageQuery) {
         WorldClockSunriseSunsetDto worldClockSunriseSunsetDto = UCopy.copyVo2Dto(worldClockSunriseSunsetVo, WorldClockSunriseSunsetDto.class);
-        return worldClockSunriseSunsetService.findPageWorldClockSunriseSunset(worldClockSunriseSunsetDto, pageQuery);
+        return worldClockSunriseSunsetService.findPage(worldClockSunriseSunsetDto, pageQuery);
     }
 
     /**
@@ -79,7 +79,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     @GetMapping(value = "findWorldClockSunriseSunset")
     public R<WorldClockSunriseSunsetDto> findWorldClockSunriseSunset(WorldClockSunriseSunsetVo worldClockSunriseSunsetVo) {
         WorldClockSunriseSunsetDto worldClockSunriseSunsetDto = UCopy.copyVo2Dto(worldClockSunriseSunsetVo, WorldClockSunriseSunsetDto.class);
-        WorldClockSunriseSunsetDto tableResult = worldClockSunriseSunsetService.findWorldClockSunriseSunset(worldClockSunriseSunsetDto);
+        WorldClockSunriseSunsetDto tableResult = worldClockSunriseSunsetService.findOne(worldClockSunriseSunsetDto);
         return R.ok(tableResult);
     }
 
@@ -92,7 +92,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     @Operation(summary = "删除日出日落时间表")
     @PostMapping(value = "deleteWorldClockSunriseSunset")
     public R<Void> deleteWorldClockSunriseSunset(@RequestBody List<Long> idList) {
-        worldClockSunriseSunsetService.deleteWorldClockSunriseSunset(idList);
+        worldClockSunriseSunsetService.deleteBatch(idList);
         return R.ok();
     }
 }

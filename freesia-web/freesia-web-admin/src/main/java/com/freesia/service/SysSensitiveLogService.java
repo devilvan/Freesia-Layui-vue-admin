@@ -2,7 +2,6 @@ package com.freesia.service;
 
 
 import com.freesia.dto.SysSensitiveLogDto;
-import com.freesia.po.SysSensitiveLogPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -20,7 +19,7 @@ public interface SysSensitiveLogService {
      * @param sysSensitiveLogDto 控制层处理后的数据传输对象
      * @return 保存回调对象
      */
-    SysSensitiveLogPo saveUpdate(SysSensitiveLogDto sysSensitiveLogDto);
+    SysSensitiveLogDto saveUpdate(SysSensitiveLogDto sysSensitiveLogDto);
 
     /**
      * 批量保存
@@ -28,7 +27,7 @@ public interface SysSensitiveLogService {
      * @param list 控制层处理后的数据传输对象集合
      * @return 保存回调对象
      */
-    List<SysSensitiveLogPo> saveUpdateBatch(List<SysSensitiveLogDto> list);
+    List<SysSensitiveLogDto> saveUpdateBatch(List<SysSensitiveLogDto> list);
 
     /**
      * 查询登录日志分页数据

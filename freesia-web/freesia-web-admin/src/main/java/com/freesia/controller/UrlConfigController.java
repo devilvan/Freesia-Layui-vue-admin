@@ -78,7 +78,7 @@ public class UrlConfigController extends BaseController {
     @GetMapping(value = "findPageUrlConfig")
     public TableResult<UrlConfigDto> findPageUrlConfig(UrlConfigVo urlConfigVo, PageQuery pageQuery) {
         UrlConfigDto urlConfigDto = UCopy.copyVo2Dto(urlConfigVo, UrlConfigDto.class);
-        return urlConfigService.findPageUrlConfig(urlConfigDto, pageQuery);
+        return urlConfigService.findPage(urlConfigDto, pageQuery);
     }
 
     /**
@@ -92,7 +92,7 @@ public class UrlConfigController extends BaseController {
     @GetMapping(value = "findUrlConfig")
     public R<UrlConfigDto> findUrlConfig(UrlConfigVo urlConfigVo) {
         UrlConfigDto urlConfigDto = UCopy.copyVo2Dto(urlConfigVo, UrlConfigDto.class);
-        UrlConfigDto tableResult = urlConfigService.findUrlConfig(urlConfigDto);
+        UrlConfigDto tableResult = urlConfigService.findOne(urlConfigDto);
         return R.ok(tableResult);
     }
 

@@ -59,12 +59,12 @@ public interface SysDeptService {
     List<FindPageSysDeptListEntity> findDeptTreeList(SysDeptDto sysDeptDto);
 
     /**
-     * 根据ID查询部门
+     * 条件查询单个对象
      *
-     * @param deptId 部门ID
-     * @return 部门信息
+     * @param sysDeptDto 部门ID
+     * @return 单个对象
      */
-    SysDeptDto findDeptById(Long deptId);
+    SysDeptDto findOne(SysDeptDto sysDeptDto);
 
     /**
      * 删除部门信息

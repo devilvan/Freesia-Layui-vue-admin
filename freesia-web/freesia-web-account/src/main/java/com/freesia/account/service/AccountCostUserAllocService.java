@@ -1,10 +1,9 @@
 package com.freesia.account.service;
 
+import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindListSysUserByIdDto;
-import com.freesia.entity.FindPageSysUserListEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.account.dto.AccountCostUserAllocDto;
 
 import java.util.List;
 
@@ -37,7 +36,7 @@ public interface AccountCostUserAllocService {
      * @param pageQuery               分页条件
      * @return 分页信息
      */
-    TableResult<AccountCostUserAllocDto> findPageAccountCostUserAlloc(AccountCostUserAllocDto accountCostUserAllocDto, PageQuery pageQuery);
+    TableResult<AccountCostUserAllocDto> findPage(AccountCostUserAllocDto accountCostUserAllocDto, PageQuery pageQuery);
 
     /**
      * 条件查询费用分摊表信息
@@ -45,14 +44,14 @@ public interface AccountCostUserAllocService {
      * @param accountCostUserAllocDto 查询条件
      * @return 费用分摊表信息
      */
-    AccountCostUserAllocDto findAccountCostUserAlloc(AccountCostUserAllocDto accountCostUserAllocDto);
+    AccountCostUserAllocDto findOne(AccountCostUserAllocDto accountCostUserAllocDto);
 
     /**
      * 删除费用分摊表信息
      *
      * @param idList 主键
      */
-    void deleteAccountCostUserAlloc(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 
     /**
      * 新增费用分摊-根据分摊用户ID查询用户信息

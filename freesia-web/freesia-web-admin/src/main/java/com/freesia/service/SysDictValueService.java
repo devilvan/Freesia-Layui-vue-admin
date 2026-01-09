@@ -35,7 +35,7 @@ public interface SysDictValueService {
      * @param pageQuery       分页参数
      * @return 分页字典值数据
      */
-    TableResult<SysDictValueDto> findPageSysDictValue(SysDictValueDto sysDictValueDto, PageQuery pageQuery);
+    TableResult<SysDictValueDto> findPage(SysDictValueDto sysDictValueDto, PageQuery pageQuery);
 
     /**
      * 查询字典值列表数据
@@ -43,7 +43,7 @@ public interface SysDictValueService {
      * @param sysDictValueDto 查询参数
      * @return 字典值列表数据
      */
-    List<SysDictValueDto> findSysDictValueList(SysDictValueDto sysDictValueDto);
+    List<SysDictValueDto> findList(SysDictValueDto sysDictValueDto);
 
     /**
      * （缓存）查询字典值列表数据

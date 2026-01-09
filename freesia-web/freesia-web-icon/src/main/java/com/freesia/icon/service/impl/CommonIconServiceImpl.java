@@ -1,7 +1,7 @@
 package com.freesia.icon.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.icon.dto.CommonIconDto;
 import com.freesia.icon.entity.FindCommonIconEntity;
 import com.freesia.icon.entity.FindPageCommonIconEntity;
@@ -12,9 +12,11 @@ import com.freesia.icon.service.CommonIconService;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysOssService;
-import com.freesia.util.UCopy;
+import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,24 +31,30 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonIconPo> implements CommonIconService {
+public class CommonIconServiceImpl extends BaseServiceImpl<CommonIconMapper, CommonIconPo, CommonIconDto> implements CommonIconService {
     private final CommonIconRepository commonIconRepository;
     private final CommonIconMapper commonIconMapper;
     private final SysOssService sysOssService;
 
+
     @Override
-    public CommonIconDto saveUpdate(CommonIconDto commonIconDto) {
-        CommonIconPo commonIconPo = new CommonIconPo();
-        UCopy.fullCopy(commonIconDto, commonIconPo);
-        CommonIconDto resultDto = new CommonIconDto();
-        UCopy.fullCopy(commonIconRepository.saveAndFlush(commonIconPo), resultDto);
-        return resultDto;
+    protected JpaRepository<CommonIconPo, Long> getRepository() {
+        return commonIconRepository;
     }
 
     @Override
-    public List<CommonIconDto> saveUpdateBatch(List<CommonIconDto> list) {
-        List<CommonIconPo> commonIconPoList = UCopy.fullCopyList(list, CommonIconPo.class);
-        return UCopy.fullCopyList(commonIconRepository.saveAllAndFlush(commonIconPoList), CommonIconDto.class);
+    protected Class<CommonIconDto> getDtoClass() {
+        return CommonIconDto.class;
+    }
+
+    @Override
+    protected Class<CommonIconPo> getPoClass() {
+        return CommonIconPo.class;
+    }
+
+    @Override
+    protected Wrapper<CommonIconPo> buildQueryWrapper(@NonNull CommonIconDto dto) {
+        return null;
     }
 
     @Override
@@ -66,7 +74,7 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
         List<CommonIconPo> commonIconPoList = commonIconRepository.findAllById(idList);
         List<Long> fileIdList = commonIconPoList.stream().map(CommonIconPo::getFileId).collect(Collectors.toList());
         if (UEmpty.isNotEmpty(fileIdList)) {
-            sysOssService.deleteSysOss(fileIdList);
+            sysOssService.deleteBatch(fileIdList);
         }
         removeBatchByIds(idList);
     }
@@ -74,8 +82,7 @@ public class CommonIconServiceImpl extends ServiceImpl<CommonIconMapper, CommonI
     @Override
     public Map<String, List<FindCommonIconEntity>> findCommonIconPicker(CommonIconDto commonIconDto) {
         List<FindCommonIconEntity> findCommonIconEntityList = commonIconMapper.findCommonIconPicker(commonIconDto);
-        Map<String, List<FindCommonIconEntity>> map = findCommonIconEntityList.stream().collect(Collectors.groupingBy(FindCommonIconEntity::getIconPartitionName));
-        return map;
+        return findCommonIconEntityList.stream().collect(Collectors.groupingBy(FindCommonIconEntity::getIconPartitionName));
     }
 
     @Override

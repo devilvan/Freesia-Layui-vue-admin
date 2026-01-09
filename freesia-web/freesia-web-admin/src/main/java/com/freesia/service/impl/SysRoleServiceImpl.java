@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
@@ -27,7 +26,9 @@ import com.freesia.repository.*;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> implements SysRoleService {
+public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRolePo, SysRoleDto> implements SysRoleService {
     private final TransactionTemplate transactionTemplate;
     private final SysRoleRepository sysRoleRepository;
     private final SysMenuRepository sysMenuRepository;
@@ -53,17 +54,32 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     private final SysRoleMenuRepository sysRoleMenuRepository;
     private final SysRoleDeptRepository sysRoleDeptRepository;
 
+
     @Override
-    public SysRolePo saveUpdate(SysRoleDto sysRoleDto) {
-        SysRolePo sysRolePo = new SysRolePo();
-        UCopy.fullCopy(sysRoleDto, sysRolePo);
-        return sysRoleRepository.saveAndFlush(sysRolePo);
+    protected JpaRepository<SysRolePo, Long> getRepository() {
+        return null;
     }
 
     @Override
-    public List<SysRolePo> saveUpdateBatch(List<SysRoleDto> list) {
-        List<SysRolePo> sysRolePoList = UCopy.fullCopyList(list, SysRolePo.class);
-        return sysRoleRepository.saveAllAndFlush(sysRolePoList);
+    protected Class<SysRoleDto> getDtoClass() {
+        return null;
+    }
+
+    @Override
+    protected Class<SysRolePo> getPoClass() {
+        return null;
+    }
+
+    @Override
+    protected Wrapper<SysRolePo> buildQueryWrapper(@NonNull SysRoleDto dto) {
+        return Wrappers.<SysRolePo>query()
+                .eq("R.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(dto.getStatus()), "R.STATUS", FlagConstant.ENABLED)
+                .like(ObjectUtil.isNotNull(dto.getRoleName()), "R.ROLE_NAME", dto.getRoleName())
+                .like(ObjectUtil.isNotNull(dto.getRoleKey()), "R.ROLE_KEY", dto.getRoleKey())
+                .between(ObjectUtil.isNotNull(dto.getCreateTimeFrom()) && ObjectUtil.isNotNull(dto.getCreateTimeTo()),
+                        "R.CREATE_TIME", dto.getCreateTimeFrom(), dto.getCreateTimeTo())
+                .orderByAsc("R.ORDER_NUM");
     }
 
     @Override
@@ -78,18 +94,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
 
     @Override
     public TableResult<FindPageSysRoleListEntity> findPageSysRoleList(SysRoleDto sysRoleDto, PageQuery pageQuery) {
-        Wrapper<SysRolePo> wrapper = USql.buildQueryWrapper(() -> {
-            SysRolePo sysRolePo = new SysRolePo();
-            UCopy.fullCopy(sysRoleDto, sysRolePo);
-            return Wrappers.<SysRolePo>query()
-                    .eq("R.LOGIC_DEL", FlagConstant.DISABLED)
-                    .eq(UEmpty.isNotEmpty(sysRolePo.getStatus()), "R.STATUS", FlagConstant.ENABLED)
-                    .like(ObjectUtil.isNotNull(sysRolePo.getRoleName()), "R.ROLE_NAME", sysRolePo.getRoleName())
-                    .like(ObjectUtil.isNotNull(sysRolePo.getRoleKey()), "R.ROLE_KEY", sysRolePo.getRoleKey())
-                    .between(ObjectUtil.isNotNull(sysRoleDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysRoleDto.getCreateTimeTo()),
-                            "R.CREATE_TIME", sysRoleDto.getCreateTimeFrom(), sysRoleDto.getCreateTimeTo())
-                    .orderByAsc("R.ORDER_NUM");
-        });
+        Wrapper<SysRolePo> wrapper = buildQueryWrapper(sysRoleDto);
         Page<FindPageSysRoleListEntity> page = sysRoleMapper.findPageSysRoleList(pageQuery.build(), wrapper);
         return TableResult.build(page);
     }
@@ -135,18 +140,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
     }
 
     @Override
-    public SysRoleDto findRoleById(Long roleId) {
+    public SysRoleDto findOne(SysRoleDto sysRoleDto) {
         Wrapper<SysRolePo> queryWrapper = new LambdaQueryWrapper<SysRolePo>()
                 .select(
                         SysRolePo::getId, SysRolePo::getRoleName,
                         SysRolePo::getRoleKey, SysRolePo::getStatus,
                         SysRolePo::getDataScope, SysRolePo::getRemark
                 )
-                .eq(SysRolePo::getId, roleId)
+                .eq(SysRolePo::getId, sysRoleDto.getId())
                 .eq(SysRolePo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysRolePo::getStatus, FlagConstant.ENABLED);
-        SysRolePo sysRolePo = this.getOne(queryWrapper);
-        return UCopy.copyPo2Dto(sysRolePo, SysRoleDto.class);
+        return findOne(sysRoleDto, queryWrapper);
     }
 
     @Override
@@ -169,7 +173,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
 
     @Override
     @LogRecord(module = RoleModule.ROLE_MANAGEMENT, subModule = RoleModule.SubModule.ASSIGN_USER, message = "role.assignUser")
-    public SysRolePo assignUser(Long roleId, List<Long> userIdList) {
+    public void assignUser(Long roleId, List<Long> userIdList) {
         SysRolePo sysRolePo = sysRoleRepository.findById(roleId).orElseGet(SysRolePo::new);
         Set<SysUserRolePo> sysUserRolePoSet = sysRolePo.getSysUserRolePoSet();
         for (Long userId : userIdList) {
@@ -181,7 +185,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
             sysUserRolePoSet.add(sysUserRolePo);
         }
         sysRolePo.setSysUserRolePoSet(sysUserRolePoSet);
-        return sysRoleRepository.save(sysRolePo);
+        sysRoleRepository.save(sysRolePo);
     }
 
     @Override
@@ -257,13 +261,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
 
     @Override
     @LogRecord(module = RoleModule.ROLE_MANAGEMENT, subModule = RoleModule.SubModule.SAVE_ROLE, message = "role.save")
-    public SysRoleDto saveRole(SysRoleDto sysRoleDto) {
+    public SysRoleDto saveUpdate(SysRoleDto sysRoleDto) {
         Long roleId = sysRoleDto.getId();
         SysRolePo sysRolePo;
         if (UEmpty.isNull(roleId)) {
             // 新增
-            sysRolePo = new SysRolePo();
-            UCopy.fullCopy(sysRoleDto, sysRolePo);
+            sysRolePo = UCopy.copyDto2Po(sysRoleDto, SysRolePo.class);
         } else {
             // 修改
             sysRolePo = findSysRolePoById(roleId);

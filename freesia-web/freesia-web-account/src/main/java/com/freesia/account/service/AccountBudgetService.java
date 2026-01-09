@@ -37,7 +37,7 @@ public interface AccountBudgetService {
      * @param pageQuery        分页条件
      * @return 分页信息
      */
-    TableResult<AccountBudgetDto> findPageAccountBudget(AccountBudgetDto accountBudgetDto, PageQuery pageQuery);
+    TableResult<AccountBudgetDto> findPage(AccountBudgetDto accountBudgetDto, PageQuery pageQuery);
 
     /**
      * 条件查询开销-预算表信息
@@ -45,14 +45,14 @@ public interface AccountBudgetService {
      * @param accountBudgetDto 查询条件
      * @return 开销-预算表信息
      */
-    AccountBudgetDto findAccountBudget(AccountBudgetDto accountBudgetDto);
+    AccountBudgetDto findOne(AccountBudgetDto accountBudgetDto);
 
     /**
      * 删除开销-预算表信息
      *
      * @param idList 主键
      */
-    void deleteAccountBudget(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 
     /**
      * 容量图-根据预算日期类型查询

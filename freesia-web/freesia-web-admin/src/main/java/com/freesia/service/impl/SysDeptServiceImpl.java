@@ -74,7 +74,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo
     }
 
     @Override
-    protected Wrapper<SysDeptPo> buildLambdaQueryWrapper(@NonNull SysDeptDto dto) {
+    protected Wrapper<SysDeptPo> buildQueryWrapper(@NonNull SysDeptDto dto) {
         return Wrappers.<SysDeptPo>query()
                 .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("D.DEPT_STATUS", UEmpty.isEmpty(dto.getDeptStatus()) ? FlagConstant.ENABLED : dto.getDeptStatus())
@@ -92,9 +92,9 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         boolean isAdmin = Convert.toBool(sysUserService.isAdmin(userId), false);
         if (isAdmin) {
-            return sysDeptMapper.findPageSysDeptList(buildLambdaQueryWrapper(sysDeptDto));
+            return sysDeptMapper.findPageSysDeptList(buildQueryWrapper(sysDeptDto));
         } else {
-            List<FindPageSysDeptListEntity> list = sysDeptMapper.findPageSysDeptList(buildLambdaQueryWrapper(sysDeptDto));
+            List<FindPageSysDeptListEntity> list = sysDeptMapper.findPageSysDeptList(buildQueryWrapper(sysDeptDto));
             // 根据查询出的部门，查找其上级部门
 //            List<Long> ancestorIdList = list.stream()
 //                    .map(FindPageSysDeptListEntity::getAncestors)
@@ -111,7 +111,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo
 
     @Override
     public TableResult<FindPageSysDeptListEntity> findPageSysDeptList(SysDeptDto sysDeptDto, PageQuery pageQuery) {
-        return sysDeptMapper.findPageSysDeptList(pageQuery.build(), buildLambdaQueryWrapper(sysDeptDto));
+        return sysDeptMapper.findPageSysDeptList(pageQuery.build(), buildQueryWrapper(sysDeptDto));
     }
 
     @Override
@@ -121,12 +121,12 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo
     }
 
     @Override
-    public SysDeptDto findDeptById(Long deptId) {
+    public SysDeptDto findOne(SysDeptDto sysDeptDto) {
         LambdaQueryWrapper<SysDeptPo> queryWrapper = new LambdaQueryWrapper<SysDeptPo>()
                 .select(SysDeptPo::getDeptName)
                 .eq(SysDeptPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(SysDeptPo::getId, deptId);
-        return convertPo2Dto(getOne(queryWrapper));
+                .eq(SysDeptPo::getId, sysDeptDto.getId());
+        return findOne(sysDeptDto, queryWrapper);
     }
 
     @Override

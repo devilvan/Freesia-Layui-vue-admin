@@ -35,7 +35,7 @@ public interface UrlConfigService {
      * @param pageQuery    分页条件
      * @return 分页信息
      */
-    TableResult<UrlConfigDto> findPageUrlConfig(UrlConfigDto urlConfigDto, PageQuery pageQuery);
+    TableResult<UrlConfigDto> findPage(UrlConfigDto urlConfigDto, PageQuery pageQuery);
 
     /**
      * 条件查询URL配置信息
@@ -43,7 +43,7 @@ public interface UrlConfigService {
      * @param urlConfigDto 查询条件
      * @return URL配置信息
      */
-    UrlConfigDto findUrlConfig(UrlConfigDto urlConfigDto);
+    UrlConfigDto findOne(UrlConfigDto urlConfigDto);
 
     /**
      * （缓存）根据配置标识查询URL配置分页信息

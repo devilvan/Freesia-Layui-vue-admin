@@ -35,7 +35,7 @@ public interface SysOssConfigService {
      * @param pageQuery       分页条件
      * @return 分页信息
      */
-    TableResult<SysOssConfigDto> findPageSysOssConfig(SysOssConfigDto sysOssConfigDto, PageQuery pageQuery);
+    TableResult<SysOssConfigDto> findPage(SysOssConfigDto sysOssConfigDto, PageQuery pageQuery);
 
     /**
      * 条件查询OSS配置信息表信息
@@ -43,14 +43,14 @@ public interface SysOssConfigService {
      * @param sysOssConfigDto 查询条件
      * @return OSS配置信息表信息
      */
-    SysOssConfigDto findSysOssConfig(SysOssConfigDto sysOssConfigDto);
+    SysOssConfigDto findOne(SysOssConfigDto sysOssConfigDto);
 
     /**
      * 删除OSS配置信息表信息
      *
      * @param idList 主键
      */
-    void deleteSysOssConfig(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 
     /**
      * 应用启动初始化OSS对象存储配置

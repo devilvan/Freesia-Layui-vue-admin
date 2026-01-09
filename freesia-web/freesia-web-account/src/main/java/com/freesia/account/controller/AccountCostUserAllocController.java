@@ -4,14 +4,12 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.account.dto.FindListSysUserByIdDto;
 import com.freesia.constant.MenuPermission;
 import com.freesia.dto.SysUserDto;
-import com.freesia.entity.FindPageSysUserListEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.account.vo.AccountCostUserAllocVo;
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.service.AccountCostUserAllocService;
 import com.freesia.controller.BaseController;
-import com.freesia.service.SysUserService;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,7 +70,7 @@ public class AccountCostUserAllocController extends BaseController {
     @GetMapping(value = "findPageAccountCostUserAlloc")
     public TableResult<AccountCostUserAllocDto> findPageAccountCostUserAlloc(AccountCostUserAllocVo accountCostUserAllocVo, PageQuery pageQuery) {
         AccountCostUserAllocDto accountCostUserAllocDto = UCopy.copyVo2Dto(accountCostUserAllocVo, AccountCostUserAllocDto.class);
-        return accountCostUserAllocService.findPageAccountCostUserAlloc(accountCostUserAllocDto, pageQuery);
+        return accountCostUserAllocService.findPage(accountCostUserAllocDto, pageQuery);
     }
 
     /**
@@ -85,7 +83,7 @@ public class AccountCostUserAllocController extends BaseController {
     @GetMapping(value = "findAccountCostUserAlloc")
     public R<AccountCostUserAllocDto> findAccountCostUserAlloc(AccountCostUserAllocVo accountCostUserAllocVo) {
         AccountCostUserAllocDto accountCostUserAllocDto = UCopy.copyVo2Dto(accountCostUserAllocVo, AccountCostUserAllocDto.class);
-        AccountCostUserAllocDto tableResult = accountCostUserAllocService.findAccountCostUserAlloc(accountCostUserAllocDto);
+        AccountCostUserAllocDto tableResult = accountCostUserAllocService.findOne(accountCostUserAllocDto);
         return R.ok(tableResult);
     }
 
@@ -98,7 +96,7 @@ public class AccountCostUserAllocController extends BaseController {
     @Operation(summary = "删除费用分摊表")
     @PostMapping(value = "deleteAccountCostUserAlloc")
     public R<Void> deleteAccountCostUserAlloc(@RequestBody List<Long> idList) {
-        accountCostUserAllocService.deleteAccountCostUserAlloc(idList);
+        accountCostUserAllocService.deleteBatch(idList);
         return R.ok();
     }
 

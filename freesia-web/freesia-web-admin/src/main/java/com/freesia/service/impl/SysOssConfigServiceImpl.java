@@ -2,8 +2,6 @@ package com.freesia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.dto.SysOssConfigDto;
@@ -12,14 +10,14 @@ import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysOssConfigMapper;
 import com.freesia.oss.constant.OssModule;
 import com.freesia.po.SysOssConfigPo;
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysOssConfigRepository;
 import com.freesia.service.SysOssConfigService;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +29,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, SysOssConfigPo> implements SysOssConfigService {
+public class SysOssConfigServiceImpl extends BaseServiceImpl<SysOssConfigMapper, SysOssConfigPo, SysOssConfigDto> implements SysOssConfigService {
     private final SysOssConfigRepository sysOssConfigRepository;
     private final SysOssConfigMapper sysOssConfigMapper;
 
@@ -53,26 +51,31 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
     }
 
     @Override
-    public TableResult<SysOssConfigDto> findPageSysOssConfig(SysOssConfigDto sysOssConfig, PageQuery pageQuery) {
-        LambdaQueryWrapper<SysOssConfigPo> wrapper = new LambdaQueryWrapper<SysOssConfigPo>()
-                .eq(SysOssConfigPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysOssConfig.getId()), SysOssConfigPo::getId, sysOssConfig.getId());
-        Page<SysOssConfigPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPage(pagePo, SysOssConfigDto.class));
+    protected JpaRepository<SysOssConfigPo, Long> getRepository() {
+        return sysOssConfigRepository;
     }
 
     @Override
-    public SysOssConfigDto findSysOssConfig(SysOssConfigDto sysOssConfig) {
-        LambdaQueryWrapper<SysOssConfigPo> wrapper = new LambdaQueryWrapper<SysOssConfigPo>()
+    protected Class<SysOssConfigDto> getDtoClass() {
+        return SysOssConfigDto.class;
+    }
+
+    @Override
+    protected Class<SysOssConfigPo> getPoClass() {
+        return SysOssConfigPo.class;
+    }
+
+    @Override
+    protected Wrapper<SysOssConfigPo> buildQueryWrapper(@NonNull SysOssConfigDto dto) {
+        return new LambdaQueryWrapper<SysOssConfigPo>()
                 .eq(SysOssConfigPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(UEmpty.isNotEmpty(sysOssConfig.getId()), SysOssConfigPo::getId, sysOssConfig.getId());
-        return UCopy.copyPo2Dto(getOne(wrapper), SysOssConfigDto.class);
+                .eq(UEmpty.isNotEmpty(dto.getId()), SysOssConfigPo::getId, dto.getId());
     }
 
     @Override
     @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.DELETE_OSS_CONFIG, message = "oss.config.delete")
-    public void deleteSysOssConfig(List<Long> idList) {
-        removeBatchByIds(idList);
+    public void deleteBatch(List<Long> idList) {
+        super.deleteBatch(idList);
     }
 
     /**

@@ -170,7 +170,7 @@ public class SysNoticeController extends BaseController {
     @GetMapping(value = "findSysNotice")
     public R<SysNoticeDto> findSysNotice(SysNoticeVo sysNoticeVo) {
         SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
-        SysNoticeDto tableResult = sysNoticeService.findSysNotice(sysNoticeDto);
+        SysNoticeDto tableResult = sysNoticeService.findOne(sysNoticeDto);
         return R.ok(tableResult);
     }
 
@@ -195,7 +195,7 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "删除消息公告表")
     @PostMapping(value = "deleteSysNotice")
     public R<Void> deleteSysNotice(@RequestBody List<Long> idList) {
-        sysNoticeService.deleteSysNotice(idList);
+        sysNoticeService.deleteBatch(idList);
         return R.ok();
     }
 

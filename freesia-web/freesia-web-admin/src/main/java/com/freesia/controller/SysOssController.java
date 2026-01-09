@@ -76,7 +76,7 @@ public class SysOssController extends BaseController {
     @GetMapping(value = "findPageSysOss")
     public TableResult<SysOssDto> findPageSysOss(SysOssVo sysOssVo, PageQuery pageQuery) {
         SysOssDto sysOssDto = UCopy.copyVo2Dto(sysOssVo, SysOssDto.class);
-        return sysOssService.findPageSysOss(sysOssDto, pageQuery);
+        return sysOssService.findPage(sysOssDto, pageQuery);
     }
 
     /**
@@ -90,7 +90,7 @@ public class SysOssController extends BaseController {
     @GetMapping(value = "findSysOss")
     public R<SysOssDto> findSysOss(SysOssVo sysOssVo) {
         SysOssDto sysOssDto = UCopy.copyVo2Dto(sysOssVo, SysOssDto.class);
-        SysOssDto tableResult = sysOssService.findSysOss(sysOssDto);
+        SysOssDto tableResult = sysOssService.findOne(sysOssDto);
         return R.ok(tableResult);
     }
 
@@ -105,7 +105,7 @@ public class SysOssController extends BaseController {
     @Operation(summary = "删除OSS对象存储表")
     @PostMapping(value = "deleteSysOss")
     public R<Void> deleteSysOss(@RequestBody List<Long> idList) {
-        sysOssService.deleteSysOss(idList);
+        sysOssService.deleteBatch(idList);
         return R.ok();
     }
 

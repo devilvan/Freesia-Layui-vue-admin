@@ -85,7 +85,7 @@ public class SysTenantController extends BaseController {
     @GetMapping(value = "findPageSysTenant")
     public TableResult<SysTenantDto> findPageSysTenant(SysTenantVo sysTenantVo, PageQuery pageQuery) {
         SysTenantDto sysTenantDto = UCopy.copyVo2Dto(sysTenantVo, SysTenantDto.class);
-        return sysTenantService.findPageSysTenant(sysTenantDto, pageQuery);
+        return sysTenantService.findPage(sysTenantDto, pageQuery);
     }
 
     /**
