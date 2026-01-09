@@ -2,7 +2,6 @@ package com.freesia.service;
 
 
 import com.freesia.dto.SysConfigDto;
-import com.freesia.po.SysConfigPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -28,7 +27,7 @@ public interface SysConfigService {
      * @param list 控制层处理后的数据传输对象集合
      * @return 保存回调对象
      */
-    List<SysConfigPo> saveUpdateBatch(List<SysConfigDto> list);
+    List<SysConfigDto> saveUpdateBatch(List<SysConfigDto> list);
 
     /**
      * 根据系统配置键查询值
@@ -60,22 +59,15 @@ public interface SysConfigService {
      * @param pageQuery    分页参数
      * @return 参数配置分页对象
      */
-    TableResult<SysConfigDto> findPageSysConfig(SysConfigDto sysConfigDto, PageQuery pageQuery);
+    TableResult<SysConfigDto> findPage(SysConfigDto sysConfigDto, PageQuery pageQuery);
 
     /**
-     * 保存系统配置信息
+     * 条件查询系统配置参数
      *
-     * @param sysConfigDto 系统配置信息
-     */
-    void saveConfig(SysConfigDto sysConfigDto);
-
-    /**
-     * 根据键查询系统配置参数
-     *
-     * @param configKey 系统配置键
+     * @param sysConfigDto 查询条件
      * @return 系统配置参数对象
      */
-    SysConfigDto findSysConfigByConfigKey(String configKey);
+    SysConfigDto findOne(SysConfigDto sysConfigDto);
 
     /**
      * 删除系统配置参数

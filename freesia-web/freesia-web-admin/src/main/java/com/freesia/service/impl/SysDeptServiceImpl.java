@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.AdminConstant;
 import com.freesia.constant.DeptModule;
@@ -33,7 +32,9 @@ import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysDeptService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -50,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> implements SysDeptService {
+public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo, SysDeptDto> implements SysDeptService {
     private final TransactionTemplate transactionTemplate;
     private final SysDeptRepository sysDeptRepository;
     private final SysDeptMapper sysDeptMapper;
@@ -58,18 +59,31 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
     private final SysUserService sysUserService;
 
     @Override
-    public SysDeptDto saveUpdate(SysDeptDto sysDeptDto) {
-        SysDeptPo sysDeptPo = new SysDeptPo();
-        UCopy.fullCopy(sysDeptDto, sysDeptPo);
-        sysDeptPo = sysDeptRepository.saveAndFlush(sysDeptPo);
-        return UCopy.copyPo2Dto(sysDeptPo, SysDeptDto.class);
+    protected JpaRepository<SysDeptPo, Long> getRepository() {
+        return sysDeptRepository;
     }
 
     @Override
-    public List<SysDeptDto> saveUpdateBatch(List<SysDeptDto> list) {
-        List<SysDeptPo> sysDeptPoList = UCopy.fullCopyList(list, SysDeptPo.class);
-        sysDeptPoList = sysDeptRepository.saveAllAndFlush(sysDeptPoList);
-        return UCopy.fullCopyList(sysDeptPoList, SysDeptDto.class);
+    protected Class<SysDeptDto> getDtoClass() {
+        return SysDeptDto.class;
+    }
+
+    @Override
+    protected Class<SysDeptPo> getPoClass() {
+        return SysDeptPo.class;
+    }
+
+    @Override
+    protected Wrapper<SysDeptPo> buildLambdaQueryWrapper(@NonNull SysDeptDto dto) {
+        return Wrappers.<SysDeptPo>query()
+                .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
+                .eq("D.DEPT_STATUS", UEmpty.isEmpty(dto.getDeptStatus()) ? FlagConstant.ENABLED : dto.getDeptStatus())
+                .eq(ObjectUtil.isNotNull(dto.getParentId()), "D.PARENT_ID", dto.getParentId())
+                .like(ObjectUtil.isNotNull(dto.getDeptName()), "D.DEPT_NAME", dto.getDeptName())
+                .between(ObjectUtil.isNotNull(dto.getCreateTimeFrom()) && ObjectUtil.isNotNull(dto.getCreateTimeTo())
+                        , "D.CREATE_TIME", dto.getCreateTimeFrom(), dto.getCreateTimeTo())
+                .orderByAsc("D.PARENT_ID")
+                .orderByAsc("D.ORDER_NUM");
     }
 
     @Override
@@ -78,9 +92,9 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         boolean isAdmin = Convert.toBool(sysUserService.isAdmin(userId), false);
         if (isAdmin) {
-            return sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
+            return sysDeptMapper.findPageSysDeptList(buildLambdaQueryWrapper(sysDeptDto));
         } else {
-            List<FindPageSysDeptListEntity> list = sysDeptMapper.findPageSysDeptList(buildWrapper(sysDeptDto));
+            List<FindPageSysDeptListEntity> list = sysDeptMapper.findPageSysDeptList(buildLambdaQueryWrapper(sysDeptDto));
             // 根据查询出的部门，查找其上级部门
 //            List<Long> ancestorIdList = list.stream()
 //                    .map(FindPageSysDeptListEntity::getAncestors)
@@ -97,7 +111,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
 
     @Override
     public TableResult<FindPageSysDeptListEntity> findPageSysDeptList(SysDeptDto sysDeptDto, PageQuery pageQuery) {
-        return sysDeptMapper.findPageSysDeptList(pageQuery.build(), buildWrapper(sysDeptDto));
+        return sysDeptMapper.findPageSysDeptList(pageQuery.build(), buildLambdaQueryWrapper(sysDeptDto));
     }
 
     @Override
@@ -108,12 +122,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
 
     @Override
     public SysDeptDto findDeptById(Long deptId) {
-        LambdaQueryWrapper<SysDeptPo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(SysDeptPo::getDeptName)
+        LambdaQueryWrapper<SysDeptPo> queryWrapper = new LambdaQueryWrapper<SysDeptPo>()
+                .select(SysDeptPo::getDeptName)
                 .eq(SysDeptPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(SysDeptPo::getId, deptId);
-        SysDeptPo sysDeptPo = this.getOne(queryWrapper);
-        return UCopy.copyPo2Dto(sysDeptPo, SysDeptDto.class);
+        return convertPo2Dto(getOne(queryWrapper));
     }
 
     @Override
@@ -122,8 +135,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists", new Object[]{}));
         sysDeptPo.setLogicDel(true);
         sysDeptPo.setDeptStatus(FlagConstant.DISABLED);
-        SysDeptPo saveSysDeptPo = sysDeptRepository.save(sysDeptPo);
-        return UCopy.copyPo2Dto(saveSysDeptPo, SysDeptDto.class);
+        return super.convertPo2Dto(sysDeptRepository.save(sysDeptPo));
     }
 
     @Override
@@ -135,19 +147,10 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         return Collections.singletonList(deptTopParent);
     }
 
-    private FindTreeDeptSelectEntity buildDeptTopParent() {
-        FindTreeDeptSelectEntity findTreeDeptSelectEntity = new FindTreeDeptSelectEntity();
-        findTreeDeptSelectEntity.setId(AdminConstant.DEPT_TOP_PARENT_ID);
-        findTreeDeptSelectEntity.setParentId(AdminConstant.DEPT_TOP_PARENT_ID);
-        findTreeDeptSelectEntity.setTitle("顶级目录");
-        return findTreeDeptSelectEntity;
-    }
-
     @Override
     public SysDeptDto saveDept(SysDeptDto sysDeptDto) {
         SysDeptPo sysDeptPo = buildSaveDeptPo(sysDeptDto);
-        sysDeptPo = sysDeptRepository.saveAndFlush(sysDeptPo);
-        return UCopy.copyPo2Dto(sysDeptPo, SysDeptDto.class);
+        return convertPo2Dto(sysDeptRepository.saveAndFlush(sysDeptPo));
     }
 
     @Override
@@ -228,6 +231,14 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
         return buildFindDeptRolesByDeptIdEntity(sysDeptPo, sysRolePoSet);
     }
 
+    private FindTreeDeptSelectEntity buildDeptTopParent() {
+        FindTreeDeptSelectEntity findTreeDeptSelectEntity = new FindTreeDeptSelectEntity();
+        findTreeDeptSelectEntity.setId(AdminConstant.DEPT_TOP_PARENT_ID);
+        findTreeDeptSelectEntity.setParentId(AdminConstant.DEPT_TOP_PARENT_ID);
+        findTreeDeptSelectEntity.setTitle("顶级目录");
+        return findTreeDeptSelectEntity;
+    }
+
     private List<FindTreeDeptSelectEntity> findTreeDeptSelectEntityList(LoginUserModel loginUserModel) {
         Long tenantId = loginUserModel.getTenantId();
         QueryWrapper<SysDeptPo> wrapper = Wrappers.<SysDeptPo>query()
@@ -266,25 +277,5 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDeptPo> im
             sysDeptPo.setRemark(sysDeptDto.getRemark());
         }
         return sysDeptPo;
-    }
-
-    /**
-     * 构建SQL
-     *
-     * @param sysDeptDto 查询参数
-     * @return 构建出的SQL对象
-     */
-    private Wrapper<SysDeptPo> buildWrapper(SysDeptDto sysDeptDto) {
-        SysDeptPo sysDeptPo = new SysDeptPo();
-        UCopy.fullCopy(sysDeptDto, sysDeptPo);
-        return Wrappers.<SysDeptPo>query()
-                .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
-                .eq("D.DEPT_STATUS", UEmpty.isEmpty(sysDeptPo.getDeptStatus()) ? FlagConstant.ENABLED : sysDeptPo.getDeptStatus())
-                .eq(ObjectUtil.isNotNull(sysDeptPo.getParentId()), "D.PARENT_ID", sysDeptPo.getParentId())
-                .like(ObjectUtil.isNotNull(sysDeptPo.getDeptName()), "D.DEPT_NAME", sysDeptPo.getDeptName())
-                .between(ObjectUtil.isNotNull(sysDeptDto.getCreateTimeFrom()) && ObjectUtil.isNotNull(sysDeptDto.getCreateTimeTo())
-                        , "D.CREATE_TIME", sysDeptDto.getCreateTimeFrom(), sysDeptDto.getCreateTimeTo())
-                .orderByAsc("D.PARENT_ID")
-                .orderByAsc("D.ORDER_NUM");
     }
 }

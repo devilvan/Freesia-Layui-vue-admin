@@ -62,7 +62,7 @@ public class SysDictValueServiceImpl extends ServiceImpl<SysDictValueMapper, Sys
                 .eq(UEmpty.isNotEmpty(sysDictValueDto.getIsDefault()), "DV.IS_DEFAULT", sysDictValueDto.getIsDefault())
                 .orderByDesc("DV.IS_DEFAULT")
                 .orderByAsc("DV.ORDER_NUM"));
-        Page<SysDictValueDto> sysDictValueDtoPage = UCopy.convertPagePo2Dto(sysDictValuePoList, SysDictValueDto.class);
+        Page<SysDictValueDto> sysDictValueDtoPage = UCopy.convertPage(sysDictValuePoList, SysDictValueDto.class);
         return TableResult.build(sysDictValueDtoPage);
     }
 

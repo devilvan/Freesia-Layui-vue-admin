@@ -85,7 +85,7 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOssPo> imple
                 record.setUrl(ossHandler.convertEndpoint2Domain(record.getUrl()));
             }
         });
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysOssDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, SysOssDto.class));
     }
 
     @Override

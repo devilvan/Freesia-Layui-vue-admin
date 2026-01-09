@@ -51,7 +51,7 @@ public class WorldClockSunriseSunsetServiceImpl extends ServiceImpl<WorldClockSu
                 .eq(WorldClockSunriseSunsetPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(worldClockSunriseSunsetDto.getId()), WorldClockSunriseSunsetPo::getId, worldClockSunriseSunsetDto.getId());
         Page<WorldClockSunriseSunsetPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, WorldClockSunriseSunsetDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, WorldClockSunriseSunsetDto.class));
     }
 
     @Override

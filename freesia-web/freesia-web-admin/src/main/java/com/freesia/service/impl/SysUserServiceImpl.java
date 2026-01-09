@@ -35,7 +35,6 @@ import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
-import com.freesia.vo.R;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -236,14 +235,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserPo> im
     @Override
     public TableResult<SysUserDto> findPageUserByTenantId(Long tenantId, PageQuery pageQuery) {
         Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageUserByTenantId(tenantId, pageQuery.build());
-        return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
+        return TableResult.build(UCopy.convertPage(sysUserPoPage, SysUserDto.class));
     }
 
     @Override
     public TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantDto sysTenantDto, PageQuery pageQuery) {
         SysTenantPo sysTenantPo = UCopy.copyDto2Po(sysTenantDto, SysTenantPo.class);
         Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageAllowAssignUserByTenantId(sysTenantPo, pageQuery.build());
-        return TableResult.build(UCopy.convertPagePo2Dto(sysUserPoPage, SysUserDto.class));
+        return TableResult.build(UCopy.convertPage(sysUserPoPage, SysUserDto.class));
     }
 
     @Override

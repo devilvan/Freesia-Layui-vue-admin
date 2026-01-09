@@ -73,7 +73,7 @@ public class CommonIconTemplateHeaderServiceImpl extends ServiceImpl<CommonIconT
                 .eq(CommonIconTemplateHeaderPo::getUserId, USecurity.getUserId())
                 .eq(UEmpty.isNotEmpty(commonIconTemplateHeaderDto.getId()), CommonIconTemplateHeaderPo::getId, commonIconTemplateHeaderDto.getId());
         Page<CommonIconTemplateHeaderPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, CommonIconTemplateHeaderDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, CommonIconTemplateHeaderDto.class));
     }
 
     @Override

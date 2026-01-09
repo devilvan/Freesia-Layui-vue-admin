@@ -1,9 +1,9 @@
 package com.freesia.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.DictModule;
 import com.freesia.constant.FlagConstant;
@@ -18,9 +18,10 @@ import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysDictKeyRepository;
 import com.freesia.service.SysDictKeyService;
 import com.freesia.util.UCache;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -33,23 +34,39 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDictKeyPo> implements SysDictKeyService {
+public class SysDictKeyServiceImpl extends BaseServiceImpl<SysDictKeyMapper, SysDictKeyPo, SysDictKeyDto> implements SysDictKeyService {
     private final SysDictKeyRepository sysDictKeyRepository;
     private final SysDictKeyMapper sysDictKeyMapper;
 
+
+    @Override
+    protected JpaRepository<SysDictKeyPo, Long> getRepository() {
+        return sysDictKeyRepository;
+    }
+
+    @Override
+    protected Class<SysDictKeyDto> getDtoClass() {
+        return SysDictKeyDto.class;
+    }
+
+    @Override
+    protected Class<SysDictKeyPo> getPoClass() {
+        return SysDictKeyPo.class;
+    }
+
+    @Override
+    protected Wrapper<SysDictKeyPo> buildLambdaQueryWrapper(@NonNull SysDictKeyDto dto) {
+        return null;
+    }
+
     @Override
     public SysDictKeyDto saveUpdate(SysDictKeyDto sysDictKeyDto) {
-        SysDictKeyPo sysDictKeyPo = new SysDictKeyPo();
-        UCopy.fullCopy(sysDictKeyDto, sysDictKeyPo);
-        SysDictKeyDto resultDto = new SysDictKeyDto();
-        UCopy.fullCopy(sysDictKeyRepository.saveAndFlush(sysDictKeyPo), resultDto);
-        return resultDto;
+        return super.saveUpdate(sysDictKeyDto);
     }
 
     @Override
     public List<SysDictKeyDto> saveUpdateBatch(List<SysDictKeyDto> list) {
-        List<SysDictKeyPo> sysDictKeyPoList = UCopy.fullCopyList(list, SysDictKeyPo.class);
-        return UCopy.fullCopyList(sysDictKeyRepository.saveAllAndFlush(sysDictKeyPoList), SysDictKeyDto.class);
+        return super.saveUpdateBatch(list);
     }
 
     @Override
@@ -66,12 +83,6 @@ public class SysDictKeyServiceImpl extends ServiceImpl<SysDictKeyMapper, SysDict
                 .orderByDesc("DK.ID")
                 .orderByAsc("DV.ORDER_NUM"));
         return TableResult.build(page);
-    }
-
-    @Override
-    public List<SysDictKeyDto> findSysDictKeyList(SysDictKeyDto sysDictKeyDto) {
-        List<SysDictKeyPo> sysDictList = sysDictKeyMapper.findSysDictKeyList(sysDictKeyDto);
-        return UCopy.fullCopyList(sysDictList, SysDictKeyDto.class);
     }
 
     @Override

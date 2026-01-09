@@ -52,7 +52,7 @@ public class UrlConfigServiceImpl extends ServiceImpl<UrlConfigMapper, UrlConfig
     public TableResult<UrlConfigDto> findPageUrlConfig(UrlConfigDto urlConfigDto, PageQuery pageQuery) {
         LambdaQueryWrapper<UrlConfigPo> wrapper = buildUrlConfigWrapper(urlConfigDto);
         Page<UrlConfigPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, UrlConfigDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, UrlConfigDto.class));
     }
 
     @Override

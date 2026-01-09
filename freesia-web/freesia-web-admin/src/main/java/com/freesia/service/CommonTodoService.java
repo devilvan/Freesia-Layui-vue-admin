@@ -32,10 +32,10 @@ public interface CommonTodoService {
      * 查询待办事项表信息
      *
      * @param commonTodoDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery     分页条件
      * @return 分页信息
      */
-    TableResult<CommonTodoDto> findPageCommonTodo(CommonTodoDto commonTodoDto, PageQuery pageQuery);
+    TableResult<CommonTodoDto> findPage(CommonTodoDto commonTodoDto, PageQuery pageQuery);
 
     /**
      * 条件查询待办事项表信息
@@ -43,7 +43,7 @@ public interface CommonTodoService {
      * @param commonTodoDto 查询条件
      * @return 待办事项表信息
      */
-    CommonTodoDto findCommonTodo(CommonTodoDto commonTodoDto);
+    CommonTodoDto findOne(CommonTodoDto commonTodoDto);
 
     /**
      * 条件查询待办事项表信息
@@ -51,12 +51,12 @@ public interface CommonTodoService {
      * @param commonTodoDto 查询条件
      * @return 待办事项表信息
      */
-    List<CommonTodoDto> findListCommonTodo(CommonTodoDto commonTodoDto);
+    List<CommonTodoDto> findList(CommonTodoDto commonTodoDto);
 
     /**
      * 删除待办事项表信息
      *
      * @param idList 主键
      */
-    void deleteCommonTodo(List<Long> idList);
+    void deleteBatch(List<Long> idList);
 }

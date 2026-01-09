@@ -157,14 +157,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRolePo> im
                 .eq("R.STATUS", FlagConstant.ENABLED)
                 .eq("U.LOGIC_DEL", FlagConstant.DISABLED);
         Page<SysRolePo> pageUserByRoleId = sysRoleMapper.findPageUserByRoleId(queryWrapper, pageQuery.build());
-        return TableResult.build(UCopy.convertPagePo2Dto(pageUserByRoleId, SysUserDto.class));
+        return TableResult.build(UCopy.convertPage(pageUserByRoleId, SysUserDto.class));
     }
 
     @Override
     public TableResult<SysUserDto> findPageAllowAssignUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery) {
         SysRolePo sysRolePo = UCopy.copyDto2Po(sysRoleDto, SysRolePo.class);
         Page<SysUserPo> userPoPage = sysRoleMapper.findPageAllowAssignUserByRoleId(sysRolePo, pageQuery.build());
-        return TableResult.build(UCopy.convertPagePo2Dto(userPoPage, SysUserDto.class));
+        return TableResult.build(UCopy.convertPage(userPoPage, SysUserDto.class));
     }
 
     @Override

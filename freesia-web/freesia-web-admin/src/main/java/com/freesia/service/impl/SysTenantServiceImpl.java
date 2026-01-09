@@ -73,7 +73,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                 .eq(SysTenantPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysTenant.getId()), SysTenantPo::getId, sysTenant.getId());
         Page<SysTenantPo> pagePo = sysTenantMapper.findPageSysTenant(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysTenantDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, SysTenantDto.class));
     }
 
     @Override

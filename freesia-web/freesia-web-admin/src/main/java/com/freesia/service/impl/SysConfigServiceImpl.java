@@ -5,8 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
 import com.freesia.dto.SysConfigDto;
@@ -17,16 +15,16 @@ import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysConfigMapper;
 import com.freesia.net.util.UServlet;
 import com.freesia.po.SysConfigPo;
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysConfigRepository;
 import com.freesia.service.SysConfigService;
 import com.freesia.util.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -39,39 +37,56 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfigPo> implements SysConfigService {
+public class SysConfigServiceImpl extends BaseServiceImpl<SysConfigMapper, SysConfigPo, SysConfigDto> implements SysConfigService {
     private final SysConfigMapper sysConfigMapper;
     private final SysConfigRepository sysConfigRepository;
+
+    @Override
+    protected JpaRepository<SysConfigPo, Long> getRepository() {
+        return sysConfigRepository;
+    }
+
+    @Override
+    protected Class<SysConfigDto> getDtoClass() {
+        return SysConfigDto.class;
+    }
+
+    @Override
+    protected Class<SysConfigPo> getPoClass() {
+        return SysConfigPo.class;
+    }
+
+    @Override
+    protected Wrapper<SysConfigPo> buildLambdaQueryWrapper(@NonNull SysConfigDto dto) {
+        return new LambdaQueryWrapper<SysConfigPo>()
+                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
+                .like(UEmpty.isNotEmpty(dto.getConfigKey()), SysConfigPo::getConfigKey, dto.getConfigKey())
+                .like(UEmpty.isNotEmpty(dto.getConfigName()), SysConfigPo::getConfigName, dto.getConfigName());
+    }
 
     @Override
     @CachePut(cacheNames = CacheConstant.SYS_CONFIG, key = "#sysConfigDto.configKey")
     @LogRecord(module = ConfigModule.CONFIG_MANAGEMENT, subModule = ConfigModule.SubModule.SAVE_CONFIG, message = "config.save")
     public SysConfigDto saveUpdate(SysConfigDto sysConfigDto) {
-        SysConfigPo sysConfigPo = new SysConfigPo();
-        UCopy.fullCopy(sysConfigDto, sysConfigPo);
-        sysConfigPo = sysConfigRepository.saveAndFlush(sysConfigPo);
-        return UCopy.copyPo2Dto(sysConfigPo, SysConfigDto.class);
+        return super.saveUpdate(sysConfigDto);
     }
 
     @Override
     @LogRecord(module = ConfigModule.CONFIG_MANAGEMENT, subModule = ConfigModule.SubModule.SAVE_CONFIG, message = "config.save")
-    public List<SysConfigPo> saveUpdateBatch(List<SysConfigDto> list) {
-        List<SysConfigPo> sysConfigPoList = UCopy.fullCopyList(list, SysConfigPo.class);
-        return sysConfigRepository.saveAllAndFlush(sysConfigPoList);
+    public List<SysConfigDto> saveUpdateBatch(List<SysConfigDto> list) {
+        return super.saveUpdateBatch(list);
     }
 
     @Override
     @Cacheable(cacheNames = CacheConstant.SYS_CONFIG, key = "#configKey")
     public SysConfigDto findConfigByKey(String configKey) {
-        Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
-                .select(SysConfigPo::getConfigKey)
-                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(SysConfigPo::getConfigKey, configKey);
-        SysConfigPo sysConfigPo = this.getOne(queryWrapper);
-        if (UEmpty.isNull(sysConfigPo)) {
+        SysConfigDto sysConfigDto = new SysConfigDto();
+        sysConfigDto.setConfigKey(configKey);
+        sysConfigDto = super.findOne(sysConfigDto);
+        if (UEmpty.isNull(sysConfigDto)) {
             throw new ConfigException("config.not.exists", new Object[]{configKey});
         }
-        return UCopy.copyPo2Dto(sysConfigPo, SysConfigDto.class);
+        return sysConfigDto;
     }
 
     @Override
@@ -86,36 +101,8 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
     @Override
     public void loadSysConfig() {
-        Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
-                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED);
-        List<SysConfigPo> sysConfigPoList = this.list(queryWrapper);
-        List<SysConfigDto> sysConfigDtoList = UCopy.fullCopyList(sysConfigPoList, SysConfigDto.class);
+        List<SysConfigDto> sysConfigDtoList = super.findList(new SysConfigDto());
         sysConfigDtoList.forEach(sysConfigDto -> UCache.put(CacheConstant.SYS_CONFIG, sysConfigDto.getConfigKey(), sysConfigDto));
-    }
-
-    @Override
-    public TableResult<SysConfigDto> findPageSysConfig(SysConfigDto sysConfigDto, PageQuery pageQuery) {
-        Page<SysConfigPo> page = sysConfigMapper.findPageSysConfig(pageQuery.build(), new LambdaQueryWrapper<SysConfigPo>()
-                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
-                .like(UEmpty.isNotEmpty(sysConfigDto.getConfigKey()), SysConfigPo::getConfigKey, sysConfigDto.getConfigKey())
-                .like(UEmpty.isNotEmpty(sysConfigDto.getConfigName()), SysConfigPo::getConfigName, sysConfigDto.getConfigName())
-                .orderByAsc(SysConfigPo::getConfigKey)
-        );
-        return TableResult.build(UCopy.convertPagePo2Dto(page, SysConfigDto.class));
-    }
-
-    @Override
-    public void saveConfig(SysConfigDto sysConfigDto) {
-        USpring.getAopProxy(this).saveUpdate(sysConfigDto);
-    }
-
-    @Override
-    public SysConfigDto findSysConfigByConfigKey(String configKey) {
-        Wrapper<SysConfigPo> queryWrapper = new LambdaQueryWrapper<SysConfigPo>()
-                .eq(SysConfigPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(SysConfigPo::getConfigKey, configKey);
-        SysConfigPo sysConfigPo = this.getOne(queryWrapper);
-        return UCopy.copyPo2Dto(sysConfigPo, SysConfigDto.class);
     }
 
     @Override
@@ -134,7 +121,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
      * @param code       用户输入的验证码（被校验）
      * @param captchaKey 校验验证码
      */
-    public void checkCaptcha(String username, String code, String captchaKey) {
+    private void checkCaptcha(String username, String code, String captchaKey) {
         String verifyKey = CacheConstant.CAPTCHA_CODE_KEY + StrUtil.emptyToDefault(captchaKey, "");
         String captcha = URedis.get(verifyKey);
         URedis.delete(verifyKey);
@@ -192,6 +179,5 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
             throw new CaptchaException();
         }
     }
-
 
 }

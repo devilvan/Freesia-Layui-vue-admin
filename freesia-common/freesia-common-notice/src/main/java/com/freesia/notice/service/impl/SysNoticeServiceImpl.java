@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.ConverterFactory;
 import com.freesia.dto.BaseDto;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.entity.FindPageSysNoticeEntity;
@@ -38,24 +39,25 @@ import java.util.stream.Collectors;
 public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNoticePo> implements SysNoticeService {
     private final SysNoticeRepository sysNoticeRepository;
     private final SysNoticeMapper sysNoticeMapper;
+    private final ConverterFactory converterFactory;
 
     @Override
     public SysNoticeDto saveUpdate(SysNoticeDto sysNoticeDto) {
         SysNoticePo sysNoticePo = UCopy.copyDto2Po(sysNoticeDto, SysNoticePo.class);
         SysNoticePo po = sysNoticeRepository.saveAndFlush(sysNoticePo);
-        return UCopy.copyPo2Dto(po, SysNoticeDto.class);
+        return converterFactory.getConverter(SysNoticePo.class, SysNoticeDto.class).convert(po);
     }
 
     @Override
     public List<SysNoticeDto> saveUpdateBatch(List<SysNoticeDto> list) {
         List<SysNoticePo> sysNoticePoList = UCopy.fullCopyList(list, SysNoticePo.class);
-        return UCopy.fullCopyList(sysNoticeRepository.saveAllAndFlush(sysNoticePoList), SysNoticeDto.class);
+        return converterFactory.getConverter(SysNoticePo.class, SysNoticeDto.class).convertBatch(sysNoticeRepository.saveAllAndFlush(sysNoticePoList));
     }
 
     @Override
     public TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeDto sysNoticeDto, PageQuery pageQuery) {
         Page<FindPageSysNoticeEntity> pagePo = sysNoticeMapper.findPageSysNotice(sysNoticeDto, pageQuery.build());
-        return TableResult.build(UCopy.convertPageEntity2Dto(pagePo, FindPageSysNoticeEntity.class));
+        return TableResult.build(pagePo);
     }
 
     @Override

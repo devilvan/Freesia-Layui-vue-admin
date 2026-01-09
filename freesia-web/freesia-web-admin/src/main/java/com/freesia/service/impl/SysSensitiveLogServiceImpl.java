@@ -64,7 +64,7 @@ public class SysSensitiveLogServiceImpl extends ServiceImpl<SysSensitiveLogMappe
                         sysSensitiveLogDto.getOperateTimeTo())
                 .orderByDesc("SL.OPERATE_TIME");
         Page<SysSensitiveLogPo> sysSensitiveLogPoPage = sysSensitiveLogMapper.findPageLoginLog(pageQuery.build(), queryWrapper);
-        Page<SysSensitiveLogDto> sysSensitiveLogDtoPage = UCopy.convertPagePo2Dto(sysSensitiveLogPoPage, SysSensitiveLogDto.class);
+        Page<SysSensitiveLogDto> sysSensitiveLogDtoPage = UCopy.convertPage(sysSensitiveLogPoPage, SysSensitiveLogDto.class);
         return TableResult.build(sysSensitiveLogDtoPage);
     }
 
@@ -87,7 +87,7 @@ public class SysSensitiveLogServiceImpl extends ServiceImpl<SysSensitiveLogMappe
                         sysSensitiveLogDto.getOperateTimeTo())
                 .orderByDesc("SL.OPERATE_TIME");
         Page<SysSensitiveLogPo> sysSensitiveLogPoPage = sysSensitiveLogMapper.findPageOptionLog(pageQuery.build(), queryWrapper);
-        Page<SysSensitiveLogDto> sysSensitiveLogDtoPage = UCopy.convertPagePo2Dto(sysSensitiveLogPoPage, SysSensitiveLogDto.class);
+        Page<SysSensitiveLogDto> sysSensitiveLogDtoPage = UCopy.convertPage(sysSensitiveLogPoPage, SysSensitiveLogDto.class);
         return TableResult.build(sysSensitiveLogDtoPage);
     }
 }

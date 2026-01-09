@@ -59,7 +59,7 @@ public class SysDictController extends BaseController {
     public R<List<SysDictKeyDto>> findSysDictKeyList(SysDictKeyVo sysDictKeyVo) {
         SysDictKeyDto sysDictKeyDto = new SysDictKeyDto();
         UCopy.fullCopy(sysDictKeyVo, sysDictKeyDto);
-        List<SysDictKeyDto> sysDictKeyEntityList = sysDictKeyService.findSysDictKeyList(sysDictKeyDto);
+        List<SysDictKeyDto> sysDictKeyEntityList = sysDictKeyService.findList(sysDictKeyDto);
         return R.ok(sysDictKeyEntityList);
     }
 

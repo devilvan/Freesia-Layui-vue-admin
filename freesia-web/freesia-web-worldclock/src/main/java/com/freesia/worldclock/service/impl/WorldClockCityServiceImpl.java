@@ -67,7 +67,7 @@ public class WorldClockCityServiceImpl extends ServiceImpl<WorldClockCityMapper,
                 .eq(WorldClockCityPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(worldClockCityDto.getId()), WorldClockCityPo::getId, worldClockCityDto.getId());
         Page<WorldClockCityPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, WorldClockCityDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, WorldClockCityDto.class));
     }
 
     @Override

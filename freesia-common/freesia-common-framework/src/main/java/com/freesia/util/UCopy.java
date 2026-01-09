@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 /**
@@ -102,7 +101,8 @@ public class UCopy {
         try {
             dto = dtoClz.getConstructor().newInstance();
             fullCopy(po, dto, excludes);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             e.printStackTrace();
         }
         return dto;
@@ -123,7 +123,8 @@ public class UCopy {
         try {
             po = poClz.getConstructor().newInstance();
             fullCopy(dto, po, excludes);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             e.printStackTrace();
         }
         return po;
@@ -144,49 +145,33 @@ public class UCopy {
         try {
             dto = dtoClz.getConstructor().newInstance();
             fullCopy(vo, dto, excludes);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             e.printStackTrace();
         }
         return dto;
     }
 
     /**
-     * Page BO转DTO
-     *
-     * @param page     BO分页对象
-     * @param dtoClass DTO的class
-     * @param <ENTITY> ENTITY类型
-     * @param <DTO>    DTO类型
-     * @return DTO分页对象
-     */
-    public static <ENTITY, DTO extends BaseDto> Page<DTO> convertPageEntity2Dto(Page<ENTITY> page, Class<DTO> dtoClass) {
-        Page<DTO> pageDto = new Page<>();
-        List<DTO> dtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
-        pageDto.setRecords(dtoList);
-        pageDto.setSize(page.getSize());
-        pageDto.setCurrent(page.getCurrent());
-        pageDto.setTotal(page.getTotal());
-        pageDto.setPages(page.getPages());
-        return pageDto;
-    }
-
-    /**
      * Page PO转DTO
      *
-     * @param page     PO分页对象
-     * @param dtoClass DTO的class
-     * @param <PO>     PO类型
-     * @param <DTO>    DTO类型
-     * @return DTO分页对象
+     * @param <SOURCE>    源类型
+     * @param <TARGET>    目标类型
+     * @param sourcePage  源分页对象
+     * @param targetClass 目标对象类型
+     * @return 目标分页对象
      */
-    public static <PO extends BasePo, DTO extends BaseDto> Page<DTO> convertPagePo2Dto(Page<PO> page, Class<DTO> dtoClass) {
-        Page<DTO> pageDto = new Page<>();
-        List<DTO> dtoList = UCopy.fullCopyList(page.getRecords(), dtoClass);
-        pageDto.setRecords(dtoList);
-        pageDto.setSize(page.getSize());
-        pageDto.setCurrent(page.getCurrent());
-        pageDto.setTotal(page.getTotal());
-        pageDto.setPages(page.getPages());
+    public static <SOURCE, TARGET> Page<TARGET> convertPage(Page<SOURCE> sourcePage, Class<TARGET> targetClass) {
+        if (sourcePage == null || UEmpty.isEmpty(sourcePage.getRecords())) {
+            return null;
+        }
+        Page<TARGET> pageDto = new Page<>();
+        List<TARGET> targetList = UCopy.fullCopyList(sourcePage.getRecords(), targetClass);
+        pageDto.setRecords(targetList);
+        pageDto.setSize(sourcePage.getSize());
+        pageDto.setCurrent(sourcePage.getCurrent());
+        pageDto.setTotal(sourcePage.getTotal());
+        pageDto.setPages(sourcePage.getPages());
         return pageDto;
     }
 
@@ -284,7 +269,8 @@ public class UCopy {
                 fullCopy(s, t);
                 set.add(t);
             }
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
             e.printStackTrace();
         }
         return set;
@@ -309,7 +295,8 @@ public class UCopy {
                 fullCopy(s, t);
                 list.add(t);
             }
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
             e.printStackTrace();
         }
         return list;
@@ -347,7 +334,8 @@ public class UCopy {
                 halfCopy(s, t);
                 list.add(t);
             }
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
             e.printStackTrace();
         }
         return list;

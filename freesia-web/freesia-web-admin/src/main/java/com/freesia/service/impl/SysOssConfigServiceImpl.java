@@ -58,7 +58,7 @@ public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, Sys
                 .eq(SysOssConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysOssConfig.getId()), SysOssConfigPo::getId, sysOssConfig.getId());
         Page<SysOssConfigPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, SysOssConfigDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, SysOssConfigDto.class));
     }
 
     @Override

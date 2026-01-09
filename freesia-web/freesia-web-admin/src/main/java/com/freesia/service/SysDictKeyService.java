@@ -45,7 +45,7 @@ public interface SysDictKeyService {
      * @param sysDictKeyDto 查询参数
      * @return 字典键列表
      */
-    List<SysDictKeyDto> findSysDictKeyList(SysDictKeyDto sysDictKeyDto);
+    List<SysDictKeyDto> findList(SysDictKeyDto sysDictKeyDto);
 
     /**
      * 保存字典键

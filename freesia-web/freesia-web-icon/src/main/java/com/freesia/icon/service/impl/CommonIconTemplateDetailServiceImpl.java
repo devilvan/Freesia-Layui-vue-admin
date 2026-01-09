@@ -68,7 +68,7 @@ public class CommonIconTemplateDetailServiceImpl extends ServiceImpl<CommonIconT
                 .eq(CommonIconTemplateDetailPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(commonIconTemplateDetailDto.getId()), CommonIconTemplateDetailPo::getId, commonIconTemplateDetailDto.getId());
         Page<CommonIconTemplateDetailPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, CommonIconTemplateDetailDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, CommonIconTemplateDetailDto.class));
     }
 
     @Override

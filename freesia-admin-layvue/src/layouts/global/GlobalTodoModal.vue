@@ -1,6 +1,6 @@
 <template>
   <lay-tab type="brief" v-model="currentIndex">
-    <lay-tab-item :title="`待办事项(${commonTodoList.length})`" id="1">
+    <lay-tab-item :title="`待办事项(${todoCount})`" id="1">
       <lay-card class="inform-item todo-item">
         <lay-button
             border="green"
@@ -30,7 +30,7 @@
                 <h4>{{ item.content }}</h4>
               </div>
               <div v-show="item.dueTime" class="oneRow" :title="item.title">
-<!--                <span>提醒时间：{{ item.dueTime ? formatDateTime(new Date(item.dueTime), "yyyy-MM-dd HH:mm") : null }}</span>-->
+                <!--                <span>提醒时间：{{ item.dueTime ? formatDateTime(new Date(item.dueTime), "yyyy-MM-dd HH:mm") : null }}</span>-->
                 <span>提醒时间：{{ item.dueTime }}</span>
               </div>
             </div>
@@ -105,7 +105,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {R} from "@/types/Result";
 import {useAppStore} from "@/store/app";
 import {defaultShortcuts, formatDateTime,} from "@/util/UDate";
@@ -145,14 +145,22 @@ const todoStatusSelectList = ref<any[]>([
 ]);
 const todoModalFocusInputRef = ref()
 
+// 计算属性：安全地获取待办事项数量
+const todoCount = computed(() => commonTodoList.value?.length ?? 0)
+
 /*VAR*/
 
 /*FUNCTION*/
 function loadDataSource() {
   findListCommonTodo(searchQuery.value).then((res: R<CommonTodoEntity[]>) => {
     if (res.code === 200) {
-      commonTodoList.value = res.data
+      // 确保始终是数组，防止后端返回 null
+      commonTodoList.value = res.data ?? []
     }
+  }).catch((error) => {
+    console.error('加载待办事项失败:', error)
+    // 发生错误时也设置为空数组
+    commonTodoList.value = []
   })
 }
 

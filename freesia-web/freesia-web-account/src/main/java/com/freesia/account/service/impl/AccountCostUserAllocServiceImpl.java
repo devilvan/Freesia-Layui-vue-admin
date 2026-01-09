@@ -56,7 +56,7 @@ public class AccountCostUserAllocServiceImpl extends ServiceImpl<AccountCostUser
                 .eq(AccountCostUserAllocPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(accountCostUserAllocDto.getId()), AccountCostUserAllocPo::getId, accountCostUserAllocDto.getId());
         Page<AccountCostUserAllocPo> pagePo = page(pageQuery.build(), wrapper);
-        return TableResult.build(UCopy.convertPagePo2Dto(pagePo, AccountCostUserAllocDto.class));
+        return TableResult.build(UCopy.convertPage(pagePo, AccountCostUserAllocDto.class));
     }
 
     @Override

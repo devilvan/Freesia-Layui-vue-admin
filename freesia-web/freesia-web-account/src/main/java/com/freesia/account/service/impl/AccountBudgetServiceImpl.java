@@ -96,7 +96,7 @@ public class AccountBudgetServiceImpl extends ServiceImpl<AccountBudgetMapper, A
                     return Integer.MAX_VALUE;
                 }
             }));
-            return TableResult.build(UCopy.convertPagePo2Dto(pagePo, AccountBudgetDto.class));
+            return TableResult.build(UCopy.convertPage(pagePo, AccountBudgetDto.class));
         }
         return TableResult.build();
     }

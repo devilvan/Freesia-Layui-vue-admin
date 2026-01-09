@@ -40,7 +40,7 @@ public class SysConfigController extends BaseController {
     @GetMapping(value = "findPageSysConfig")
     public TableResult<SysConfigDto> findPageSysConfig(SysConfigVo sysConfigVo, PageQuery pageQuery) {
         SysConfigDto sysConfigDto = UCopy.copyVo2Dto(sysConfigVo, SysConfigDto.class);
-        return sysConfigService.findPageSysConfig(sysConfigDto, pageQuery);
+        return sysConfigService.findPage(sysConfigDto, pageQuery);
     }
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_INDEX)
@@ -64,7 +64,7 @@ public class SysConfigController extends BaseController {
     @PostMapping(value = "saveConfig")
     public R<Void> saveConfig(@RequestBody SysConfigVo sysConfigVo) {
         SysConfigDto sysConfigDto = UCopy.copyVo2Dto(sysConfigVo, SysConfigDto.class);
-        sysConfigService.saveConfig(sysConfigDto);
+        sysConfigService.saveUpdate(sysConfigDto);
         return R.ok();
     }
 
@@ -73,7 +73,9 @@ public class SysConfigController extends BaseController {
     @Operation(summary = "删除系统配置信息")
     @DeleteMapping(value = "deleteConfig")
     public R<Void> deleteConfig(@RequestParam String configKey) {
-        SysConfigDto sysConfigDto = sysConfigService.findSysConfigByConfigKey(configKey);
+        SysConfigDto sysConfigDto = new SysConfigDto();
+        sysConfigDto.setConfigKey(configKey);
+        sysConfigDto = sysConfigService.findOne(sysConfigDto);
         if (ObjectUtil.isNotNull(sysConfigDto)) {
             if (sysConfigDto.getBuildIn()) {
                 R<Void> r = R.failed();
