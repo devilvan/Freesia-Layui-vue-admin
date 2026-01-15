@@ -531,7 +531,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         }
     }
 
-    private static EchartStackedHorizontalBarOptionEntity buildWeekEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {
+    private EchartStackedHorizontalBarOptionEntity buildWeekEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {
         EchartStackedHorizontalBarOptionEntity entity = new EchartStackedHorizontalBarOptionEntity();
         Function<FindRankByCostTypeEntity, String> groupingWeekStartEnd = item -> item.getWeekStart() + "\n" + item.getWeekEnd();
         Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList = findRankByCostTypeEntityList.stream().collect(Collectors.groupingBy(groupingWeekStartEnd));
@@ -545,7 +545,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         return entity;
     }
 
-    private static EchartStackedHorizontalBarOptionEntity buildMonthEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {
+    private EchartStackedHorizontalBarOptionEntity buildMonthEchartStackedHorizontalBarOptionEntity(List<FindRankByCostTypeEntity> findRankByCostTypeEntityList) {
         EchartStackedHorizontalBarOptionEntity entity = new EchartStackedHorizontalBarOptionEntity();
         Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList = findRankByCostTypeEntityList.stream().collect(Collectors.groupingBy(FindRankByCostTypeEntity::getDateSign));
         List<EchartStackedHorizontalBarOptionEntity.Series> sortedList = buildSortedSeries(groupingByDateSignMapList);
@@ -558,7 +558,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         return entity;
     }
 
-    private static List<EchartStackedHorizontalBarOptionEntity.Series> buildSortedSeries(Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList) {
+    private List<EchartStackedHorizontalBarOptionEntity.Series> buildSortedSeries(Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList) {
         Set<Map.Entry<String, List<FindRankByCostTypeEntity>>> entrySet = groupingByDateSignMapList.entrySet();
         Map<String, List<BigDecimal>> resultMap = new HashMap<>(16);
         for (Map.Entry<String, List<FindRankByCostTypeEntity>> entry : entrySet) {
