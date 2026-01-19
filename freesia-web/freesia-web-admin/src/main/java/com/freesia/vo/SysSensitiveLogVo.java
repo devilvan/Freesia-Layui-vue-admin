@@ -19,7 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "敏感操作信息表 值对象")
-public class SysSensitiveLogVo {
+public class SysSensitiveLogVo extends BaseVo {
     @Schema(description = "操作人姓名")
     @JsonAlias(value = {"operatorName"})
     private String operatorName;

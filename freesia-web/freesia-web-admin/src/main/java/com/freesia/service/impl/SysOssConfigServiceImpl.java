@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysOssConfigConverter;
 import com.freesia.dto.SysOssConfigDto;
 import com.freesia.json.util.UJSON;
 import com.freesia.log.annotation.LogRecord;
@@ -13,8 +15,8 @@ import com.freesia.po.SysOssConfigPo;
 import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysOssConfigRepository;
 import com.freesia.service.SysOssConfigService;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.vo.SysOssConfigVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,25 +31,14 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class SysOssConfigServiceImpl extends BaseServiceImpl<SysOssConfigMapper, SysOssConfigPo, SysOssConfigDto> implements SysOssConfigService {
+public class SysOssConfigServiceImpl extends BaseServiceImpl<SysOssConfigMapper, SysOssConfigVo, SysOssConfigDto, SysOssConfigPo> implements SysOssConfigService {
     private final SysOssConfigRepository sysOssConfigRepository;
     private final SysOssConfigMapper sysOssConfigMapper;
+    private final SysOssConfigConverter sysOssConfigConverter;
 
     @Override
-    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS_CONFIG, message = "oss.config.save")
-    public SysOssConfigDto saveUpdate(SysOssConfigDto sysOssConfigDto) {
-        SysOssConfigPo sysOssConfigPo = new SysOssConfigPo();
-        UCopy.fullCopy(sysOssConfigDto, sysOssConfigPo);
-        SysOssConfigDto resultDto = new SysOssConfigDto();
-        UCopy.fullCopy(sysOssConfigRepository.saveAndFlush(sysOssConfigPo), resultDto);
-        return resultDto;
-    }
-
-    @Override
-    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS_CONFIG, message = "oss.config.save")
-    public List<SysOssConfigDto> saveUpdateBatch(List<SysOssConfigDto> list) {
-        List<SysOssConfigPo> sysOssConfigPoList = UCopy.fullCopyList(list, SysOssConfigPo.class);
-        return UCopy.fullCopyList(sysOssConfigRepository.saveAllAndFlush(sysOssConfigPoList), SysOssConfigDto.class);
+    protected MapStructConverter<SysOssConfigVo, SysOssConfigDto, SysOssConfigPo> getMapStructConverter() {
+        return sysOssConfigConverter;
     }
 
     @Override
@@ -70,6 +61,18 @@ public class SysOssConfigServiceImpl extends BaseServiceImpl<SysOssConfigMapper,
         return new LambdaQueryWrapper<SysOssConfigPo>()
                 .eq(SysOssConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(dto.getId()), SysOssConfigPo::getId, dto.getId());
+    }
+
+    @Override
+    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS_CONFIG, message = "oss.config.save")
+    public SysOssConfigDto saveUpdate(SysOssConfigDto sysOssConfigDto) {
+        return super.saveUpdate(sysOssConfigDto);
+    }
+
+    @Override
+    @LogRecord(module = OssModule.OSS_MANAGEMENT, subModule = OssModule.SubModule.SAVE_OSS_CONFIG, message = "oss.config.save")
+    public List<SysOssConfigDto> saveUpdateBatch(List<SysOssConfigDto> list) {
+        return super.saveUpdateBatch(list);
     }
 
     @Override

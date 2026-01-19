@@ -2,13 +2,16 @@ package com.freesia.account.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.freesia.account.converter.AccountCostUserAllocConverter;
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindListSysUserByIdDto;
 import com.freesia.account.mapper.AccountCostUserAllocMapper;
 import com.freesia.account.po.AccountCostUserAllocPo;
 import com.freesia.account.repository.AccountCostUserAllocRepository;
 import com.freesia.account.service.AccountCostUserAllocService;
+import com.freesia.account.vo.AccountCostUserAllocVo;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
 import com.freesia.entity.FindPageSysUserListEntity;
 import com.freesia.service.SysUserService;
 import com.freesia.service.impl.BaseServiceImpl;
@@ -28,11 +31,17 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class AccountCostUserAllocServiceImpl extends BaseServiceImpl<AccountCostUserAllocMapper, AccountCostUserAllocPo, AccountCostUserAllocDto> implements AccountCostUserAllocService {
+public class AccountCostUserAllocServiceImpl extends BaseServiceImpl<AccountCostUserAllocMapper, AccountCostUserAllocVo, AccountCostUserAllocDto, AccountCostUserAllocPo> implements AccountCostUserAllocService {
     private final AccountCostUserAllocRepository accountCostUserAllocRepository;
     private final AccountCostUserAllocMapper accountCostUserAllocMapper;
     private final SysUserService sysUserService;
+    private final AccountCostUserAllocConverter accountCostUserAllocConverter;
 
+
+    @Override
+    protected MapStructConverter<AccountCostUserAllocVo, AccountCostUserAllocDto, AccountCostUserAllocPo> getMapStructConverter() {
+        return accountCostUserAllocConverter;
+    }
 
     @Override
     protected JpaRepository<AccountCostUserAllocPo, Long> getRepository() {

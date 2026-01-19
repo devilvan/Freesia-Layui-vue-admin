@@ -1,10 +1,10 @@
 package com.freesia.controller;
 
+import com.freesia.converter.SysSensitiveLogConverter;
 import com.freesia.dto.SysSensitiveLogDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysSensitiveLogService;
-import com.freesia.util.UCopy;
 import com.freesia.vo.SysSensitiveLogVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "SysSensitiveLogController", description = "敏感操作信息表 控制器")
 public class SysSensitiveLogController extends BaseController {
     private final SysSensitiveLogService sysSensitiveLogService;
+    private final SysSensitiveLogConverter sysSensitiveLogConverter;
 
     /**
      * 查询登录日志分页数据
@@ -35,8 +36,7 @@ public class SysSensitiveLogController extends BaseController {
     @Operation(summary = "查询登录日志分页数据")
     @GetMapping(value = "findPageLoginLog")
     public TableResult<SysSensitiveLogDto> findPageLoginLog(SysSensitiveLogVo sysSensitiveLogVo, PageQuery pageQuery) {
-        SysSensitiveLogDto sysSensitiveLogDto = new SysSensitiveLogDto();
-        UCopy.fullCopy(sysSensitiveLogVo, sysSensitiveLogDto);
+        SysSensitiveLogDto sysSensitiveLogDto = sysSensitiveLogConverter.convertVo2Dto(sysSensitiveLogVo);
         return sysSensitiveLogService.findPageLoginLog(sysSensitiveLogDto, pageQuery);
     }
 
@@ -50,8 +50,7 @@ public class SysSensitiveLogController extends BaseController {
     @Operation(summary = "查询操作日志分页数据")
     @GetMapping(value = "findPageOptionLog")
     public TableResult<SysSensitiveLogDto> findPageOptionLog(SysSensitiveLogVo sysSensitiveLogVo, PageQuery pageQuery) {
-        SysSensitiveLogDto sysSensitiveLogDto = new SysSensitiveLogDto();
-        UCopy.fullCopy(sysSensitiveLogVo, sysSensitiveLogDto);
+        SysSensitiveLogDto sysSensitiveLogDto = sysSensitiveLogConverter.convertVo2Dto(sysSensitiveLogVo);
         return sysSensitiveLogService.findPageOptionLog(sysSensitiveLogDto, pageQuery);
     }
 }

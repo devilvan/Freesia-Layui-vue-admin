@@ -1,6 +1,7 @@
-package com.freesia.convert;
+package com.freesia.convert.factory;
 
-import com.freesia.convert.impl.ReflectionConverter;
+import com.freesia.convert.ReflectConverter;
+import com.freesia.convert.impl.ReflectionReflectConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,12 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @SuppressWarnings(value = "all")
-public class ConverterFactory {
-    private final Map<ClassPair, Converter> converters = new ConcurrentHashMap<>();
+public class ReflectConverterFactory {
+    private final Map<ClassPair, ReflectConverter> converters = new ConcurrentHashMap<>();
 
-    public <SOURCE, TARGET> Converter<SOURCE, TARGET> getConverter(Class<SOURCE> sourceClass, Class<TARGET> targetClass) {
+    public <SOURCE, TARGET> ReflectConverter<SOURCE, TARGET> getConverter(Class<SOURCE> sourceClass, Class<TARGET> targetClass) {
         return converters.computeIfAbsent(new ClassPair(sourceClass, targetClass),
-                k -> new ReflectionConverter<>(sourceClass, targetClass));
+                k -> new ReflectionReflectConverter<>(sourceClass, targetClass));
     }
 
     @Data

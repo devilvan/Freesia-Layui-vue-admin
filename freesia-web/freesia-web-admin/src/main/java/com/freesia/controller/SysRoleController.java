@@ -2,19 +2,19 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuPermission;
+import com.freesia.converter.SysRoleConverter;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
 import com.freesia.entity.FindDeptRolesByRoleIdEntity;
 import com.freesia.entity.FindPageSysRoleListEntity;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.service.SysRoleService;
-import com.freesia.util.UCopy;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.service.SysRoleService;
 import com.freesia.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,12 +36,13 @@ import java.util.Set;
 @Tag(name = "SysRoleController", description = "角色信息表 控制器")
 public class SysRoleController extends BaseController {
     private final SysRoleService sysRoleService;
+    private final SysRoleConverter sysRoleConverter;
 
     @Operation(summary = "获取角色列表分页")
     @GetMapping("findPageSysRoleList")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_ROLE_INDEX})
     public TableResult<FindPageSysRoleListEntity> findPageSysRoleList(SysRoleVo sysRoleVo, PageQuery pageQuery) {
-        SysRoleDto sysRoleDto = UCopy.copyVo2Dto(sysRoleVo, SysRoleDto.class);
+        SysRoleDto sysRoleDto = sysRoleConverter.convertVo2Dto(sysRoleVo);
         return sysRoleService.findPageSysRoleList(sysRoleDto, pageQuery);
     }
 
@@ -76,16 +77,16 @@ public class SysRoleController extends BaseController {
     @Operation(summary = "查询用户信息和已分配该角色的用户列表")
     @GetMapping(value = "findPageUserByRoleId")
     public TableResult<SysUserDto> findPageUserByRoleId(SysRoleVo sysRoleVo, PageQuery pageQuery) {
-        SysRoleDto sysRoleDto = UCopy.copyVo2Dto(sysRoleVo, SysRoleDto.class);
-        sysRoleDto.setTenantId(USecurity.getTenantId());
+        sysRoleVo.setTenantId(USecurity.getTenantId());
+        SysRoleDto sysRoleDto = sysRoleConverter.convertVo2Dto(sysRoleVo);
         return sysRoleService.findPageUserByRoleId(sysRoleDto, pageQuery);
     }
 
     @Operation(summary = "查询未分配该角色的用户列表")
     @GetMapping(value = "findPageAllowAssignUserByRoleId")
     public TableResult<SysUserDto> findPageAllowAssignUserByRoleId(SysRoleVo sysRoleVo, PageQuery pageQuery) {
-        SysRoleDto sysRoleDto = UCopy.copyVo2Dto(sysRoleVo, SysRoleDto.class);
-        sysRoleDto.setTenantId(USecurity.getTenantId());
+        sysRoleVo.setTenantId(USecurity.getTenantId());
+        SysRoleDto sysRoleDto = sysRoleConverter.convertVo2Dto(sysRoleVo);
         return sysRoleService.findPageAllowAssignUserByRoleId(sysRoleDto, pageQuery);
     }
 
@@ -139,8 +140,7 @@ public class SysRoleController extends BaseController {
     public R<SysRoleDto> saveRole(@RequestBody SaveRoleVo saveRoleVo) {
         String status = saveRoleVo.getStatus();
         saveRoleVo.setStatus(FlagConstant.TRUE.equals(status) ? FlagConstant.ENABLED : FlagConstant.DISABLED);
-        SysRoleDto sysRoleDto = UCopy.copyVo2Dto(saveRoleVo, SysRoleDto.class);
-        sysRoleDto = sysRoleService.saveUpdate(sysRoleDto);
+        SysRoleDto sysRoleDto = sysRoleService.saveUpdate(sysRoleConverter.convertSaveVo2Dto(saveRoleVo));
         return R.ok(sysRoleDto);
     }
 
@@ -149,7 +149,7 @@ public class SysRoleController extends BaseController {
     @PostMapping("deleteRole")
     @SaCheckPermission(value = MenuPermission.SYSTEM_ROLE_DELETE)
     public R<Void> deleteRole(@RequestBody SysRoleVo sysRoleVo) {
-        SysRoleDto sysRoleDto = UCopy.copyVo2Dto(sysRoleVo, SysRoleDto.class);
+        SysRoleDto sysRoleDto = sysRoleConverter.convertVo2Dto(sysRoleVo);
         sysRoleService.deleteRole(sysRoleDto);
         return R.ok();
     }

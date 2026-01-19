@@ -1,7 +1,7 @@
 package com.freesia.convert.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.freesia.convert.Converter;
+import com.freesia.convert.ReflectConverter;
 import com.freesia.exception.ServiceException;
 import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
@@ -16,7 +16,7 @@ import java.util.List;
  * @date 2026-01-05
  */
 @AllArgsConstructor
-public class ReflectionConverter<SOURCE, TARGET> implements Converter<SOURCE, TARGET> {
+public class ReflectionReflectConverter<SOURCE, TARGET> implements ReflectConverter<SOURCE, TARGET> {
     private final Class<SOURCE> sourceClass;
     private final Class<TARGET> targetClass;
 

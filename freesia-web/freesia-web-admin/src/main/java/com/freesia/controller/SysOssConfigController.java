@@ -1,11 +1,11 @@
 package com.freesia.controller;
 
-import com.freesia.idempotent.annotation.Idempotent;
+import com.freesia.converter.SysOssConfigConverter;
 import com.freesia.dto.SysOssConfigDto;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysOssConfigService;
-import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import com.freesia.vo.SysOssConfigVo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +26,7 @@ import java.util.List;
 @Tag(name = "SysOssConfigController", description = "OSS配置信息表 控制器")
 public class SysOssConfigController extends BaseController {
     private final SysOssConfigService sysOssConfigService;
+    private final SysOssConfigConverter sysOssConfigConverter;
 
     /**
      * 保存OSS配置信息表信息
@@ -37,7 +38,7 @@ public class SysOssConfigController extends BaseController {
     @Operation(summary = "保存OSS配置信息表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysOssConfigVo sysOssConfigVo) {
-        SysOssConfigDto sysOssConfigDto = UCopy.copyVo2Dto(sysOssConfigVo, SysOssConfigDto.class);
+        SysOssConfigDto sysOssConfigDto = sysOssConfigConverter.convertVo2Dto(sysOssConfigVo);
         sysOssConfigService.saveUpdate(sysOssConfigDto);
         return R.ok();
     }
@@ -50,10 +51,10 @@ public class SysOssConfigController extends BaseController {
      * @return 形式返回
      */
     @Idempotent
-    @Operation(summary = "保存OSS配置信息表信息")
+    @Operation(summary = "批量保存OSS配置信息表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<SysOssConfigVo> sysOssConfigVoList) {
-        List<SysOssConfigDto> sysOssConfigDtoList = UCopy.fullCopyList(sysOssConfigVoList, SysOssConfigDto.class);
+        List<SysOssConfigDto> sysOssConfigDtoList = sysOssConfigConverter.convertBatchVo2Dto(sysOssConfigVoList);
         sysOssConfigService.saveUpdateBatch(sysOssConfigDtoList);
         return R.ok();
     }
@@ -67,8 +68,8 @@ public class SysOssConfigController extends BaseController {
      */
     @Operation(summary = "查询OSS配置信息表分页信息")
     @GetMapping(value = "findPageSysOssConfig")
-    public TableResult<SysOssConfigDto> findPageSysOssConfig(SysOssConfigVo sysOssConfigVo, PageQuery pageQuery) {
-        SysOssConfigDto sysOssConfigDto = UCopy.copyVo2Dto(sysOssConfigVo, SysOssConfigDto.class);
+    public TableResult<SysOssConfigDto> findPageSysOssConfig(@RequestBody SysOssConfigVo sysOssConfigVo, PageQuery pageQuery) {
+        SysOssConfigDto sysOssConfigDto = sysOssConfigConverter.convertVo2Dto(sysOssConfigVo);
         return sysOssConfigService.findPage(sysOssConfigDto, pageQuery);
     }
 
@@ -80,8 +81,8 @@ public class SysOssConfigController extends BaseController {
      */
     @Operation(summary = "条件查询OSS配置信息表")
     @GetMapping(value = "findSysOssConfig")
-    public R<SysOssConfigDto> findSysOssConfig(SysOssConfigVo sysOssConfigVo) {
-        SysOssConfigDto sysOssConfigDto = UCopy.copyVo2Dto(sysOssConfigVo, SysOssConfigDto.class);
+    public R<SysOssConfigDto> findSysOssConfig(@RequestBody SysOssConfigVo sysOssConfigVo) {
+        SysOssConfigDto sysOssConfigDto = sysOssConfigConverter.convertVo2Dto(sysOssConfigVo);
         SysOssConfigDto tableResult = sysOssConfigService.findOne(sysOssConfigDto);
         return R.ok(tableResult);
     }

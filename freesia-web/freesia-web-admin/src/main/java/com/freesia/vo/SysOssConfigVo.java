@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
  * @author Evad.Wu
  * @Description OSS配置信息表 值对象
@@ -17,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "OSS配置信息表 值对象")
-public class SysOssConfigVo {
+public class SysOssConfigVo extends BaseVo {
     @Schema(description = "配置key")
     @JsonAlias(value = {"configKey"})
     private String configKey;

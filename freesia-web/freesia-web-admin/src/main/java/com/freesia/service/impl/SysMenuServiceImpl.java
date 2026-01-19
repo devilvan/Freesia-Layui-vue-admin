@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysMenuConverter;
 import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.MetaDto;
 import com.freesia.dto.RouterDto;
@@ -29,6 +31,7 @@ import com.freesia.repository.SysRoleMenuRepository;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysMenuService;
 import com.freesia.util.*;
+import com.freesia.vo.SysMenuVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +51,7 @@ import java.util.stream.Collectors;
 @Valid
 @Service
 @RequiredArgsConstructor
-public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuPo, SysMenuDto> implements SysMenuService {
+public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuVo, SysMenuDto, SysMenuPo> implements SysMenuService {
     private static final String PREFIX = "/";
     private static final String NO_REDIRECT = "noRedirect";
     private static final String COMPONENT_REGEX = "([A-Za-z0-9$_])+(/[A-Za-z0-9$_]*)$";
@@ -58,7 +61,13 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuPo
     private final SysMenuRepository sysMenuRepository;
     private final SysRoleMapper sysRoleMapper;
     private final SysRoleMenuRepository sysRoleMenuRepository;
+    private final SysMenuConverter sysMenuConverter;
 
+
+    @Override
+    protected MapStructConverter<SysMenuVo, SysMenuDto, SysMenuPo> getMapStructConverter() {
+        return null;
+    }
 
     @Override
     protected JpaRepository<SysMenuPo, Long> getRepository() {
@@ -102,7 +111,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuPo
             // 非管理员则查询可用的菜单权限
             sysMenuPoList = sysMenuMapper.findDirAndMenuByUserId(userId);
         }
-        List<SysMenuDto> sysMenuDtoList = UCopy.fullCopyList(sysMenuPoList, SysMenuDto.class);
+        List<SysMenuDto> sysMenuDtoList = sysMenuConverter.convertBatchPo2Dto(sysMenuPoList);
         return UTree.buildTree(sysMenuDtoList);
     }
 
@@ -240,7 +249,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuPo
                 .orderByAsc("M.ORDER_NUM");
         List<SysMenuPo> sysMenuPoList = USecurity.isAdmin(userId) ? sysMenuMapper.findAllMenuTree(wrapper) :
                 sysMenuMapper.findAllMenuTree(wrapper.eq(ObjectUtil.isNotNull(userId), "SUR.USER_ID", userId));
-        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyList(sysMenuPoList, FindAllMenuTreeEntity.class);
+        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuConverter.convertBatchPo2FindAllMenuTreeEntity(sysMenuPoList);
         return UTree.buildTree(findAllMenuTreeEntityList);
     }
 
@@ -254,7 +263,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuPo
                 .orderByAsc("M.PARENT_ID")
                 .orderByAsc("M.ORDER_NUM");
         List<SysMenuPo> sysMenuPoList = sysMenuMapper.findAllMenuTree(wrapper);
-        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyList(sysMenuPoList, FindAllMenuTreeEntity.class);
+        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuConverter.convertBatchPo2FindAllMenuTreeEntity(sysMenuPoList);
         return UTree.buildTree(findAllMenuTreeEntityList);
     }
 
@@ -356,7 +365,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuPo
     @Override
     public List<SysMenuDto> findAllSysButton(SysMenuDto sysMenuDto) {
         List<SysMenuPo> sysMenuPoList = sysMenuMapper.findAllSysButton(sysMenuDto, USecurity.isAdmin());
-        return UCopy.fullCopyList(sysMenuPoList, SysMenuDto.class);
+        return sysMenuConverter.convertBatchPo2Dto(sysMenuPoList);
     }
 
     @Override
@@ -522,7 +531,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuPo
         if (UEmpty.isEmpty(componentType) && UString.isHttp(sysMenuDto.getPath())) {
             throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.add.link.failed");
         }
-        SysMenuPo sysMenuPo = UCopy.copyDto2Po(sysMenuDto, SysMenuPo.class);
+        SysMenuPo sysMenuPo = sysMenuConverter.convertDto2Po(sysMenuDto);
         boolean flag = sysMenuMapper.findMenuPathExist(sysMenuPo);
         if (flag) {
             throw new ServiceException(MenuModule.MENU_MANAGEMENT, "menu.path.existed", new Object[]{sysMenuPo.getPath()});

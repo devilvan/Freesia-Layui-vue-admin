@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.MenuPermission;
 import com.freesia.constant.MenuType;
+import com.freesia.converter.SysMenuConverter;
 import com.freesia.dto.AssignButtonDto;
 import com.freesia.dto.SysMenuDto;
 import com.freesia.entity.FindAllMenuTreeEntity;
@@ -17,7 +18,6 @@ import com.freesia.json.util.UJSON;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysMenuService;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.vo.AssignButtonVo;
 import com.freesia.vo.R;
@@ -46,6 +46,8 @@ import java.util.Optional;
 public class SysMenuController extends BaseController {
     @Resource(name = "sysMenuServiceImpl")
     private SysMenuService sysMenuService;
+    @Resource(name = "sysMenuConverter")
+    private SysMenuConverter sysMenuConverter;
 
     /**
      * 批量保存菜单信息
@@ -63,10 +65,10 @@ public class SysMenuController extends BaseController {
     })
     @Operation(summary = "批量保存菜单信息")
     @PostMapping(value = "saveMenuList")
-    public R<List<SysMenuVo>> saveMenuList(@RequestBody String request) {
+    public R<List<SysMenuDto>> saveMenuList(@RequestBody String request) {
         List<SysMenuVo> sysMenuVoList = UJSON.parseArray(request, SysMenuVo.class);
-        List<SysMenuDto> sysMenuDtoList = sysMenuService.saveUpdateBatch(UCopy.fullCopyList(sysMenuVoList, SysMenuDto.class));
-        return R.ok(UCopy.fullCopyList(sysMenuDtoList, SysMenuVo.class));
+        List<SysMenuDto> sysMenuDtoList = sysMenuService.saveUpdateBatch(sysMenuConverter.convertBatchVo2Dto(sysMenuVoList));
+        return R.ok(sysMenuDtoList);
     }
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_MENU_INDEX)
@@ -99,7 +101,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "根据用户ID查询菜单列表")
     @GetMapping(value = "findMenuListByUserId")
     public R<List<FindMenuListByUserIdEntity>> findMenuListByUserId(SysMenuVo sysMenuVo) {
-        SysMenuDto sysMenuDto = UCopy.copyVo2Dto(sysMenuVo, SysMenuDto.class);
+        SysMenuDto sysMenuDto = sysMenuConverter.convertVo2Dto(sysMenuVo);
         LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
         List<FindMenuListByUserIdEntity> menuList = sysMenuService.findMenuListByUserId(sysMenuDto, loginUser.getUserId());
         return R.ok(menuList);
@@ -125,7 +127,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "保存目录-菜单-按钮、链接")
     @PostMapping(value = "saveMenu")
     public R<SysMenuDto> saveMenu(@RequestBody @Valid SysMenuVo sysMenuVo) {
-        SysMenuDto sysMenuDto = UCopy.copyVo2Dto(sysMenuVo, SysMenuDto.class);
+        SysMenuDto sysMenuDto = sysMenuConverter.convertVo2Dto(sysMenuVo);
         String path = sysMenuDto.getPath();
         if (!MenuType.BUTTON.getType().equals(sysMenuDto.getMenuType())) {
             sysMenuDto.setPath(path.trim());
@@ -151,7 +153,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "查询菜单下所有的按钮")
     @GetMapping(value = "findAllSysButton")
     public R<List<SysMenuDto>> findAllSysButton(SysMenuVo sysMenuVo, @Validated @NotEmpty String roleId) {
-        SysMenuDto sysMenuDto = UCopy.copyVo2Dto(sysMenuVo, SysMenuDto.class);
+        SysMenuDto sysMenuDto = sysMenuConverter.convertVo2Dto(sysMenuVo);
         sysMenuDto.setRoleId(Long.valueOf(roleId));
         List<SysMenuDto> sysMenuDtoList = sysMenuService.findAllSysButton(sysMenuDto);
         return R.ok(sysMenuDtoList);
@@ -160,7 +162,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "根据角色ID查询菜单下已分配的按钮ID")
     @GetMapping(value = "findAssignedSysButtonByRoleId")
     public R<List<Long>> findAssignedSysButtonByRoleId(SysMenuVo sysMenuVo, @Validated @NotEmpty String roleId) {
-        SysMenuDto sysMenuDto = UCopy.copyVo2Dto(sysMenuVo, SysMenuDto.class);
+        SysMenuDto sysMenuDto = sysMenuConverter.convertVo2Dto(sysMenuVo);
         List<Long> buttonIdList = sysMenuService.findAssignedSysButtonByRoleId(sysMenuDto, Long.valueOf(roleId));
         return R.ok(buttonIdList);
     }

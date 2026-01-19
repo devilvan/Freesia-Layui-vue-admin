@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.freesia.convert.ConverterFactory;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.convert.factory.ReflectConverterFactory;
 import com.freesia.dto.BaseDto;
 import com.freesia.po.BasePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.vo.BaseVo;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
@@ -24,9 +26,9 @@ import java.util.List;
  */
 @Component
 @SuppressWarnings("unused")
-public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends BasePo, DTO extends BaseDto> extends ServiceImpl<MAPPER, PO> {
+public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, VO extends BaseVo, DTO extends BaseDto, PO extends BasePo> extends ServiceImpl<MAPPER, PO> {
     @Resource
-    private ConverterFactory converterFactory;
+    private ReflectConverterFactory reflectConverterFactory;
 
     /**
      * 单个保存（模板方法）
@@ -35,12 +37,12 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      * @return 保存后的DTO
      */
     public DTO saveUpdate(DTO dto) {
-        PO po = converterFactory.getConverter(getDtoClass(), getPoClass()).convert(dto);
+        PO po = reflectConverterFactory.getConverter(getDtoClass(), getPoClass()).convert(dto);
         // 钩子方法，子类可以重写以添加额外逻辑
         beforeSave(po, dto);
         PO saved = getRepository().saveAndFlush(po);
         afterSave(saved, dto);
-        return converterFactory.getConverter(getPoClass(), getDtoClass()).convert(saved);
+        return reflectConverterFactory.getConverter(getPoClass(), getDtoClass()).convert(saved);
     }
 
     /**
@@ -50,8 +52,8 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      * @return 保存后的DTO集合
      */
     public List<DTO> saveUpdateBatch(List<DTO> list) {
-        List<PO> commonTodoPoList = converterFactory.getConverter(getDtoClass(), getPoClass()).convertBatch(list);
-        return converterFactory.getConverter(getPoClass(), getDtoClass()).convertBatch(getRepository().saveAllAndFlush(commonTodoPoList));
+        List<PO> commonTodoPoList = reflectConverterFactory.getConverter(getDtoClass(), getPoClass()).convertBatch(list);
+        return reflectConverterFactory.getConverter(getPoClass(), getDtoClass()).convertBatch(getRepository().saveAllAndFlush(commonTodoPoList));
     }
 
 
@@ -87,7 +89,7 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
     public TableResult<DTO> findPage(DTO dto, PageQuery pageQuery, Wrapper<PO> wrapper) {
         if (wrapper != null) {
             Page<PO> page = page(pageQuery.build(), wrapper);
-            return TableResult.build(converterFactory.getConverter(getPoClass(), getDtoClass()).convertPage(page));
+            return TableResult.build(reflectConverterFactory.getConverter(getPoClass(), getDtoClass()).convertPage(page));
         }
         return TableResult.build();
     }
@@ -111,7 +113,7 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      */
     public DTO findOne(DTO dto, Wrapper<PO> wrapper) {
         if (wrapper != null) {
-            return converterFactory.getConverter(getPoClass(), getDtoClass()).convert(getOne(wrapper));
+            return reflectConverterFactory.getConverter(getPoClass(), getDtoClass()).convert(getOne(wrapper));
         }
         return null;
     }
@@ -135,10 +137,17 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      */
     public List<DTO> findList(DTO dto, Wrapper<PO> wrapper) {
         if (wrapper != null) {
-            return converterFactory.getConverter(getPoClass(), getDtoClass()).convertBatch(list(wrapper));
+            return reflectConverterFactory.getConverter(getPoClass(), getDtoClass()).convertBatch(list(wrapper));
         }
         return null;
     }
+
+    /**
+     * 获取MapStructConverter实例
+     *
+     * @return MapStructConverter实例
+     */
+    protected abstract MapStructConverter<VO, DTO, PO> getMapStructConverter();
 
     /**
      * 获取持久层实例
@@ -188,7 +197,7 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      * @return PO
      */
     protected PO convertDto2Po(DTO dto) {
-        return converterFactory.getConverter(getDtoClass(), getPoClass()).convert(dto);
+        return reflectConverterFactory.getConverter(getDtoClass(), getPoClass()).convert(dto);
     }
 
     /**
@@ -198,6 +207,6 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, PO extends 
      * @return DTO
      */
     protected DTO convertPo2Dto(PO po) {
-        return converterFactory.getConverter(getPoClass(), getDtoClass()).convert(po);
+        return reflectConverterFactory.getConverter(getPoClass(), getDtoClass()).convert(po);
     }
 }

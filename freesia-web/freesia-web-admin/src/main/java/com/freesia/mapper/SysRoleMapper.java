@@ -58,7 +58,7 @@ public interface SysRoleMapper extends BaseMapper<SysRolePo> {
      * @param pageQuery 分页信息
      * @return 分页数据
      */
-    Page<SysRolePo> findPageUserByRoleId(@Param(Constants.WRAPPER) Wrapper<SysRolePo> wrapper, @Param("page") Page<SysRolePo> pageQuery);
+    Page<SysUserPo> findPageUserByRoleId(@Param(Constants.WRAPPER) Wrapper<SysRolePo> wrapper, @Param("page") Page<SysRolePo> pageQuery);
 
     /**
      * 查询未分配该角色的用户列表

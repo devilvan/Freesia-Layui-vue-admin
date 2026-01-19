@@ -16,4 +16,6 @@ public final class AuditConstant {
     public static final String MODIFY_TIME = "modifyTime";
     public static final String LOGIC_DEL = "logicDel";
     public static final String REC_VER = "recVer";
+    public static final String BUILD_IN = "buildIn";
+    public static final String TENANT_ID = "tenantId";
 }

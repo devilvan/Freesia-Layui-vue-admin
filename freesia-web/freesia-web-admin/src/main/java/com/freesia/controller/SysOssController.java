@@ -2,12 +2,12 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.constant.MenuPermission;
+import com.freesia.converter.SysOssConverter;
 import com.freesia.dto.SysOssDto;
 import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysOssService;
-import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import com.freesia.vo.SysOssVo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +32,7 @@ import java.util.List;
 @Tag(name = "SysOssController", description = "OSS对象存储表 控制器")
 public class SysOssController extends BaseController {
     private final SysOssService sysOssService;
+    private final SysOssConverter sysOssConverter;
 
     /**
      * 保存OSS对象存储表信息
@@ -43,7 +44,7 @@ public class SysOssController extends BaseController {
     @Operation(summary = "保存OSS对象存储表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysOssVo sysOssVo) {
-        SysOssDto sysOssDto = UCopy.copyVo2Dto(sysOssVo, SysOssDto.class);
+        SysOssDto sysOssDto = sysOssConverter.convertVo2Dto(sysOssVo);
         sysOssService.saveUpdate(sysOssDto);
         return R.ok();
     }
@@ -59,7 +60,7 @@ public class SysOssController extends BaseController {
     @Operation(summary = "保存OSS对象存储表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<SysOssVo> sysOssVoList) {
-        List<SysOssDto> sysOssDtoList = UCopy.fullCopyList(sysOssVoList, SysOssDto.class);
+        List<SysOssDto> sysOssDtoList = sysOssConverter.convertBatchVo2Dto(sysOssVoList);
         sysOssService.saveUpdateBatch(sysOssDtoList);
         return R.ok();
     }
@@ -75,7 +76,7 @@ public class SysOssController extends BaseController {
     @Operation(summary = "查询OSS对象存储表分页信息")
     @GetMapping(value = "findPageSysOss")
     public TableResult<SysOssDto> findPageSysOss(SysOssVo sysOssVo, PageQuery pageQuery) {
-        SysOssDto sysOssDto = UCopy.copyVo2Dto(sysOssVo, SysOssDto.class);
+        SysOssDto sysOssDto = sysOssConverter.convertVo2Dto(sysOssVo);
         return sysOssService.findPage(sysOssDto, pageQuery);
     }
 
@@ -89,7 +90,7 @@ public class SysOssController extends BaseController {
     @Operation(summary = "条件查询OSS对象存储表")
     @GetMapping(value = "findSysOss")
     public R<SysOssDto> findSysOss(SysOssVo sysOssVo) {
-        SysOssDto sysOssDto = UCopy.copyVo2Dto(sysOssVo, SysOssDto.class);
+        SysOssDto sysOssDto = sysOssConverter.convertVo2Dto(sysOssVo);
         SysOssDto tableResult = sysOssService.findOne(sysOssDto);
         return R.ok(tableResult);
     }

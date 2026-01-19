@@ -10,6 +10,9 @@ import com.freesia.constant.AdminConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.RoleModule;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysRoleConverter;
+import com.freesia.converter.SysUserConverter;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindAllRolesEntity;
@@ -26,6 +29,7 @@ import com.freesia.repository.*;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.*;
+import com.freesia.vo.SysRoleVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,7 +48,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRolePo, SysRoleDto> implements SysRoleService {
+public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo, SysRoleDto, SysRolePo> implements SysRoleService {
     private final TransactionTemplate transactionTemplate;
     private final SysRoleRepository sysRoleRepository;
     private final SysMenuRepository sysMenuRepository;
@@ -52,7 +56,13 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRolePo
     private final SysUserRoleRepository sysUserRoleRepository;
     private final SysRoleMenuRepository sysRoleMenuRepository;
     private final SysRoleDeptRepository sysRoleDeptRepository;
+    private final SysRoleConverter sysRoleConverter;
+    private final SysUserConverter sysUserConverter;
 
+    @Override
+    protected MapStructConverter<SysRoleVo, SysRoleDto, SysRolePo> getMapStructConverter() {
+        return sysRoleConverter;
+    }
 
     @Override
     protected JpaRepository<SysRolePo, Long> getRepository() {
@@ -135,7 +145,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRolePo
                 )
                 .eq(SysRolePo::getLogicDel, FlagConstant.DISABLED);
         List<SysRolePo> sysRolePoList = this.list(queryWrapper);
-        return UCopy.fullCopyList(sysRolePoList, FindAllRolesEntity.class);
+        return sysRoleConverter.convertBatchPo2FindAllRolesEntity(sysRolePoList);
     }
 
     @Override
@@ -159,15 +169,15 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRolePo
                 .eq("R.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("R.STATUS", FlagConstant.ENABLED)
                 .eq("U.LOGIC_DEL", FlagConstant.DISABLED);
-        Page<SysRolePo> pageUserByRoleId = sysRoleMapper.findPageUserByRoleId(queryWrapper, pageQuery.build());
-        return TableResult.build(UCopy.convertPage(pageUserByRoleId, SysUserDto.class));
+        Page<SysUserPo> sysUserPoPage = sysRoleMapper.findPageUserByRoleId(queryWrapper, pageQuery.build());
+        return TableResult.build(sysUserConverter.convertPagePo2Dto(sysUserPoPage));
     }
 
     @Override
     public TableResult<SysUserDto> findPageAllowAssignUserByRoleId(SysRoleDto sysRoleDto, PageQuery pageQuery) {
-        SysRolePo sysRolePo = UCopy.copyDto2Po(sysRoleDto, SysRolePo.class);
+        SysRolePo sysRolePo = sysRoleConverter.convertDto2Po(sysRoleDto);
         Page<SysUserPo> userPoPage = sysRoleMapper.findPageAllowAssignUserByRoleId(sysRolePo, pageQuery.build());
-        return TableResult.build(UCopy.convertPage(userPoPage, SysUserDto.class));
+        return TableResult.build(sysUserConverter.convertPagePo2Dto(userPoPage));
     }
 
     @Override
@@ -265,14 +275,14 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRolePo
         SysRolePo sysRolePo;
         if (UEmpty.isNull(roleId)) {
             // 新增
-            sysRolePo = UCopy.copyDto2Po(sysRoleDto, SysRolePo.class);
+            sysRolePo = sysRoleConverter.convertDto2Po(sysRoleDto);
         } else {
             // 修改
             sysRolePo = findSysRolePoById(roleId);
-            UCopy.halfCopy(sysRoleDto, sysRolePo);
+            sysRoleConverter.updateSysRolePo(sysRoleDto, sysRolePo);
         }
         SysRolePo save = sysRoleRepository.save(sysRolePo);
-        return UCopy.copyPo2Dto(save, SysRoleDto.class);
+        return sysRoleConverter.convertPo2Dto(save);
     }
 
     @Override

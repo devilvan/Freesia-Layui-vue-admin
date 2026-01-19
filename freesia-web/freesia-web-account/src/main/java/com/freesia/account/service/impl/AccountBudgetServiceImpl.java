@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.account.constant.BudgetType;
+import com.freesia.account.converter.AccountBudgetConverter;
 import com.freesia.account.dto.AccountBudgetDto;
 import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.entity.FindBudgetCapacityEntity;
@@ -12,13 +13,14 @@ import com.freesia.account.mapper.AccountBudgetMapper;
 import com.freesia.account.po.AccountBudgetPo;
 import com.freesia.account.repository.AccountBudgetRepository;
 import com.freesia.account.service.AccountBudgetService;
+import com.freesia.account.vo.AccountBudgetVo;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
 import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
 import com.freesia.service.impl.BaseServiceImpl;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -40,10 +42,16 @@ import java.util.Objects;
  */
 @Service
 @RequiredArgsConstructor
-public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMapper, AccountBudgetPo, AccountBudgetDto> implements AccountBudgetService {
+public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMapper, AccountBudgetVo, AccountBudgetDto, AccountBudgetPo> implements AccountBudgetService {
     private final AccountBudgetRepository accountBudgetRepository;
     private final AccountBudgetMapper accountBudgetMapper;
+    private final AccountBudgetConverter accountBudgetConverter;
 
+
+    @Override
+    protected MapStructConverter<AccountBudgetVo, AccountBudgetDto, AccountBudgetPo> getMapStructConverter() {
+        return accountBudgetConverter;
+    }
 
     @Override
     protected JpaRepository<AccountBudgetPo, Long> getRepository() {
@@ -86,9 +94,7 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
             }
 
         }
-        AccountBudgetPo accountBudgetPo = UCopy.copyDto2Po(accountBudgetDto, AccountBudgetPo.class);
-        accountBudgetPo = accountBudgetRepository.saveAndFlush(accountBudgetPo);
-        return UCopy.copyPo2Dto(accountBudgetPo, AccountBudgetDto.class);
+        return super.saveUpdate(accountBudgetDto);
     }
 
     @Override
@@ -113,7 +119,7 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
                     return Integer.MAX_VALUE;
                 }
             }));
-            return TableResult.build(UCopy.convertPage(pagePo, AccountBudgetDto.class));
+            return TableResult.build(accountBudgetConverter.convertPagePo2Dto(pagePo));
         }
         return TableResult.build();
     }

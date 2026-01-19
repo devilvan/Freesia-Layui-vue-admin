@@ -9,7 +9,7 @@ import java.util.List;
  * @Description （转换器模式）转换器 接口
  * @date 2026-01-04
  */
-public interface Converter<SOURCE, TARGET> {
+public interface ReflectConverter<SOURCE, TARGET> {
     /**
      * 单个转换
      *

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 
@@ -69,6 +70,20 @@ public class CommonExceptionAspect {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public R<Object> illegalArgumentException(HttpServletRequest request, IllegalArgumentException e) {
+        String message = e.getMessage();
+        log.error("请求地址：【{}】，错误信息：{}", request.getRequestURL(), message);
+        return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, message);
+    }
+
+    /**
+     * IO流错误异常
+     *
+     * @param request 异常的请求
+     * @param e       捕获的异常
+     * @return 形式返回
+     */
+    @ExceptionHandler(IOException.class)
+    public R<Object> ioException(HttpServletRequest request, IOException e) {
         String message = e.getMessage();
         log.error("请求地址：【{}】，错误信息：{}", request.getRequestURL(), message);
         return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, message);

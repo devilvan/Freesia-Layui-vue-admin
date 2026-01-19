@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.account.constant.CostType;
 import com.freesia.account.constant.DateScope;
+import com.freesia.account.converter.AccountCostConverter;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindCostLineChartDto;
@@ -17,7 +18,9 @@ import com.freesia.account.po.AccountCostPo;
 import com.freesia.account.repository.AccountCostRepository;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.service.AccountCostUserAllocService;
+import com.freesia.account.vo.AccountCostVo;
 import com.freesia.constant.Constants;
+import com.freesia.convert.MapStructConverter;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
@@ -66,13 +69,20 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, AccountCostPo, AccountCostDto> implements AccountCostService {
+public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, AccountCostVo, AccountCostDto, AccountCostPo> implements AccountCostService {
     private final AccountCostRepository accountCostRepository;
     private final AccountCostMapper accountCostMapper;
     private final TransactionTemplate transactionTemplate;
     private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
     private final SysUserService sysUserService;
     private final AccountCostUserAllocService accountCostUserAllocService;
+    private final AccountCostConverter accountCostConverter;
+
+
+    @Override
+    protected MapStructConverter<AccountCostVo, AccountCostDto, AccountCostPo> getMapStructConverter() {
+        return accountCostConverter;
+    }
 
     @Override
     protected JpaRepository<AccountCostPo, Long> getRepository() {
@@ -108,11 +118,11 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         if (UEmpty.isNull(costId)) {
             // 新增
             AccountCostPo afterInsertAccountCostPo = handleInsert(accountCostDto, accountCostPo, accountCostUserIdList, userId, sysUserDto);
-            return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
+            return accountCostConverter.convertPo2Dto(afterInsertAccountCostPo);
         } else {
             // 修改
             AccountCostPo afterInsertAccountCostPo = handleUpdate(accountCostDto, accountCostPo, costId, accountCostUserIdList, userId, sysUserDto);
-            return UCopy.copyPo2Dto(afterInsertAccountCostPo, AccountCostDto.class);
+            return accountCostConverter.convertPo2Dto(afterInsertAccountCostPo);
         }
     }
 
@@ -154,7 +164,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
             }
         }
         toExportList.sort(Comparator.comparing(AccountCostExportEntity::getPaymentTime));
-        return UCopy.fullCopyList(toExportList, AccountCostExportEntity.class);
+        return toExportList;
     }
 
     @Override

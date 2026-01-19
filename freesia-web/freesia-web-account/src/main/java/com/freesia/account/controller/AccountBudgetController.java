@@ -1,5 +1,6 @@
 package com.freesia.account.controller;
 
+import com.freesia.account.converter.AccountBudgetConverter;
 import com.freesia.account.dto.AccountBudgetDto;
 import com.freesia.account.dto.FindBudgetCapacityDto;
 import com.freesia.account.service.AccountBudgetService;
@@ -12,7 +13,6 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.tenant.exception.TenantException;
-import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +33,7 @@ import java.util.Optional;
 @Tag(name = "AccountBudgetController", description = "开销-预算表 控制器")
 public class AccountBudgetController extends BaseController {
     private final AccountBudgetService accountBudgetService;
+    private final AccountBudgetConverter accountBudgetConverter;
 
     /**
      * 保存开销-预算表信息
@@ -44,8 +45,8 @@ public class AccountBudgetController extends BaseController {
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody AccountBudgetVo accountBudgetVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
-        accountBudgetDto.setUserId(userId);
+        accountBudgetVo.setUserId(userId);
+        AccountBudgetDto accountBudgetDto = accountBudgetConverter.convertVo2Dto(accountBudgetVo);
         accountBudgetService.saveUpdate(accountBudgetDto);
         return R.ok();
     }
@@ -60,7 +61,7 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "保存开销-预算表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<AccountBudgetVo> accountBudgetVoList) {
-        List<AccountBudgetDto> accountBudgetDtoList = UCopy.fullCopyList(accountBudgetVoList, AccountBudgetDto.class);
+        List<AccountBudgetDto> accountBudgetDtoList = accountBudgetConverter.convertBatchVo2Dto(accountBudgetVoList);
         accountBudgetService.saveUpdateBatch(accountBudgetDtoList);
         return R.ok();
     }
@@ -75,9 +76,9 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "查询开销-预算表分页信息")
     @GetMapping(value = "findPageAccountBudget")
     public TableResult<AccountBudgetDto> findPageAccountBudget(AccountBudgetVo accountBudgetVo, PageQuery pageQuery) {
-        AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        accountBudgetDto.setUserId(userId);
+        accountBudgetVo.setUserId(userId);
+        AccountBudgetDto accountBudgetDto = accountBudgetConverter.convertVo2Dto(accountBudgetVo);
         return accountBudgetService.findPage(accountBudgetDto, pageQuery);
     }
 
@@ -90,9 +91,9 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "条件查询开销-预算表")
     @GetMapping(value = "findAccountBudget")
     public R<AccountBudgetDto> findAccountBudget(AccountBudgetVo accountBudgetVo) {
-        AccountBudgetDto accountBudgetDto = UCopy.copyVo2Dto(accountBudgetVo, AccountBudgetDto.class);
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        accountBudgetDto.setUserId(userId);
+        accountBudgetVo.setUserId(userId);
+        AccountBudgetDto accountBudgetDto = accountBudgetConverter.convertVo2Dto(accountBudgetVo);
         AccountBudgetDto tableResult = accountBudgetService.findOne(accountBudgetDto);
         return R.ok(tableResult);
     }
@@ -120,9 +121,8 @@ public class AccountBudgetController extends BaseController {
         } else {
             findBudgetCapacityVo.setTenantId(null);
         }
-        FindBudgetCapacityDto findBudgetCapacityDto = new FindBudgetCapacityDto();
-        UCopy.fullCopy(findBudgetCapacityVo, findBudgetCapacityDto);
-        findBudgetCapacityDto.setUserId(userId);
+        findBudgetCapacityVo.setUserId(userId);
+        FindBudgetCapacityDto findBudgetCapacityDto = accountBudgetConverter.convertFindBudgetCapacityVo2Dto(findBudgetCapacityVo);
         List<EchartCapacityOptionEntity> echartCapacityOptionEntityList = accountBudgetService.findBudgetCapacity(findBudgetCapacityDto);
         return R.ok(echartCapacityOptionEntityList);
     }

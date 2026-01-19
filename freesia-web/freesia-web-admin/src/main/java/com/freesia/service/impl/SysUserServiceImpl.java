@@ -10,6 +10,9 @@ import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.UserModule;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysTenantConverter;
+import com.freesia.converter.SysUserConverter;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
@@ -34,6 +37,7 @@ import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
+import com.freesia.vo.SysUserVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -51,7 +55,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo, SysUserDto> implements SysUserService {
+public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo, SysUserDto, SysUserPo> implements SysUserService {
     private final TransactionTemplate transactionTemplate;
     private final LoginPasswordProperties loginPasswordProperties;
     private final SysUserRepository sysUserRepository;
@@ -59,7 +63,13 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
     private final SysDeptMapper sysDeptMapper;
     private final SysTenantService sysTenantService;
     private final SysUserRoleRepository sysUserRoleRepository;
+    private final SysUserConverter sysUserConverter;
+    private final SysTenantConverter sysTenantConverter;
 
+    @Override
+    protected MapStructConverter<SysUserVo, SysUserDto, SysUserPo> getMapStructConverter() {
+        return sysUserConverter;
+    }
 
     @Override
     protected JpaRepository<SysUserPo, Long> getRepository() {
@@ -101,9 +111,9 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
 
     @Override
     public SysUserPo findOneByUsername(String username) {
-        LambdaQueryWrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(SysUserPo::getUserName, SysUserPo::getAccountStatus, SysUserPo::getLogicDel);
-        queryWrapper.eq(SysUserPo::getUserName, username);
+        LambdaQueryWrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<SysUserPo>()
+                .select(SysUserPo::getUserName, SysUserPo::getAccountStatus, SysUserPo::getLogicDel)
+                .eq(SysUserPo::getUserName, username);
         return this.getOne(queryWrapper);
     }
 
@@ -115,26 +125,25 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
     @Override
     public SysUserDto findUserById(Long userId) {
         SysUserPo sysUserPo = sysUserRepository.findById(userId).orElseGet(SysUserPo::new);
-        return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
+        return sysUserConverter.convertPo2Dto(sysUserPo);
     }
 
     @Override
     public List<SysUserDto> findUserByIdList(List<Long> userIdList) {
         List<SysUserPo> sysUserPoList = Optional.of(sysUserRepository.findAllById(userIdList)).orElseGet(ArrayList::new);
-        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+        return sysUserConverter.convertBatchPo2Dto(sysUserPoList);
     }
 
     @Override
     public boolean checkUserNameUnique(SysUserDto sysUserDto) {
-        SysUserPo sysUserPo = new SysUserPo();
-        UCopy.fullCopy(sysUserDto, sysUserPo);
+        SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
         return sysUserMapper.checkUserNameUnique(sysUserPo);
     }
 
     @Override
     @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.REGISTER, message = "user.register")
     public boolean register(SysUserDto sysUserDto) {
-        SysUserPo sysUserPo = UCopy.copyDto2Po(sysUserDto, SysUserPo.class);
+        SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
         return Convert.toBool(sysUserRepository.save(sysUserPo), false);
     }
 
@@ -174,7 +183,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
                 .eq(SysUserPo::getId, userId);
         SysUserPo sysUserPo = sysUserMapper.findCurrentUserProfile(queryWrapper);
         sysUserPo.setAvatar(ossHandler.convertEndpoint2Domain(sysUserPo.getAvatar()));
-        return UCopy.copyPo2Dto(sysUserPo, SysUserDto.class);
+        return sysUserConverter.convertPo2Dto(sysUserPo);
     }
 
     @Override
@@ -183,7 +192,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
         SysUserPo sysUserPo;
         if (UEmpty.isNotNull(id)) {
             sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed", new Object[]{}));
-            UCopy.halfCopy(sysUserDto, sysUserPo);
+            sysUserConverter.updateSysUserPo(sysUserDto, sysUserPo);
             sysUserRepository.save(sysUserPo);
         } else {
             sysUserPo = buildInsertSysUserPo(sysUserDto);
@@ -261,14 +270,14 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
     @Override
     public TableResult<SysUserDto> findPageUserByTenantId(Long tenantId, PageQuery pageQuery) {
         Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageUserByTenantId(tenantId, pageQuery.build());
-        return TableResult.build(UCopy.convertPage(sysUserPoPage, SysUserDto.class));
+        return TableResult.build(sysUserConverter.convertPagePo2Dto(sysUserPoPage));
     }
 
     @Override
     public TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantDto sysTenantDto, PageQuery pageQuery) {
-        SysTenantPo sysTenantPo = UCopy.copyDto2Po(sysTenantDto, SysTenantPo.class);
+        SysTenantPo sysTenantPo = sysTenantConverter.convertDto2Po(sysTenantDto);
         Page<SysUserPo> sysUserPoPage = sysUserMapper.findPageAllowAssignUserByTenantId(sysTenantPo, pageQuery.build());
-        return TableResult.build(UCopy.convertPage(sysUserPoPage, SysUserDto.class));
+        return TableResult.build(sysUserConverter.convertPagePo2Dto(sysUserPoPage));
     }
 
     @Override
@@ -282,7 +291,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
                 .eq(SysUserPo::getLogicDel, FlagConstant.DISABLED)
                 .in(SysUserPo::getUserName, distinctUserNameList);
         List<SysUserPo> sysUserPoList = this.list(queryWrapper);
-        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+        return sysUserConverter.convertBatchPo2Dto(sysUserPoList);
     }
 
     @Override
@@ -291,7 +300,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
         List<SysUserPo> sysUserPoList = sysUserRepository.findAllById(idList);
         sysUserPoList = sysUserPoList.stream().peek(sysUserPo -> sysUserPo.setLogicDel(true)).collect(Collectors.toList());
         sysUserRepository.saveAll(sysUserPoList);
-        return UCopy.fullCopyList(sysUserPoList, SysUserDto.class);
+        return sysUserConverter.convertBatchPo2Dto(sysUserPoList);
     }
 
     @Override
@@ -331,7 +340,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
                 .in(SysUserPo::getId, idList);
         List<SysUserPo> sysUserPoList = sysUserMapper.selectList(wrapper);
         if (UEmpty.isNotEmpty(sysUserPoList)) {
-            return UCopy.fullCopyList(sysUserPoList, FindPageSysUserListEntity.class);
+            return sysUserConverter.convertPo2FindPageSysUserListEntity(sysUserPoList);
         }
         return null;
     }
@@ -343,7 +352,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserPo
      * @return 构建后的新增用户实体
      */
     private SysUserPo buildInsertSysUserPo(SysUserDto sysUserDto) {
-        SysUserPo sysUserPo = UCopy.copyDto2Po(sysUserDto, SysUserPo.class);
+        SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
         sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
         return sysUserPo;
     }

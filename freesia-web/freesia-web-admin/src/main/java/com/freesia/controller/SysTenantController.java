@@ -2,18 +2,18 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
+import com.freesia.converter.SysTenantConverter;
 import com.freesia.dto.AssignTenantDto;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.entity.FindSysTenantEntity;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysTenantService;
 import com.freesia.util.UCollection;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
-import com.freesia.satoken.util.USecurity;
 import com.freesia.vo.AssignTenantVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SysTenantVo;
@@ -36,6 +36,7 @@ import java.util.List;
 @Tag(name = "SysTenantController", description = "租户信息表 控制器")
 public class SysTenantController extends BaseController {
     private final SysTenantService sysTenantService;
+    private final SysTenantConverter sysTenantConverter;
 
     /**
      * 保存租户信息表信息
@@ -50,7 +51,7 @@ public class SysTenantController extends BaseController {
     @Operation(summary = "保存租户信息表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysTenantVo sysTenantVo) {
-        SysTenantDto sysTenantDto = UCopy.copyVo2Dto(sysTenantVo, SysTenantDto.class);
+        SysTenantDto sysTenantDto = sysTenantConverter.convertVo2Dto(sysTenantVo);
         sysTenantService.saveUpdate(sysTenantDto);
         return R.ok();
     }
@@ -68,7 +69,7 @@ public class SysTenantController extends BaseController {
     @Operation(summary = "保存租户信息表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<SysTenantVo> sysTenantVoList) {
-        List<SysTenantDto> sysTenantDtoList = UCopy.fullCopyList(sysTenantVoList, SysTenantDto.class);
+        List<SysTenantDto> sysTenantDtoList = sysTenantConverter.convertBatchVo2Dto(sysTenantVoList);
         sysTenantService.saveUpdateBatch(sysTenantDtoList);
         return R.ok();
     }
@@ -84,7 +85,7 @@ public class SysTenantController extends BaseController {
     @Operation(summary = "查询租户信息表分页信息")
     @GetMapping(value = "findPageSysTenant")
     public TableResult<SysTenantDto> findPageSysTenant(SysTenantVo sysTenantVo, PageQuery pageQuery) {
-        SysTenantDto sysTenantDto = UCopy.copyVo2Dto(sysTenantVo, SysTenantDto.class);
+        SysTenantDto sysTenantDto = sysTenantConverter.convertVo2Dto(sysTenantVo);
         return sysTenantService.findPage(sysTenantDto, pageQuery);
     }
 
@@ -98,7 +99,7 @@ public class SysTenantController extends BaseController {
     @Operation(summary = "条件查询租户信息表")
     @GetMapping(value = "findSysTenant")
     public R<FindSysTenantEntity> findSysTenant(SysTenantVo sysTenantVo) {
-        SysTenantDto sysTenantDto = UCopy.copyVo2Dto(sysTenantVo, SysTenantDto.class);
+        SysTenantDto sysTenantDto = sysTenantConverter.convertVo2Dto(sysTenantVo);
         return R.ok(sysTenantService.findSysTenant(sysTenantDto));
     }
 
@@ -128,7 +129,7 @@ public class SysTenantController extends BaseController {
     @Operation(summary = "分配租户")
     @PostMapping(value = "assignTenant")
     public R<Void> assignTenant(@Validated @RequestBody AssignTenantVo assignTenantVo) {
-        AssignTenantDto assignTenantDto = convertAssignTenantVo2Dto(assignTenantVo);
+        AssignTenantDto assignTenantDto = sysTenantConverter.convertAssignTenantVo2Dto(assignTenantVo);
         Long tenantId = assignTenantDto.getTenantId();
         List<Long> userIdList = assignTenantDto.getUserIdList();
         if (UEmpty.isNotEmpty(userIdList)) {

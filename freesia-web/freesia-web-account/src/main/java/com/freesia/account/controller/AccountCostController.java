@@ -7,6 +7,8 @@ import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.freesia.account.constant.DateScope;
 import com.freesia.account.constant.MenuPermission;
+import com.freesia.account.converter.AccountCostConverter;
+import com.freesia.account.converter.AccountCostUserAllocConverter;
 import com.freesia.account.dto.AccountCostDto;
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindCostLineChartDto;
@@ -67,6 +69,8 @@ import java.util.Optional;
 @Tag(name = "AccountCostController", description = "开销表 控制器")
 public class AccountCostController extends BaseController {
     private final AccountCostService accountCostService;
+    private final AccountCostConverter accountCostConverter;
+    private final AccountCostUserAllocConverter accountCostUserAllocConverter;
 
     /**
      * 保存开销表信息
@@ -125,7 +129,7 @@ public class AccountCostController extends BaseController {
             accountCostVo.setTenantId(null);
         }
         Date[] dateRange = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS, UString.SEPARATOR);
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
         accountCostDto.setUserId(userId);
         accountCostDto.setPaymentTimeFrom(dateRange[0]);
         accountCostDto.setPaymentTimeTo(dateRange[1]);
@@ -219,7 +223,7 @@ public class AccountCostController extends BaseController {
         } else {
             accountsExportVo.setTenantId(null);
         }
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountsExportVo, AccountCostDto.class);
+        AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountsExportVo);
         accountCostDto.setUserId(userId);
         Date[] dates = parseDateRange(accountsExportVo.getPaymentTimeRange());
         accountCostDto.setPaymentTimeFrom(dates[0]);
@@ -238,7 +242,7 @@ public class AccountCostController extends BaseController {
         } else {
             accountCostVo.setTenantId(null);
         }
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
         accountCostDto.setUserId(userId);
         if (UEmpty.isEmpty(accountCostVo.getPaymentTimeRange())) {
             Date[] dates = defaultDateRange(6);
@@ -270,7 +274,7 @@ public class AccountCostController extends BaseController {
                 .orElse(DateScope.WEEK);
         String code = dateScope.getCode();
         findCostLineChartVo.setDateScope(code);
-        FindCostLineChartDto findCostLineChartDto = UCopy.copyVo2Dto(findCostLineChartVo, FindCostLineChartDto.class);
+        FindCostLineChartDto findCostLineChartDto = accountCostConverter.convertFindCostLineChartVo2Dto(findCostLineChartVo);
         findCostLineChartDto.setUserId(userId);
         String dateValue = findCostLineChartVo.getDateValue();
         if (DateScope.WEEK.getCode().equals(code)) {
@@ -323,7 +327,7 @@ public class AccountCostController extends BaseController {
         } else {
             findCostSumCalendarNearYearVo.setTenantId(null);
         }
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCostSumCalendarNearYearVo, AccountCostDto.class);
+        AccountCostDto accountCostDto = accountCostConverter.convertFindCostSumCalendarNearYearVo2Dto(findCostSumCalendarNearYearVo);
         accountCostDto.setUserId(userId);
         Date[] dates = defaultDateRange(365);
         accountCostDto.setPaymentTimeFrom(dates[0]);
@@ -346,7 +350,7 @@ public class AccountCostController extends BaseController {
         } else {
             findRankByCostTypeVo.setTenantId(null);
         }
-        FindRankByCostTypeDto findRankByCostTypeDto = UCopy.copyVo2Dto(findRankByCostTypeVo, FindRankByCostTypeDto.class);
+        FindRankByCostTypeDto findRankByCostTypeDto = accountCostConverter.convertFindRankByCostTypeVo2Dto(findRankByCostTypeVo);
         findRankByCostTypeDto.setUserId(userId);
         EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = accountCostService.findRankByCostType(findRankByCostTypeDto);
         return R.ok(echartStackedHorizontalBarOptionEntity);
@@ -363,7 +367,7 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findSelectCostTypeList")
     public R<List<LaySelect>> findSelectCostTypeList(AccountCostVo accountCostVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
         accountCostDto.setUserId(userId);
         Date[] dateRange = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS, UString.SEPARATOR);
         accountCostDto.setPaymentTimeFrom(dateRange[0]);
@@ -387,7 +391,7 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findCacheCostType")
     public R<List<FindCacheCostTypeEntity>> findCacheCostType(FindCacheCostTypeVo findCacheCostTypeVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(findCacheCostTypeVo, AccountCostDto.class);
+        AccountCostDto accountCostDto = accountCostConverter.convertFindCacheCostTypeVo2Dto(findCacheCostTypeVo);
         accountCostDto.setUserId(userId);
         List<FindCacheCostTypeEntity> laySelectList = accountCostService.findCacheCostType(accountCostDto);
         return R.ok(laySelectList);
@@ -431,13 +435,12 @@ public class AccountCostController extends BaseController {
         Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
         List<AccountCostDto> accountCostDtoList = new ArrayList<>();
         accountCostVoList.forEach(accountCostVo -> {
-            AccountCostDto accountCostDto = new AccountCostDto();
+            AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
             if (!accountCostVo.getAllTenantFlag()) {
-                accountCostVo.setTenantId(tenantId);
+                accountCostDto.setTenantId(tenantId);
             } else {
-                accountCostVo.setTenantId(null);
+                accountCostDto.setTenantId(null);
             }
-            UCopy.fullCopy(accountCostVo, accountCostDto);
             accountCostDto.setUserId(userId);
             accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
             accountCostDtoList.add(accountCostDto);
@@ -452,7 +455,7 @@ public class AccountCostController extends BaseController {
      * @return 组装好的数据
      */
     private AccountCostDto pre2Save(AccountCostVo accountCostVo) {
-        AccountCostDto accountCostDto = UCopy.copyVo2Dto(accountCostVo, AccountCostDto.class);
+        AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         if (!accountCostVo.getAllTenantFlag()) {
             Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
@@ -464,7 +467,7 @@ public class AccountCostController extends BaseController {
         accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
         List<AccountCostUserAllocVo> accountCostUserAllocVoList = accountCostVo.getAccountCostUserAllocVoList();
         if (UEmpty.isNotEmpty((accountCostUserAllocVoList))) {
-            List<AccountCostUserAllocDto> accountCostUserAllocDtoList = UCopy.fullCopyList(accountCostUserAllocVoList, AccountCostUserAllocDto.class);
+            List<AccountCostUserAllocDto> accountCostUserAllocDtoList = accountCostUserAllocConverter.convertBatchVo2Dto(accountCostUserAllocVoList);
             accountCostDto.setAccountCostUserAllocDtoList(accountCostUserAllocDtoList);
         }
         return accountCostDto;

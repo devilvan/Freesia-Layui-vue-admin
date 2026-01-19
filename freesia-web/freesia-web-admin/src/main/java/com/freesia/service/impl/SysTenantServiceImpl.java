@@ -4,6 +4,8 @@ import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysTenantConverter;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.entity.FindSysTenantEntity;
 import com.freesia.exception.ServiceException;
@@ -16,8 +18,8 @@ import com.freesia.repository.SysTenantRepository;
 import com.freesia.service.SysTenantService;
 import com.freesia.tenant.constant.TenantModule;
 import com.freesia.tenant.exception.TenantException;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.vo.SysTenantVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,10 +36,16 @@ import java.util.Set;
  */
 @Service
 @RequiredArgsConstructor
-public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTenantPo, SysTenantDto> implements SysTenantService {
+public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTenantVo, SysTenantDto, SysTenantPo> implements SysTenantService {
     private final SysTenantRepository sysTenantRepository;
     private final SysTenantMapper sysTenantMapper;
+    private final SysTenantConverter sysTenantConverter;
 
+
+    @Override
+    protected MapStructConverter<SysTenantVo, SysTenantDto, SysTenantPo> getMapStructConverter() {
+        return sysTenantConverter;
+    }
 
     @Override
     protected JpaRepository<SysTenantPo, Long> getRepository() {
@@ -65,19 +73,17 @@ public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTe
     @Override
     @LogRecord(module = TenantModule.TENANT_MANAGEMENT, subModule = TenantModule.SubModule.SAVE_TENANT, message = "tenant.save")
     public SysTenantDto saveUpdate(SysTenantDto sysTenantDto) {
-        SysTenantPo sysTenantPo = new SysTenantPo();
         if (UEmpty.isEmpty(sysTenantDto.getId())) {
             int flag = Convert.toInt(sysTenantMapper.findExistCode(sysTenantDto.getCode()), 0);
             if (flag != 0) {
                 throw new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.code.exists", new Object[]{sysTenantDto.getCode()});
             }
-            UCopy.fullCopy(sysTenantDto, sysTenantPo);
-            return UCopy.copyPo2Dto(sysTenantRepository.saveAndFlush(sysTenantPo), SysTenantDto.class);
+            return super.saveUpdate(sysTenantDto);
         }
         Wrapper<SysTenantPo> queryWrapper = buildQueryWrapper(sysTenantDto);
-        sysTenantPo = getOne(queryWrapper);
-        UCopy.halfCopy(sysTenantDto, sysTenantPo);
-        return UCopy.copyPo2Dto(sysTenantRepository.saveAndFlush(sysTenantPo), SysTenantDto.class);
+        SysTenantPo sysTenantPo = getOne(queryWrapper);
+        sysTenantConverter.updateSysTenantPo(sysTenantDto, sysTenantPo);
+        return sysTenantConverter.convertPo2Dto(sysTenantRepository.saveAndFlush(sysTenantPo));
     }
 
     @Override
@@ -90,9 +96,7 @@ public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTe
     public FindSysTenantEntity findSysTenant(SysTenantDto sysTenantDto) {
         Wrapper<SysTenantPo> wrapper = buildQueryWrapper(sysTenantDto);
         SysTenantPo sysTenantPo = getOne(wrapper);
-        FindSysTenantEntity findSysTenantEntity = new FindSysTenantEntity();
-        UCopy.fullCopy(sysTenantPo, findSysTenantEntity);
-        return findSysTenantEntity;
+        return sysTenantConverter.convertPo2FindEntity(sysTenantPo);
     }
 
     @Override
@@ -124,7 +128,7 @@ public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTe
     @Override
     public List<SysTenantDto> findListSysTenantByUserId(Long userId) {
         List<SysTenantPo> sysTenantPoList = sysTenantMapper.findListSysTenantByUserId(userId);
-        return UCopy.fullCopyList(sysTenantPoList, SysTenantDto.class);
+        return sysTenantConverter.convertBatchPo2Dto(sysTenantPoList);
     }
 
     @Override

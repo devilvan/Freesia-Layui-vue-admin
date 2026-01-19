@@ -3,9 +3,11 @@ package com.freesia.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.freesia.crypt.annotation.Encrypt;
-import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
+import com.freesia.converter.SysTenantConverter;
+import com.freesia.converter.SysUserConverter;
+import com.freesia.crypt.annotation.Encrypt;
+import com.freesia.crypt.util.UCrypt;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.*;
@@ -13,14 +15,13 @@ import com.freesia.excel.UserImportListener;
 import com.freesia.excel.constant.ExcelSuffix;
 import com.freesia.excel.util.UExcel;
 import com.freesia.exception.UserException;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.oss.exception.OssException;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.service.SysUserService;
-import com.freesia.util.UCopy;
-import com.freesia.crypt.util.UCrypt;
-import com.freesia.util.UMessage;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.service.SysUserService;
+import com.freesia.util.UMessage;
 import com.freesia.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,12 +48,14 @@ import java.util.Set;
 @Tag(name = "SysUserController", description = "用户信息表 控制器")
 public class SysUserController extends BaseController {
     private final SysUserService sysUserService;
+    private final SysUserConverter sysUserConverter;
+    private final SysTenantConverter sysTenantConverter;
 
     @Operation(summary = "获取用户列表分页")
     @GetMapping("findPageSysUserList")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserVo sysUserVo, PageQuery pageQuery) {
-        SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
+        SysUserDto sysUserDto = sysUserConverter.convertVo2Dto(sysUserVo);
         return sysUserService.findPageSysUserList(sysUserDto, pageQuery);
     }
 
@@ -60,9 +63,8 @@ public class SysUserController extends BaseController {
     @Operation(summary = "获取部门下的用户")
     @GetMapping("findPageSysUserByDept")
     public TableResult<FindPageSysUserByDeptEntity> findPageSysUserByDept(SysUserVo sysUserVo, PageQuery pageQuery) {
-        SysUserDto sysUserDto = new SysUserDto();
-        UCopy.fullCopy(sysUserVo, sysUserDto);
-        sysUserDto.setTenantId(USecurity.getTenantId());
+        sysUserVo.setTenantId(USecurity.getTenantId());
+        SysUserDto sysUserDto = sysUserConverter.convertVo2Dto(sysUserVo);
         return sysUserService.findPageSysUserByDept(sysUserDto, pageQuery);
     }
 
@@ -71,8 +73,7 @@ public class SysUserController extends BaseController {
     @GetMapping("findCurrentUserProfile")
     public R<FindCurrentUserProfileEntity> findCurrentUserProfile() {
         SysUserDto sysUserDto = sysUserService.findCurrentUserProfile(USecurity.getUserId());
-        FindCurrentUserProfileEntity findCurrentUserProfileEntity = new FindCurrentUserProfileEntity();
-        UCopy.fullCopy(sysUserDto, findCurrentUserProfileEntity);
+        FindCurrentUserProfileEntity findCurrentUserProfileEntity = sysUserConverter.convertDto2FindCurrentUserProfileEntity(sysUserDto);
         return R.ok(findCurrentUserProfileEntity);
     }
 
@@ -85,7 +86,7 @@ public class SysUserController extends BaseController {
     })
     public R<Void> saveUserInfo(@RequestBody String request) {
         SysUserVo sysUserVo = UCrypt.aesDecryptJSON(request, SysUserVo.class);
-        SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
+        SysUserDto sysUserDto = sysUserConverter.convertVo2Dto(sysUserVo);
         sysUserService.saveUserInfo(sysUserDto);
         return R.ok();
     }
@@ -118,7 +119,7 @@ public class SysUserController extends BaseController {
     @Operation(summary = "根据租户ID查询可分配该租户的用户")
     @GetMapping("findPageAllowAssignUserByTenantId")
     public TableResult<SysUserDto> findPageAllowAssignUserByTenantId(SysTenantVo sysTenantVo, PageQuery pageQuery) {
-        SysTenantDto sysTenantDto = UCopy.copyVo2Dto(sysTenantVo, SysTenantDto.class);
+        SysTenantDto sysTenantDto = sysTenantConverter.convertVo2Dto(sysTenantVo);
         return sysUserService.findPageAllowAssignUserByTenantId(sysTenantDto, pageQuery);
     }
 
@@ -132,13 +133,12 @@ public class SysUserController extends BaseController {
                 .map(m -> m.substring(m.lastIndexOf('.') + 1))
                 .orElseThrow(() -> new OssException("oss.file.required"));
         if (!ExcelSuffix.includeBySuffix(suffix)) {
-            throw new UserException("import.suffix.invalid", new Object[] {suffix});
+            throw new UserException("import.suffix.invalid", new Object[]{suffix});
         }
         try {
             UExcel.read(file.getInputStream(), SysUserImportEntity.class, ExcelSuffix.getInstanceBySuffix(suffix).getExcelTypeEnum(),
                     new UserImportListener<>(sysUserService, avatar), 0, null);
         } catch (IOException e) {
-            e.printStackTrace();
             R<Void> failed = R.failed();
             failed.setMsg(UMessage.message("file.upload.failed"));
             return failed;
@@ -187,7 +187,7 @@ public class SysUserController extends BaseController {
     @GetMapping("findPageSysUserWithoutDataScope")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
     public TableResult<FindPageSysUserListEntity> findPageSysUserWithoutDataScope(SysUserVo sysUserVo, PageQuery pageQuery) {
-        SysUserDto sysUserDto = UCopy.copyVo2Dto(sysUserVo, SysUserDto.class);
+        SysUserDto sysUserDto = sysUserConverter.convertVo2Dto(sysUserVo);
         return sysUserService.findPageSysUserWithoutDataScope(sysUserDto, pageQuery);
     }
 }

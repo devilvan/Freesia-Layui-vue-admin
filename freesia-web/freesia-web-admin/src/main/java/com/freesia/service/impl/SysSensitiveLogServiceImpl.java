@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.UserModule;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysSensitiveLogConverter;
 import com.freesia.dto.SysSensitiveLogDto;
 import com.freesia.mapper.SysSensitiveLogMapper;
 import com.freesia.po.SysSensitiveLogPo;
@@ -13,8 +15,8 @@ import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysSensitiveLogRepository;
 import com.freesia.service.SysSensitiveLogService;
 import com.freesia.util.UCalendar;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.vo.SysSensitiveLogVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,10 +29,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class SysSensitiveLogServiceImpl extends BaseServiceImpl<SysSensitiveLogMapper, SysSensitiveLogPo, SysSensitiveLogDto> implements SysSensitiveLogService {
+public class SysSensitiveLogServiceImpl extends BaseServiceImpl<SysSensitiveLogMapper, SysSensitiveLogVo, SysSensitiveLogDto, SysSensitiveLogPo> implements SysSensitiveLogService {
     private final SysSensitiveLogRepository sysSensitiveLogRepository;
     private final SysSensitiveLogMapper sysSensitiveLogMapper;
+    private final SysSensitiveLogConverter sysSensitiveLogConverter;
 
+    @Override
+    protected MapStructConverter<SysSensitiveLogVo, SysSensitiveLogDto, SysSensitiveLogPo> getMapStructConverter() {
+        return sysSensitiveLogConverter;
+    }
 
     @Override
     protected JpaRepository<SysSensitiveLogPo, Long> getRepository() {
@@ -71,7 +78,7 @@ public class SysSensitiveLogServiceImpl extends BaseServiceImpl<SysSensitiveLogM
     public TableResult<SysSensitiveLogDto> findPageLoginLog(SysSensitiveLogDto sysSensitiveLogDto, PageQuery pageQuery) {
         Wrapper<SysSensitiveLogPo> queryWrapper = buildQueryWrapper(sysSensitiveLogDto);
         Page<SysSensitiveLogPo> sysSensitiveLogPoPage = sysSensitiveLogMapper.findPageLoginLog(pageQuery.build(), queryWrapper);
-        Page<SysSensitiveLogDto> sysSensitiveLogDtoPage = UCopy.convertPage(sysSensitiveLogPoPage, SysSensitiveLogDto.class);
+        Page<SysSensitiveLogDto> sysSensitiveLogDtoPage = sysSensitiveLogConverter.convertPagePo2Dto(sysSensitiveLogPoPage);
         return TableResult.build(sysSensitiveLogDtoPage);
     }
 
@@ -79,7 +86,7 @@ public class SysSensitiveLogServiceImpl extends BaseServiceImpl<SysSensitiveLogM
     public TableResult<SysSensitiveLogDto> findPageOptionLog(SysSensitiveLogDto sysSensitiveLogDto, PageQuery pageQuery) {
         Wrapper<SysSensitiveLogPo> queryWrapper = buildQueryWrapper(sysSensitiveLogDto);
         Page<SysSensitiveLogPo> sysSensitiveLogPoPage = sysSensitiveLogMapper.findPageOptionLog(pageQuery.build(), queryWrapper);
-        Page<SysSensitiveLogDto> sysSensitiveLogDtoPage = UCopy.convertPage(sysSensitiveLogPoPage, SysSensitiveLogDto.class);
+        Page<SysSensitiveLogDto> sysSensitiveLogDtoPage = sysSensitiveLogConverter.convertPagePo2Dto(sysSensitiveLogPoPage);
         return TableResult.build(sysSensitiveLogDtoPage);
     }
 }

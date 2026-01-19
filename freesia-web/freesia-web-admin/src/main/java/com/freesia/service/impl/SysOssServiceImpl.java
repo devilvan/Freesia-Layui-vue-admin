@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysOssConverter;
 import com.freesia.dto.SysOssDto;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysOssMapper;
@@ -23,10 +25,10 @@ import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysOssRepository;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysOssService;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
 import com.freesia.util.USpring;
+import com.freesia.vo.SysOssVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -51,9 +53,15 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssPo, SysOssDto> implements SysOssService {
+public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssVo, SysOssDto, SysOssPo> implements SysOssService {
     private final SysOssRepository sysOssRepository;
+    private final SysOssConverter sysOssConverter;
 
+
+    @Override
+    protected MapStructConverter<SysOssVo, SysOssDto, SysOssPo> getMapStructConverter() {
+        return sysOssConverter;
+    }
 
     @Override
     protected JpaRepository<SysOssPo, Long> getRepository() {
@@ -102,7 +110,7 @@ public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssPo, S
                 record.setUrl(ossHandler.convertEndpoint2Domain(record.getUrl()));
             }
         });
-        return TableResult.build(UCopy.convertPage(pagePo, SysOssDto.class));
+        return TableResult.build(sysOssConverter.convertPagePo2Dto(pagePo));
     }
 
     @Override
@@ -155,8 +163,7 @@ public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssPo, S
             sysOssDto.setService(ossHandler.getConfigKey());
             sysOssDto.setFileSize(file.getSize());
             sysOssDto.setFileHash(UOssFile.calculateFileHash(file));
-            SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
-            SysOssDto resultSysOssDto = UCopy.copyPo2Dto(sysOssRepository.save(sysOssPo), SysOssDto.class);
+            SysOssDto resultSysOssDto = super.saveUpdate(sysOssDto);
             resultSysOssDtoList.add(resultSysOssDto);
             // 保存操作日志
             SysSensitiveLogBean saveSysSensitiveLogBean = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
@@ -179,7 +186,7 @@ public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssPo, S
 
     @Override
     public List<SysOssDto> uploadTemp(List<MultipartFile> fileList) {
-        List<SysOssPo> sysOssPoList = new ArrayList<>();
+        List<SysOssDto> sysOssDtoList = new ArrayList<>();
         OssHandler ossHandler = OssFactory.getInstance();
         for (MultipartFile file : fileList) {
             String originalFilename = file.getOriginalFilename();
@@ -207,10 +214,9 @@ public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssPo, S
             sysOssDto.setFileSize(file.getSize());
             sysOssDto.setFileHash(UOssFile.calculateFileHash(file));
             setPrivateBucketExpirationUrl(sysOssDto);
-            SysOssPo sysOssPo = UCopy.copyDto2Po(sysOssDto, SysOssPo.class);
-            sysOssPoList.add(sysOssPo);
+            sysOssDtoList.add(sysOssDto);
         }
-        List<SysOssDto> resultSysOssDtoList = UCopy.fullCopyList(sysOssRepository.saveAll(sysOssPoList), SysOssDto.class);
+        List<SysOssDto> resultSysOssDtoList = super.saveUpdateBatch(sysOssDtoList);
         resultSysOssDtoList = resultSysOssDtoList.stream().peek(item -> {
             item.setUrl(ossHandler.convertEndpoint2Domain(item.getUrl()));
         }).collect(Collectors.toList());
@@ -274,7 +280,7 @@ public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssPo, S
     @Override
     @Cacheable(value = CacheConstant.SYS_OSS, key = "#id")
     public SysOssDto findCacheById(Long id) {
-        return UCopy.copyPo2Dto(getById(id), SysOssDto.class);
+        return sysOssConverter.convertPo2Dto(getById(id));
     }
 
     @Override
