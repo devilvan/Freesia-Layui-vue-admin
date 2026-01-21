@@ -3,13 +3,15 @@ package com.freesia.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.UrlConfigConverter;
 import com.freesia.dto.UrlConfigDto;
 import com.freesia.mapper.UrlConfigMapper;
 import com.freesia.po.UrlConfigPo;
 import com.freesia.repository.UrlConfigRepository;
 import com.freesia.service.UrlConfigService;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.vo.UrlConfigVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,10 +27,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class UrlConfigServiceImpl extends BaseServiceImpl<UrlConfigMapper, UrlConfigPo, UrlConfigDto> implements UrlConfigService {
+public class UrlConfigServiceImpl extends BaseServiceImpl<UrlConfigMapper, UrlConfigVo, UrlConfigDto, UrlConfigPo> implements UrlConfigService {
     private static final String URL_CONFIG = "url_config";
     private final UrlConfigRepository urlConfigRepository;
+    private final UrlConfigConverter urlConfigConverter;
 
+    @Override
+    protected MapStructConverter<UrlConfigVo, UrlConfigDto, UrlConfigPo> getMapStructConverter() {
+        return urlConfigConverter;
+    }
 
     @Override
     protected JpaRepository<UrlConfigPo, Long> getRepository() {
@@ -66,7 +73,7 @@ public class UrlConfigServiceImpl extends BaseServiceImpl<UrlConfigMapper, UrlCo
                 .eq(UrlConfigPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UrlConfigPo::getCode, code);
         UrlConfigPo urlConfigPo = getOne(wrapper);
-        return UCopy.copyPo2Dto(urlConfigPo, UrlConfigDto.class);
+        return urlConfigConverter.convertPo2Dto(urlConfigPo);
     }
 
     @Override

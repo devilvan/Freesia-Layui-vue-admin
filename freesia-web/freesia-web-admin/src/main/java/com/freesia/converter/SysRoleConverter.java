@@ -32,5 +32,5 @@ public interface SysRoleConverter extends MapStructConverter<SysRoleVo, SysRoleD
     @Mapping(target = "sysRoleDeptPoSet", ignore = true)
     @Mapping(target = "sysMenuPoSet", ignore = true)
     @Mapping(target = "sysDeptPoSet", ignore = true)
-    void updateSysRolePo(SysRoleDto sysRoleDto, @MappingTarget SysRolePo sysRolePo);
+    void updateSysRoleDto2Po(SysRoleDto sysRoleDto, @MappingTarget SysRolePo sysRolePo);
 }

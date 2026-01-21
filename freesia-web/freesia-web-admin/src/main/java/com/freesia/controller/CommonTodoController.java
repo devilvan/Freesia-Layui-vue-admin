@@ -1,12 +1,12 @@
 package com.freesia.controller;
 
+import com.freesia.converter.CommonTodoConverter;
 import com.freesia.dto.CommonTodoDto;
 import com.freesia.exception.UserException;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.CommonTodoService;
-import com.freesia.util.UCopy;
 import com.freesia.vo.CommonTodoVo;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @Tag(name = "CommonTodoController", description = "待办事项表 控制器")
 public class CommonTodoController extends BaseController {
     private final CommonTodoService commonTodoService;
+    private final CommonTodoConverter commonTodoConverter;
 
     /**
      * 保存待办事项表信息
@@ -39,7 +40,7 @@ public class CommonTodoController extends BaseController {
     @Operation(summary = "保存待办事项表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody CommonTodoVo commonTodoVo) {
-        CommonTodoDto commonTodoDto = UCopy.copyVo2Dto(commonTodoVo, CommonTodoDto.class);
+        CommonTodoDto commonTodoDto = commonTodoConverter.convertVo2Dto(commonTodoVo);
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         commonTodoDto.setUserId(userId);
         commonTodoService.saveUpdate(commonTodoDto);
@@ -57,7 +58,7 @@ public class CommonTodoController extends BaseController {
     public R<Void> saveUpdateBatch(@RequestBody List<CommonTodoVo> commonTodoVoList) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         commonTodoVoList = commonTodoVoList.stream().peek(commonTodoVo -> commonTodoVo.setUserId(userId)).collect(Collectors.toList());
-        List<CommonTodoDto> commonTodoDtoList = UCopy.fullCopyList(commonTodoVoList, CommonTodoDto.class);
+        List<CommonTodoDto> commonTodoDtoList = commonTodoConverter.convertBatchVo2Dto(commonTodoVoList);
         commonTodoService.saveUpdateBatch(commonTodoDtoList);
         return R.ok();
     }
@@ -72,7 +73,7 @@ public class CommonTodoController extends BaseController {
     @Operation(summary = "查询待办事项表分页信息")
     @GetMapping(value = "findPageCommonTodo")
     public TableResult<CommonTodoDto> findPageCommonTodo(CommonTodoVo commonTodoVo, PageQuery pageQuery) {
-        CommonTodoDto commonTodoDto = UCopy.copyVo2Dto(commonTodoVo, CommonTodoDto.class);
+        CommonTodoDto commonTodoDto = commonTodoConverter.convertVo2Dto(commonTodoVo);
         return commonTodoService.findPage(commonTodoDto, pageQuery);
     }
 
@@ -85,7 +86,7 @@ public class CommonTodoController extends BaseController {
     @Operation(summary = "条件查询待办事项表")
     @GetMapping(value = "findCommonTodo")
     public R<CommonTodoDto> findCommonTodo(CommonTodoVo commonTodoVo) {
-        CommonTodoDto commonTodoDto = UCopy.copyVo2Dto(commonTodoVo, CommonTodoDto.class);
+        CommonTodoDto commonTodoDto = commonTodoConverter.convertVo2Dto(commonTodoVo);
         commonTodoDto = commonTodoService.findOne(commonTodoDto);
         return R.ok(commonTodoDto);
     }
@@ -99,7 +100,7 @@ public class CommonTodoController extends BaseController {
     @Operation(summary = "条件查询待办事项表")
     @GetMapping(value = "findListCommonTodo")
     public R<List<CommonTodoDto>> findListCommonTodo(CommonTodoVo commonTodoVo) {
-        CommonTodoDto commonTodoDto = UCopy.copyVo2Dto(commonTodoVo, CommonTodoDto.class);
+        CommonTodoDto commonTodoDto = commonTodoConverter.convertVo2Dto(commonTodoVo);
         List<CommonTodoDto> commonTodoDtoList = commonTodoService.findList(commonTodoDto);
         return R.ok(commonTodoDtoList);
     }

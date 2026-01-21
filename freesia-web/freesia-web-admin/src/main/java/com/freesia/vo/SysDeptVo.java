@@ -4,20 +4,22 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
-* @author Evad.Wu
-* @Description 部门信息表 值对象
-* @date 2023-08-12
-*/
+ * @author Evad.Wu
+ * @Description 部门信息表 值对象
+ * @date 2023-08-12
+ */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "部门信息表 值对象")
-public class SysDeptVo {
+public class SysDeptVo extends BaseVo {
     @Schema(description = "父部门ID")
     @JsonAlias(value = {"parentId"})
     private Long parentId;

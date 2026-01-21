@@ -3,8 +3,8 @@ package com.freesia.worldclock.controller;
 import com.freesia.controller.BaseController;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.util.UCopy;
 import com.freesia.vo.R;
+import com.freesia.worldclock.converter.WorldClockCityConverter;
 import com.freesia.worldclock.dto.FindCitySunriseSunsetReqDto;
 import com.freesia.worldclock.dto.WorldClockCityDto;
 import com.freesia.worldclock.entity.FindCitySunriseSunsetEntity;
@@ -28,6 +28,7 @@ import java.util.List;
 @Tag(name = "WorldClockCityController", description = "城市表 控制器")
 public class WorldClockCityController extends BaseController {
     private final WorldClockCityService worldClockCityService;
+    private final WorldClockCityConverter worldClockCityConverter;
 
     /**
      * 保存城市表信息
@@ -38,7 +39,7 @@ public class WorldClockCityController extends BaseController {
     @Operation(summary = "保存城市表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody WorldClockCityVo worldClockCityVo) {
-        WorldClockCityDto worldClockCityDto = UCopy.copyVo2Dto(worldClockCityVo, WorldClockCityDto.class);
+        WorldClockCityDto worldClockCityDto = worldClockCityConverter.convertWorldClockCityVo2Dto(worldClockCityVo);
         worldClockCityService.saveUpdate(worldClockCityDto);
         return R.ok();
     }
@@ -52,7 +53,7 @@ public class WorldClockCityController extends BaseController {
     @Operation(summary = "保存城市表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<WorldClockCityVo> worldClockCityVoList) {
-        List<WorldClockCityDto> worldClockCityDtoList = UCopy.fullCopyList(worldClockCityVoList, WorldClockCityDto.class);
+        List<WorldClockCityDto> worldClockCityDtoList = worldClockCityConverter.convertBatchVo2Dto(worldClockCityVoList);
         worldClockCityService.saveUpdateBatch(worldClockCityDtoList);
         return R.ok();
     }
@@ -67,7 +68,7 @@ public class WorldClockCityController extends BaseController {
     @Operation(summary = "查询城市表分页信息")
     @GetMapping(value = "findPageWorldClockCity")
     public TableResult<WorldClockCityDto> findPageWorldClockCity(WorldClockCityVo worldClockCityVo, PageQuery pageQuery) {
-        WorldClockCityDto worldClockCityDto = UCopy.copyVo2Dto(worldClockCityVo, WorldClockCityDto.class);
+        WorldClockCityDto worldClockCityDto = worldClockCityConverter.convertVo2Dto(worldClockCityVo);
         return worldClockCityService.findPage(worldClockCityDto, pageQuery);
     }
 
@@ -80,7 +81,7 @@ public class WorldClockCityController extends BaseController {
     @Operation(summary = "条件查询城市表")
     @GetMapping(value = "findWorldClockCity")
     public R<WorldClockCityDto> findWorldClockCity(WorldClockCityVo worldClockCityVo) {
-        WorldClockCityDto worldClockCityDto = UCopy.copyVo2Dto(worldClockCityVo, WorldClockCityDto.class);
+        WorldClockCityDto worldClockCityDto = worldClockCityConverter.convertVo2Dto(worldClockCityVo);
         WorldClockCityDto tableResult = worldClockCityService.findOne(worldClockCityDto);
         return R.ok(tableResult);
     }
@@ -97,7 +98,6 @@ public class WorldClockCityController extends BaseController {
         worldClockCityService.deleteBatch(idList);
         return R.ok();
     }
-
 
     /**
      * 条件查询城市日出日落时间表

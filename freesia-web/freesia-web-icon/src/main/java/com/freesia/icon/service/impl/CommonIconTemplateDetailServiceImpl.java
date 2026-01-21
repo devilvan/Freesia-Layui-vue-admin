@@ -4,6 +4,8 @@ import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.icon.converter.CommonIconTemplateDetailConverter;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconEntity;
 import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
@@ -12,9 +14,9 @@ import com.freesia.icon.mapper.CommonIconTemplateDetailMapper;
 import com.freesia.icon.po.CommonIconTemplateDetailPo;
 import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
+import com.freesia.icon.vo.CommonIconTemplateDetailVo;
 import com.freesia.pojo.LaySelect;
 import com.freesia.service.impl.BaseServiceImpl;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UTree;
 import lombok.NonNull;
@@ -32,10 +34,16 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonIconTemplateDetailMapper, CommonIconTemplateDetailPo, CommonIconTemplateDetailDto> implements CommonIconTemplateDetailService {
+public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonIconTemplateDetailMapper, CommonIconTemplateDetailVo, CommonIconTemplateDetailDto, CommonIconTemplateDetailPo> implements CommonIconTemplateDetailService {
     private final CommonIconTemplateDetailRepository commonIconTemplateDetailRepository;
     private final CommonIconTemplateDetailMapper commonIconTemplateDetailMapper;
+    private final CommonIconTemplateDetailConverter commonIconTemplateDetailConverter;
 
+
+    @Override
+    protected MapStructConverter<CommonIconTemplateDetailVo, CommonIconTemplateDetailDto, CommonIconTemplateDetailPo> getMapStructConverter() {
+        return commonIconTemplateDetailConverter;
+    }
 
     @Override
     protected JpaRepository<CommonIconTemplateDetailPo, Long> getRepository() {
@@ -65,8 +73,7 @@ public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonI
         List<FindCommonIconEntity> multipleIconList = dto.getMultipleIconList();
         int orderNum = Convert.toInt(dto.getOrderNum(), 0) + 10;
         for (FindCommonIconEntity entity : multipleIconList) {
-            CommonIconTemplateDetailPo po = new CommonIconTemplateDetailPo();
-            UCopy.fullCopy(dto, po);
+            CommonIconTemplateDetailPo po = commonIconTemplateDetailConverter.convertDto2Po(dto);
             po.setIconId(entity.getId());
             po.setName(entity.getName());
             po.setOrderNum(orderNum);
@@ -74,7 +81,7 @@ public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonI
             orderNum += 10;
         }
         List<CommonIconTemplateDetailPo> poList = commonIconTemplateDetailRepository.saveAll(commonIconTemplateDetailPoList);
-        return UCopy.fullCopyList(poList, CommonIconTemplateDetailDto.class);
+        return commonIconTemplateDetailConverter.convertBatchPo2Dto(poList);
     }
 
 

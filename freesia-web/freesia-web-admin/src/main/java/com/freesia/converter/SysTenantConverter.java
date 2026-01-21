@@ -7,10 +7,7 @@ import com.freesia.entity.FindSysTenantEntity;
 import com.freesia.po.SysTenantPo;
 import com.freesia.vo.AssignTenantVo;
 import com.freesia.vo.SysTenantVo;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 /**
  * @author Evad.Wu
@@ -24,6 +21,11 @@ public interface SysTenantConverter extends MapStructConverter<SysTenantVo, SysT
     @Mapping(target = "tenantId", source = "tenantId", qualifiedByName = "stringToLong")
     AssignTenantDto convertAssignTenantVo2Dto(AssignTenantVo assignTenantVo);
 
+    @Named("stringToLong")
+    default Long stringToLong(String tenantId) {
+        return tenantId != null ? Long.parseLong(tenantId) : null;
+    }
+
     @Mapping(target = "sysTenantUserPoSet", ignore = true)
-    void updateSysTenantPo(SysTenantDto sysTenantDto, @MappingTarget SysTenantPo sysTenantPo);
+    void updateSysTenantDto2Po(SysTenantDto sysTenantDto, @MappingTarget SysTenantPo sysTenantPo);
 }

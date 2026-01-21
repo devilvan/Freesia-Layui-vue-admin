@@ -82,7 +82,7 @@ public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTe
         }
         Wrapper<SysTenantPo> queryWrapper = buildQueryWrapper(sysTenantDto);
         SysTenantPo sysTenantPo = getOne(queryWrapper);
-        sysTenantConverter.updateSysTenantPo(sysTenantDto, sysTenantPo);
+        sysTenantConverter.updateSysTenantDto2Po(sysTenantDto, sysTenantPo);
         return sysTenantConverter.convertPo2Dto(sysTenantRepository.saveAndFlush(sysTenantPo));
     }
 

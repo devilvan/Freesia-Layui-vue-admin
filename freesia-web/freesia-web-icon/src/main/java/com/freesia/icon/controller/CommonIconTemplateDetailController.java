@@ -2,6 +2,7 @@ package com.freesia.icon.controller;
 
 import cn.hutool.core.convert.Convert;
 import com.freesia.controller.BaseController;
+import com.freesia.icon.converter.CommonIconTemplateDetailConverter;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.entity.FindCommonIconTemplateDetailEntity;
 import com.freesia.icon.entity.FindTreeIconTreeTypeEntity;
@@ -11,7 +12,6 @@ import com.freesia.icon.vo.FindMaxOrderNumVo;
 import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +31,7 @@ import java.util.List;
 @Tag(name = "CommonIconTemplateDetailController", description = "通用图标模板表 控制器")
 public class CommonIconTemplateDetailController extends BaseController {
     private final CommonIconTemplateDetailService commonIconTemplateDetailService;
+    private final CommonIconTemplateDetailConverter commonIconTemplateDetailConverter;
 
     /**
      * 保存通用图标模板表信息
@@ -41,7 +42,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @Operation(summary = "保存通用图标模板表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody CommonIconTemplateDetailVo commonIconTemplateDetailVo) {
-        CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = commonIconTemplateDetailConverter.convertVo2Dto(commonIconTemplateDetailVo);
         commonIconTemplateDetailService.saveUpdate(commonIconTemplateDetailDto);
         return R.ok();
     }
@@ -55,7 +56,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @Operation(summary = "保存通用图标模板表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody CommonIconTemplateDetailVo commonIconTemplateDetailVo) {
-        CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = commonIconTemplateDetailConverter.convertVo2Dto(commonIconTemplateDetailVo);
         commonIconTemplateDetailDto.setMultipleIconList(commonIconTemplateDetailVo.getMultipleIconList());
         commonIconTemplateDetailService.saveUpdateBatch(commonIconTemplateDetailDto);
         return R.ok();
@@ -71,7 +72,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @Operation(summary = "查询通用图标模板表分页信息")
     @GetMapping(value = "findPageCommonIconTemplateDetail")
     public TableResult<CommonIconTemplateDetailDto> findPageCommonIconTemplateDetail(CommonIconTemplateDetailVo commonIconTemplateDetailVo, PageQuery pageQuery) {
-        CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = commonIconTemplateDetailConverter.convertVo2Dto(commonIconTemplateDetailVo);
         return commonIconTemplateDetailService.findPage(commonIconTemplateDetailDto, pageQuery);
     }
 
@@ -84,7 +85,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @Operation(summary = "条件查询通用图标模板表")
     @GetMapping(value = "findCommonIconTemplateDetail")
     public R<FindCommonIconTemplateDetailEntity> findCommonIconTemplateDetail(CommonIconTemplateDetailVo commonIconTemplateDetailVo) {
-        CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = commonIconTemplateDetailConverter.convertVo2Dto(commonIconTemplateDetailVo);
         FindCommonIconTemplateDetailEntity tableResult = commonIconTemplateDetailService.findCommonIconTemplateDetail(commonIconTemplateDetailDto);
         return R.ok(tableResult);
     }
@@ -111,7 +112,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @Operation(summary = "查询通用图标模板明细的节点数据")
     @GetMapping(value = "findTreeIconTreeType")
     public R<List<FindTreeIconTreeTypeEntity>> findTreeIconTreeType(CommonIconTemplateDetailVo commonIconTemplateDetailVo) {
-        CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(commonIconTemplateDetailVo, CommonIconTemplateDetailDto.class);
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = commonIconTemplateDetailConverter.convertVo2Dto(commonIconTemplateDetailVo);
         List<FindTreeIconTreeTypeEntity> resultEntiytList = commonIconTemplateDetailService.findTreeIconTreeType(commonIconTemplateDetailDto);
         return R.ok(resultEntiytList);
     }
@@ -120,7 +121,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @GetMapping(value = "findMaxOrderNum")
 //    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
     public R<Integer> findMaxOrderNum(FindMaxOrderNumVo findMaxOrderNumVo) {
-        CommonIconTemplateDetailDto commonIconTemplateDetailDto = UCopy.copyVo2Dto(findMaxOrderNumVo, CommonIconTemplateDetailDto.class);
+        CommonIconTemplateDetailDto commonIconTemplateDetailDto = commonIconTemplateDetailConverter.convertFindMaxOrderNumVo2CommonIconTemplateDetailDto(findMaxOrderNumVo);
         Integer maxOrderNum = Convert.toInt(commonIconTemplateDetailService.findMaxOrderNum(commonIconTemplateDetailDto), 0);
         maxOrderNum = (maxOrderNum / 10) * 10 + 10;
         return R.ok(maxOrderNum);
@@ -130,7 +131,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @GetMapping(value = "findGrouping")
 //    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
     public R<List<LaySelect>> findGrouping(CommonIconTemplateDetailVo vo) {
-        CommonIconTemplateDetailDto dto = UCopy.copyVo2Dto(vo, CommonIconTemplateDetailDto.class);
+        CommonIconTemplateDetailDto dto = commonIconTemplateDetailConverter.convertVo2Dto(vo);
         List<LaySelect> resultMap = commonIconTemplateDetailService.findGrouping(dto);
         return R.ok(resultMap);
     }
@@ -139,7 +140,7 @@ public class CommonIconTemplateDetailController extends BaseController {
     @GetMapping(value = "findCustomIconTemplateDetail")
 //    @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_INDEX)
     public R<List<FindTreeIconTreeTypeEntity>> findCustomIconTemplateDetail(CommonIconTemplateDetailVo vo) {
-        CommonIconTemplateDetailDto dto = UCopy.copyVo2Dto(vo, CommonIconTemplateDetailDto.class);
+        CommonIconTemplateDetailDto dto = commonIconTemplateDetailConverter.convertVo2Dto(vo);
         List<FindTreeIconTreeTypeEntity> list = commonIconTemplateDetailService.findCustomIconTemplateDetail(dto);
         return R.ok(list);
     }

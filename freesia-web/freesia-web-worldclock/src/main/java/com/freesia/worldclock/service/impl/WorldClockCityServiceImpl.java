@@ -3,10 +3,11 @@ package com.freesia.worldclock.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
 import com.freesia.redis.util.URedis;
 import com.freesia.service.impl.BaseServiceImpl;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
+import com.freesia.worldclock.converter.WorldClockCityConverter;
 import com.freesia.worldclock.dto.FindCitySunriseSunsetReqDto;
 import com.freesia.worldclock.dto.WorldClockCityDto;
 import com.freesia.worldclock.dto.WorldClockSunriseSunsetDto;
@@ -18,6 +19,7 @@ import com.freesia.worldclock.service.WorldClockCityService;
 import com.freesia.worldclock.service.WorldClockSunriseSunsetService;
 import com.freesia.worldclock.util.SunriseSunsetCalculatorUtil;
 import com.freesia.worldclock.util.TimeZoneConverter;
+import com.freesia.worldclock.vo.WorldClockCityVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +42,17 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class WorldClockCityServiceImpl extends BaseServiceImpl<WorldClockCityMapper, WorldClockCityPo, WorldClockCityDto> implements WorldClockCityService {
+public class WorldClockCityServiceImpl extends BaseServiceImpl<WorldClockCityMapper, WorldClockCityVo, WorldClockCityDto, WorldClockCityPo> implements WorldClockCityService {
     private final WorldClockCityRepository worldClockCityRepository;
     private final WorldClockCityMapper worldClockCityMapper;
     private final WorldClockSunriseSunsetService worldClockSunriseSunsetService;
+    private final WorldClockCityConverter worldClockCityConverter;
 
+
+    @Override
+    protected MapStructConverter<WorldClockCityVo, WorldClockCityDto, WorldClockCityPo> getMapStructConverter() {
+        return worldClockCityConverter;
+    }
 
     @Override
     protected JpaRepository<WorldClockCityPo, Long> getRepository() {
@@ -134,7 +142,7 @@ public class WorldClockCityServiceImpl extends BaseServiceImpl<WorldClockCityMap
     @Override
     public List<WorldClockCityDto> findList(WorldClockCityDto worldClockCityDto) {
         List<WorldClockCityPo> worldClockCityPoList = worldClockCityMapper.findListWorldClockCity(worldClockCityDto);
-        return UCopy.fullCopyList(worldClockCityPoList, WorldClockCityDto.class);
+        return worldClockCityConverter.convertBatchPo2Dto(worldClockCityPoList);
     }
 
 

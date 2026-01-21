@@ -10,6 +10,8 @@ import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.AdminConstant;
 import com.freesia.constant.DeptModule;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysDeptConverter;
 import com.freesia.dto.SysDeptDto;
 import com.freesia.entity.FindDeptRolesByDeptIdEntity;
 import com.freesia.entity.FindPageSysDeptListEntity;
@@ -32,6 +34,7 @@ import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysDeptService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
+import com.freesia.vo.SysDeptVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -51,12 +54,19 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo, SysDeptDto> implements SysDeptService {
+public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptVo, SysDeptDto, SysDeptPo> implements SysDeptService {
     private final TransactionTemplate transactionTemplate;
     private final SysDeptRepository sysDeptRepository;
     private final SysDeptMapper sysDeptMapper;
     private final SysRoleDeptRepository sysRoleDeptRepository;
     private final SysUserService sysUserService;
+    private final SysDeptConverter sysDeptConverter;
+
+
+    @Override
+    protected MapStructConverter<SysDeptVo, SysDeptDto, SysDeptPo> getMapStructConverter() {
+        return sysDeptConverter;
+    }
 
     @Override
     protected JpaRepository<SysDeptPo, Long> getRepository() {
@@ -135,7 +145,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo
         SysDeptPo sysDeptPo = sysDeptRepository.findById(deptId).orElseThrow(() -> new DeptException("dept.not.exists", new Object[]{}));
         sysDeptPo.setLogicDel(true);
         sysDeptPo.setDeptStatus(FlagConstant.DISABLED);
-        return super.convertPo2Dto(sysDeptRepository.save(sysDeptPo));
+        return sysDeptConverter.convertPo2Dto(sysDeptRepository.save(sysDeptPo));
     }
 
     @Override
@@ -150,7 +160,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo
     @Override
     public SysDeptDto saveDept(SysDeptDto sysDeptDto) {
         SysDeptPo sysDeptPo = buildSaveDeptPo(sysDeptDto);
-        return convertPo2Dto(sysDeptRepository.saveAndFlush(sysDeptPo));
+        return sysDeptConverter.convertPo2Dto(sysDeptRepository.saveAndFlush(sysDeptPo));
     }
 
     @Override
@@ -263,7 +273,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptPo
         Long id = sysDeptDto.getId();
         if (UEmpty.isNotNull(id)) {
             sysDeptPo = sysDeptRepository.findById(id).orElseThrow(() -> new DeptException("dept.query.failed", new Object[]{id}));
-            UCopy.halfCopy(sysDeptDto, sysDeptPo);
+            sysDeptConverter.updateSysDeptDto2Po(sysDeptDto, sysDeptPo);
         } else {
             Long parentId = sysDeptDto.getParentId();
             sysDeptPo.setParentId(parentId);

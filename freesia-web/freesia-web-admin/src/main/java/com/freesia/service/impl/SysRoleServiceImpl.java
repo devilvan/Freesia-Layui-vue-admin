@@ -279,7 +279,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
         } else {
             // 修改
             sysRolePo = findSysRolePoById(roleId);
-            sysRoleConverter.updateSysRolePo(sysRoleDto, sysRolePo);
+            sysRoleConverter.updateSysRoleDto2Po(sysRoleDto, sysRolePo);
         }
         SysRolePo save = sysRoleRepository.save(sysRolePo);
         return sysRoleConverter.convertPo2Dto(save);

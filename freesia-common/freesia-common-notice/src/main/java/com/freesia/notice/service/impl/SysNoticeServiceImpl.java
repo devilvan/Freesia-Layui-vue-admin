@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
 import com.freesia.dto.BaseDto;
+import com.freesia.notice.converter.SysNoticeConverter;
 import com.freesia.notice.dto.MarkReadDto;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.entity.FindPageSysNoticeEntity;
@@ -18,7 +20,6 @@ import com.freesia.notice.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.impl.BaseServiceImpl;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +38,15 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class SysNoticeServiceImpl extends BaseServiceImpl<SysNoticeMapper, SysNoticePo, SysNoticeDto> implements SysNoticeService {
+public class SysNoticeServiceImpl extends BaseServiceImpl<SysNoticeMapper, SysNoticeVo, SysNoticeDto, SysNoticePo> implements SysNoticeService {
     private final SysNoticeRepository sysNoticeRepository;
     private final SysNoticeMapper sysNoticeMapper;
+    private final SysNoticeConverter sysNoticeConverter;
 
+    @Override
+    protected MapStructConverter<SysNoticeVo, SysNoticeDto, SysNoticePo> getMapStructConverter() {
+        return sysNoticeConverter;
+    }
 
     @Override
     protected JpaRepository<SysNoticePo, Long> getRepository() {
@@ -84,7 +90,7 @@ public class SysNoticeServiceImpl extends BaseServiceImpl<SysNoticeMapper, SysNo
 
     @Override
     public Integer findUnreadCount(SysNoticeVo sysNoticeVo) {
-        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+        SysNoticeDto sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
         return sysNoticeMapper.findUnreadCount(sysNoticeDto);
     }
 

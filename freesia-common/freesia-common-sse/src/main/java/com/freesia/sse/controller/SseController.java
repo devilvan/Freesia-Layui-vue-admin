@@ -10,6 +10,7 @@ import com.freesia.sse.constant.SseTopic;
 import com.freesia.sse.dto.SseMessageDto;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,11 +29,11 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
+@RequiredArgsConstructor
 @ConditionalOnProperty(value = "sse.enabled", havingValue = "true")
 @Tag(name = "SseController", description = "SSE (Server-Sent Events) 控制器")
 public class SseController extends BaseController implements DisposableBean {
-    @Resource
-    private SseEmitterManager sseEmitterManager;
+    private final SseEmitterManager sseEmitterManager;
 
     /**
      * 建立 SSE 连接

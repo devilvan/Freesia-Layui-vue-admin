@@ -4,6 +4,8 @@ import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.convert.Convert;
 import com.freesia.constant.MenuPermission;
+import com.freesia.converter.SysDictKeyConverter;
+import com.freesia.converter.SysDictValueConverter;
 import com.freesia.dto.SysDictDto;
 import com.freesia.dto.SysDictKeyDto;
 import com.freesia.dto.SysDictValueDto;
@@ -20,7 +22,6 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysDictKeyService;
 import com.freesia.service.SysDictValueService;
-import com.freesia.util.UCopy;
 import com.freesia.util.UMessage;
 import com.freesia.vo.R;
 import com.freesia.vo.SysDictKeyVo;
@@ -52,13 +53,14 @@ import java.util.Optional;
 public class SysDictController extends BaseController {
     private final SysDictKeyService sysDictKeyService;
     private final SysDictValueService sysDictValueService;
+    private final SysDictKeyConverter sysDictKeyConverter;
+    private final SysDictValueConverter sysDictValueConverter;
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_DICT_INDEX)
     @Operation(summary = "查询字典键数据列表")
     @GetMapping(value = "findSysDictKeyList")
     public R<List<SysDictKeyDto>> findSysDictKeyList(SysDictKeyVo sysDictKeyVo) {
-        SysDictKeyDto sysDictKeyDto = new SysDictKeyDto();
-        UCopy.fullCopy(sysDictKeyVo, sysDictKeyDto);
+        SysDictKeyDto sysDictKeyDto = sysDictKeyConverter.convertVo2Dto(sysDictKeyVo);
         List<SysDictKeyDto> sysDictKeyEntityList = sysDictKeyService.findList(sysDictKeyDto);
         return R.ok(sysDictKeyEntityList);
     }
@@ -67,8 +69,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "查询字典值分页数据")
     @GetMapping(value = "findPageSysDictValue")
     public TableResult<SysDictValueDto> findPageSysDictValue(SysDictVo sysDictValueVo, PageQuery pageQuery) {
-        SysDictValueDto sysDictValueDto = new SysDictValueDto();
-        UCopy.fullCopy(sysDictValueVo, sysDictValueDto);
+        SysDictValueDto sysDictValueDto = sysDictValueConverter.convertSysDictVo2SysDictValueDto(sysDictValueVo);
         return sysDictValueService.findPage(sysDictValueDto, pageQuery);
     }
 
@@ -76,8 +77,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "查询字典值列表数据")
     @GetMapping(value = "findSysDictValueList")
     public R<List<SysDictValueDto>> findSysDictValueList(@Valid SysDictVo sysDictValueVo) {
-        SysDictValueDto sysDictValueDto = new SysDictValueDto();
-        UCopy.fullCopy(sysDictValueVo, sysDictValueDto);
+        SysDictValueDto sysDictValueDto = sysDictValueConverter.convertSysDictVo2SysDictValueDto(sysDictValueVo);
         List<SysDictValueDto> sysDictValueDtoList = sysDictValueService.findList(sysDictValueDto);
         return R.ok(sysDictValueDtoList);
     }
@@ -93,8 +93,7 @@ public class SysDictController extends BaseController {
     @Operation(summary = "查询字典数据的分页信息")
     @GetMapping(value = "findPageSysDictList")
     public TableResult<FindPageSysDictKeyEntity> findPageSysDictList(SysDictVo sysDictVo, PageQuery pageQuery) {
-        SysDictDto sysDictDto = new SysDictDto();
-        UCopy.fullCopy(sysDictVo, sysDictDto);
+        SysDictDto sysDictDto = sysDictValueConverter.convertSysDictVo2Dto(sysDictVo);
         return sysDictKeyService.findPageSysDictList(sysDictDto, pageQuery);
     }
 
@@ -107,7 +106,7 @@ public class SysDictController extends BaseController {
     @PostMapping(value = "saveSysDictKeyList")
     public R<Void> saveSysDictKeyList(@RequestBody String request) {
         List<SysDictKeyVo> sysDictKeyVoList = UJSON.parseArray(request, SysDictKeyVo.class);
-        List<SysDictKeyDto> sysDictKeyDtoList = UCopy.fullCopyList(sysDictKeyVoList, SysDictKeyDto.class);
+        List<SysDictKeyDto> sysDictKeyDtoList = sysDictKeyConverter.convertBatchVo2Dto(sysDictKeyVoList);
         sysDictKeyService.saveUpdateBatch(sysDictKeyDtoList);
         return R.ok();
     }
@@ -121,7 +120,7 @@ public class SysDictController extends BaseController {
     @PostMapping(value = "saveSysDictKey")
     public R<SysDictKeyDto> saveSysDictKey(@RequestBody String request) {
         SysDictKeyVo sysDictKeyVo = UJSON.parseObject(request, SysDictKeyVo.class);
-        SysDictKeyDto sysDictKeyDto = UCopy.copyVo2Dto(sysDictKeyVo, SysDictKeyDto.class);
+        SysDictKeyDto sysDictKeyDto = sysDictKeyConverter.convertVo2Dto(sysDictKeyVo);
         sysDictKeyDto = sysDictKeyService.saveSysDictKey(sysDictKeyDto);
         return R.ok(sysDictKeyDto);
     }
@@ -135,7 +134,7 @@ public class SysDictController extends BaseController {
     @PostMapping(value = "saveSysDictValue")
     public R<SysDictValueDto> saveSysDictValue(@RequestBody String request) {
         SysDictValueVo sysDictValueVo = UJSON.parseObject(request, SysDictValueVo.class);
-        SysDictValueDto sysDictValueDto = UCopy.copyVo2Dto(sysDictValueVo, SysDictValueDto.class);
+        SysDictValueDto sysDictValueDto = sysDictValueConverter.convertVo2Dto(sysDictValueVo);
         sysDictValueDto = sysDictValueService.saveSysDictValue(sysDictValueDto);
         return R.ok(sysDictValueDto);
     }
@@ -149,7 +148,7 @@ public class SysDictController extends BaseController {
     @PostMapping(value = "saveSysDictValueList")
     public R<Void> saveSysDictValueList(@RequestBody String request) {
         List<SysDictValueVo> sysDictValueVoList = UJSON.parseArray(request, SysDictValueVo.class);
-        List<SysDictValueDto> sysDictValueDtoList = UCopy.fullCopyList(sysDictValueVoList, SysDictValueDto.class);
+        List<SysDictValueDto> sysDictValueDtoList = sysDictValueConverter.convertBatchVo2Dto(sysDictValueVoList);
         sysDictValueService.saveUpdateBatch(sysDictValueDtoList);
         return R.ok();
     }

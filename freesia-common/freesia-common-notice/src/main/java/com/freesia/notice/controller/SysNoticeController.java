@@ -4,6 +4,7 @@ import com.freesia.controller.BaseController;
 import com.freesia.exception.ServiceException;
 import com.freesia.notice.constant.NoticeModule;
 import com.freesia.notice.constant.SysNoticeType;
+import com.freesia.notice.converter.SysNoticeConverter;
 import com.freesia.notice.dto.MarkReadDto;
 import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.entity.FindPageSysNoticeEntity;
@@ -18,7 +19,6 @@ import com.freesia.sse.component.SseEmitterManager;
 import com.freesia.sse.constant.SseTopic;
 import com.freesia.sse.dto.SseMessageDto;
 import com.freesia.util.UCalendar;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +43,7 @@ public class SysNoticeController extends BaseController {
     private final SysNoticeService sysNoticeService;
     private final SseEmitterManager sseEmitterManager;
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    private final SysNoticeConverter sysNoticeConverter;
 
     /**
      * 保存消息公告表信息
@@ -88,7 +89,7 @@ public class SysNoticeController extends BaseController {
                 calendar.set(Calendar.MILLISECOND, 0);
                 sysNoticeVo.setEffectiveTimeFrom(calendar.getTime());
             }
-            sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+            sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
             scheduledThreadPoolExecutor.schedule(() -> {
                 SseMessageDto sseMessageDto = new SseMessageDto();
                 sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
@@ -96,7 +97,7 @@ public class SysNoticeController extends BaseController {
                 sseEmitterManager.publishAll(sseMessageDto);
             }, 5, TimeUnit.SECONDS);
         } else {
-            sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+            sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
         }
         if (UEmpty.isNotNull(sysNoticeDto)) {
             sysNoticeService.saveUpdate(sysNoticeDto);
@@ -113,7 +114,7 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "保存消息公告表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<SysNoticeVo> sysNoticeVoList) {
-        List<SysNoticeDto> sysNoticeDtoList = UCopy.fullCopyList(sysNoticeVoList, SysNoticeDto.class);
+        List<SysNoticeDto> sysNoticeDtoList = sysNoticeConverter.convertBatchVo2Dto(sysNoticeVoList);
         sysNoticeService.saveUpdateBatch(sysNoticeDtoList);
         return R.ok();
     }
@@ -130,7 +131,7 @@ public class SysNoticeController extends BaseController {
     public TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeVo sysNoticeVo, PageQuery pageQuery) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
         sysNoticeVo.setUserId(userId);
-        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+        SysNoticeDto sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
         Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
         if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
             sysNoticeDto.setEffectiveTimeFrom(effectiveTime[0]);
@@ -150,7 +151,7 @@ public class SysNoticeController extends BaseController {
     public R<List<FindPageSysNoticeEntity>> findListSysNotice(SysNoticeVo sysNoticeVo) {
         Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
         sysNoticeVo.setUserId(userId);
-        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+        SysNoticeDto sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
         Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
         if (UEmpty.isNotEmpty(effectiveTime) && effectiveTime.length == 2) {
             sysNoticeDto.setEffectiveTimeFrom(effectiveTime[0]);
@@ -169,7 +170,7 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "条件查询消息公告表")
     @GetMapping(value = "findSysNotice")
     public R<SysNoticeDto> findSysNotice(SysNoticeVo sysNoticeVo) {
-        SysNoticeDto sysNoticeDto = UCopy.copyVo2Dto(sysNoticeVo, SysNoticeDto.class);
+        SysNoticeDto sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
         SysNoticeDto tableResult = sysNoticeService.findOne(sysNoticeDto);
         return R.ok(tableResult);
     }

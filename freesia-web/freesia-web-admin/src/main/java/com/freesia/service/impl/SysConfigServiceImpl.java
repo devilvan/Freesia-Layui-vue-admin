@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.freesia.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysConfigConverter;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.exception.CaptchaException;
 import com.freesia.exception.CaptchaExpireException;
@@ -19,6 +21,7 @@ import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysConfigRepository;
 import com.freesia.service.SysConfigService;
 import com.freesia.util.*;
+import com.freesia.vo.SysConfigVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -37,9 +40,15 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class SysConfigServiceImpl extends BaseServiceImpl<SysConfigMapper, SysConfigPo, SysConfigDto> implements SysConfigService {
+public class SysConfigServiceImpl extends BaseServiceImpl<SysConfigMapper, SysConfigVo, SysConfigDto, SysConfigPo> implements SysConfigService {
     private final SysConfigMapper sysConfigMapper;
     private final SysConfigRepository sysConfigRepository;
+    private final SysConfigConverter sysConfigConverter;
+
+    @Override
+    protected MapStructConverter<SysConfigVo, SysConfigDto, SysConfigPo> getMapStructConverter() {
+        return sysConfigConverter;
+    }
 
     @Override
     protected JpaRepository<SysConfigPo, Long> getRepository() {

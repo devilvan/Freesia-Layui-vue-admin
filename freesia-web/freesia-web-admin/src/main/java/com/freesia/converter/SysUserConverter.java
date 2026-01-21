@@ -43,5 +43,5 @@ public interface SysUserConverter extends MapStructConverter<SysUserVo, SysUserD
     @Mapping(target = "sysTenantUserPoSet", ignore = true)
     @Mapping(target = "sysRolePoSet", ignore = true)
     @Mapping(target = "sysDeptPo", ignore = true)
-    void updateSysUserPo(SysUserDto sysUserDto, @MappingTarget SysUserPo sysUserPo);
+    void updateSysUserDto2Po(SysUserDto sysUserDto, @MappingTarget SysUserPo sysUserPo);
 }

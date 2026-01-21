@@ -1,11 +1,10 @@
 package com.freesia.sse.schedule;
 
 import com.freesia.sse.component.SseEmitterManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * @author Evad.Wu
@@ -14,9 +13,9 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class SseHeartbeatCompleteScheduler {
-    @Resource
-    private SseEmitterManager sseEmitterManager;
+    private final SseEmitterManager sseEmitterManager;
 
     /**
      * 接收心跳-完成连接 定时任务

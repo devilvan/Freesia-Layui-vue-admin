@@ -31,7 +31,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //    private FastJsonHttpMessageConverter fastJsonHttpMessageConverter;
     @Resource
     private ObjectMapper objectMapper;
-    @Resource
+    @Resource(name = "threadPoolTaskExecutor")
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     /**

@@ -6,6 +6,7 @@ import cn.hutool.http.HttpStatus;
 import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
 import com.freesia.dto.SysOssDto;
+import com.freesia.icon.converter.CommonIconConverter;
 import com.freesia.icon.dto.CommonIconDto;
 import com.freesia.icon.entity.CommonIconSaveUpdateEntity;
 import com.freesia.icon.entity.FindCommonIconEntity;
@@ -17,7 +18,6 @@ import com.freesia.json.util.UJSON;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysOssService;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
 import com.freesia.vo.R;
@@ -47,6 +47,7 @@ public class CommonIconController extends BaseController {
     private final CommonIconService commonIconService;
     private final SysOssService sysOssService;
     private final TransactionTemplate transactionTemplate;
+    private final CommonIconConverter commonIconConverter;
 
     /**
      * 保存通用图标表信息
@@ -73,7 +74,7 @@ public class CommonIconController extends BaseController {
             return R.failed(HttpStatus.HTTP_BAD_REQUEST, UMessage.message("oss.upload.only.one"));
         }
         List<SysOssDto> sysOssDtoList = new ArrayList<>();
-        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        CommonIconDto commonIconDto = commonIconConverter.convertVo2Dto(commonIconVo);
         // 文件新增
         if (UEmpty.isNull(commonIconVo.getId())) {
             sysOssDtoList = sysOssService.upload(fileList, "icon");
@@ -118,7 +119,7 @@ public class CommonIconController extends BaseController {
     public R<Void> saveUpdateBatch(@NotNull @RequestPart(value = "file[]") List<MultipartFile> fileList,
                                    @RequestParam(value = "commonIconVo") String request) {
         CommonIconVo commonIconVo = UJSON.parseObject(request, CommonIconVo.class);
-        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        CommonIconDto commonIconDto = commonIconConverter.convertVo2Dto(commonIconVo);
         return transactionTemplate.execute(status -> {
             List<SysOssDto> sysOssDtoList = sysOssService.upload(fileList, "icon");
             if (UEmpty.isNotEmpty(sysOssDtoList)) {
@@ -142,7 +143,7 @@ public class CommonIconController extends BaseController {
     @GetMapping(value = "findPageCommonIcon")
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
     public TableResult<FindPageCommonIconEntity> findPageCommonIcon(CommonIconVo commonIconVo, PageQuery pageQuery) {
-        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        CommonIconDto commonIconDto = commonIconConverter.convertVo2Dto(commonIconVo);
         return commonIconService.findPageCommonIcon(commonIconDto, pageQuery);
     }
 
@@ -156,7 +157,7 @@ public class CommonIconController extends BaseController {
     @GetMapping(value = "findCommonIcon")
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
     public R<FindCommonIconEntity> findCommonIcon(CommonIconVo commonIconVo) {
-        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        CommonIconDto commonIconDto = commonIconConverter.convertVo2Dto(commonIconVo);
         FindCommonIconEntity tableResult = commonIconService.findCommonIcon(commonIconDto);
         return R.ok(tableResult);
     }
@@ -171,7 +172,7 @@ public class CommonIconController extends BaseController {
     @PostMapping(value = "findListCommonIcon")
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
     public R<List<FindCommonIconEntity>> findListCommonIcon(@RequestBody CommonIconVo commonIconVo) {
-        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        CommonIconDto commonIconDto = commonIconConverter.convertVo2Dto(commonIconVo);
         commonIconDto.setIdList(commonIconVo.getIdList());
         List<FindCommonIconEntity> list = commonIconService.findListCommonIcon(commonIconDto);
         return R.ok(list);
@@ -201,7 +202,7 @@ public class CommonIconController extends BaseController {
     @GetMapping(value = "findCommonIconPicker")
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
     public R<Map<String, List<FindCommonIconEntity>>> findCommonIconPicker(CommonIconVo commonIconVo) {
-        CommonIconDto commonIconDto = UCopy.copyVo2Dto(commonIconVo, CommonIconDto.class);
+        CommonIconDto commonIconDto = commonIconConverter.convertVo2Dto(commonIconVo);
         Map<String, List<FindCommonIconEntity>> resultMap = commonIconService.findCommonIconPicker(commonIconDto);
         return R.ok(resultMap);
     }

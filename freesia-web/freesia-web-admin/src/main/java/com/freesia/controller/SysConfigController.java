@@ -4,12 +4,12 @@ import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.ObjectUtil;
 import com.freesia.constant.MenuPermission;
+import com.freesia.converter.SysConfigConverter;
 import com.freesia.dto.SysConfigDto;
 import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysConfigService;
-import com.freesia.util.UCopy;
 import com.freesia.util.UMessage;
 import com.freesia.util.UString;
 import com.freesia.vo.R;
@@ -34,12 +34,13 @@ import javax.validation.Valid;
 @Tag(name = "SysConfigController", description = "全局配置信息表 控制器")
 public class SysConfigController extends BaseController {
     private final SysConfigService sysConfigService;
+    private final SysConfigConverter sysConfigConverter;
 
     @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_INDEX)
     @Operation(summary = "获取参数配置分页")
     @GetMapping(value = "findPageSysConfig")
     public TableResult<SysConfigDto> findPageSysConfig(SysConfigVo sysConfigVo, PageQuery pageQuery) {
-        SysConfigDto sysConfigDto = UCopy.copyVo2Dto(sysConfigVo, SysConfigDto.class);
+        SysConfigDto sysConfigDto = sysConfigConverter.convertVo2Dto(sysConfigVo);
         return sysConfigService.findPage(sysConfigDto, pageQuery);
     }
 
@@ -63,7 +64,7 @@ public class SysConfigController extends BaseController {
     @Operation(summary = "保存系统配置信息")
     @PostMapping(value = "saveConfig")
     public R<Void> saveConfig(@RequestBody SysConfigVo sysConfigVo) {
-        SysConfigDto sysConfigDto = UCopy.copyVo2Dto(sysConfigVo, SysConfigDto.class);
+        SysConfigDto sysConfigDto = sysConfigConverter.convertVo2Dto(sysConfigVo);
         sysConfigService.saveUpdate(sysConfigDto);
         return R.ok();
     }

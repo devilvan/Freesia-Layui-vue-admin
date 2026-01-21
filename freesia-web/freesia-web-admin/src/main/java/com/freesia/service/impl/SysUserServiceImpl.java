@@ -192,7 +192,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
         SysUserPo sysUserPo;
         if (UEmpty.isNotNull(id)) {
             sysUserPo = sysUserRepository.findById(id).orElseThrow(() -> new UserException("user.query.failed", new Object[]{}));
-            sysUserConverter.updateSysUserPo(sysUserDto, sysUserPo);
+            sysUserConverter.updateSysUserDto2Po(sysUserDto, sysUserPo);
             sysUserRepository.save(sysUserPo);
         } else {
             sysUserPo = buildInsertSysUserPo(sysUserDto);

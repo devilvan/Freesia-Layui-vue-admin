@@ -3,8 +3,8 @@ package com.freesia.worldclock.controller;
 import com.freesia.controller.BaseController;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.util.UCopy;
 import com.freesia.vo.R;
+import com.freesia.worldclock.converter.WorldClockSunriseSunsetConverter;
 import com.freesia.worldclock.dto.WorldClockSunriseSunsetDto;
 import com.freesia.worldclock.service.WorldClockSunriseSunsetService;
 import com.freesia.worldclock.vo.WorldClockSunriseSunsetVo;
@@ -26,6 +26,7 @@ import java.util.List;
 @Tag(name = "WorldClockSunriseSunsetController", description = "日出日落时间表 控制器")
 public class WorldClockSunriseSunsetController extends BaseController {
     private final WorldClockSunriseSunsetService worldClockSunriseSunsetService;
+    private final WorldClockSunriseSunsetConverter worldClockSunriseSunsetConverter;
 
     /**
      * 保存日出日落时间表信息
@@ -36,7 +37,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     @Operation(summary = "保存日出日落时间表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody WorldClockSunriseSunsetVo worldClockSunriseSunsetVo) {
-        WorldClockSunriseSunsetDto worldClockSunriseSunsetDto = UCopy.copyVo2Dto(worldClockSunriseSunsetVo, WorldClockSunriseSunsetDto.class);
+        WorldClockSunriseSunsetDto worldClockSunriseSunsetDto = worldClockSunriseSunsetConverter.convertVo2Dto(worldClockSunriseSunsetVo);
         worldClockSunriseSunsetService.saveUpdate(worldClockSunriseSunsetDto);
         return R.ok();
     }
@@ -50,7 +51,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     @Operation(summary = "保存日出日落时间表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<WorldClockSunriseSunsetVo> worldClockSunriseSunsetVoList) {
-        List<WorldClockSunriseSunsetDto> worldClockSunriseSunsetDtoList = UCopy.fullCopyList(worldClockSunriseSunsetVoList, WorldClockSunriseSunsetDto.class);
+        List<WorldClockSunriseSunsetDto> worldClockSunriseSunsetDtoList = worldClockSunriseSunsetConverter.convertBatchVo2Dto(worldClockSunriseSunsetVoList);
         worldClockSunriseSunsetService.saveUpdateBatch(worldClockSunriseSunsetDtoList);
         return R.ok();
     }
@@ -65,7 +66,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     @Operation(summary = "查询日出日落时间表分页信息")
     @GetMapping(value = "findPageWorldClockSunriseSunset")
     public TableResult<WorldClockSunriseSunsetDto> findPageWorldClockSunriseSunset(WorldClockSunriseSunsetVo worldClockSunriseSunsetVo, PageQuery pageQuery) {
-        WorldClockSunriseSunsetDto worldClockSunriseSunsetDto = UCopy.copyVo2Dto(worldClockSunriseSunsetVo, WorldClockSunriseSunsetDto.class);
+        WorldClockSunriseSunsetDto worldClockSunriseSunsetDto = worldClockSunriseSunsetConverter.convertVo2Dto(worldClockSunriseSunsetVo);
         return worldClockSunriseSunsetService.findPage(worldClockSunriseSunsetDto, pageQuery);
     }
 
@@ -78,7 +79,7 @@ public class WorldClockSunriseSunsetController extends BaseController {
     @Operation(summary = "条件查询日出日落时间表")
     @GetMapping(value = "findWorldClockSunriseSunset")
     public R<WorldClockSunriseSunsetDto> findWorldClockSunriseSunset(WorldClockSunriseSunsetVo worldClockSunriseSunsetVo) {
-        WorldClockSunriseSunsetDto worldClockSunriseSunsetDto = UCopy.copyVo2Dto(worldClockSunriseSunsetVo, WorldClockSunriseSunsetDto.class);
+        WorldClockSunriseSunsetDto worldClockSunriseSunsetDto = worldClockSunriseSunsetConverter.convertVo2Dto(worldClockSunriseSunsetVo);
         WorldClockSunriseSunsetDto tableResult = worldClockSunriseSunsetService.findOne(worldClockSunriseSunsetDto);
         return R.ok(tableResult);
     }

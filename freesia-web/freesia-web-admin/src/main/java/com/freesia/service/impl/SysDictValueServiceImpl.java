@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.DictModule;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysDictValueConverter;
 import com.freesia.dto.SysDictValueDto;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.mapper.SysDictValueMapper;
@@ -17,6 +19,7 @@ import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysDictValueRepository;
 import com.freesia.service.SysDictValueService;
 import com.freesia.util.*;
+import com.freesia.vo.SysDictValueVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,9 +36,16 @@ import java.util.Map;
  */
 @Service
 @RequiredArgsConstructor
-public class SysDictValueServiceImpl extends BaseServiceImpl<SysDictValueMapper, SysDictValuePo, SysDictValueDto> implements SysDictValueService {
+public class SysDictValueServiceImpl extends BaseServiceImpl<SysDictValueMapper, SysDictValueVo, SysDictValueDto, SysDictValuePo> implements SysDictValueService {
     private final SysDictValueRepository sysDictValueRepository;
     private final SysDictValueMapper sysDictValueMapper;
+    private final SysDictValueConverter sysDictValueConverter;
+
+
+    @Override
+    protected MapStructConverter<SysDictValueVo, SysDictValueDto, SysDictValuePo> getMapStructConverter() {
+        return sysDictValueConverter;
+    }
 
     @Override
     protected JpaRepository<SysDictValuePo, Long> getRepository() {
@@ -68,20 +78,19 @@ public class SysDictValueServiceImpl extends BaseServiceImpl<SysDictValueMapper,
     @Override
     public TableResult<SysDictValueDto> findPage(SysDictValueDto sysDictValueDto, PageQuery pageQuery) {
         Page<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.findPageSysDictValue(pageQuery.build(), buildQueryWrapper(sysDictValueDto));
-        Page<SysDictValueDto> sysDictValueDtoPage = UCopy.convertPage(sysDictValuePoList, SysDictValueDto.class);
-        return TableResult.build(sysDictValueDtoPage);
+        return TableResult.build(sysDictValueConverter.convertPagePo2Dto(sysDictValuePoList));
     }
 
     @Override
     public List<SysDictValueDto> findList(SysDictValueDto sysDictValueDto) {
         List<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.findSysDictValueList(buildQueryWrapper(sysDictValueDto));
-        return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
+        return sysDictValueConverter.convertBatchPo2Dto(sysDictValuePoList);
     }
 
     @Override
     public List<SysDictValueDto> findCacheSysDictValueList(String dictKey) {
         List<SysDictValuePo> sysDictValuePoList = USpring.getAopProxy(this).findSysDictValuePoList(dictKey);
-        return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
+        return sysDictValueConverter.convertBatchPo2Dto(sysDictValuePoList);
     }
 
     @Cacheable(cacheNames = CacheConstant.SYS_DICT, key = "#dictKey")
@@ -122,12 +131,12 @@ public class SysDictValueServiceImpl extends BaseServiceImpl<SysDictValueMapper,
         }
         if (UEmpty.isNotEmpty(sysDictValueDto.getId())) {
             sysDictValuePo = sysDictValueRepository.findById(sysDictValueDto.getId()).orElseGet(SysDictValuePo::new);
-            UCopy.halfCopy(sysDictValueDto, sysDictValuePo);
+            sysDictValueConverter.updateSysDictValueDto2Po(sysDictValueDto, sysDictValuePo);
         } else {
-            UCopy.fullCopy(sysDictValueDto, sysDictValuePo);
+            sysDictValuePo = sysDictValueConverter.convertDto2Po(sysDictValueDto);
         }
         sysDictValueRepository.save(sysDictValuePo);
-        return UCopy.copyPo2Dto(sysDictValuePo, SysDictValueDto.class);
+        return sysDictValueConverter.convertPo2Dto(sysDictValuePo);
     }
 
     @Override
@@ -163,7 +172,7 @@ public class SysDictValueServiceImpl extends BaseServiceImpl<SysDictValueMapper,
     @Override
     public List<SysDictValueDto> findDistinctDictValueNameList(List<String> distinctDictValueNameList, String dictKey, Long keyId) {
         List<SysDictValuePo> sysDictValuePoList = sysDictValueMapper.findDistinctDictValueNameList(distinctDictValueNameList, dictKey, keyId);
-        return UCopy.fullCopyList(sysDictValuePoList, SysDictValueDto.class);
+        return sysDictValueConverter.convertBatchPo2Dto(sysDictValuePoList);
     }
 
     @Override

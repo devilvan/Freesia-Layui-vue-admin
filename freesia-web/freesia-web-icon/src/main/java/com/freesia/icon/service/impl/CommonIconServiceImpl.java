@@ -2,6 +2,8 @@ package com.freesia.icon.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.icon.converter.CommonIconConverter;
 import com.freesia.icon.dto.CommonIconDto;
 import com.freesia.icon.entity.FindCommonIconEntity;
 import com.freesia.icon.entity.FindPageCommonIconEntity;
@@ -9,6 +11,7 @@ import com.freesia.icon.mapper.CommonIconMapper;
 import com.freesia.icon.po.CommonIconPo;
 import com.freesia.icon.repository.CommonIconRepository;
 import com.freesia.icon.service.CommonIconService;
+import com.freesia.icon.vo.CommonIconVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysOssService;
@@ -31,11 +34,16 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class CommonIconServiceImpl extends BaseServiceImpl<CommonIconMapper, CommonIconPo, CommonIconDto> implements CommonIconService {
+public class CommonIconServiceImpl extends BaseServiceImpl<CommonIconMapper, CommonIconVo, CommonIconDto, CommonIconPo> implements CommonIconService {
     private final CommonIconRepository commonIconRepository;
     private final CommonIconMapper commonIconMapper;
     private final SysOssService sysOssService;
+    private final CommonIconConverter commonIconConverter;
 
+    @Override
+    protected MapStructConverter<CommonIconVo, CommonIconDto, CommonIconPo> getMapStructConverter() {
+        return commonIconConverter;
+    }
 
     @Override
     protected JpaRepository<CommonIconPo, Long> getRepository() {

@@ -3,12 +3,12 @@ package com.freesia.controller;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.constant.MenuPermission;
+import com.freesia.converter.UrlConfigConverter;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.dto.UrlConfigDto;
 import com.freesia.service.UrlConfigService;
 import com.freesia.vo.UrlConfigVo;
-import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +31,7 @@ import java.util.List;
 @Tag(name = "UrlConfigController", description = "URL配置信息表 控制器")
 public class UrlConfigController extends BaseController {
     private final UrlConfigService urlConfigService;
+    private final UrlConfigConverter urlConfigConverter;
 
     /**
      * 保存URL配置信息表信息
@@ -44,7 +45,7 @@ public class UrlConfigController extends BaseController {
     @Operation(summary = "保存URL配置信息表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody UrlConfigVo urlConfigVo) {
-        UrlConfigDto urlConfigDto = UCopy.copyVo2Dto(urlConfigVo, UrlConfigDto.class);
+        UrlConfigDto urlConfigDto = urlConfigConverter.convertVo2Dto(urlConfigVo);
         urlConfigService.saveUpdate(urlConfigDto);
         return R.ok();
     }
@@ -61,7 +62,7 @@ public class UrlConfigController extends BaseController {
     @Operation(summary = "保存URL配置信息表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<UrlConfigVo> urlConfigVoList) {
-        List<UrlConfigDto> urlConfigDtoList = UCopy.fullCopyList(urlConfigVoList, UrlConfigDto.class);
+        List<UrlConfigDto> urlConfigDtoList = urlConfigConverter.convertBatchVo2Dto(urlConfigVoList);
         urlConfigService.saveUpdateBatch(urlConfigDtoList);
         return R.ok();
     }
@@ -77,7 +78,7 @@ public class UrlConfigController extends BaseController {
     @Operation(summary = "查询URL配置信息表分页信息")
     @GetMapping(value = "findPageUrlConfig")
     public TableResult<UrlConfigDto> findPageUrlConfig(UrlConfigVo urlConfigVo, PageQuery pageQuery) {
-        UrlConfigDto urlConfigDto = UCopy.copyVo2Dto(urlConfigVo, UrlConfigDto.class);
+        UrlConfigDto urlConfigDto = urlConfigConverter.convertVo2Dto(urlConfigVo);
         return urlConfigService.findPage(urlConfigDto, pageQuery);
     }
 
@@ -91,7 +92,7 @@ public class UrlConfigController extends BaseController {
     @Operation(summary = "条件查询URL配置信息表")
     @GetMapping(value = "findUrlConfig")
     public R<UrlConfigDto> findUrlConfig(UrlConfigVo urlConfigVo) {
-        UrlConfigDto urlConfigDto = UCopy.copyVo2Dto(urlConfigVo, UrlConfigDto.class);
+        UrlConfigDto urlConfigDto = urlConfigConverter.convertVo2Dto(urlConfigVo);
         UrlConfigDto tableResult = urlConfigService.findOne(urlConfigDto);
         return R.ok(tableResult);
     }

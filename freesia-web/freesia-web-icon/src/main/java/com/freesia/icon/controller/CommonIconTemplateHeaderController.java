@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.convert.Convert;
 import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
+import com.freesia.icon.converter.CommonIconTemplateHeaderConverter;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
@@ -33,6 +34,7 @@ import java.util.List;
 @Tag(name = "CommonIconTemplateHeaderController", description = "通用图标模板头表 控制器")
 public class CommonIconTemplateHeaderController extends BaseController {
     private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
+    private final CommonIconTemplateHeaderConverter commonIconTemplateHeaderConverter;
 
     /**
      * 保存通用图标模板头表信息
@@ -48,7 +50,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
             @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_HEADER_EDIT),
     })
     public R<Void> saveUpdate(@RequestBody CommonIconTemplateHeaderVo commonIconTemplateHeaderVo) {
-        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
+        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = commonIconTemplateHeaderConverter.convertVo2Dto(commonIconTemplateHeaderVo);
         commonIconTemplateHeaderService.saveUpdate(commonIconTemplateHeaderDto);
         return R.ok();
     }
@@ -67,7 +69,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
             @SaCheckPermission(value = MenuPermission.COMMON_ICON_TEMPLATE_HEADER_EDIT),
     })
     public R<Void> saveUpdateBatch(@RequestBody List<CommonIconTemplateHeaderVo> commonIconTemplateHeaderVoList) {
-        List<CommonIconTemplateHeaderDto> commonIconTemplateHeaderDtoList = UCopy.fullCopyList(commonIconTemplateHeaderVoList, CommonIconTemplateHeaderDto.class);
+        List<CommonIconTemplateHeaderDto> commonIconTemplateHeaderDtoList = commonIconTemplateHeaderConverter.convertBatchVo2Dto(commonIconTemplateHeaderVoList);
         commonIconTemplateHeaderService.saveUpdateBatch(commonIconTemplateHeaderDtoList);
         return R.ok();
     }
@@ -83,7 +85,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
     @GetMapping(value = "findPageCommonIconTemplateHeader")
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_INDEX})
     public TableResult<CommonIconTemplateHeaderDto> findPageCommonIconTemplateHeader(CommonIconTemplateHeaderVo commonIconTemplateHeaderVo, PageQuery pageQuery) {
-        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
+        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = commonIconTemplateHeaderConverter.convertVo2Dto(commonIconTemplateHeaderVo);
         return commonIconTemplateHeaderService.findPage(commonIconTemplateHeaderDto, pageQuery);
     }
 
@@ -97,7 +99,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
     @GetMapping(value = "findCommonIconTemplateHeader")
     @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_HEADER_INDEX})
     public R<CommonIconTemplateHeaderDto> findCommonIconTemplateHeader(CommonIconTemplateHeaderVo commonIconTemplateHeaderVo) {
-        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = UCopy.copyVo2Dto(commonIconTemplateHeaderVo, CommonIconTemplateHeaderDto.class);
+        CommonIconTemplateHeaderDto commonIconTemplateHeaderDto = commonIconTemplateHeaderConverter.convertVo2Dto(commonIconTemplateHeaderVo);
         CommonIconTemplateHeaderDto tableResult = commonIconTemplateHeaderService.findOne(commonIconTemplateHeaderDto);
         return R.ok(tableResult);
     }

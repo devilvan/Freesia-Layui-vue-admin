@@ -24,10 +24,10 @@ import com.freesia.vo.R;
 import com.freesia.vo.SysMenuVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -42,12 +42,11 @@ import java.util.Optional;
 @Valid
 @RestController
 @RequestMapping(value = "/api/sysMenuController")
+@RequiredArgsConstructor
 @Tag(name = "SysMenuController", description = "目录-菜单-按钮信息表 控制器")
 public class SysMenuController extends BaseController {
-    @Resource(name = "sysMenuServiceImpl")
-    private SysMenuService sysMenuService;
-    @Resource(name = "sysMenuConverter")
-    private SysMenuConverter sysMenuConverter;
+    private final SysMenuService sysMenuService;
+    private final SysMenuConverter sysMenuConverter;
 
     /**
      * 批量保存菜单信息

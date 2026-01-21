@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.DictModule;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.converter.SysDictKeyConverter;
 import com.freesia.dto.SysDictDto;
 import com.freesia.dto.SysDictKeyDto;
 import com.freesia.entity.FindPageSysDictKeyEntity;
@@ -19,6 +21,7 @@ import com.freesia.repository.SysDictKeyRepository;
 import com.freesia.service.SysDictKeyService;
 import com.freesia.util.UCache;
 import com.freesia.util.UEmpty;
+import com.freesia.vo.SysDictKeyVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,10 +37,16 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class SysDictKeyServiceImpl extends BaseServiceImpl<SysDictKeyMapper, SysDictKeyPo, SysDictKeyDto> implements SysDictKeyService {
+public class SysDictKeyServiceImpl extends BaseServiceImpl<SysDictKeyMapper, SysDictKeyVo, SysDictKeyDto, SysDictKeyPo> implements SysDictKeyService {
     private final SysDictKeyRepository sysDictKeyRepository;
     private final SysDictKeyMapper sysDictKeyMapper;
+    private final SysDictKeyConverter sysDictKeyConverter;
 
+
+    @Override
+    protected MapStructConverter<SysDictKeyVo, SysDictKeyDto, SysDictKeyPo> getMapStructConverter() {
+        return sysDictKeyConverter;
+    }
 
     @Override
     protected JpaRepository<SysDictKeyPo, Long> getRepository() {
@@ -68,6 +77,7 @@ public class SysDictKeyServiceImpl extends BaseServiceImpl<SysDictKeyMapper, Sys
     public List<SysDictKeyDto> saveUpdateBatch(List<SysDictKeyDto> list) {
         return super.saveUpdateBatch(list);
     }
+
 
     @Override
     public TableResult<FindPageSysDictKeyEntity> findPageSysDictList(SysDictDto sysDictDto, PageQuery pageQuery) {

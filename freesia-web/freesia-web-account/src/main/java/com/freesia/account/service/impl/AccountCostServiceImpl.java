@@ -112,8 +112,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         Long costId = accountCostDto.getId();
         OssHandler ossHandler = OssFactory.getInstance();
         accountCostDto.setIcon(ossHandler.convertDomain2Endpoint(accountCostDto.getIcon()));
-        AccountCostPo accountCostPo = new AccountCostPo();
-        UCopy.halfCopy(accountCostDto, accountCostPo);
+        AccountCostPo accountCostPo = accountCostConverter.convertDto2Po(accountCostDto);
         List<Long> accountCostUserIdList = accountCostDto.getAccountCostUserIdList();
         if (UEmpty.isNull(costId)) {
             // 新增

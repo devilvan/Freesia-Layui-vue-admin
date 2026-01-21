@@ -2,21 +2,21 @@ package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.constant.MenuPermission;
+import com.freesia.converter.SysDeptConverter;
+import com.freesia.crypt.util.UCrypt;
 import com.freesia.dto.SysDeptDto;
 import com.freesia.entity.FindDeptRolesByDeptIdEntity;
 import com.freesia.entity.FindPageSysDeptListEntity;
 import com.freesia.entity.FindTreeDeptSelectEntity;
 import com.freesia.exception.DeptException;
 import com.freesia.exception.UserException;
-import com.freesia.satoken.model.LoginUserModel;
+import com.freesia.idempotent.annotation.Idempotent;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.service.SysDeptService;
-import com.freesia.util.UCopy;
-import com.freesia.crypt.util.UCrypt;
+import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.service.SysDeptService;
 import com.freesia.vo.DeptAssignRoleVo;
 import com.freesia.vo.R;
 import com.freesia.vo.SaveDeptVo;
@@ -43,12 +43,12 @@ import java.util.Set;
 @Tag(name = "SysDeptController", description = "部门信息表 控制器")
 public class SysDeptController extends BaseController {
     private final SysDeptService sysDeptService;
+    private final SysDeptConverter sysDeptConverter;
 
     @Operation(summary = "获取部门列表分页")
     @GetMapping("findPageSysDeptList")
     public TableResult<FindPageSysDeptListEntity> findPageSysDeptList(SysDeptVo sysDeptVo, PageQuery pageQuery) {
-        SysDeptDto sysDeptDto = new SysDeptDto();
-        UCopy.fullCopy(sysDeptVo, sysDeptDto);
+        SysDeptDto sysDeptDto = sysDeptConverter.convertVo2Dto(sysDeptVo);
         return sysDeptService.findPageSysDeptList(sysDeptDto, pageQuery);
     }
 
@@ -56,7 +56,7 @@ public class SysDeptController extends BaseController {
     @Operation(summary = "获取部门下拉树")
     @GetMapping("findDeptTreeList")
     public R<List<FindPageSysDeptListEntity>> findDeptTreeList(SysDeptVo sysDeptVo) {
-        SysDeptDto sysDeptDto = UCopy.copyVo2Dto(sysDeptVo, SysDeptDto.class);;
+        SysDeptDto sysDeptDto = sysDeptConverter.convertVo2Dto(sysDeptVo);
         sysDeptDto.setTenantId(USecurity.getTenantId());
         List<FindPageSysDeptListEntity> deptTreeList = sysDeptService.findDeptTreeList(sysDeptDto);
         return R.ok(deptTreeList);
@@ -67,7 +67,7 @@ public class SysDeptController extends BaseController {
     public R<SysDeptDto> findDeptById() {
         LoginUserModel loginUser = USecurity.getLoginUser();
         Long deptId = Optional.ofNullable(loginUser).map(LoginUserModel::getDeptId)
-                .orElseThrow(() -> new DeptException("dept.id.required", new Object[] {}));
+                .orElseThrow(() -> new DeptException("dept.id.required", new Object[]{}));
         SysDeptDto sysDeptDto = new SysDeptDto();
         sysDeptDto.setId(deptId);
         sysDeptDto = sysDeptService.findOne(sysDeptDto);
@@ -83,7 +83,7 @@ public class SysDeptController extends BaseController {
     @PostMapping("saveDept")
     public R<SysDeptDto> saveDept(@RequestBody String encrypt) {
         SaveDeptVo saveDeptVo = UCrypt.aesDecryptJSON(encrypt, SaveDeptVo.class);
-        SysDeptDto sysDeptDto = sysDeptService.saveDept(UCopy.copyVo2Dto(saveDeptVo, SysDeptDto.class));
+        SysDeptDto sysDeptDto = sysDeptService.saveDept(sysDeptConverter.convertSaveDeptVo2Dto(saveDeptVo));
         return R.ok(sysDeptDto);
     }
 
@@ -100,7 +100,7 @@ public class SysDeptController extends BaseController {
     @Operation(summary = "查询部门树下拉框集合")
     @GetMapping(value = "findTreeDeptSelect")
     public R<List<FindTreeDeptSelectEntity>> findTreeDeptSelect() {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         List<FindTreeDeptSelectEntity> menuList = sysDeptService.findTreeDeptSelect(loginUser);
         return R.ok(menuList);
     }
@@ -109,7 +109,7 @@ public class SysDeptController extends BaseController {
     @Operation(summary = "查询部门树下拉框集合（分配部门）")
     @GetMapping(value = "findTreeAssignDeptSelect")
     public R<List<FindTreeDeptSelectEntity>> findTreeAssignDeptSelect() {
-        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[] {}));
+        LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseThrow(() -> new UserException("user.info.null", new Object[]{}));
         List<FindTreeDeptSelectEntity> menuList = sysDeptService.findTreeAssignDeptSelect(loginUser);
         return R.ok(menuList);
     }

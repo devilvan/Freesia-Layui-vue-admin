@@ -4,17 +4,19 @@ import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.freesia.constant.FlagConstant;
+import com.freesia.convert.MapStructConverter;
+import com.freesia.icon.converter.CommonIconTemplateHeaderConverter;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.icon.mapper.CommonIconTemplateHeaderMapper;
 import com.freesia.icon.po.CommonIconTemplateHeaderPo;
 import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
+import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
 import com.freesia.po.BasePo;
 import com.freesia.pojo.LaySelect;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.impl.BaseServiceImpl;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +33,15 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonIconTemplateHeaderMapper, CommonIconTemplateHeaderPo, CommonIconTemplateHeaderDto> implements CommonIconTemplateHeaderService {
+public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonIconTemplateHeaderMapper, CommonIconTemplateHeaderVo, CommonIconTemplateHeaderDto, CommonIconTemplateHeaderPo> implements CommonIconTemplateHeaderService {
     private final CommonIconTemplateHeaderRepository commonIconTemplateHeaderRepository;
     private final CommonIconTemplateHeaderMapper commonIconTemplateHeaderMapper;
+    private final CommonIconTemplateHeaderConverter commonIconTemplateHeaderConverter;
 
+    @Override
+    protected MapStructConverter<CommonIconTemplateHeaderVo, CommonIconTemplateHeaderDto, CommonIconTemplateHeaderPo> getMapStructConverter() {
+        return commonIconTemplateHeaderConverter;
+    }
 
     @Override
     protected JpaRepository<CommonIconTemplateHeaderPo, Long> getRepository() {
@@ -75,11 +82,10 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
                 commonIconTemplateHeaderRepository.saveAll(commonIconTemplateHeaderPoList);
             }
         }
-        CommonIconTemplateHeaderPo commonIconTemplateHeaderPo = UCopy.copyDto2Po(commonIconTemplateHeaderDto, CommonIconTemplateHeaderPo.class);
+        CommonIconTemplateHeaderPo commonIconTemplateHeaderPo = commonIconTemplateHeaderConverter.convertDto2Po(commonIconTemplateHeaderDto);
         commonIconTemplateHeaderPo.setUserId(userId);
         CommonIconTemplateHeaderDto resultDto = new CommonIconTemplateHeaderDto();
-        UCopy.fullCopy(commonIconTemplateHeaderRepository.saveAndFlush(commonIconTemplateHeaderPo), resultDto);
-        return resultDto;
+        return super.saveUpdate(resultDto);
     }
 
     @Override
