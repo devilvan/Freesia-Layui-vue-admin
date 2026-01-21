@@ -341,11 +341,6 @@
                             <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
-                    <generatedSourcesDirectory>${project.build.directory}/generated-sources</generatedSourcesDirectory>
-                    <compilerArgs>
-                        <compilerArg>-Amapstruct.defaultComponentModel=spring</compilerArg>
-                        <compilerArg>-Amapstruct.unmappedTargetPolicy=IGNORE</compilerArg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
