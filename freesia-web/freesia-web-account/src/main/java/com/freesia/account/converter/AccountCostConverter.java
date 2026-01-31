@@ -18,7 +18,6 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AccountCostConverter extends MapStructConverter<AccountCostVo, AccountCostDto, AccountCostPo> {
     @Override
-    @Mapping(target = "userId", ignore = true)
     @Mapping(target = "paymentTimeTo", ignore = true)
     @Mapping(target = "paymentTimeFrom", ignore = true)
     @Mapping(target = "dateScope", ignore = true)

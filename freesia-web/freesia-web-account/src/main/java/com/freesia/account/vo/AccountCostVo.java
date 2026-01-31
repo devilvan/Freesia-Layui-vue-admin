@@ -47,6 +47,9 @@ public class AccountCostVo extends BaseVo {
     @Schema(description = "备注")
     @JsonAlias(value = {"remark"})
     private String remark;
+    @Schema(description = "用户ID")
+    @JsonAlias(value = {"userId"})
+    private Long userId;
     @Schema(description = "关联用户ID集合")
     @JsonAlias(value = {"accountCostUserIdList"})
     private List<Long> accountCostUserIdList;

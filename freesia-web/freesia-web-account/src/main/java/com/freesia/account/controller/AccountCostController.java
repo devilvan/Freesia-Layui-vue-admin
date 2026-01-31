@@ -87,10 +87,6 @@ public class AccountCostController extends BaseController {
     })
     public R<Void> saveUpdate(@RequestBody AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = pre2Save(accountCostVo);
-        if (accountCostDto.getId() != null) {
-            Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-            accountCostDto.setUserId(userId);
-        }
         accountCostService.saveUpdate(accountCostDto);
         return R.ok();
     }
@@ -460,14 +456,12 @@ public class AccountCostController extends BaseController {
      */
     private AccountCostDto pre2Save(AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
         if (!accountCostVo.getAllTenantFlag()) {
             Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
             accountCostDto.setTenantId(tenantId);
         } else {
             accountCostDto.setTenantId(null);
         }
-        accountCostDto.setUserId(userId);
         accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
         List<AccountCostUserAllocVo> accountCostUserAllocVoList = accountCostVo.getAccountCostUserAllocVoList();
         if (UEmpty.isNotEmpty((accountCostUserAllocVoList))) {

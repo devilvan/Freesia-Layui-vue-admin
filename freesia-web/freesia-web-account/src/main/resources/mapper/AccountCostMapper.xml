@@ -96,12 +96,16 @@
         END AS ALLOC_STATUS
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
-        INNER JOIN sys_user SU ON ACUA.USER_ID = SU.ID
+        LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND AC.ID IN (
+            SELECT DISTINCT ACUA2.COST_ID
+            FROM account_cost_user_alloc ACUA2
+            WHERE ACUA2.USER_ID = #{accountCostDto.userId}
+        )
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND ACUA.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.costDesc != null and accountCostDto.costDesc != ''">
             AND AC.COST_DESC like CONCAT('%', #{accountCostDto.costDesc}, '%')
         </if>
@@ -186,12 +190,16 @@
         GROUP_CONCAT(SU.NICK_NAME) AS NICK_NAME
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
-        INNER JOIN sys_user SU ON ACUA.USER_ID = SU.ID
+        LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        AND AC.ID IN (
+            SELECT DISTINCT ACUA2.COST_ID
+            FROM account_cost_user_alloc ACUA2
+            WHERE ACUA2.USER_ID = #{accountCostDto.userId}
+        )
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
-        AND ACUA.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.id != null and accountCostDto.id != 0">
             AND ACUA.COST_ID = #{accountCostDto.id}
         </if>
