@@ -18,6 +18,11 @@ import org.mapstruct.MappingTarget;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SysDictValueConverter extends MapStructConverter<SysDictValueVo, SysDictValueDto, SysDictValuePo> {
+
+    @Mapping(target = "sysDictKeyPo", ignore = true)
+    @Override
+    SysDictValuePo convertDto2Po(SysDictValueDto source);
+
     @Mapping(target = "sysDictKeyPo", ignore = true)
     void updateSysDictValueDto2Po(SysDictValueDto sysDictValueDto, @MappingTarget SysDictValuePo sysDictValuePo);
 

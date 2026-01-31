@@ -5,6 +5,7 @@ import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.po.CommonIconTemplateHeaderPo;
 import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 /**
@@ -14,4 +15,7 @@ import org.mapstruct.MappingConstants;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CommonIconTemplateHeaderConverter extends MapStructConverter<CommonIconTemplateHeaderVo, CommonIconTemplateHeaderDto, CommonIconTemplateHeaderPo> {
+    @Mapping(target = "commonIconTemplateDetailPoSet", ignore = true)
+    @Override
+    CommonIconTemplateHeaderPo convertDto2Po(CommonIconTemplateHeaderDto source);
 }

@@ -5,6 +5,7 @@ import com.freesia.icon.dto.CommonIconDto;
 import com.freesia.icon.po.CommonIconPo;
 import com.freesia.icon.vo.CommonIconVo;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 /**
@@ -14,4 +15,7 @@ import org.mapstruct.MappingConstants;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CommonIconConverter extends MapStructConverter<CommonIconVo, CommonIconDto, CommonIconPo> {
+    @Mapping(target = "idList", ignore = true)
+    @Override
+    CommonIconDto convertPo2Dto(CommonIconPo source);
 }

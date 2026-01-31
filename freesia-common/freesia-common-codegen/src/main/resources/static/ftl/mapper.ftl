@@ -23,7 +23,10 @@ public interface ${dataBaseDto.className}Mapper extends BaseMapper<${dataBaseDto
     * @param pageQuery    分页条件
     * @return 分页信息
     */
-    Page<${dataBaseDto.className}Po> findPage${dataBaseDto.className}(@Param(value = "dto") ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto, @Param("page") Page<${dataBaseDto.className}Po> page);
+    Page
+    <${dataBaseDto.className}Po> findPage(@Param(value = "dto") ${dataBaseDto.className}
+        Dto ${dataBaseDto.className?uncap_first}Dto, @Param("page") Page
+        <${dataBaseDto.className}Po> page);
 
     /**
     * 查询${dataBaseDto.comment}信息
@@ -31,7 +34,9 @@ public interface ${dataBaseDto.className}Mapper extends BaseMapper<${dataBaseDto
     * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
     * @return 分页信息
     */
-    List<${dataBaseDto.className}Dto> findList${dataBaseDto.className}(@Param(value = "dto") ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
+            List
+            <${dataBaseDto.className}Dto> findList(@Param(value = "dto") ${dataBaseDto.className}
+                Dto ${dataBaseDto.className?uncap_first}Dto);
 
     /**
      * 批量新增
@@ -40,13 +45,4 @@ public interface ${dataBaseDto.className}Mapper extends BaseMapper<${dataBaseDto
      * @return 新增数量
      */
     int insertBatch(@Param(value = "list") List<${dataBaseDto.className}Po> list);
-
-    /**
-    * 批量更新
-    *
-    * @param list    待新增集合
-    * @return 更新数量
-    */
-    int updateBatch(@Param(value = "list") List<${dataBaseDto.className}Po> list);
-
 }

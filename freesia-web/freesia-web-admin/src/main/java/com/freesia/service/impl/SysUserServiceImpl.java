@@ -340,7 +340,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
                 .in(SysUserPo::getId, idList);
         List<SysUserPo> sysUserPoList = sysUserMapper.selectList(wrapper);
         if (UEmpty.isNotEmpty(sysUserPoList)) {
-            return sysUserConverter.convertPo2FindPageSysUserListEntity(sysUserPoList);
+            return UCopy.fullCopyList(sysUserPoList, FindPageSysUserListEntity.class);
         }
         return null;
     }

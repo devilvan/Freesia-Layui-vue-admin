@@ -16,6 +16,19 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SysTenantConverter extends MapStructConverter<SysTenantVo, SysTenantDto, SysTenantPo> {
+    @Mapping(target = "userId", ignore = true)
+    @Override
+    SysTenantDto convertVo2Dto(SysTenantVo source);
+
+    @Mapping(target = "sysTenantUserPoSet", ignore = true)
+    @Override
+    SysTenantPo convertDto2Po(SysTenantDto source);
+
+    @Mapping(target = "userId", ignore = true)
+    @Override
+    SysTenantDto convertPo2Dto(SysTenantPo source);
+
+
     FindSysTenantEntity convertPo2FindEntity(SysTenantPo sysTenantPo);
 
     @Mapping(target = "tenantId", source = "tenantId", qualifiedByName = "stringToLong")

@@ -5,6 +5,7 @@ import com.freesia.notice.dto.SysNoticeDto;
 import com.freesia.notice.po.SysNoticePo;
 import com.freesia.notice.vo.SysNoticeVo;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 /**
@@ -14,4 +15,16 @@ import org.mapstruct.MappingConstants;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SysNoticeConverter extends MapStructConverter<SysNoticeVo, SysNoticeDto, SysNoticePo> {
+    @Mapping(target = "announcementIdList", ignore = true)
+    @Override
+    SysNoticeDto convertVo2Dto(SysNoticeVo source);
+
+    @Override
+    SysNoticePo convertDto2Po(SysNoticeDto source);
+
+    @Mapping(target = "createTimeTo", ignore = true)
+    @Mapping(target = "createTimeFrom", ignore = true)
+    @Mapping(target = "announcementIdList", ignore = true)
+    @Override
+    SysNoticeDto convertPo2Dto(SysNoticePo source);
 }

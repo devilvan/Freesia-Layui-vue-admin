@@ -17,6 +17,18 @@ import org.mapstruct.MappingTarget;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SysDeptConverter extends MapStructConverter<SysDeptVo, SysDeptDto, SysDeptPo> {
+
+    @Mapping(target = "sysUserPoSet", ignore = true)
+    @Mapping(target = "sysRolePoSet", ignore = true)
+    @Mapping(target = "sysRoleDeptPoSet", ignore = true)
+    @Override
+    SysDeptPo convertDto2Po(SysDeptDto source);
+
+    @Mapping(target = "createTimeTo", ignore = true)
+    @Mapping(target = "createTimeFrom", ignore = true)
+    @Override
+    SysDeptDto convertPo2Dto(SysDeptPo source);
+
     @Mapping(target = "sysUserPoSet", ignore = true)
     @Mapping(target = "sysRolePoSet", ignore = true)
     @Mapping(target = "sysRoleDeptPoSet", ignore = true)

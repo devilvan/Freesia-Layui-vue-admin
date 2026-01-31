@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -30,4 +31,6 @@ public class WorldClockCityDto extends BaseDto {
     private BigDecimal latitude;
     @Schema(description = "经度")
     private BigDecimal longitude;
+    @Schema(description = "城市名称集合")
+    private List<String> cityNameList;
 }

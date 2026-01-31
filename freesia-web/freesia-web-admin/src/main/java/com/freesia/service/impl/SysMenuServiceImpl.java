@@ -249,7 +249,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuVo
                 .orderByAsc("M.ORDER_NUM");
         List<SysMenuPo> sysMenuPoList = USecurity.isAdmin(userId) ? sysMenuMapper.findAllMenuTree(wrapper) :
                 sysMenuMapper.findAllMenuTree(wrapper.eq(ObjectUtil.isNotNull(userId), "SUR.USER_ID", userId));
-        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuConverter.convertBatchPo2FindAllMenuTreeEntity(sysMenuPoList);
+        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyList(sysMenuPoList, FindAllMenuTreeEntity.class);
         return UTree.buildTree(findAllMenuTreeEntityList);
     }
 
@@ -263,7 +263,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuVo
                 .orderByAsc("M.PARENT_ID")
                 .orderByAsc("M.ORDER_NUM");
         List<SysMenuPo> sysMenuPoList = sysMenuMapper.findAllMenuTree(wrapper);
-        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = sysMenuConverter.convertBatchPo2FindAllMenuTreeEntity(sysMenuPoList);
+        List<FindAllMenuTreeEntity> findAllMenuTreeEntityList = UCopy.fullCopyList(sysMenuPoList, FindAllMenuTreeEntity.class);
         return UTree.buildTree(findAllMenuTreeEntityList);
     }
 

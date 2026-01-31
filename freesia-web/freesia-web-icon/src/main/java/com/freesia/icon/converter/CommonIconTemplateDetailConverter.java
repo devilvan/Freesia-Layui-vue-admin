@@ -16,6 +16,19 @@ import org.mapstruct.MappingConstants;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CommonIconTemplateDetailConverter extends MapStructConverter<CommonIconTemplateDetailVo, CommonIconTemplateDetailDto, CommonIconTemplateDetailPo> {
+    @Mapping(target = "idList", ignore = true)
+    @Override
+    CommonIconTemplateDetailDto convertVo2Dto(CommonIconTemplateDetailVo source);
+
+    @Mapping(target = "commonIconTemplateHeaderPo", ignore = true)
+    @Override
+    CommonIconTemplateDetailPo convertDto2Po(CommonIconTemplateDetailDto source);
+
+    @Mapping(target = "multipleIconList", ignore = true)
+    @Mapping(target = "idList", ignore = true)
+    @Override
+    CommonIconTemplateDetailDto convertPo2Dto(CommonIconTemplateDetailPo source);
+
     @Mapping(target = "remark", ignore = true)
     @Mapping(target = "parentId", ignore = true)
     @Mapping(target = "orderNum", ignore = true)

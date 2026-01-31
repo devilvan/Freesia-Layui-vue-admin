@@ -1,14 +1,12 @@
 package com.freesia.icon.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
@@ -16,6 +14,7 @@ import java.math.BigDecimal;
  * @date 2025-05-15
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "通用图标模板头表 值对象")

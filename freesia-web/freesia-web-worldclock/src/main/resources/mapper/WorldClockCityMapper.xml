@@ -1,7 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.freesia.worldclock.mapper.WorldClockCityMapper">
-    <sql id="allColumns">
+    <resultMap id="BaseResultMap" type="com.freesia.worldclock.po.WorldClockCityPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="CITY_NAME" property="cityName"/>
+        <result column="COUNTRY_CODE" property="countryCode"/>
+        <result column="TIMEZONE" property="timezone"/>
+        <result column="LATITUDE" property="latitude"/>
+        <result column="LONGITUDE" property="longitude"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, CITY_NAME, COUNTRY_CODE, TIMEZONE, LATITUDE, LONGITUDE
+    </sql>
+    <select id="findPageWorldClockCity" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM WORLD_CLOCK_CITY
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.cityName != null and dto.cityName != ''">
+            AND CITY_NAME = #{dto.cityName}
+        </if>
+        <if test="dto.countryCode != null and dto.countryCode != ''">
+            AND COUNTRY_CODE = #{dto.countryCode}
+        </if>
+        <if test="dto.timezone != null and dto.timezone != ''">
+            AND TIMEZONE = #{dto.timezone}
+        </if>
+        <if test="dto.latitude != null">
+            AND LATITUDE = #{dto.latitude}
+        </if>
+        <if test="dto.longitude != null">
+            AND LONGITUDE = #{dto.longitude}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findListWorldClockCity" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM WORLD_CLOCK_CITY
+        WHERE LOGIC_DEL = 0
+        <if test="dto.cityName != null and dto.cityName != ''">
+            AND CITY_NAME = #{dto.cityName}
+        </if>
+        <if test="dto.countryCode != null and dto.countryCode != ''">
+            AND COUNTRY_CODE = #{dto.countryCode}
+        </if>
+        <if test="dto.timezone != null and dto.timezone != ''">
+            AND TIMEZONE = #{dto.timezone}
+        </if>
+        <if test="dto.latitude != null">
+            AND LATITUDE = #{dto.latitude}
+        </if>
+        <if test="dto.longitude != null">
+            AND LONGITUDE = #{dto.longitude}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO WORLD_CLOCK_CITY
+        (
         ID,
         CREATOR,
         CREATE_TIME,
@@ -16,46 +82,49 @@
         TIMEZONE,
         LATITUDE,
         LONGITUDE
-    </sql>
-    <select id="findListWorldClockCity" resultType="com.freesia.worldclock.po.WorldClockCityPo">
-        SELECT ID,
-        CREATOR,
-        CREATE_TIME,
-        MODIFIER,
-        MODIFY_TIME,
-        LOGIC_DEL,
-        REC_VER,
-        BUILD_IN,
-        TENANT_ID,
-        CITY_NAME,
-        COUNTRY_CODE,
-        TIMEZONE,
-        LATITUDE,
-        LONGITUDE
-        FROM world_clock_city
-        WHERE LOGIC_DEL = 0
-        <if test="dto.id != null">
-            AND ID = #{dto.id}
-        </if>
-    </select>
-
-    <select id="findCitySunriseSunset" resultType="com.freesia.worldclock.entity.FindCitySunriseSunsetEntity">
-        SELECT
-        city.ID AS CITY_ID,
-        city.CITY_NAME,
-        city.TIMEZONE,
-        ss.ID AS SUNRISE_SUNSET_ID,
-        ss.date,
-        ss.sunrise_time,
-        ss.sunset_time,
-        ss.day_length_minutes
-        FROM world_clock_city city
-        LEFT JOIN world_clock_sunrise_sunset ss ON city.ID = SS.CITY_ID
-        WHERE city.LOGIC_DEL = 0
-        and ss.LOGIC_DEL = 0
-        AND ss.DATE = DATE(#{dto.date})
-        <if test="dto.id != null">
-            AND ss.CITY_ID = #{dto.id}
-        </if>
-    </select>
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.cityName},
+            #{item.countryCode},
+            #{item.timezone},
+            #{item.latitude},
+            #{item.longitude}
+            )
+        </foreach>
+    </insert>
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE WORLD_CLOCK_CITY
+            <set>
+                <if test="item.cityName != null and item.cityName != ''">
+                    CITY_NAME = #{item.cityName},
+                </if>
+                <if test="item.countryCode != null and item.countryCode != ''">
+                    COUNTRY_CODE = #{item.countryCode},
+                </if>
+                <if test="item.timezone != null and item.timezone != ''">
+                    TIMEZONE = #{item.timezone},
+                </if>
+                <if test="item.latitude != null">
+                    LATITUDE = #{item.latitude},
+                </if>
+                <if test="item.longitude != null">
+                    LONGITUDE = #{item.longitude},
+                </if>
+                MODIFY_TIME = NOW()
+            </set>
+            WHERE LOGIC_DEL = 0 AND ID = #{item.id}
+        </foreach>
+    </update>
 </mapper>

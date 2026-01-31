@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
  * @date 2025-09-19
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings(value = "unchecked")
 public class UNotice {
 
     /**
@@ -20,14 +21,12 @@ public class UNotice {
      *
      * @param modifier 接收敏感信息的修改器
      * @param <T>      敏感信息bean的类型
-     * @return 敏感信息bean
      */
-    public static <T extends SysNoticeDto> T recordSysNotice(Modifier<T> modifier) {
+    public static <T extends SysNoticeDto> void recordSysNotice(Modifier<T> modifier) {
         SysNoticeDto sysNoticeDto = new SysNoticeDto();
         sysNoticeDto.setPublisherId(USecurity.getUserId());
         sysNoticeDto.setReadFlag(false);
         T dto = modifier.modify((T) sysNoticeDto);
         USpring.context().publishEvent(dto);
-        return dto;
     }
 }

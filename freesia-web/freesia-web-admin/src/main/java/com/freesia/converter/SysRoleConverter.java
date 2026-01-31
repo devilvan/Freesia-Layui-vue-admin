@@ -20,6 +20,27 @@ import java.util.List;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SysRoleConverter extends MapStructConverter<SysRoleVo, SysRoleDto, SysRolePo> {
+    @Mapping(target = "orderNum", ignore = true)
+    @Mapping(target = "menuCheckStrictly", ignore = true)
+    @Mapping(target = "deptCheckStrictly", ignore = true)
+    @Mapping(target = "dataScope", ignore = true)
+    @Override
+    SysRoleDto convertVo2Dto(SysRoleVo source);
+
+    @Mapping(target = "sysUserRolePoSet", ignore = true)
+    @Mapping(target = "sysUserPoSet", ignore = true)
+    @Mapping(target = "sysRoleMenuPoSet", ignore = true)
+    @Mapping(target = "sysRoleDeptPoSet", ignore = true)
+    @Mapping(target = "sysMenuPoSet", ignore = true)
+    @Mapping(target = "sysDeptPoSet", ignore = true)
+    @Override
+    SysRolePo convertDto2Po(SysRoleDto source);
+
+    @Mapping(target = "createTimeTo", ignore = true)
+    @Mapping(target = "createTimeFrom", ignore = true)
+    @Override
+    SysRoleDto convertPo2Dto(SysRolePo source);
+
     @Mapping(target = "menuCheckStrictly", ignore = true)
     @Mapping(target = "deptCheckStrictly", ignore = true)
     SysRoleDto convertSaveVo2Dto(SaveRoleVo saveRoleVo);

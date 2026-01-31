@@ -19,8 +19,6 @@ public class FindCitySunriseSunsetEntity {
     private String cityName;
     @Schema(description = "城市所属时区")
     private String timezone;
-    @Schema(description = "日出日落ID")
-    private Long sunriseSunsetId;
     @Schema(description = "日期")
     private LocalDate date;
     @Schema(description = "日出时间（UTC）")

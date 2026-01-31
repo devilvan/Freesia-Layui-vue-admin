@@ -1,14 +1,15 @@
 package com.freesia.worldclock.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
  * @date 2025-10-31
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "城市表 值对象")
@@ -35,4 +37,6 @@ public class WorldClockCityVo extends BaseVo {
     @Schema(description = "经度")
     @JsonAlias(value = {"longitude"})
     private BigDecimal longitude;
+    @Schema(description = "城市名称集合")
+    private List<String> cityNameList;
 }

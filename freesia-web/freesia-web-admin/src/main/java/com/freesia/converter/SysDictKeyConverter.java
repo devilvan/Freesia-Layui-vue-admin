@@ -5,6 +5,7 @@ import com.freesia.dto.SysDictKeyDto;
 import com.freesia.po.SysDictKeyPo;
 import com.freesia.vo.SysDictKeyVo;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 /**
@@ -14,4 +15,14 @@ import org.mapstruct.MappingConstants;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SysDictKeyConverter extends MapStructConverter<SysDictKeyVo, SysDictKeyDto, SysDictKeyPo> {
+    @Override
+    SysDictKeyDto convertVo2Dto(SysDictKeyVo source);
+
+    @Mapping(target = "sysDictValuePoSet", ignore = true)
+    @Override
+    SysDictKeyPo convertDto2Po(SysDictKeyDto source);
+
+    @Mapping(target = "keyNameOrDictKey", ignore = true)
+    @Override
+    SysDictKeyDto convertPo2Dto(SysDictKeyPo source);
 }
