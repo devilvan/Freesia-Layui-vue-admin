@@ -1,4 +1,4 @@
-package com.freesia.bean;
+package com.freesia.satoken.bean;
 
 import com.freesia.bean.BaseBean;
 import io.swagger.v3.oas.annotations.media.Schema;

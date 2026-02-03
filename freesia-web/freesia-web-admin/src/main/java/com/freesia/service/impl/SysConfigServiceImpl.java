@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.freesia.bean.SysSensitiveLogBean;
+import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.converter.SysConfigConverter;

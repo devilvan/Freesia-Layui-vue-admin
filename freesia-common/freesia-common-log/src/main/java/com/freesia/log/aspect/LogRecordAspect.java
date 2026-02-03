@@ -1,6 +1,6 @@
 package com.freesia.log.aspect;
 
-import com.freesia.bean.SysSensitiveLogBean;
+import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.json.util.UJSON;
 import com.freesia.log.annotation.LogRecord;

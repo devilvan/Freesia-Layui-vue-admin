@@ -87,6 +87,10 @@ public class AccountCostController extends BaseController {
     })
     public R<Void> saveUpdate(@RequestBody AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = pre2Save(accountCostVo);
+        if (UEmpty.isNull(accountCostDto.getId())) {
+            Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+            accountCostDto.setUserId(userId);
+        }
         accountCostService.saveUpdate(accountCostDto);
         return R.ok();
     }
@@ -157,6 +161,8 @@ public class AccountCostController extends BaseController {
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_INDEX)
     public R<FindAccountCostEntity> findAccountCost(AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = pre2Save(accountCostVo);
+        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        accountCostDto.setUserId(userId);
         FindAccountCostEntity findAccountCostEntity = accountCostService.findAccountCost(accountCostDto);
         return R.ok(findAccountCostEntity);
     }

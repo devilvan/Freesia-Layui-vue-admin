@@ -1,6 +1,6 @@
 package com.freesia.event;
 
-import com.freesia.bean.SysSensitiveLogBean;
+import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.dto.SysSensitiveLogDto;
 import com.freesia.service.SysSensitiveLogService;
 import com.freesia.util.UCopy;
