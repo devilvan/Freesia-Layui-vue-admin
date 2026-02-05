@@ -47,5 +47,10 @@ public class FindPageAccountCostEntity extends AccountCostDto {
      */
     @Schema(description = "分摊状态")
     private String allocStatus;
+    /**
+     * 租户名称
+     */
+    @Schema(description = "租户名称")
+    private String tenantName;
 
 }

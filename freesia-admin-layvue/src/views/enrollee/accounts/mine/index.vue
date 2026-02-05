@@ -194,6 +194,10 @@
           <lay-icon class="layui-icon-up"></lay-icon>
           按时间导出
         </lay-button>
+        <lay-switch style="margin-left: 10px"
+                    v-model="accountCostStore.allTenantFlag"
+                    onswitch-text="统计所有账本"
+                    @change="doChangeAllTenantFlag"></lay-switch>
       </template>
       <template v-slot:operator="{ row }">
         <lay-button
@@ -509,6 +513,7 @@ import {SysConfigKey} from "@/types/system/Config";
 import {findListAllocByCostId, findListSysUserById} from "@/api/account/AccountCostUserAlloc";
 import {AccountCostUserAllocVo} from "@/types/account/AccountCostUserAlloc";
 import {deleteCommonIcon} from "@/api/common/icon/Icon";
+import {useAccountCostStore} from "@/store/accountCost";
 
 /* INIT*/
 onMounted(async () => {
@@ -537,6 +542,7 @@ onMounted(async () => {
 
 /* VAR*/
 const useStore = useAppStore()
+const accountCostStore = useAccountCostStore()
 const $ACCOUNT_MENU_PERMISSION = app.config.globalProperties.$ACCOUNT_MENU_PERMISSION
 const $router = router;
 const paymentSignSelect = ref<Array<SysDictValueEntity>>();
@@ -571,10 +577,11 @@ const columns = ref([
   {title: '分摊金额', width: '130px', key: 'allocAmount'},
   {title: '分摊状态', width: '80px', key: 'allocStatus', customSlot: 'allocStatus'},
   {title: '时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
-  {title: '修改时间', width: '150px', key: 'modifyTime'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
+  {title: '所属账本', width: '100px', key: 'tenantName'},
   {title: '关联用户', width: '200px', key: 'nickNameList', customSlot: 'nickNameList'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
+  {title: '修改时间', width: '150px', key: 'modifyTime'},
   {
     title: '操作',
     width: '150px',
@@ -660,6 +667,7 @@ const operate = ref<Operate>();
 
 /* FUNCTION*/
 const loadDataSource = () => {
+  searchQuery.value.allTenantFlag = accountCostStore.allTenantFlag || false
   findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<AccountCostEntity>) => {
     pageQuery.total = res.total;
     dataSource.value = res.rows
@@ -986,13 +994,14 @@ function getDayColor(date: Date) {
 
 function getRowStyle(row: any, rowIndex: number) {
   const day = new Date(row.paymentTime).getDay();
-  if (day === 0) return 'background-color:' + 'rgba(255, 154, 158, 0.4)';
-  if (day === 1) return 'background-color:' + 'rgba(255, 87, 34, 0.4)';
-  if (day === 2) return 'background-color:' + 'rgba(255, 184, 0, 0.4)';
-  if (day === 3) return 'background-color:' + 'rgba(54, 179, 104, 0.4)';
-  if (day === 4) return 'background-color:' + 'rgba(45, 140, 240, 0.4)';
-  if (day === 5) return 'background-color:' + 'rgba(57, 99, 188, 0.4)';
-  if (day === 6) return 'background-color:' + 'rgba(153, 138, 219, 0.4)';
+  let opacity = row.tenantId == useStore.currentTenant ? 1 : 0.7
+  if (day === 0) return 'background-color:' + 'rgba(255, 154, 158, 0.4); opacity: ' + opacity + ';';
+  if (day === 1) return 'background-color:' + 'rgba(255, 87, 34, 0.4); opacity: ' + opacity + ';';
+  if (day === 2) return 'background-color:' + 'rgba(255, 184, 0, 0.4); opacity: ' + opacity + ';';
+  if (day === 3) return 'background-color:' + 'rgba(54, 179, 104, 0.4); opacity: ' + opacity + ';';
+  if (day === 4) return 'background-color:' + 'rgba(45, 140, 240, 0.4); opacity: ' + opacity + ';';
+  if (day === 5) return 'background-color:' + 'rgba(57, 99, 188, 0.4); opacity: ' + opacity + ';';
+  if (day === 6) return 'background-color:' + 'rgba(153, 138, 219, 0.4); opacity: ' + opacity + ';';
   return ''
 }
 
@@ -1128,7 +1137,7 @@ function toPrevious() {
   addExpenseActive.value = addExpenseActive.value - 1
 }
 
-function splitNumber(total: number, parts: number) : number[]{
+function splitNumber(total: number, parts: number): number[] {
   // 参数验证
   if (parts <= 0 || !Number.isInteger(parts)) {
     throw new Error('份数必须是正整数');
@@ -1248,6 +1257,11 @@ function setAvgAmountReminder(avgAmountReminder: number) {
       accountCostVo.value.accountCostUserAllocVoList[0].amount += Number(reminderInteger)
     }
   }
+}
+
+function doChangeAllTenantFlag() {
+  accountCostStore.changeAllTenantFlag()
+  window.location.reload()
 }
 
 /* FUNCTION*/

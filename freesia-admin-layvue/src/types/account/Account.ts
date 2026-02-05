@@ -34,9 +34,10 @@ export interface AccountCostEntity extends BaseEntity {
     remark?: string;
     accountCostUserId?: string
     accountCostUserName?: string
-    accountCostUserAllocVoList?: AccountCostUserAllocVo[],
-    allocAmount?: number,
+    accountCostUserAllocVoList?: AccountCostUserAllocVo[]
+    allocAmount?: number
     allocStatus?: string
+    tenantName?: string
 }
 
 export interface FindCacheCostTypeVo extends BaseVo {

@@ -28,14 +28,17 @@
         'UNFINISHED'
         WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%0%' THEN
         'FINISHED' ELSE 'PART'
-        END AS ALLOC_STATUS
+        END AS ALLOC_STATUS,
+        TENANT.NAME AS TENANT_NAME
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
-        WHERE 1 = 1
-        AND AC.LOGIC_DEL = 0
+        LEFT JOIN sys_tenant TENANT ON AC.TENANT_ID = TENANT.ID
+        WHERE AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        <if test="accountCostDto.tenantId != null">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
         <if test="accountCostDto.costDesc != null and accountCostDto.costDesc != ''">
             AND AC.COST_DESC like CONCAT('%', #{accountCostDto.costDesc}, '%')
         </if>
@@ -93,13 +96,16 @@
         'UNFINISHED'
         WHEN GROUP_CONCAT( ACUA.ALLOC_FLAG ) NOT LIKE '%0%' THEN
         'FINISHED' ELSE 'PART'
-        END AS ALLOC_STATUS
+        END AS ALLOC_STATUS,
+        TENANT.NAME AS TENANT_NAME
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
-        WHERE 1 = 1
-        AND AC.LOGIC_DEL = 0
-        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        LEFT JOIN sys_tenant TENANT ON AC.TENANT_ID = TENANT.ID
+        WHERE AC.LOGIC_DEL = 0
+        <if test="accountCostDto.tenantId != null">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
         AND AC.ID IN (
             SELECT DISTINCT ACUA2.COST_ID
             FROM account_cost_user_alloc ACUA2
@@ -249,6 +255,7 @@
         <result property="accountCostUserId" column="SU_ID"/>
         <result property="accountCostUserName" column="NICK_NAME"/>
         <result property="allocStatus" column="ALLOC_STATUS"/>
+        <result property="tenantName" column="TENANT_NAME"/>
     </resultMap>
     <select id="findListAccountsExport" resultType="com.freesia.account.entity.AccountCostExportEntity">
         SELECT T.COST_DESC,
