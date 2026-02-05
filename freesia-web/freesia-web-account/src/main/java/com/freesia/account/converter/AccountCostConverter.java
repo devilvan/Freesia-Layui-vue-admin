@@ -79,5 +79,6 @@ public interface AccountCostConverter extends MapStructConverter<AccountCostVo, 
     @Mapping(target = "buildIn", ignore = true)
     @Mapping(target = "accountCostUserIdList", ignore = true)
     @Mapping(target = "accountCostUserAllocDtoList", ignore = true)
+    @Mapping(target = "allTenantFlag", ignore = true)
     AccountCostDto convertFindCacheCostTypeVo2Dto(FindCacheCostTypeVo findCacheCostTypeVo);
 }

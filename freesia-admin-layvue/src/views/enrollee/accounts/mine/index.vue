@@ -715,7 +715,8 @@ const showExpenseModal = (text: any, row: any) => {
   }
   if (Operate.EDIT === text) {
     findAccountCost({
-      id: row.id
+      id: row.id,
+      allTenantFlag: accountCostStore.allTenantFlag
     }).then((res: any) => {
       if (res.code === 200) {
         let data = res.data;

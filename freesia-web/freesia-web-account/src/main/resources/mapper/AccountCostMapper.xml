@@ -169,7 +169,9 @@
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCostDto.userId}
-        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        <if test="accountCostDto.tenantId != null">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
         <if test="accountCostDto.id != null and accountCostDto.id != 0">
             AND AC.ID = #{accountCostDto.id}
         </if>
@@ -199,7 +201,9 @@
         LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
-        AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        <if test="accountCostDto.tenantId != null">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
         AND AC.ID IN (
             SELECT DISTINCT ACUA2.COST_ID
             FROM account_cost_user_alloc ACUA2
