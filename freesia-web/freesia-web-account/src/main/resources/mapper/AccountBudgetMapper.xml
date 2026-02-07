@@ -47,7 +47,7 @@
                CONCAT(CURDATE(), ' 00:00:00') AS DURATION_FROM,
                CONCAT(CURDATE(), ' 23:59:59') AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
@@ -62,8 +62,7 @@
                DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)                           AS DURATION_FROM,
                DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA
-                           ON AC.ID = ACUA.COST_ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
@@ -78,7 +77,8 @@
                DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)                           AS DURATION_FROM,
                DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+                 LEFT JOIN account_cost_user_alloc ACUA
+                           ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
@@ -109,7 +109,7 @@
                DATE_FORMAT(CURDATE(), '%Y-%m-01') AS DURATION_FROM,
                LAST_DAY(CURDATE())                AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
@@ -139,7 +139,7 @@
                DATE_FORMAT(CURDATE(), '%Y-01-01') AS DURATION_FROM,
                DATE_FORMAT(CURDATE(), '%Y-12-31') AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0
@@ -170,7 +170,7 @@
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
         WHERE 1 = 1
           AND AC.LOGIC_DEL = 0

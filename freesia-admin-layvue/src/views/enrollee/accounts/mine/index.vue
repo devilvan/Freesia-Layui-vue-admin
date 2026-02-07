@@ -355,7 +355,7 @@
           <lay-card>
             <div class="middle">
               <h1 style="padding:20px 15px; font-family: sans-serif">
-                总金额：{{ accountCostVo.outlay }}¥
+                总金额：¥{{ accountCostVo.outlay }}
                 <!--                <lay-count-up prefix="总金额：¥ " :decimalPlaces="2"></lay-count-up>-->
               </h1>
             </div>
