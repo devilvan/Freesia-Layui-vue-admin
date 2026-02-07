@@ -54,7 +54,7 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "保存消息公告表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysNoticeVo sysNoticeVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         String type = sysNoticeVo.getType();
         sysNoticeVo.setPublisherId(userId);
         SysNoticeType sysNoticeType = SysNoticeType.getInstanceByCode(type);
@@ -129,7 +129,7 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "查询消息公告表分页信息")
     @GetMapping(value = "findPageSysNotice")
     public TableResult<FindPageSysNoticeEntity> findPageSysNotice(SysNoticeVo sysNoticeVo, PageQuery pageQuery) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         sysNoticeVo.setUserId(userId);
         SysNoticeDto sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
         Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
@@ -149,7 +149,7 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "查询消息公告表集合")
     @GetMapping(value = "findListSysNotice")
     public R<List<FindPageSysNoticeEntity>> findListSysNotice(SysNoticeVo sysNoticeVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         sysNoticeVo.setUserId(userId);
         SysNoticeDto sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
         Date[] effectiveTime = sysNoticeVo.getEffectiveTime();
@@ -209,7 +209,7 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "查询未读消息/公告数量")
     @GetMapping(value = "findUnreadCount")
     public R<Integer> findUnreadCount(SysNoticeVo sysNoticeVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         sysNoticeVo.setUserId(userId);
         // 20251022-Bliss 查询未读消息和近7天的数据，过滤超过7天的已读消息
         Date[] defaultCreateTime = defaultDateRange(6);
@@ -228,7 +228,7 @@ public class SysNoticeController extends BaseController {
     @Operation(summary = "标记已读")
     @PostMapping(value = "markRead")
     public R<Integer> markRead(@RequestBody MarkReadDto markReadDto) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new ServiceException(NoticeModule.NOTICE_MANAGEMENT, "user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         markReadDto.setUserId(userId);
         Date[] defaultCreateTime = defaultDateRange(6);
         markReadDto.setCreateTimeFrom(defaultCreateTime[0]);

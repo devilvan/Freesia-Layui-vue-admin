@@ -41,7 +41,7 @@ public class CommonTodoController extends BaseController {
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody CommonTodoVo commonTodoVo) {
         CommonTodoDto commonTodoDto = commonTodoConverter.convertVo2Dto(commonTodoVo);
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         commonTodoDto.setUserId(userId);
         commonTodoService.saveUpdate(commonTodoDto);
         return R.ok();
@@ -56,7 +56,7 @@ public class CommonTodoController extends BaseController {
     @Operation(summary = "保存待办事项表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<CommonTodoVo> commonTodoVoList) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         commonTodoVoList = commonTodoVoList.stream().peek(commonTodoVo -> commonTodoVo.setUserId(userId)).collect(Collectors.toList());
         List<CommonTodoDto> commonTodoDtoList = commonTodoConverter.convertBatchVo2Dto(commonTodoVoList);
         commonTodoService.saveUpdateBatch(commonTodoDtoList);

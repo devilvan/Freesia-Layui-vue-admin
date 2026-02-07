@@ -99,7 +99,7 @@
         END AS ALLOC_STATUS,
         TENANT.NAME AS TENANT_NAME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{accountCostDto.userId}
         LEFT JOIN sys_user SU ON ACUA.USER_ID = SU.ID
         LEFT JOIN sys_tenant TENANT ON AC.TENANT_ID = TENANT.ID
         WHERE AC.LOGIC_DEL = 0

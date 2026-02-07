@@ -37,8 +37,10 @@ import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
-import com.freesia.tenant.exception.TenantException;
-import com.freesia.util.*;
+import com.freesia.util.UCalendar;
+import com.freesia.util.UEmpty;
+import com.freesia.util.UMessage;
+import com.freesia.util.UString;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -88,7 +90,7 @@ public class AccountCostController extends BaseController {
     public R<Void> saveUpdate(@RequestBody AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = pre2Save(accountCostVo);
         if (UEmpty.isNull(accountCostDto.getId())) {
-            Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+            Long userId = USecurity.getUserId();
             accountCostDto.setUserId(userId);
         }
         accountCostService.saveUpdate(accountCostDto);
@@ -125,9 +127,9 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "findPageAccountCost")
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_INDEX)
     public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostVo accountCostVo, PageQuery pageQuery) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         if (!accountCostVo.getAllTenantFlag()) {
-            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            Long tenantId = USecurity.getTenantId();
             accountCostVo.setTenantId(tenantId);
         } else {
             accountCostVo.setTenantId(null);
@@ -161,7 +163,7 @@ public class AccountCostController extends BaseController {
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_INDEX)
     public R<FindAccountCostEntity> findAccountCost(AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = pre2Save(accountCostVo);
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         accountCostDto.setUserId(userId);
         FindAccountCostEntity findAccountCostEntity = accountCostService.findAccountCost(accountCostDto);
         return R.ok(findAccountCostEntity);
@@ -222,9 +224,9 @@ public class AccountCostController extends BaseController {
     @GetMapping(value = "accountsExport")
     @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EXPORT)
     public void accountsExport(AccountCostVo accountsExportVo, HttpServletResponse response) throws IOException {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         if (!accountsExportVo.getAllTenantFlag()) {
-            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            Long tenantId = USecurity.getTenantId();
             accountsExportVo.setTenantId(tenantId);
         } else {
             accountsExportVo.setTenantId(null);
@@ -241,9 +243,9 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "饼图-查询各类型开销比例")
     @GetMapping(value = "findCostTypeRatePie")
     public R<EchartPieOptionEntity> findCostTypeRatePie(AccountCostVo accountCostVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         if (!accountCostVo.getAllTenantFlag()) {
-            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            Long tenantId = USecurity.getTenantId();
             accountCostVo.setTenantId(tenantId);
         } else {
             accountCostVo.setTenantId(null);
@@ -267,9 +269,9 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "折线图-根据时间查询")
     @GetMapping(value = "findCostLineChart")
     public R<EchartLineOptionEntity> findCostLineChart(FindCostLineChartVo findCostLineChartVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         if (!findCostLineChartVo.getAllTenantFlag()) {
-            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            Long tenantId = USecurity.getTenantId();
             findCostLineChartVo.setTenantId(tenantId);
         } else {
             findCostLineChartVo.setTenantId(null);
@@ -326,9 +328,9 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "日历-查询近一年支出")
     @GetMapping(value = "findCostSumCalendarNearYear")
     public R<EchartCalendarOptionEntity> findCostSumCalendarNearYear(FindCostSumCalendarNearYearVo findCostSumCalendarNearYearVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         if (!findCostSumCalendarNearYearVo.getAllTenantFlag()) {
-            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            Long tenantId = USecurity.getTenantId();
             findCostSumCalendarNearYearVo.setTenantId(tenantId);
         } else {
             findCostSumCalendarNearYearVo.setTenantId(null);
@@ -349,9 +351,9 @@ public class AccountCostController extends BaseController {
         if (UEmpty.isEmpty(dateScope) || null == DateScope.getInstanceByCode(dateScope)) {
             throw new AccountException("dateScope.invalid", new Object[]{dateScope});
         }
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         if (!findRankByCostTypeVo.getAllTenantFlag()) {
-            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            Long tenantId = USecurity.getTenantId();
             findRankByCostTypeVo.setTenantId(tenantId);
         } else {
             findRankByCostTypeVo.setTenantId(null);
@@ -372,7 +374,7 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "查询开销类型查询选择框")
     @GetMapping(value = "findSelectCostTypeList")
     public R<List<LaySelect>> findSelectCostTypeList(AccountCostVo accountCostVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
         accountCostDto.setUserId(userId);
         Date[] dateRange = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS, UString.SEPARATOR);
@@ -387,7 +389,7 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "根据用户ID查询开销类型下拉集合")
     @GetMapping(value = "findListSelectCostType")
     public R<List<LaySelect>> findListSelectCostType() {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         List<LaySelect> laySelectList = accountCostService.findListSelectCostType(userId);
         return R.ok(laySelectList);
     }
@@ -396,7 +398,7 @@ public class AccountCostController extends BaseController {
     @Operation(summary = "自动完成-根据输入查询图标类型和URL")
     @GetMapping(value = "findCacheCostType")
     public R<List<FindCacheCostTypeEntity>> findCacheCostType(FindCacheCostTypeVo findCacheCostTypeVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         AccountCostDto accountCostDto = accountCostConverter.convertFindCacheCostTypeVo2Dto(findCacheCostTypeVo);
         accountCostDto.setUserId(userId);
         List<FindCacheCostTypeEntity> laySelectList = accountCostService.findCacheCostType(accountCostDto);
@@ -437,8 +439,8 @@ public class AccountCostController extends BaseController {
      * @return 组装好的数据
      */
     private List<AccountCostDto> pre2Save(List<AccountCostVo> accountCostVoList) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
-        Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+        Long userId = USecurity.getUserId();
+        Long tenantId = USecurity.getTenantId();
         List<AccountCostDto> accountCostDtoList = new ArrayList<>();
         accountCostVoList.forEach(accountCostVo -> {
             AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
@@ -463,7 +465,7 @@ public class AccountCostController extends BaseController {
     private AccountCostDto pre2Save(AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
         if (!accountCostVo.getAllTenantFlag()) {
-            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            Long tenantId = USecurity.getTenantId();
             accountCostDto.setTenantId(tenantId);
         } else {
             accountCostDto.setTenantId(null);

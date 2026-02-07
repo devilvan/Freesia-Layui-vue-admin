@@ -8,11 +8,9 @@ import com.freesia.account.vo.AccountBudgetVo;
 import com.freesia.account.vo.FindBudgetCapacityVo;
 import com.freesia.controller.BaseController;
 import com.freesia.entity.EchartCapacityOptionEntity;
-import com.freesia.exception.UserException;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
-import com.freesia.tenant.exception.TenantException;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -44,7 +41,7 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "保存开销-预算表信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody AccountBudgetVo accountBudgetVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         accountBudgetVo.setUserId(userId);
         AccountBudgetDto accountBudgetDto = accountBudgetConverter.convertVo2Dto(accountBudgetVo);
         accountBudgetService.saveUpdate(accountBudgetDto);
@@ -76,7 +73,7 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "查询开销-预算表分页信息")
     @GetMapping(value = "findPageAccountBudget")
     public TableResult<AccountBudgetDto> findPageAccountBudget(AccountBudgetVo accountBudgetVo, PageQuery pageQuery) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         accountBudgetVo.setUserId(userId);
         AccountBudgetDto accountBudgetDto = accountBudgetConverter.convertVo2Dto(accountBudgetVo);
         return accountBudgetService.findPage(accountBudgetDto, pageQuery);
@@ -91,7 +88,7 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "条件查询开销-预算表")
     @GetMapping(value = "findAccountBudget")
     public R<AccountBudgetDto> findAccountBudget(AccountBudgetVo accountBudgetVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         accountBudgetVo.setUserId(userId);
         AccountBudgetDto accountBudgetDto = accountBudgetConverter.convertVo2Dto(accountBudgetVo);
         AccountBudgetDto tableResult = accountBudgetService.findOne(accountBudgetDto);
@@ -114,9 +111,9 @@ public class AccountBudgetController extends BaseController {
     @Operation(summary = "容量图-根据预算日期类型查询")
     @GetMapping(value = "findBudgetCapacity")
     public R<List<EchartCapacityOptionEntity>> findBudgetCapacity(FindBudgetCapacityVo findBudgetCapacityVo) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         if (!findBudgetCapacityVo.getAllTenantFlag()) {
-            Long tenantId = Optional.ofNullable(USecurity.getTenantId()).orElseThrow(() -> new TenantException("tenant.required", new Object[]{}));
+            Long tenantId = USecurity.getTenantId();
             findBudgetCapacityVo.setTenantId(tenantId);
         } else {
             findBudgetCapacityVo.setTenantId(null);

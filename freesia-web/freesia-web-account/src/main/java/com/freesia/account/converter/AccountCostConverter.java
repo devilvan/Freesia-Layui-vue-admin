@@ -34,6 +34,7 @@ public interface AccountCostConverter extends MapStructConverter<AccountCostVo, 
     @Mapping(target = "costTypeList", ignore = true)
     @Mapping(target = "accountCostUserIdList", ignore = true)
     @Mapping(target = "accountCostUserAllocDtoList", ignore = true)
+    @Mapping(target = "allTenantFlag", ignore = true)
     AccountCostDto convertPo2Dto(AccountCostPo source);
 
     @Mapping(target = "year", ignore = true)

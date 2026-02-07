@@ -26,7 +26,6 @@ import com.freesia.entity.EchartCalendarOptionEntity;
 import com.freesia.entity.EchartLineOptionEntity;
 import com.freesia.entity.EchartPieOptionEntity;
 import com.freesia.entity.EchartStackedHorizontalBarOptionEntity;
-import com.freesia.exception.UserException;
 import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.idempotent.annotation.Idempotent;
@@ -107,7 +106,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
 
     @Override
     public AccountCostDto saveUpdate(AccountCostDto accountCostDto) {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         SysUserDto sysUserDto = sysUserService.findUserById(userId);
         Long costId = accountCostDto.getId();
         OssHandler ossHandler = OssFactory.getInstance();
@@ -280,7 +279,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
     @Override
     @Idempotent(interval = "PT10S")
     public void refreshCache() {
-        Long userId = Optional.ofNullable(USecurity.getUserId()).orElseThrow(() -> new UserException("user.not.exists", new Object[]{}));
+        Long userId = USecurity.getUserId();
         String findCostTypeRatePieCacheKey = "findCostTypeRatePie:" + userId + '*';
         String findCostLineChartCacheKey = "findCostLineChart:" + userId + '*';
         String findCostSumCalendarNearYearCacheKey = "findCostSumCalendarNearYear:" + userId + '*';
