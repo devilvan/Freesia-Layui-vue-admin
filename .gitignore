@@ -4,3 +4,5 @@
 /freesia-web/freesia-web-app/src/test/
 /freesia-admin-layvue/components.d.ts
 /freesia-spring-admin/src/test/
+/target/
+**/target/

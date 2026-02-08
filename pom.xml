@@ -330,6 +330,9 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <fork>true</fork>
+                    <meminitial>512m</meminitial>
+                    <maxmem>1024m</maxmem>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -347,7 +350,8 @@
                             <version>${mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
-                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
+                    <!-- MapStruct不能添加这句，否则在target中会出现两个一样的converter bean，导致启动报错-->
+                    <!--<generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>-->
                     <compilerArgs>
                         <compilerArg>-Amapstruct.defaultComponentModel=spring</compilerArg>
                         <compilerArg>-Amapstruct.unmappedTargetPolicy=IGNORE</compilerArg>
