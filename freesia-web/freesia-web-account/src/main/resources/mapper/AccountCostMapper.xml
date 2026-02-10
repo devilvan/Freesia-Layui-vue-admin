@@ -706,6 +706,7 @@
         FROM (
         SELECT AC.ID, AC.PAYMENT_TIME, AC.MODIFY_TIME
         FROM account_cost AC
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         WHERE AC.LOGIC_DEL = 0
         AND AC.USER_ID = #{accountCostDto.userId}
         <if test="accountCostDto.tenantId != null">
@@ -727,6 +728,13 @@
         <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCostDto.costTypeList)">
             AND AC.COST_TYPE IN
             <foreach collection="accountCostDto.costTypeList" item="item" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCostDto.accountCostUserIdList)">
+            AND ACUA.USER_ID IN
+            <foreach collection="accountCostDto.accountCostUserIdList" item="item" open="(" close=")"
                      separator=",">
                 #{item}
             </foreach>
@@ -767,6 +775,13 @@
         <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCostDto.costTypeList)">
             AND AC.COST_TYPE IN
             <foreach collection="accountCostDto.costTypeList" item="item" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="@com.freesia.util.UEmpty@isNotEmpty(accountCostDto.accountCostUserIdList)">
+            AND ACUA.USER_ID IN
+            <foreach collection="accountCostDto.accountCostUserIdList" item="item" open="(" close=")"
                      separator=",">
                 #{item}
             </foreach>
