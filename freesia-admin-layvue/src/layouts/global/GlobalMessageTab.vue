@@ -11,9 +11,9 @@
     <slot></slot>
     <template #content>
       <div class="dropdownContainer">
-        <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
-          <lay-tab-item :title="`通知(${userStore.noticeCount})`" id="1">
-            <div style="width: 100%; height: 100%; overflow: hidden">
+        <lay-scroll height="500px">
+          <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
+            <lay-tab-item :title="`通知(${userStore.noticeCount})`" id="1">
               <div
                   class="inform-item"
                   v-for="(item, index) in noticeList"
@@ -39,38 +39,38 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </lay-tab-item>
-          <lay-tab-item :title="`公告(${userStore.announcementCount})`" id="2">
-            <div style="width: 100%; height: 100%; overflow: hidden">
-              <div
-                  class="inform-item privateLette-item"
-                  v-for="(item, index) in announcementList"
-                  :key="index"
-                  @click="doMarkRead(item, index)"
-              >
-                <div class="inform-item-icon">
-                  <img src="@/assets/messageSlot/info2.png" alt=""/>
-                </div>
-                <div class="inform-item-text" :style="getRowStyle(item, index)">
-                  <div>{{ item.title }}</div>
-                  <div class="oneRow" :title="item.content">{{ item.content }}</div>
-                  <div class="inform-item-time">
-                    {{ item.createTime }}
+            </lay-tab-item>
+            <lay-tab-item :title="`公告(${userStore.announcementCount})`" id="2">
+              <div style="width: 100%; height: 100%; overflow: hidden">
+                <div
+                    class="inform-item privateLette-item"
+                    v-for="(item, index) in announcementList"
+                    :key="index"
+                    @click="doMarkRead(item, index)"
+                >
+                  <div class="inform-item-icon">
+                    <img src="@/assets/messageSlot/info2.png" alt=""/>
                   </div>
-                </div>
-                <div class="inform-item-readFlag">
-                  <div v-show="announcementList[index].readFlag">
-                    <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
+                  <div class="inform-item-text" :style="getRowStyle(item, index)">
+                    <div>{{ item.title }}</div>
+                    <div class="oneRow" :title="item.content">{{ item.content }}</div>
+                    <div class="inform-item-time">
+                      {{ item.createTime }}
+                    </div>
                   </div>
-                  <div v-show="!announcementList[index].readFlag">
-                    <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
+                  <div class="inform-item-readFlag">
+                    <div v-show="announcementList[index].readFlag">
+                      <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
+                    </div>
+                    <div v-show="!announcementList[index].readFlag">
+                      <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </lay-tab-item>
-        </lay-tab>
+            </lay-tab-item>
+          </lay-tab>
+        </lay-scroll>
       </div>
     </template>
   </lay-dropdown>

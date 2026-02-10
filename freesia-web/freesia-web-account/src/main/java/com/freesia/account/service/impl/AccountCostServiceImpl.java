@@ -126,8 +126,22 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
 
     @Override
     public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostDto accountCost, PageQuery pageQuery) {
-        Page<FindPageAccountCostEntity> pagePo = accountCostMapper.findPageAccountCost(accountCost, pageQuery.build());
-        return TableResult.build(pagePo);
+        Page<Long> idPage = accountCostMapper.findPageAccountCostId(accountCost, pageQuery.build());
+        if (idPage != null && UEmpty.isNotEmpty(idPage.getRecords())) {
+            AccountCostDto accountCostDto = new AccountCostDto();
+            accountCostDto.setUserId(accountCost.getUserId());
+            accountCostDto.setTenantId(accountCost.getTenantId());
+            accountCostDto.setIdList(idPage.getRecords());
+            List<FindPageAccountCostEntity> findPageAccountCostEntityList = accountCostMapper.findPageAccountCost(accountCostDto);
+            Page<FindPageAccountCostEntity> pagePo = new Page<>();
+            pagePo.setRecords(findPageAccountCostEntityList);
+            pagePo.setSize(idPage.getSize());
+            pagePo.setCurrent(idPage.getCurrent());
+            pagePo.setTotal(idPage.getTotal());
+            pagePo.setPages(idPage.getPages());
+            return TableResult.build(pagePo);
+        }
+        return TableResult.build(new Page<>());
     }
 
     @Override

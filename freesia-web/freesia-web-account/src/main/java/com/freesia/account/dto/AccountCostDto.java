@@ -60,4 +60,6 @@ public class AccountCostDto extends BaseDto {
     private List<AccountCostUserAllocDto> accountCostUserAllocDtoList;
     @Schema(description = "是否统计所有账本")
     private Boolean allTenantFlag = false;
+    @Schema(description = "ID集合")
+    private List<Long> idList;
 }

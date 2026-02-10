@@ -131,12 +131,23 @@
         @change="change"
         @sortChange="sortChange">
       <template #allocStatus="{ row }">
-        <dict-scan :options="allocStatusSelect" :value="row.allocStatus"/>
+        {{ 
+          (() => {
+            if (!row.accountCostUserAllocDtoList || row.accountCostUserAllocDtoList.length === 0) return null;
+            const flags = row.accountCostUserAllocDtoList.map(item => item.allocFlag) || [];
+            if (flags.length === 0) return '未分摊';
+            const allTrue = flags.every(flag => flag);
+            const allFalse = flags.every(flag => !flag);
+            if (allTrue) return '已分摊';
+            if (allFalse) return '未分摊';
+            return '部分分摊';
+          })()
+        }}
       </template>
       <template #nickNameList="{ row }">
-        <lay-tooltip :visible="false" trigger="hover" :content='row.accountCostUserName'>
-          <div class="oneRow">{{ row.accountCostUserName }}</div>
-        </lay-tooltip>
+        {{
+          row.accountCostUserAllocDtoList?.map(item => item?.sysUserDto).filter(Boolean).map(userDto => userDto?.nickName).filter(Boolean).join(', ')
+        }}
       </template>
       <template #paymentTime="{ row }">
         {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）
@@ -147,9 +158,21 @@
         </lay-tooltip>
       </template>
       <template #acNickName="{ row }">
-        <lay-tooltip :visible="false" trigger="hover" :content="row.acNickName">
-          <div class="oneRow">{{ row.acNickName }}</div>
+        <lay-tooltip :visible="false" trigger="hover" :content="row?.sysUserDto?.nickName">
+          <div class="oneRow">{{ row?.sysUserDto?.nickName }}</div>
         </lay-tooltip>
+      </template>
+      <template #tenantName="{ row }">
+        <lay-tooltip :visible="false" trigger="hover" :content="row?.sysTenantDto?.name">
+          <div class="oneRow">{{ row?.sysTenantDto?.name }}</div>
+        </lay-tooltip>
+      </template>
+      <template #allocAmount="{ row }">
+        <div v-html="
+          row.accountCostUserAllocDtoList?.map(item => {
+            return `${item?.sysUserDto?.nickName}：${item?.amount}元（${item?.allocFlag? '已分摊' : '未分摊'}）`
+          }).join('<br>')
+        "></div>
       </template>
       <template #paymentSign="{ row }">
         <dict-tag :options="paymentSignSelect" :value="row.paymentSign"/>
@@ -519,7 +542,6 @@ import {useAccountCostStore} from "@/store/accountCost";
 onMounted(async () => {
   paymentSignSelect.value = await loadSysDictValue(Constants.PAYMENT_SIGN)
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
-  allocStatusSelect.value = await loadSysDictValue(Constants.ALLOC_STATUS)
   searchQuery.value.paymentTimeRange = buildRange(6)
   let param: CommonIconTemplateDetailVo = {
     headerId: useStore.commonIconHeader
@@ -574,11 +596,11 @@ const columns = ref([
   {title: '金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '类型', width: '130px', key: 'icon', customSlot: 'iconType'},
   {title: '标识', width: '80px', key: 'paymentSign', customSlot: 'paymentSign'},
-  {title: '分摊金额', width: '130px', key: 'allocAmount'},
+  {title: '分摊金额', width: '300px', key: 'allocAmount', customSlot: 'allocAmount'},
   {title: '分摊状态', width: '80px', key: 'allocStatus', customSlot: 'allocStatus'},
   {title: '时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
-  {title: '所属账本', width: '100px', key: 'tenantName'},
+  {title: '所属账本', width: '100px', key: 'tenantName', customSlot: 'tenantName'},
   {title: '关联用户', width: '200px', key: 'nickNameList', customSlot: 'nickNameList'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
   {title: '修改时间', width: '150px', key: 'modifyTime'},
@@ -995,14 +1017,13 @@ function getDayColor(date: Date) {
 
 function getRowStyle(row: any, rowIndex: number) {
   const day = new Date(row.paymentTime).getDay();
-  let opacity = row.tenantId == useStore.currentTenant ? 1 : 0.7
-  if (day === 0) return 'background-color:' + 'rgba(255, 154, 158, 0.4); opacity: ' + opacity + ';';
-  if (day === 1) return 'background-color:' + 'rgba(255, 87, 34, 0.4); opacity: ' + opacity + ';';
-  if (day === 2) return 'background-color:' + 'rgba(255, 184, 0, 0.4); opacity: ' + opacity + ';';
-  if (day === 3) return 'background-color:' + 'rgba(54, 179, 104, 0.4); opacity: ' + opacity + ';';
-  if (day === 4) return 'background-color:' + 'rgba(45, 140, 240, 0.4); opacity: ' + opacity + ';';
-  if (day === 5) return 'background-color:' + 'rgba(57, 99, 188, 0.4); opacity: ' + opacity + ';';
-  if (day === 6) return 'background-color:' + 'rgba(153, 138, 219, 0.4); opacity: ' + opacity + ';';
+  if (day === 0) return 'background-color:' + 'rgba(255, 154, 158, 0.4);';
+  if (day === 1) return 'background-color:' + 'rgba(255, 87, 34, 0.4);';
+  if (day === 2) return 'background-color:' + 'rgba(255, 184, 0, 0.4);';
+  if (day === 3) return 'background-color:' + 'rgba(54, 179, 104, 0.4);';
+  if (day === 4) return 'background-color:' + 'rgba(45, 140, 240, 0.4);';
+  if (day === 5) return 'background-color:' + 'rgba(57, 99, 188, 0.4);';
+  if (day === 6) return 'background-color:' + 'rgba(153, 138, 219, 0.4);';
   return ''
 }
 

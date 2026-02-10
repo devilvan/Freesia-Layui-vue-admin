@@ -68,13 +68,12 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
     List<FindCostSumCalendarNearYearEntity> findCostSumCalendarNearYear(@Param("accountCostDto") AccountCostDto accountCostDto);
 
     /**
-     * 查询开销表分页信息
+     * 查询开销表分页集合信息
      *
      * @param accountCostDto 入参
-     * @param page           分页参数
      * @return 分页数据
      */
-    Page<FindPageAccountCostEntity> findPageAccountCost(@Param("accountCostDto") AccountCostDto accountCostDto, @Param("page") Page<AccountCostPo> page);
+    List<FindPageAccountCostEntity> findPageAccountCost(@Param("accountCostDto") AccountCostDto accountCostDto);
 
     /**
      * 条件查询开销表
@@ -107,4 +106,13 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @return 结果集
      */
     List<AccountCostPo> findSelectCostTypeList(@Param(value = "accountCostDto") AccountCostDto accountCostDto);
+
+    /**
+     * 查询分页查询所需的ID
+     *
+     * @param accountCostDto 查询条件
+     * @param pageQuery      分页条件
+     * @return ID集合
+     */
+    Page<Long> findPageAccountCostId(@Param(value = "accountCostDto") AccountCostDto accountCostDto, @Param(value = "page") Page<AccountCostPo> pageQuery);
 }

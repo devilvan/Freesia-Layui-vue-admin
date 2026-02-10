@@ -4,7 +4,7 @@
 
     <!--输出sql语句-->
     <logger name="com.freesia" level="INFO"/>
-    <property name="logRecord.path" value="/logs"/>
+    <property name="logRecord.path" value="${user.dir}/logs"/>
     <property name="maxHistory" value="7"/>
     <property name="maxFileSize" value="50MB"/>
     <property name="consolePattern"

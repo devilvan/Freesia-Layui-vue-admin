@@ -1,6 +1,7 @@
 package com.freesia.account.dto;
 
 import com.freesia.dto.BaseDto;
+import com.freesia.dto.SysUserDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -28,4 +29,6 @@ public class AccountCostUserAllocDto extends BaseDto {
     private Date operateTime;
     @Schema(description = "是否分摊（0-否，1-是）")
     private Boolean allocFlag;
+    @Schema(description = "分摊用户")
+    private SysUserDto sysUserDto;
 }

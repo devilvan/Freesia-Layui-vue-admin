@@ -89,6 +89,7 @@ public class AccountCostController extends BaseController {
     })
     public R<Void> saveUpdate(@RequestBody AccountCostVo accountCostVo) {
         AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
+        accountCostDto.setTenantId(USecurity.getTenantId());
         accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
         List<AccountCostUserAllocVo> accountCostUserAllocVoList = accountCostVo.getAccountCostUserAllocVoList();
         if (UEmpty.isNotEmpty((accountCostUserAllocVoList))) {
@@ -460,28 +461,5 @@ public class AccountCostController extends BaseController {
                 .registerWriteHandler(new ExcelCellWriteStyle<>())
                 .sheet(0, title)
                 .doWrite(accountCostExportEntityList);
-    }
-
-    /**
-     * 保存记账数据前操作
-     *
-     * @param accountCostVo 前端入参
-     * @return 组装好的数据
-     */
-    private AccountCostDto pre2Save(AccountCostVo accountCostVo) {
-        AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
-        if (!accountCostVo.getAllTenantFlag()) {
-            Long tenantId = USecurity.getTenantId();
-            accountCostDto.setTenantId(tenantId);
-        } else {
-            accountCostDto.setTenantId(null);
-        }
-        accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
-        List<AccountCostUserAllocVo> accountCostUserAllocVoList = accountCostVo.getAccountCostUserAllocVoList();
-        if (UEmpty.isNotEmpty((accountCostUserAllocVoList))) {
-            List<AccountCostUserAllocDto> accountCostUserAllocDtoList = accountCostUserAllocConverter.convertBatchVo2Dto(accountCostUserAllocVoList);
-            accountCostDto.setAccountCostUserAllocDtoList(accountCostUserAllocDtoList);
-        }
-        return accountCostDto;
     }
 }
