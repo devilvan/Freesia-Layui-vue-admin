@@ -1,6 +1,5 @@
 package com.freesia.account.service.impl;
 
-import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,7 +19,6 @@ import com.freesia.convert.MapStructConverter;
 import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.redis.util.URedis;
 import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
 import lombok.NonNull;
@@ -30,7 +28,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
 import java.util.*;
 
 /**
@@ -126,16 +123,16 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
     public List<EchartCapacityOptionEntity> findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto) {
         List<EchartCapacityOptionEntity> echartCapacityOptionEntityList = new ArrayList<>();
         List<AccountBudgetPo> accountCostPoList = accountBudgetMapper.findListBudget(findBudgetCapacityDto);
-//        if (UEmpty.isEmpty(accountCostPoList)) {
-//            return echartCapacityOptionEntityList;
-//        }
-        String cacheKey = "findBudgetCapacity:" +
-                findBudgetCapacityDto.getUserId() + "@" +
-                findBudgetCapacityDto.getTenantId();
-        List<EchartCapacityOptionEntity> echartCapacityOptionEntityListCache = URedis.get(cacheKey);
-        if (UEmpty.isNotNull(echartCapacityOptionEntityListCache)) {
-            return echartCapacityOptionEntityListCache;
+        if (UEmpty.isEmpty(accountCostPoList)) {
+            return echartCapacityOptionEntityList;
         }
+//        String cacheKey = "findBudgetCapacity:" +
+//                findBudgetCapacityDto.getUserId() + "@" +
+//                findBudgetCapacityDto.getTenantId();
+//        List<EchartCapacityOptionEntity> echartCapacityOptionEntityListCache = URedis.get(cacheKey);
+//        if (UEmpty.isNotNull(echartCapacityOptionEntityListCache)) {
+//            return echartCapacityOptionEntityListCache;
+//        }
         for (AccountBudgetPo accountBudgetPo : accountCostPoList) {
             String budgetType = accountBudgetPo.getBudgetType();
             if (BudgetType.DAY.getCode().equals(budgetType)) {
@@ -238,7 +235,7 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
                     return Integer.MAX_VALUE;
                 }
             }));
-            URedis.set(cacheKey, echartCapacityOptionEntityList, Duration.ofSeconds(30));
+//            URedis.set(cacheKey, echartCapacityOptionEntityList, Duration.ofSeconds(30));
         }
         return echartCapacityOptionEntityList;
     }
@@ -246,10 +243,12 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
     private EchartCapacityOptionEntity buildEchartCapacityOptionEntity(List<FindBudgetCapacityEntity> findBudgetCapacityEntityList, AccountBudgetPo accountBudgetPo) {
         EchartCapacityOptionEntity echartCapacityOptionEntity = new EchartCapacityOptionEntity();
         BigDecimal sumOutlay = BigDecimal.ZERO;
+        echartCapacityOptionEntity.setId(accountBudgetPo.getId());
         echartCapacityOptionEntity.setName(accountBudgetPo.getBudgetDesc());
         echartCapacityOptionEntity.setBudget(accountBudgetPo.getOutlay());
         echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
         echartCapacityOptionEntity.setBudgetType(accountBudgetPo.getBudgetType());
+        echartCapacityOptionEntity.setValue(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
         if (UEmpty.isEmpty(findBudgetCapacityEntityList)) {
             return echartCapacityOptionEntity;
         }
@@ -262,7 +261,7 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
                 .setScale(2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(100));
         echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
-        echartCapacityOptionEntity.setValue(Convert.toBigDecimal(rate, BigDecimal.ZERO));
+        echartCapacityOptionEntity.setValue(rate);
         // 如果是自定义类型，则赋值自定义的时间范围
         if (BudgetType.CUSTOM.getCode().equals(accountBudgetPo.getBudgetType())) {
             echartCapacityOptionEntity.setDurationFrom(accountBudgetPo.getDurationFrom());

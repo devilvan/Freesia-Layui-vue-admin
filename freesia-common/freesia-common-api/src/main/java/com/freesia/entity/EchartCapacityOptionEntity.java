@@ -15,6 +15,8 @@ import java.util.Date;
  */
 @Data
 public class EchartCapacityOptionEntity {
+    @Schema(description = "主键")
+    private Long id;
     @Schema(description = "描述")
     private String name;
     @Schema(description = "值（单位：%）")

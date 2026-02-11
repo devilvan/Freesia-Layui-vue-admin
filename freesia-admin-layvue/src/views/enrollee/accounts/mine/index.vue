@@ -144,11 +144,6 @@
           })()
         }}
       </template>
-      <template #nickNameList="{ row }">
-        {{
-          row.accountCostUserAllocDtoList?.map(item => item?.sysUserDto).filter(Boolean).map(userDto => userDto?.nickName).filter(Boolean).join(', ')
-        }}
-      </template>
       <template #paymentTime="{ row }">
         {{ row.paymentTime }} （{{ getWeekdayCn(row.paymentTime) }}）
       </template>
@@ -599,11 +594,10 @@ const columns = ref([
   {title: '分摊金额', width: '300px', key: 'allocAmount', customSlot: 'allocAmount'},
   {title: '分摊状态', width: '80px', key: 'allocStatus', customSlot: 'allocStatus'},
   {title: '时间', width: '200px', key: 'paymentTime', customSlot: 'paymentTime', sort: 'desc'},
+  {title: '修改时间', width: '150px', key: 'modifyTime'},
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
   {title: '所属账本', width: '100px', key: 'tenantName', customSlot: 'tenantName'},
-  {title: '关联用户', width: '200px', key: 'nickNameList', customSlot: 'nickNameList'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
-  {title: '修改时间', width: '150px', key: 'modifyTime'},
   {
     title: '操作',
     width: '150px',

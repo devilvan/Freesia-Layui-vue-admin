@@ -298,13 +298,11 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         String findCostLineChartCacheKey = "findCostLineChart:" + userId + '*';
         String findCostSumCalendarNearYearCacheKey = "findCostSumCalendarNearYear:" + userId + '*';
         String findRankByCostTypeCacheKey = "findRankByCostType:" + userId + '*';
-        String findBudgetCapacityCacheKey = "findBudgetCapacity:" + userId + '*';
         List<String> keyList = new ArrayList<>();
         keyList.addAll(URedis.scan(findCostTypeRatePieCacheKey));
         keyList.addAll(URedis.scan(findCostLineChartCacheKey));
         keyList.addAll(URedis.scan(findCostSumCalendarNearYearCacheKey));
         keyList.addAll(URedis.scan(findRankByCostTypeCacheKey));
-        keyList.addAll(URedis.scan(findBudgetCapacityCacheKey));
         URedis.delete(keyList);
     }
 
