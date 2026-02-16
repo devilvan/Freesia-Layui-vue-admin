@@ -118,7 +118,6 @@ public class AccountCostController extends BaseController {
             @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EDIT)
     })
     public R<Void> saveUpdateBatch(@RequestBody List<AccountCostVo> accountCostVoList) {
-        Long userId = USecurity.getUserId();
         Long tenantId = USecurity.getTenantId();
         List<AccountCostDto> accountCostDtoList = new ArrayList<>();
         accountCostVoList.forEach(accountCostVo -> {
@@ -248,7 +247,6 @@ public class AccountCostController extends BaseController {
      * 记账导出
      *
      * @param accountsExportVo 查询入参
-     * @return 形式返回
      */
     @Idempotent
     @Operation(summary = "记账导出")
@@ -283,15 +281,14 @@ public class AccountCostController extends BaseController {
         }
         AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
         accountCostDto.setUserId(userId);
+        Date[] dates;
         if (UEmpty.isEmpty(accountCostVo.getPaymentTimeRange())) {
-            Date[] dates = defaultDateRange(6);
-            accountCostDto.setPaymentTimeFrom(dates[0]);
-            accountCostDto.setPaymentTimeTo(dates[1]);
+            dates = defaultDateRange(6);
         } else {
-            Date[] dates = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS);
-            accountCostDto.setPaymentTimeFrom(dates[0]);
-            accountCostDto.setPaymentTimeTo(dates[1]);
+            dates = parseDateRange(accountCostVo.getPaymentTimeRange(), Constants.SDF_YMDHMS);
         }
+        accountCostDto.setPaymentTimeFrom(dates[0]);
+        accountCostDto.setPaymentTimeTo(dates[1]);
         EchartPieOptionEntity echartPieOptionEntity = accountCostService.findCostTypeRatePie(accountCostDto);
         return R.ok(echartPieOptionEntity);
     }
@@ -343,7 +340,8 @@ public class AccountCostController extends BaseController {
                 }
             }
             if (DateScope.MONTH.getCode().equals(code)) {
-                if (yearMonth.length == 2) {
+                int yearMonthLength = 2;
+                if (yearMonth.length == yearMonthLength) {
                     findCostLineChartDto.setYear(Integer.parseInt(yearMonth[0]));
                     findCostLineChartDto.setMonth(Integer.parseInt(yearMonth[1]));
                 } else {

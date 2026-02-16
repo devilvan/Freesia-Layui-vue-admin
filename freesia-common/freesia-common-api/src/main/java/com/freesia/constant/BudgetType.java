@@ -1,4 +1,4 @@
-package com.freesia.account.constant;
+package com.freesia.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,13 +11,34 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum BudgetType {
+    /**
+     * 日预算
+     */
     DAY("DAY", "日预算"),
+    /**
+     * 周预算
+     */
     WEEK("WEEK", "周预算"),
+    /**
+     * 月预算
+     */
     MONTH("MONTH", "月预算"),
+    /**
+     * 年预算
+     */
     YEAR("YEAR", "年预算"),
-    CUSTOM("CUSTOM", "自定义");
+    /**
+     * 自定义
+     */
+    CUSTOM("CUSTOM", "");
 
+    /**
+     * 编码
+     */
     private final String code;
+    /**
+     * 描述
+     */
     private final String desc;
 
     /**
