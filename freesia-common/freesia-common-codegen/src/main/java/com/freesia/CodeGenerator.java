@@ -55,13 +55,14 @@ public class CodeGenerator {
      */
     private static void generate(List<DataBaseDto> dataBaseDtoList) {
         for (DataBaseDto dataBaseDto : dataBaseDtoList) {
-//            generateVo(dataBaseDto);
-//            generateDto(dataBaseDto);
-//            generatePo(dataBaseDto);
-//            generateController(dataBaseDto);
-//            generateService(dataBaseDto);
-//            generateServiceImpl(dataBaseDto);
-//            generateRepository(dataBaseDto);
+            generateVo(dataBaseDto);
+            generateDto(dataBaseDto);
+            generatePo(dataBaseDto);
+            generateController(dataBaseDto);
+            generateService(dataBaseDto);
+            generateServiceImpl(dataBaseDto);
+            generateConverter(dataBaseDto);
+            generateRepository(dataBaseDto);
             generateMapper(dataBaseDto);
             generateMapperXml(dataBaseDto);
         }
@@ -341,6 +342,19 @@ public class CodeGenerator {
             mapperFile.mkdirs();
         }
         File path = new File(parentpPath + dataBaseDto.getClassName() + "ServiceImpl" + SUFFIX_JAVA);
+        Map<String, Object> map = new HashMap<>(basicMap);
+        map.put("dataBaseDto", dataBaseDto);
+        generateFileByTemplate(templateName, path, map);
+    }
+
+    private static void generateConverter(DataBaseDto dataBaseDto) {
+        String parentpPath = basicMap.get("projectDirectory") + "\\" + basicMap.get("path") + "\\converter\\";
+        String templateName = "converter.ftl";
+        File mapperFile = new File(parentpPath);
+        if (!mapperFile.exists()) {
+            mapperFile.mkdirs();
+        }
+        File path = new File(parentpPath + dataBaseDto.getClassName() + "Converter" + SUFFIX_JAVA);
         Map<String, Object> map = new HashMap<>(basicMap);
         map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);

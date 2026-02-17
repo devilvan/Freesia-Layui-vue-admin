@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.account.mapper.AccountBillingMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.account.po.AccountBillingPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="REMARK" property="remark"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="BUDGET_ID" property="budgetId"/>
+        <result column="STRATEGY_ID" property="strategyId"/>
+        <result column="TITLE" property="title"/>
+        <result column="BUDGET_TYPE" property="budgetType"/>
+        <result column="BUDGET_AMOUNT" property="budgetAmount"/>
+        <result column="OUTLAY" property="outlay"/>
+        <result column="INCOME_AMOUNT" property="incomeAmount"/>
+        <result column="BILLING_TIME" property="billingTime"/>
+        <result column="BILLING_TIME_FROM" property="billingTimeFrom"/>
+        <result column="BILLING_TIME_TO" property="billingTimeTo"/>
+        <result column="RECALCULATE_FLAG" property="recalculateFlag"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, STRATEGY_ID, TITLE, BUDGET_TYPE, BUDGET_AMOUNT, OUTLAY, INCOME_AMOUNT, BILLING_TIME, BILLING_TIME_FROM, BILLING_TIME_TO, RECALCULATE_FLAG
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ACCOUNT_BILLING
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.remark != null and dto.remark != ''">
+            AND REMARK = #{dto.remark}
+        </if>
+        <if test="dto.userId != null">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.budgetId != null">
+            AND BUDGET_ID = #{dto.budgetId}
+        </if>
+        <if test="dto.strategyId != null">
+            AND STRATEGY_ID = #{dto.strategyId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.budgetType != null and dto.budgetType != ''">
+            AND BUDGET_TYPE = #{dto.budgetType}
+        </if>
+        <if test="dto.budgetAmount != null">
+            AND BUDGET_AMOUNT = #{dto.budgetAmount}
+        </if>
+        <if test="dto.outlay != null">
+            AND OUTLAY = #{dto.outlay}
+        </if>
+        <if test="dto.incomeAmount != null">
+            AND INCOME_AMOUNT = #{dto.incomeAmount}
+        </if>
+        <if test="dto.billingTime != null">
+            AND BILLING_TIME = #{dto.billingTime}
+        </if>
+        <if test="dto.billingTimeFrom != null">
+            AND BILLING_TIME_FROM = #{dto.billingTimeFrom}
+        </if>
+        <if test="dto.billingTimeTo != null">
+            AND BILLING_TIME_TO = #{dto.billingTimeTo}
+        </if>
+        <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
+            AND RECALCULATE_FLAG = #{dto.recalculateFlag}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ACCOUNT_BILLING,ACCOUNT_BILLING_STRATEGY
+        WHERE LOGIC_DEL = 0
+        <if test="dto.remark != null and dto.remark != ''">
+            AND REMARK = #{dto.remark}
+        </if>
+        <if test="dto.userId != null">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.budgetId != null">
+            AND BUDGET_ID = #{dto.budgetId}
+        </if>
+        <if test="dto.strategyId != null">
+            AND STRATEGY_ID = #{dto.strategyId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.budgetType != null and dto.budgetType != ''">
+            AND BUDGET_TYPE = #{dto.budgetType}
+        </if>
+        <if test="dto.budgetAmount != null">
+            AND BUDGET_AMOUNT = #{dto.budgetAmount}
+        </if>
+        <if test="dto.outlay != null">
+            AND OUTLAY = #{dto.outlay}
+        </if>
+        <if test="dto.incomeAmount != null">
+            AND INCOME_AMOUNT = #{dto.incomeAmount}
+        </if>
+        <if test="dto.billingTime != null">
+            AND BILLING_TIME = #{dto.billingTime}
+        </if>
+        <if test="dto.billingTimeFrom != null">
+            AND BILLING_TIME_FROM = #{dto.billingTimeFrom}
+        </if>
+        <if test="dto.billingTimeTo != null">
+            AND BILLING_TIME_TO = #{dto.billingTimeTo}
+        </if>
+        <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
+            AND RECALCULATE_FLAG = #{dto.recalculateFlag}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO ACCOUNT_BILLING
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        REMARK, 
+        USER_ID, 
+        BUDGET_ID, 
+        STRATEGY_ID, 
+        TITLE, 
+        BUDGET_TYPE, 
+        BUDGET_AMOUNT, 
+        OUTLAY, 
+        INCOME_AMOUNT, 
+        BILLING_TIME, 
+        BILLING_TIME_FROM, 
+        BILLING_TIME_TO, 
+        RECALCULATE_FLAG
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.remark}, 
+            #{item.userId}, 
+            #{item.budgetId}, 
+            #{item.strategyId}, 
+            #{item.title}, 
+            #{item.budgetType}, 
+            #{item.budgetAmount}, 
+            #{item.outlay}, 
+            #{item.incomeAmount}, 
+            #{item.billingTime}, 
+            #{item.billingTimeFrom}, 
+            #{item.billingTimeTo}, 
+            #{item.recalculateFlag}
+            )
+        </foreach>
+    </insert>
+</mapper>

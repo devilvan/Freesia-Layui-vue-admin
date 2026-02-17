@@ -12,12 +12,11 @@
         <result column="BUILD_IN" property="buildIn"/>
         <result column="TENANT_ID" property="tenantId"/>
         <#list dataBaseDto.fieldList as field>
-            <result column="${field.columnName}" property="${field.fieldName}"/>
+        <result column="${field.columnName}" property="${field.fieldName}"/>
         </#list>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN,
-        TENANT_ID, <#list dataBaseDto.fieldList as field>${field.columnName}<#if field_has_next>, </#if></#list>
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, <#list dataBaseDto.fieldList as field>${field.columnName}<#if field_has_next>, </#if></#list>
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -70,7 +69,7 @@
         TENANT_ID,
         <#list dataBaseDto.fieldList as field>
         <#if field.columnName != 'ID'>
-            ${field.columnName}<#if field_has_next>, </#if>
+        ${field.columnName}<#if field_has_next>, </#if>
         </#if>
         </#list>
         )
@@ -88,7 +87,7 @@
             <#noparse>#{</#noparse>item.tenantId<#noparse>}</#noparse>,
             <#list dataBaseDto.fieldList as field>
             <#if field.columnName != 'ID'>
-                <#noparse>#{</#noparse>item.${field.fieldName}<#noparse>}</#noparse><#if field_has_next>, </#if>
+            <#noparse>#{</#noparse>item.${field.fieldName}<#noparse>}</#noparse><#if field_has_next>, </#if>
             </#if>
             </#list>
             )

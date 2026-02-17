@@ -11,8 +11,17 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum AllocStatus {
+    /**
+     * 未分摊
+     */
     UNFINISHED("UNFINISHED", "msg.unfinished"),
+    /**
+     * 部分分摊
+     */
     PART("PART", "msg.part"),
+    /**
+     * 已分摊
+     */
     FINISHED("FINISHED", "msg.finished");
 
     private final String code;
