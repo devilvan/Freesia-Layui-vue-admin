@@ -66,7 +66,7 @@ public class AccountBillingController extends BaseController {
     @GetMapping(value = "findPageAccountBilling")
     public TableResult<AccountBillingDto> findPageAccountBilling(AccountBillingVo accountBillingVo, PageQuery pageQuery) {
         AccountBillingDto accountBillingDto = UCopy.copyVo2Dto(accountBillingVo, AccountBillingDto.class);
-        return accountBillingService.findPageAccountBilling(accountBillingDto, pageQuery);
+        return accountBillingService.findPage(accountBillingDto, pageQuery);
     }
 
     /**
@@ -79,7 +79,7 @@ public class AccountBillingController extends BaseController {
     @GetMapping(value = "findAccountBilling")
     public R<AccountBillingDto> findAccountBilling(AccountBillingVo accountBillingVo) {
         AccountBillingDto accountBillingDto = UCopy.copyVo2Dto(accountBillingVo, AccountBillingDto.class);
-        accountBillingDto = accountBillingService.findAccountBilling(accountBillingDto);
+        accountBillingDto = accountBillingService.findOne(accountBillingDto);
         return R.ok(accountBillingDto);
     }
 
@@ -93,7 +93,7 @@ public class AccountBillingController extends BaseController {
     @GetMapping(value = "findListAccountBilling")
     public R<List<AccountBillingDto>> findListAccountBilling(AccountBillingVo accountBillingVo) {
         AccountBillingDto accountBillingDto = UCopy.copyVo2Dto(accountBillingVo, AccountBillingDto.class);
-        List<AccountBillingDto> accountBillingDtoList = accountBillingService.findListAccountBilling(accountBillingDto);
+        List<AccountBillingDto> accountBillingDtoList = accountBillingService.findList(accountBillingDto);
         return R.ok(accountBillingDtoList);
     }
 
@@ -106,7 +106,7 @@ public class AccountBillingController extends BaseController {
     @Operation(summary = "删除记账账单表")
     @PostMapping(value = "deleteAccountBilling")
     public R<Void> deleteAccountBilling(@RequestBody List<Long> idList) {
-        accountBillingService.deleteAccountBilling(idList);
+        accountBillingService.deleteBatch(idList);
         return R.ok();
     }
 }

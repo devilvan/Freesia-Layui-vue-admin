@@ -66,7 +66,7 @@ public class AccountBillingStrategyController extends BaseController {
     @GetMapping(value = "findPageAccountBillingStrategy")
     public TableResult<AccountBillingStrategyDto> findPageAccountBillingStrategy(AccountBillingStrategyVo accountBillingStrategyVo, PageQuery pageQuery) {
         AccountBillingStrategyDto accountBillingStrategyDto = UCopy.copyVo2Dto(accountBillingStrategyVo, AccountBillingStrategyDto.class);
-        return accountBillingStrategyService.findPageAccountBillingStrategy(accountBillingStrategyDto, pageQuery);
+        return accountBillingStrategyService.findPage(accountBillingStrategyDto, pageQuery);
     }
 
     /**
@@ -79,7 +79,7 @@ public class AccountBillingStrategyController extends BaseController {
     @GetMapping(value = "findAccountBillingStrategy")
     public R<AccountBillingStrategyDto> findAccountBillingStrategy(AccountBillingStrategyVo accountBillingStrategyVo) {
         AccountBillingStrategyDto accountBillingStrategyDto = UCopy.copyVo2Dto(accountBillingStrategyVo, AccountBillingStrategyDto.class);
-        accountBillingStrategyDto = accountBillingStrategyService.findAccountBillingStrategy(accountBillingStrategyDto);
+        accountBillingStrategyDto = accountBillingStrategyService.findOne(accountBillingStrategyDto);
         return R.ok(accountBillingStrategyDto);
     }
 
@@ -93,7 +93,7 @@ public class AccountBillingStrategyController extends BaseController {
     @GetMapping(value = "findListAccountBillingStrategy")
     public R<List<AccountBillingStrategyDto>> findListAccountBillingStrategy(AccountBillingStrategyVo accountBillingStrategyVo) {
         AccountBillingStrategyDto accountBillingStrategyDto = UCopy.copyVo2Dto(accountBillingStrategyVo, AccountBillingStrategyDto.class);
-        List<AccountBillingStrategyDto> accountBillingStrategyDtoList = accountBillingStrategyService.findListAccountBillingStrategy(accountBillingStrategyDto);
+        List<AccountBillingStrategyDto> accountBillingStrategyDtoList = accountBillingStrategyService.findList(accountBillingStrategyDto);
         return R.ok(accountBillingStrategyDtoList);
     }
 
@@ -106,7 +106,7 @@ public class AccountBillingStrategyController extends BaseController {
     @Operation(summary = "删除记账账单策略表")
     @PostMapping(value = "deleteAccountBillingStrategy")
     public R<Void> deleteAccountBillingStrategy(@RequestBody List<Long> idList) {
-        accountBillingStrategyService.deleteAccountBillingStrategy(idList);
+        accountBillingStrategyService.deleteBatch(idList);
         return R.ok();
     }
 }

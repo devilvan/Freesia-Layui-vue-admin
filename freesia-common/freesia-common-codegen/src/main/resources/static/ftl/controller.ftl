@@ -66,7 +66,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @GetMapping(value = "findPage${dataBaseDto.className}")
     public TableResult<${dataBaseDto.className}Dto> findPage${dataBaseDto.className}(${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo, PageQuery pageQuery) {
         ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
-        return ${dataBaseDto.className?uncap_first}Service.findPage${dataBaseDto.className}(${dataBaseDto.className?uncap_first}Dto, pageQuery);
+        return ${dataBaseDto.className?uncap_first}Service.findPage(${dataBaseDto.className?uncap_first}Dto, pageQuery);
     }
 
     /**
@@ -79,7 +79,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @GetMapping(value = "find${dataBaseDto.className}")
     public R<${dataBaseDto.className}Dto> find${dataBaseDto.className}(${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo) {
         ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
-        ${dataBaseDto.className?uncap_first}Dto = ${dataBaseDto.className?uncap_first}Service.find${dataBaseDto.className}(${dataBaseDto.className?uncap_first}Dto);
+        ${dataBaseDto.className?uncap_first}Dto = ${dataBaseDto.className?uncap_first}Service.findOne(${dataBaseDto.className?uncap_first}Dto);
         return R.ok(${dataBaseDto.className?uncap_first}Dto);
     }
 
@@ -93,7 +93,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @GetMapping(value = "findList${dataBaseDto.className}")
     public R<List<${dataBaseDto.className}Dto>> findList${dataBaseDto.className}(${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo) {
         ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
-        List<${dataBaseDto.className}Dto> ${dataBaseDto.className?uncap_first}DtoList = ${dataBaseDto.className?uncap_first}Service.findList${dataBaseDto.className}(${dataBaseDto.className?uncap_first}Dto);
+        List<${dataBaseDto.className}Dto> ${dataBaseDto.className?uncap_first}DtoList = ${dataBaseDto.className?uncap_first}Service.findList(${dataBaseDto.className?uncap_first}Dto);
         return R.ok(${dataBaseDto.className?uncap_first}DtoList);
     }
 
@@ -106,7 +106,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @Operation(summary = "删除${dataBaseDto.comment}")
     @PostMapping(value = "delete${dataBaseDto.className}")
     public R<Void> delete${dataBaseDto.className}(@RequestBody List<Long> idList) {
-        ${dataBaseDto.className?uncap_first}Service.delete${dataBaseDto.className}(idList);
+        ${dataBaseDto.className?uncap_first}Service.deleteBatch(idList);
         return R.ok();
     }
 }

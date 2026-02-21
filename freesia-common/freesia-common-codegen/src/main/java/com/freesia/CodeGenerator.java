@@ -33,6 +33,7 @@ public class CodeGenerator {
     private static final List<String> intType = List.of("TINYINT", "SMALLINT", "MEDIUMINT", "INT");
     private static final String SUFFIX_JAVA = ".java";
     private static final String SUFFIX_XML = ".xml";
+    private static final String SUFFIX_TS = ".ts";
     private static final Map<String, Object> basicMap;
 
     static {
@@ -55,16 +56,18 @@ public class CodeGenerator {
      */
     private static void generate(List<DataBaseDto> dataBaseDtoList) {
         for (DataBaseDto dataBaseDto : dataBaseDtoList) {
-            generateVo(dataBaseDto);
-            generateDto(dataBaseDto);
-            generatePo(dataBaseDto);
-            generateController(dataBaseDto);
-            generateService(dataBaseDto);
-            generateServiceImpl(dataBaseDto);
-            generateConverter(dataBaseDto);
-            generateRepository(dataBaseDto);
-            generateMapper(dataBaseDto);
-            generateMapperXml(dataBaseDto);
+//            generateVo(dataBaseDto);
+//            generateDto(dataBaseDto);
+//            generatePo(dataBaseDto);
+//            generateController(dataBaseDto);
+//            generateService(dataBaseDto);
+//            generateServiceImpl(dataBaseDto);
+//            generateConverter(dataBaseDto);
+//            generateRepository(dataBaseDto);
+//            generateMapper(dataBaseDto);
+//            generateMapperXml(dataBaseDto);
+            generateType(dataBaseDto);
+            generateApi(dataBaseDto);
         }
     }
 
@@ -394,6 +397,32 @@ public class CodeGenerator {
             mapperFile.mkdirs();
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + "Repository" + SUFFIX_JAVA);
+        Map<String, Object> map = new HashMap<>(basicMap);
+        map.put("dataBaseDto", dataBaseDto);
+        generateFileByTemplate(templateName, path, map);
+    }
+
+    private static void generateType(DataBaseDto dataBaseDto) {
+        String parentPath = basicMap.get("projectDirectory") + "\\" + basicMap.get("path") + "\\vue\\type\\";
+        String templateName = "type.ftl";
+        File mapperFile = new File(parentPath);
+        if (!mapperFile.exists()) {
+            mapperFile.mkdirs();
+        }
+        File path = new File(parentPath + dataBaseDto.getClassName() + SUFFIX_TS);
+        Map<String, Object> map = new HashMap<>(basicMap);
+        map.put("dataBaseDto", dataBaseDto);
+        generateFileByTemplate(templateName, path, map);
+    }
+
+    private static void generateApi(DataBaseDto dataBaseDto) {
+        String parentPath = basicMap.get("projectDirectory") + "\\" + basicMap.get("path") + "\\vue\\api\\";
+        String templateName = "api.ftl";
+        File mapperFile = new File(parentPath);
+        if (!mapperFile.exists()) {
+            mapperFile.mkdirs();
+        }
+        File path = new File(parentPath + dataBaseDto.getClassName() + SUFFIX_TS);
         Map<String, Object> map = new HashMap<>(basicMap);
         map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);

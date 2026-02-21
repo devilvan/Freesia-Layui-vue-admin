@@ -66,7 +66,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenuVo
 
     @Override
     protected MapStructConverter<SysMenuVo, SysMenuDto, SysMenuPo> getMapStructConverter() {
-        return null;
+        return sysMenuConverter;
     }
 
     @Override
