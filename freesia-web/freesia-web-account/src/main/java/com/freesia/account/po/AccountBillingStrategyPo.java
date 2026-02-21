@@ -12,16 +12,17 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.io.Serial;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
  * @Description 记账账单策略表 映射
- * @date 2026-02-17
+ * @date 2026-02-21
  */
 @Setter
 @Getter
@@ -54,18 +55,22 @@ public class AccountBillingStrategyPo extends BasePo implements Serializable {
     private String budgetType;
     @Schema(description = "生成时间")
     @TableField(value = "GENERATE_TIME")
-    @Column(name = "GENERATE_TIME", columnDefinition = "DATETIME NOT NULL COMMENT '生成时间'")
+    @Column(name = "GENERATE_TIME", columnDefinition = "DATETIME COMMENT '生成时间'")
     private Date generateTime;
-    @Schema(description = "生成状态（0-否；1-是）")
-    @TableField(value = "GENERATE_FLAG")
-    @Column(name = "GENERATE_FLAG", columnDefinition = "TINYINT(3) COMMENT '生成状态（0-否；1-是）'")
-    private Integer generateFlag;
+    @Schema(description = "下次生成时间")
+    @TableField(value = "NEXT_GENERATE_TIME")
+    @Column(name = "NEXT_GENERATE_TIME", columnDefinition = "DATETIME COMMENT '下次生成时间'")
+    private Date nextGenerateTime;
     @Schema(description = "是否启用（0-否；1-是）")
     @TableField(value = "ENABLED")
-    @Column(name = "ENABLED", columnDefinition = "TINYINT(3) COMMENT '是否启用（0-否；1-是）'")
-    private Integer enabled;
-    @Schema(description = "开始周（0-星期日；1-星期一；6-星期六）")
+    @Column(name = "ENABLED", columnDefinition = "BIT(1) COMMENT '是否启用（0-否；1-是）'")
+    private Boolean enabled;
+    @Schema(description = "开始周（1-星期一；7-星期日）")
     @TableField(value = "WEEK_BEGIN")
-    @Column(name = "WEEK_BEGIN", columnDefinition = "INT(10) COMMENT '开始周（0-星期日；1-星期一；6-星期六）'")
+    @Column(name = "WEEK_BEGIN", columnDefinition = "INT(10) COMMENT '开始周（1-星期一；7-星期日）'")
     private Integer weekBegin;
+    @Schema(description = "是否重新计算（0-否；1-是）")
+    @TableField(value = "RECALCULATE_FLAG")
+    @Column(name = "RECALCULATE_FLAG", columnDefinition = "BIT(1) COMMENT '是否重新计算（0-否；1-是）'")
+    private Boolean recalculateFlag;
 }

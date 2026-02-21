@@ -67,7 +67,12 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
 
     @Override
     protected Wrapper<AccountBudgetPo> buildQueryWrapper(@NonNull AccountBudgetDto accountBudgetDto) {
-        return new LambdaQueryWrapper<AccountBudgetPo>().eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED).eq(AccountBudgetPo::getUserId, accountBudgetDto.getUserId()).eq(UEmpty.isNotEmpty(accountBudgetDto.getId()), AccountBudgetPo::getId, accountBudgetDto.getId());
+        return new LambdaQueryWrapper<AccountBudgetPo>()
+                .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(AccountBudgetPo::getUserId, accountBudgetDto.getUserId())
+                .eq(AccountBudgetPo::getTenantId, accountBudgetDto.getTenantId())
+                .eq(UEmpty.isNotEmpty(accountBudgetDto.getBudgetType()), AccountBudgetPo::getBudgetType, accountBudgetDto.getBudgetType())
+                .eq(UEmpty.isNotEmpty(accountBudgetDto.getId()), AccountBudgetPo::getId, accountBudgetDto.getId());
     }
 
     @Override

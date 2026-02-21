@@ -33,7 +33,7 @@ public class CommonTodoDto extends BaseDto {
     @JsonFormat(pattern = Constants.YMD_HM)
     private Date dueTime;
     @Schema(description = "发送提醒标识（0-否；1-是）")
-    private Integer reminderSendFlag;
+    private Boolean reminderSendFlag;
     @Schema(description = "优先级（0-高；1-中；2-低）")
     private Integer priority;
 }

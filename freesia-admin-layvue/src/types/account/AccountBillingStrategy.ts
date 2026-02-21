@@ -6,9 +6,11 @@ export interface AccountBillingStrategyVo extends BaseVo {
     budgetId?: number;
     budgetType?: string;
     generateTime?: string;
-    generateFlag?: string;
-    enabled?: string;
+    nextGenerateTime?: string;
+    generateFlag?: boolean;
+    enabled?: boolean;
     weekBegin?: number;
+    recalculateFlag?: boolean;
 }
 
 export interface AccountBillingStrategyEntity extends BaseEntity {
@@ -17,7 +19,8 @@ export interface AccountBillingStrategyEntity extends BaseEntity {
     budgetId?: number;
     budgetType?: string;
     generateTime?: string;
-    generateFlag?: string;
-    enabled?: string;
+    generateFlag?: boolean;
+    enabled?: boolean;
     weekBegin?: number;
+    recalculateFlag?: boolean;
 }

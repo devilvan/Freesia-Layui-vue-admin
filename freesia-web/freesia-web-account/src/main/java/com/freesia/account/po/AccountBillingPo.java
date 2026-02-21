@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 记账账单表 映射
- * @date 2026-02-17
+ * @date 2026-02-21
  */
 @Setter
 @Getter

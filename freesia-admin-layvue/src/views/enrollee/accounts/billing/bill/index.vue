@@ -20,8 +20,8 @@
                   size="sm"
                   style="width: 100%"
                   v-model="searchQuery.budgetType"
-                  :options="accountBudgetDurationTypeSelectList"
-                  :items="accountBudgetDurationTypeSelectList"
+                  :options="accountBillingDurationTypeSelectList"
+                  :items="accountBillingDurationTypeSelectList"
                   :allow-clear="true"
               ></lay-select>
             </lay-form-item>
@@ -42,138 +42,137 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <div>
-      <lay-table
-          v-model:selected-keys="selectedKeys"
-          :columns="columns"
-          :data-source="dataSource"
-          :default-toolbar="defaultToolbarFlag"
-          :loading="loading"
-          :page="pageQuery"
-          :even="evenFlag"
-          @change="change"
-          @sortChange="sortChange">
-        <template #remark="{ row }">
-          <lay-tooltip :visible="false" trigger="hover" :content="row.remark">
-            <div class="oneRow">{{ row.remark }}</div>
-          </lay-tooltip>
-        </template>
-        <template #budgetType="{ row }">
-          <dict-scan :options="accountBudgetDurationTypeSelect" :value="row.budgetType"/>
-        </template>
-        <template v-slot:toolbar>
-          <lay-button
-              size="sm"
-
-              type="normal"
-              @click="toSearch"
-          >
-            查询
-          </lay-button>
-          <lay-button size="sm" @click="queryFormReset"
-          > 重置
-          </lay-button>
-          <lay-button
-              size="sm"
-              type="primary"
-              @click="showSaveModal(Operate.ADD, null)"
-          >
-            <lay-icon class="layui-icon-addition"></lay-icon>
-            新增
-          </lay-button>
-          <lay-button size="sm" @click="toRemove">
-            <lay-icon class="layui-icon-delete"></lay-icon>
-            删除
-          </lay-button>
-        </template>
-        <template v-slot:operator="{ row }">
-          <lay-button
-              border="green"
-              border-style="dashed"
-              size="xs"
-              @click="showSaveModal(Operate.EDIT, row)">编辑
-          </lay-button>
-          <lay-button
-              border="orange"
-              border-style="dashed"
-              size="xs"
-              @click="showSaveModal(Operate.COPY, row)">复制
-          </lay-button>
-          <lay-popconfirm
-              content="确定要删除吗?"
-              @cancel="cancel"
-              @confirm="confirm(row)">
-            <lay-button border="red"
-                        border-style="dashed"
-                        size="xs">删除
-            </lay-button>
-          </lay-popconfirm>
-        </template>
-      </lay-table>
-    </div>
+    <lay-table
+        v-model:selected-keys="selectedKeys"
+        :columns="columns"
+        :data-source="dataSource"
+        :default-toolbar="defaultToolbarFlag"
+        :loading="loading"
+        :page="pageQuery"
+        :even="evenFlag"
+        @change="change"
+        @sortChange="sortChange">
+      <template v-slot:toolbar>
+        <lay-button size="sm" type="normal" @click="toSearch">查询</lay-button>
+        <lay-button size="sm" @click="queryFormReset"> 重置
+        </lay-button>
+<!--          <lay-button size="sm" type="primary" @click="showSaveModal(Operate.ADD, null)">-->
+<!--            <lay-icon class="layui-icon-addition"></lay-icon>-->
+<!--            新增-->
+<!--          </lay-button>-->
+<!--          <lay-button size="sm" @click="toRemove">-->
+<!--            <lay-icon class="layui-icon-delete"></lay-icon>-->
+<!--            删除-->
+<!--          </lay-button>-->
+      </template>
+<!--        <template v-slot:operator="{ row }">-->
+<!--          <lay-button-->
+<!--              border="green"-->
+<!--              border-style="dashed"-->
+<!--              size="xs"-->
+<!--              @click="showSaveModal(Operate.EDIT, row)">编辑-->
+<!--          </lay-button>-->
+<!--          <lay-button-->
+<!--              border="orange"-->
+<!--              border-style="dashed"-->
+<!--              size="xs"-->
+<!--              @click="showSaveModal(Operate.COPY, row)">复制-->
+<!--          </lay-button>-->
+<!--          <lay-popconfirm-->
+<!--              content="确定要删除吗?"-->
+<!--              @cancel="cancel"-->
+<!--              @confirm="confirm(row)">-->
+<!--            <lay-button border="red"-->
+<!--                        border-style="dashed"-->
+<!--                        size="xs">删除-->
+<!--            </lay-button>-->
+<!--          </lay-popconfirm>-->
+<!--        </template>-->
+    </lay-table>
 
     <lay-layer v-model="showModalFlag" :area="['1200px']" :title="saveModalTitle">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form ref="saveFormRef" :model="saveAccountBudgetVo" :rules="saveFromRules" label-position="top">
+        <lay-form ref="saveFormRef" :model="saveAccountBillingVo" :rules="saveFromRules" label-position="top">
           <lay-row :space="20">
             <lay-col :md="6">
-              <lay-form-item label="预算描述" prop="budgetDesc" required>
+              <lay-form-item label="标题" prop="title">
                 <lay-input
-                    v-model="saveAccountBudgetVo.budgetDesc"
+                    v-model="saveAccountBillingVo.title"
                     :allow-clear="true"
                     size="sm"
                 ></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="预算金额" prop="outlay" required>
+              <lay-form-item label="预算类型" prop="budgetType">
                 <lay-input
-                    v-model="saveAccountBudgetVo.outlay"
+                    v-model="saveAccountBillingVo.budgetType"
                     :allow-clear="true"
-                    type="number"
                     size="sm"
                 ></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="预算日期类型" prop="budgetType" required>
-                <lay-select
-                    size="sm"
-                    style="width: 100%"
-                    v-model="saveAccountBudgetVo.budgetType"
-                    :options="accountBudgetDurationTypeSelectList"
-                    :items="accountBudgetDurationTypeSelectList"
+              <lay-form-item label="预算金额" prop="budgetAmount">
+                <lay-input
+                    v-model="saveAccountBillingVo.budgetAmount"
                     :allow-clear="true"
-                    @change="saveBudgetTypeChange"
-                ></lay-select>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
-          <lay-row :space="20">
-            <lay-col :md="6">
-              <lay-form-item label="时间范围从"
-                             :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
-                             prop="durationFrom" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
-                             :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationFrom"
-                                 allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
+                    size="sm"
+                ></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="时间范围到"
-                             :style="saveAccountBudgetVo.budgetType !== 'CUSTOM' ? 'display: none' : ''"
-                             prop="durationTo" :required="saveAccountBudgetVo.budgetType === 'CUSTOM'"
-                             :hidden="saveAccountBudgetVo.budgetType !== 'CUSTOM'">
-                <lay-date-picker style="width: 100%" simple type="datetime" v-model="saveAccountBudgetVo.durationTo"
-                                 allow-clear :inputFormat="'YYYY-MM-DD HH:mm:ss'"></lay-date-picker>
+              <lay-form-item label="支出金额" prop="outlay">
+                <lay-input
+                    v-model="saveAccountBillingVo.outlay"
+                    :allow-clear="true"
+                    size="sm"
+                ></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="备注" prop="remark">
-                <lay-textarea
-                    v-model="saveAccountBudgetVo.remark"
-                    allow-clear
-                ></lay-textarea>
+              <lay-form-item label="收入金额" prop="incomeAmount">
+                <lay-input
+                    v-model="saveAccountBillingVo.incomeAmount"
+                    :allow-clear="true"
+                    size="sm"
+                ></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="账单时间" prop="billingTime">
+                <lay-input
+                    v-model="saveAccountBillingVo.billingTime"
+                    :allow-clear="true"
+                    size="sm"
+                ></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="账单时间从" prop="billingTimeFrom">
+                <lay-input
+                    v-model="saveAccountBillingVo.billingTimeFrom"
+                    :allow-clear="true"
+                    size="sm"
+                ></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="账单时间到" prop="billingTimeTo">
+                <lay-input
+                    v-model="saveAccountBillingVo.billingTimeTo"
+                    :allow-clear="true"
+                    size="sm"
+                ></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="是否重新计算" prop="recalculateFlag">
+                <lay-input
+                    v-model="saveAccountBillingVo.recalculateFlag"
+                    :allow-clear="true"
+                    size="sm"
+                ></lay-input>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -192,7 +191,7 @@
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
-  name: "Budget",
+  name: "AccountBilling",
 };
 </script>
 <script lang="ts" setup>
@@ -200,37 +199,40 @@ import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
 import {TableResult} from "@/types/Result";
-import {deleteAccountBudget, findPageAccountBudget} from "@/api/account/AccountBudget";
-import {AccountBudgetEntity, AccountBudgetVo} from "@/types/account/AccountBudget";
+import {deleteAccountBilling, findPageAccountBilling} from "@/api/account/AccountBilling";
+import {AccountBillingEntity, AccountBillingVo} from "@/types/account/AccountBilling";
 import {Operate} from "@/types/Constants";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {findAccountBudget, saveUpdate} from "@/api/account/AccountBudget";
+import {findAccountBilling, saveUpdate} from "@/api/account/AccountBilling";
 
 /* INIT*/
 onMounted(async () => {
-  accountBudgetDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
-  accountBudgetDurationTypeSelectList.value = await sysDictValueSelect(accountBudgetDurationTypeSelect.value)
+  accountBillingDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
+  accountBillingDurationTypeSelectList.value = await sysDictValueSelect(accountBillingDurationTypeSelect.value)
   loadDataSource()
 })
 /* INIT*/
 
 /* VAR*/
-const searchQuery = ref<AccountBudgetVo>({})
+const searchQuery = ref<AccountBillingVo>({})
 const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const dataSource = ref<Array<AccountBudgetEntity>>()
+const dataSource = ref<Array<AccountBillingEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '预算描述', width: '130px', key: 'budgetDesc', fixed: 'left'},
-  {title: '预算金额', width: '130px', key: 'outlay', sort: 'desc'},
-  {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
-  {title: '时间范围从', width: '130px', key: 'durationFrom'},
-  {title: '时间范围到', width: '130px', key: 'durationTo'},
-  {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
+  {title: '标题', width: '130px', key: 'title'},
+  {title: '预算类型', width: '130px', key: 'budgetType'},
+  {title: '预算金额', width: '130px', key: 'budgetAmount'},
+  {title: '支出金额', width: '130px', key: 'outlay'},
+  {title: '收入金额', width: '130px', key: 'incomeAmount'},
+  {title: '账单时间', width: '130px', key: 'billingTime'},
+  {title: '账单时间从', width: '130px', key: 'billingTimeFrom'},
+  {title: '账单时间到', width: '130px', key: 'billingTimeTo'},
+  {title: '是否重新计算', width: '130px', key: 'recalculateFlag'},
   {
     title: '操作',
     width: '150px',
@@ -239,26 +241,26 @@ const columns = ref([
     fixed: 'right'
   }
 ])
-const loading = ref(true)
+const loading = ref(false)
 const defaultToolbarFlag = ref(true)
 const evenFlag = ref(true)
 const showModalFlag = ref(false)
 const saveModalTitle = ref('');
 const saveFormRef = ref(null)
-const saveAccountBudgetVo = ref<AccountBudgetVo>(<AccountBudgetVo>{})
+const saveAccountBillingVo = ref<AccountBillingVo>(<AccountBillingVo>{})
 const queryFormRef = ref(null)
-const accountBudgetDurationTypeSelect = ref<Array<SysDictValueEntity>>(<Array<SysDictValueEntity>>[]);
-const accountBudgetDurationTypeSelectList = ref();
+const accountBillingDurationTypeSelect = ref<Array<SysDictValueEntity>>(<Array<SysDictValueEntity>>[]);
+const accountBillingDurationTypeSelectList = ref();
 const saveFromRules = ref({
-  outlay: {
-    validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
-      if (value <= 0) {
-        callback(new Error("金额不能为0"));
-      } else {
-        return true;
-      }
-    }
-  },
+  // outlay: {
+  //  validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
+  //   if (value <= 0) {
+  //    callback(new Error("金额不能为0"));
+  //   } else {
+  //    return true;
+  //   }
+  //  }
+  // },
 })
 /* VAR*/
 
@@ -267,10 +269,10 @@ const saveFromRules = ref({
  * 初始化表格
  */
 const loadDataSource = () => {
-  findPageAccountBudget(searchQuery.value, pageQuery).then((res: TableResult<AccountBudgetEntity>) => {
+  findPageAccountBilling(searchQuery.value, pageQuery).then((res: TableResult<AccountBillingEntity>) => {
     if (res.code == 200) {
       pageQuery.total = res.total;
-      dataSource.value = res.rows
+      dataSource.value = res.rows || []
     } else {
       layer.msg(res.msg)
       return;
@@ -320,14 +322,14 @@ function queryFormReset() {
 const showSaveModal = (text: any, row: any) => {
   saveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : Operate.COPY === text ? "复制" : "";
   if (row != null) {
-    saveAccountBudgetVo.value = {...row}
+    saveAccountBillingVo.value = {...row}
   }
   if (Operate.EDIT === text) {
-    findAccountBudget({
+    findAccountBilling({
       id: row.id
     }).then((res: any) => {
       if (res.code === 200) {
-        saveAccountBudgetVo.value = res.data;
+        saveAccountBillingVo.value = res.data;
       }
     })
   } else if (Operate.ADD === text) {
@@ -350,7 +352,7 @@ function toRemove() {
       {
         text: '确定',
         callback: (id: any) => {
-          deleteAccountBudget(selectedKeys.value).then((res: any) => {
+          deleteAccountBilling(selectedKeys.value).then((res: any) => {
             if (res.code === 200) {
               layer.msg('删除成功')
             }
@@ -377,16 +379,16 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   saveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      saveUpdate(saveAccountBudgetVo.value).then((res: any) => {
+      saveUpdate(saveAccountBillingVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
-          saveAccountBudgetVo.value = {};
+          saveAccountBillingVo.value = {};
           if (clickFlag) {
             showModalFlag.value = false
           } else {
             // 如果是修改+回车，则关闭窗口
-            if (saveAccountBudgetVo.id && saveAccountBudgetVo.id != 0) {
+            if (saveAccountBillingVo.id && saveAccountBillingVo.id != 0) {
               showModalFlag.value = false
             }
           }
@@ -411,17 +413,9 @@ function toCancel() {
   showModalFlag.value = false
 }
 
-function saveBudgetTypeChange(value: any) {
-  if (!value || value !== 'CUSTOM') {
-    // 如果不是自定义则时间范围置空
-    saveAccountBudgetVo.value.durationFrom = null;
-    saveAccountBudgetVo.value.durationTo = null;
-  }
-}
-
 function confirm(row: any) {
   if (row) {
-    deleteAccountBudget([row.id]).then((res: any) => {
+    deleteAccountBilling([row.id]).then((res: any) => {
       if (res.code === 200) {
         layer.msg('删除成功')
       }

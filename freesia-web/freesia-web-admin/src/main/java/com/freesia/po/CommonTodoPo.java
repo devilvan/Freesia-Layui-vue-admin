@@ -2,7 +2,6 @@ package com.freesia.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +11,12 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.io.Serial;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
@@ -58,8 +58,8 @@ public class CommonTodoPo extends BasePo implements Serializable {
     private Date dueTime;
     @Schema(description = "发送提醒标识（0-否；1-是）")
     @TableField(value = "REMINDER_SEND_FLAG")
-    @Column(name = "REMINDER_SEND_FLAG", columnDefinition = "TINYINT(3) COMMENT '发送提醒标识（0-否；1-是）'")
-    private Integer reminderSendFlag;
+    @Column(name = "REMINDER_SEND_FLAG", columnDefinition = "TINYINT(1) COMMENT '发送提醒标识（0-否；1-是）'")
+    private Boolean reminderSendFlag;
     @Schema(description = "优先级（0-高；1-中；2-低）")
     @TableField(value = "PRIORITY")
     @Column(name = "PRIORITY", columnDefinition = "INT(10) COMMENT '优先级（0-高；1-中；2-低）'")

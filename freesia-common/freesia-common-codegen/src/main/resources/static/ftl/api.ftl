@@ -2,7 +2,7 @@ import Http from "../Http";
 import {PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
-import {${dataBaseDto.className}Entity, ${dataBaseDto.className}Vo} from "@/types/${dataBaseDto.className}";
+import {${dataBaseDto.className}Entity, ${dataBaseDto.className}Vo} from "@/types/${module}/${dataBaseDto.className}";
 
 export function saveUpdate(${dataBaseDto.className?uncap_first}Vo: ${dataBaseDto.className}Vo): Promise<R<void>> {
  return Http.post("/api/${dataBaseDto.className?uncap_first}Controller/saveUpdate", ${dataBaseDto.className?uncap_first}Vo);

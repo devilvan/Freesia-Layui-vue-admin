@@ -65,7 +65,11 @@ export enum Constants {
     /**
      * 待办事项状态
      */
-    TODO_STATUS = "TODO_STATUS"
+    TODO_STATUS = "TODO_STATUS",
+    /**
+     * 周天数（1-星期一；7-星期日）
+     */
+    WEEK_DAY = "WEEK_DAY"
 }
 
 export const loadSysDictValue = async (dictKey: string): Promise<Array<SysDictValueEntity>> => {

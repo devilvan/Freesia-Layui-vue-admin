@@ -34,6 +34,7 @@ public class CodeGenerator {
     private static final String SUFFIX_JAVA = ".java";
     private static final String SUFFIX_XML = ".xml";
     private static final String SUFFIX_TS = ".ts";
+    private static final String SUFFIX_VUE = ".vue";
     private static final Map<String, Object> basicMap;
 
     static {
@@ -56,18 +57,22 @@ public class CodeGenerator {
      */
     private static void generate(List<DataBaseDto> dataBaseDtoList) {
         for (DataBaseDto dataBaseDto : dataBaseDtoList) {
-//            generateVo(dataBaseDto);
-//            generateDto(dataBaseDto);
-//            generatePo(dataBaseDto);
+            /* 后端*/
+            generateVo(dataBaseDto);
+            generateDto(dataBaseDto);
+            generatePo(dataBaseDto);
 //            generateController(dataBaseDto);
 //            generateService(dataBaseDto);
 //            generateServiceImpl(dataBaseDto);
 //            generateConverter(dataBaseDto);
 //            generateRepository(dataBaseDto);
 //            generateMapper(dataBaseDto);
-//            generateMapperXml(dataBaseDto);
-            generateType(dataBaseDto);
-            generateApi(dataBaseDto);
+            generateMapperXml(dataBaseDto);
+
+            /* 前端*/
+//            generateType(dataBaseDto);
+//            generateApi(dataBaseDto);
+//            generateIndex(dataBaseDto);
         }
     }
 
@@ -89,6 +94,7 @@ public class CodeGenerator {
         String secondaryModule = String.valueOf(pro.get("secondaryModule"));
         String path = pro.get("path") + secondaryModule + "\\";
         String author = String.valueOf(pro.get("author"));
+        String module = String.valueOf(pro.get("module"));
         String packageName;
         if (UEmpty.isNotEmpty(secondaryModule)) {
             packageName = pro.get("packageName") + "." + secondaryModule;
@@ -101,6 +107,7 @@ public class CodeGenerator {
         map.put("path", path);
         map.put("author", author);
         map.put("packageName", packageName);
+        map.put("module", module);
         map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         return map;
     }
@@ -423,6 +430,19 @@ public class CodeGenerator {
             mapperFile.mkdirs();
         }
         File path = new File(parentPath + dataBaseDto.getClassName() + SUFFIX_TS);
+        Map<String, Object> map = new HashMap<>(basicMap);
+        map.put("dataBaseDto", dataBaseDto);
+        generateFileByTemplate(templateName, path, map);
+    }
+
+    private static void generateIndex(DataBaseDto dataBaseDto) {
+        String parentPath = basicMap.get("projectDirectory") + "\\" + basicMap.get("path") + "\\vue\\index\\";
+        String templateName = "index.ftl";
+        File mapperFile = new File(parentPath);
+        if (!mapperFile.exists()) {
+            mapperFile.mkdirs();
+        }
+        File path = new File(parentPath + dataBaseDto.getClassName() + SUFFIX_VUE);
         Map<String, Object> map = new HashMap<>(basicMap);
         map.put("dataBaseDto", dataBaseDto);
         generateFileByTemplate(templateName, path, map);

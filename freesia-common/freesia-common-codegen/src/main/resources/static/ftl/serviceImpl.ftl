@@ -35,6 +35,11 @@ public class ${dataBaseDto.className}ServiceImpl extends BaseServiceImpl<${dataB
     private final ${dataBaseDto.className}Converter ${dataBaseDto.className?uncap_first}Converter;
 
     @Override
+    protected MapStructConverter<${dataBaseDto.className}Vo, ${dataBaseDto.className}Dto, ${dataBaseDto.className}Po> getMapStructConverter() {
+        return ${dataBaseDto.className?uncap_first}Converter;
+    }
+
+    @Override
     protected JpaRepository<${dataBaseDto.className}Po, Long> getRepository() {
     return ${dataBaseDto.className?uncap_first}Repository;
     }
@@ -52,12 +57,12 @@ public class ${dataBaseDto.className}ServiceImpl extends BaseServiceImpl<${dataB
     @Override
     protected Wrapper<${dataBaseDto.className}Po> buildQueryWrapper(@NonNull ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto) {
         return new LambdaQueryWrapper<${dataBaseDto.className}Po>()
-            .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}Dto.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}Dto.getId());
-    }
-
-    @Override
-    protected MapStructConverter<${dataBaseDto.className}Vo, ${dataBaseDto.className}Dto, ${dataBaseDto.className}Po> getMapStructConverter() {
-        return ${dataBaseDto.className?uncap_first}Converter;
+                .eq(${dataBaseDto.className}Po::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}Dto.getId()), ${dataBaseDto.className}Po::getId, ${dataBaseDto.className?uncap_first}Dto.getId())
+                <#if dataBaseDto.fieldList ??>
+                <#list dataBaseDto.fieldList as field>
+                .eq(UEmpty.isNotEmpty(${dataBaseDto.className?uncap_first}Dto.get${field.fieldName?cap_first}()), ${dataBaseDto.className}Po::get${field.fieldName?cap_first}, ${dataBaseDto.className?uncap_first}Dto.get${field.fieldName?cap_first}())
+                </#list>
+                </#if>;
     }
 }

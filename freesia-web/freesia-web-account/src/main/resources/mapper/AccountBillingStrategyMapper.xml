@@ -16,12 +16,13 @@
         <result column="BUDGET_ID" property="budgetId"/>
         <result column="BUDGET_TYPE" property="budgetType"/>
         <result column="GENERATE_TIME" property="generateTime"/>
-        <result column="GENERATE_FLAG" property="generateFlag"/>
+        <result column="NEXT_GENERATE_TIME" property="nextGenerateTime"/>
         <result column="ENABLED" property="enabled"/>
         <result column="WEEK_BEGIN" property="weekBegin"/>
+        <result column="RECALCULATE_FLAG" property="recalculateFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, BUDGET_TYPE, GENERATE_TIME, GENERATE_FLAG, ENABLED, WEEK_BEGIN
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, BUDGET_TYPE, GENERATE_TIME, NEXT_GENERATE_TIME, ENABLED, WEEK_BEGIN, RECALCULATE_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -44,14 +45,17 @@
         <if test="dto.generateTime != null">
             AND GENERATE_TIME = #{dto.generateTime}
         </if>
-        <if test="dto.generateFlag != null">
-            AND GENERATE_FLAG = #{dto.generateFlag}
+        <if test="dto.nextGenerateTime != null">
+            AND NEXT_GENERATE_TIME = #{dto.nextGenerateTime}
         </if>
-        <if test="dto.enabled != null">
+        <if test="dto.enabled != null and dto.enabled != ''">
             AND ENABLED = #{dto.enabled}
         </if>
         <if test="dto.weekBegin != null">
             AND WEEK_BEGIN = #{dto.weekBegin}
+        </if>
+        <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
+            AND RECALCULATE_FLAG = #{dto.recalculateFlag}
         </if>
         ORDER BY create_time DESC
     </select>
@@ -75,14 +79,17 @@
         <if test="dto.generateTime != null">
             AND GENERATE_TIME = #{dto.generateTime}
         </if>
-        <if test="dto.generateFlag != null">
-            AND GENERATE_FLAG = #{dto.generateFlag}
+        <if test="dto.nextGenerateTime != null">
+            AND NEXT_GENERATE_TIME = #{dto.nextGenerateTime}
         </if>
-        <if test="dto.enabled != null">
+        <if test="dto.enabled != null and dto.enabled != ''">
             AND ENABLED = #{dto.enabled}
         </if>
         <if test="dto.weekBegin != null">
             AND WEEK_BEGIN = #{dto.weekBegin}
+        </if>
+        <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
+            AND RECALCULATE_FLAG = #{dto.recalculateFlag}
         </if>
         ORDER BY MODIFY_TIME DESC
     </select>
@@ -103,9 +110,10 @@
         BUDGET_ID, 
         BUDGET_TYPE, 
         GENERATE_TIME, 
-        GENERATE_FLAG, 
+        NEXT_GENERATE_TIME, 
         ENABLED, 
-        WEEK_BEGIN
+        WEEK_BEGIN, 
+        RECALCULATE_FLAG
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -124,9 +132,10 @@
             #{item.budgetId}, 
             #{item.budgetType}, 
             #{item.generateTime}, 
-            #{item.generateFlag}, 
+            #{item.nextGenerateTime}, 
             #{item.enabled}, 
-            #{item.weekBegin}
+            #{item.weekBegin}, 
+            #{item.recalculateFlag}
             )
         </foreach>
     </insert>

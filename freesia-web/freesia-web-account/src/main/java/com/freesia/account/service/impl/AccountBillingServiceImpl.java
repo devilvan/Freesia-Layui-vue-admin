@@ -26,13 +26,18 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 记账账单表 业务逻辑类
- * @date 2026-02-17
+ * @date 2026-02-21
  */
 @Service
 @RequiredArgsConstructor
 public class AccountBillingServiceImpl extends BaseServiceImpl<AccountBillingMapper, AccountBillingVo, AccountBillingDto, AccountBillingPo> implements AccountBillingService {
     private final AccountBillingRepository accountBillingRepository;
     private final AccountBillingConverter accountBillingConverter;
+
+    @Override
+    protected MapStructConverter<AccountBillingVo, AccountBillingDto, AccountBillingPo> getMapStructConverter() {
+        return accountBillingConverter;
+    }
 
     @Override
     protected JpaRepository<AccountBillingPo, Long> getRepository() {
@@ -52,12 +57,21 @@ public class AccountBillingServiceImpl extends BaseServiceImpl<AccountBillingMap
     @Override
     protected Wrapper<AccountBillingPo> buildQueryWrapper(@NonNull AccountBillingDto accountBillingDto) {
         return new LambdaQueryWrapper<AccountBillingPo>()
-            .eq(AccountBillingPo::getLogicDel, FlagConstant.DISABLED)
-            .eq(UEmpty.isNotEmpty(accountBillingDto.getId()), AccountBillingPo::getId, accountBillingDto.getId());
-    }
-
-    @Override
-    protected MapStructConverter<AccountBillingVo, AccountBillingDto, AccountBillingPo> getMapStructConverter() {
-        return accountBillingConverter;
+                .eq(AccountBillingPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getId()), AccountBillingPo::getId, accountBillingDto.getId())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getRemark()), AccountBillingPo::getRemark, accountBillingDto.getRemark())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getUserId()), AccountBillingPo::getUserId, accountBillingDto.getUserId())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getBudgetId()), AccountBillingPo::getBudgetId, accountBillingDto.getBudgetId())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getStrategyId()), AccountBillingPo::getStrategyId, accountBillingDto.getStrategyId())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getTitle()), AccountBillingPo::getTitle, accountBillingDto.getTitle())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getBudgetType()), AccountBillingPo::getBudgetType, accountBillingDto.getBudgetType())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getBudgetAmount()), AccountBillingPo::getBudgetAmount, accountBillingDto.getBudgetAmount())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getOutlay()), AccountBillingPo::getOutlay, accountBillingDto.getOutlay())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getIncomeAmount()), AccountBillingPo::getIncomeAmount, accountBillingDto.getIncomeAmount())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getBillingTime()), AccountBillingPo::getBillingTime, accountBillingDto.getBillingTime())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getBillingTimeFrom()), AccountBillingPo::getBillingTimeFrom, accountBillingDto.getBillingTimeFrom())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getBillingTimeTo()), AccountBillingPo::getBillingTimeTo, accountBillingDto.getBillingTimeTo())
+                .eq(UEmpty.isNotEmpty(accountBillingDto.getRecalculateFlag()), AccountBillingPo::getRecalculateFlag, accountBillingDto.getRecalculateFlag())
+                ;
     }
 }

@@ -5,6 +5,7 @@ import com.freesia.exception.ServiceException;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,12 +86,19 @@ public interface MapStructConverter<VO, DTO, PO> {
      * @return DTO分页实例
      */
     default Page<DTO> convertPagePo2Dto(Page<PO> sourcePage) {
-        if (sourcePage == null || UEmpty.isEmpty(sourcePage.getRecords())) {
-            return null;
+        Page<DTO> pageDto = new Page<>();
+        if (sourcePage == null) {
+            return new Page<>();
         }
-        Page<DTO> pageDto = null;
+        if (UEmpty.isEmpty(sourcePage.getRecords())) {
+            pageDto.setRecords(new ArrayList<>());
+            pageDto.setSize(sourcePage.getSize());
+            pageDto.setCurrent(sourcePage.getCurrent());
+            pageDto.setTotal(sourcePage.getTotal());
+            pageDto.setPages(sourcePage.getPages());
+            return new Page<>();
+        }
         try {
-            pageDto = new Page<>();
             List<DTO> targetList = this.convertBatchPo2Dto(sourcePage.getRecords());
             pageDto.setRecords(targetList);
             pageDto.setSize(sourcePage.getSize());

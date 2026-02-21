@@ -1,17 +1,18 @@
 package com.freesia.account.controller;
 
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
-import com.freesia.account.vo.AccountBillingStrategyVo;
 import com.freesia.account.dto.AccountBillingStrategyDto;
 import com.freesia.account.service.AccountBillingStrategyService;
+import com.freesia.account.vo.AccountBillingStrategyVo;
 import com.freesia.controller.BaseController;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,6 +38,8 @@ public class AccountBillingStrategyController extends BaseController {
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody AccountBillingStrategyVo accountBillingStrategyVo) {
         AccountBillingStrategyDto accountBillingStrategyDto = UCopy.copyVo2Dto(accountBillingStrategyVo, AccountBillingStrategyDto.class);
+        accountBillingStrategyDto.setUserId(USecurity.getUserId());
+        accountBillingStrategyDto.setTenantId(USecurity.getTenantId());
         accountBillingStrategyService.saveUpdate(accountBillingStrategyDto);
         return R.ok();
     }
@@ -66,6 +69,8 @@ public class AccountBillingStrategyController extends BaseController {
     @GetMapping(value = "findPageAccountBillingStrategy")
     public TableResult<AccountBillingStrategyDto> findPageAccountBillingStrategy(AccountBillingStrategyVo accountBillingStrategyVo, PageQuery pageQuery) {
         AccountBillingStrategyDto accountBillingStrategyDto = UCopy.copyVo2Dto(accountBillingStrategyVo, AccountBillingStrategyDto.class);
+        accountBillingStrategyDto.setUserId(USecurity.getUserId());
+        accountBillingStrategyDto.setTenantId(USecurity.getTenantId());
         return accountBillingStrategyService.findPage(accountBillingStrategyDto, pageQuery);
     }
 

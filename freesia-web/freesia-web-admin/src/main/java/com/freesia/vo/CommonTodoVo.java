@@ -37,7 +37,7 @@ public class CommonTodoVo extends BaseVo {
     private Date dueTime;
     @Schema(description = "发送提醒标识（0-否；1-是）")
     @JsonAlias(value = {"reminderSendFlag"})
-    private Integer reminderSendFlag;
+    private Boolean reminderSendFlag;
     @Schema(description = "优先级（0-高；1-中；2-低）")
     @JsonAlias(value = {"priority"})
     private Integer priority;

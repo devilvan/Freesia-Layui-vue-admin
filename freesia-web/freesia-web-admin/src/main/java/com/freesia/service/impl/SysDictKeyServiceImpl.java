@@ -20,6 +20,7 @@ import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysDictKeyRepository;
 import com.freesia.service.SysDictKeyService;
 import com.freesia.util.UCache;
+import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.vo.SysDictKeyVo;
 import lombok.NonNull;
@@ -69,15 +70,10 @@ public class SysDictKeyServiceImpl extends BaseServiceImpl<SysDictKeyMapper, Sys
     }
 
     @Override
-    public SysDictKeyDto saveUpdate(SysDictKeyDto sysDictKeyDto) {
-        return super.saveUpdate(sysDictKeyDto);
+    public List<SysDictKeyDto> findList(SysDictKeyDto sysDictKeyDto) {
+        List<SysDictKeyPo> sysDictList = sysDictKeyMapper.findSysDictKeyList(sysDictKeyDto);
+        return UCopy.fullCopyList(sysDictList, SysDictKeyDto.class);
     }
-
-    @Override
-    public List<SysDictKeyDto> saveUpdateBatch(List<SysDictKeyDto> list) {
-        return super.saveUpdateBatch(list);
-    }
-
 
     @Override
     public TableResult<FindPageSysDictKeyEntity> findPageSysDictList(SysDictDto sysDictDto, PageQuery pageQuery) {

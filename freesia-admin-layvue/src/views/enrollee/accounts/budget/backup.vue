@@ -1,46 +1,46 @@
 <template>
   <lay-container :fluid="true">
-    <lay-card>
-      <lay-form ref="queryFormRef" :model="searchQuery"
-                label-position="top" @keydown.enter.prevent="toSearch">
-        <lay-row :space="20">
-          <lay-col :md="6">
-            <lay-form-item label="预算描述" prop="budgetDesc">
-              <lay-input
-                  v-model="searchQuery.budgetDesc"
-                  :allow-clear="true"
-                  placeholder="请输入"
-                  size="sm"
-              ></lay-input>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="预算日期类型" prop="budgetType">
-              <lay-select
-                  size="sm"
-                  style="width: 100%"
-                  v-model="searchQuery.budgetType"
-                  :options="accountBudgetDurationTypeSelectList"
-                  :items="accountBudgetDurationTypeSelectList"
-                  :allow-clear="true"
-              ></lay-select>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="时间范围从" prop="durationFrom">
-              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationFrom"
-                               allow-clear></lay-date-picker>
-            </lay-form-item>
-          </lay-col>
-          <lay-col :md="6">
-            <lay-form-item label="时间范围到" prop="durationTo">
-              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationTo"
-                               allow-clear></lay-date-picker>
-            </lay-form-item>
-          </lay-col>
-        </lay-row>
-      </lay-form>
-    </lay-card>
+<!--    <lay-card>-->
+<!--      <lay-form ref="queryFormRef" :model="searchQuery"-->
+<!--                label-position="top" @keydown.enter.prevent="toSearch">-->
+<!--        <lay-row :space="20">-->
+<!--          <lay-col :md="6">-->
+<!--            <lay-form-item label="预算描述" prop="budgetDesc">-->
+<!--              <lay-input-->
+<!--                  v-model="searchQuery.budgetDesc"-->
+<!--                  :allow-clear="true"-->
+<!--                  placeholder="请输入"-->
+<!--                  size="sm"-->
+<!--              ></lay-input>-->
+<!--            </lay-form-item>-->
+<!--          </lay-col>-->
+<!--          <lay-col :md="6">-->
+<!--            <lay-form-item label="预算日期类型" prop="budgetType">-->
+<!--              <lay-select-->
+<!--                  size="sm"-->
+<!--                  style="width: 100%"-->
+<!--                  v-model="searchQuery.budgetType"-->
+<!--                  :options="accountBudgetDurationTypeSelectList"-->
+<!--                  :items="accountBudgetDurationTypeSelectList"-->
+<!--                  :allow-clear="true"-->
+<!--              ></lay-select>-->
+<!--            </lay-form-item>-->
+<!--          </lay-col>-->
+<!--          <lay-col :md="6">-->
+<!--            <lay-form-item label="时间范围从" prop="durationFrom">-->
+<!--              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationFrom"-->
+<!--                               allow-clear></lay-date-picker>-->
+<!--            </lay-form-item>-->
+<!--          </lay-col>-->
+<!--          <lay-col :md="6">-->
+<!--            <lay-form-item label="时间范围到" prop="durationTo">-->
+<!--              <lay-date-picker style="width: 100%" simple type="date" v-model="searchQuery.durationTo"-->
+<!--                               allow-clear></lay-date-picker>-->
+<!--            </lay-form-item>-->
+<!--          </lay-col>-->
+<!--        </lay-row>-->
+<!--      </lay-form>-->
+<!--    </lay-card>-->
     <!-- table -->
     <div>
       <lay-table

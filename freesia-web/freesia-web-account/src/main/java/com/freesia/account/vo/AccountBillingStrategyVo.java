@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 记账账单策略表 值对象
- * @date 2026-02-17
+ * @date 2026-02-21
  */
 @Data
 @NoArgsConstructor
@@ -35,13 +35,16 @@ public class AccountBillingStrategyVo extends BaseVo {
     @Schema(description = "生成时间")
     @JsonAlias(value = {"generateTime"})
     private Date generateTime;
-    @Schema(description = "生成状态（0-否；1-是）")
-    @JsonAlias(value = {"generateFlag"})
-    private Integer generateFlag;
+    @Schema(description = "下次生成时间")
+    @JsonAlias(value = {"nextGenerateTime"})
+    private Date nextGenerateTime;
     @Schema(description = "是否启用（0-否；1-是）")
     @JsonAlias(value = {"enabled"})
-    private Integer enabled;
-    @Schema(description = "开始周（0-星期日；1-星期一；6-星期六）")
+    private Boolean enabled;
+    @Schema(description = "开始周（1-星期一；7-星期日）")
     @JsonAlias(value = {"weekBegin"})
     private Integer weekBegin;
+    @Schema(description = "是否重新计算（0-否；1-是）")
+    @JsonAlias(value = {"recalculateFlag"})
+    private Boolean recalculateFlag;
 }

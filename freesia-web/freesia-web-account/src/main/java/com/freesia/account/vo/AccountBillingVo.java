@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 记账账单表 值对象
- * @date 2026-02-17
+ * @date 2026-02-21
  */
 @Data
 @NoArgsConstructor
