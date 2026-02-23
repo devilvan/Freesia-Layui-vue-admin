@@ -716,7 +716,7 @@
             AND AC.COST_DESC like CONCAT('%', #{accountCostDto.costDesc}, '%')
         </if>
         <if test="accountCostDto.remark != null and accountCostDto.remark != ''">
-            AND AC.REMARK LIKE ('%', #{accountCostDto.remark}, '%')
+            AND AC.REMARK LIKE CONCAT('%', #{accountCostDto.remark}, '%')
         </if>
         <if test="accountCostDto.paymentSign != null and accountCostDto.paymentSign != ''">
             AND AC.PAYMENT_SIGN = #{accountCostDto.paymentSign}
@@ -760,7 +760,7 @@
             AND AC.COST_DESC like CONCAT('%', #{accountCostDto.costDesc}, '%')
         </if>
         <if test="accountCostDto.remark != null and accountCostDto.remark != ''">
-            AND AC.REMARK LIKE ('%', #{accountCostDto.remark}, '%')
+            AND AC.REMARK LIKE CONCAT('%', #{accountCostDto.remark}, '%')
         </if>
         <if test="accountCostDto.paymentSign != null and accountCostDto.paymentSign != ''">
             AND AC.PAYMENT_SIGN = #{accountCostDto.paymentSign}

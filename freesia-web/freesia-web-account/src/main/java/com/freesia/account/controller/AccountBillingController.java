@@ -109,4 +109,21 @@ public class AccountBillingController extends BaseController {
         accountBillingService.deleteBatch(idList);
         return R.ok();
     }
+
+    /**
+     * 生成账单任务
+     *
+     * @param accountBillingVo 查询条件
+     * @return 形式返回
+     */
+    @Operation(summary = "生成账单任务")
+    @GetMapping(value = "generateBillingTask")
+    public R<Void> generateBillingTask(AccountBillingVo accountBillingVo) {
+        AccountBillingDto accountBillingDto = UCopy.copyVo2Dto(accountBillingVo, AccountBillingDto.class);
+        // TODO 查询用户设置的预算
+        // TODO 判断Redis是否有该用户的最早的记账时间，无则查询添加并接入Redis缓存，有则跳过
+        // TODO 根据最早的记账时间，判断是否需要生成账单
+        // TODO 遍历预算，根据预算天数生成账单数据
+        return R.ok();
+    }
 }
