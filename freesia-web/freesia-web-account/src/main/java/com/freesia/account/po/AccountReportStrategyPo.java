@@ -12,31 +12,30 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
- * @Description 记账账单策略表 映射
- * @date 2026-02-21
+ * @Description 记账报表策略表 映射
+ * @date 2026-02-25
  */
 @Setter
 @Getter
 @ToString
 @NoArgsConstructor
 @Accessors(chain = true)
-@TableName(value = "ACCOUNT_BILLING_STRATEGY")
+@TableName(value = "ACCOUNT_REPORT_STRATEGY")
 
 @Entity
-@Table(name = "ACCOUNT_BILLING_STRATEGY")
+@Table(name = "ACCOUNT_REPORT_STRATEGY")
 @DynamicInsert
 @EntityListeners(AuditingEntityListener.class)
-@Schema(description = "记账账单策略表 映射")
-public class AccountBillingStrategyPo extends BasePo implements Serializable {
+@Schema(description = "记账报表策略表 映射")
+public class AccountReportStrategyPo extends BasePo implements Serializable {
     @Schema(description = "备注")
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(1,024) COMMENT '备注'")

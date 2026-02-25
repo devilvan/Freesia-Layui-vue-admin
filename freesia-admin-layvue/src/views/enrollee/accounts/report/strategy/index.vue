@@ -20,8 +20,8 @@
                   size="sm"
                   style="width: 100%"
                   v-model="searchQuery.budgetType"
-                  :options="accountBillingDurationTypeSelectList"
-                  :items="accountBillingDurationTypeSelectList"
+                  :options="accountReportStrategyDurationTypeSelectList"
+                  :items="accountReportStrategyDurationTypeSelectList"
                   :allow-clear="true"
               ></lay-select>
             </lay-form-item>
@@ -42,137 +42,103 @@
       </lay-form>
     </lay-card>
     <!-- table -->
-    <lay-table
-        v-model:selected-keys="selectedKeys"
-        :columns="columns"
-        :data-source="dataSource"
-        :default-toolbar="defaultToolbarFlag"
-        :loading="loading"
-        :page="pageQuery"
-        :even="evenFlag"
-        @change="change"
-        @sortChange="sortChange">
-      <template v-slot:toolbar>
-        <lay-button size="sm" type="normal" @click="toSearch">查询</lay-button>
-        <lay-button size="sm" @click="queryFormReset"> 重置
-        </lay-button>
-<!--          <lay-button size="sm" type="primary" @click="showSaveModal(Operate.ADD, null)">-->
-<!--            <lay-icon class="layui-icon-addition"></lay-icon>-->
-<!--            新增-->
-<!--          </lay-button>-->
-<!--          <lay-button size="sm" @click="toRemove">-->
-<!--            <lay-icon class="layui-icon-delete"></lay-icon>-->
-<!--            删除-->
-<!--          </lay-button>-->
-      </template>
-<!--        <template v-slot:operator="{ row }">-->
-<!--          <lay-button-->
-<!--              border="green"-->
-<!--              border-style="dashed"-->
-<!--              size="xs"-->
-<!--              @click="showSaveModal(Operate.EDIT, row)">编辑-->
-<!--          </lay-button>-->
-<!--          <lay-button-->
-<!--              border="orange"-->
-<!--              border-style="dashed"-->
-<!--              size="xs"-->
-<!--              @click="showSaveModal(Operate.COPY, row)">复制-->
-<!--          </lay-button>-->
-<!--          <lay-popconfirm-->
-<!--              content="确定要删除吗?"-->
-<!--              @cancel="cancel"-->
-<!--              @confirm="confirm(row)">-->
-<!--            <lay-button border="red"-->
-<!--                        border-style="dashed"-->
-<!--                        size="xs">删除-->
-<!--            </lay-button>-->
-<!--          </lay-popconfirm>-->
-<!--        </template>-->
-    </lay-table>
+    <div>
+      <lay-table
+          v-model:selected-keys="selectedKeys"
+          :columns="columns"
+          :data-source="dataSource"
+          :default-toolbar="defaultToolbarFlag"
+          :loading="loading"
+          :page="pageQuery"
+          :even="evenFlag"
+          @change="change"
+          @sortChange="sortChange">
+        <template #weekBegin="{ row }">
+          <dict-scan :options="weekDaySelect" :value="row.weekBegin"/>
+        </template>
+        <template v-slot:toolbar>
+          <lay-button size="sm" type="normal" @click="toSearch">查询</lay-button>
+          <lay-button size="sm" @click="queryFormReset"> 重置
+          </lay-button>
+          <lay-button size="sm" type="primary" @click="showSaveModal(Operate.ADD, null)">
+            <lay-icon class="layui-icon-addition"></lay-icon>
+            新增
+          </lay-button>
+          <lay-button size="sm" @click="toRemove">
+            <lay-icon class="layui-icon-delete"></lay-icon>
+            删除
+          </lay-button>
+        </template>
+        <template v-slot:operator="{ row }">
+          <lay-button
+              border="green"
+              border-style="dashed"
+              size="xs"
+              @click="showSaveModal(Operate.EDIT, row)">编辑
+          </lay-button>
+          <lay-button
+              border="orange"
+              border-style="dashed"
+              size="xs"
+              @click="showSaveModal(Operate.COPY, row)">复制
+          </lay-button>
+          <lay-popconfirm
+              content="确定要删除吗?"
+              @cancel="cancel"
+              @confirm="confirm(row)">
+            <lay-button border="red"
+                        border-style="dashed"
+                        size="xs">删除
+            </lay-button>
+          </lay-popconfirm>
+        </template>
+      </lay-table>
+    </div>
 
     <lay-layer v-model="showModalFlag" :area="['1200px']" :title="saveModalTitle">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" @keydown.esc.prevent="toCancel">
-        <lay-form ref="saveFormRef" :model="saveAccountBillingVo" :rules="saveFromRules" label-position="top">
+        <lay-form ref="saveFormRef" :model="saveAccountReportStrategyVo" :rules="saveFromRules" label-position="top">
           <lay-row :space="20">
             <lay-col :md="6">
-              <lay-form-item label="标题" prop="title">
-                <lay-input
-                    v-model="saveAccountBillingVo.title"
-                    :allow-clear="true"
+              <lay-form-item label="预算类型" prop="budgetType" required>
+                <lay-select
                     size="sm"
-                ></lay-input>
+                    style="width: 100%"
+                    v-model="saveAccountReportStrategyVo.budgetType"
+                    :options="accountReportStrategyDurationTypeSelectList"
+                    :items="accountReportStrategyDurationTypeSelectList"
+                    :allow-clear="true"
+                ></lay-select>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="预算类型" prop="budgetType">
-                <lay-input
-                    v-model="saveAccountBillingVo.budgetType"
-                    :allow-clear="true"
+              <lay-form-item label="开始周" prop="weekBegin" required>
+                <lay-select
                     size="sm"
-                ></lay-input>
+                    style="width: 100%"
+                    v-model="saveAccountReportStrategyVo.weekBegin"
+                    :options="weekDaySelectList"
+                    :items="weekDaySelectList"
+                    :allow-clear="true"
+                ></lay-select>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="预算金额" prop="budgetAmount">
-                <lay-input
-                    v-model="saveAccountBillingVo.budgetAmount"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="支出金额" prop="outlay">
-                <lay-input
-                    v-model="saveAccountBillingVo.outlay"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="收入金额" prop="incomeAmount">
-                <lay-input
-                    v-model="saveAccountBillingVo.incomeAmount"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="账单时间" prop="billingTime">
-                <lay-input
-                    v-model="saveAccountBillingVo.billingTime"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="账单时间从" prop="billingTimeFrom">
-                <lay-input
-                    v-model="saveAccountBillingVo.billingTimeFrom"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="账单时间到" prop="billingTimeTo">
-                <lay-input
-                    v-model="saveAccountBillingVo.billingTimeTo"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
+              <lay-form-item label="是否启用" prop="enabled" required>
+                <lay-switch v-model="saveAccountReportStrategyVo.enabled"></lay-switch>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
               <lay-form-item label="是否重新计算" prop="recalculateFlag">
-                <lay-input
-                    v-model="saveAccountBillingVo.recalculateFlag"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
+                <lay-switch v-model="saveAccountReportStrategyVo.recalculateFlag"></lay-switch>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+          <lay-row :space="20">
+            <lay-col :md="6">
+              <lay-form-item label="备注" prop="remark">
+                <lay-textarea v-model="saveAccountReportStrategyVo.remark" :allow-clear="true" show-count
+                              :maxlength="1024"></lay-textarea>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -191,7 +157,7 @@
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
-  name: "AccountBilling",
+  name: "AccountReportStrategy",
 };
 </script>
 <script lang="ts" setup>
@@ -199,40 +165,38 @@ import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
 import {TableResult} from "@/types/Result";
-import {deleteAccountBilling, findPageAccountBilling} from "@/api/account/AccountBilling";
-import {AccountBillingEntity, AccountBillingVo} from "@/types/account/AccountBilling";
+import {deleteAccountReportStrategy, findPageAccountReportStrategy} from "@/api/account/AccountReportStrategy";
+import {AccountReportStrategyEntity, AccountReportStrategyVo} from "@/types/account/AccountReportStrategy";
 import {Operate} from "@/types/Constants";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {findAccountBilling, saveUpdate} from "@/api/account/AccountBilling";
+import {findAccountReportStrategy, saveUpdate} from "@/api/account/AccountReportStrategy";
 
 /* INIT*/
 onMounted(async () => {
-  accountBillingDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
-  accountBillingDurationTypeSelectList.value = await sysDictValueSelect(accountBillingDurationTypeSelect.value)
+  accountReportStrategyDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
+  accountReportStrategyDurationTypeSelectList.value = await sysDictValueSelect(accountReportStrategyDurationTypeSelect.value)
+  weekDaySelect.value = await loadSysDictValue(Constants.WEEK_DAY)
+  weekDaySelectList.value = await sysDictValueSelect(weekDaySelect.value)
   loadDataSource()
 })
 /* INIT*/
 
 /* VAR*/
-const searchQuery = ref<AccountBillingVo>({})
+const searchQuery = ref<AccountReportStrategyVo>({})
 const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const dataSource = ref<Array<AccountBillingEntity>>()
+const dataSource = ref<Array<AccountReportStrategyEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '标题', width: '130px', key: 'title'},
   {title: '预算类型', width: '130px', key: 'budgetType'},
-  {title: '预算金额', width: '130px', key: 'budgetAmount'},
-  {title: '支出金额', width: '130px', key: 'outlay'},
-  {title: '收入金额', width: '130px', key: 'incomeAmount'},
-  {title: '账单时间', width: '130px', key: 'billingTime'},
-  {title: '账单时间从', width: '130px', key: 'billingTimeFrom'},
-  {title: '账单时间到', width: '130px', key: 'billingTimeTo'},
-  {title: '是否重新计算', width: '130px', key: 'recalculateFlag'},
+  {title: '是否启用', width: '130px', key: 'enabled'},
+  {title: '开始周', width: '130px', key: 'weekBegin', customSlot: 'weekBegin'},
+  {title: '最新生成时间', width: '130px', key: 'generateTime'},
+  {title: '下次生成时间', width: '130px', key: 'nextGenerateTime'},
   {
     title: '操作',
     width: '150px',
@@ -247,10 +211,12 @@ const evenFlag = ref(true)
 const showModalFlag = ref(false)
 const saveModalTitle = ref('');
 const saveFormRef = ref(null)
-const saveAccountBillingVo = ref<AccountBillingVo>(<AccountBillingVo>{})
+const saveAccountReportStrategyVo = ref<AccountReportStrategyVo>(<AccountReportStrategyVo>{})
 const queryFormRef = ref(null)
-const accountBillingDurationTypeSelect = ref<Array<SysDictValueEntity>>(<Array<SysDictValueEntity>>[]);
-const accountBillingDurationTypeSelectList = ref();
+const accountReportStrategyDurationTypeSelect = ref<Array<SysDictValueEntity>>(<Array<SysDictValueEntity>>[]);
+const accountReportStrategyDurationTypeSelectList = ref();
+const weekDaySelect = ref<Array<SysDictValueEntity>>(<Array<SysDictValueEntity>>[]);
+const weekDaySelectList = ref();
 const saveFromRules = ref({
   // outlay: {
   //  validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
@@ -269,10 +235,10 @@ const saveFromRules = ref({
  * 初始化表格
  */
 const loadDataSource = () => {
-  findPageAccountBilling(searchQuery.value, pageQuery).then((res: TableResult<AccountBillingEntity>) => {
+  findPageAccountReportStrategy(searchQuery.value, pageQuery).then((res: TableResult<AccountReportStrategyEntity>) => {
     if (res.code == 200) {
       pageQuery.total = res.total;
-      dataSource.value = res.rows || []
+      dataSource.value = res.rows
     } else {
       layer.msg(res.msg)
       return;
@@ -297,7 +263,7 @@ const change = () => {
  * 触发列表字段排序
  */
 const sortChange = (key: any, sort: number) => {
-  layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
+  layer.msg(`字段${key} - 排序${sort}}, 你可以利用 sort-change 实现服务端排序`)
 }
 
 /**
@@ -322,17 +288,21 @@ function queryFormReset() {
 const showSaveModal = (text: any, row: any) => {
   saveModalTitle.value = Operate.ADD === text ? "新增" : Operate.EDIT === text ? "编辑" : Operate.COPY === text ? "复制" : "";
   if (row != null) {
-    saveAccountBillingVo.value = {...row}
+    saveAccountReportStrategyVo.value = {...row}
   }
   if (Operate.EDIT === text) {
-    findAccountBilling({
+    findAccountReportStrategy({
       id: row.id
     }).then((res: any) => {
       if (res.code === 200) {
-        saveAccountBillingVo.value = res.data;
+        saveAccountReportStrategyVo.value = res.data;
       }
     })
   } else if (Operate.ADD === text) {
+    // 开始周默认周一
+    saveAccountReportStrategyVo.value.weekBegin = 1;
+    saveAccountReportStrategyVo.value.enabled = true;
+    saveAccountReportStrategyVo.value.recalculateFlag = true;
   } else if (Operate.COPY === text) {
   }
   showModalFlag.value = !showModalFlag.value
@@ -352,7 +322,7 @@ function toRemove() {
       {
         text: '确定',
         callback: (id: any) => {
-          deleteAccountBilling(selectedKeys.value).then((res: any) => {
+          deleteAccountReportStrategy(selectedKeys.value).then((res: any) => {
             if (res.code === 200) {
               layer.msg('删除成功')
             }
@@ -379,16 +349,16 @@ function toRemove() {
 function toSubmit(clickFlag: boolean) {
   saveFormRef.value.validate((isValidate: any, model: any, errors: any) => {
     if (isValidate) {
-      saveUpdate(saveAccountBillingVo.value).then((res: any) => {
+      saveUpdate(saveAccountReportStrategyVo.value).then((res: any) => {
         if (res.code === 200) {
           loadDataSource();
           layer.msg('保存成功！', {icon: 1, time: 1000})
-          saveAccountBillingVo.value = {};
+          saveAccountReportStrategyVo.value = {};
           if (clickFlag) {
             showModalFlag.value = false
           } else {
             // 如果是修改+回车，则关闭窗口
-            if (saveAccountBillingVo.id && saveAccountBillingVo.id != 0) {
+            if (saveAccountReportStrategyVo.id && saveAccountReportStrategyVo.id != 0) {
               showModalFlag.value = false
             }
           }
@@ -415,7 +385,7 @@ function toCancel() {
 
 function confirm(row: any) {
   if (row) {
-    deleteAccountBilling([row.id]).then((res: any) => {
+    deleteAccountReportStrategy([row.id]).then((res: any) => {
       if (res.code === 200) {
         layer.msg('删除成功')
       }

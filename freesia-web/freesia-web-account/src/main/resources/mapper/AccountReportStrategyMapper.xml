@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.freesia.account.mapper.AccountBillingMapper">
-    <resultMap id="BaseResultMap" type="com.freesia.account.po.AccountBillingPo">
+<mapper namespace="com.freesia.account.mapper.AccountReportStrategyMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.account.po.AccountReportStrategyPo">
         <id column="ID" property="id"/>
         <result column="CREATOR" property="creator"/>
         <result column="CREATE_TIME" property="createTime"/>
@@ -14,24 +14,20 @@
         <result column="REMARK" property="remark"/>
         <result column="USER_ID" property="userId"/>
         <result column="BUDGET_ID" property="budgetId"/>
-        <result column="STRATEGY_ID" property="strategyId"/>
-        <result column="TITLE" property="title"/>
         <result column="BUDGET_TYPE" property="budgetType"/>
-        <result column="BUDGET_AMOUNT" property="budgetAmount"/>
-        <result column="OUTLAY" property="outlay"/>
-        <result column="INCOME_AMOUNT" property="incomeAmount"/>
-        <result column="BILLING_TIME" property="billingTime"/>
-        <result column="BILLING_TIME_FROM" property="billingTimeFrom"/>
-        <result column="BILLING_TIME_TO" property="billingTimeTo"/>
+        <result column="GENERATE_TIME" property="generateTime"/>
+        <result column="NEXT_GENERATE_TIME" property="nextGenerateTime"/>
+        <result column="ENABLED" property="enabled"/>
+        <result column="WEEK_BEGIN" property="weekBegin"/>
         <result column="RECALCULATE_FLAG" property="recalculateFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, STRATEGY_ID, TITLE, BUDGET_TYPE, BUDGET_AMOUNT, OUTLAY, INCOME_AMOUNT, BILLING_TIME, BILLING_TIME_FROM, BILLING_TIME_TO, RECALCULATE_FLAG
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, BUDGET_TYPE, GENERATE_TIME, NEXT_GENERATE_TIME, ENABLED, WEEK_BEGIN, RECALCULATE_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM ACCOUNT_BILLING
+        FROM ACCOUNT_REPORT_STRATEGY
         WHERE
         LOGIC_DEL = 0
         <if test="dto.remark != null and dto.remark != ''">
@@ -43,32 +39,20 @@
         <if test="dto.budgetId != null">
             AND BUDGET_ID = #{dto.budgetId}
         </if>
-        <if test="dto.strategyId != null">
-            AND STRATEGY_ID = #{dto.strategyId}
-        </if>
-        <if test="dto.title != null and dto.title != ''">
-            AND TITLE = #{dto.title}
-        </if>
         <if test="dto.budgetType != null and dto.budgetType != ''">
             AND BUDGET_TYPE = #{dto.budgetType}
         </if>
-        <if test="dto.budgetAmount != null">
-            AND BUDGET_AMOUNT = #{dto.budgetAmount}
+        <if test="dto.generateTime != null">
+            AND GENERATE_TIME = #{dto.generateTime}
         </if>
-        <if test="dto.outlay != null">
-            AND OUTLAY = #{dto.outlay}
+        <if test="dto.nextGenerateTime != null">
+            AND NEXT_GENERATE_TIME = #{dto.nextGenerateTime}
         </if>
-        <if test="dto.incomeAmount != null">
-            AND INCOME_AMOUNT = #{dto.incomeAmount}
+        <if test="dto.enabled != null and dto.enabled != ''">
+            AND ENABLED = #{dto.enabled}
         </if>
-        <if test="dto.billingTime != null">
-            AND BILLING_TIME = #{dto.billingTime}
-        </if>
-        <if test="dto.billingTimeFrom != null">
-            AND BILLING_TIME_FROM = #{dto.billingTimeFrom}
-        </if>
-        <if test="dto.billingTimeTo != null">
-            AND BILLING_TIME_TO = #{dto.billingTimeTo}
+        <if test="dto.weekBegin != null">
+            AND WEEK_BEGIN = #{dto.weekBegin}
         </if>
         <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
             AND RECALCULATE_FLAG = #{dto.recalculateFlag}
@@ -78,7 +62,7 @@
     <select id="findList" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM ACCOUNT_BILLING,ACCOUNT_BILLING_STRATEGY
+        FROM ACCOUNT_REPORT,ACCOUNT_REPORT_STRATEGY
         WHERE LOGIC_DEL = 0
         <if test="dto.remark != null and dto.remark != ''">
             AND REMARK = #{dto.remark}
@@ -89,32 +73,20 @@
         <if test="dto.budgetId != null">
             AND BUDGET_ID = #{dto.budgetId}
         </if>
-        <if test="dto.strategyId != null">
-            AND STRATEGY_ID = #{dto.strategyId}
-        </if>
-        <if test="dto.title != null and dto.title != ''">
-            AND TITLE = #{dto.title}
-        </if>
         <if test="dto.budgetType != null and dto.budgetType != ''">
             AND BUDGET_TYPE = #{dto.budgetType}
         </if>
-        <if test="dto.budgetAmount != null">
-            AND BUDGET_AMOUNT = #{dto.budgetAmount}
+        <if test="dto.generateTime != null">
+            AND GENERATE_TIME = #{dto.generateTime}
         </if>
-        <if test="dto.outlay != null">
-            AND OUTLAY = #{dto.outlay}
+        <if test="dto.nextGenerateTime != null">
+            AND NEXT_GENERATE_TIME = #{dto.nextGenerateTime}
         </if>
-        <if test="dto.incomeAmount != null">
-            AND INCOME_AMOUNT = #{dto.incomeAmount}
+        <if test="dto.enabled != null and dto.enabled != ''">
+            AND ENABLED = #{dto.enabled}
         </if>
-        <if test="dto.billingTime != null">
-            AND BILLING_TIME = #{dto.billingTime}
-        </if>
-        <if test="dto.billingTimeFrom != null">
-            AND BILLING_TIME_FROM = #{dto.billingTimeFrom}
-        </if>
-        <if test="dto.billingTimeTo != null">
-            AND BILLING_TIME_TO = #{dto.billingTimeTo}
+        <if test="dto.weekBegin != null">
+            AND WEEK_BEGIN = #{dto.weekBegin}
         </if>
         <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
             AND RECALCULATE_FLAG = #{dto.recalculateFlag}
@@ -122,7 +94,7 @@
         ORDER BY MODIFY_TIME DESC
     </select>
     <insert id="insertBatch" parameterType="java.util.List">
-        INSERT INTO ACCOUNT_BILLING
+        INSERT INTO ACCOUNT_REPORT_STRATEGY
         (
         ID,
         CREATOR,
@@ -136,15 +108,11 @@
         REMARK, 
         USER_ID, 
         BUDGET_ID, 
-        STRATEGY_ID, 
-        TITLE, 
         BUDGET_TYPE, 
-        BUDGET_AMOUNT, 
-        OUTLAY, 
-        INCOME_AMOUNT, 
-        BILLING_TIME, 
-        BILLING_TIME_FROM, 
-        BILLING_TIME_TO, 
+        GENERATE_TIME, 
+        NEXT_GENERATE_TIME, 
+        ENABLED, 
+        WEEK_BEGIN, 
         RECALCULATE_FLAG
         )
         VALUES
@@ -162,15 +130,11 @@
             #{item.remark}, 
             #{item.userId}, 
             #{item.budgetId}, 
-            #{item.strategyId}, 
-            #{item.title}, 
             #{item.budgetType}, 
-            #{item.budgetAmount}, 
-            #{item.outlay}, 
-            #{item.incomeAmount}, 
-            #{item.billingTime}, 
-            #{item.billingTimeFrom}, 
-            #{item.billingTimeTo}, 
+            #{item.generateTime}, 
+            #{item.nextGenerateTime}, 
+            #{item.enabled}, 
+            #{item.weekBegin}, 
             #{item.recalculateFlag}
             )
         </foreach>

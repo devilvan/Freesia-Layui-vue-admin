@@ -12,14 +12,14 @@ import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
- * @Description 记账账单表 值对象
- * @date 2026-02-21
+ * @Description 记账报表表 值对象
+ * @date 2026-02-25
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "记账账单表 值对象")
-public class AccountBillingVo extends BaseVo {
+@Schema(description = "记账报表表 值对象")
+public class AccountReportVo extends BaseVo {
     @Schema(description = "备注")
     @JsonAlias(value = {"remark"})
     private String remark;

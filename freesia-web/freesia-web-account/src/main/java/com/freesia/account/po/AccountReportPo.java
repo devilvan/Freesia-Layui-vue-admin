@@ -20,22 +20,22 @@ import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
- * @Description 记账账单表 映射
- * @date 2026-02-21
+ * @Description 记账报表表 映射
+ * @date 2026-02-25
  */
 @Setter
 @Getter
 @ToString
 @NoArgsConstructor
 @Accessors(chain = true)
-@TableName(value = "ACCOUNT_BILLING")
+@TableName(value = "ACCOUNT_REPORT")
 
 @Entity
-@Table(name = "ACCOUNT_BILLING")
+@Table(name = "ACCOUNT_REPORT")
 @DynamicInsert
 @EntityListeners(AuditingEntityListener.class)
-@Schema(description = "记账账单表 映射")
-public class AccountBillingPo extends BasePo implements Serializable {
+@Schema(description = "记账报表表 映射")
+public class AccountReportPo extends BasePo implements Serializable {
     @Schema(description = "备注")
     @TableField(value = "REMARK")
     @Column(name = "REMARK", columnDefinition = "VARCHAR(1,024) COMMENT '备注'")

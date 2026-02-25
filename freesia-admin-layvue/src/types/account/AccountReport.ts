@@ -1,6 +1,6 @@
 import {BaseEntity, BaseVo} from "@/types/common";
 
-export interface AccountBillingVo extends BaseVo {
+export interface AccountReportVo extends BaseVo {
     remark?: string;
     userId?: number;
     budgetId?: number;
@@ -16,7 +16,7 @@ export interface AccountBillingVo extends BaseVo {
     recalculateFlag?: boolean;
 }
 
-export interface AccountBillingEntity extends BaseEntity {
+export interface AccountReportEntity extends BaseEntity {
     remark?: string;
     userId?: number;
     budgetId?: number;

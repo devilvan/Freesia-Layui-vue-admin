@@ -5,8 +5,8 @@ import com.freesia.pojo.TableResult;
 import ${packageName}.vo.${dataBaseDto.className}Vo;
 import ${packageName}.dto.${dataBaseDto.className}Dto;
 import ${packageName}.service.${dataBaseDto.className}Service;
+import ${packageName}.converter.${dataBaseDto.className}Converter;
 import com.freesia.controller.BaseController;
-import com.freesia.util.UCopy;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +26,7 @@ import java.util.List;
 @Tag(name = "${dataBaseDto.className}Controller", description = "${dataBaseDto.comment} 控制器")
 public class ${dataBaseDto.className}Controller extends BaseController {
     private final ${dataBaseDto.className}Service ${dataBaseDto.className?uncap_first}Service;
+    private final ${dataBaseDto.className}Converter ${dataBaseDto.className?uncap_first}Converter;
 
     /**
      * 保存${dataBaseDto.comment}信息
@@ -36,7 +37,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @Operation(summary = "保存${dataBaseDto.comment}信息")
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody ${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo) {
-        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
+        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = ${dataBaseDto.className?uncap_first}Converter.convertVo2Dto(${dataBaseDto.className?uncap_first}Vo);
         ${dataBaseDto.className?uncap_first}Service.saveUpdate(${dataBaseDto.className?uncap_first}Dto);
         return R.ok();
     }
@@ -50,7 +51,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @Operation(summary = "保存${dataBaseDto.comment}信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<${dataBaseDto.className}Vo> ${dataBaseDto.className?uncap_first}VoList) {
-        List<${dataBaseDto.className}Dto> ${dataBaseDto.className?uncap_first}DtoList = UCopy.fullCopyList(${dataBaseDto.className?uncap_first}VoList, ${dataBaseDto.className}Dto.class);
+        List<${dataBaseDto.className}Dto> ${dataBaseDto.className?uncap_first}DtoList = ${dataBaseDto.className?uncap_first}Converter.convertBatchVo2Dto(${dataBaseDto.className?uncap_first}VoList);
         ${dataBaseDto.className?uncap_first}Service.saveUpdateBatch(${dataBaseDto.className?uncap_first}DtoList);
         return R.ok();
     }
@@ -65,7 +66,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @Operation(summary = "查询${dataBaseDto.comment}分页信息")
     @GetMapping(value = "findPage${dataBaseDto.className}")
     public TableResult<${dataBaseDto.className}Dto> findPage${dataBaseDto.className}(${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo, PageQuery pageQuery) {
-        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
+        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = ${dataBaseDto.className?uncap_first}Converter.convertVo2Dto(${dataBaseDto.className?uncap_first}Vo);
         return ${dataBaseDto.className?uncap_first}Service.findPage(${dataBaseDto.className?uncap_first}Dto, pageQuery);
     }
 
@@ -78,7 +79,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @Operation(summary = "条件查询${dataBaseDto.comment}")
     @GetMapping(value = "find${dataBaseDto.className}")
     public R<${dataBaseDto.className}Dto> find${dataBaseDto.className}(${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo) {
-        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
+        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = ${dataBaseDto.className?uncap_first}Converter.convertVo2Dto(${dataBaseDto.className?uncap_first}Vo);
         ${dataBaseDto.className?uncap_first}Dto = ${dataBaseDto.className?uncap_first}Service.findOne(${dataBaseDto.className?uncap_first}Dto);
         return R.ok(${dataBaseDto.className?uncap_first}Dto);
     }
@@ -92,7 +93,7 @@ public class ${dataBaseDto.className}Controller extends BaseController {
     @Operation(summary = "条件查询${dataBaseDto.comment}")
     @GetMapping(value = "findList${dataBaseDto.className}")
     public R<List<${dataBaseDto.className}Dto>> findList${dataBaseDto.className}(${dataBaseDto.className}Vo ${dataBaseDto.className?uncap_first}Vo) {
-        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = UCopy.copyVo2Dto(${dataBaseDto.className?uncap_first}Vo, ${dataBaseDto.className}Dto.class);
+        ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto = ${dataBaseDto.className?uncap_first}Converter.convertVo2Dto(${dataBaseDto.className?uncap_first}Vo);
         List<${dataBaseDto.className}Dto> ${dataBaseDto.className?uncap_first}DtoList = ${dataBaseDto.className?uncap_first}Service.findList(${dataBaseDto.className?uncap_first}Dto);
         return R.ok(${dataBaseDto.className?uncap_first}DtoList);
     }

@@ -9,15 +9,15 @@ import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
- * @Description 记账账单表 数据传输对象
- * @date 2026-02-21
+ * @Description 记账报表表 数据传输对象
+ * @date 2026-02-25
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "记账账单表 数据传输对象")
-public class AccountBillingDto extends BaseDto {
+@Schema(description = "记账报表表 数据传输对象")
+public class AccountReportDto extends BaseDto {
     @Schema(description = "备注")
     private String remark;
     @Schema(description = "用户ID")

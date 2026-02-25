@@ -58,16 +58,16 @@ public class CodeGenerator {
     private static void generate(List<DataBaseDto> dataBaseDtoList) {
         for (DataBaseDto dataBaseDto : dataBaseDtoList) {
             /* 后端*/
-            generateVo(dataBaseDto);
-            generateDto(dataBaseDto);
-            generatePo(dataBaseDto);
-//            generateController(dataBaseDto);
+//            generateVo(dataBaseDto);
+//            generateDto(dataBaseDto);
+//            generatePo(dataBaseDto);
+            generateController(dataBaseDto);
 //            generateService(dataBaseDto);
 //            generateServiceImpl(dataBaseDto);
 //            generateConverter(dataBaseDto);
 //            generateRepository(dataBaseDto);
 //            generateMapper(dataBaseDto);
-            generateMapperXml(dataBaseDto);
+//            generateMapperXml(dataBaseDto);
 
             /* 前端*/
 //            generateType(dataBaseDto);
