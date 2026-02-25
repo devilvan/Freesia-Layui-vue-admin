@@ -1,17 +1,19 @@
 package com.freesia.account.controller;
 
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
-import com.freesia.account.vo.AccountReportVo;
+import cn.dev33.satoken.annotation.SaIgnore;
+import com.freesia.account.converter.AccountReportConverter;
 import com.freesia.account.dto.AccountReportDto;
 import com.freesia.account.service.AccountReportService;
-import com.freesia.account.converter.AccountReportConverter;
+import com.freesia.account.vo.AccountReportVo;
 import com.freesia.controller.BaseController;
+import com.freesia.dto.SysUserDto;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class AccountReportController extends BaseController {
     /**
      * 保存记账报表表信息
      *
-     * @param accountReportVo    待保存对象
+     * @param accountReportVo 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存记账报表表信息")
@@ -45,7 +47,7 @@ public class AccountReportController extends BaseController {
     /**
      * 批量保存记账报表表信息
      *
-     * @param accountReportVoList    待保存对象
+     * @param accountReportVoList 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存记账报表表信息")
@@ -60,7 +62,7 @@ public class AccountReportController extends BaseController {
      * 查询记账报表表分页信息
      *
      * @param accountReportVo 查询条件
-     * @param pageQuery   分页条件
+     * @param pageQuery       分页条件
      * @return 形式返回
      */
     @Operation(summary = "查询记账报表表分页信息")
@@ -85,11 +87,11 @@ public class AccountReportController extends BaseController {
     }
 
     /**
-    * 条件查询记账报表表
-    *
-    * @param accountReportVo 查询条件
-    * @return 形式返回
-    */
+     * 条件查询记账报表表
+     *
+     * @param accountReportVo 查询条件
+     * @return 形式返回
+     */
     @Operation(summary = "条件查询记账报表表")
     @GetMapping(value = "findListAccountReport")
     public R<List<AccountReportDto>> findListAccountReport(AccountReportVo accountReportVo) {
@@ -108,6 +110,19 @@ public class AccountReportController extends BaseController {
     @PostMapping(value = "deleteAccountReport")
     public R<Void> deleteAccountReport(@RequestBody List<Long> idList) {
         accountReportService.deleteBatch(idList);
+        return R.ok();
+    }
+
+    /**
+     * 生成报表任务
+     *
+     * @return 形式返回
+     */
+    @SaIgnore
+    @Operation(summary = "生成报表任务")
+    @PostMapping(value = "generateReportTask")
+    public R<Void> generateReportTask(@RequestBody SysUserDto sysUserDto) {
+        accountReportService.generateReportTask(sysUserDto);
         return R.ok();
     }
 }

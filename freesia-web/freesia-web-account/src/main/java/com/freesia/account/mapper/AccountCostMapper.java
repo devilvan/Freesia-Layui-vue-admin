@@ -10,6 +10,7 @@ import com.freesia.account.po.AccountCostPo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -115,4 +116,12 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
      * @return ID集合
      */
     Page<Long> findPageAccountCostId(@Param(value = "accountCostDto") AccountCostDto accountCostDto, @Param(value = "page") Page<AccountCostPo> pageQuery);
+
+    /**
+     * 根据租户ID查询最早的记账时间
+     *
+     * @param accountCostDto 查询条件
+     * @return ID集合
+     */
+    Date findMinPaymentTime(@Param(value = "accountCostDto") AccountCostDto accountCostDto);
 }

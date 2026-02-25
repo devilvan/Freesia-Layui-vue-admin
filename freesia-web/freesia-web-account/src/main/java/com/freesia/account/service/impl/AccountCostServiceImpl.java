@@ -346,6 +346,11 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         return commonIconTemplateHeaderService.findListSelectCostType(dto);
     }
 
+    @Override
+    public Date findMinPaymentTime(AccountCostDto accountCostDto) {
+        return accountCostMapper.findMinPaymentTime(accountCostDto);
+    }
+
 
     /**
      * 构建统计行

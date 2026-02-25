@@ -1,5 +1,6 @@
 package com.freesia.account.service;
 
+import com.freesia.dto.SysUserDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.account.dto.AccountReportDto;
@@ -59,4 +60,9 @@ public interface AccountReportService {
      * @param idList 主键
      */
     void deleteBatch(List<Long> idList);
+
+    /**
+     * 生成账单任务
+     */
+    void generateReportTask(SysUserDto sysUserDto);
 }

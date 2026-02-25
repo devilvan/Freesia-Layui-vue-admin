@@ -63,4 +63,8 @@ public final class CacheConstant {
      * 用户自定义图标 缓存键
      */
     public static final String FIND_CACHE_COST_TYPE = "findCacheCostType:";
+    /**
+     * 记账报表-租户数据最早时间 缓存键
+     */
+    public static final String FIND_CACHE_ACCOUNT_COST_EARLY_PAYMENT_TIME = "findCacheAccountCostEarlyPaymentTime:";
 }

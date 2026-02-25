@@ -15,6 +15,7 @@ import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -82,7 +83,7 @@ public interface AccountCostService {
     /**
      * 折线图-根据时间查询
      *
-     * @param accountCostDto 入参
+     * @param findCostLineChartDto 入参
      * @return 结果集
      */
     EchartLineOptionEntity findCostLineChart(FindCostLineChartDto findCostLineChartDto);
@@ -98,7 +99,7 @@ public interface AccountCostService {
     /**
      * 排名-按消费类型排名
      *
-     * @param accountCostDto 查询入参
+     * @param findRankByCostTypeDto 查询入参
      * @return 图表数据
      */
     EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto);
@@ -131,4 +132,12 @@ public interface AccountCostService {
      * @return 下拉集合
      */
     List<LaySelect> findListSelectCostType(Long userId);
+
+    /**
+     * 根据租户ID查询最早的记账时间
+     *
+     * @param accountCostDto 查询条件
+     * @return 最早的记账时间
+     */
+    Date findMinPaymentTime(AccountCostDto accountCostDto);
 }

@@ -48,6 +48,14 @@ public interface AccountBudgetService {
     AccountBudgetDto findOne(AccountBudgetDto accountBudgetDto);
 
     /**
+     * 条件查询开销-预算表信息
+     *
+     * @param accountBudgetDto 查询条件
+     * @return 开销-预算表信息
+     */
+    List<AccountBudgetDto> findList(AccountBudgetDto accountBudgetDto);
+
+    /**
      * 删除开销-预算表信息
      *
      * @param idList 主键

@@ -790,4 +790,35 @@
         ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
         ) T
     </select>
+    <select id="findMinPaymentTime" resultType="java.util.Date">
+        SELECT MIN(T.PAYMENT_TIME) AS PAYMENT_TIME
+        FROM (
+        SELECT MIN(AC.PAYMENT_TIME) AS PAYMENT_TIME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+        WHERE AC.LOGIC_DEL = 0
+        AND AC.USER_ID = #{accountCostDto.userId}
+        <if test="accountCostDto.tenantId != null">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
+        GROUP BY AC.ID
+
+        UNION ALL
+
+        SELECT MIN(AC.PAYMENT_TIME) AS PAYMENT_TIME
+        FROM account_cost AC
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{accountCostDto.userId}
+        WHERE AC.LOGIC_DEL = 0
+        <if test="accountCostDto.tenantId != null">
+            AND AC.TENANT_ID = #{accountCostDto.tenantId}
+        </if>
+        AND AC.ID IN (
+        SELECT DISTINCT ACUA2.COST_ID
+        FROM account_cost_user_alloc ACUA2
+        WHERE ACUA2.USER_ID = #{accountCostDto.userId}
+        )
+        GROUP BY AC.ID
+        ORDER BY PAYMENT_TIME
+        ) T
+    </select>
 </mapper>
