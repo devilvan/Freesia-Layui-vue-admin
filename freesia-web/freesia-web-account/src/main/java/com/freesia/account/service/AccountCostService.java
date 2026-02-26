@@ -140,4 +140,12 @@ public interface AccountCostService {
      * @return 最早的记账时间
      */
     Date findMinPaymentTime(AccountCostDto accountCostDto);
+
+    /**
+     * 条件查询开销表信息
+     *
+     * @param accountCostDto 查询条件
+     * @return 开销表信息
+     */
+    List<FindPageAccountCostEntity> findListAccountCost(AccountCostDto accountCostDto);
 }

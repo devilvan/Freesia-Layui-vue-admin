@@ -38,7 +38,7 @@
             </association>
         </collection>
     </resultMap>
-    <select id="findPageAccountCost" resultMap="findPageAccountCostResultMap">
+    <sql id="findPageAccountCostSql">
         SELECT
         AC.ID,
         AC.CREATE_TIME,
@@ -128,6 +128,9 @@
             </foreach>
         </if>
         GROUP BY AC.ID, ALLOC_ID
+    </sql>
+    <select id="findPageAccountCost" resultMap="findPageAccountCostResultMap">
+        <include refid="findPageAccountCostSql" />
         ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
     </select>
     <select id="findAccountCost" resultMap="findAccountCostResultMap">
@@ -201,6 +204,9 @@
             AND ACUA.COST_ID = #{accountCostDto.id}
         </if>
         GROUP BY AC.ID
+    </select>
+    <select id="findListAccountCost" resultMap="findPageAccountCostResultMap">
+        <include refid="findPageAccountCostSql" />
     </select>
     <resultMap id="findAccountCostResultMap" type="com.freesia.account.entity.FindAccountCostEntity">
         <id property="id" column="ID"/>
@@ -701,7 +707,7 @@
             AND AC.PAYMENT_TIME <![CDATA[<=]]> #{accountCostDto.paymentTimeTo}
         </if>
     </select>
-    <select id="findPageAccountCostId" resultType="java.lang.Long">
+    <sql id="findListAccountCostIdSql">
         SELECT T.ID
         FROM (
         SELECT AC.ID, AC.PAYMENT_TIME, AC.MODIFY_TIME
@@ -789,6 +795,12 @@
         GROUP BY AC.ID
         ORDER BY PAYMENT_TIME DESC, MODIFY_TIME DESC
         ) T
+    </sql>
+    <select id="findPageAccountCostId" resultType="java.lang.Long">
+        <include refid="findListAccountCostIdSql" />
+    </select>
+    <select id="findListAccountCostId" resultType="java.lang.Long">
+        <include refid="findListAccountCostIdSql" />
     </select>
     <select id="findMinPaymentTime" resultType="java.util.Date">
         SELECT MIN(T.PAYMENT_TIME) AS PAYMENT_TIME

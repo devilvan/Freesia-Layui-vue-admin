@@ -17,27 +17,35 @@ import java.util.List;
 @Mapper
 public interface AccountReportMapper extends BaseMapper<AccountReportPo> {
     /**
-    * 分页查询记账报表表信息
-    *
-    * @param accountReportDto 查询条件
-    * @param page    分页条件
-    * @return 分页信息
-    */
+     * 分页查询记账报表表信息
+     *
+     * @param accountReportDto 查询条件
+     * @param page             分页条件
+     * @return 分页信息
+     */
     Page<AccountReportPo> findPage(@Param(value = "dto") AccountReportDto accountReportDto, @Param("page") Page<AccountReportPo> page);
 
     /**
-    * 查询记账报表表信息
-    *
-    * @param accountReportDto 查询条件
-    * @return 分页信息
-    */
+     * 查询记账报表表信息
+     *
+     * @param accountReportDto 查询条件
+     * @return 分页信息
+     */
     List<AccountReportDto> findList(@Param(value = "dto") AccountReportDto accountReportDto);
 
     /**
      * 批量新增
      *
-     * @param list    待新增集合
+     * @param list 待新增集合
      * @return 新增数量
      */
     int insertBatch(@Param(value = "list") List<AccountReportPo> list);
+
+    /**
+     * 查询是否存在
+     *
+     * @param accountReportDto 查询入参
+     * @return 是否存在
+     */
+    Boolean findExist(AccountReportDto accountReportDto);
 }

@@ -121,6 +121,13 @@
         </if>
         ORDER BY MODIFY_TIME DESC
     </select>
+    <select id="findExist" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1
+                      FROM account_report
+                      WHERE BUDGET_ID = #{budgetId}
+                        AND BUDGET_TYPE = #{budgetType}
+                        AND BILLING_TIME_FROM = #{billingTimeFrom})
+    </select>
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO ACCOUNT_REPORT
         (

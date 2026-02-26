@@ -11,7 +11,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CostType {
+    /**
+     * 支出
+     */
     EXPENSE("EXPENSES", "支出"),
+    /**
+     * 收入
+     */
     INCOME("INCOME", "收入");
 
     /**
@@ -30,8 +36,8 @@ public enum CostType {
      * @return 枚举对象
      */
     public static CostType getInstanceByCode(String code) {
-        CostType[] CostTypes = CostType.values();
-        for (CostType value : CostTypes) {
+        CostType[] values = CostType.values();
+        for (CostType value : values) {
             if (value.code.equals(code)) {
                 return value;
             }

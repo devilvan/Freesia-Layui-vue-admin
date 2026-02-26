@@ -61,7 +61,7 @@ spring:
         reset-enable: false
         url-pattern: /druid/*
         # 设置白名单，不填则允许所有访问
-        allow: localhost
+        allow: 127.0.0.1
       web-stat-filter:
         # 添加过滤规则
         url-pattern: /*
@@ -128,7 +128,7 @@ spring:
       hibernate:
         jdbc:
           # 批量保存时重写SQL语句，每批1000条提交
-          batch_size: 20
+          batch_size: 100
           batch_versioned_data: true
         order_inserts: true
         order_updates: true

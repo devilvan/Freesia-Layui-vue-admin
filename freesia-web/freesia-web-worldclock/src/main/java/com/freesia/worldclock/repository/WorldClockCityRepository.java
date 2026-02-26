@@ -16,10 +16,4 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 public interface WorldClockCityRepository extends JpaRepository<WorldClockCityPo, Long> {
-    @Modifying
-    @Query("""
-            DELETE FROM WorldClockSunriseSunsetPo WHERE cityId = :cityId AND YEAR(date) = :year
-            """)
-    @Transactional(rollbackFor = Exception.class)
-    void deleteExistingData(@Param(value = "cityId") Long cityId,@Param(value = "year") int year);
 }

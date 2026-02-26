@@ -1,9 +1,8 @@
 package com.freesia.account.service;
 
-import com.freesia.dto.SysUserDto;
+import com.freesia.account.dto.AccountReportDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.account.dto.AccountReportDto;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ public interface AccountReportService {
      * 查询记账报表表信息
      *
      * @param accountReportDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery        分页条件
      * @return 分页信息
      */
     TableResult<AccountReportDto> findPage(AccountReportDto accountReportDto, PageQuery pageQuery);
@@ -62,7 +61,10 @@ public interface AccountReportService {
     void deleteBatch(List<Long> idList);
 
     /**
-     * 生成账单任务
+     * 查询是否存在相同的报表记录
+     *
+     * @param accountReportDto 查询入参
+     * @return 是否存在
      */
-    void generateReportTask(SysUserDto sysUserDto);
+    Boolean findExist(AccountReportDto accountReportDto);
 }

@@ -215,6 +215,7 @@
         <lay-switch style="margin-left: 10px"
                     v-model="accountCostStore.allTenantFlag"
                     onswitch-text="统计所有账本"
+                    unswitch-text="统计所有账本"
                     @change="doChangeAllTenantFlag"></lay-switch>
       </template>
       <template v-slot:operator="{ row }">

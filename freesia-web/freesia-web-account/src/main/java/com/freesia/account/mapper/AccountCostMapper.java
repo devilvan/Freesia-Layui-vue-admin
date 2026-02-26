@@ -118,10 +118,26 @@ public interface AccountCostMapper extends BaseMapper<AccountCostPo> {
     Page<Long> findPageAccountCostId(@Param(value = "accountCostDto") AccountCostDto accountCostDto, @Param(value = "page") Page<AccountCostPo> pageQuery);
 
     /**
+     * 查询批量查询所需的ID
+     *
+     * @param accountCostDto 查询条件
+     * @return ID集合
+     */
+    List<Long> findListAccountCostId(@Param(value = "accountCostDto") AccountCostDto accountCostDto);
+
+    /**
      * 根据租户ID查询最早的记账时间
      *
      * @param accountCostDto 查询条件
      * @return ID集合
      */
     Date findMinPaymentTime(@Param(value = "accountCostDto") AccountCostDto accountCostDto);
+
+    /**
+     * 条件查询开销表
+     *
+     * @param accountCostDto 入参
+     * @return 结果集
+     */
+    List<FindPageAccountCostEntity> findListAccountCost(@Param("accountCostDto") AccountCostDto accountCostDto);
 }

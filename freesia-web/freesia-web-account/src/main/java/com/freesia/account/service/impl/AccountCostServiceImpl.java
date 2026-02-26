@@ -150,6 +150,21 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
     }
 
     @Override
+    public List<FindPageAccountCostEntity> findListAccountCost(AccountCostDto accountCost) {
+        List<Long> idList = accountCostMapper.findListAccountCostId(accountCost);
+        List<FindPageAccountCostEntity> findPageAccountCostEntityList = new ArrayList<>();
+        if (UEmpty.isNotEmpty(idList)) {
+            AccountCostDto accountCostDto = new AccountCostDto();
+            accountCostDto.setUserId(accountCost.getUserId());
+            accountCostDto.setTenantId(accountCost.getTenantId());
+            accountCostDto.setIdList(idList);
+            findPageAccountCostEntityList = accountCostMapper.findListAccountCost(accountCostDto);
+            return findPageAccountCostEntityList;
+        }
+        return findPageAccountCostEntityList;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteAccountCost(List<Long> idList) {
         List<AccountCostPo> accountCostPoList = accountCostRepository.findAllById(idList);

@@ -3,6 +3,7 @@ package com.freesia.account.controller;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.freesia.account.converter.AccountReportConverter;
 import com.freesia.account.dto.AccountReportDto;
+import com.freesia.account.scheduler.GenerateReportTaskScheduler;
 import com.freesia.account.service.AccountReportService;
 import com.freesia.account.vo.AccountReportVo;
 import com.freesia.controller.BaseController;
@@ -29,6 +30,7 @@ import java.util.List;
 public class AccountReportController extends BaseController {
     private final AccountReportService accountReportService;
     private final AccountReportConverter accountReportConverter;
+    private final GenerateReportTaskScheduler generateReportTaskScheduler;
 
     /**
      * 保存记账报表表信息
@@ -121,8 +123,8 @@ public class AccountReportController extends BaseController {
     @SaIgnore
     @Operation(summary = "生成报表任务")
     @PostMapping(value = "generateReportTask")
-    public R<Void> generateReportTask(@RequestBody SysUserDto sysUserDto) {
-        accountReportService.generateReportTask(sysUserDto);
+    public R<Void> generateReportTask(@RequestBody List<SysUserDto> sysUserDtoList) {
+        generateReportTaskScheduler.generateReportTask();
         return R.ok();
     }
 }

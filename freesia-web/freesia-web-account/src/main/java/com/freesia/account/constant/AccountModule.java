@@ -1,7 +1,6 @@
 package com.freesia.account.constant;
 
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
@@ -15,6 +14,10 @@ public final class AccountModule {
      * 主模块 记账模块
      */
     public static final String ACCOUNT_MANAGEMENT = "ACCOUNT_MANAGEMENT";
+    /**
+     * 主模块 记账-报表模块
+     */
+    public static final String ACCOUNT_REPORT_MANAGEMENT = "ACCOUNT_REPORT_MANAGEMENT";
 
     /**
      * 子模块
