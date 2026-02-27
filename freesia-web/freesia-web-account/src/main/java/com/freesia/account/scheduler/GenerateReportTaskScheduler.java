@@ -180,11 +180,7 @@ public class GenerateReportTaskScheduler {
             Date billingTimeTo = getBillingTimeTo(startCal.getTime(), budgetType);
 
             // 检查账单是否已存在
-            AccountReportDto accountReportDto = new AccountReportDto();
-            accountReportDto.setBudgetId(dto.getId());
-            accountReportDto.setBudgetType(budgetType);
-            accountReportDto.setBillingTimeFrom(billingTimeFrom);
-            Boolean flag = accountReportService.findExist(accountReportDto);
+            Boolean flag = findExistReport(dto, billingTimeFrom);
             if (flag) {
                 moveToNextPeriod(startCal, budgetType);
                 continue;
@@ -197,7 +193,7 @@ public class GenerateReportTaskScheduler {
             reportDto.setTitle(dto.getBudgetDesc());
             reportDto.setBudgetType(budgetType);
             reportDto.setBudgetAmount(dto.getOutlay());
-            reportDto.setBillingTime(startCal.getTime());
+            reportDto.setBillingTime(billingTimeTo);
             reportDto.setBillingTimeFrom(billingTimeFrom);
             reportDto.setBillingTimeTo(billingTimeTo);
             reportDto.setRecalculateFlag(true);
@@ -212,6 +208,21 @@ public class GenerateReportTaskScheduler {
         if (UEmpty.isNotEmpty(accountReportDtoList)) {
             accountReportService.saveUpdateBatch(accountReportDtoList);
         }
+    }
+
+    /**
+     * 查询账单数据是否存在
+     *
+     * @param dto             预算实体
+     * @param billingTimeFrom 账单时间从
+     * @return 是否存在
+     */
+    private Boolean findExistReport(AccountBudgetDto dto, Date billingTimeFrom) {
+        AccountReportDto accountReportDto = new AccountReportDto();
+        accountReportDto.setBudgetId(dto.getId());
+        accountReportDto.setBudgetType(dto.getBudgetType());
+        accountReportDto.setBillingTimeFrom(billingTimeFrom);
+        return accountReportService.findExist(accountReportDto);
     }
 
     /**
@@ -310,7 +321,7 @@ public class GenerateReportTaskScheduler {
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
-        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.MILLISECOND, 999);
 
         if (BudgetType.DAY.getCode().equals(budgetType)) {
             return cal.getTime();
