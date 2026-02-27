@@ -12,6 +12,7 @@
     <version>1.5.0</version>
     <modules>
         <module>freesia-spring-admin</module>
+        <module>freesia-xxl-job</module>
     </modules>
     <name>freesia-extends</name>
     <description>第三方软件</description>

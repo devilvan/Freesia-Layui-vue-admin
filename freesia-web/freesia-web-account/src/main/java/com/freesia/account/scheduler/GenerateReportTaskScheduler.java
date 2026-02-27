@@ -19,6 +19,7 @@ import com.freesia.po.SysUserPo;
 import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysUserRepository;
 import com.freesia.util.UEmpty;
+import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -43,6 +44,7 @@ public class GenerateReportTaskScheduler {
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final SysUserRepository sysUserRepository;
 
+    @XxlJob("generateReportTask")
     public void generateReportTask() {
         List<SysUserPo> sysUserPoList = sysUserRepository.findAll();
         List<SysUserDto> sysUserDtoList = new ArrayList<>();

@@ -1,9 +1,9 @@
 package com.freesia.sse.schedule;
 
 import com.freesia.sse.component.SseEmitterManager;
+import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,8 +20,8 @@ public class SseHeartbeatCompleteScheduler {
     /**
      * 接收心跳-完成连接 定时任务
      */
-    @Scheduled(fixedRate = 20000)
-    public void sendHeartbeat() {
+    @XxlJob("sseHeartbeatScheduler")
+    public void sseHeartbeatScheduler() {
         sseEmitterManager.sseHeartbeatSchedule();
     }
 }
