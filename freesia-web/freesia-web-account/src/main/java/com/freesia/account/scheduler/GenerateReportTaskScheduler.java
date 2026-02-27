@@ -13,11 +13,12 @@ import com.freesia.account.service.AccountReportService;
 import com.freesia.constant.BudgetType;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.Constants;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
-import com.freesia.po.SysTenantUserPo;
 import com.freesia.po.SysUserPo;
 import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysUserRepository;
+import com.freesia.service.SysTenantService;
 import com.freesia.util.UEmpty;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,10 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Bliss.Wu
@@ -43,6 +47,7 @@ public class GenerateReportTaskScheduler {
     private final AccountReportService accountReportService;
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final SysUserRepository sysUserRepository;
+    private final SysTenantService sysTenantService;
 
     @XxlJob("generateReportTask")
     public void generateReportTask() {
@@ -50,17 +55,17 @@ public class GenerateReportTaskScheduler {
         List<SysUserDto> sysUserDtoList = new ArrayList<>();
         for (SysUserPo sysUserPo : sysUserPoList) {
             Long userId = sysUserPo.getId();
-            Set<SysTenantUserPo> sysTenantUserPoSet = sysUserPo.getSysTenantUserPoSet();
-            sysTenantUserPoSet.forEach(sysTenantUserPo -> {
-                if (sysTenantUserPo == null || sysTenantUserPo.getSysTenantPo() == null) {
-                    return;
-                }
-                Long tenantId = sysTenantUserPo.getSysTenantUserPk().getTenantId();
+            List<SysTenantDto> sysTenantDtoList = sysTenantService.findListSysTenantByUserId(userId);
+            if (UEmpty.isEmpty(sysTenantDtoList)) {
+                continue;
+            }
+            for (SysTenantDto sysTenantDto : sysTenantDtoList) {
+                Long tenantId = sysTenantDto.getId();
                 SysUserDto sysUserDto = new SysUserDto();
                 sysUserDto.setId(userId);
                 sysUserDto.setTenantId(tenantId);
                 sysUserDtoList.add(sysUserDto);
-            });
+            }
         }
         if (UEmpty.isNotEmpty(sysUserDtoList)) {
             generateReportTask(sysUserDtoList);
