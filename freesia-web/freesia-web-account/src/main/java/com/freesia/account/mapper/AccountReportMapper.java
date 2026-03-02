@@ -48,4 +48,12 @@ public interface AccountReportMapper extends BaseMapper<AccountReportPo> {
      * @return 是否存在
      */
     Boolean findExist(AccountReportDto accountReportDto);
+
+    /**
+     * 查询在时间范围内的报表数据
+     *
+     * @param accountReportDto 查询入参
+     * @return 结果集
+     */
+    List<AccountReportDto> findBetweenBillingTime(AccountReportDto accountReportDto);
 }

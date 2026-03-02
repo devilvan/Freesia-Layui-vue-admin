@@ -18,6 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author Evad.Wu
  * @Description 记账报表表 业务逻辑类
@@ -61,7 +64,6 @@ public class AccountReportServiceImpl extends BaseServiceImpl<AccountReportMappe
                 .eq(UEmpty.isNotEmpty(accountReportDto.getStrategyId()), AccountReportPo::getStrategyId, accountReportDto.getStrategyId())
                 .eq(UEmpty.isNotEmpty(accountReportDto.getTitle()), AccountReportPo::getTitle, accountReportDto.getTitle())
                 .eq(UEmpty.isNotEmpty(accountReportDto.getBudgetType()), AccountReportPo::getBudgetType, accountReportDto.getBudgetType())
-                .eq(UEmpty.isNotEmpty(accountReportDto.getBudgetAmount()), AccountReportPo::getBudgetAmount, accountReportDto.getBudgetAmount())
                 .eq(UEmpty.isNotEmpty(accountReportDto.getOutlay()), AccountReportPo::getOutlay, accountReportDto.getOutlay())
                 .eq(UEmpty.isNotEmpty(accountReportDto.getIncomeAmount()), AccountReportPo::getIncomeAmount, accountReportDto.getIncomeAmount())
                 .eq(UEmpty.isNotEmpty(accountReportDto.getBillingTime()), AccountReportPo::getBillingTime, accountReportDto.getBillingTime())
@@ -74,5 +76,15 @@ public class AccountReportServiceImpl extends BaseServiceImpl<AccountReportMappe
     @Override
     public Boolean findExist(AccountReportDto accountReportDto) {
         return accountReportMapper.findExist(accountReportDto);
+    }
+
+    @Override
+    public void changeRecalculateFlag(Set<Long> idSet) {
+        accountReportRepository.changeRecalculateFlag(idSet);
+    }
+
+    @Override
+    public List<AccountReportDto> findBetweenBillingTime(AccountReportDto accountReportDto) {
+        return accountReportMapper.findBetweenBillingTime(accountReportDto);
     }
 }

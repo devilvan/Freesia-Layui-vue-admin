@@ -38,9 +38,6 @@ public class AccountReportVo extends BaseVo {
     @Schema(description = "预算类型（DAY-每日；WEEK-每周；MONTH-每月；YEAR-每年；CUSTOM-自定义）")
     @JsonAlias(value = {"budgetType"})
     private String budgetType;
-    @Schema(description = "预算金额")
-    @JsonAlias(value = {"budgetAmount"})
-    private BigDecimal budgetAmount;
     @Schema(description = "支出金额")
     @JsonAlias(value = {"outlay"})
     private BigDecimal outlay;
@@ -56,7 +53,7 @@ public class AccountReportVo extends BaseVo {
     @Schema(description = "账单时间到")
     @JsonAlias(value = {"billingTimeTo"})
     private Date billingTimeTo;
-    @Schema(description = "是否重新计算（0-否；1-是）")
+    @Schema(description = "是否完成重算（默认1，0-否；1-是）")
     @JsonAlias(value = {"recalculateFlag"})
     private Boolean recalculateFlag;
 }

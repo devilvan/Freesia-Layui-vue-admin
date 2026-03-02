@@ -69,4 +69,9 @@ public interface AccountBudgetService {
      * @return 容量图数据
      */
     List<EchartCapacityOptionEntity> findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto);
+
+    /**
+     * 缓存预算
+     */
+    void cacheBudget(Long userId, Long tenantId);
 }

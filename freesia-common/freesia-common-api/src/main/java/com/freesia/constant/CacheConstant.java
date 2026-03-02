@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author Evad.Wu
- * @Description 缓存的名字 静态类
+ * @Description 缓存键 静态类
  * 缓存组名称常量
  * key 格式为 cacheNames#ttl#maxIdleTime#maxSize
  * ttl 过期时间 如果设置为0则不过期 默认为0
@@ -67,4 +67,8 @@ public final class CacheConstant {
      * 记账报表-租户数据最早时间 缓存键
      */
     public static final String FIND_CACHE_ACCOUNT_COST_EARLY_PAYMENT_TIME = "findCacheAccountCostEarlyPaymentTime:";
+    /**
+     * 记账模块-查询预算 缓存键
+     */
+    public static final String FIND_BUDGET = "findBudget:";
 }

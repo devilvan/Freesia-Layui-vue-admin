@@ -12,11 +12,13 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.io.Serial;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Evad.Wu
@@ -60,10 +62,6 @@ public class AccountReportPo extends BasePo implements Serializable {
     @TableField(value = "BUDGET_TYPE")
     @Column(name = "BUDGET_TYPE", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '预算类型（DAY-每日；WEEK-每周；MONTH-每月；YEAR-每年；CUSTOM-自定义）'")
     private String budgetType;
-    @Schema(description = "预算金额")
-    @TableField(value = "BUDGET_AMOUNT")
-    @Column(name = "BUDGET_AMOUNT", columnDefinition = "DECIMAL(20) COMMENT '预算金额'")
-    private BigDecimal budgetAmount;
     @Schema(description = "支出金额")
     @TableField(value = "OUTLAY")
     @Column(name = "OUTLAY", columnDefinition = "DECIMAL(20) COMMENT '支出金额'")
@@ -84,8 +82,8 @@ public class AccountReportPo extends BasePo implements Serializable {
     @TableField(value = "BILLING_TIME_TO")
     @Column(name = "BILLING_TIME_TO", columnDefinition = "DATETIME COMMENT '账单时间到'")
     private Date billingTimeTo;
-    @Schema(description = "是否重新计算（0-否；1-是）")
+    @Schema(description = "是否完成重算（默认1，0-否；1-是）")
     @TableField(value = "RECALCULATE_FLAG")
-    @Column(name = "RECALCULATE_FLAG", columnDefinition = "BIT(1) COMMENT '是否重新计算（0-否；1-是）'")
+    @Column(name = "RECALCULATE_FLAG", columnDefinition = "BIT(1) COMMENT '是否完成重算（默认1，0-否；1-是）'")
     private Boolean recalculateFlag;
 }

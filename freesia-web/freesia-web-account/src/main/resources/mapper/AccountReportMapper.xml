@@ -17,7 +17,6 @@
         <result column="STRATEGY_ID" property="strategyId"/>
         <result column="TITLE" property="title"/>
         <result column="BUDGET_TYPE" property="budgetType"/>
-        <result column="BUDGET_AMOUNT" property="budgetAmount"/>
         <result column="OUTLAY" property="outlay"/>
         <result column="INCOME_AMOUNT" property="incomeAmount"/>
         <result column="BILLING_TIME" property="billingTime"/>
@@ -26,7 +25,7 @@
         <result column="RECALCULATE_FLAG" property="recalculateFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, STRATEGY_ID, TITLE, BUDGET_TYPE, BUDGET_AMOUNT, OUTLAY, INCOME_AMOUNT, BILLING_TIME, BILLING_TIME_FROM, BILLING_TIME_TO, RECALCULATE_FLAG
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, STRATEGY_ID, TITLE, BUDGET_TYPE, OUTLAY, INCOME_AMOUNT, BILLING_TIME, BILLING_TIME_FROM, BILLING_TIME_TO, RECALCULATE_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -51,9 +50,6 @@
         </if>
         <if test="dto.budgetType != null and dto.budgetType != ''">
             AND BUDGET_TYPE = #{dto.budgetType}
-        </if>
-        <if test="dto.budgetAmount != null">
-            AND BUDGET_AMOUNT = #{dto.budgetAmount}
         </if>
         <if test="dto.outlay != null">
             AND OUTLAY = #{dto.outlay}
@@ -98,9 +94,6 @@
         <if test="dto.budgetType != null and dto.budgetType != ''">
             AND BUDGET_TYPE = #{dto.budgetType}
         </if>
-        <if test="dto.budgetAmount != null">
-            AND BUDGET_AMOUNT = #{dto.budgetAmount}
-        </if>
         <if test="dto.outlay != null">
             AND OUTLAY = #{dto.outlay}
         </if>
@@ -128,6 +121,21 @@
                         AND BUDGET_TYPE = #{budgetType}
                         AND BILLING_TIME_FROM = #{billingTimeFrom})
     </select>
+    <select id="findBetweenBillingTime" resultType="com.freesia.account.dto.AccountReportDto">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM account_report
+        where LOGIC_DEL = 0
+        AND BUDGET_TYPE = #{budgetType}
+        <if test="userId != null">
+            AND USER_ID = #{userId}
+        </if>
+        <if test="tenantId != null">
+            AND TENANT_ID = #{tenantId}
+        </if>
+        AND BILLING_TIME_FROM <![CDATA[<=]]> #{billingTime}
+        AND BILLING_TIME_TO <![CDATA[>=]]> #{billingTime}
+    </select>
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO ACCOUNT_REPORT
         (
@@ -140,18 +148,17 @@
         REC_VER,
         BUILD_IN,
         TENANT_ID,
-        REMARK, 
-        USER_ID, 
-        BUDGET_ID, 
-        STRATEGY_ID, 
-        TITLE, 
-        BUDGET_TYPE, 
-        BUDGET_AMOUNT, 
-        OUTLAY, 
-        INCOME_AMOUNT, 
-        BILLING_TIME, 
-        BILLING_TIME_FROM, 
-        BILLING_TIME_TO, 
+        REMARK,
+        USER_ID,
+        BUDGET_ID,
+        STRATEGY_ID,
+        TITLE,
+        BUDGET_TYPE,
+        OUTLAY,
+        INCOME_AMOUNT,
+        BILLING_TIME,
+        BILLING_TIME_FROM,
+        BILLING_TIME_TO,
         RECALCULATE_FLAG
         )
         VALUES
@@ -166,18 +173,17 @@
             #{item.recVer},
             #{item.buildIn},
             #{item.tenantId},
-            #{item.remark}, 
-            #{item.userId}, 
-            #{item.budgetId}, 
-            #{item.strategyId}, 
-            #{item.title}, 
-            #{item.budgetType}, 
-            #{item.budgetAmount}, 
-            #{item.outlay}, 
-            #{item.incomeAmount}, 
-            #{item.billingTime}, 
-            #{item.billingTimeFrom}, 
-            #{item.billingTimeTo}, 
+            #{item.remark},
+            #{item.userId},
+            #{item.budgetId},
+            #{item.strategyId},
+            #{item.title},
+            #{item.budgetType},
+            #{item.outlay},
+            #{item.incomeAmount},
+            #{item.billingTime},
+            #{item.billingTimeFrom},
+            #{item.billingTimeTo},
             #{item.recalculateFlag}
             )
         </foreach>

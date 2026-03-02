@@ -42,7 +42,9 @@ public class AccountBudgetController extends BaseController {
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody AccountBudgetVo accountBudgetVo) {
         Long userId = USecurity.getUserId();
+        Long tenantId = USecurity.getTenantId();
         accountBudgetVo.setUserId(userId);
+        accountBudgetVo.setTenantId(tenantId);
         AccountBudgetDto accountBudgetDto = accountBudgetConverter.convertVo2Dto(accountBudgetVo);
         accountBudgetService.saveUpdate(accountBudgetDto);
         return R.ok();

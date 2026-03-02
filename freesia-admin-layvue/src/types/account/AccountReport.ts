@@ -7,7 +7,6 @@ export interface AccountReportVo extends BaseVo {
     strategyId?: number;
     title?: string;
     budgetType?: string;
-    budgetAmount?: number;
     outlay?: number;
     incomeAmount?: number;
     billingTime?: string;
@@ -23,7 +22,6 @@ export interface AccountReportEntity extends BaseEntity {
     strategyId?: number;
     title?: string;
     budgetType?: string;
-    budgetAmount?: number;
     outlay?: number;
     incomeAmount?: number;
     billingTime?: string;

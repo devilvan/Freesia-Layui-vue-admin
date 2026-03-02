@@ -1,8 +1,8 @@
 package com.freesia.xxljob.aspect;
 
 import com.freesia.constant.Constants;
+import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,7 +18,6 @@ import java.util.Date;
  * @Description XXL-JOB调度器 切面
  * @date 2026-02-27
  */
-@Slf4j
 @Aspect
 @Component
 public class XxlJobAspect {
@@ -29,13 +28,15 @@ public class XxlJobAspect {
         Method method = methodSignature.getMethod();
         Object proceed;
         long start = System.currentTimeMillis();
-        log.info("********方法：{}，开始时间：{}********", method.getName(), simpleDateFormat.format(new Date(start)));
+        XxlJobHelper.log("********方法：{}，开始时间：{}********", method.getName(), simpleDateFormat.format(new Date(start)));
         try {
             proceed = proceedingJoinPoint.proceed();
+            XxlJobHelper.handleSuccess();
         } finally {
             long end = System.currentTimeMillis();
-            log.info("********方法：{}，结束时间：{}，消耗时间：{}********",
+            XxlJobHelper.log("********方法：{}，结束时间：{}，消耗时间：{}********",
                     method.getName(), simpleDateFormat.format(new Date(end)), (end - start) + "ms");
+            XxlJobHelper.handleFail();
         }
         return proceed;
     }

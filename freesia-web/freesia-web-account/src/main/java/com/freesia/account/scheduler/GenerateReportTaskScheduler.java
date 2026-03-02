@@ -1,10 +1,9 @@
 package com.freesia.account.scheduler;
 
 import cn.hutool.core.util.RandomUtil;
-import com.freesia.account.constant.CostType;
+import com.freesia.account.AccountReportSchedulerHelper;
 import com.freesia.account.dto.AccountBudgetDto;
 import com.freesia.account.dto.AccountCostDto;
-import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.AccountReportDto;
 import com.freesia.account.entity.FindPageAccountCostEntity;
 import com.freesia.account.service.AccountBudgetService;
@@ -25,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -199,15 +197,14 @@ public class GenerateReportTaskScheduler {
             reportDto.setStrategyId(dto.getStrategyId());
             reportDto.setTitle(dto.getBudgetDesc());
             reportDto.setBudgetType(budgetType);
-            reportDto.setBudgetAmount(dto.getOutlay());
             reportDto.setBillingTime(billingTimeTo);
             reportDto.setBillingTimeFrom(billingTimeFrom);
             reportDto.setBillingTimeTo(billingTimeTo);
             reportDto.setRecalculateFlag(true);
             // 查询期间收支记录
-            List<FindPageAccountCostEntity> findAccountCostEntityList = findListAccountCost(userId, tenantId, billingTimeFrom, billingTimeTo);
+            List<FindPageAccountCostEntity> findAccountCostEntityList = AccountReportSchedulerHelper.findListAccountCost(accountCostService, userId, tenantId, billingTimeFrom, billingTimeTo);
             // 构建收支金额
-            buildReportOutlayIncome(userId, findAccountCostEntityList, reportDto);
+            AccountReportSchedulerHelper.buildReportOutlayIncome(userId, findAccountCostEntityList, reportDto);
             accountReportDtoList.add(reportDto);
             // 移动到下一个周期
             moveToNextPeriod(startCal, budgetType);
@@ -232,63 +229,6 @@ public class GenerateReportTaskScheduler {
         return accountReportService.findExist(accountReportDto);
     }
 
-    /**
-     * 构建收支金额
-     *
-     * @param userId                    用户ID
-     * @param findAccountCostEntityList 账单记录
-     * @param reportPo                  待修改的报表实体
-     */
-    private void buildReportOutlayIncome(Long userId, List<FindPageAccountCostEntity> findAccountCostEntityList, AccountReportDto reportPo) {
-        // 赋值收支金额
-        BigDecimal outlay = BigDecimal.ZERO;
-        BigDecimal income = BigDecimal.ZERO;
-        if (UEmpty.isNotEmpty(findAccountCostEntityList)) {
-            for (FindPageAccountCostEntity entity : findAccountCostEntityList) {
-                String paymentSign = entity.getPaymentSign();
-                CostType costType = CostType.getInstanceByCode(paymentSign);
-                if (costType == null) {
-                    continue;
-                }
-                if (costType.equals(CostType.INCOME)) {
-                    // 收入金额直接获取
-                    income = income.add(entity.getOutlay());
-                } else if (costType.equals(CostType.EXPENSE)) {
-                    // 支出金额，先判断是否存在关联，存在关联则取本人关联的分摊金额，否则取记录金额
-                    List<AccountCostUserAllocDto> accountCostUserAllocDtoList = entity.getAccountCostUserAllocDtoList();
-                    if (UEmpty.isNotEmpty(accountCostUserAllocDtoList)) {
-                        BigDecimal outlayTmp = accountCostUserAllocDtoList.stream()
-                                .filter(allocDto -> allocDto.getUserId().equals(userId))
-                                .findFirst().map(AccountCostUserAllocDto::getAmount)
-                                .orElse(BigDecimal.ZERO);
-                        outlay = outlay.add(outlayTmp);
-                    } else {
-                        outlay = outlay.add(entity.getOutlay());
-                    }
-                }
-            }
-            reportPo.setOutlay(outlay);
-            reportPo.setIncomeAmount(income);
-        }
-    }
-
-    /**
-     * 查询账单记录集合
-     *
-     * @param userId          用户ID
-     * @param tenantId        租户ID
-     * @param billingTimeFrom 账单时间从
-     * @param billingTimeTo   账单时间到
-     * @return 账单记录
-     */
-    private List<FindPageAccountCostEntity> findListAccountCost(Long userId, Long tenantId, Date billingTimeFrom, Date billingTimeTo) {
-        AccountCostDto accountCostDto = new AccountCostDto();
-        accountCostDto.setUserId(userId);
-        accountCostDto.setTenantId(tenantId);
-        accountCostDto.setPaymentTimeFrom(billingTimeFrom);
-        accountCostDto.setPaymentTimeTo(billingTimeTo);
-        return accountCostService.findListAccountCost(accountCostDto);
-    }
 
     /**
      * 获取账单周期开始时间

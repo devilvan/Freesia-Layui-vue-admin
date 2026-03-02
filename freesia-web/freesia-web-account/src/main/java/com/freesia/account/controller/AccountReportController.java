@@ -4,10 +4,10 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import com.freesia.account.converter.AccountReportConverter;
 import com.freesia.account.dto.AccountReportDto;
 import com.freesia.account.scheduler.GenerateReportTaskScheduler;
+import com.freesia.account.scheduler.RecalculateReportScheduler;
 import com.freesia.account.service.AccountReportService;
 import com.freesia.account.vo.AccountReportVo;
 import com.freesia.controller.BaseController;
-import com.freesia.dto.SysUserDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.vo.R;
@@ -31,6 +31,7 @@ public class AccountReportController extends BaseController {
     private final AccountReportService accountReportService;
     private final AccountReportConverter accountReportConverter;
     private final GenerateReportTaskScheduler generateReportTaskScheduler;
+    private final RecalculateReportScheduler recalculateReportScheduler;
 
     /**
      * 保存记账报表表信息
@@ -123,8 +124,24 @@ public class AccountReportController extends BaseController {
     @SaIgnore
     @Operation(summary = "生成报表任务")
     @PostMapping(value = "generateReportTask")
-    public R<Void> generateReportTask(@RequestBody List<SysUserDto> sysUserDtoList) {
+    public R<Void> generateReportTask() {
         generateReportTaskScheduler.generateReportTask();
+        return R.ok();
+    }
+
+    /**
+     * 重算报表数据
+     *
+     * @return 形式返回
+     */
+    @SaIgnore
+    @Operation(summary = "重算报表数据")
+    @PostMapping(value = "recalculateReport")
+    public R<Void> recalculateReport() {
+        recalculateReportScheduler.recalculateDayReport();
+        recalculateReportScheduler.recalculateWeekReport();
+        recalculateReportScheduler.recalculateMonthReport();
+        recalculateReportScheduler.recalculateYearReport();
         return R.ok();
     }
 }

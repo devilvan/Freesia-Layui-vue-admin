@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.freesia.constant.BudgetType;
 import com.freesia.account.converter.AccountBudgetConverter;
 import com.freesia.account.dto.AccountBudgetDto;
 import com.freesia.account.dto.FindBudgetCapacityDto;
@@ -15,11 +14,14 @@ import com.freesia.account.po.AccountBudgetPo;
 import com.freesia.account.repository.AccountBudgetRepository;
 import com.freesia.account.service.AccountBudgetService;
 import com.freesia.account.vo.AccountBudgetVo;
+import com.freesia.constant.BudgetType;
+import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.entity.EchartCapacityOptionEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.redis.util.URedis;
 import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
@@ -27,6 +29,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -43,6 +46,7 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
     private final AccountBudgetRepository accountBudgetRepository;
     private final AccountBudgetMapper accountBudgetMapper;
     private final AccountBudgetConverter accountBudgetConverter;
+    private final TransactionTemplate transactionTemplate;
 
 
     @Override
@@ -77,9 +81,10 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
 
     @Override
     public AccountBudgetDto saveUpdate(AccountBudgetDto accountBudgetDto) {
+        Long userId = accountBudgetDto.getUserId();
+        Long tenantId = accountBudgetDto.getTenantId();
         // 新增则需要校验是否已经设置了该预算类型的数据
         if (UEmpty.isNull(accountBudgetDto.getId())) {
-            Long userId = accountBudgetDto.getUserId();
             String budgetType = accountBudgetDto.getBudgetType();
             if (!BudgetType.CUSTOM.getCode().equals(budgetType)) {
                 LambdaQueryWrapper<AccountBudgetPo> wrapper = new LambdaQueryWrapper<AccountBudgetPo>().eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED).eq(AccountBudgetPo::getBudgetType, budgetType).eq(AccountBudgetPo::getUserId, userId);
@@ -88,9 +93,25 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
                     throw new AccountException("account.budget.exists", new Object[]{});
                 }
             }
-
         }
-        return super.saveUpdate(accountBudgetDto);
+        return transactionTemplate.execute(status -> {
+            AccountBudgetDto afterSaveAccountBudgetDto = super.saveUpdate(accountBudgetDto);
+            cacheBudget(userId, tenantId);
+            return afterSaveAccountBudgetDto;
+        });
+    }
+
+    @Override
+    public void cacheBudget(Long userId, Long tenantId) {
+        AccountBudgetDto queryParam = new AccountBudgetDto();
+        queryParam.setUserId(userId);
+        queryParam.setTenantId(tenantId);
+        List<AccountBudgetDto> accountBudgetDtoList = super.findList(queryParam);
+        if (UEmpty.isNotEmpty(accountBudgetDtoList)) {
+            // 20260302-Bliss 保存预算时添加到缓存
+            String cacheKey = CacheConstant.FIND_BUDGET + userId + '@' + tenantId;
+            URedis.set(cacheKey, accountBudgetDtoList);
+        }
     }
 
     @Override

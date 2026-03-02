@@ -44,7 +44,7 @@ public class AccountReportStrategyVo extends BaseVo {
     @Schema(description = "开始周（1-星期一；7-星期日）")
     @JsonAlias(value = {"weekBegin"})
     private Integer weekBegin;
-    @Schema(description = "是否重新计算（0-否；1-是）")
+    @Schema(description = "是否完成重算（默认1，0-否；1-是）")
     @JsonAlias(value = {"recalculateFlag"})
     private Boolean recalculateFlag;
 }

@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -30,8 +31,6 @@ public class AccountReportDto extends BaseDto {
     private String title;
     @Schema(description = "预算类型（DAY-每日；WEEK-每周；MONTH-每月；YEAR-每年；CUSTOM-自定义）")
     private String budgetType;
-    @Schema(description = "预算金额")
-    private BigDecimal budgetAmount;
     @Schema(description = "支出金额")
     private BigDecimal outlay;
     @Schema(description = "收入金额")
@@ -42,6 +41,8 @@ public class AccountReportDto extends BaseDto {
     private Date billingTimeFrom;
     @Schema(description = "账单时间到")
     private Date billingTimeTo;
-    @Schema(description = "是否重新计算（0-否；1-是）")
+    @Schema(description = "是否完成重算（默认1，0-否；1-是）")
     private Boolean recalculateFlag;
+    @Schema(description = "ID集合")
+    private List<Long> idList;
 }

@@ -129,6 +129,28 @@ public class URedis {
     }
 
     /**
+     * Set 入队
+     *
+     * @param key    Set键
+     * @param values 元素
+     * @param <T>    元素类型
+     */
+    public static <T> void addAll(String key, T... values) {
+        REDIS_TEMPLATE.opsForSet().add(key, values);
+    }
+
+    /**
+     * Set 入队
+     *
+     * @param key    Set键
+     * @param values 元素
+     * @param <T>    元素类型
+     */
+    public static <T> void addAll(String key, Collection<T> values) {
+        REDIS_TEMPLATE.opsForSet().add(key, values);
+    }
+
+    /**
      * Set 出队
      *
      * @param key Set键
@@ -149,17 +171,6 @@ public class URedis {
      */
     public static <T> List<T> setPop(final String key, Integer size) {
         return (List<T>) REDIS_TEMPLATE.opsForSet().pop(key, size);
-    }
-
-    /**
-     * Set 添加元素
-     *
-     * @param key    Set键
-     * @param values 元素
-     * @param <T>    元素类型
-     */
-    public static <T> void addAll(String key, T[] values) {
-        REDIS_TEMPLATE.opsForSet().add(key, values);
     }
 
     /**

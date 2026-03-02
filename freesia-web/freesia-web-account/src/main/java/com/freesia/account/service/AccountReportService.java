@@ -5,6 +5,7 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -67,4 +68,19 @@ public interface AccountReportService {
      * @return 是否存在
      */
     Boolean findExist(AccountReportDto accountReportDto);
+
+    /**
+     * 根据ID集合修改是否需要重新计算标志
+     *
+     * @param idSet ID集合
+     */
+    void changeRecalculateFlag(Set<Long> idSet);
+
+    /**
+     * 查询在时间范围内的报表数据
+     *
+     * @param accountReportDto 查询入参
+     * @return 结果集
+     */
+    List<AccountReportDto> findBetweenBillingTime(AccountReportDto accountReportDto);
 }

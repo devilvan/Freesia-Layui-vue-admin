@@ -68,8 +68,8 @@ public class AccountReportStrategyPo extends BasePo implements Serializable {
     @TableField(value = "WEEK_BEGIN")
     @Column(name = "WEEK_BEGIN", columnDefinition = "INT(10) COMMENT '开始周（1-星期一；7-星期日）'")
     private Integer weekBegin;
-    @Schema(description = "是否重新计算（0-否；1-是）")
+    @Schema(description = "是否完成重算（默认1，0-否；1-是）")
     @TableField(value = "RECALCULATE_FLAG")
-    @Column(name = "RECALCULATE_FLAG", columnDefinition = "BIT(1) COMMENT '是否重新计算（0-否；1-是）'")
+    @Column(name = "RECALCULATE_FLAG", columnDefinition = "BIT(1) COMMENT '是否完成重算（默认1，0-否；1-是）'")
     private Boolean recalculateFlag;
 }

@@ -113,15 +113,6 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="预算金额" prop="budgetAmount">
-                <lay-input
-                    v-model="saveAccountReportVo.budgetAmount"
-                    :allow-clear="true"
-                    size="sm"
-                ></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
               <lay-form-item label="支出金额" prop="outlay">
                 <lay-input
                     v-model="saveAccountReportVo.outlay"
@@ -226,7 +217,6 @@ const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '标题', width: '130px', key: 'title'},
   {title: '预算类型', width: '130px', key: 'budgetType'},
-  {title: '预算金额', width: '130px', key: 'budgetAmount'},
   {title: '支出金额', width: '130px', key: 'outlay'},
   {title: '收入金额', width: '130px', key: 'incomeAmount'},
   {title: '账单时间', width: '130px', key: 'billingTime'},

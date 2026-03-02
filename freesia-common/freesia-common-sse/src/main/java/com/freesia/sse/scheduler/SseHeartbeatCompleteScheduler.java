@@ -1,4 +1,4 @@
-package com.freesia.sse.schedule;
+package com.freesia.sse.scheduler;
 
 import com.freesia.sse.component.SseEmitterManager;
 import com.xxl.job.core.handler.annotation.XxlJob;
