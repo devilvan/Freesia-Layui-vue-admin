@@ -12,26 +12,34 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 记账报表策略表 持久层
- * @date 2026-02-25
+ * @date 2026-03-03
  */
 @Mapper
 public interface AccountReportStrategyMapper extends BaseMapper<AccountReportStrategyPo> {
     /**
-    * 分页查询记账报表策略表信息
-    *
-    * @param accountReportStrategyDto 查询条件
-    * @param page    分页条件
-    * @return 分页信息
-    */
+     * 分页查询记账报表策略表信息
+     *
+     * @param accountReportStrategyDto 查询条件
+     * @param page    分页条件
+     * @return 分页信息
+     */
     Page<AccountReportStrategyPo> findPage(@Param(value = "dto") AccountReportStrategyDto accountReportStrategyDto, @Param("page") Page<AccountReportStrategyPo> page);
 
     /**
-    * 查询记账报表策略表信息
-    *
-    * @param accountReportStrategyDto 查询条件
-    * @return 分页信息
-    */
+     * 查询记账报表策略表信息
+     *
+     * @param accountReportStrategyDto 查询条件
+     * @return 分页信息
+     */
     List<AccountReportStrategyDto> findList(@Param(value = "dto") AccountReportStrategyDto accountReportStrategyDto);
+
+    /**
+     * 查询记账报表策略表信息
+     *
+     * @param accountReportStrategyDto 查询条件
+     * @return 分页信息
+     */
+    AccountReportStrategyDto findOne(@Param(value = "dto") AccountReportStrategyDto accountReportStrategyDto);
 
     /**
      * 批量新增

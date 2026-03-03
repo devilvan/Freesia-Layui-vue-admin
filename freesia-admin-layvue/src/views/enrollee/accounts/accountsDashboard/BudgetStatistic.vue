@@ -8,6 +8,9 @@
             <div style="font-size: 12pt;text-align: center;height: 30px">
               {{ item.name }}
             </div>
+            <div style="font-size: 10pt;text-align: center;height: 30px">
+              所属账本：{{ item.tenantName }}
+            </div>
             <div v-if="item.durationFrom" style="font-size: 10pt;text-align: center;height: 30px">
               {{ item.durationFrom }} - {{ item.durationTo }}
             </div>
@@ -38,7 +41,7 @@
                 <lay-icon type="layui-icon-edit"></lay-icon>
                 设置预算
               </div>
-              <div>
+              <div @click="doFindAccountReport(item)">
                 <lay-icon type="layui-icon-chart-screen"></lay-icon>
                 历史数据
               </div>
@@ -122,6 +125,54 @@
       </div>
     </div>
   </lay-layer>
+
+  <lay-layer v-model="showReportModalFlag" :area="['1200px']" :title="'历史数据'">
+    <lay-card>
+      <lay-form ref="queryFormRef" :model="searchQuery"
+                label-position="top" @keydown.enter.prevent="change()">
+        <lay-row :space="20">
+          <lay-col :md="6">
+            <lay-form-item label="报表时间" prop="billingTime">
+              <lay-date-picker style="width: 100%"
+                               v-model="searchQuery.billingTime"
+                               size="sm"
+                               simple allow-clear
+                               @change="change()"></lay-date-picker>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="12">
+            <lay-form-item label="报表时间范围" prop="billingTimeRange">
+              <lay-date-picker style="width: 100%"
+                               v-model="searchQuery.billingTimeRange"
+                               allow-clear range simple
+                               type="datetime"
+                               :default-time="dateRangeDefaultTime"
+                               :shortcuts="defaultShortcuts" @change="change()"></lay-date-picker>
+            </lay-form-item>
+          </lay-col>
+        </lay-row>
+      </lay-form>
+    </lay-card>
+    <div style="padding: 20px" v-esc-close="toCancel">
+      <lay-table
+          v-model:selected-keys="selectedKeys"
+          :columns="columns"
+          :data-source="dataSource"
+          :default-toolbar="defaultToolbarFlag"
+          :loading="loading"
+          :page="pageQuery"
+          :even="evenFlag"
+          @change="change">
+        <template #budgetType="{ row }">
+          <dict-scan :options="accountBudgetDurationTypeSelect" :value="row.budgetType"/>
+        </template>
+        <template v-slot:toolbar>
+          <lay-button size="sm" type="normal" @click="change()">查询</lay-button>
+          <lay-button size="sm" @click="toResetReport()">重置</lay-button>
+        </template>
+      </lay-table>
+    </div>
+  </lay-layer>
 </template>
 
 <script lang="ts">
@@ -132,12 +183,17 @@ export default {
 <script lang="ts" setup>
 
 /*INIT*/
-import {onMounted, ref, watch} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import {AccountBudgetVo, EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {findAccountBudget, saveUpdate} from "@/api/account/AccountBudget";
 import {layer} from "@layui/layui-vue";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {findAccountReport, findPageAccountReport} from "@/api/account/AccountReport";
+import {R, TableResult} from "@/types/Result";
+import {AccountReportEntity, AccountReportVo} from "@/types/account/AccountReport";
+import {PageQuery} from "@/types/Common";
+import {defaultShortcuts} from "@/util/UDate";
 
 const props = defineProps({
   title: {
@@ -166,8 +222,10 @@ onMounted(async () => {
 /*VAR*/
 const accountBudgetEntityList = ref<Array<EchartCapacityOptionEntity>>([]);
 const showModalFlag = ref(false)
+const showReportModalFlag = ref(false)
 const saveAccountBudgetVo = ref<AccountBudgetVo>(<AccountBudgetVo>{})
 const saveFormRef = ref(null)
+const queryFormRef = ref(null)
 const accountBudgetDurationTypeSelect = ref<Array<SysDictValueEntity>>();
 const accountBudgetDurationTypeSelectList = ref();
 const saveFromRules = ref({
@@ -181,9 +239,46 @@ const saveFromRules = ref({
     }
   },
 })
+const searchQuery = ref<AccountReportVo>({})
+const pageQuery = reactive<PageQuery>({
+  current: 1,
+  limit: 10
+})
+const columns = ref([
+  {title: '标题', width: '130px', key: 'title'},
+  {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
+  {title: '支出金额', width: '130px', key: 'outlay'},
+  {title: '收入金额', width: '130px', key: 'incomeAmount'},
+  {title: '报表时间', width: '130px', key: 'billingTime'},
+  {title: '报表时间从', width: '130px', key: 'billingTimeFrom'},
+  {title: '报表时间到', width: '130px', key: 'billingTimeTo'},
+])
+const dataSource = ref<Array<AccountReportEntity>>()
+const selectedKeys = ref<Array<string>>([])
+const loading = ref(false)
+const defaultToolbarFlag = ref(true)
+const evenFlag = ref(true)
+const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 /*VAR*/
 
 /*FUNCTION*/
+/**
+ * 初始化表格
+ */
+const loadDataSource = () => {
+  findPageAccountReport(searchQuery.value, pageQuery).then((res: TableResult<AccountReportEntity>) => {
+    if (res.code == 200) {
+      pageQuery.total = res.total;
+      dataSource.value = res.rows || []
+    } else {
+      layer.msg(res.msg)
+      return;
+    }
+  }).catch(e => {
+    layer.msg(e.msg)
+  });
+}
+
 function changeBudgetUpdateModal(item: EchartCapacityOptionEntity) {
   findAccountBudget({id: item.id}).then((res: any) => {
     if (res.code === 200) {
@@ -219,6 +314,15 @@ function toSubmit(clickFlag: boolean) {
   })
 }
 
+function doFindAccountReport(item: EchartCapacityOptionEntity) {
+  searchQuery.value = {}
+  dataSource.value = []
+  pageQuery.current = 1
+  searchQuery.value.budgetId = item.id
+  change()
+  showReportModalFlag.value = true;
+}
+
 /**
  * 保存弹出框-重置
  */
@@ -226,11 +330,18 @@ function toReset() {
   saveFormRef.value.reset();
 }
 
+function toResetReport() {
+  queryFormRef.value.reset();
+  searchQuery.value.billingTime = ''
+  searchQuery.value.billingTimeRange = []
+}
+
 /**
  * 保存弹出框-取消
  */
 function toCancel() {
   showModalFlag.value = false
+  showReportModalFlag.value = false
 }
 
 function saveBudgetTypeChange(value: any) {
@@ -241,6 +352,16 @@ function saveBudgetTypeChange(value: any) {
   }
 }
 
+/**
+ * 刷新表格
+ */
+const change = () => {
+  loading.value = true
+  setTimeout(() => {
+    loadDataSource()
+    loading.value = false
+  }, 200)
+}
 /*FUNCTION*/
 </script>
 

@@ -52,6 +52,9 @@
         :even="evenFlag"
         @change="change"
         @sortChange="sortChange">
+      <template #budgetType="{ row }">
+        <dict-scan :options="accountReportDurationTypeSelect" :value="row.budgetType"/>
+      </template>
       <template v-slot:toolbar>
         <lay-button size="sm" type="normal" @click="toSearch">查询</lay-button>
         <lay-button size="sm" @click="queryFormReset"> 重置
@@ -131,7 +134,7 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="账单时间" prop="billingTime">
+              <lay-form-item label="报表时间" prop="billingTime">
                 <lay-input
                     v-model="saveAccountReportVo.billingTime"
                     :allow-clear="true"
@@ -140,7 +143,7 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="账单时间从" prop="billingTimeFrom">
+              <lay-form-item label="报表时间从" prop="billingTimeFrom">
                 <lay-input
                     v-model="saveAccountReportVo.billingTimeFrom"
                     :allow-clear="true"
@@ -149,7 +152,7 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="账单时间到" prop="billingTimeTo">
+              <lay-form-item label="报表时间到" prop="billingTimeTo">
                 <lay-input
                     v-model="saveAccountReportVo.billingTimeTo"
                     :allow-clear="true"
@@ -215,14 +218,13 @@ const dataSource = ref<Array<AccountReportEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const columns = ref([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
-  {title: '标题', width: '130px', key: 'title'},
-  {title: '预算类型', width: '130px', key: 'budgetType'},
+  // {title: '标题', width: '130px', key: 'title'},
+  {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
   {title: '支出金额', width: '130px', key: 'outlay'},
   {title: '收入金额', width: '130px', key: 'incomeAmount'},
-  {title: '账单时间', width: '130px', key: 'billingTime'},
-  {title: '账单时间从', width: '130px', key: 'billingTimeFrom'},
-  {title: '账单时间到', width: '130px', key: 'billingTimeTo'},
-  {title: '是否重新计算', width: '130px', key: 'recalculateFlag'},
+  {title: '报表时间', width: '130px', key: 'billingTime'},
+  {title: '报表时间从', width: '130px', key: 'billingTimeFrom'},
+  {title: '报表时间到', width: '130px', key: 'billingTimeTo'},
   {
     title: '操作',
     width: '150px',

@@ -93,7 +93,7 @@ public class GenerateReportTaskScheduler {
             // 查询缓存本账单最早的记账时间，无则查询并加入缓存
             String minPaymentTimeFormat = buildMinPaymentTimeFormat(tenantId, userId);
             if (UEmpty.isNotEmpty(minPaymentTimeFormat)) {
-                // 解析最早账单时间
+                // 解析最早报表时间
                 Date minDate = parseMinDate(minPaymentTimeFormat);
                 // 遍历预算，根据预算类型生成账单任务
                 for (AccountBudgetDto dto : accountBudgetDtoList) {
@@ -104,10 +104,10 @@ public class GenerateReportTaskScheduler {
     }
 
     /**
-     * 解析最早账单时间
+     * 解析最早报表时间
      *
-     * @param minPaymentTimeFormat 最早账单时间（字符串）
-     * @return 最早账单时间（日期）
+     * @param minPaymentTimeFormat 最早报表时间（字符串）
+     * @return 最早报表时间（日期）
      */
     private Date parseMinDate(String minPaymentTimeFormat) {
         Date earliestDate;
@@ -218,7 +218,7 @@ public class GenerateReportTaskScheduler {
      * 查询账单数据是否存在
      *
      * @param dto             预算实体
-     * @param billingTimeFrom 账单时间从
+     * @param billingTimeFrom 报表时间从
      * @return 是否存在
      */
     private Boolean findExistReport(AccountBudgetDto dto, Date billingTimeFrom) {
@@ -233,7 +233,7 @@ public class GenerateReportTaskScheduler {
     /**
      * 获取账单周期开始时间
      *
-     * @param date       账单时间从
+     * @param date       报表时间从
      * @param budgetType 预算类型
      * @return 账单周期开始时间
      */
@@ -258,7 +258,7 @@ public class GenerateReportTaskScheduler {
     /**
      * 获取账单周期结束时间
      *
-     * @param date       账单时间从
+     * @param date       报表时间从
      * @param budgetType 预算类型
      * @return 账单周期开始时间
      */

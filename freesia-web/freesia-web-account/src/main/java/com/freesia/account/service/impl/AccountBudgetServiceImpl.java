@@ -73,8 +73,8 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
     protected Wrapper<AccountBudgetPo> buildQueryWrapper(@NonNull AccountBudgetDto accountBudgetDto) {
         return new LambdaQueryWrapper<AccountBudgetPo>()
                 .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
-                .eq(AccountBudgetPo::getUserId, accountBudgetDto.getUserId())
-                .eq(AccountBudgetPo::getTenantId, accountBudgetDto.getTenantId())
+                .eq(UEmpty.isNotEmpty(accountBudgetDto.getId()), AccountBudgetPo::getUserId, accountBudgetDto.getUserId())
+                .eq(UEmpty.isNotEmpty(accountBudgetDto.getTenantId()), AccountBudgetPo::getTenantId, accountBudgetDto.getTenantId())
                 .eq(UEmpty.isNotEmpty(accountBudgetDto.getBudgetType()), AccountBudgetPo::getBudgetType, accountBudgetDto.getBudgetType())
                 .eq(UEmpty.isNotEmpty(accountBudgetDto.getId()), AccountBudgetPo::getId, accountBudgetDto.getId());
     }
@@ -142,42 +142,47 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
     }
 
     @Override
+    public AccountBudgetDto findOne(AccountBudgetDto dto) {
+        return super.findOne(dto);
+    }
+
+    @Override
     public List<EchartCapacityOptionEntity> findBudgetCapacity(FindBudgetCapacityDto findBudgetCapacityDto) {
         List<EchartCapacityOptionEntity> echartCapacityOptionEntityList = new ArrayList<>();
-        List<AccountBudgetPo> accountCostPoList = accountBudgetMapper.findListBudget(findBudgetCapacityDto);
-        if (UEmpty.isEmpty(accountCostPoList)) {
+        List<AccountBudgetDto> accountBudgetDtoList = accountBudgetMapper.findListBudget(findBudgetCapacityDto);
+        if (UEmpty.isEmpty(accountBudgetDtoList)) {
             return echartCapacityOptionEntityList;
         }
-        for (AccountBudgetPo accountBudgetPo : accountCostPoList) {
-            String budgetType = accountBudgetPo.getBudgetType();
+        for (AccountBudgetDto accountBudgetDto : accountBudgetDtoList) {
+            String budgetType = accountBudgetDto.getBudgetType();
             if (BudgetType.DAY.getCode().equals(budgetType)) {
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findDayBudgetCapacity(findBudgetCapacityDto);
-                EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                 echartCapacityOptionEntity.buildDuration(budgetType);
                 echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
             } else if (BudgetType.WEEK.getCode().equals(budgetType)) {
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findWeekBudgetCapacity(findBudgetCapacityDto);
-                EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                 echartCapacityOptionEntity.buildDuration(budgetType);
                 echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
             } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findMonthBudgetCapacity(findBudgetCapacityDto);
-                EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                 echartCapacityOptionEntity.buildDuration(budgetType);
                 echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
             } else if (BudgetType.YEAR.getCode().equals(budgetType)) {
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findYearBudgetCapacity(findBudgetCapacityDto);
-                EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                 echartCapacityOptionEntity.buildDuration(budgetType);
                 echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
             } else if (BudgetType.CUSTOM.getCode().equals(budgetType)) {
-                Date durationFrom = accountBudgetPo.getDurationFrom();
-                Date durationTo = accountBudgetPo.getDurationTo();
+                Date durationFrom = accountBudgetDto.getDurationFrom();
+                Date durationTo = accountBudgetDto.getDurationTo();
                 findBudgetCapacityDto.setDurationFrom(durationFrom);
                 findBudgetCapacityDto.setDurationTo(durationTo);
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findCustomBudgetCapacity(findBudgetCapacityDto);
                 if (UEmpty.isNotEmpty(findBudgetCapacityEntityList)) {
-                    EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetPo);
+                    EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                     if (!DateUtil.isIn(new Date(), durationFrom, durationTo)) {
                         echartCapacityOptionEntity.setName(UMessage.message("budget.expired", echartCapacityOptionEntity.getName()));
                     }
@@ -217,27 +222,28 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
         }
     }
 
-    private EchartCapacityOptionEntity buildEchartCapacityOptionEntity(List<FindBudgetCapacityEntity> findBudgetCapacityEntityList, AccountBudgetPo accountBudgetPo) {
+    private EchartCapacityOptionEntity buildEchartCapacityOptionEntity(List<FindBudgetCapacityEntity> findBudgetCapacityEntityList, AccountBudgetDto accountBudgetDto) {
         EchartCapacityOptionEntity echartCapacityOptionEntity = new EchartCapacityOptionEntity();
         BigDecimal sumOutlay = BigDecimal.ZERO;
-        echartCapacityOptionEntity.setId(accountBudgetPo.getId());
-        echartCapacityOptionEntity.setName(accountBudgetPo.getBudgetDesc());
-        echartCapacityOptionEntity.setBudget(accountBudgetPo.getOutlay());
+        echartCapacityOptionEntity.setId(accountBudgetDto.getId());
+        echartCapacityOptionEntity.setName(accountBudgetDto.getBudgetDesc());
+        echartCapacityOptionEntity.setBudget(accountBudgetDto.getOutlay());
         echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
-        echartCapacityOptionEntity.setBudgetType(accountBudgetPo.getBudgetType());
+        echartCapacityOptionEntity.setBudgetType(accountBudgetDto.getBudgetType());
         echartCapacityOptionEntity.setValue(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+        echartCapacityOptionEntity.setTenantName(accountBudgetDto.getTenantName());
         if (UEmpty.isEmpty(findBudgetCapacityEntityList)) {
             return echartCapacityOptionEntity;
         }
         FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
         sumOutlay = findBudgetCapacityEntityList.stream().map(AccountBudgetDto::getOutlay).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal rate = sumOutlay.divide(accountBudgetPo.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        BigDecimal rate = sumOutlay.divide(accountBudgetDto.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
         echartCapacityOptionEntity.setValue(rate);
         // 如果是自定义类型，则赋值自定义的时间范围
-        if (BudgetType.CUSTOM.getCode().equals(accountBudgetPo.getBudgetType())) {
-            echartCapacityOptionEntity.setDurationFrom(accountBudgetPo.getDurationFrom());
-            echartCapacityOptionEntity.setDurationTo(accountBudgetPo.getDurationTo());
+        if (BudgetType.CUSTOM.getCode().equals(accountBudgetDto.getBudgetType())) {
+            echartCapacityOptionEntity.setDurationFrom(accountBudgetDto.getDurationFrom());
+            echartCapacityOptionEntity.setDurationTo(accountBudgetDto.getDurationTo());
         } else {
             echartCapacityOptionEntity.setDurationFrom(findBudgetCapacityEntity.getDurationFrom());
             echartCapacityOptionEntity.setDurationTo(findBudgetCapacityEntity.getDurationTo());

@@ -2,9 +2,9 @@ import {BaseEntity, BaseVo} from "@/types/common";
 
 export interface AccountReportVo extends BaseVo {
     remark?: string;
-    userId?: number;
-    budgetId?: number;
-    strategyId?: number;
+    userId?: string;
+    budgetId?: string;
+    strategyId?: string;
     title?: string;
     budgetType?: string;
     outlay?: number;
@@ -13,6 +13,7 @@ export interface AccountReportVo extends BaseVo {
     billingTimeFrom?: string;
     billingTimeTo?: string;
     recalculateFlag?: boolean;
+    billingTimeRange?: Array<string>
 }
 
 export interface AccountReportEntity extends BaseEntity {

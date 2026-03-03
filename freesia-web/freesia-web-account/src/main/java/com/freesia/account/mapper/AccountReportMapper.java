@@ -31,7 +31,15 @@ public interface AccountReportMapper extends BaseMapper<AccountReportPo> {
      * @param accountReportDto 查询条件
      * @return 分页信息
      */
-    List<AccountReportDto> findList(@Param(value = "dto") AccountReportDto accountReportDto);
+    List<AccountReportPo> findList(@Param(value = "dto") AccountReportDto accountReportDto);
+
+    /**
+     * 查询记账报表表信息
+     *
+     * @param accountReportDto 查询条件
+     * @return 分页信息
+     */
+    AccountReportPo findOne(@Param(value = "dto") AccountReportDto accountReportDto);
 
     /**
      * 批量新增

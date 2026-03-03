@@ -5,6 +5,7 @@ import com.freesia.account.dto.AccountReportDto;
 import com.freesia.account.entity.FindPageAccountCostEntity;
 import com.freesia.account.service.AccountCostService;
 import com.freesia.account.service.AccountReportService;
+import com.freesia.constant.BudgetType;
 import com.freesia.dto.BaseDto;
 import com.freesia.util.UEmpty;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -31,7 +32,7 @@ public class RecalculateReportScheduler {
      */
     @XxlJob("recalculateDayReport")
     public void recalculateDayReport() {
-        List<Long> idList = findRecalculateIdList();
+        List<Long> idList = findRecalculateIdList(BudgetType.DAY);
         if (UEmpty.isEmpty(idList)) {
             return;
         }
@@ -43,7 +44,7 @@ public class RecalculateReportScheduler {
      */
     @XxlJob("recalculateWeekReport")
     public void recalculateWeekReport() {
-        List<Long> idList = findRecalculateIdList();
+        List<Long> idList = findRecalculateIdList(BudgetType.WEEK);
         if (UEmpty.isEmpty(idList)) {
             return;
         }
@@ -55,7 +56,7 @@ public class RecalculateReportScheduler {
      */
     @XxlJob("recalculateMonthReport")
     public void recalculateMonthReport() {
-        List<Long> idList = findRecalculateIdList();
+        List<Long> idList = findRecalculateIdList(BudgetType.MONTH);
         if (UEmpty.isEmpty(idList)) {
             return;
         }
@@ -67,7 +68,7 @@ public class RecalculateReportScheduler {
      */
     @XxlJob("recalculateYearReport")
     public void recalculateYearReport() {
-        List<Long> idList = findRecalculateIdList();
+        List<Long> idList = findRecalculateIdList(BudgetType.YEAR);
         if (UEmpty.isEmpty(idList)) {
             return;
         }
@@ -80,9 +81,10 @@ public class RecalculateReportScheduler {
      *
      * @return 报表ID
      */
-    private List<Long> findRecalculateIdList() {
+    private List<Long> findRecalculateIdList(BudgetType budgetType) {
         AccountReportDto accountReportDto = new AccountReportDto();
         accountReportDto.setRecalculateFlag(false);
+        accountReportDto.setBudgetType(budgetType.getCode());
         List<AccountReportDto> accountReportDtoList = accountReportService.findList(accountReportDto);
         return accountReportDtoList.stream().map(BaseDto::getId).collect(Collectors.toList());
     }
@@ -103,6 +105,7 @@ public class RecalculateReportScheduler {
             List<FindPageAccountCostEntity> findAccountCostEntityList = AccountReportSchedulerHelper.findListAccountCost(accountCostService, userId, tenantId, billingTimeFrom, billingTimeTo);
             // 构建收支金额
             AccountReportSchedulerHelper.buildReportOutlayIncome(userId, findAccountCostEntityList, accountReportDto);
+            accountReportDto.setRecalculateFlag(true);
         }
         accountReportService.saveUpdateBatch(accountReportDtoList);
     }

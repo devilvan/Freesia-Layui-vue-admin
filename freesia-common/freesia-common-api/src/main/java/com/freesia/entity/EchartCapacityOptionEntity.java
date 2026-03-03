@@ -35,6 +35,8 @@ public class EchartCapacityOptionEntity {
     private Date durationTo;
     @Schema(description = "预算类型")
     private String budgetType;
+    @Schema(description = "所属账本")
+    private String tenantName;
 
     /**
      * 根据预算类型构建时间范围

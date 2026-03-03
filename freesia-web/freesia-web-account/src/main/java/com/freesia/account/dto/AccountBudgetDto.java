@@ -41,4 +41,6 @@ public class AccountBudgetDto extends BaseDto {
     private Long strategyId;
     @Schema(description = "备注")
     private String remark;
+    @Schema(description = "租户名称")
+    private String tenantName;
 }

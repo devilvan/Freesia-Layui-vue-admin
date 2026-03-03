@@ -1,14 +1,16 @@
 package com.freesia.account.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.freesia.constant.Constants;
 import com.freesia.vo.BaseVo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Evad.Wu
@@ -44,16 +46,20 @@ public class AccountReportVo extends BaseVo {
     @Schema(description = "收入金额")
     @JsonAlias(value = {"incomeAmount"})
     private BigDecimal incomeAmount;
-    @Schema(description = "账单时间")
+    @Schema(description = "报表时间")
     @JsonAlias(value = {"billingTime"})
+    @DateTimeFormat(pattern = Constants.YMD)
     private Date billingTime;
-    @Schema(description = "账单时间从")
+    @Schema(description = "报表时间从")
     @JsonAlias(value = {"billingTimeFrom"})
     private Date billingTimeFrom;
-    @Schema(description = "账单时间到")
+    @Schema(description = "报表时间到")
     @JsonAlias(value = {"billingTimeTo"})
     private Date billingTimeTo;
     @Schema(description = "是否完成重算（默认1，0-否；1-是）")
     @JsonAlias(value = {"recalculateFlag"})
     private Boolean recalculateFlag;
+    @Schema(description = "报表时间范围（查询）")
+    @JsonAlias(value = {"billingTimeRange"})
+    private String billingTimeRange;
 }

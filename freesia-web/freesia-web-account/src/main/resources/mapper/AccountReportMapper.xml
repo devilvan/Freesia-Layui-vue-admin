@@ -58,23 +58,24 @@
             AND INCOME_AMOUNT = #{dto.incomeAmount}
         </if>
         <if test="dto.billingTime != null">
-            AND BILLING_TIME = #{dto.billingTime}
+            AND BILLING_TIME_FROM <![CDATA[<=]]> #{dto.billingTime}
+            AND BILLING_TIME_TO <![CDATA[>=]]> #{dto.billingTime}
         </if>
         <if test="dto.billingTimeFrom != null">
-            AND BILLING_TIME_FROM = #{dto.billingTimeFrom}
+            AND BILLING_TIME_FROM <![CDATA[>=]]> #{dto.billingTimeFrom}
         </if>
         <if test="dto.billingTimeTo != null">
-            AND BILLING_TIME_TO = #{dto.billingTimeTo}
+            AND BILLING_TIME_TO <![CDATA[<=]]> #{dto.billingTimeTo}
         </if>
         <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
             AND RECALCULATE_FLAG = #{dto.recalculateFlag}
         </if>
-        ORDER BY create_time DESC
+        ORDER BY BILLING_TIME DESC, BUDGET_TYPE DESC
     </select>
     <select id="findList" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM ACCOUNT_REPORT,ACCOUNT_REPORT_STRATEGY
+        FROM ACCOUNT_REPORT
         WHERE LOGIC_DEL = 0
         <if test="dto.remark != null and dto.remark != ''">
             AND REMARK = #{dto.remark}
@@ -112,7 +113,50 @@
         <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
             AND RECALCULATE_FLAG = #{dto.recalculateFlag}
         </if>
-        ORDER BY MODIFY_TIME DESC
+        ORDER BY BILLING_TIME DESC, BUDGET_TYPE DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ACCOUNT_REPORT
+        WHERE LOGIC_DEL = 0
+        <if test="dto.remark != null and dto.remark != ''">
+            AND REMARK = #{dto.remark}
+        </if>
+        <if test="dto.userId != null">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.budgetId != null">
+            AND BUDGET_ID = #{dto.budgetId}
+        </if>
+        <if test="dto.strategyId != null">
+            AND STRATEGY_ID = #{dto.strategyId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.budgetType != null and dto.budgetType != ''">
+            AND BUDGET_TYPE = #{dto.budgetType}
+        </if>
+        <if test="dto.outlay != null">
+            AND OUTLAY = #{dto.outlay}
+        </if>
+        <if test="dto.incomeAmount != null">
+            AND INCOME_AMOUNT = #{dto.incomeAmount}
+        </if>
+        <if test="dto.billingTime != null">
+            AND BILLING_TIME = #{dto.billingTime}
+        </if>
+        <if test="dto.billingTimeFrom != null">
+            AND BILLING_TIME_FROM = #{dto.billingTimeFrom}
+        </if>
+        <if test="dto.billingTimeTo != null">
+            AND BILLING_TIME_TO = #{dto.billingTimeTo}
+        </if>
+        <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
+            AND RECALCULATE_FLAG = #{dto.recalculateFlag}
+        </if>
+        LIMIT 1
     </select>
     <select id="findExist" resultType="java.lang.Boolean">
         SELECT EXISTS(SELECT 1

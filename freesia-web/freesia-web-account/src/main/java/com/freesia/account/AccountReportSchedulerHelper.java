@@ -24,8 +24,8 @@ public class AccountReportSchedulerHelper {
      *
      * @param userId          用户ID
      * @param tenantId        租户ID
-     * @param billingTimeFrom 账单时间从
-     * @param billingTimeTo   账单时间到
+     * @param billingTimeFrom 报表时间从
+     * @param billingTimeTo   报表时间到
      * @return 账单记录
      */
     public static List<FindPageAccountCostEntity> findListAccountCost(AccountCostService accountCostService, Long userId, Long tenantId, Date billingTimeFrom, Date billingTimeTo) {

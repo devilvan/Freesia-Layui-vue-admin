@@ -1,5 +1,7 @@
 package com.freesia.account.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -35,11 +37,14 @@ public class AccountReportDto extends BaseDto {
     private BigDecimal outlay;
     @Schema(description = "收入金额")
     private BigDecimal incomeAmount;
-    @Schema(description = "账单时间")
+    @Schema(description = "报表时间")
+    @JsonFormat(pattern = Constants.YMD)
     private Date billingTime;
-    @Schema(description = "账单时间从")
+    @Schema(description = "报表时间从")
+    @JsonFormat(pattern = Constants.YMD)
     private Date billingTimeFrom;
-    @Schema(description = "账单时间到")
+    @Schema(description = "报表时间到")
+    @JsonFormat(pattern = Constants.YMD)
     private Date billingTimeTo;
     @Schema(description = "是否完成重算（默认1，0-否；1-是）")
     private Boolean recalculateFlag;

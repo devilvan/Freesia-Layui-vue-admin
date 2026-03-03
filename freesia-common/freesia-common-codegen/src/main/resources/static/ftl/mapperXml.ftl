@@ -40,7 +40,7 @@
     <select id="findList" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM ${tableName}
+        FROM ${dataBaseDto.tableName}
         WHERE LOGIC_DEL = 0
         <#list dataBaseDto.fieldList as field>
         <#if field.javaType == "String">
@@ -54,6 +54,24 @@
         </#if>
         </#list>
         ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ${dataBaseDto.tableName}
+        WHERE LOGIC_DEL = 0
+        <#list dataBaseDto.fieldList as field>
+        <#if field.javaType == "String">
+        <if test="dto.${field.fieldName} != null and dto.${field.fieldName} != ''">
+            AND ${field.columnName} = <#noparse>#{</#noparse>dto.${field.fieldName}<#noparse>}</#noparse>
+        </if>
+        <#else>
+        <if test="dto.${field.fieldName} != null">
+            AND ${field.columnName} = <#noparse>#{</#noparse>dto.${field.fieldName}<#noparse>}</#noparse>
+        </if>
+        </#if>
+        </#list>
+        LIMIT 1
     </select>
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO ${dataBaseDto.tableName}

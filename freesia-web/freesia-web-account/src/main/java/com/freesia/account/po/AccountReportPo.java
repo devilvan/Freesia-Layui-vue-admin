@@ -70,17 +70,17 @@ public class AccountReportPo extends BasePo implements Serializable {
     @TableField(value = "INCOME_AMOUNT")
     @Column(name = "INCOME_AMOUNT", columnDefinition = "DECIMAL(20) COMMENT '收入金额'")
     private BigDecimal incomeAmount;
-    @Schema(description = "账单时间")
+    @Schema(description = "报表时间")
     @TableField(value = "BILLING_TIME")
-    @Column(name = "BILLING_TIME", columnDefinition = "DATETIME COMMENT '账单时间'")
+    @Column(name = "BILLING_TIME", columnDefinition = "DATETIME COMMENT '报表时间'")
     private Date billingTime;
-    @Schema(description = "账单时间从")
+    @Schema(description = "报表时间从")
     @TableField(value = "BILLING_TIME_FROM")
-    @Column(name = "BILLING_TIME_FROM", columnDefinition = "DATETIME COMMENT '账单时间从'")
+    @Column(name = "BILLING_TIME_FROM", columnDefinition = "DATETIME COMMENT '报表时间从'")
     private Date billingTimeFrom;
-    @Schema(description = "账单时间到")
+    @Schema(description = "报表时间到")
     @TableField(value = "BILLING_TIME_TO")
-    @Column(name = "BILLING_TIME_TO", columnDefinition = "DATETIME COMMENT '账单时间到'")
+    @Column(name = "BILLING_TIME_TO", columnDefinition = "DATETIME COMMENT '报表时间到'")
     private Date billingTimeTo;
     @Schema(description = "是否完成重算（默认1，0-否；1-是）")
     @TableField(value = "RECALCULATE_FLAG")

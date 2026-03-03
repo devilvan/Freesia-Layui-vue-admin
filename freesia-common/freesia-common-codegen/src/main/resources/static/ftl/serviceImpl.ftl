@@ -65,4 +65,22 @@ public class ${dataBaseDto.className}ServiceImpl extends BaseServiceImpl<${dataB
                 </#list>
                 </#if>;
     }
+
+    @Override
+    public TableResult<${dataBaseDto.className}Dto> findPage(${dataBaseDto.className}Dto dto, PageQuery pageQuery) {
+        Page<${dataBaseDto.className}Po> page = ${dataBaseDto.className?uncap_first}Mapper.findPage(dto, pageQuery.build());
+        return TableResult.build(${dataBaseDto.className?uncap_first}Converter.convertPagePo2Dto(page));
+    }
+
+    @Override
+    public List<${dataBaseDto.className}Dto> findList(${dataBaseDto.className}Dto dto) {
+        return ${dataBaseDto.className?uncap_first}Mapper.findList(dto);
+        return ${dataBaseDto.className?uncap_first}Converter.convertBatchPo2Dto(${dataBaseDto.className?uncap_first}Mapper.findList(dto));
+    }
+
+    @Override
+    public ${dataBaseDto.className}Dto findOne(${dataBaseDto.className}Dto dto) {
+        return ${dataBaseDto.className?uncap_first}Mapper.findOne(dto);
+        return ${dataBaseDto.className?uncap_first}Converter.convertPo2Dto(${dataBaseDto.className?uncap_first}Mapper.findOne(dto));
+    }
 }

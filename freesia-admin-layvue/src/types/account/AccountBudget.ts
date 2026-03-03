@@ -27,4 +27,5 @@ export interface EchartCapacityOptionEntity {
     budget?: number
     durationFrom?: string;
     durationTo?: string;
+    tenantName?: string;
 }

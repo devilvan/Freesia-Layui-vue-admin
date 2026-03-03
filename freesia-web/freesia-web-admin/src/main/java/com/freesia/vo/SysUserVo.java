@@ -55,7 +55,7 @@ public class SysUserVo extends BaseVo {
     @Schema(description = "创建时间（从）")
     @JsonFormat(pattern = Constants.YMD_HMS)
     private Date createTimeFrom;
-    @Schema(description = "创建时间（从）")
+    @Schema(description = "创建时间（到）")
     @JsonFormat(pattern = Constants.YMD_HMS)
     private Date createTimeTo;
 

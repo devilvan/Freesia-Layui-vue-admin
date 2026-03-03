@@ -61,13 +61,13 @@ public class CodeGenerator {
 //            generateVo(dataBaseDto);
 //            generateDto(dataBaseDto);
 //            generatePo(dataBaseDto);
-            generateController(dataBaseDto);
+//            generateController(dataBaseDto);
 //            generateService(dataBaseDto);
 //            generateServiceImpl(dataBaseDto);
 //            generateConverter(dataBaseDto);
 //            generateRepository(dataBaseDto);
-//            generateMapper(dataBaseDto);
-//            generateMapperXml(dataBaseDto);
+            generateMapper(dataBaseDto);
+            generateMapperXml(dataBaseDto);
 
             /* 前端*/
 //            generateType(dataBaseDto);

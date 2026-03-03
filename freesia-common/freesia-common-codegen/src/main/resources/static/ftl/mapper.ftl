@@ -17,21 +17,29 @@ import java.util.List;
 @Mapper
 public interface ${dataBaseDto.className}Mapper extends BaseMapper<${dataBaseDto.className}Po> {
     /**
-    * 分页查询${dataBaseDto.comment}信息
-    *
-    * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
-    * @param page    分页条件
-    * @return 分页信息
-    */
+     * 分页查询${dataBaseDto.comment}信息
+     *
+     * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
+     * @param page    分页条件
+     * @return 分页信息
+     */
     Page<${dataBaseDto.className}Po> findPage(@Param(value = "dto") ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto, @Param("page") Page<${dataBaseDto.className}Po> page);
 
     /**
-    * 查询${dataBaseDto.comment}信息
-    *
-    * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
-    * @return 分页信息
-    */
+     * 查询${dataBaseDto.comment}信息
+     *
+     * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
+     * @return 分页信息
+     */
     List<${dataBaseDto.className}Dto> findList(@Param(value = "dto") ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
+
+    /**
+     * 查询${dataBaseDto.comment}信息
+     *
+     * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
+     * @return 分页信息
+     */
+    ${dataBaseDto.className}Po findOne(@Param(value = "dto") ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
 
     /**
      * 批量新增

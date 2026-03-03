@@ -24,7 +24,7 @@ public interface AccountBudgetMapper extends BaseMapper<AccountBudgetPo> {
      * @param accountBudgetDto 查询条件
      * @return 结果集
      */
-    List<AccountBudgetPo> findListBudget(@Param("accountBudgetDto") AccountBudgetDto accountBudgetDto);
+    List<AccountBudgetDto> findListBudget(@Param("accountBudgetDto") AccountBudgetDto accountBudgetDto);
 
     /**
      * 容量图-查询日预算数据

@@ -7,15 +7,19 @@ import com.freesia.account.scheduler.GenerateReportTaskScheduler;
 import com.freesia.account.scheduler.RecalculateReportScheduler;
 import com.freesia.account.service.AccountReportService;
 import com.freesia.account.vo.AccountReportVo;
+import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.util.UEmpty;
+import com.freesia.util.UString;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -71,6 +75,12 @@ public class AccountReportController extends BaseController {
     @Operation(summary = "查询记账报表表分页信息")
     @GetMapping(value = "findPageAccountReport")
     public TableResult<AccountReportDto> findPageAccountReport(AccountReportVo accountReportVo, PageQuery pageQuery) {
+        String billingTimeRange = accountReportVo.getBillingTimeRange();
+        if (UEmpty.isNotEmpty(billingTimeRange)) {
+            Date[] dateRange = parseDateRange(billingTimeRange, Constants.SDF_YMDHMS, UString.SEPARATOR);
+            accountReportVo.setBillingTimeFrom(dateRange[0]);
+            accountReportVo.setBillingTimeTo(dateRange[1]);
+        }
         AccountReportDto accountReportDto = accountReportConverter.convertVo2Dto(accountReportVo);
         return accountReportService.findPage(accountReportDto, pageQuery);
     }
