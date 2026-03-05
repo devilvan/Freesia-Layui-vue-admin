@@ -209,7 +209,12 @@ springdoc:
     - group: 10. 租户模块
       paths-to-match: /api/sysTenantController/**
     - group: 11. 记账模块
-      paths-to-match: /api/accountCostController/**
+      paths-to-match:
+        - /api/account*/**
+        - /api/account*/**
+        - /api/account*/**
+        - /api/account*/**
+        - /api/account*/**
     - group: 12. 通用图标模块
       paths-to-match: /common/commonIcon*/**
 # knife4j的增强配置，不需要增强可以不配
@@ -234,7 +239,7 @@ xxl:
       # 执行器将会使用该地址进行"执行器心跳注册"和"任务结果回调"；为空则关闭自动注册；
       addresses: http://${xxl.job.admin.ip}:${xxl.job.admin.port}/xxl-job-admin
       # 执行器通讯TOKEN [选填]：非空时启用；
-      accessToken: Wjw#Dhevilvan*578395%Bliss
+      accessToken:
     executor:
       # 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
       appname:

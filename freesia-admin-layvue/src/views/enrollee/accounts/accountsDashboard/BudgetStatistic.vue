@@ -245,13 +245,12 @@ const pageQuery = reactive<PageQuery>({
   limit: 10
 })
 const columns = ref([
-  {title: '标题', width: '130px', key: 'title'},
+  // {title: '标题', width: '130px', key: 'title'},
   {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
+  {title: '开始时间', width: '130px', key: 'billingTimeFrom'},
+  {title: '结束时间', width: '130px', key: 'billingTimeTo'},
   {title: '支出金额', width: '130px', key: 'outlay'},
   {title: '收入金额', width: '130px', key: 'incomeAmount'},
-  {title: '报表时间', width: '130px', key: 'billingTime'},
-  {title: '报表时间从', width: '130px', key: 'billingTimeFrom'},
-  {title: '报表时间到', width: '130px', key: 'billingTimeTo'},
 ])
 const dataSource = ref<Array<AccountReportEntity>>()
 const selectedKeys = ref<Array<string>>([])
