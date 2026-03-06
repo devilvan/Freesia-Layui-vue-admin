@@ -181,6 +181,68 @@
         AND BILLING_TIME_FROM <![CDATA[<=]]> #{billingTime}
         AND BILLING_TIME_TO <![CDATA[>=]]> #{billingTime}
     </select>
+    <select id="findPageAccountReport" resultType="com.freesia.account.entity.FindPageAccountReportEntity">
+        SELECT report.ID,
+        report.CREATOR,
+        report.CREATE_TIME,
+        report.MODIFIER,
+        report.MODIFY_TIME,
+        report.LOGIC_DEL,
+        report.REC_VER,
+        report.BUILD_IN,
+        report.TENANT_ID,
+        report.REMARK,
+        report.USER_ID,
+        report.BUDGET_ID,
+        report.STRATEGY_ID,
+        report.TITLE,
+        report.BUDGET_TYPE,
+        report.BUDGET_AMOUNT,
+        report.OUTLAY,
+        report.INCOME_AMOUNT,
+        report.BILLING_TIME,
+        report.BILLING_TIME_FROM,
+        report.BILLING_TIME_TO,
+        report.RECALCULATE_FLAG,
+        IFNULL(report.BUDGET_AMOUNT, 0) - IFNULL(report.OUTLAY, 0) AS SAVE_AMOUNT
+        FROM account_report report
+        where report.LOGIC_DEL = 0
+        <if test="dto.userId != null">
+            AND report.USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.budgetId != null">
+            AND report.BUDGET_ID = #{dto.budgetId}
+        </if>
+        <if test="dto.strategyId != null">
+            AND report.STRATEGY_ID = #{dto.strategyId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND report.TITLE = #{dto.title}
+        </if>
+        <if test="dto.budgetType != null and dto.budgetType != ''">
+            AND report.BUDGET_TYPE = #{dto.budgetType}
+        </if>
+        <if test="dto.outlay != null">
+            AND report.OUTLAY = #{dto.outlay}
+        </if>
+        <if test="dto.incomeAmount != null">
+            AND report.INCOME_AMOUNT = #{dto.incomeAmount}
+        </if>
+        <if test="dto.billingTime != null">
+            AND report.BILLING_TIME_FROM <![CDATA[<=]]> #{dto.billingTime}
+            AND report.BILLING_TIME_TO <![CDATA[>=]]> #{dto.billingTime}
+        </if>
+        <if test="dto.billingTimeFrom != null">
+            AND report.BILLING_TIME_FROM <![CDATA[>=]]> #{dto.billingTimeFrom}
+        </if>
+        <if test="dto.billingTimeTo != null">
+            AND report.BILLING_TIME_TO <![CDATA[<=]]> #{dto.billingTimeTo}
+        </if>
+        <if test="dto.recalculateFlag != null and dto.recalculateFlag != ''">
+            AND report.RECALCULATE_FLAG = #{dto.recalculateFlag}
+        </if>
+        ORDER BY report.BILLING_TIME DESC, report.BUDGET_TYPE DESC
+    </select>
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO ACCOUNT_REPORT
         (

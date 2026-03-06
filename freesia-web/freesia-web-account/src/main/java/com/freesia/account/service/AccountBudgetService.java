@@ -72,6 +72,8 @@ public interface AccountBudgetService {
 
     /**
      * 缓存预算
+     *
+     * @param userId 用户ID
      */
-    void cacheBudget(Long userId, Long tenantId);
+    void cacheBudget(Long userId);
 }

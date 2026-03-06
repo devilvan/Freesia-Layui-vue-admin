@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.account.converter.AccountReportConverter;
 import com.freesia.account.dto.AccountReportDto;
+import com.freesia.account.entity.FindPageAccountReportEntity;
 import com.freesia.account.mapper.AccountReportMapper;
 import com.freesia.account.po.AccountReportPo;
 import com.freesia.account.repository.AccountReportRepository;
@@ -81,6 +82,12 @@ public class AccountReportServiceImpl extends BaseServiceImpl<AccountReportMappe
     public TableResult<AccountReportDto> findPage(AccountReportDto dto, PageQuery pageQuery) {
         Page<AccountReportPo> page = accountReportMapper.findPage(dto, pageQuery.build());
         return TableResult.build(accountReportConverter.convertPagePo2Dto(page));
+    }
+
+    @Override
+    public TableResult<FindPageAccountReportEntity> findPageAccountReport(AccountReportDto accountReportDto, PageQuery pageQuery) {
+        Page<FindPageAccountReportEntity> page = accountReportMapper.findPageAccountReport(accountReportDto, pageQuery.build());
+        return TableResult.build(page);
     }
 
     @Override

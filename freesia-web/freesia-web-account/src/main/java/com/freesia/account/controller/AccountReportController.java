@@ -3,6 +3,7 @@ package com.freesia.account.controller;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.freesia.account.converter.AccountReportConverter;
 import com.freesia.account.dto.AccountReportDto;
+import com.freesia.account.entity.FindPageAccountReportEntity;
 import com.freesia.account.scheduler.GenerateReportTaskScheduler;
 import com.freesia.account.scheduler.RecalculateReportScheduler;
 import com.freesia.account.service.AccountReportService;
@@ -76,7 +77,7 @@ public class AccountReportController extends BaseController {
      */
     @Operation(summary = "查询记账报表表分页信息")
     @GetMapping(value = "findPageAccountReport")
-    public TableResult<AccountReportDto> findPageAccountReport(AccountReportVo accountReportVo, PageQuery pageQuery) {
+    public TableResult<FindPageAccountReportEntity> findPageAccountReport(AccountReportVo accountReportVo, PageQuery pageQuery) {
         accountReportVo.setUserId(USecurity.getUserId());
         accountReportVo.setTenantId(USecurity.getTenantId());
         String billingTimeRange = accountReportVo.getBillingTimeRange();
@@ -86,7 +87,7 @@ public class AccountReportController extends BaseController {
             accountReportVo.setBillingTimeTo(dateRange[1]);
         }
         AccountReportDto accountReportDto = accountReportConverter.convertVo2Dto(accountReportVo);
-        return accountReportService.findPage(accountReportDto, pageQuery);
+        return accountReportService.findPageAccountReport(accountReportDto, pageQuery);
     }
 
     /**

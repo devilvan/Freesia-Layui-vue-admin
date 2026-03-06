@@ -75,7 +75,6 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
                 .eq(AccountBudgetPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(accountBudgetDto.getId()), AccountBudgetPo::getId, accountBudgetDto.getId())
                 .eq(UEmpty.isNotEmpty(accountBudgetDto.getUserId()), AccountBudgetPo::getUserId, accountBudgetDto.getUserId())
-                .eq(UEmpty.isNotEmpty(accountBudgetDto.getTenantId()), AccountBudgetPo::getTenantId, accountBudgetDto.getTenantId())
                 .eq(UEmpty.isNotEmpty(accountBudgetDto.getBudgetType()), AccountBudgetPo::getBudgetType, accountBudgetDto.getBudgetType())
                 .eq(UEmpty.isNotEmpty(accountBudgetDto.getId()), AccountBudgetPo::getId, accountBudgetDto.getId());
     }
@@ -83,7 +82,6 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
     @Override
     public AccountBudgetDto saveUpdate(AccountBudgetDto accountBudgetDto) {
         Long userId = accountBudgetDto.getUserId();
-        Long tenantId = accountBudgetDto.getTenantId();
         // 新增则需要校验是否已经设置了该预算类型的数据
         if (UEmpty.isNull(accountBudgetDto.getId())) {
             String budgetType = accountBudgetDto.getBudgetType();
@@ -97,20 +95,19 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
         }
         return transactionTemplate.execute(status -> {
             AccountBudgetDto afterSaveAccountBudgetDto = super.saveUpdate(accountBudgetDto);
-            cacheBudget(userId, tenantId);
+            cacheBudget(userId);
             return afterSaveAccountBudgetDto;
         });
     }
 
     @Override
-    public void cacheBudget(Long userId, Long tenantId) {
+    public void cacheBudget(Long userId) {
         AccountBudgetDto queryParam = new AccountBudgetDto();
         queryParam.setUserId(userId);
-        queryParam.setTenantId(tenantId);
         List<AccountBudgetDto> accountBudgetDtoList = super.findList(queryParam);
         if (UEmpty.isNotEmpty(accountBudgetDtoList)) {
             // 20260302-Bliss 保存预算时添加到缓存
-            String cacheKey = CacheConstant.FIND_BUDGET + userId + '@' + tenantId;
+            String cacheKey = CacheConstant.FIND_BUDGET + userId;
             URedis.set(cacheKey, accountBudgetDtoList);
         }
     }

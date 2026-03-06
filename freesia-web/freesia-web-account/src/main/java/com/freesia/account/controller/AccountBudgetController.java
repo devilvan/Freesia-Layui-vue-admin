@@ -42,9 +42,7 @@ public class AccountBudgetController extends BaseController {
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody AccountBudgetVo accountBudgetVo) {
         Long userId = USecurity.getUserId();
-        Long tenantId = USecurity.getTenantId();
         accountBudgetVo.setUserId(userId);
-        accountBudgetVo.setTenantId(tenantId);
         AccountBudgetDto accountBudgetDto = accountBudgetConverter.convertVo2Dto(accountBudgetVo);
         accountBudgetService.saveUpdate(accountBudgetDto);
         return R.ok();
@@ -114,12 +112,6 @@ public class AccountBudgetController extends BaseController {
     @GetMapping(value = "findBudgetCapacity")
     public R<List<EchartCapacityOptionEntity>> findBudgetCapacity(FindBudgetCapacityVo findBudgetCapacityVo) {
         Long userId = USecurity.getUserId();
-        if (!findBudgetCapacityVo.getAllTenantFlag()) {
-            Long tenantId = USecurity.getTenantId();
-            findBudgetCapacityVo.setTenantId(tenantId);
-        } else {
-            findBudgetCapacityVo.setTenantId(null);
-        }
         findBudgetCapacityVo.setUserId(userId);
         FindBudgetCapacityDto findBudgetCapacityDto = accountBudgetConverter.convertFindBudgetCapacityVo2Dto(findBudgetCapacityVo);
         List<EchartCapacityOptionEntity> echartCapacityOptionEntityList = accountBudgetService.findBudgetCapacity(findBudgetCapacityDto);

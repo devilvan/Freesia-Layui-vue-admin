@@ -29,4 +29,5 @@ export interface AccountReportEntity extends BaseEntity {
     billingTimeFrom?: string;
     billingTimeTo?: string;
     recalculateFlag?: boolean;
+    saveAmount?: number;
 }

@@ -98,11 +98,10 @@ public class RecalculateReportScheduler {
         }
         for (AccountReportDto accountReportDto : accountReportDtoList) {
             Long userId = accountReportDto.getUserId();
-            Long tenantId = accountReportDto.getTenantId();
             Date billingTimeFrom = accountReportDto.getBillingTimeFrom();
             Date billingTimeTo = accountReportDto.getBillingTimeTo();
             // 查询期间收支记录
-            List<FindPageAccountCostEntity> findAccountCostEntityList = AccountReportSchedulerHelper.findListAccountCost(accountCostService, userId, tenantId, billingTimeFrom, billingTimeTo);
+            List<FindPageAccountCostEntity> findAccountCostEntityList = AccountReportSchedulerHelper.findListAccountCost(accountCostService, userId, billingTimeFrom, billingTimeTo);
             // 构建收支金额
             AccountReportSchedulerHelper.buildReportOutlayIncome(userId, findAccountCostEntityList, accountReportDto);
             accountReportDto.setRecalculateFlag(true);

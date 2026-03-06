@@ -8,9 +8,6 @@
             <div style="font-size: 12pt;text-align: center;height: 30px">
               {{ item.name }}
             </div>
-            <div style="font-size: 10pt;text-align: center;height: 30px">
-              所属账本：{{ item.tenantName }}
-            </div>
             <div v-if="item.durationFrom" style="font-size: 10pt;text-align: center;height: 30px">
               {{ item.durationFrom }} - {{ item.durationTo }}
             </div>
@@ -254,6 +251,7 @@ const columns = ref([
   {title: '结束时间', width: '130px', key: 'billingTimeTo'},
   {title: '预算支出金额', width: '130px', key: 'budgetAmount', totalRow: true},
   {title: '支出金额', width: '130px', key: 'outlay', totalRow: true},
+  {title: '攒钱', width: '130px', key: 'saveAmount', totalRow: true},
   {title: '收入金额', width: '130px', key: 'incomeAmount', totalRow: true},
 ])
 const dataSource = ref<Array<AccountReportEntity>>()

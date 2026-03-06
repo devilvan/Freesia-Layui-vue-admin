@@ -23,15 +23,13 @@ public class AccountReportSchedulerHelper {
      * 查询账单记录集合
      *
      * @param userId          用户ID
-     * @param tenantId        租户ID
      * @param billingTimeFrom 报表时间从
      * @param billingTimeTo   报表时间到
      * @return 账单记录
      */
-    public static List<FindPageAccountCostEntity> findListAccountCost(AccountCostService accountCostService, Long userId, Long tenantId, Date billingTimeFrom, Date billingTimeTo) {
+    public static List<FindPageAccountCostEntity> findListAccountCost(AccountCostService accountCostService, Long userId, Date billingTimeFrom, Date billingTimeTo) {
         AccountCostDto accountCostDto = new AccountCostDto();
         accountCostDto.setUserId(userId);
-        accountCostDto.setTenantId(tenantId);
         accountCostDto.setPaymentTimeFrom(billingTimeFrom);
         accountCostDto.setPaymentTimeTo(billingTimeTo);
         return accountCostService.findListAccountCost(accountCostDto);

@@ -12,7 +12,6 @@ import com.freesia.account.service.AccountReportService;
 import com.freesia.constant.BudgetType;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.Constants;
-import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.po.SysUserPo;
 import com.freesia.redis.util.URedis;
@@ -50,29 +49,22 @@ public class GenerateReportTaskScheduler {
     @XxlJob("generateReportTask")
     public void generateReportTask() {
         List<SysUserPo> sysUserPoList = sysUserRepository.findAll();
+        if (UEmpty.isEmpty(sysUserPoList)) {
+            return;
+        }
         List<SysUserDto> sysUserDtoList = new ArrayList<>();
         for (SysUserPo sysUserPo : sysUserPoList) {
             Long userId = sysUserPo.getId();
-            List<SysTenantDto> sysTenantDtoList = sysTenantService.findListSysTenantByUserId(userId);
-            if (UEmpty.isEmpty(sysTenantDtoList)) {
-                continue;
-            }
-            for (SysTenantDto sysTenantDto : sysTenantDtoList) {
-                Long tenantId = sysTenantDto.getId();
-                SysUserDto sysUserDto = new SysUserDto();
-                sysUserDto.setId(userId);
-                sysUserDto.setTenantId(tenantId);
-                sysUserDtoList.add(sysUserDto);
-            }
+            SysUserDto sysUserDto = new SysUserDto();
+            sysUserDto.setId(userId);
+            sysUserDtoList.add(sysUserDto);
         }
-        if (UEmpty.isNotEmpty(sysUserDtoList)) {
-            generateReportTask(sysUserDtoList);
-        }
+        generateReportTask(sysUserDtoList);
     }
 
     public void generateReportTask(List<SysUserDto> sysUserDtoList) {
         for (SysUserDto sysUserDto : sysUserDtoList) {
-            if (sysUserDto.getId() == null || sysUserDto.getTenantId() == null) {
+            if (sysUserDto.getId() == null) {
                 continue;
             }
             threadPoolTaskExecutor.execute(() -> {
@@ -83,21 +75,19 @@ public class GenerateReportTaskScheduler {
 
     private void generateReport(SysUserDto sysUserDto) {
         Long userId = sysUserDto.getId();
-        Long tenantId = sysUserDto.getTenantId();
         // 查询用户设置的预算
         AccountBudgetDto accountBudgetDto = new AccountBudgetDto();
         accountBudgetDto.setUserId(userId);
-        accountBudgetDto.setTenantId(tenantId);
         List<AccountBudgetDto> accountBudgetDtoList = accountBudgetService.findList(accountBudgetDto);
         if (UEmpty.isNotEmpty(accountBudgetDtoList)) {
             // 查询缓存本账单最早的记账时间，无则查询并加入缓存
-            String minPaymentTimeFormat = buildMinPaymentTimeFormat(tenantId, userId);
+            String minPaymentTimeFormat = buildMinPaymentTimeFormat(userId);
             if (UEmpty.isNotEmpty(minPaymentTimeFormat)) {
                 // 解析最早报表时间
                 Date minDate = parseMinDate(minPaymentTimeFormat);
                 // 遍历预算，根据预算类型生成账单任务
                 for (AccountBudgetDto dto : accountBudgetDtoList) {
-                    generatePeriodBilling(dto, minDate, new Date(), userId, tenantId);
+                    generatePeriodBilling(dto, minDate, new Date(), userId);
                 }
             }
         }
@@ -120,20 +110,18 @@ public class GenerateReportTaskScheduler {
     }
 
     /**
-     * 查询缓存本账单最早的记账时间，无则查询并加入缓存
+     * 查询缓存用户最早的记账时间，无则查询并加入缓存
      * 格式{@link Constants#SDF_YMD}
      *
-     * @param tenantId 租户ID
-     * @param userId   用户ID
+     * @param userId 用户ID
      * @return 最早记账时间
      */
-    private String buildMinPaymentTimeFormat(Long tenantId, Long userId) {
-        String cacheKey = CacheConstant.FIND_CACHE_ACCOUNT_COST_EARLY_PAYMENT_TIME + userId + "@" + tenantId;
+    private String buildMinPaymentTimeFormat(Long userId) {
+        String cacheKey = CacheConstant.FIND_CACHE_ACCOUNT_COST_EARLY_PAYMENT_TIME + userId;
         String minPaymentTimeFormat = URedis.get(cacheKey);
         if (UEmpty.isEmpty(minPaymentTimeFormat)) {
             AccountCostDto accountCostDto = new AccountCostDto();
             accountCostDto.setUserId(userId);
-            accountCostDto.setTenantId(tenantId);
             Date minPaymentTime = accountCostService.findMinPaymentTime(accountCostDto);
             if (minPaymentTime != null) {
                 minPaymentTimeFormat = Constants.SDF_YMD.format(minPaymentTime);
@@ -154,9 +142,8 @@ public class GenerateReportTaskScheduler {
      * @param earliestDate 最早记账时间
      * @param today        今天
      * @param userId       用户ID
-     * @param tenantId     租户ID
      */
-    private void generatePeriodBilling(AccountBudgetDto dto, Date earliestDate, Date today, Long userId, Long tenantId) {
+    private void generatePeriodBilling(AccountBudgetDto dto, Date earliestDate, Date today, Long userId) {
         String budgetType = dto.getBudgetType();
 
         // 处理CUSTOM类型的预算
@@ -169,7 +156,7 @@ public class GenerateReportTaskScheduler {
                 // 检查账单是否已存在
                 Boolean flag = findExistReport(dto, durationFrom);
                 if (!flag) {
-                    AccountReportDto reportDto = buildAccountReportDto(dto, userId, tenantId, budgetType, durationTo, durationFrom);
+                    AccountReportDto reportDto = buildAccountReportDto(dto, userId, budgetType, durationTo, durationFrom);
                     // 保存单个报表
                     accountReportService.saveUpdate(reportDto);
                 }
@@ -210,7 +197,7 @@ public class GenerateReportTaskScheduler {
                 moveToNextPeriod(startCal, budgetType);
                 continue;
             }
-            AccountReportDto reportDto = buildAccountReportDto(dto, userId, tenantId, budgetType, billingTimeTo, billingTimeFrom);
+            AccountReportDto reportDto = buildAccountReportDto(dto, userId, budgetType, billingTimeTo, billingTimeFrom);
             accountReportDtoList.add(reportDto);
             // 移动到下一个周期
             moveToNextPeriod(startCal, budgetType);
@@ -225,16 +212,14 @@ public class GenerateReportTaskScheduler {
      *
      * @param dto          预算对象
      * @param userId       用户ID
-     * @param tenantId     租户ID
      * @param budgetType   预算类型
      * @param durationTo   时间范围从
      * @param durationFrom 时间范围到
      * @return 报表对象
      */
-    private AccountReportDto buildAccountReportDto(AccountBudgetDto dto, Long userId, Long tenantId, String budgetType, Date durationTo, Date durationFrom) {
+    private AccountReportDto buildAccountReportDto(AccountBudgetDto dto, Long userId, String budgetType, Date durationTo, Date durationFrom) {
         AccountReportDto reportDto = new AccountReportDto();
         reportDto.setUserId(userId);
-        reportDto.setTenantId(tenantId);
         reportDto.setBudgetId(dto.getId());
         reportDto.setStrategyId(dto.getStrategyId());
         reportDto.setTitle(dto.getBudgetDesc());
@@ -245,7 +230,7 @@ public class GenerateReportTaskScheduler {
         reportDto.setBillingTimeTo(durationTo);
         reportDto.setRecalculateFlag(true);
         // 查询期间收支记录
-        List<FindPageAccountCostEntity> findAccountCostEntityList = AccountReportSchedulerHelper.findListAccountCost(accountCostService, userId, tenantId, durationFrom, durationTo);
+        List<FindPageAccountCostEntity> findAccountCostEntityList = AccountReportSchedulerHelper.findListAccountCost(accountCostService, userId, durationFrom, durationTo);
         // 构建收支金额
         AccountReportSchedulerHelper.buildReportOutlayIncome(userId, findAccountCostEntityList, reportDto);
         return reportDto;

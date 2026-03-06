@@ -2,6 +2,7 @@ package com.freesia.account.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.freesia.account.entity.FindPageAccountReportEntity;
 import com.freesia.account.po.AccountReportPo;
 import com.freesia.account.dto.AccountReportDto;
 import org.apache.ibatis.annotations.Param;
@@ -64,4 +65,13 @@ public interface AccountReportMapper extends BaseMapper<AccountReportPo> {
      * @return 结果集
      */
     List<AccountReportDto> findBetweenBillingTime(AccountReportDto accountReportDto);
+
+    /**
+     * 自定义分页查询记账报表表信息
+     *
+     * @param accountReportDto 查询条件
+     * @param page             分页条件
+     * @return 分页信息
+     */
+    Page<FindPageAccountReportEntity> findPageAccountReport(@Param("dto") AccountReportDto accountReportDto, @Param("page") Page<AccountReportPo> page);
 }

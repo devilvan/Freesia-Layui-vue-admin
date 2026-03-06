@@ -141,16 +141,16 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
      */
     private void executeChangeReportRecalculateFlag(AccountCostDto accountCostDto, Long userId, Long tenantId) {
         AccountCostPo originAccountCostPo = accountCostRepository.findById(accountCostDto.getId()).orElse(null);
-//        threadPoolTaskExecutor.execute(() -> {
+        threadPoolTaskExecutor.execute(() -> {
             if (originAccountCostPo != null) {
                 // 20260302-Bliss 修改金额或收支类型时，标记已生成的预算账单的重算标识为false
                 if (!(accountCostDto.getPaymentSign().equals(originAccountCostPo.getPaymentSign()) && accountCostDto.getOutlay().compareTo(originAccountCostPo.getOutlay()) == 0)) {
                     // 查询预算
-                    String findBudget = CacheConstant.FIND_BUDGET + userId + '@' + tenantId;
+                    String findBudget = CacheConstant.FIND_BUDGET + userId;
                     List<AccountBudgetDto> accountBudgetDtoList = URedis.get(findBudget);
                     if (UEmpty.isEmpty(accountBudgetDtoList)) {
                         // 如果没有缓存预算则尝试缓存一次
-                        accountBudgetService.cacheBudget(userId, tenantId);
+                        accountBudgetService.cacheBudget(userId);
                         return;
                     }
                     Set<Long> reportIdSet = new HashSet<>();
@@ -175,7 +175,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
                     }
                 }
             }
-//        });
+        });
     }
 
     @Override

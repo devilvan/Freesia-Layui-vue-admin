@@ -1,6 +1,7 @@
 package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountReportDto;
+import com.freesia.account.entity.FindPageAccountReportEntity;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -37,6 +38,15 @@ public interface AccountReportService {
      * @return 分页信息
      */
     TableResult<AccountReportDto> findPage(AccountReportDto accountReportDto, PageQuery pageQuery);
+
+    /**
+     * 自定义分页查询记账报表表信息
+     *
+     * @param accountReportDto 查询条件
+     * @param pageQuery        分页条件
+     * @return 分页信息
+     */
+    TableResult<FindPageAccountReportEntity> findPageAccountReport(AccountReportDto accountReportDto, PageQuery pageQuery);
 
     /**
      * 条件查询记账报表表信息
