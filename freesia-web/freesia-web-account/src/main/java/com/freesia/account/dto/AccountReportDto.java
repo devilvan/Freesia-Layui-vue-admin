@@ -1,11 +1,13 @@
 package com.freesia.account.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;
 import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import javax.persistence.Column;
 import java.util.Date;
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,6 +35,8 @@ public class AccountReportDto extends BaseDto {
     private String title;
     @Schema(description = "预算类型（DAY-每日；WEEK-每周；MONTH-每月；YEAR-每年；CUSTOM-自定义）")
     private String budgetType;
+    @Schema(description = "预算金额")
+    private BigDecimal budgetAmount;
     @Schema(description = "支出金额")
     private BigDecimal outlay;
     @Schema(description = "收入金额")

@@ -126,7 +126,7 @@
     </div>
   </lay-layer>
 
-  <lay-layer v-model="showReportModalFlag" :area="['1200px']" :title="'历史数据'">
+  <lay-layer v-model="showReportModalFlag" :area="['1200px', '600px']" :title="'历史数据'">
     <lay-card>
       <lay-form ref="queryFormRef" :model="searchQuery"
                 label-position="top" @keydown.enter.prevent="change()">
@@ -242,15 +242,19 @@ const saveFromRules = ref({
 const searchQuery = ref<AccountReportVo>({})
 const pageQuery = reactive<PageQuery>({
   current: 1,
-  limit: 10
+  limit: 10,
+  limits: [10, 20, 50, 100, 200],
+  hideOnSinglePage: false,
+  layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })
 const columns = ref([
   // {title: '标题', width: '130px', key: 'title'},
   {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
   {title: '开始时间', width: '130px', key: 'billingTimeFrom'},
   {title: '结束时间', width: '130px', key: 'billingTimeTo'},
-  {title: '支出金额', width: '130px', key: 'outlay'},
-  {title: '收入金额', width: '130px', key: 'incomeAmount'},
+  {title: '预算支出金额', width: '130px', key: 'budgetAmount', totalRow: true},
+  {title: '支出金额', width: '130px', key: 'outlay', totalRow: true},
+  {title: '收入金额', width: '130px', key: 'incomeAmount', totalRow: true},
 ])
 const dataSource = ref<Array<AccountReportEntity>>()
 const selectedKeys = ref<Array<string>>([])

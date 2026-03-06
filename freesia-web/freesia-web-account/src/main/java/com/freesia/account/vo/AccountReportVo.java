@@ -40,6 +40,9 @@ public class AccountReportVo extends BaseVo {
     @Schema(description = "预算类型（DAY-每日；WEEK-每周；MONTH-每月；YEAR-每年；CUSTOM-自定义）")
     @JsonAlias(value = {"budgetType"})
     private String budgetType;
+    @Schema(description = "预算金额")
+    @JsonAlias(value = {"budgetAmount"})
+    private BigDecimal budgetAmount;
     @Schema(description = "支出金额")
     @JsonAlias(value = {"outlay"})
     private BigDecimal outlay;

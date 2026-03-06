@@ -17,6 +17,7 @@
         <result column="STRATEGY_ID" property="strategyId"/>
         <result column="TITLE" property="title"/>
         <result column="BUDGET_TYPE" property="budgetType"/>
+        <result column="BUDGET_AMOUNT" property="budgetAmount"/>
         <result column="OUTLAY" property="outlay"/>
         <result column="INCOME_AMOUNT" property="incomeAmount"/>
         <result column="BILLING_TIME" property="billingTime"/>
@@ -25,7 +26,7 @@
         <result column="RECALCULATE_FLAG" property="recalculateFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, STRATEGY_ID, TITLE, BUDGET_TYPE, OUTLAY, INCOME_AMOUNT, BILLING_TIME, BILLING_TIME_FROM, BILLING_TIME_TO, RECALCULATE_FLAG
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, STRATEGY_ID, TITLE, BUDGET_TYPE, BUDGET_AMOUNT, OUTLAY, INCOME_AMOUNT, BILLING_TIME, BILLING_TIME_FROM, BILLING_TIME_TO, RECALCULATE_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -198,6 +199,7 @@
         STRATEGY_ID,
         TITLE,
         BUDGET_TYPE,
+        BUDGET_AMOUNT,
         OUTLAY,
         INCOME_AMOUNT,
         BILLING_TIME,
@@ -223,6 +225,7 @@
             #{item.strategyId},
             #{item.title},
             #{item.budgetType},
+            #{item.budgetAmount},
             #{item.outlay},
             #{item.incomeAmount},
             #{item.billingTime},

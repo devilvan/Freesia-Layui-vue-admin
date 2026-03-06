@@ -62,6 +62,10 @@ public class AccountReportPo extends BasePo implements Serializable {
     @TableField(value = "BUDGET_TYPE")
     @Column(name = "BUDGET_TYPE", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '预算类型（DAY-每日；WEEK-每周；MONTH-每月；YEAR-每年；CUSTOM-自定义）'")
     private String budgetType;
+    @Schema(description = "预算金额")
+    @TableField(value = "BUDGET_AMOUNT")
+    @Column(name = "BUDGET_AMOUNT", columnDefinition = "DECIMAL(20) COMMENT '预算金额'")
+    private BigDecimal budgetAmount;
     @Schema(description = "支出金额")
     @TableField(value = "OUTLAY")
     @Column(name = "OUTLAY", columnDefinition = "DECIMAL(20) COMMENT '支出金额'")

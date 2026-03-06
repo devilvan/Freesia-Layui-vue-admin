@@ -197,6 +197,7 @@ public class GenerateReportTaskScheduler {
             reportDto.setStrategyId(dto.getStrategyId());
             reportDto.setTitle(dto.getBudgetDesc());
             reportDto.setBudgetType(budgetType);
+            reportDto.setBudgetAmount(dto.getOutlay());
             reportDto.setBillingTime(billingTimeTo);
             reportDto.setBillingTimeFrom(billingTimeFrom);
             reportDto.setBillingTimeTo(billingTimeTo);
