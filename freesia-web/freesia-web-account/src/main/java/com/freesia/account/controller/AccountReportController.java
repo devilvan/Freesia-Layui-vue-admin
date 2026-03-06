@@ -9,8 +9,10 @@ import com.freesia.account.service.AccountReportService;
 import com.freesia.account.vo.AccountReportVo;
 import com.freesia.constant.Constants;
 import com.freesia.controller.BaseController;
+import com.freesia.dto.SysUserDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UString;
 import com.freesia.vo.R;
@@ -75,6 +77,8 @@ public class AccountReportController extends BaseController {
     @Operation(summary = "查询记账报表表分页信息")
     @GetMapping(value = "findPageAccountReport")
     public TableResult<AccountReportDto> findPageAccountReport(AccountReportVo accountReportVo, PageQuery pageQuery) {
+        accountReportVo.setUserId(USecurity.getUserId());
+        accountReportVo.setTenantId(USecurity.getTenantId());
         String billingTimeRange = accountReportVo.getBillingTimeRange();
         if (UEmpty.isNotEmpty(billingTimeRange)) {
             Date[] dateRange = parseDateRange(billingTimeRange, Constants.SDF_YMDHMS, UString.SEPARATOR);
@@ -136,6 +140,19 @@ public class AccountReportController extends BaseController {
     @PostMapping(value = "generateReportTask")
     public R<Void> generateReportTask() {
         generateReportTaskScheduler.generateReportTask();
+        return R.ok();
+    }
+
+    /**
+     * 根据用户信息生成报表任务
+     *
+     * @return 形式返回
+     */
+    @SaIgnore
+    @Operation(summary = "根据用户信息生成报表任务")
+    @PostMapping(value = "generateReportTaskByUser")
+    public R<Void> generateReportTaskByUser(@RequestBody List<SysUserDto> sysUserDtoList) {
+        generateReportTaskScheduler.generateReportTask(sysUserDtoList);
         return R.ok();
     }
 

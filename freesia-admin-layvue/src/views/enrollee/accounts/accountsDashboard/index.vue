@@ -77,6 +77,7 @@ import {cancelAssignUser} from "@/api/system/Role";
 
 /*INIT*/
 onMounted(() => {
+  accountBudgetVo.value.allTenantFlag = accountCostStore.allTenantFlag || false
   findBudgetCapacity(accountBudgetVo.value).then((res: any) => {
     if (res.code === 200) {
       echartCapacityOptionEntityList.value = res.data

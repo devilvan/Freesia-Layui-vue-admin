@@ -158,6 +158,26 @@ public class GenerateReportTaskScheduler {
      */
     private void generatePeriodBilling(AccountBudgetDto dto, Date earliestDate, Date today, Long userId, Long tenantId) {
         String budgetType = dto.getBudgetType();
+
+        // 处理CUSTOM类型的预算
+        if (BudgetType.CUSTOM.getCode().equals(budgetType)) {
+            Date durationFrom = dto.getDurationFrom();
+            Date durationTo = dto.getDurationTo();
+
+            // 检查时间范围是否有效
+            if (durationFrom != null && durationTo != null) {
+                // 检查账单是否已存在
+                Boolean flag = findExistReport(dto, durationFrom);
+                if (!flag) {
+                    AccountReportDto reportDto = buildAccountReportDto(dto, userId, tenantId, budgetType, durationTo, durationFrom);
+                    // 保存单个报表
+                    accountReportService.saveUpdate(reportDto);
+                }
+            }
+            return;
+        }
+
+        // 处理其他类型的预算
         Calendar startCal = Calendar.getInstance();
         Calendar endCal = Calendar.getInstance();
         endCal.setTime(today);
@@ -190,22 +210,7 @@ public class GenerateReportTaskScheduler {
                 moveToNextPeriod(startCal, budgetType);
                 continue;
             }
-            AccountReportDto reportDto = new AccountReportDto();
-            reportDto.setUserId(userId);
-            reportDto.setTenantId(tenantId);
-            reportDto.setBudgetId(dto.getId());
-            reportDto.setStrategyId(dto.getStrategyId());
-            reportDto.setTitle(dto.getBudgetDesc());
-            reportDto.setBudgetType(budgetType);
-            reportDto.setBudgetAmount(dto.getOutlay());
-            reportDto.setBillingTime(billingTimeTo);
-            reportDto.setBillingTimeFrom(billingTimeFrom);
-            reportDto.setBillingTimeTo(billingTimeTo);
-            reportDto.setRecalculateFlag(true);
-            // 查询期间收支记录
-            List<FindPageAccountCostEntity> findAccountCostEntityList = AccountReportSchedulerHelper.findListAccountCost(accountCostService, userId, tenantId, billingTimeFrom, billingTimeTo);
-            // 构建收支金额
-            AccountReportSchedulerHelper.buildReportOutlayIncome(userId, findAccountCostEntityList, reportDto);
+            AccountReportDto reportDto = buildAccountReportDto(dto, userId, tenantId, budgetType, billingTimeTo, billingTimeFrom);
             accountReportDtoList.add(reportDto);
             // 移动到下一个周期
             moveToNextPeriod(startCal, budgetType);
@@ -213,6 +218,37 @@ public class GenerateReportTaskScheduler {
         if (UEmpty.isNotEmpty(accountReportDtoList)) {
             accountReportService.saveUpdateBatch(accountReportDtoList);
         }
+    }
+
+    /**
+     * 构建自定义预算的报表DTO
+     *
+     * @param dto          预算对象
+     * @param userId       用户ID
+     * @param tenantId     租户ID
+     * @param budgetType   预算类型
+     * @param durationTo   时间范围从
+     * @param durationFrom 时间范围到
+     * @return 报表对象
+     */
+    private AccountReportDto buildAccountReportDto(AccountBudgetDto dto, Long userId, Long tenantId, String budgetType, Date durationTo, Date durationFrom) {
+        AccountReportDto reportDto = new AccountReportDto();
+        reportDto.setUserId(userId);
+        reportDto.setTenantId(tenantId);
+        reportDto.setBudgetId(dto.getId());
+        reportDto.setStrategyId(dto.getStrategyId());
+        reportDto.setTitle(dto.getBudgetDesc());
+        reportDto.setBudgetType(budgetType);
+        reportDto.setBudgetAmount(dto.getOutlay());
+        reportDto.setBillingTime(durationTo);
+        reportDto.setBillingTimeFrom(durationFrom);
+        reportDto.setBillingTimeTo(durationTo);
+        reportDto.setRecalculateFlag(true);
+        // 查询期间收支记录
+        List<FindPageAccountCostEntity> findAccountCostEntityList = AccountReportSchedulerHelper.findListAccountCost(accountCostService, userId, tenantId, durationFrom, durationTo);
+        // 构建收支金额
+        AccountReportSchedulerHelper.buildReportOutlayIncome(userId, findAccountCostEntityList, reportDto);
+        return reportDto;
     }
 
     /**
