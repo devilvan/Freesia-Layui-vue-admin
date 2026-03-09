@@ -8,6 +8,7 @@ import com.freesia.account.service.AccountReportService;
 import com.freesia.constant.BudgetType;
 import com.freesia.dto.BaseDto;
 import com.freesia.util.UEmpty;
+import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -31,48 +32,52 @@ public class RecalculateReportScheduler {
      * 重算日报表
      */
     @XxlJob("recalculateDayReport")
-    public void recalculateDayReport() {
+    public ReturnT<String> recalculateDayReport() {
         List<Long> idList = findRecalculateIdList(BudgetType.DAY);
         if (UEmpty.isEmpty(idList)) {
-            return;
+            return ReturnT.FAIL;
         }
         handleRecalculateReport(idList);
+        return ReturnT.SUCCESS;
     }
 
     /**
      * 重算周报表
      */
     @XxlJob("recalculateWeekReport")
-    public void recalculateWeekReport() {
+    public ReturnT<String> recalculateWeekReport() {
         List<Long> idList = findRecalculateIdList(BudgetType.WEEK);
         if (UEmpty.isEmpty(idList)) {
-            return;
+            return ReturnT.FAIL;
         }
         handleRecalculateReport(idList);
+        return ReturnT.SUCCESS;
     }
 
     /**
      * 重算月报表
      */
     @XxlJob("recalculateMonthReport")
-    public void recalculateMonthReport() {
+    public ReturnT<String> recalculateMonthReport() {
         List<Long> idList = findRecalculateIdList(BudgetType.MONTH);
         if (UEmpty.isEmpty(idList)) {
-            return;
+            return ReturnT.FAIL;
         }
         handleRecalculateReport(idList);
+        return ReturnT.SUCCESS;
     }
 
     /**
      * 重算年报表
      */
     @XxlJob("recalculateYearReport")
-    public void recalculateYearReport() {
+    public ReturnT<String> recalculateYearReport() {
         List<Long> idList = findRecalculateIdList(BudgetType.YEAR);
         if (UEmpty.isEmpty(idList)) {
-            return;
+            return ReturnT.FAIL;
         }
         handleRecalculateReport(idList);
+        return ReturnT.SUCCESS;
     }
 
 

@@ -1,6 +1,7 @@
 package com.freesia.sse.scheduler;
 
 import com.freesia.sse.component.SseEmitterManager;
+import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,12 @@ public class SseHeartbeatCompleteScheduler {
      * 接收心跳-完成连接 定时任务
      */
     @XxlJob("sseHeartbeatScheduler")
-    public void sseHeartbeatScheduler() {
-        sseEmitterManager.sseHeartbeatSchedule();
+    public ReturnT<String> sseHeartbeatScheduler() {
+        try {
+            sseEmitterManager.sseHeartbeatSchedule();
+        } catch (Exception e) {
+            return ReturnT.FAIL;
+        }
+        return ReturnT.SUCCESS;
     }
 }

@@ -1,6 +1,8 @@
 package com.freesia.xxljob.aspect;
 
 import com.freesia.constant.Constants;
+import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.context.XxlJobContext;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,18 +28,15 @@ public class XxlJobAspect {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Constants.YMD_HMS_SSS);
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
         Method method = methodSignature.getMethod();
-        Object proceed;
         long start = System.currentTimeMillis();
         XxlJobHelper.log("********方法：{}，开始时间：{}********", method.getName(), simpleDateFormat.format(new Date(start)));
         try {
-            proceed = proceedingJoinPoint.proceed();
-            XxlJobHelper.handleSuccess();
+            return proceedingJoinPoint.proceed();
         } finally {
             long end = System.currentTimeMillis();
             XxlJobHelper.log("********方法：{}，结束时间：{}，消耗时间：{}********",
                     method.getName(), simpleDateFormat.format(new Date(end)), (end - start) + "ms");
             XxlJobHelper.handleFail();
         }
-        return proceed;
     }
 }

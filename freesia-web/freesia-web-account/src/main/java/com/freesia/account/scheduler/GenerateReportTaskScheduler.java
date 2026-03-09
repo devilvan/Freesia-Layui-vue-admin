@@ -18,6 +18,7 @@ import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysUserRepository;
 import com.freesia.service.SysTenantService;
 import com.freesia.util.UEmpty;
+import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -47,10 +48,10 @@ public class GenerateReportTaskScheduler {
     private final SysTenantService sysTenantService;
 
     @XxlJob("generateReportTask")
-    public void generateReportTask() {
+    public ReturnT<String> generateReportTask() {
         List<SysUserPo> sysUserPoList = sysUserRepository.findAll();
         if (UEmpty.isEmpty(sysUserPoList)) {
-            return;
+            return ReturnT.FAIL;
         }
         List<SysUserDto> sysUserDtoList = new ArrayList<>();
         for (SysUserPo sysUserPo : sysUserPoList) {
@@ -60,6 +61,7 @@ public class GenerateReportTaskScheduler {
             sysUserDtoList.add(sysUserDto);
         }
         generateReportTask(sysUserDtoList);
+        return ReturnT.SUCCESS;
     }
 
     public void generateReportTask(List<SysUserDto> sysUserDtoList) {

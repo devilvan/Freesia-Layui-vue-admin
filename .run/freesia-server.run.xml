@@ -30,6 +30,10 @@
               <option name="containerPort" value="3658" />
               <option name="hostPort" value="3658" />
             </DockerPortBindingImpl>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="8598" />
+              <option name="hostPort" value="8598" />
+            </DockerPortBindingImpl>
           </list>
         </option>
         <option name="commandLineOptions" value="--network freesia-net --restart=always" />
