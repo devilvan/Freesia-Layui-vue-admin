@@ -9,9 +9,7 @@ import router, {addRoutes} from "../router";
 import {RouterComponent} from "../types/Menu";
 import {reloadSysTenant} from "../api/system/Tenant";
 import {useTabStore} from "../layouts/composable/useTabStore";
-import {loginPath} from "../api/Http";
-import {findUnreadCount} from "@/api/system/Notice";
-import {SysNoticeVo} from "@/types/system/Notice";
+import {isMobile, loginPath, mobileLoginPath} from "../api/Http";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
@@ -92,7 +90,11 @@ export const useUserStore = defineStore({
             useTabStore().tabs = []
             useTabStore().tabsCache = []
             useTabStore().currentPath = ''
-            await router.replace(loginPath)
+            if (isMobile()) {
+                await router.replace(mobileLoginPath)
+            } else {
+                await router.replace(loginPath)
+            }
         },
         async reloadSysTenant() {
             const {data, code} = await reloadSysTenant()

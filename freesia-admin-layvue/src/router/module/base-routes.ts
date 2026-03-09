@@ -1,4 +1,5 @@
 import Login from '@/views/login/index.vue'
+import MobileLogin from '@/views/login/mobile/index.vue'
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import ErrorCode from "@/views/error/ErrorCode.vue";
 import {MenuPermission} from "@/types/Permission";
@@ -11,6 +12,11 @@ export const constantRoutes = [
     {
         path: '/login',
         component: Login,
+        meta: {title: '登录页面'},
+    },
+    {
+        path: '/mobile/login',
+        component: MobileLogin,
         meta: {title: '登录页面'},
     },
     {

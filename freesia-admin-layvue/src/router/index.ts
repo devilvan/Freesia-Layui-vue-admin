@@ -4,8 +4,7 @@ import 'nprogress/nprogress.css'
 import {constantRoutes} from "./module/base-routes";
 import {useUserStore} from "../store/user";
 import {RouterComponent} from "../types/Menu";
-import {loginPath} from "../api/Http";
-import {useTabStore} from "../layouts/composable/useTabStore";
+import {isMobile, loginPath, mobileLoginPath} from "../api/Http";
 
 NProgress.configure({showSpinner: false})
 
@@ -33,19 +32,20 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     const userStore = useUserStore();
     NProgress.start();
     let token = userStore.token;
-    if (to.path === loginPath) {
+
+    // 处理登录页面访问
+    if (to.path === loginPath || to.path === mobileLoginPath) {
         if (!token || token === '') {
-            // 如果token不存在，直接跳转到登录页
+            // 如果token不存在，直接进入登录页
             userStore.token = ''
             next()
-        } else if ((token || token !== '') && to.path === loginPath) {
+        } else {
             // 如果token存在（已登录），则跳转到默认页
             next({path: '/'})
-        } else {
-            next()
         }
     }
-    if (token) {
+    // 处理已登录状态
+    else if (token) {
         if (!isGetRouter) {
             isGetRouter = true;
             await userStore.getRouters()
@@ -53,8 +53,14 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         } else {
             next()
         }
-    } else {
-        next({path: loginPath})
+    }
+    // 处理未登录状态
+    else {
+        if (isMobile()) {
+            next({path: mobileLoginPath})
+        } else {
+            next({path: loginPath})
+        }
     }
 })
 

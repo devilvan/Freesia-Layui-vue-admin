@@ -3,13 +3,26 @@ import {useUserStore} from "@/store/user";
 import {layer} from '@layui/layui-vue';
 import router from '@/router'
 import {useAppStore} from "@/store/app";
-import {name} from "node-rsa";
 
 export let loginPath: string = '/login'
+export let mobileLoginPath: string = '/mobile/login'
 export let downloadPath = import.meta.env.VITE_APP_DOWNLOAD_PATH;
 type TAxiosOption = {
     timeout: number;
     baseURL: string;
+}
+
+export const isMobile = () => {
+    // 更全面的移动设备检测
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    const isMobileDevice = mobileRegex.test(navigator.userAgent);
+
+    // 结合屏幕宽度检测
+    const isSmallScreen = window.innerWidth <= 768;
+
+    let flag = isMobileDevice || isSmallScreen;
+    // console.log(flag ? '移动端' : 'PC端')
+    return flag;
 }
 
 const config: TAxiosOption = {
@@ -29,8 +42,12 @@ class Http {
             if (userInfoStore.token) {
                 (config.headers as AxiosRequestHeaders).Authorization = "Bearer " + userInfoStore.token as string
             } else {
-                if (router.currentRoute.value.path !== loginPath) {
-                    router.push(loginPath).then(r => r)
+                if (router.currentRoute.value.path !== loginPath || router.currentRoute.value.path !== mobileLoginPath) {
+                    if (isMobile()) {
+                        router.push(mobileLoginPath).then(r => r)
+                    } else {
+                        router.push(loginPath).then(r => r)
+                    }
                 }
             }
             config.headers['X-Tenant-Id'] = useAppStore().currentTenant
@@ -59,7 +76,11 @@ class Http {
                         {
                             icon: 2, yes: function () {
                                 userInfoStore.token = ''
-                                router.push(loginPath);
+                                if (isMobile()) {
+                                    router.push(mobileLoginPath);
+                                } else {
+                                    router.push(loginPath);
+                                }
                                 layer.closeAll()
                             }
                         });
@@ -68,7 +89,11 @@ class Http {
                         content: "会话认证失败, 请重新登录"
                     })
                     userInfoStore.token = ''
-                    router.push(loginPath);
+                    if (isMobile()) {
+                        router.push(mobileLoginPath);
+                    } else {
+                        router.push(loginPath);
+                    }
                     layer.closeAll()
                     return responseData;
                 case 403:
