@@ -23,11 +23,7 @@ public class SseHeartbeatCompleteScheduler {
      */
     @XxlJob("sseHeartbeatScheduler")
     public ReturnT<String> sseHeartbeatScheduler() {
-        try {
-            sseEmitterManager.sseHeartbeatSchedule();
-        } catch (Exception e) {
-            return ReturnT.FAIL;
-        }
+        sseEmitterManager.sseHeartbeatSchedule();
         return ReturnT.SUCCESS;
     }
 }
