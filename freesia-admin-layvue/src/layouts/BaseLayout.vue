@@ -25,7 +25,7 @@
       >
         <lay-logo v-if="appStore.logo">
           <lay-avatar :src="bootstrapImageUrl" @click="preview(bootstrapImageUrl)"></lay-avatar>
-          <span style="padding-left: 20px; font-size: 18pt; font-family: 'Consolas'"
+          <span :style="'font-size: 18pt; font-family: \'Consolas\'' + (!isMobile() ? 'padding-left: 20px;' : '')"
                 v-if="!appStore.collapse">Freesia</span>
         </lay-logo>
         <div class="side-menu-wrapper">
@@ -52,10 +52,10 @@
           </div>
         </div>
       </lay-side>
-      <lay-layout style="width: 0px">
+      <lay-layout>
         <!-- 布局头部 -->
         <lay-header style="display: flex">
-          <lay-menu class="layui-layout-left">
+          <lay-menu v-if="!isMobile()" class="layui-layout-left">
             <lay-menu-item @click="collapse">
               <lay-icon
                   v-if="appStore.collapse"
@@ -111,26 +111,28 @@
             </template>
           </lay-dropdown>
           <lay-menu class="layui-layout-right">
+            <lay-menu-item v-if="isMobile()" @click="collapse">
+              <lay-icon
+                  v-if="appStore.collapse"
+                  type="layui-icon-spread-left"
+              ></lay-icon>
+              <lay-icon v-else type="layui-icon-shrink-right"></lay-icon>
+            </lay-menu-item>
             <lay-menu-item>
-              <lay-select
-                  v-model="appStore.currentTenant"
-                  placeholder="请选择租户"
-                  @change="changeTenantSelect"
-              >
+              <lay-select :style="!isMobile() ? 'width: 100%' : 'width: 90%'"
+                          v-model="appStore.currentTenant"
+                          placeholder="请选择租户"
+                          @change="changeTenantSelect">
                 <template v-for="(sysTenant, index) in userInfoStore.sysTenantDtoList" :key="index">
                   <lay-select-option :value="sysTenant.id" :label="sysTenant.name"></lay-select-option>
                 </template>
               </lay-select>
             </lay-menu-item>
-            <lay-menu-item>
+            <lay-menu-item v-if="!isMobile()">
               <lay-fullscreen v-slot="{ toggle, isFullscreen }">
                 <lay-icon
                     @click="toggle()"
-                    :type="
-                    isFullscreen
-                      ? 'layui-icon-screen-restore'
-                      : 'layui-icon-screen-full'
-                  "
+                    :type="isFullscreen ? 'layui-icon-screen-restore' : 'layui-icon-screen-full'"
                 ></lay-icon>
               </lay-fullscreen>
             </lay-menu-item>
@@ -149,7 +151,7 @@
             </lay-menu-item>
             <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
-                <lay-icon style="font-size: 14pt" type="layui-icon-website"></lay-icon>
+                <lay-icon :style="!isMobile() ? 'font-size: 14pt' : 'font-size: 12pt'" type="layui-icon-website"></lay-icon>
                 <template #content>
                   <lay-dropdown-menu>
                     <lay-dropdown-menu-item
@@ -166,11 +168,13 @@
                 </template>
               </lay-dropdown>
             </lay-menu-item>
-            <lay-menu-item>
-              <lay-icon style="font-size: 14pt" type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
+            <lay-menu-item v-if="!isMobile()">
+              <lay-icon :style="!isMobile() ? 'font-size: 14pt' : 'font-size: 12pt'" type="layui-icon-gitee" title="Gitee码云"
+                        @click="toGitee"></lay-icon>
             </lay-menu-item>
-            <lay-menu-item>
-              <lay-icon style="font-size: 14pt" type="layui-icon-read" title="接口文档" @click="toDoc"></lay-icon>
+            <lay-menu-item v-if="!isMobile()">
+              <lay-icon :style="!isMobile() ? 'font-size: 14pt' : 'font-size: 12pt'" type="layui-icon-read" title="接口文档"
+                        @click="toDoc"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
               <lay-dropdown updateAtScroll placement="bottom">
@@ -192,15 +196,17 @@
               </lay-dropdown>
             </lay-menu-item>
             <lay-menu-item @click="changeVisible">
-              <lay-icon style="font-size: 14pt" type="layui-icon-more-vertical"></lay-icon>
+              <lay-icon :style="!isMobile() ? 'font-size: 14pt' : 'font-size: 12pt'" type="layui-icon-more-vertical"></lay-icon>
             </lay-menu-item>
           </lay-menu>
         </lay-header>
         <lay-body>
-          <lay-notice-bar leftIcon="layui-icon-mute"
-                          :scrollable="true"
-                          :textlist="announcementContentList"
-                          mode="closeable" rightIcon="layui-icon-close"></lay-notice-bar>
+          <lay-notice-bar
+              v-if="!isMobile()"
+              leftIcon="layui-icon-mute"
+              :scrollable="true"
+              :textlist="announcementContentList"
+              mode="closeable" rightIcon="layui-icon-close"></lay-notice-bar>
           <global-tab
               :class="
               appStore.tagsTheme == 'concise'
@@ -246,6 +252,7 @@ import {R} from "@/types/Result";
 import {findPublishedAnnouncement, findUnreadCount} from "@/api/system/Notice";
 import {SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
 import {buildRange} from "@/util/UDate";
+import {isMobile} from "@/api/Http";
 
 export interface AnnouncementContent {
   id?: string,
@@ -253,6 +260,7 @@ export interface AnnouncementContent {
 }
 
 export default {
+  methods: {isMobile},
   components: {
     GlobalSetup,
     GlobalContent,
@@ -616,7 +624,7 @@ export default {
 }
 
 .divBadgeIcon {
-  padding-left: 20px;
+  //padding-left: 20px;
   padding-right: 20px;
   align-content: center;
   justify-content: center

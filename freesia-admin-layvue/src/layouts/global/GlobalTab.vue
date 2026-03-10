@@ -61,13 +61,14 @@ import {useTabStore} from '@/layouts/composable/useTabStore'
 import {computed, onMounted, ref, watch} from "vue";
 import router from "@/router";
 import {useRoute} from "vue-router";
+import {isMobile} from "@/api/Http";
 
 const appStore = useAppStore()
 
 const $tab = useTabStore()
 const route = useRoute();
 const routes = router.getRoutes()
-const defaultTabsName = ['Workbench']
+const defaultTabsName = !isMobile() ? ['Workbench'] : ['AccountsDashboard']
 const currentPath = computed(() => route.path);
 const stat = ref('关闭')
 const triggerType = ['contextMenu']
