@@ -12,14 +12,21 @@
         </lay-scroll>
       </div>
       <lay-tooltip trigger="hover" content="待办事项" position="left">
-        <lay-backtop @click="changeDrawer" :showHeight="0" :bottom="100" :bgcolor="backTopColor" circle disabled>
+        <lay-backtop v-if="!isMobile()" @click="changeDrawer" :showHeight="0" :bottom="100" :bgcolor="backTopColor"
+                     circle disabled>
           <lay-badge type="rim" value="10" position="top-right">
             <lay-icon type="layui-icon-success" size="50px"></lay-icon>
           </lay-badge>
         </lay-backtop>
       </lay-tooltip>
+      <lay-tooltip trigger="hover" content="开始记账" position="left">
+        <lay-backtop v-if="isMobile()" @click="changeDrawer" :showHeight="0" :bottom="150" :bgcolor="backTopColor"
+                     circle disabled>
+          <lay-icon type="layui-icon-add-one" size="40px"></lay-icon>
+        </lay-backtop>
+      </lay-tooltip>
       <lay-tooltip trigger="hover" content="返回顶部" position="left">
-        <lay-backtop :showHeight="700" :bgcolor="backTopColor" :circle="true">
+        <lay-backtop :showHeight="600" :bgcolor="backTopColor" :circle="true" :bottom="!isMobile() ? 40 : 90 ">
           <lay-icon type="layui-icon-top" size="50px"></lay-icon>
         </lay-backtop>
       </lay-tooltip>
@@ -35,6 +42,7 @@ import {formatDateTime} from '@/util/UDate'
 import {h, ref} from "vue";
 import {layer} from "@layui/layui-vue";
 import GlobalTodoModal from "@/layouts/global/GlobalTodoModal.vue";
+import {isMobile} from "@/api/Http";
 
 const appStore = useAppStore()
 const $tab = useTabStore()

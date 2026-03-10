@@ -28,6 +28,7 @@ import {findRankByCostType} from "@/api/account/Account";
 import {R} from "@/types/Result";
 import {layer} from "@layui/layui-vue";
 import {useAccountCostStore} from "@/store/accountCost";
+import {isMobile} from "@/api/Http";
 
 /*INIT*/
 const props = defineProps({
@@ -115,7 +116,9 @@ function doFindCostRank() {
             return out;
           }
         },
-        legend: {},
+        legend: {
+          show: !isMobile()
+        },
         grid: {
           left: '3%',
           right: '3%',

@@ -23,7 +23,7 @@
         <CostTypeRatePie/>
       </lay-col>
       <lay-col md="12">
-        <AccountBudget :dataSource="echartCapacityOptionEntityList"/>
+        <AccountBudget v-if="!isMobile()" :dataSource="echartCapacityOptionEntityList"/>
       </lay-col>
     </lay-row>
     <lay-row :space="20">
@@ -74,6 +74,7 @@ import {useAccountCostStore} from "@/store/accountCost";
 import {refreshCache} from "@/api/account/Account";
 import {layer} from "@layui/layui-vue";
 import {cancelAssignUser} from "@/api/system/Role";
+import {isMobile} from "@/api/Http";
 
 /*INIT*/
 onMounted(() => {
