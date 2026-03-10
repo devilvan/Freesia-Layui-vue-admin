@@ -68,6 +68,25 @@
     color: #666;
 }
 
+.layui-header .layui-nav.layui-nav-left {
+}
+
+.layui-header .layui-nav.layui-nav-left .layui-this {
+    background-color: whitesmoke;
+}
+
+.layui-header .layui-nav.layui-nav-left .layui-this:after {
+    display: none;
+}
+
+.layui-header .layui-nav.layui-nav-left .layui-nav-item a {
+    max-width: 10px;
+}
+
+.layui-header .layui-nav.layui-nav-left .layui-nav-item a * {
+    color: #666;
+}
+
 .layui-layout.has-tab .layui-header {
     box-shadow: none;
 }
@@ -82,12 +101,12 @@
 }
 
 .layui-header .layui-nav {
-    padding: 0 5px;
+    padding: 0 0;
 }
 
 .layui-header .layui-nav .layui-nav-item > a {
-    padding: 0 5px;
-    max-width: 180px;
+    padding: 0 0;
+    /*max-width: 180px;*/
 }
 
 .layui-header .layui-nav.layui-layout-left {

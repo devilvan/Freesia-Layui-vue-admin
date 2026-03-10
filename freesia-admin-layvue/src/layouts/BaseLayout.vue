@@ -77,7 +77,7 @@
           <!-- 菜单分组 -->
           <lay-menu
               v-if="appStore.subfield && appStore.subfieldPosition == 'head'"
-              class="layui-nav-center"
+              class="layui-nav-left"
               :selectedKey="mainSelectedKey"
               @changeSelectedKey="changeMainSelectedKey"
           >
@@ -119,7 +119,7 @@
               <lay-icon v-else type="layui-icon-shrink-right"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
-              <lay-select :style="!isMobile() ? 'width: 100%' : 'width: 90%'"
+              <lay-select :style="!isMobile() ? 'width: 100%' : 'width: 100%;max-width: 180px'"
                           v-model="appStore.currentTenant"
                           placeholder="请选择租户"
                           @change="changeTenantSelect">
@@ -624,7 +624,7 @@ export default {
 }
 
 .divBadgeIcon {
-  //padding-left: 20px;
+  padding-left: 20px;
   padding-right: 20px;
   align-content: center;
   justify-content: center
