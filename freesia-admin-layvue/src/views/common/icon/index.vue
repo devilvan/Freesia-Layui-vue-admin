@@ -267,7 +267,6 @@ import {uploadTemp} from "@/api/system/Oss";
 import {SysOssEntity} from "@/types/system/Oss";
 import {getWeekdayCn} from "@/util/UDate";
 import {preview} from "@/util/UImage";
-import {useModalStore} from "@/layouts/composable/useModalStore";
 import app from "@/main";
 
 /* INIT*/
@@ -280,7 +279,6 @@ onMounted(async () => {
 
 /* VAR*/
 const $MENU_PERMISSION = app.config.globalProperties.$MENU_PERMISSION
-const modalStore = useModalStore()
 const searchQuery = ref<CommonIconVo>(<CommonIconVo>{})
 const pageQuery = reactive<PageQuery>({
   current: 1,
