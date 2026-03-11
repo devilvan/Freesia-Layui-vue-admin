@@ -52,6 +52,7 @@
         <mapstruct.version>1.5.3.Final</mapstruct.version>
         <lombok.version>1.18.24</lombok.version>
         <xxljob.version>2.3.1</xxljob.version>
+        <justauth.version>1.16.7</justauth.version>
     </properties>
 
     <profiles>
@@ -307,6 +308,12 @@
                 <groupId>com.xuxueli</groupId>
                 <artifactId>xxl-job-core</artifactId>
                 <version>${xxljob.version}</version>
+            </dependency>
+            <!-- justAuth 第三方授权，在线文档：https://justauth.cn/-->
+            <dependency>
+                <groupId>me.zhyd.oauth</groupId>
+                <artifactId>JustAuth</artifactId>
+                <version>${justauth.version}</version>
             </dependency>
             <!-- 基础模块-->
             <dependency>

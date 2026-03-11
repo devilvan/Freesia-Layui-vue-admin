@@ -22,7 +22,12 @@ public enum DeviceType {
     /**
      * 小程序
      */
-    APPLET("applet");
+    MIN_PROGRAM("minProgram"),
+    /**
+     * 第三方授权
+     */
+    THIRD_PARTY_AUTH("thirdPartyAuth"),
+    ;
 
     private final String device;
 }

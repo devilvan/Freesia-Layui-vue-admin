@@ -88,7 +88,8 @@ public class USecurity {
         if (ObjectUtil.isNotNull(deviceType)) {
             model.setDevice(deviceType.getDevice());
         }
-        StpUtil.login(loginUserModel.getLoginId(), model.setExtra(USER_KEY, loginUserModel.getUserId()));
+        model.setExtra(USER_KEY, loginUserModel.getUserId());
+        StpUtil.login(loginUserModel.getLoginId(), model);
         StpUtil.getTokenSession().set(LOGIN_USER_KEY, loginUserModel);
     }
 
