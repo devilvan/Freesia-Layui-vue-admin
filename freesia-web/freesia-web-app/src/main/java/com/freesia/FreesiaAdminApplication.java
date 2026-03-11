@@ -1,6 +1,5 @@
 package com.freesia;
 
-import cn.hutool.crypto.SecureUtil;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -48,7 +47,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 })
 public class FreesiaAdminApplication {
     public static void main(String[] args) {
-        SecureUtil.disableBouncyCastle();
+//        SecureUtil.disableBouncyCastle();
         SpringApplication.run(FreesiaAdminApplication.class, args);
     }
 }

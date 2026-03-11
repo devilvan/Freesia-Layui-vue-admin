@@ -45,7 +45,7 @@
         <p6spy.version>3.9.1</p6spy.version>
         <satoken.version>1.35.0.RC</satoken.version>
         <aws-java-sdk-s3.version>1.12.540</aws-java-sdk-s3.version>
-        <bcprov-jdk15to18.version>1.64</bcprov-jdk15to18.version>
+        <bcprov-jdk15to18.version>1.78</bcprov-jdk15to18.version>
         <spring-security-crypto.version>5.7.11</spring-security-crypto.version>
         <lock4j-redisson.version>2.2.7</lock4j-redisson.version>
         <javax.mail.version>1.6.2</javax.mail.version>
