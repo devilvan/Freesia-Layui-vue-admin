@@ -49,7 +49,6 @@ public class SseController extends BaseController implements DisposableBean {
     /**
      * 关闭 SSE 连接
      */
-    @SaIgnore
     @GetMapping(value = "${sse.path}/close")
     public R<Void> close() {
         String tokenValue = StpUtil.getTokenValue();

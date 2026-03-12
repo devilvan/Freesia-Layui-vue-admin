@@ -17,6 +17,11 @@
     </properties>
 
     <dependencies>
+        <!-- justAuth 第三方授权，在线文档：https://justauth.cn/-->
+        <dependency>
+            <groupId>me.zhyd.oauth</groupId>
+            <artifactId>JustAuth</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.freesia</groupId>
             <artifactId>freesia-web-framework</artifactId>

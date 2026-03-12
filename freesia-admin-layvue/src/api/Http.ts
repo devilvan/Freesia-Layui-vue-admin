@@ -3,7 +3,6 @@ import {useUserStore} from "@/store/user";
 import {layer} from '@layui/layui-vue';
 import router from '@/router'
 import {useAppStore} from "@/store/app";
-import {name} from "node-rsa";
 
 export let loginPath: string = '/login'
 export let downloadPath = import.meta.env.VITE_APP_DOWNLOAD_PATH;

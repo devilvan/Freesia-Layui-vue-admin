@@ -20,6 +20,7 @@
     "event-source-polyfill": "^1.0.31",
     "js-base64": "^3.7.2",
     "jsencrypt": "^3.3.2",
+    "md-editor-v3": "^6.4.0",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.32",
     "pinia-plugin-persistedstate": "^3.1.0",
