@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysThirdpartyAuthMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.po.SysThirdpartyAuthPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="AUTH_ID" property="authId"/>
+        <result column="SOURCE" property="source"/>
+        <result column="OPEN_ID" property="openId"/>
+        <result column="USER_NAME" property="userName"/>
+        <result column="NICK_NAME" property="nickName"/>
+        <result column="EMAIL" property="email"/>
+        <result column="AVATAR" property="avatar"/>
+        <result column="ACCESS_TOKEN" property="accessToken"/>
+        <result column="EXPIRE_TIMEOUT" property="expireTimeout"/>
+        <result column="REFRESH_TOKEN" property="refreshToken"/>
+        <result column="ACCESS_CODE" property="accessCode"/>
+        <result column="UNION_ID" property="unionId"/>
+        <result column="SCOPE" property="scope"/>
+        <result column="TOKEN_TYPE" property="tokenType"/>
+        <result column="ID_TOKEN" property="idToken"/>
+        <result column="MAC_ALGORITHM" property="macAlgorithm"/>
+        <result column="MAC_KEY" property="macKey"/>
+        <result column="CODE" property="code"/>
+        <result column="OAUTH_TOKEN" property="oauthToken"/>
+        <result column="OAUTH_TOKEN_SECRET" property="oauthTokenSecret"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, AUTH_ID, SOURCE, OPEN_ID, USER_NAME, NICK_NAME, EMAIL, AVATAR, ACCESS_TOKEN, EXPIRE_TIMEOUT, REFRESH_TOKEN, ACCESS_CODE, UNION_ID, SCOPE, TOKEN_TYPE, ID_TOKEN, MAC_ALGORITHM, MAC_KEY, CODE, OAUTH_TOKEN, OAUTH_TOKEN_SECRET
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_THIRDPARTY_AUTH
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.authId != null and dto.authId != ''">
+            AND AUTH_ID = #{dto.authId}
+        </if>
+        <if test="dto.source != null and dto.source != ''">
+            AND SOURCE = #{dto.source}
+        </if>
+        <if test="dto.openId != null and dto.openId != ''">
+            AND OPEN_ID = #{dto.openId}
+        </if>
+        <if test="dto.userName != null and dto.userName != ''">
+            AND USER_NAME = #{dto.userName}
+        </if>
+        <if test="dto.nickName != null and dto.nickName != ''">
+            AND NICK_NAME = #{dto.nickName}
+        </if>
+        <if test="dto.email != null and dto.email != ''">
+            AND EMAIL = #{dto.email}
+        </if>
+        <if test="dto.avatar != null and dto.avatar != ''">
+            AND AVATAR = #{dto.avatar}
+        </if>
+        <if test="dto.accessToken != null and dto.accessToken != ''">
+            AND ACCESS_TOKEN = #{dto.accessToken}
+        </if>
+        <if test="dto.expireTimeout != null">
+            AND EXPIRE_TIMEOUT = #{dto.expireTimeout}
+        </if>
+        <if test="dto.refreshToken != null and dto.refreshToken != ''">
+            AND REFRESH_TOKEN = #{dto.refreshToken}
+        </if>
+        <if test="dto.accessCode != null and dto.accessCode != ''">
+            AND ACCESS_CODE = #{dto.accessCode}
+        </if>
+        <if test="dto.unionId != null and dto.unionId != ''">
+            AND UNION_ID = #{dto.unionId}
+        </if>
+        <if test="dto.scope != null and dto.scope != ''">
+            AND SCOPE = #{dto.scope}
+        </if>
+        <if test="dto.tokenType != null and dto.tokenType != ''">
+            AND TOKEN_TYPE = #{dto.tokenType}
+        </if>
+        <if test="dto.idToken != null and dto.idToken != ''">
+            AND ID_TOKEN = #{dto.idToken}
+        </if>
+        <if test="dto.macAlgorithm != null and dto.macAlgorithm != ''">
+            AND MAC_ALGORITHM = #{dto.macAlgorithm}
+        </if>
+        <if test="dto.macKey != null and dto.macKey != ''">
+            AND MAC_KEY = #{dto.macKey}
+        </if>
+        <if test="dto.code != null and dto.code != ''">
+            AND CODE = #{dto.code}
+        </if>
+        <if test="dto.oauthToken != null and dto.oauthToken != ''">
+            AND OAUTH_TOKEN = #{dto.oauthToken}
+        </if>
+        <if test="dto.oauthTokenSecret != null and dto.oauthTokenSecret != ''">
+            AND OAUTH_TOKEN_SECRET = #{dto.oauthTokenSecret}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_THIRDPARTY_AUTH
+        WHERE LOGIC_DEL = 0
+        <if test="dto.authId != null and dto.authId != ''">
+            AND AUTH_ID = #{dto.authId}
+        </if>
+        <if test="dto.source != null and dto.source != ''">
+            AND SOURCE = #{dto.source}
+        </if>
+        <if test="dto.openId != null and dto.openId != ''">
+            AND OPEN_ID = #{dto.openId}
+        </if>
+        <if test="dto.userName != null and dto.userName != ''">
+            AND USER_NAME = #{dto.userName}
+        </if>
+        <if test="dto.nickName != null and dto.nickName != ''">
+            AND NICK_NAME = #{dto.nickName}
+        </if>
+        <if test="dto.email != null and dto.email != ''">
+            AND EMAIL = #{dto.email}
+        </if>
+        <if test="dto.avatar != null and dto.avatar != ''">
+            AND AVATAR = #{dto.avatar}
+        </if>
+        <if test="dto.accessToken != null and dto.accessToken != ''">
+            AND ACCESS_TOKEN = #{dto.accessToken}
+        </if>
+        <if test="dto.expireTimeout != null">
+            AND EXPIRE_TIMEOUT = #{dto.expireTimeout}
+        </if>
+        <if test="dto.refreshToken != null and dto.refreshToken != ''">
+            AND REFRESH_TOKEN = #{dto.refreshToken}
+        </if>
+        <if test="dto.accessCode != null and dto.accessCode != ''">
+            AND ACCESS_CODE = #{dto.accessCode}
+        </if>
+        <if test="dto.unionId != null and dto.unionId != ''">
+            AND UNION_ID = #{dto.unionId}
+        </if>
+        <if test="dto.scope != null and dto.scope != ''">
+            AND SCOPE = #{dto.scope}
+        </if>
+        <if test="dto.tokenType != null and dto.tokenType != ''">
+            AND TOKEN_TYPE = #{dto.tokenType}
+        </if>
+        <if test="dto.idToken != null and dto.idToken != ''">
+            AND ID_TOKEN = #{dto.idToken}
+        </if>
+        <if test="dto.macAlgorithm != null and dto.macAlgorithm != ''">
+            AND MAC_ALGORITHM = #{dto.macAlgorithm}
+        </if>
+        <if test="dto.macKey != null and dto.macKey != ''">
+            AND MAC_KEY = #{dto.macKey}
+        </if>
+        <if test="dto.code != null and dto.code != ''">
+            AND CODE = #{dto.code}
+        </if>
+        <if test="dto.oauthToken != null and dto.oauthToken != ''">
+            AND OAUTH_TOKEN = #{dto.oauthToken}
+        </if>
+        <if test="dto.oauthTokenSecret != null and dto.oauthTokenSecret != ''">
+            AND OAUTH_TOKEN_SECRET = #{dto.oauthTokenSecret}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_THIRDPARTY_AUTH
+        WHERE LOGIC_DEL = 0
+        <if test="dto.authId != null and dto.authId != ''">
+            AND AUTH_ID = #{dto.authId}
+        </if>
+        <if test="dto.source != null and dto.source != ''">
+            AND SOURCE = #{dto.source}
+        </if>
+        <if test="dto.openId != null and dto.openId != ''">
+            AND OPEN_ID = #{dto.openId}
+        </if>
+        <if test="dto.userName != null and dto.userName != ''">
+            AND USER_NAME = #{dto.userName}
+        </if>
+        <if test="dto.nickName != null and dto.nickName != ''">
+            AND NICK_NAME = #{dto.nickName}
+        </if>
+        <if test="dto.email != null and dto.email != ''">
+            AND EMAIL = #{dto.email}
+        </if>
+        <if test="dto.avatar != null and dto.avatar != ''">
+            AND AVATAR = #{dto.avatar}
+        </if>
+        <if test="dto.accessToken != null and dto.accessToken != ''">
+            AND ACCESS_TOKEN = #{dto.accessToken}
+        </if>
+        <if test="dto.expireTimeout != null">
+            AND EXPIRE_TIMEOUT = #{dto.expireTimeout}
+        </if>
+        <if test="dto.refreshToken != null and dto.refreshToken != ''">
+            AND REFRESH_TOKEN = #{dto.refreshToken}
+        </if>
+        <if test="dto.accessCode != null and dto.accessCode != ''">
+            AND ACCESS_CODE = #{dto.accessCode}
+        </if>
+        <if test="dto.unionId != null and dto.unionId != ''">
+            AND UNION_ID = #{dto.unionId}
+        </if>
+        <if test="dto.scope != null and dto.scope != ''">
+            AND SCOPE = #{dto.scope}
+        </if>
+        <if test="dto.tokenType != null and dto.tokenType != ''">
+            AND TOKEN_TYPE = #{dto.tokenType}
+        </if>
+        <if test="dto.idToken != null and dto.idToken != ''">
+            AND ID_TOKEN = #{dto.idToken}
+        </if>
+        <if test="dto.macAlgorithm != null and dto.macAlgorithm != ''">
+            AND MAC_ALGORITHM = #{dto.macAlgorithm}
+        </if>
+        <if test="dto.macKey != null and dto.macKey != ''">
+            AND MAC_KEY = #{dto.macKey}
+        </if>
+        <if test="dto.code != null and dto.code != ''">
+            AND CODE = #{dto.code}
+        </if>
+        <if test="dto.oauthToken != null and dto.oauthToken != ''">
+            AND OAUTH_TOKEN = #{dto.oauthToken}
+        </if>
+        <if test="dto.oauthTokenSecret != null and dto.oauthTokenSecret != ''">
+            AND OAUTH_TOKEN_SECRET = #{dto.oauthTokenSecret}
+        </if>
+        LIMIT 1
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO SYS_THIRDPARTY_AUTH
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        AUTH_ID, 
+        SOURCE, 
+        OPEN_ID, 
+        USER_NAME, 
+        NICK_NAME, 
+        EMAIL, 
+        AVATAR, 
+        ACCESS_TOKEN, 
+        EXPIRE_TIMEOUT, 
+        REFRESH_TOKEN, 
+        ACCESS_CODE, 
+        UNION_ID, 
+        SCOPE, 
+        TOKEN_TYPE, 
+        ID_TOKEN, 
+        MAC_ALGORITHM, 
+        MAC_KEY, 
+        CODE, 
+        OAUTH_TOKEN, 
+        OAUTH_TOKEN_SECRET
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.authId}, 
+            #{item.source}, 
+            #{item.openId}, 
+            #{item.userName}, 
+            #{item.nickName}, 
+            #{item.email}, 
+            #{item.avatar}, 
+            #{item.accessToken}, 
+            #{item.expireTimeout}, 
+            #{item.refreshToken}, 
+            #{item.accessCode}, 
+            #{item.unionId}, 
+            #{item.scope}, 
+            #{item.tokenType}, 
+            #{item.idToken}, 
+            #{item.macAlgorithm}, 
+            #{item.macKey}, 
+            #{item.code}, 
+            #{item.oauthToken}, 
+            #{item.oauthTokenSecret}
+            )
+        </foreach>
+    </insert>
+</mapper>

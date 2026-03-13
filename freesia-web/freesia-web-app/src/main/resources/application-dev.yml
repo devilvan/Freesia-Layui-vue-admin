@@ -82,6 +82,8 @@ freesia:
         - WORLD_CLOCK_CITY
         - WORLD_CLOCK_SUNRISE_SUNSET
         - COMMON_TODO
+        - SYS_CLIENT
+        - SYS_THIRDPARTY_AUTH
 ---
 login.password:
   # 密码最大错误次数
@@ -217,6 +219,12 @@ springdoc:
         - /api/account*/**
     - group: 12. 通用图标模块
       paths-to-match: /common/commonIcon*/**
+    - group: 13. 通知公告模块
+      paths-to-match: /api/sysNoticeController/**
+    - group: 14. 系统授权模块
+      paths-to-match:
+        -  api/sysClientController/**
+        -  api/sysThirdpartyAuthController/**
 # knife4j的增强配置，不需要增强可以不配
 #knife4j:
 #  enable: true

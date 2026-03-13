@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysClientMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.po.SysClientPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="CLIENT_ID" property="clientId"/>
+        <result column="CLIENT_KEY" property="clientKey"/>
+        <result column="CLIENT_SECRET" property="clientSecret"/>
+        <result column="GRANT_TYPE" property="grantType"/>
+        <result column="DEVICE_TYPE" property="deviceType"/>
+        <result column="ACTIVE_TIMEOUT" property="activeTimeout"/>
+        <result column="TIMEOUT" property="timeout"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, CLIENT_ID, CLIENT_KEY, CLIENT_SECRET, GRANT_TYPE, DEVICE_TYPE, ACTIVE_TIMEOUT, TIMEOUT
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_CLIENT
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.clientId != null">
+            AND CLIENT_ID = #{dto.clientId}
+        </if>
+        <if test="dto.clientKey != null and dto.clientKey != ''">
+            AND CLIENT_KEY = #{dto.clientKey}
+        </if>
+        <if test="dto.clientSecret != null and dto.clientSecret != ''">
+            AND CLIENT_SECRET = #{dto.clientSecret}
+        </if>
+        <if test="dto.grantType != null and dto.grantType != ''">
+            AND GRANT_TYPE = #{dto.grantType}
+        </if>
+        <if test="dto.deviceType != null and dto.deviceType != ''">
+            AND DEVICE_TYPE = #{dto.deviceType}
+        </if>
+        <if test="dto.activeTimeout != null">
+            AND ACTIVE_TIMEOUT = #{dto.activeTimeout}
+        </if>
+        <if test="dto.timeout != null">
+            AND TIMEOUT = #{dto.timeout}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_CLIENT
+        WHERE LOGIC_DEL = 0
+        <if test="dto.clientId != null">
+            AND CLIENT_ID = #{dto.clientId}
+        </if>
+        <if test="dto.clientKey != null and dto.clientKey != ''">
+            AND CLIENT_KEY = #{dto.clientKey}
+        </if>
+        <if test="dto.clientSecret != null and dto.clientSecret != ''">
+            AND CLIENT_SECRET = #{dto.clientSecret}
+        </if>
+        <if test="dto.grantType != null and dto.grantType != ''">
+            AND GRANT_TYPE = #{dto.grantType}
+        </if>
+        <if test="dto.deviceType != null and dto.deviceType != ''">
+            AND DEVICE_TYPE = #{dto.deviceType}
+        </if>
+        <if test="dto.activeTimeout != null">
+            AND ACTIVE_TIMEOUT = #{dto.activeTimeout}
+        </if>
+        <if test="dto.timeout != null">
+            AND TIMEOUT = #{dto.timeout}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_CLIENT
+        WHERE LOGIC_DEL = 0
+        <if test="dto.clientId != null">
+            AND CLIENT_ID = #{dto.clientId}
+        </if>
+        <if test="dto.clientKey != null and dto.clientKey != ''">
+            AND CLIENT_KEY = #{dto.clientKey}
+        </if>
+        <if test="dto.clientSecret != null and dto.clientSecret != ''">
+            AND CLIENT_SECRET = #{dto.clientSecret}
+        </if>
+        <if test="dto.grantType != null and dto.grantType != ''">
+            AND GRANT_TYPE = #{dto.grantType}
+        </if>
+        <if test="dto.deviceType != null and dto.deviceType != ''">
+            AND DEVICE_TYPE = #{dto.deviceType}
+        </if>
+        <if test="dto.activeTimeout != null">
+            AND ACTIVE_TIMEOUT = #{dto.activeTimeout}
+        </if>
+        <if test="dto.timeout != null">
+            AND TIMEOUT = #{dto.timeout}
+        </if>
+        LIMIT 1
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO SYS_CLIENT
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        CLIENT_ID, 
+        CLIENT_KEY, 
+        CLIENT_SECRET, 
+        GRANT_TYPE, 
+        DEVICE_TYPE, 
+        ACTIVE_TIMEOUT, 
+        TIMEOUT
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.clientId}, 
+            #{item.clientKey}, 
+            #{item.clientSecret}, 
+            #{item.grantType}, 
+            #{item.deviceType}, 
+            #{item.activeTimeout}, 
+            #{item.timeout}
+            )
+        </foreach>
+    </insert>
+</mapper>

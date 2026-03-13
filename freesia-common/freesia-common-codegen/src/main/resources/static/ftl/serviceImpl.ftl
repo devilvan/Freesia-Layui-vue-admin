@@ -2,7 +2,9 @@ package ${packageName}.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.freesia.service.impl.BaseServiceImpl;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
 import ${packageName}.vo.${dataBaseDto.className}Vo;
@@ -14,13 +16,10 @@ import ${packageName}.mapper.${dataBaseDto.className}Mapper;
 import ${packageName}.repository.${dataBaseDto.className}Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -32,6 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ${dataBaseDto.className}ServiceImpl extends BaseServiceImpl<${dataBaseDto.className}Mapper, ${dataBaseDto.className}Vo, ${dataBaseDto.className}Dto, ${dataBaseDto.className}Po> implements ${dataBaseDto.className}Service {
     private final ${dataBaseDto.className}Repository ${dataBaseDto.className?uncap_first}Repository;
+    private final ${dataBaseDto.className}Mapper ${dataBaseDto.className?uncap_first}Mapper;
     private final ${dataBaseDto.className}Converter ${dataBaseDto.className?uncap_first}Converter;
 
     @Override
@@ -75,12 +75,10 @@ public class ${dataBaseDto.className}ServiceImpl extends BaseServiceImpl<${dataB
     @Override
     public List<${dataBaseDto.className}Dto> findList(${dataBaseDto.className}Dto dto) {
         return ${dataBaseDto.className?uncap_first}Mapper.findList(dto);
-        return ${dataBaseDto.className?uncap_first}Converter.convertBatchPo2Dto(${dataBaseDto.className?uncap_first}Mapper.findList(dto));
     }
 
     @Override
     public ${dataBaseDto.className}Dto findOne(${dataBaseDto.className}Dto dto) {
-        return ${dataBaseDto.className?uncap_first}Mapper.findOne(dto);
         return ${dataBaseDto.className?uncap_first}Converter.convertPo2Dto(${dataBaseDto.className?uncap_first}Mapper.findOne(dto));
     }
 }
