@@ -1,10 +1,10 @@
-package com.freesia.notice.service;
+package com.freesia.service;
 
-import com.freesia.notice.dto.MarkReadDto;
-import com.freesia.notice.dto.SysNoticeDto;
-import com.freesia.notice.entity.FindPageSysNoticeEntity;
-import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
-import com.freesia.notice.vo.SysNoticeVo;
+import com.freesia.dto.MarkReadDto;
+import com.freesia.dto.SysNoticeDto;
+import com.freesia.entity.FindPageSysNoticeEntity;
+import com.freesia.entity.FindPublishedAnnouncementEntity;
+import com.freesia.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 

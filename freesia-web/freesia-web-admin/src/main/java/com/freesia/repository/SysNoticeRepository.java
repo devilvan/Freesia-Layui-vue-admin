@@ -1,8 +1,8 @@
-package com.freesia.notice.repository;
+package com.freesia.repository;
 
 
-import com.freesia.notice.dto.MarkReadDto;
-import com.freesia.notice.po.SysNoticePo;
+import com.freesia.dto.MarkReadDto;
+import com.freesia.po.SysNoticePo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,4 +1,4 @@
-package com.freesia.notice.constant;
+package com.freesia.constant;
 
 import com.freesia.constant.SysModule;
 import lombok.AccessLevel;

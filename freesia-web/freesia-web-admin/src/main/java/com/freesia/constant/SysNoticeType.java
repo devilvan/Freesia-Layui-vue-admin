@@ -1,20 +1,24 @@
-package com.freesia.notice.constant;
+package com.freesia.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
  * @author Evad.Wu
- * @Description 消息类别 枚举类
- * @date 2025-09-19
+ * @Description 通知/公告 枚举类
+ * @date 2025-06-08
  */
 @Getter
 @AllArgsConstructor
-public enum SysNoticeCategory {
+public enum SysNoticeType {
     /**
-     * 记账
+     * 通知
      */
-    ACCOUNT("ACCOUNT", "记账");
+    NOTICE("NOTICE", "通知"),
+    /**
+     * 公告
+     */
+    ANNOUNCEMENT("ANNOUNCEMENT", "公告");
 
     private final String code;
     private final String desc;
@@ -25,9 +29,9 @@ public enum SysNoticeCategory {
      * @param code 编码
      * @return 枚举对象
      */
-    public static SysNoticeCategory getInstanceByCode(String code) {
-        SysNoticeCategory[] values = SysNoticeCategory.values();
-        for (SysNoticeCategory value : values) {
+    public static SysNoticeType getInstanceByCode(String code) {
+        SysNoticeType[] values = SysNoticeType.values();
+        for (SysNoticeType value : values) {
             if (value.code.equals(code)) {
                 return value;
             }

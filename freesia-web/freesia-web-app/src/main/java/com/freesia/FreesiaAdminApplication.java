@@ -29,21 +29,18 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.freesia.account.mapper",
         "com.freesia.icon.mapper",
         "com.freesia.worldclock.mapper",
-        "com.freesia.notice.mapper",
 })
 @EnableJpaRepositories(basePackages = {
         "com.freesia.repository",
         "com.freesia.account.repository",
         "com.freesia.icon.repository",
         "com.freesia.worldclock.repository",
-        "com.freesia.notice.repository",
 })
 @EntityScan(basePackages = {
         "com.freesia.po",
         "com.freesia.account.po",
         "com.freesia.icon.po",
         "com.freesia.worldclock.po",
-        "com.freesia.notice.po",
 })
 public class FreesiaAdminApplication {
     public static void main(String[] args) {

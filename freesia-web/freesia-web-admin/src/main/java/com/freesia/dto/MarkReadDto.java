@@ -1,4 +1,4 @@
-package com.freesia.notice.dto;
+package com.freesia.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

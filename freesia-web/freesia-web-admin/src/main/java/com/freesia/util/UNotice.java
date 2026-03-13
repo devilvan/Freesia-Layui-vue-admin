@@ -1,7 +1,7 @@
-package com.freesia.notice.util;
+package com.freesia.util;
 
 import com.freesia.function.Modifier;
-import com.freesia.notice.dto.SysNoticeDto;
+import com.freesia.dto.SysNoticeDto;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.util.USpring;
 import lombok.AccessLevel;

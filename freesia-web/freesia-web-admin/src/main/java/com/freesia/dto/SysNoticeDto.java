@@ -1,4 +1,4 @@
-package com.freesia.notice.dto;
+package com.freesia.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.freesia.constant.Constants;

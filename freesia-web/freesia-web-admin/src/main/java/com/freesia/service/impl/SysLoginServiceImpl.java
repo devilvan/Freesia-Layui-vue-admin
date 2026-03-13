@@ -11,7 +11,7 @@ import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.net.util.UServlet;
-import com.freesia.notice.service.SysNoticeService;
+import com.freesia.service.SysNoticeService;
 import com.freesia.po.SysDeptPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.po.SysUserPo;

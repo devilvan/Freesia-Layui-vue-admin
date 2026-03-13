@@ -1,12 +1,12 @@
-package com.freesia.notice.mapper;
+package com.freesia.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.freesia.notice.entity.FindPageSysNoticeEntity;
-import com.freesia.notice.dto.SysNoticeDto;
-import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
-import com.freesia.notice.po.SysNoticePo;
+import com.freesia.entity.FindPageSysNoticeEntity;
+import com.freesia.dto.SysNoticeDto;
+import com.freesia.entity.FindPublishedAnnouncementEntity;
+import com.freesia.po.SysNoticePo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

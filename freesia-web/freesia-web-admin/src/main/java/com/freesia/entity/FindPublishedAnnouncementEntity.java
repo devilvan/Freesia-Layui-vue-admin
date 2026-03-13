@@ -1,6 +1,6 @@
-package com.freesia.notice.entity;
+package com.freesia.entity;
 
-import com.freesia.notice.dto.SysNoticeDto;
+import com.freesia.dto.SysNoticeDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

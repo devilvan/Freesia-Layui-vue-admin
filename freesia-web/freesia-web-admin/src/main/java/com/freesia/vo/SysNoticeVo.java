@@ -1,4 +1,4 @@
-package com.freesia.notice.vo;
+package com.freesia.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.freesia.vo.BaseVo;

@@ -1,7 +1,7 @@
-package com.freesia.notice.event;
+package com.freesia.event;
 
-import com.freesia.notice.dto.SysNoticeDto;
-import com.freesia.notice.service.SysNoticeService;
+import com.freesia.dto.SysNoticeDto;
+import com.freesia.service.SysNoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

@@ -1,17 +1,14 @@
-package com.freesia.notice.controller;
+package com.freesia.controller;
 
-import com.freesia.controller.BaseController;
-import com.freesia.exception.ServiceException;
-import com.freesia.notice.constant.NoticeModule;
-import com.freesia.notice.constant.SysNoticeType;
-import com.freesia.notice.converter.SysNoticeConverter;
-import com.freesia.notice.dto.MarkReadDto;
-import com.freesia.notice.dto.SysNoticeDto;
-import com.freesia.notice.entity.FindPageSysNoticeEntity;
-import com.freesia.notice.entity.FindPublishedAnnouncementEntity;
-import com.freesia.notice.exception.NoticeException;
-import com.freesia.notice.service.SysNoticeService;
-import com.freesia.notice.vo.SysNoticeVo;
+import com.freesia.constant.SysNoticeType;
+import com.freesia.converter.SysNoticeConverter;
+import com.freesia.dto.MarkReadDto;
+import com.freesia.dto.SysNoticeDto;
+import com.freesia.entity.FindPageSysNoticeEntity;
+import com.freesia.entity.FindPublishedAnnouncementEntity;
+import com.freesia.exception.NoticeException;
+import com.freesia.service.SysNoticeService;
+import com.freesia.vo.SysNoticeVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;

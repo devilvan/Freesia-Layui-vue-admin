@@ -1,9 +1,9 @@
-package com.freesia.notice.converter;
+package com.freesia.converter;
 
 import com.freesia.convert.MapStructConverter;
-import com.freesia.notice.dto.SysNoticeDto;
-import com.freesia.notice.po.SysNoticePo;
-import com.freesia.notice.vo.SysNoticeVo;
+import com.freesia.dto.SysNoticeDto;
+import com.freesia.po.SysNoticePo;
+import com.freesia.vo.SysNoticeVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

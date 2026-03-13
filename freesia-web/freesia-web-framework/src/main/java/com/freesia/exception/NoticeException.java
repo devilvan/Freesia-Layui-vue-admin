@@ -1,7 +1,7 @@
-package com.freesia.notice.exception;
+package com.freesia.exception;
 
-import com.freesia.exception.ServiceException;
-import com.freesia.notice.constant.NoticeModule;
+
+import com.freesia.constant.NoticeModule;
 
 import java.io.Serial;
 

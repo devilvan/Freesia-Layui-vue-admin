@@ -1,4 +1,4 @@
-package com.freesia.notice.po;
+package com.freesia.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;

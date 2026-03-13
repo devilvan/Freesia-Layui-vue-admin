@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.freesia.notice.mapper.SysNoticeMapper">
-    <select id="findPublishedAnnouncement" resultType="com.freesia.notice.entity.FindPublishedAnnouncementEntity">
+<mapper namespace="com.freesia.mapper.SysNoticeMapper">
+    <select id="findPublishedAnnouncement" resultType="com.freesia.entity.FindPublishedAnnouncementEntity">
         SELECT SN.ID,
                SN.REC_VER,
                SN.CONTENT,
@@ -48,7 +48,7 @@
           AND SN.EFFECTIVE_TIME_TO IS NULL
           AND NOW() <![CDATA[>=]]> SN.EFFECTIVE_TIME_FROM
     </select>
-    <select id="findPageSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
+    <select id="findPageSysNotice" resultType="com.freesia.entity.FindPageSysNoticeEntity">
         SELECT
         SN.ID,
         SN.CREATOR,
@@ -103,7 +103,7 @@
             AND SN.TYPE = #{sysNoticeDto.type}
         </if>
     </select>
-    <select id="findListSysNotice" resultType="com.freesia.notice.entity.FindPageSysNoticeEntity">
+    <select id="findListSysNotice" resultType="com.freesia.entity.FindPageSysNoticeEntity">
         SELECT
         SN.ID,
         SN.CREATOR,
