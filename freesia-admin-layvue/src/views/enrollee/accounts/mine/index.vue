@@ -122,7 +122,7 @@
         v-model:selected-keys="selectedKeys"
         :columns="columns"
         :data-source="dataSource"
-        :default-toolbar="true"
+        :default-toolbar="defaultToolBar"
         :loading="loading"
         :page="pageQuery"
         :even="false"
@@ -131,7 +131,7 @@
         @change="change"
         @sortChange="sortChange">
       <template #allocStatus="{ row }">
-        {{ 
+        {{
           (() => {
             if (!row.accountCostUserAllocDtoList || row.accountCostUserAllocDtoList.length === 0) return null;
             const flags = row.accountCostUserAllocDtoList.map(item => item.allocFlag) || [];
@@ -243,6 +243,16 @@
         </lay-popconfirm>
       </template>
     </lay-table>
+
+    <lay-dropdown ref="filterManualRef" :alignPoint="true">
+      <template #content>
+        <lay-dropdown-menu>
+          <lay-dropdown-menu-item>选项一</lay-dropdown-menu-item>
+          <lay-dropdown-menu-item>选项二</lay-dropdown-menu-item>
+          <lay-dropdown-menu-item>选项三</lay-dropdown-menu-item>
+        </lay-dropdown-menu>
+      </template>
+    </lay-dropdown>
 
     <lay-layer v-model="addExpenseModalShowFlag" :area="['1200px']" :title="title">
       <div style="padding: 20px" @keydown.enter.prevent="toSubmit(false)" v-esc-close="expenseModalClose">
@@ -493,8 +503,8 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
-import {layer} from '@layui/layui-vue'
+import {h, onMounted, reactive, ref} from 'vue'
+import {LayCheckbox, LayDropdown, layer} from '@layui/layui-vue'
 import {LaySelectEntity, PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {
@@ -531,8 +541,10 @@ import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
 import {findListAllocByCostId, findListSysUserById} from "@/api/account/AccountCostUserAlloc";
 import {AccountCostUserAllocVo} from "@/types/account/AccountCostUserAlloc";
-import {deleteCommonIcon} from "@/api/common/icon/Icon";
 import {useAccountCostStore} from "@/store/accountCost";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {LayIcon} from "@layui/icons-vue";
+import option from "@/views/system/log/option/index.vue";
 
 /* INIT*/
 onMounted(async () => {
@@ -565,7 +577,6 @@ const $ACCOUNT_MENU_PERMISSION = app.config.globalProperties.$ACCOUNT_MENU_PERMI
 const $router = router;
 const paymentSignSelect = ref<Array<SysDictValueEntity>>();
 const paymentSignSelectList = ref<any[]>();
-const allocStatusSelect = ref<Array<SysDictValueEntity>>();
 const searchQuery = ref<AccountCostVo>({})
 const loading = ref(false)
 const selectedKeys = ref<Array<string>>([])
@@ -578,6 +589,37 @@ const addExpenseFormRef = ref(null)
 const expenseAllocationTableRef = ref(null)
 const addExpenseModalShowFlag = ref(false)
 const dataSource = ref<Array<AccountCostEntity>>()
+const filterManualRef = ref(null);
+const defaultToolBar = ref<TableDefaultToolbar[]>([
+  {
+    title: '自定义列', icon: 'layui-icon-slider', render: () => {
+      return h(LayDropdown, { placement: "bottom-end" }, {
+        default: () => h(
+            "div",
+            {
+              class: "layui-table-toolbar-item",
+              title: '自定义列',
+            },
+            h(LayIcon, { type: "layui-icon-slider" }),
+        ),
+
+        content: () => h(
+            "div",
+            { class: "layui-table-tool-checkbox" },
+            columns.value.filter(item => item.title === '金额').map((column, columnIndex) => h(LayCheckbox, {
+              skin: "primary",
+              key: column.key || column.type || columnIndex,
+              value: columnIndex,
+              modelValue: !column.hide,
+              // disabled: isValueArray(column.children),
+
+              onChange: () => column.hide = !column.hide,
+            }, () => column.title)),
+        ),
+      });
+    }
+  }, "export", "print"
+])
 const title = ref('新增')
 const pageQuery = reactive<PageQuery>({
   current: 1,
@@ -586,7 +628,7 @@ const pageQuery = reactive<PageQuery>({
   hideOnSinglePage: false,
   layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })
-const columns = ref([
+const columns = ref<TableColumn[]>([
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '描述', width: '130px', key: 'costDesc', fixed: 'left', ellipsisTooltipTheme: 'dark'},
   {title: '金额', width: '130px', key: 'outlay', sort: 'desc'},

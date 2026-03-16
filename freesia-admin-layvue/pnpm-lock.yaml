@@ -15,8 +15,8 @@ importers:
         specifier: ^1.0.15
         version: 1.0.15
       '@layui/layui-vue':
-        specifier: 2.22.0
-        version: 2.22.0(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))
+        specifier: 2.23.3
+        version: 2.23.3(vue@3.5.13(typescript@4.9.5))
       '@layui/unplugin-vue-components':
         specifier: 0.0.3
         version: 0.0.3(@babel/parser@7.26.10)(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))
@@ -129,10 +129,6 @@ packages:
     resolution: {integrity: sha512-6aQR2zGE/QFi8JpDLjUZEPYOs7+mhKXm86VaKFiLP35JQwQb6bwUE+XbvkH0EptsYhbNBSUGaUBLKqxH1xSgsA==}
     engines: {node: '>=6.0.0'}
     hasBin: true
-
-  '@babel/types@7.21.0':
-    resolution: {integrity: sha512-uR7NWq2VNFnDi7EYqiRz2Jv/VQIu38tu64Zy8TX2nQFQ6etJ9V/Rr2msW8BS132mum2rL645qpDrLtAJtVpuow==}
-    engines: {node: '>=6.9.0'}
 
   '@babel/types@7.26.10':
     resolution: {integrity: sha512-emqcG3vHrpxUKTrxcblR36dcrcoRDvKmnL/dCL6ZsHaShW80qxCAcNhzQZrpeM765VzEos+xOi4s+r4IXzTwdQ==}
@@ -433,8 +429,8 @@ packages:
   '@layui/layer-vue@2.4.8':
     resolution: {integrity: sha512-mZnsXuNS0dm24y/yIIXGyMVeKwTmeO5QEz8IirFOH1syNk6ny3xUQngA9fjVclPElN1UPystnFZtZ6ILYVofNA==}
 
-  '@layui/layui-vue@2.22.0':
-    resolution: {integrity: sha512-MLdylbl1AbtgZ51SYmc8+gc+ctFI1K/UcNanTPrjufmV29+zz1iwYCuLQOOIpuF4btmev/r7V6Ep3ZwF46TVsw==}
+  '@layui/layui-vue@2.23.3':
+    resolution: {integrity: sha512-xLdfsgjK8HDiPoHOUMSaSZeZ+VSzNIWlhSOiMhoUmQUNuDSsJxPJF7w/uXvHltRLJyMu/AXJK89DuMC1oaQUZg==}
 
   '@layui/unplugin-vue-components@0.0.3':
     resolution: {integrity: sha512-s9TLwh9jRUb2ntEqsFy8yy+ZyQTlRx/FFCcP1sXIlxkvHYf4N5VrwcJV91eKCYRaufq8AO9+YMfeHvSh2kfhgw==}
@@ -514,15 +510,6 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
-
-  '@rollup/plugin-terser@0.4.4':
-    resolution: {integrity: sha512-XHeJC5Bgvs8LfukDwWZp7yeqin6ns8RTl2B9avbejt6tZqsqvVoWI7ZTQrcNsfKEDWBTnTxM8nMDkO2IFFbd0A==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
 
   '@rollup/pluginutils@5.1.4':
     resolution: {integrity: sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==}
@@ -658,9 +645,6 @@ packages:
 
   '@types/nprogress@0.2.3':
     resolution: {integrity: sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==}
-
-  '@types/qrcode@1.5.0':
-    resolution: {integrity: sha512-x5ilHXRxUPIMfjtM+1vf/GPTRWZ81nqscursm5gMznJeK9M0YnZ1c3bEvRLQ0zSSgedLx1J6MGL231ObQGGhaA==}
 
   '@types/qs@6.9.18':
     resolution: {integrity: sha512-kK7dgTYDyGqS+e2Q4aK9X3D7q234CIZ1Bv0q/7Z5IwRDoADNU81xXJK/YVyLbLTZCoIwUoDoffFeF+p/eIklAA==}
@@ -1159,9 +1143,6 @@ packages:
 
   event-source-polyfill@1.0.31:
     resolution: {integrity: sha512-4IJSItgS/41IxN5UVAVuAyczwZF7ZIEsM1XAoUzIHA6A+xzusEZUutdXz2Nr+MQPLxfTiCvqE79/C8HT8fKFvA==}
-
-  evtd@0.2.4:
-    resolution: {integrity: sha512-qaeGN5bx63s/AXgQo8gj6fBkxge+OoLddLniox5qtLAEY5HSnuSlISXVPxnSae1dWblvTh4/HoMIB+mbMsvZzw==}
 
   expand-brackets@2.1.4:
     resolution: {integrity: sha512-w/ozOKR9Obk3qoWeY/WDi6MFta9AoMR+zud60mdnbniMcBxRuFJyDt2LdX/14A1UABeqk+Uk+LDfUpvoGKppZA==}
@@ -1893,9 +1874,6 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
-  randombytes@2.1.0:
-    resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
-
   readable-stream@3.6.2:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
     engines: {node: '>= 6'}
@@ -1992,9 +1970,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  serialize-javascript@6.0.2:
-    resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
-
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
 
@@ -2029,9 +2004,6 @@ packages:
   side-channel@1.1.0:
     resolution: {integrity: sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==}
     engines: {node: '>= 0.4'}
-
-  smob@1.5.0:
-    resolution: {integrity: sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==}
 
   snapdragon-node@2.1.1:
     resolution: {integrity: sha512-O27l4xaMYt/RSQ5TR3vpWCAB5Kb/czIcqUFOM/C4fYcLnbZUc1PkjTAMjof2pBWaSTwOUd6qUHcFGVGj7aIwnw==}
@@ -2145,10 +2117,6 @@ packages:
     resolution: {integrity: sha512-LBAhFyLho16harJoWMg/nZsQYgTrg5jXOn2nCYjRUcZZEdE3qa2zb8QEDRUGVZBW4rlazf2fxkg8tztybTaqWw==}
     engines: {node: '>=10'}
     hasBin: true
-
-  to-fast-properties@2.0.0:
-    resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
-    engines: {node: '>=4'}
 
   to-object-path@0.3.0:
     resolution: {integrity: sha512-9mWHdnGRuh3onocaHzukyvCZhzvr6tiflAy/JRFXcJX0TjgfWA9pk9t8CMbzmBE4Jfw58pXbkngtBtqYxzNEyg==}
@@ -2326,6 +2294,7 @@ packages:
   vue-i18n@9.6.3:
     resolution: {integrity: sha512-8uTI7mW0JoB6lZkQySxJEINkjGSfqj7PsrCG5YULJ2l6jSqIoN5BruQCLNuFJduOVG8SIsuAs3bHIco/D3swGg==}
     engines: {node: '>= 16'}
+    deprecated: v9 and v10 no longer supported. please migrate to v11. about maintenance status, see https://vue-i18n.intlify.dev/guide/maintenance.html
     peerDependencies:
       vue: ^3.0.0
 
@@ -2410,12 +2379,6 @@ snapshots:
   '@babel/parser@7.26.10':
     dependencies:
       '@babel/types': 7.26.10
-
-  '@babel/types@7.21.0':
-    dependencies:
-      '@babel/helper-string-parser': 7.25.9
-      '@babel/helper-validator-identifier': 7.25.9
-      to-fast-properties: 2.0.0
 
   '@babel/types@7.26.10':
     dependencies:
@@ -2775,15 +2738,19 @@ snapshots:
       '@jridgewell/set-array': 1.2.1
       '@jridgewell/sourcemap-codec': 1.5.0
       '@jridgewell/trace-mapping': 0.3.25
+    optional: true
 
-  '@jridgewell/resolve-uri@3.1.2': {}
+  '@jridgewell/resolve-uri@3.1.2':
+    optional: true
 
-  '@jridgewell/set-array@1.2.1': {}
+  '@jridgewell/set-array@1.2.1':
+    optional: true
 
   '@jridgewell/source-map@0.3.6':
     dependencies:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
+    optional: true
 
   '@jridgewell/sourcemap-codec@1.5.0': {}
 
@@ -2791,6 +2758,7 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+    optional: true
 
   '@layui/icons-vue@1.1.3': {}
 
@@ -2800,27 +2768,22 @@ snapshots:
     dependencies:
       '@layui/icons-vue': 1.1.3
 
-  '@layui/layui-vue@2.22.0(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))':
+  '@layui/layui-vue@2.23.3(vue@3.5.13(typescript@4.9.5))':
     dependencies:
-      '@babel/types': 7.21.0
       '@ctrl/tinycolor': 3.6.1
       '@floating-ui/dom': 1.6.5
       '@layui/icons-vue': 1.1.3
       '@layui/layer-vue': 2.4.8
-      '@rollup/plugin-terser': 0.4.4(rollup@4.36.0)
-      '@types/qrcode': 1.5.0
       '@umijs/ssr-darkreader': 4.9.45
       '@vueuse/core': 8.7.3(vue@3.5.13(typescript@4.9.5))
       async-validator: 4.2.5
       cropperjs: 1.6.2
       dayjs: 1.11.13
-      evtd: 0.2.4
       jsbarcode: 3.11.5
       qrcode: 1.5.0
       vue-i18n: 9.6.3(vue@3.5.13(typescript@4.9.5))
     transitivePeerDependencies:
       - '@vue/composition-api'
-      - rollup
       - vue
 
   '@layui/unplugin-vue-components@0.0.3(@babel/parser@7.26.10)(rollup@4.36.0)(vue@3.5.13(typescript@4.9.5))':
@@ -2949,14 +2912,6 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
 
-  '@rollup/plugin-terser@0.4.4(rollup@4.36.0)':
-    dependencies:
-      serialize-javascript: 6.0.2
-      smob: 1.5.0
-      terser: 5.39.0
-    optionalDependencies:
-      rollup: 4.36.0
-
   '@rollup/pluginutils@5.1.4(rollup@4.36.0)':
     dependencies:
       '@types/estree': 1.0.6
@@ -3048,10 +3003,6 @@ snapshots:
       undici-types: 5.26.5
 
   '@types/nprogress@0.2.3': {}
-
-  '@types/qrcode@1.5.0':
-    dependencies:
-      '@types/node': 18.19.80
 
   '@types/qs@6.9.18': {}
 
@@ -3276,7 +3227,8 @@ snapshots:
     dependencies:
       fill-range: 7.1.1
 
-  buffer-from@1.1.2: {}
+  buffer-from@1.1.2:
+    optional: true
 
   cache-base@1.0.1:
     dependencies:
@@ -3658,8 +3610,6 @@ snapshots:
   etag@1.8.1: {}
 
   event-source-polyfill@1.0.31: {}
-
-  evtd@0.2.4: {}
 
   expand-brackets@2.1.4:
     dependencies:
@@ -4443,10 +4393,6 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  randombytes@2.1.0:
-    dependencies:
-      safe-buffer: 5.2.1
-
   readable-stream@3.6.2:
     dependencies:
       inherits: 2.0.4
@@ -4569,10 +4515,6 @@ snapshots:
 
   semver@7.7.1: {}
 
-  serialize-javascript@6.0.2:
-    dependencies:
-      randombytes: 2.1.0
-
   set-blocking@2.0.0: {}
 
   set-function-length@1.2.2:
@@ -4632,8 +4574,6 @@ snapshots:
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
 
-  smob@1.5.0: {}
-
   snapdragon-node@2.1.1:
     dependencies:
       define-property: 1.0.0
@@ -4671,6 +4611,7 @@ snapshots:
     dependencies:
       buffer-from: 1.1.2
       source-map: 0.6.1
+    optional: true
 
   source-map-url@0.4.1: {}
 
@@ -4782,8 +4723,7 @@ snapshots:
       acorn: 8.14.1
       commander: 2.20.3
       source-map-support: 0.5.21
-
-  to-fast-properties@2.0.0: {}
+    optional: true
 
   to-object-path@0.3.0:
     dependencies:
