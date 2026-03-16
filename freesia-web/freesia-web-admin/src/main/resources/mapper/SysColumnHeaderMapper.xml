@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysColumnHeaderMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.po.SysColumnHeaderPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="COMPONENT" property="component"/>
+        <result column="ENABLED" property="enabled"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, COMPONENT, ENABLED
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_COLUMN_HEADER
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.component != null and dto.component != ''">
+            AND COMPONENT = #{dto.component}
+        </if>
+        <if test="dto.enabled != null and dto.enabled != ''">
+            AND ENABLED = #{dto.enabled}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_COLUMN_HEADER
+        WHERE LOGIC_DEL = 0
+        <if test="dto.component != null and dto.component != ''">
+            AND COMPONENT = #{dto.component}
+        </if>
+        <if test="dto.enabled != null and dto.enabled != ''">
+            AND ENABLED = #{dto.enabled}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_COLUMN_HEADER
+        WHERE LOGIC_DEL = 0
+        <if test="dto.component != null and dto.component != ''">
+            AND COMPONENT = #{dto.component}
+        </if>
+        <if test="dto.enabled != null and dto.enabled != ''">
+            AND ENABLED = #{dto.enabled}
+        </if>
+        LIMIT 1
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO SYS_COLUMN_HEADER
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        COMPONENT, 
+        ENABLED
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.component}, 
+            #{item.enabled}
+            )
+        </foreach>
+    </insert>
+</mapper>

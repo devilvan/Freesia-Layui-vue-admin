@@ -70,9 +70,9 @@ public class CodeGenerator {
             generateMapperXml(dataBaseDto);
 
             /* 前端*/
-//            generateType(dataBaseDto);
-//            generateApi(dataBaseDto);
-//            generateIndex(dataBaseDto);
+            generateType(dataBaseDto);
+            generateApi(dataBaseDto);
+            generateIndex(dataBaseDto);
         }
     }
 

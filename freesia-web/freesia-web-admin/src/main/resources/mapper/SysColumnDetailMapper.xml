@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SysColumnDetailMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.po.SysColumnDetailPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="HEADER_ID" property="headerId"/>
+        <result column="TITLE" property="title"/>
+        <result column="ENABLED" property="enabled"/>
+        <result column="FIXED" property="fixed"/>
+        <result column="ELLIPSIS_TOOLTIP" property="ellipsisTooltip"/>
+        <result column="WIDTH" property="width"/>
+        <result column="MIN_WIDTH" property="minWidth"/>
+        <result column="MAX_WIDTH" property="maxWidth"/>
+        <result column="ORDER_NUM" property="orderNum"/>
+        <result column="SORTED" property="sorted"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, USER_ID, HEADER_ID, TITLE, ENABLED, FIXED, ELLIPSIS_TOOLTIP, WIDTH, MIN_WIDTH, MAX_WIDTH, ORDER_NUM, SORTED
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_COLUMN_DETAIL
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.userId != null">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.headerId != null">
+            AND HEADER_ID = #{dto.headerId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.enabled != null and dto.enabled != ''">
+            AND ENABLED = #{dto.enabled}
+        </if>
+        <if test="dto.fixed != null and dto.fixed != ''">
+            AND FIXED = #{dto.fixed}
+        </if>
+        <if test="dto.ellipsisTooltip != null and dto.ellipsisTooltip != ''">
+            AND ELLIPSIS_TOOLTIP = #{dto.ellipsisTooltip}
+        </if>
+        <if test="dto.width != null and dto.width != ''">
+            AND WIDTH = #{dto.width}
+        </if>
+        <if test="dto.minWidth != null and dto.minWidth != ''">
+            AND MIN_WIDTH = #{dto.minWidth}
+        </if>
+        <if test="dto.maxWidth != null and dto.maxWidth != ''">
+            AND MAX_WIDTH = #{dto.maxWidth}
+        </if>
+        <if test="dto.orderNum != null">
+            AND ORDER_NUM = #{dto.orderNum}
+        </if>
+        <if test="dto.sorted != null and dto.sorted != ''">
+            AND SORTED = #{dto.sorted}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_COLUMN_DETAIL
+        WHERE LOGIC_DEL = 0
+        <if test="dto.userId != null">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.headerId != null">
+            AND HEADER_ID = #{dto.headerId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.enabled != null and dto.enabled != ''">
+            AND ENABLED = #{dto.enabled}
+        </if>
+        <if test="dto.fixed != null and dto.fixed != ''">
+            AND FIXED = #{dto.fixed}
+        </if>
+        <if test="dto.ellipsisTooltip != null and dto.ellipsisTooltip != ''">
+            AND ELLIPSIS_TOOLTIP = #{dto.ellipsisTooltip}
+        </if>
+        <if test="dto.width != null and dto.width != ''">
+            AND WIDTH = #{dto.width}
+        </if>
+        <if test="dto.minWidth != null and dto.minWidth != ''">
+            AND MIN_WIDTH = #{dto.minWidth}
+        </if>
+        <if test="dto.maxWidth != null and dto.maxWidth != ''">
+            AND MAX_WIDTH = #{dto.maxWidth}
+        </if>
+        <if test="dto.orderNum != null">
+            AND ORDER_NUM = #{dto.orderNum}
+        </if>
+        <if test="dto.sorted != null and dto.sorted != ''">
+            AND SORTED = #{dto.sorted}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SYS_COLUMN_DETAIL
+        WHERE LOGIC_DEL = 0
+        <if test="dto.userId != null">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.headerId != null">
+            AND HEADER_ID = #{dto.headerId}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.enabled != null and dto.enabled != ''">
+            AND ENABLED = #{dto.enabled}
+        </if>
+        <if test="dto.fixed != null and dto.fixed != ''">
+            AND FIXED = #{dto.fixed}
+        </if>
+        <if test="dto.ellipsisTooltip != null and dto.ellipsisTooltip != ''">
+            AND ELLIPSIS_TOOLTIP = #{dto.ellipsisTooltip}
+        </if>
+        <if test="dto.width != null and dto.width != ''">
+            AND WIDTH = #{dto.width}
+        </if>
+        <if test="dto.minWidth != null and dto.minWidth != ''">
+            AND MIN_WIDTH = #{dto.minWidth}
+        </if>
+        <if test="dto.maxWidth != null and dto.maxWidth != ''">
+            AND MAX_WIDTH = #{dto.maxWidth}
+        </if>
+        <if test="dto.orderNum != null">
+            AND ORDER_NUM = #{dto.orderNum}
+        </if>
+        <if test="dto.sorted != null and dto.sorted != ''">
+            AND SORTED = #{dto.sorted}
+        </if>
+        LIMIT 1
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO SYS_COLUMN_DETAIL
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        USER_ID, 
+        HEADER_ID, 
+        TITLE, 
+        ENABLED, 
+        FIXED, 
+        ELLIPSIS_TOOLTIP, 
+        WIDTH, 
+        MIN_WIDTH, 
+        MAX_WIDTH, 
+        ORDER_NUM, 
+        SORTED
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.userId}, 
+            #{item.headerId}, 
+            #{item.title}, 
+            #{item.enabled}, 
+            #{item.fixed}, 
+            #{item.ellipsisTooltip}, 
+            #{item.width}, 
+            #{item.minWidth}, 
+            #{item.maxWidth}, 
+            #{item.orderNum}, 
+            #{item.sorted}
+            )
+        </foreach>
+    </insert>
+</mapper>
