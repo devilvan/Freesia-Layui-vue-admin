@@ -22,7 +22,7 @@ export function find${dataBaseDto.className}(${dataBaseDto.className?uncap_first
  return Http.get("/api/${dataBaseDto.className?uncap_first}Controller/find${dataBaseDto.className}", params);
 }
 
-export function findList${dataBaseDto.className}(${dataBaseDto.className?uncap_first}Vo: ${dataBaseDto.className}Vo): Promise<R<${dataBaseDto.className}Entity>> {
+export function findList${dataBaseDto.className}(${dataBaseDto.className?uncap_first}Vo: ${dataBaseDto.className}Vo): Promise<R<${dataBaseDto.className}Entity[]>> {
  let params = buildUrlParam(${dataBaseDto.className?uncap_first}Vo);
  return Http.get("/api/${dataBaseDto.className?uncap_first}Controller/findList${dataBaseDto.className}", params);
 }

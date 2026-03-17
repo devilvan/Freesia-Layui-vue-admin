@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列头表 持久层
- * @date 2026-03-16
+ * @date 2026-03-17
  */
 @Mapper
 public interface SysColumnHeaderMapper extends BaseMapper<SysColumnHeaderPo> {

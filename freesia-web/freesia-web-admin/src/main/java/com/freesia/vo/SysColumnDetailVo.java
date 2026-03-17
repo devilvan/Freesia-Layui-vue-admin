@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 值对象
- * @date 2026-03-16
+ * @date 2026-03-17
  */
 @Data
 @NoArgsConstructor
@@ -38,15 +38,15 @@ public class SysColumnDetailVo extends BaseVo {
     @Schema(description = "是否过长省略（true-是；false-否）")
     @JsonAlias(value = {"ellipsisTooltip"})
     private Boolean ellipsisTooltip;
-    @Schema(description = "列宽")
+    @Schema(description = "列宽（单位：px）")
     @JsonAlias(value = {"width"})
-    private String width;
+    private Integer width;
     @Schema(description = "最小列宽（单位：px）")
     @JsonAlias(value = {"minWidth"})
-    private String minWidth;
+    private Integer minWidth;
     @Schema(description = "最大列宽（单位：px）")
     @JsonAlias(value = {"maxWidth"})
-    private String maxWidth;
+    private Integer maxWidth;
     @Schema(description = "排序号")
     @JsonAlias(value = {"orderNum"})
     private Integer orderNum;

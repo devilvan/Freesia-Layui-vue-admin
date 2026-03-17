@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 业务逻辑类
- * @date 2026-03-16
+ * @date 2026-03-17
  */
 @Service
 @RequiredArgsConstructor
@@ -41,7 +41,7 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
 
     @Override
     protected JpaRepository<SysColumnDetailPo, Long> getRepository() {
-        return sysColumnDetailRepository;
+    return sysColumnDetailRepository;
     }
 
     @Override
@@ -65,6 +65,9 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getEnabled()), SysColumnDetailPo::getEnabled, sysColumnDetailDto.getEnabled())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getFixed()), SysColumnDetailPo::getFixed, sysColumnDetailDto.getFixed())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getEllipsisTooltip()), SysColumnDetailPo::getEllipsisTooltip, sysColumnDetailDto.getEllipsisTooltip())
+                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getWidth()), SysColumnDetailPo::getWidth, sysColumnDetailDto.getWidth())
+                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getMinWidth()), SysColumnDetailPo::getMinWidth, sysColumnDetailDto.getMinWidth())
+                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getMaxWidth()), SysColumnDetailPo::getMaxWidth, sysColumnDetailDto.getMaxWidth())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getOrderNum()), SysColumnDetailPo::getOrderNum, sysColumnDetailDto.getOrderNum())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getSorted()), SysColumnDetailPo::getSorted, sysColumnDetailDto.getSorted())
                 ;
@@ -81,14 +84,8 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
         return sysColumnDetailMapper.findList(dto);
     }
 
-
     @Override
     public SysColumnDetailDto findOne(SysColumnDetailDto dto) {
         return sysColumnDetailConverter.convertPo2Dto(sysColumnDetailMapper.findOne(dto));
-    }
-
-    @Override
-    public void init() {
-
     }
 }

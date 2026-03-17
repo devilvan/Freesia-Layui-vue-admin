@@ -95,9 +95,45 @@
     <lay-form ref="saveFormRef" :model="saveSysColumnHeaderVo" :rules="saveFromRules" label-position="top">
      <lay-row :space="20">
        <lay-col :md="6">
-        <lay-form-item label="组件名" prop="component">
+        <lay-form-item label="组件ID" prop="componentId">
           <lay-input
-                  v-model="saveSysColumnHeaderVo.component"
+                  v-model="saveSysColumnHeaderVo.componentId"
+                  :allow-clear="true"
+                  size="sm"
+          ></lay-input>
+        </lay-form-item>
+       </lay-col>
+       <lay-col :md="6">
+        <lay-form-item label="组件名" prop="name">
+          <lay-input
+                  v-model="saveSysColumnHeaderVo.name"
+                  :allow-clear="true"
+                  size="sm"
+          ></lay-input>
+        </lay-form-item>
+       </lay-col>
+       <lay-col :md="6">
+        <lay-form-item label="表格高度" prop="height">
+          <lay-input
+                  v-model="saveSysColumnHeaderVo.height"
+                  :allow-clear="true"
+                  size="sm"
+          ></lay-input>
+        </lay-form-item>
+       </lay-col>
+       <lay-col :md="6">
+        <lay-form-item label="表格最大高度" prop="maxHeight">
+          <lay-input
+                  v-model="saveSysColumnHeaderVo.maxHeight"
+                  :allow-clear="true"
+                  size="sm"
+          ></lay-input>
+        </lay-form-item>
+       </lay-col>
+       <lay-col :md="6">
+        <lay-form-item label="初始化分页大小" prop="initPageSize">
+          <lay-input
+                  v-model="saveSysColumnHeaderVo.initPageSize"
                   :allow-clear="true"
                   size="sm"
           ></lay-input>
@@ -107,6 +143,42 @@
         <lay-form-item label="是否启用（true-是；false-否）" prop="enabled">
           <lay-input
                   v-model="saveSysColumnHeaderVo.enabled"
+                  :allow-clear="true"
+                  size="sm"
+          ></lay-input>
+        </lay-form-item>
+       </lay-col>
+       <lay-col :md="6">
+        <lay-form-item label="是否允许单元格列宽拖动（true-是；false-否）" prop="resizeFlag">
+          <lay-input
+                  v-model="saveSysColumnHeaderVo.resizeFlag"
+                  :allow-clear="true"
+                  size="sm"
+          ></lay-input>
+        </lay-form-item>
+       </lay-col>
+       <lay-col :md="6">
+        <lay-form-item label="是否允许根据内容自动计算列宽（true-是；false-否）" prop="autoColsWidthFlag">
+          <lay-input
+                  v-model="saveSysColumnHeaderVo.autoColsWidthFlag"
+                  :allow-clear="true"
+                  size="sm"
+          ></lay-input>
+        </lay-form-item>
+       </lay-col>
+       <lay-col :md="6">
+        <lay-form-item label="是否启用默认工具栏（true-是；false-否）" prop="defaultToolBarFlag">
+          <lay-input
+                  v-model="saveSysColumnHeaderVo.defaultToolBarFlag"
+                  :allow-clear="true"
+                  size="sm"
+          ></lay-input>
+        </lay-form-item>
+       </lay-col>
+       <lay-col :md="6">
+        <lay-form-item label="组件名" prop="component">
+          <lay-input
+                  v-model="saveSysColumnHeaderVo.component"
                   :allow-clear="true"
                   size="sm"
           ></lay-input>
@@ -159,8 +231,16 @@ const dataSource = ref<Array<SysColumnHeaderEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const columns = ref([
  {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
- {title: '组件名', width: '130px', key: 'component'},
+ {title: '组件ID', width: '130px', key: 'componentId'},
+ {title: '组件名', width: '130px', key: 'name'},
+ {title: '表格高度', width: '130px', key: 'height'},
+ {title: '表格最大高度', width: '130px', key: 'maxHeight'},
+ {title: '初始化分页大小', width: '130px', key: 'initPageSize'},
  {title: '是否启用（true-是；false-否）', width: '130px', key: 'enabled'},
+ {title: '是否允许单元格列宽拖动（true-是；false-否）', width: '130px', key: 'resizeFlag'},
+ {title: '是否允许根据内容自动计算列宽（true-是；false-否）', width: '130px', key: 'autoColsWidthFlag'},
+ {title: '是否启用默认工具栏（true-是；false-否）', width: '130px', key: 'defaultToolBarFlag'},
+ {title: '组件名', width: '130px', key: 'component'},
  {
   title: '操作',
   width: '150px',

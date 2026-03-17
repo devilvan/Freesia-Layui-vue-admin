@@ -1,23 +1,24 @@
 package com.freesia.controller;
 
-import com.freesia.converter.SysColumnDetailConverter;
-import com.freesia.dto.SysColumnDetailDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.service.SysColumnDetailService;
-import com.freesia.vo.R;
 import com.freesia.vo.SysColumnDetailVo;
+import com.freesia.dto.SysColumnDetailDto;
+import com.freesia.service.SysColumnDetailService;
+import com.freesia.converter.SysColumnDetailConverter;
+import com.freesia.controller.BaseController;
+import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 控制器
- * @date 2026-03-16
+ * @date 2026-03-17
  */
 @RestController
 @RequiredArgsConstructor

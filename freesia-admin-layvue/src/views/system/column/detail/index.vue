@@ -1,3 +1,4 @@
+<template>
  <lay-container :fluid="true">
 <!--    <lay-card>-->
 <!--      <lay-form ref="queryFormRef" :model="searchQuery"-->
@@ -148,7 +149,7 @@
         </lay-form-item>
        </lay-col>
        <lay-col :md="6">
-        <lay-form-item label="列宽" prop="width">
+        <lay-form-item label="列宽（单位：px）" prop="width">
           <lay-input
                   v-model="saveSysColumnDetailVo.width"
                   :allow-clear="true"
@@ -245,7 +246,7 @@ const columns = ref([
  {title: '是否启用（true-是；false-否）', width: '130px', key: 'enabled'},
  {title: '是否固定（true-是；false-否）', width: '130px', key: 'fixed'},
  {title: '是否过长省略（true-是；false-否）', width: '130px', key: 'ellipsisTooltip'},
- {title: '列宽', width: '130px', key: 'width'},
+ {title: '列宽（单位：px）', width: '130px', key: 'width'},
  {title: '最小列宽（单位：px）', width: '130px', key: 'minWidth'},
  {title: '最大列宽（单位：px）', width: '130px', key: 'maxWidth'},
  {title: '排序号', width: '130px', key: 'orderNum'},

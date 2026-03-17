@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 业务逻辑接口
- * @date 2026-03-16
+ * @date 2026-03-17
  */
 public interface SysColumnDetailService {
     /**
@@ -32,7 +32,7 @@ public interface SysColumnDetailService {
      * 查询系统列明细表信息
      *
      * @param sysColumnDetailDto 查询条件
-     * @param pageQuery          分页条件
+     * @param pageQuery    分页条件
      * @return 分页信息
      */
     TableResult<SysColumnDetailDto> findPage(SysColumnDetailDto sysColumnDetailDto, PageQuery pageQuery);
@@ -59,9 +59,4 @@ public interface SysColumnDetailService {
      * @param idList 主键
      */
     void deleteBatch(List<Long> idList);
-
-    /**
-     * 全表初始化系统列明细表信息
-     */
-    void init();
 }

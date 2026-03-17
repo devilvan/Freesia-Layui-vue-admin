@@ -1,7 +1,10 @@
 package com.freesia.controller;
 
+import com.freesia.dto.SysColumnDetailDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.service.SysColumnDetailService;
+import com.freesia.util.UEmpty;
 import com.freesia.vo.SysColumnHeaderVo;
 import com.freesia.dto.SysColumnHeaderDto;
 import com.freesia.service.SysColumnHeaderService;
@@ -18,7 +21,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列头表 控制器
- * @date 2026-03-16
+ * @date 2026-03-17
  */
 @RestController
 @RequiredArgsConstructor
@@ -27,11 +30,12 @@ import java.util.List;
 public class SysColumnHeaderController extends BaseController {
     private final SysColumnHeaderService sysColumnHeaderService;
     private final SysColumnHeaderConverter sysColumnHeaderConverter;
+    private final SysColumnDetailService sysColumnDetailService;
 
     /**
      * 保存系统列头表信息
      *
-     * @param sysColumnHeaderVo    待保存对象
+     * @param sysColumnHeaderVo 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存系统列头表信息")
@@ -45,7 +49,7 @@ public class SysColumnHeaderController extends BaseController {
     /**
      * 批量保存系统列头表信息
      *
-     * @param sysColumnHeaderVoList    待保存对象
+     * @param sysColumnHeaderVoList 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存系统列头表信息")
@@ -60,7 +64,7 @@ public class SysColumnHeaderController extends BaseController {
      * 查询系统列头表分页信息
      *
      * @param sysColumnHeaderVo 查询条件
-     * @param pageQuery   分页条件
+     * @param pageQuery         分页条件
      * @return 形式返回
      */
     @Operation(summary = "查询系统列头表分页信息")
@@ -81,15 +85,21 @@ public class SysColumnHeaderController extends BaseController {
     public R<SysColumnHeaderDto> findSysColumnHeader(SysColumnHeaderVo sysColumnHeaderVo) {
         SysColumnHeaderDto sysColumnHeaderDto = sysColumnHeaderConverter.convertVo2Dto(sysColumnHeaderVo);
         sysColumnHeaderDto = sysColumnHeaderService.findOne(sysColumnHeaderDto);
+        if (sysColumnHeaderDto != null) {
+            SysColumnDetailDto sysColumnDetailDto = new SysColumnDetailDto();
+            sysColumnDetailDto.setHeaderId(sysColumnHeaderDto.getId());
+            List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.findList(sysColumnDetailDto);
+            sysColumnHeaderDto.setSysColumnDetailDtoList(sysColumnDetailDtoList);
+        }
         return R.ok(sysColumnHeaderDto);
     }
 
     /**
-    * 条件查询系统列头表
-    *
-    * @param sysColumnHeaderVo 查询条件
-    * @return 形式返回
-    */
+     * 条件查询系统列头表
+     *
+     * @param sysColumnHeaderVo 查询条件
+     * @return 形式返回
+     */
     @Operation(summary = "条件查询系统列头表")
     @GetMapping(value = "findListSysColumnHeader")
     public R<List<SysColumnHeaderDto>> findListSysColumnHeader(SysColumnHeaderVo sysColumnHeaderVo) {

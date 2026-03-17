@@ -50,13 +50,13 @@
         <if test="dto.ellipsisTooltip != null and dto.ellipsisTooltip != ''">
             AND ELLIPSIS_TOOLTIP = #{dto.ellipsisTooltip}
         </if>
-        <if test="dto.width != null and dto.width != ''">
+        <if test="dto.width != null">
             AND WIDTH = #{dto.width}
         </if>
-        <if test="dto.minWidth != null and dto.minWidth != ''">
+        <if test="dto.minWidth != null">
             AND MIN_WIDTH = #{dto.minWidth}
         </if>
-        <if test="dto.maxWidth != null and dto.maxWidth != ''">
+        <if test="dto.maxWidth != null">
             AND MAX_WIDTH = #{dto.maxWidth}
         </if>
         <if test="dto.orderNum != null">
@@ -90,13 +90,13 @@
         <if test="dto.ellipsisTooltip != null and dto.ellipsisTooltip != ''">
             AND ELLIPSIS_TOOLTIP = #{dto.ellipsisTooltip}
         </if>
-        <if test="dto.width != null and dto.width != ''">
+        <if test="dto.width != null">
             AND WIDTH = #{dto.width}
         </if>
-        <if test="dto.minWidth != null and dto.minWidth != ''">
+        <if test="dto.minWidth != null">
             AND MIN_WIDTH = #{dto.minWidth}
         </if>
-        <if test="dto.maxWidth != null and dto.maxWidth != ''">
+        <if test="dto.maxWidth != null">
             AND MAX_WIDTH = #{dto.maxWidth}
         </if>
         <if test="dto.orderNum != null">
@@ -105,7 +105,7 @@
         <if test="dto.sorted != null and dto.sorted != ''">
             AND SORTED = #{dto.sorted}
         </if>
-        ORDER BY MODIFY_TIME DESC
+        ORDER BY ORDER_NUM , MODIFY_TIME DESC
     </select>
     <select id="findOne" resultMap="BaseResultMap">
         SELECT
@@ -130,13 +130,13 @@
         <if test="dto.ellipsisTooltip != null and dto.ellipsisTooltip != ''">
             AND ELLIPSIS_TOOLTIP = #{dto.ellipsisTooltip}
         </if>
-        <if test="dto.width != null and dto.width != ''">
+        <if test="dto.width != null">
             AND WIDTH = #{dto.width}
         </if>
-        <if test="dto.minWidth != null and dto.minWidth != ''">
+        <if test="dto.minWidth != null">
             AND MIN_WIDTH = #{dto.minWidth}
         </if>
-        <if test="dto.maxWidth != null and dto.maxWidth != ''">
+        <if test="dto.maxWidth != null">
             AND MAX_WIDTH = #{dto.maxWidth}
         </if>
         <if test="dto.orderNum != null">
@@ -159,16 +159,16 @@
         REC_VER,
         BUILD_IN,
         TENANT_ID,
-        USER_ID, 
-        HEADER_ID, 
-        TITLE, 
-        ENABLED, 
-        FIXED, 
-        ELLIPSIS_TOOLTIP, 
-        WIDTH, 
-        MIN_WIDTH, 
-        MAX_WIDTH, 
-        ORDER_NUM, 
+        USER_ID,
+        HEADER_ID,
+        TITLE,
+        ENABLED,
+        FIXED,
+        ELLIPSIS_TOOLTIP,
+        WIDTH,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        ORDER_NUM,
         SORTED
         )
         VALUES
@@ -183,16 +183,16 @@
             #{item.recVer},
             #{item.buildIn},
             #{item.tenantId},
-            #{item.userId}, 
-            #{item.headerId}, 
-            #{item.title}, 
-            #{item.enabled}, 
-            #{item.fixed}, 
-            #{item.ellipsisTooltip}, 
-            #{item.width}, 
-            #{item.minWidth}, 
-            #{item.maxWidth}, 
-            #{item.orderNum}, 
+            #{item.userId},
+            #{item.headerId},
+            #{item.title},
+            #{item.enabled},
+            #{item.fixed},
+            #{item.ellipsisTooltip},
+            #{item.width},
+            #{item.minWidth},
+            #{item.maxWidth},
+            #{item.orderNum},
             #{item.sorted}
             )
         </foreach>

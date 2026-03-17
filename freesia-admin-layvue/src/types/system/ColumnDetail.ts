@@ -7,9 +7,9 @@ export interface SysColumnDetailVo extends BaseVo {
     enabled?: boolean;
     fixed?: boolean;
     ellipsisTooltip?: boolean;
-    width?: string;
-    minWidth?: string;
-    maxWidth?: string;
+    width?: number;
+    minWidth?: number;
+    maxWidth?: number;
     orderNum?: number;
     sorted?: string;
 }
@@ -21,9 +21,9 @@ export interface SysColumnDetailEntity extends BaseEntity {
     enabled?: boolean;
     fixed?: boolean;
     ellipsisTooltip?: boolean;
-    width?: string;
-    minWidth?: string;
-    maxWidth?: string;
+    width?: number;
+    minWidth?: number;
+    maxWidth?: number;
     orderNum?: number;
     sorted?: string;
 }

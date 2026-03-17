@@ -2,11 +2,11 @@ import Http from "../Http";
 import {PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
-import {SysColumnDetailEntity, SysColumnDetailVo} from "@/types/account/SysColumnDetail";
+import {SysColumnDetailEntity, SysColumnDetailVo} from "@/types/system/ColumnDetail";
 
 export function saveUpdate(sysColumnDetailVo: SysColumnDetailVo): Promise<R<void>> {
  return Http.post("/api/sysColumnDetailController/saveUpdate", sysColumnDetailVo);
- }
+}
 
 export function saveUpdateBatch(sysColumnDetailVoList: Array<SysColumnDetailVo>): Promise<R<void>> {
  return Http.post("/api/sysColumnDetailController/saveUpdateBatch", sysColumnDetailVoList);

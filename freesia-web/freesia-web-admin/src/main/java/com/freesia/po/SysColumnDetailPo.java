@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 映射
- * @date 2026-03-16
+ * @date 2026-03-17
  */
 @Setter
 @Getter
@@ -60,18 +60,18 @@ public class SysColumnDetailPo extends BasePo implements Serializable {
     @TableField(value = "ELLIPSIS_TOOLTIP")
     @Column(name = "ELLIPSIS_TOOLTIP", columnDefinition = "BIT(1) COMMENT '是否过长省略（true-是；false-否）'")
     private Boolean ellipsisTooltip;
-    @Schema(description = "列宽")
+    @Schema(description = "列宽（单位：px）")
     @TableField(value = "WIDTH")
-    @Column(name = "WIDTH", columnDefinition = "VARCHAR(32) COMMENT '列宽'")
-    private String width;
+    @Column(name = "WIDTH", columnDefinition = "INT(10) COMMENT '列宽（单位：px）'")
+    private Integer width;
     @Schema(description = "最小列宽（单位：px）")
     @TableField(value = "MIN_WIDTH")
-    @Column(name = "MIN_WIDTH", columnDefinition = "VARCHAR(32) COMMENT '最小列宽（单位：px）'")
-    private String minWidth;
+    @Column(name = "MIN_WIDTH", columnDefinition = "INT(10) COMMENT '最小列宽（单位：px）'")
+    private Integer minWidth;
     @Schema(description = "最大列宽（单位：px）")
     @TableField(value = "MAX_WIDTH")
-    @Column(name = "MAX_WIDTH", columnDefinition = "VARCHAR(32) COMMENT '最大列宽（单位：px）'")
-    private String maxWidth;
+    @Column(name = "MAX_WIDTH", columnDefinition = "INT(10) COMMENT '最大列宽（单位：px）'")
+    private Integer maxWidth;
     @Schema(description = "排序号")
     @TableField(value = "ORDER_NUM")
     @Column(name = "ORDER_NUM", columnDefinition = "INT(10) COMMENT '排序号'")

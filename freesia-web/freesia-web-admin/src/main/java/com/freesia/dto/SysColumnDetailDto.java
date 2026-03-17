@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 数据传输对象
- * @date 2026-03-16
+ * @date 2026-03-17
  */
 @Data
 @NoArgsConstructor
@@ -30,12 +30,12 @@ public class SysColumnDetailDto extends BaseDto {
     private Boolean fixed;
     @Schema(description = "是否过长省略（true-是；false-否）")
     private Boolean ellipsisTooltip;
-    @Schema(description = "列宽")
-    private String width;
+    @Schema(description = "列宽（单位：px）")
+    private Integer width;
     @Schema(description = "最小列宽（单位：px）")
-    private String minWidth;
+    private Integer minWidth;
     @Schema(description = "最大列宽（单位：px）")
-    private String maxWidth;
+    private Integer maxWidth;
     @Schema(description = "排序号")
     private Integer orderNum;
     @Schema(description = "是否排序（null-不排序；A-顺序；D-倒序）")

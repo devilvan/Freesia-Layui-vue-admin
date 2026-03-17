@@ -11,11 +11,18 @@
         <result column="REC_VER" property="recVer"/>
         <result column="BUILD_IN" property="buildIn"/>
         <result column="TENANT_ID" property="tenantId"/>
-        <result column="COMPONENT" property="component"/>
+        <result column="COMPONENT_ID" property="componentId"/>
+        <result column="NAME" property="name"/>
+        <result column="HEIGHT" property="height"/>
+        <result column="MAX_HEIGHT" property="maxHeight"/>
+        <result column="INIT_PAGE_SIZE" property="initPageSize"/>
         <result column="ENABLED" property="enabled"/>
+        <result column="RESIZE_FLAG" property="resizeFlag"/>
+        <result column="AUTO_COLS_WIDTH_FLAG" property="autoColsWidthFlag"/>
+        <result column="DEFAULT_TOOL_BAR_FLAG" property="defaultToolBarFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, COMPONENT, ENABLED
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, COMPONENT_ID, NAME, HEIGHT, MAX_HEIGHT, INIT_PAGE_SIZE, ENABLED, RESIZE_FLAG, AUTO_COLS_WIDTH_FLAG, DEFAULT_TOOL_BAR_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -23,11 +30,32 @@
         FROM SYS_COLUMN_HEADER
         WHERE
         LOGIC_DEL = 0
-        <if test="dto.component != null and dto.component != ''">
-            AND COMPONENT = #{dto.component}
+        <if test="dto.componentId != null and dto.componentId != ''">
+            AND COMPONENT_ID = #{dto.componentId}
+        </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND NAME = #{dto.name}
+        </if>
+        <if test="dto.height != null">
+            AND HEIGHT = #{dto.height}
+        </if>
+        <if test="dto.maxHeight != null">
+            AND MAX_HEIGHT = #{dto.maxHeight}
+        </if>
+        <if test="dto.initPageSize != null">
+            AND INIT_PAGE_SIZE = #{dto.initPageSize}
         </if>
         <if test="dto.enabled != null and dto.enabled != ''">
             AND ENABLED = #{dto.enabled}
+        </if>
+        <if test="dto.resizeFlag != null and dto.resizeFlag != ''">
+            AND RESIZE_FLAG = #{dto.resizeFlag}
+        </if>
+        <if test="dto.autoColsWidthFlag != null and dto.autoColsWidthFlag != ''">
+            AND AUTO_COLS_WIDTH_FLAG = #{dto.autoColsWidthFlag}
+        </if>
+        <if test="dto.defaultToolBarFlag != null and dto.defaultToolBarFlag != ''">
+            AND DEFAULT_TOOL_BAR_FLAG = #{dto.defaultToolBarFlag}
         </if>
         ORDER BY create_time DESC
     </select>
@@ -36,11 +64,32 @@
         <include refid="Base_Column_List"/>
         FROM SYS_COLUMN_HEADER
         WHERE LOGIC_DEL = 0
-        <if test="dto.component != null and dto.component != ''">
-            AND COMPONENT = #{dto.component}
+        <if test="dto.componentId != null and dto.componentId != ''">
+            AND COMPONENT_ID = #{dto.componentId}
+        </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND NAME = #{dto.name}
+        </if>
+        <if test="dto.height != null">
+            AND HEIGHT = #{dto.height}
+        </if>
+        <if test="dto.maxHeight != null">
+            AND MAX_HEIGHT = #{dto.maxHeight}
+        </if>
+        <if test="dto.initPageSize != null">
+            AND INIT_PAGE_SIZE = #{dto.initPageSize}
         </if>
         <if test="dto.enabled != null and dto.enabled != ''">
             AND ENABLED = #{dto.enabled}
+        </if>
+        <if test="dto.resizeFlag != null and dto.resizeFlag != ''">
+            AND RESIZE_FLAG = #{dto.resizeFlag}
+        </if>
+        <if test="dto.autoColsWidthFlag != null and dto.autoColsWidthFlag != ''">
+            AND AUTO_COLS_WIDTH_FLAG = #{dto.autoColsWidthFlag}
+        </if>
+        <if test="dto.defaultToolBarFlag != null and dto.defaultToolBarFlag != ''">
+            AND DEFAULT_TOOL_BAR_FLAG = #{dto.defaultToolBarFlag}
         </if>
         ORDER BY MODIFY_TIME DESC
     </select>
@@ -49,11 +98,32 @@
         <include refid="Base_Column_List"/>
         FROM SYS_COLUMN_HEADER
         WHERE LOGIC_DEL = 0
-        <if test="dto.component != null and dto.component != ''">
-            AND COMPONENT = #{dto.component}
+        <if test="dto.componentId != null and dto.componentId != ''">
+            AND COMPONENT_ID = #{dto.componentId}
+        </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND NAME = #{dto.name}
+        </if>
+        <if test="dto.height != null">
+            AND HEIGHT = #{dto.height}
+        </if>
+        <if test="dto.maxHeight != null">
+            AND MAX_HEIGHT = #{dto.maxHeight}
+        </if>
+        <if test="dto.initPageSize != null">
+            AND INIT_PAGE_SIZE = #{dto.initPageSize}
         </if>
         <if test="dto.enabled != null and dto.enabled != ''">
             AND ENABLED = #{dto.enabled}
+        </if>
+        <if test="dto.resizeFlag != null and dto.resizeFlag != ''">
+            AND RESIZE_FLAG = #{dto.resizeFlag}
+        </if>
+        <if test="dto.autoColsWidthFlag != null and dto.autoColsWidthFlag != ''">
+            AND AUTO_COLS_WIDTH_FLAG = #{dto.autoColsWidthFlag}
+        </if>
+        <if test="dto.defaultToolBarFlag != null and dto.defaultToolBarFlag != ''">
+            AND DEFAULT_TOOL_BAR_FLAG = #{dto.defaultToolBarFlag}
         </if>
         LIMIT 1
     </select>
@@ -69,8 +139,15 @@
         REC_VER,
         BUILD_IN,
         TENANT_ID,
-        COMPONENT, 
-        ENABLED
+        COMPONENT_ID,
+        NAME,
+        HEIGHT,
+        MAX_HEIGHT,
+        INIT_PAGE_SIZE,
+        ENABLED,
+        RESIZE_FLAG,
+        AUTO_COLS_WIDTH_FLAG,
+        DEFAULT_TOOL_BAR_FLAG
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -84,8 +161,15 @@
             #{item.recVer},
             #{item.buildIn},
             #{item.tenantId},
-            #{item.component}, 
-            #{item.enabled}
+            #{item.componentId},
+            #{item.name},
+            #{item.height},
+            #{item.maxHeight},
+            #{item.initPageSize},
+            #{item.enabled},
+            #{item.resizeFlag},
+            #{item.autoColsWidthFlag},
+            #{item.defaultToolBarFlag}
             )
         </foreach>
     </insert>
