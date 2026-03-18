@@ -29,6 +29,9 @@ public class SysColumnDetailVo extends BaseVo {
     @Schema(description = "列名")
     @JsonAlias(value = {"title"})
     private String title;
+    @Schema(description = "属性名")
+    @JsonAlias(value = {"name"})
+    private String name;
     @Schema(description = "是否启用（true-是；false-否）")
     @JsonAlias(value = {"enabled"})
     private Boolean enabled;

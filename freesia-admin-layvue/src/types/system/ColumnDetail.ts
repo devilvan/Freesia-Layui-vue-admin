@@ -4,6 +4,7 @@ export interface SysColumnDetailVo extends BaseVo {
     userId?: number;
     headerId?: number;
     title?: string;
+    name?: string;
     enabled?: boolean;
     fixed?: boolean;
     ellipsisTooltip?: boolean;
@@ -18,6 +19,7 @@ export interface SysColumnDetailEntity extends BaseEntity {
     userId?: number;
     headerId?: number;
     title?: string;
+    name?: string;
     enabled?: boolean;
     fixed?: boolean;
     ellipsisTooltip?: boolean;

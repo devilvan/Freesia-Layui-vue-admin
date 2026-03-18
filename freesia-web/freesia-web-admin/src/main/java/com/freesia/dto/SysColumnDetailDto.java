@@ -24,6 +24,8 @@ public class SysColumnDetailDto extends BaseDto {
     private Long headerId;
     @Schema(description = "列名")
     private String title;
+    @Schema(description = "属性名")
+    private String name;
     @Schema(description = "是否启用（true-是；false-否）")
     private Boolean enabled;
     @Schema(description = "是否固定（true-是；false-否）")

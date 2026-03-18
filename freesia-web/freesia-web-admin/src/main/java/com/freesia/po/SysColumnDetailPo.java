@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,6 +25,7 @@ import java.math.BigDecimal;
 @ToString
 @NoArgsConstructor
 @Accessors(chain = true)
+@EqualsAndHashCode(callSuper = false)
 @TableName(value = "SYS_COLUMN_DETAIL")
 
 @Entity
@@ -48,6 +46,10 @@ public class SysColumnDetailPo extends BasePo implements Serializable {
     @TableField(value = "TITLE")
     @Column(name = "TITLE", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '列名'")
     private String title;
+    @Schema(description = "属性名")
+    @TableField(value = "TITLE")
+    @Column(name = "NAME", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '属性名'")
+    private String name;
     @Schema(description = "是否启用（true-是；false-否）")
     @TableField(value = "ENABLED")
     @Column(name = "ENABLED", columnDefinition = "BIT(1) COMMENT '是否启用（true-是；false-否）'")
@@ -80,4 +82,12 @@ public class SysColumnDetailPo extends BasePo implements Serializable {
     @TableField(value = "SORTED")
     @Column(name = "SORTED", columnDefinition = "CHAR(1) COMMENT '是否排序（null-不排序；A-顺序；D-倒序）'")
     private String sorted;
+
+    @Schema(description = "图标模板明细在头-明细关系中的头数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @ManyToOne(targetEntity = SysColumnHeaderPo.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "HEADER_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    private SysColumnHeaderPo sysColumnHeaderPo;
 }

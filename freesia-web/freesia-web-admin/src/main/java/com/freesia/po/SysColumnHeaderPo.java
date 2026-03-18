@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,6 +14,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * @author Evad.Wu
@@ -76,4 +74,11 @@ public class SysColumnHeaderPo extends BasePo implements Serializable {
     @TableField(value = "COMPONENT")
     @Column(name = "COMPONENT", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '组件名'")
     private String component;
+
+    @Schema(description = "系统列头在头-明细关系中的系统列明细数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @OneToMany(targetEntity = SysColumnDetailPo.class, mappedBy = "sysColumnHeaderPo", fetch = FetchType.LAZY)
+    private Set<SysColumnDetailPo> sysColumnDetailPoSet;
 }

@@ -7,6 +7,8 @@ import {TableColumn} from "@layui/layui-vue/types/component/table/typing";
 import {SysColumnHeaderEntity, SysColumnHeaderVo} from "@/types/system/ColumnHeader";
 import {R} from "@/types/Result";
 import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
+import {Sorted} from "@/types/Constants";
+import {saveUpdate} from "@/api/system/ColumnDetail";
 
 /**
  * 构建系统自定义列
@@ -20,13 +22,27 @@ export function handleFindSysColumn(component: string, defaultColumns: TableColu
     findSysColumnHeader(param).then((res: R<SysColumnHeaderEntity>) => {
             if (res.code === 200 && res.data) {
                 let sysColumnDetailList = res.data.sysColumnDetailList;
+                let sysColumnHeader: SysColumnHeaderEntity = res.data || {};
                 if (sysColumnDetailList && sysColumnDetailList.length > 0) {
                     sysColumnDetailList.forEach((item: SysColumnDetailEntity) => {
+                        let sorted = "";
+                        if (item.sorted) {
+                            if (item.sorted === "A") {
+                                sorted = Sorted.A;
+                            } else if (item.sorted === "D") {
+                                sorted = Sorted.D;
+                            }
+                        }
                         columns.push({
-                            key: "",
+                            key: item.name || '',
                             title: item.title || '',
-                            hide: item.enabled || true
-
+                            hide: item.enabled || true,
+                            width: item.width + 'px' || "0px",
+                            minWidth: item.minWidth + 'px' || "200px",
+                            sort: sorted,
+                            ellipsisTooltip: item.ellipsisTooltip || false,
+                            fixed: item.fixed ? "left" : (item.fixed || undefined),
+                            resize: sysColumnHeader.resizeFlag || false,
                         })
                     })
                 }
@@ -53,7 +69,10 @@ export function handleFindSysColumn(component: string, defaultColumns: TableColu
                 modelValue: !column.hide,
                 // disabled: isValueArray(column.children),
 
-                onChange: () => column.hide = !column.hide,
+                onChange: () => {
+                    column.hide = !column.hide
+                    saveUpdate({enabled: column.hide}).then(r => r)
+                },
             }, () => column.title)),
         ),
     });

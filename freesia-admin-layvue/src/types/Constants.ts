@@ -13,3 +13,8 @@ export enum Operate {
     EDIT = "EDIT",
     COPY = "COPY"
 }
+
+export enum Sorted {
+    A = "asc",
+    D = "desc"
+}

@@ -14,6 +14,7 @@
         <result column="USER_ID" property="userId"/>
         <result column="HEADER_ID" property="headerId"/>
         <result column="TITLE" property="title"/>
+        <result column="KEY" property="key"/>
         <result column="ENABLED" property="enabled"/>
         <result column="FIXED" property="fixed"/>
         <result column="ELLIPSIS_TOOLTIP" property="ellipsisTooltip"/>
@@ -24,7 +25,7 @@
         <result column="SORTED" property="sorted"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, USER_ID, HEADER_ID, TITLE, ENABLED, FIXED, ELLIPSIS_TOOLTIP, WIDTH, MIN_WIDTH, MAX_WIDTH, ORDER_NUM, SORTED
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, USER_ID, HEADER_ID, TITLE, `KEY`, ENABLED, FIXED, ELLIPSIS_TOOLTIP, WIDTH, MIN_WIDTH, MAX_WIDTH, ORDER_NUM, SORTED
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
