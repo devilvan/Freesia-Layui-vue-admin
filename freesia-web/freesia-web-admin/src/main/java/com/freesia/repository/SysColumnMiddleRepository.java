@@ -1,0 +1,17 @@
+package com.freesia.repository;
+
+
+import com.freesia.po.SysColumnMiddlePo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+/**
+ * @author Evad.Wu
+ * @Description 系统列中间表 持久层
+ * @date 2026-03-20
+ */
+@Repository
+public interface SysColumnMiddleRepository extends JpaRepository<SysColumnMiddlePo, Long> {
+}

@@ -41,7 +41,7 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
 
     @Override
     protected JpaRepository<SysColumnHeaderPo, Long> getRepository() {
-    return sysColumnHeaderRepository;
+        return sysColumnHeaderRepository;
     }
 
     @Override

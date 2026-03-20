@@ -18,13 +18,13 @@ public class MybatisAuditComponent implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         if (metaObject.hasSetter(AuditConstant.CREATOR)) {
-            this.setFieldValByName(AuditConstant.CREATOR, "Evad", metaObject);
+            this.setFieldValByName(AuditConstant.CREATOR, "SYSTEM", metaObject);
         }
         if (metaObject.hasSetter(AuditConstant.CREATE_TIME)) {
             this.setFieldValByName(AuditConstant.CREATE_TIME, new Date(), metaObject);
         }
         if (metaObject.hasSetter(AuditConstant.MODIFIER)) {
-            this.setFieldValByName(AuditConstant.MODIFIER, "Evad", metaObject);
+            this.setFieldValByName(AuditConstant.MODIFIER, "SYSTEM", metaObject);
         }
         if (metaObject.hasSetter(AuditConstant.MODIFY_TIME)) {
             this.setFieldValByName(AuditConstant.MODIFY_TIME, new Date(), metaObject);
@@ -40,7 +40,7 @@ public class MybatisAuditComponent implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         if (metaObject.hasSetter(AuditConstant.MODIFIER)) {
-            this.setFieldValByName(AuditConstant.MODIFIER, "Evad", metaObject);
+            this.setFieldValByName(AuditConstant.MODIFIER, "SYSTEM", metaObject);
         }
         if (metaObject.hasSetter(AuditConstant.MODIFY_TIME)) {
             this.setFieldValByName(AuditConstant.MODIFY_TIME, new Date(), metaObject);

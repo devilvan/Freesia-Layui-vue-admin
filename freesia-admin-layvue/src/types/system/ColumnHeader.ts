@@ -11,7 +11,7 @@ export interface SysColumnHeaderVo extends BaseVo {
     resizeFlag?: boolean;
     autoColsWidthFlag?: boolean;
     defaultToolBarFlag?: boolean;
-    component?: string;
+    defaultColumnList?: Array<DefaultColumnVo>;
 }
 
 export interface SysColumnHeaderEntity extends BaseEntity {
@@ -26,4 +26,16 @@ export interface SysColumnHeaderEntity extends BaseEntity {
     defaultToolBarFlag?: boolean;
     component?: string;
     sysColumnDetailList?: Array<SysColumnDetailEntity>;
+}
+
+export interface DefaultColumnVo {
+    hide: boolean;
+    sorted: string | null;
+    width: number;
+    resize: boolean | string;
+    minWidth: number;
+    fixed: "left" | "right" | null;
+    title: string;
+    ellipsisTooltip: boolean;
+    key?: string
 }

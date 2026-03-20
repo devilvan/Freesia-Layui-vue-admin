@@ -32,7 +32,7 @@ public interface SysColumnDetailService {
      * 查询系统列明细表信息
      *
      * @param sysColumnDetailDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery          分页条件
      * @return 分页信息
      */
     TableResult<SysColumnDetailDto> findPage(SysColumnDetailDto sysColumnDetailDto, PageQuery pageQuery);
@@ -59,4 +59,12 @@ public interface SysColumnDetailService {
      * @param idList 主键
      */
     void deleteBatch(List<Long> idList);
+
+    /**
+     * 根据中间表过滤后的明细
+     *
+     * @param sysColumnDetailDto 查询条件
+     * @return 结果集
+     */
+    List<SysColumnDetailDto> findMiddleList(SysColumnDetailDto sysColumnDetailDto);
 }

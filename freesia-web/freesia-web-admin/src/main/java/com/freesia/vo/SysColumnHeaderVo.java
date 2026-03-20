@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -50,4 +51,6 @@ public class SysColumnHeaderVo extends BaseVo {
     @Schema(description = "组件名")
     @JsonAlias(value = {"component"})
     private String component;
+    @Schema(description = "默认列")
+    private List<DefaultColumnVo> defaultColumnVoList;
 }

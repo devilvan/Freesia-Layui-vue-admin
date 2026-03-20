@@ -18,8 +18,7 @@ export function findPageSysColumnHeader(sysColumnHeaderVo: SysColumnHeaderVo, pa
 }
 
 export function findSysColumnHeader(sysColumnHeaderVo: SysColumnHeaderVo): Promise<R<SysColumnHeaderEntity>> {
-    let params = buildUrlParam(sysColumnHeaderVo);
-    return Http.get("/api/sysColumnHeaderController/findSysColumnHeader", params);
+    return Http.post("/api/sysColumnHeaderController/findSysColumnHeader", sysColumnHeaderVo);
 }
 
 export function findListSysColumnHeader(sysColumnHeaderVo: SysColumnHeaderVo): Promise<R<SysColumnHeaderEntity[]>> {

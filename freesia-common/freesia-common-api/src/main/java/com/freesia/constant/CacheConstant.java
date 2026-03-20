@@ -71,4 +71,12 @@ public final class CacheConstant {
      * 记账模块-查询预算 缓存键
      */
     public static final String FIND_BUDGET = "findBudget:";
+    /**
+     * 管理模块-查询自定义列明细 缓存键
+     */
+    public static final String SYS_COLUMN_DETAIL = "sys_column_detail";
+    /**
+     * 管理模块-查询自定义列中间表 缓存键
+     */
+    public static final String SYS_COLUMN_MIDDLE = "sys_column_middle";
 }

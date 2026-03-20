@@ -75,20 +75,20 @@ public class SysColumnHeaderController extends BaseController {
     }
 
     /**
-     * 条件查询系统列头表
+     * 条件查询系统列头及明细
      *
      * @param sysColumnHeaderVo 查询条件
      * @return 形式返回
      */
-    @Operation(summary = "条件查询系统列头表")
+    @Operation(summary = "条件查询系统列头及明细")
     @GetMapping(value = "findSysColumnHeader")
-    public R<SysColumnHeaderDto> findSysColumnHeader(SysColumnHeaderVo sysColumnHeaderVo) {
+    public R<SysColumnHeaderDto> findSysColumnHeader(@RequestBody SysColumnHeaderVo sysColumnHeaderVo) {
         SysColumnHeaderDto sysColumnHeaderDto = sysColumnHeaderConverter.convertVo2Dto(sysColumnHeaderVo);
         sysColumnHeaderDto = sysColumnHeaderService.findOne(sysColumnHeaderDto);
         if (sysColumnHeaderDto != null) {
             SysColumnDetailDto sysColumnDetailDto = new SysColumnDetailDto();
             sysColumnDetailDto.setHeaderId(sysColumnHeaderDto.getId());
-            List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.findList(sysColumnDetailDto);
+            List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.findMiddleList(sysColumnDetailDto);
             sysColumnHeaderDto.setSysColumnDetailDtoList(sysColumnDetailDtoList);
         }
         return R.ok(sysColumnHeaderDto);

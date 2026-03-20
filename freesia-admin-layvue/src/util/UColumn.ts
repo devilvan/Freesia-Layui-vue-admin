@@ -4,7 +4,7 @@ import {LayCheckbox, LayDropdown} from "@layui/layui-vue";
 import {LayIcon} from "@layui/icons-vue";
 import {findSysColumnHeader} from "@/api/system/ColumnHeader";
 import {TableColumn} from "@layui/layui-vue/types/component/table/typing";
-import {SysColumnHeaderEntity, SysColumnHeaderVo} from "@/types/system/ColumnHeader";
+import {DefaultColumnVo, SysColumnHeaderEntity, SysColumnHeaderVo} from "@/types/system/ColumnHeader";
 import {R} from "@/types/Result";
 import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 import {Sorted} from "@/types/Constants";
@@ -12,11 +12,13 @@ import {saveUpdate} from "@/api/system/ColumnDetail";
 
 /**
  * 构建系统自定义列
- * @param component 组件名
+ * @param name 组件名称
+ * @param defaultColumns 默认展示列表
  */
-export function handleFindSysColumn(component: string, defaultColumns: TableColumn[]): VNode {
+export function handleFindSysColumn(name: string, defaultColumns: TableColumn[]): VNode {
     let param: SysColumnHeaderVo = {
-        component: component
+        name: name,
+        // defaultColumnList: convertToDefaultColumn(defaultColumns),
     }
     let columns: TableColumn[] = []
     findSysColumnHeader(param).then((res: R<SysColumnHeaderEntity>) => {
@@ -46,6 +48,8 @@ export function handleFindSysColumn(component: string, defaultColumns: TableColu
                         })
                     })
                 }
+            } else {
+                columns = defaultColumns;
             }
         }
     )
@@ -76,4 +80,32 @@ export function handleFindSysColumn(component: string, defaultColumns: TableColu
             }, () => column.title)),
         ),
     });
+}
+
+function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultColumnVo[] {
+    return defaultColumns?.map(item => {
+        let sorted = null;
+        if (item.sort) {
+            if (item.sort === "A") {
+                sorted = Sorted.A;
+            } else if (item.sort === "D") {
+                sorted = Sorted.D;
+            }
+        }
+        return {
+            key: item.key,
+            title: item.title || '',
+            hide: item.hide || false,
+            width: parseWidth2Number(item.width) || 120,
+            minWidth: parseWidth2Number(item.minWidth) || 20,
+            sorted: sorted || null,
+            ellipsisTooltip: item.ellipsisTooltip || false,
+            fixed: item.fixed || null,
+            resize: item.resize || '',
+        }
+    })
+}
+
+function parseWidth2Number(width: string | undefined): number {
+    return Number(width?.replace('px', ''));
 }

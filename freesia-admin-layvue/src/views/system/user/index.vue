@@ -254,6 +254,8 @@ import {upload, uploadTemp} from "@/api/system/Oss";
 import {parseImgPath, preview} from "@/util/UImage";
 import {SysDeptSelectEntity} from "@/types/system/Dept";
 import {findTreeAssignDeptSelect} from "@/api/system/Dept";
+import {handleFindSysColumn} from "@/util/UColumn";
+import {TableColumn} from "@layui/layui-vue/types/component/table/typing";
 
 /* INIT*/
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
@@ -262,6 +264,7 @@ const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
+  handleFindSysColumn("User", columns.value)
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   sysGenderListSelect.value = await sysDictValueSelect(sysGenderList.value)
   for (const path in avatarPathGlob) {
@@ -297,7 +300,7 @@ const pageQuery: PageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const columns = ref([
+const columns = ref<TableColumn[]>([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '用户名', width: '80px', key: 'userName'},
   {title: '昵称', width: '80px', key: 'nickName'},

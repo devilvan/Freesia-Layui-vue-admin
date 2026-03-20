@@ -13,8 +13,9 @@
         <result column="TENANT_ID" property="tenantId"/>
         <result column="USER_ID" property="userId"/>
         <result column="HEADER_ID" property="headerId"/>
+        <result column="MIDDLE_ID" property="middleId"/>
         <result column="TITLE" property="title"/>
-        <result column="KEY" property="key"/>
+        <result column="NAME" property="name"/>
         <result column="ENABLED" property="enabled"/>
         <result column="FIXED" property="fixed"/>
         <result column="ELLIPSIS_TOOLTIP" property="ellipsisTooltip"/>
@@ -23,9 +24,10 @@
         <result column="MAX_WIDTH" property="maxWidth"/>
         <result column="ORDER_NUM" property="orderNum"/>
         <result column="SORTED" property="sorted"/>
+        <result column="RESIZE_FLAG" property="resizeFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, USER_ID, HEADER_ID, TITLE, `KEY`, ENABLED, FIXED, ELLIPSIS_TOOLTIP, WIDTH, MIN_WIDTH, MAX_WIDTH, ORDER_NUM, SORTED
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, USER_ID, HEADER_ID, MIDDLE_ID, TITLE, `NAME`, ENABLED, FIXED, ELLIPSIS_TOOLTIP, WIDTH, MIN_WIDTH, MAX_WIDTH, ORDER_NUM, SORTED, RESIZE_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -41,6 +43,9 @@
         </if>
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND NAME = #{dto.name}
         </if>
         <if test="dto.enabled != null and dto.enabled != ''">
             AND ENABLED = #{dto.enabled}
@@ -65,6 +70,9 @@
         </if>
         <if test="dto.sorted != null and dto.sorted != ''">
             AND SORTED = #{dto.sorted}
+        </if>
+        <if test="dto.resizeFlag != null and dto.resizeFlag != ''">
+            AND RESIZE_FLAG = #{dto.resizeFlag}
         </if>
         ORDER BY create_time DESC
     </select>
@@ -82,6 +90,9 @@
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
         </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND NAME = #{dto.name}
+        </if>
         <if test="dto.enabled != null and dto.enabled != ''">
             AND ENABLED = #{dto.enabled}
         </if>
@@ -106,6 +117,9 @@
         <if test="dto.sorted != null and dto.sorted != ''">
             AND SORTED = #{dto.sorted}
         </if>
+        <if test="dto.resizeFlag != null and dto.resizeFlag != ''">
+            AND RESIZE_FLAG = #{dto.resizeFlag}
+        </if>
         ORDER BY ORDER_NUM , MODIFY_TIME DESC
     </select>
     <select id="findOne" resultMap="BaseResultMap">
@@ -121,6 +135,9 @@
         </if>
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND NAME = #{dto.name}
         </if>
         <if test="dto.enabled != null and dto.enabled != ''">
             AND ENABLED = #{dto.enabled}
@@ -148,6 +165,38 @@
         </if>
         LIMIT 1
     </select>
+    <select id="findMiddleList" resultType="com.freesia.dto.SysColumnDetailDto">
+        SELECT DETAIL.ID,
+               DETAIL.CREATOR,
+               DETAIL.CREATE_TIME,
+               DETAIL.MODIFIER,
+               DETAIL.MODIFY_TIME,
+               DETAIL.LOGIC_DEL,
+               DETAIL.REC_VER,
+               DETAIL.BUILD_IN,
+               DETAIL.TENANT_ID,
+               DETAIL.USER_ID,
+               DETAIL.HEADER_ID,
+               DETAIL.MIDDLE_ID,
+               DETAIL.TITLE,
+               DETAIL.NAME,
+               DETAIL.ENABLED,
+               DETAIL.FIXED,
+               DETAIL.ELLIPSIS_TOOLTIP,
+               DETAIL.WIDTH,
+               DETAIL.MIN_WIDTH,
+               DETAIL.MAX_WIDTH,
+               DETAIL.ORDER_NUM,
+               DETAIL.SORTED,
+               DETAIL.RESIZE_FLAG
+        FROM sys_column_header HEADER
+                 LEFT JOIN sys_column_middle MIDDLE
+                           ON MIDDLE.HEADER_ID = HEADER.ID AND MIDDLE.ENABLED = 1 AND MIDDLE.LOGIC_DEL = 0
+                 LEFT JOIN SYS_COLUMN_DETAIL DETAIL ON DETAIL.HEADER_ID = HEADER.ID AND MIDDLE_ID = MIDDLE.ID
+        WHERE DETAIL.LOGIC_DEL = 0
+          AND DETAIL.USER_ID = #{userId}
+          AND DETAIL.HEADER_ID = #{headerId}
+    </select>
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO SYS_COLUMN_DETAIL
         (
@@ -162,7 +211,9 @@
         TENANT_ID,
         USER_ID,
         HEADER_ID,
+        MIDDLE_ID,
         TITLE,
+        NAME,
         ENABLED,
         FIXED,
         ELLIPSIS_TOOLTIP,
@@ -170,32 +221,34 @@
         MIN_WIDTH,
         MAX_WIDTH,
         ORDER_NUM,
-        SORTED
+        SORTED,
+        RESIZE_FLAG
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (
-            #{item.id},
-            #{item.creator},
-            #{item.createTime},
-            #{item.modifier},
-            #{item.modifyTime},
-            #{item.logicDel},
-            #{item.recVer},
-            #{item.buildIn},
-            #{item.tenantId},
-            #{item.userId},
-            #{item.headerId},
-            #{item.title},
-            #{item.enabled},
-            #{item.fixed},
-            #{item.ellipsisTooltip},
-            #{item.width},
-            #{item.minWidth},
-            #{item.maxWidth},
-            #{item.orderNum},
-            #{item.sorted}
-            )
-        </foreach>
+        (
+        #{item.id},
+        #{item.creator},
+        #{item.createTime},
+        #{item.modifier},
+        #{item.modifyTime},
+        #{item.logicDel},
+        #{item.recVer},
+        #{item.buildIn},
+        #{item.tenantId},
+        #{item.userId},
+        #{item.headerId},
+        #{item.middleId},
+        #{item.title},
+        #{item.name},
+        #{item.enabled},
+        #{item.fixed},
+        #{item.ellipsisTooltip},
+        #{item.width},
+        #{item.minWidth},
+        #{item.maxWidth},
+        #{item.orderNum},
+        #{item.sorted},
+        #{item.resizeFlag}
     </insert>
 </mapper>

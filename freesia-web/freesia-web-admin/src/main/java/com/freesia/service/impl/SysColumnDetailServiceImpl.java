@@ -3,6 +3,7 @@ package com.freesia.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.freesia.constant.CacheConstant;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.constant.FlagConstant;
@@ -14,6 +15,8 @@ import com.freesia.service.SysColumnDetailService;
 import com.freesia.converter.SysColumnDetailConverter;
 import com.freesia.mapper.SysColumnDetailMapper;
 import com.freesia.repository.SysColumnDetailRepository;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import com.freesia.util.UEmpty;
@@ -41,7 +44,7 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
 
     @Override
     protected JpaRepository<SysColumnDetailPo, Long> getRepository() {
-    return sysColumnDetailRepository;
+        return sysColumnDetailRepository;
     }
 
     @Override
@@ -65,12 +68,15 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getEnabled()), SysColumnDetailPo::getEnabled, sysColumnDetailDto.getEnabled())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getFixed()), SysColumnDetailPo::getFixed, sysColumnDetailDto.getFixed())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getEllipsisTooltip()), SysColumnDetailPo::getEllipsisTooltip, sysColumnDetailDto.getEllipsisTooltip())
-                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getWidth()), SysColumnDetailPo::getWidth, sysColumnDetailDto.getWidth())
-                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getMinWidth()), SysColumnDetailPo::getMinWidth, sysColumnDetailDto.getMinWidth())
-                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getMaxWidth()), SysColumnDetailPo::getMaxWidth, sysColumnDetailDto.getMaxWidth())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getOrderNum()), SysColumnDetailPo::getOrderNum, sysColumnDetailDto.getOrderNum())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getSorted()), SysColumnDetailPo::getSorted, sysColumnDetailDto.getSorted())
                 ;
+    }
+
+    @Override
+    @CachePut(cacheNames = CacheConstant.SYS_COLUMN_DETAIL, key = "#dto.headerId + '@' + #dto.userId")
+    public SysColumnDetailDto saveUpdate(SysColumnDetailDto dto) {
+        return super.saveUpdate(dto);
     }
 
     @Override
@@ -82,6 +88,12 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
     @Override
     public List<SysColumnDetailDto> findList(SysColumnDetailDto dto) {
         return sysColumnDetailMapper.findList(dto);
+    }
+
+    @Override
+    @Cacheable(cacheNames = CacheConstant.SYS_COLUMN_DETAIL, key = "#dto.headerId + '@' + #dto.userId")
+    public List<SysColumnDetailDto> findMiddleList(SysColumnDetailDto dto) {
+        return sysColumnDetailMapper.findMiddleList(dto);
     }
 
     @Override

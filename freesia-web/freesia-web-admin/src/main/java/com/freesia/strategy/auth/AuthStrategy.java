@@ -1,4 +1,4 @@
-package com.freesia.strategy;
+package com.freesia.strategy.auth;
 
 import com.freesia.util.UEmpty;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ public interface AuthStrategy {
     String NAME = "AuthStrategy";
 
     /**
-     * @author Bliss.Wu
+     * @author Evad.Wu
      * @Description 策略类型
      * @date 2026-03-12
      */

@@ -22,6 +22,8 @@ public class SysColumnDetailDto extends BaseDto {
     private Long userId;
     @Schema(description = "系统列头ID")
     private Long headerId;
+    @Schema(description = "系统列中间表ID")
+    private Long middleId;
     @Schema(description = "列名")
     private String title;
     @Schema(description = "属性名")
@@ -42,4 +44,6 @@ public class SysColumnDetailDto extends BaseDto {
     private Integer orderNum;
     @Schema(description = "是否排序（null-不排序；A-顺序；D-倒序）")
     private String sorted;
+    @Schema(description = "是否允许拖动（true-是；false-否）")
+    private Boolean resizeFlag;
 }

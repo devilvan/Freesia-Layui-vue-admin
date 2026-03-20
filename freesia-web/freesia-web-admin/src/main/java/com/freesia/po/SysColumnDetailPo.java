@@ -42,6 +42,10 @@ public class SysColumnDetailPo extends BasePo implements Serializable {
     @TableField(value = "HEADER_ID")
     @Column(name = "HEADER_ID", columnDefinition = "BIGINT(19) NOT NULL COMMENT '系统列头ID'")
     private Long headerId;
+    @Schema(description = "系统列中间表ID")
+    @TableField(value = "MIDDLE_ID")
+    @Column(name = "MIDDLE_ID", columnDefinition = "BIGINT(19) NOT NULL COMMENT '系统列中间表ID'")
+    private Long middleId;
     @Schema(description = "列名")
     @TableField(value = "TITLE")
     @Column(name = "TITLE", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '列名'")
@@ -82,12 +86,24 @@ public class SysColumnDetailPo extends BasePo implements Serializable {
     @TableField(value = "SORTED")
     @Column(name = "SORTED", columnDefinition = "CHAR(1) COMMENT '是否排序（null-不排序；A-顺序；D-倒序）'")
     private String sorted;
+    @Schema(description = "是否允许拖动（true-是；false-否）")
+    @TableField(value = "RESIZE_FLAG")
+    @Column(name = "RESIZE_FLAG", columnDefinition = "BIT(1) COMMENT '是否允许拖动（true-是；false-否）'")
+    private Boolean resizeFlag;
 
-    @Schema(description = "图标模板明细在头-明细关系中的头数据")
+    @Schema(description = "系统列明细在头-明细关系中的系统列头数据")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @TableField(exist = false)
     @ManyToOne(targetEntity = SysColumnHeaderPo.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "HEADER_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private SysColumnHeaderPo sysColumnHeaderPo;
+
+    @Schema(description = "系统列明细在中间表-明细关系中的系统列中间表数据")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @TableField(exist = false)
+    @ManyToOne(targetEntity = SysColumnMiddlePo.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "MIDDLE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    private SysColumnMiddlePo sysColumnMiddlePo;
 }

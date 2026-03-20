@@ -26,6 +26,9 @@ public class SysColumnDetailVo extends BaseVo {
     @Schema(description = "系统列头ID")
     @JsonAlias(value = {"headerId"})
     private Long headerId;
+    @Schema(description = "系统列中间表ID")
+    @JsonAlias(value = {"middleId"})
+    private Long middleId;
     @Schema(description = "列名")
     @JsonAlias(value = {"title"})
     private String title;
@@ -56,4 +59,7 @@ public class SysColumnDetailVo extends BaseVo {
     @Schema(description = "是否排序（null-不排序；A-顺序；D-倒序）")
     @JsonAlias(value = {"sorted"})
     private String sorted;
+    @Schema(description = "是否允许拖动（true-是；false-否）")
+    @JsonAlias(value = {"resizeFlag"})
+    private Boolean resizeFlag;
 }

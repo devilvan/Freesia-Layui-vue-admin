@@ -1,6 +1,6 @@
-package com.freesia.strategy.impl;
+package com.freesia.strategy.auth.impl;
 
-import com.freesia.strategy.AuthStrategy;
+import com.freesia.strategy.auth.AuthStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

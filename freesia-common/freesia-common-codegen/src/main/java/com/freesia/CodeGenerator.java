@@ -1,6 +1,7 @@
 package com.freesia;
 
 import cn.hutool.core.util.StrUtil;
+import com.freesia.constant.AuditConstant;
 import com.freesia.dto.ColumnFieldDto;
 import com.freesia.dto.DataBaseDto;
 import com.freesia.dto.TableDto;
@@ -141,7 +142,16 @@ public class CodeGenerator {
     private static List<DataBaseDto> printTableStructure(TableDto tbDto) {
         List<DataBaseDto> dataBaseDtoList = new ArrayList<>();
         // 每张表默认的审计字段，在生成的Model中只显示业务字段，而通过继承一个BasePo管理这些审计字段
-        List<String> auditList = List.of("ID", "CREATOR", "CREATE_TIME", "MODIFIER", "MODIFY_TIME", "LOGIC_DEL", "REC_VER", "BUILD_IN", "TENANT_ID");
+        List<String> auditList = List.of(
+                AuditConstant.TABLE_NAME_ID,
+                AuditConstant.TABLE_NAME_CREATOR,
+                AuditConstant.TABLE_NAME_CREATE_TIME,
+                AuditConstant.TABLE_NAME_MODIFIER,
+                AuditConstant.TABLE_NAME_MODIFY_TIME,
+                AuditConstant.TABLE_NAME_LOGIC_DEL,
+                AuditConstant.TABLE_NAME_REC_VER,
+                AuditConstant.TABLE_NAME_BUILD_IN,
+                AuditConstant.TABLE_NAME_TENANT_ID);
         try {
             // JDBC的过程了，加载MySQL驱动-连接-执行-结果集
             Class.forName(tbDto.getDriver());
