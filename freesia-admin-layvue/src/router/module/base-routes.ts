@@ -42,7 +42,7 @@ export const dynamicRoutes = [
             {
                 path: 'assignRole/:userId(\\d+)',
                 component: () => import('@/views/system/user/assignRole.vue'),
-                name: 'AssignRole',
+                name: 'UserAssignRole',
                 meta: {title: '分配角色', affix: false, cache: false, closable: true}
             }
         ]
@@ -56,7 +56,7 @@ export const dynamicRoutes = [
             {
                 path: 'assignUser/:roleId(\\d+)',
                 component: () => import('@/views/system/role/assignUser.vue'),
-                name: 'AssignUser',
+                name: 'RoleAssignUser',
                 meta: {title: '分配用户', affix: false, cache: false, closable: true}
             }
         ]
@@ -70,7 +70,7 @@ export const dynamicRoutes = [
             {
                 path: 'assignButton/:roleId(\\d+)',
                 component: () => import('@/views/system/role/assignButton.vue'),
-                name: 'AssignButton',
+                name: 'RoleAssignButton',
                 meta: {title: '分配按钮权限', affix: false, cache: false, closable: true}
             }
         ]

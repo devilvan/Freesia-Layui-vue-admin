@@ -226,29 +226,31 @@
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
-        (
-        #{item.id},
-        #{item.creator},
-        #{item.createTime},
-        #{item.modifier},
-        #{item.modifyTime},
-        #{item.logicDel},
-        #{item.recVer},
-        #{item.buildIn},
-        #{item.tenantId},
-        #{item.userId},
-        #{item.headerId},
-        #{item.middleId},
-        #{item.title},
-        #{item.name},
-        #{item.enabled},
-        #{item.fixed},
-        #{item.ellipsisTooltip},
-        #{item.width},
-        #{item.minWidth},
-        #{item.maxWidth},
-        #{item.orderNum},
-        #{item.sorted},
-        #{item.resizeFlag}
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.userId},
+            #{item.headerId},
+            #{item.middleId},
+            #{item.title},
+            #{item.name},
+            #{item.enabled},
+            #{item.fixed},
+            #{item.ellipsisTooltip},
+            #{item.width},
+            #{item.minWidth},
+            #{item.maxWidth},
+            #{item.orderNum},
+            #{item.sorted},
+            #{item.resizeFlag}
+            )
+        </foreach>
     </insert>
 </mapper>

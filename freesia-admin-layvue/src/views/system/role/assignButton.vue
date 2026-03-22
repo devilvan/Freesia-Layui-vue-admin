@@ -160,7 +160,7 @@
  * 创建组件时要添加name，否则在使用keep-alive时就会失效
  */
 export default {
-  name: "AssignButton",
+  name: "RoleAssignButton",
 };
 </script>
 <script setup lang="ts">

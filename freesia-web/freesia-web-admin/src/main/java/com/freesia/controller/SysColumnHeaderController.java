@@ -1,20 +1,19 @@
 package com.freesia.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
+import com.freesia.converter.SysColumnHeaderConverter;
 import com.freesia.dto.SysColumnDetailDto;
+import com.freesia.dto.SysColumnHeaderDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.service.SysColumnDetailService;
-import com.freesia.util.UEmpty;
-import com.freesia.vo.SysColumnHeaderVo;
-import com.freesia.dto.SysColumnHeaderDto;
 import com.freesia.service.SysColumnHeaderService;
-import com.freesia.converter.SysColumnHeaderConverter;
-import com.freesia.controller.BaseController;
 import com.freesia.vo.R;
+import com.freesia.vo.SysColumnHeaderVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -52,6 +51,7 @@ public class SysColumnHeaderController extends BaseController {
      * @param sysColumnHeaderVoList 待保存对象
      * @return 形式返回
      */
+    @SaIgnore
     @Operation(summary = "保存系统列头表信息")
     @PostMapping(value = "saveUpdateBatch")
     public R<Void> saveUpdateBatch(@RequestBody List<SysColumnHeaderVo> sysColumnHeaderVoList) {

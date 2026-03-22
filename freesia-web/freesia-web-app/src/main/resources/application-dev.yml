@@ -86,6 +86,7 @@ freesia:
         - SYS_THIRDPARTY_AUTH
         - SYS_COLUMN_HEADER
         - SYS_COLUMN_DETAIL
+        - SYS_COLUMN_MIDDLE
 ---
 login.password:
   # 密码最大错误次数
