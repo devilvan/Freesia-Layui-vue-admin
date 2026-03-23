@@ -1,17 +1,11 @@
 import cn.hutool.core.date.DatePattern;
 import com.freesia.dto.SleepCommentHeaderDto;
-import com.freesia.net.builder.HttpBuilder;
-import com.freesia.net.component.HttpClientComponent;
-import com.freesia.net.dto.HttpClientDto;
 import com.freesia.util.UEmpty;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,9 +13,7 @@ import java.net.Proxy;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SpiderTest {
     @Test
@@ -87,7 +79,7 @@ public class SpiderTest {
     }
 
     @Test
-    public void testRaddit() {
+    public void testReddit() {
         String targetUrl = "https://www.reddit.com/r/EightSleep/comments/1s0u90m/pod_cannot_cool_down_to_desired_temperature/";
         Connection connect = Jsoup.connect(targetUrl)
                 .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 7890)))
