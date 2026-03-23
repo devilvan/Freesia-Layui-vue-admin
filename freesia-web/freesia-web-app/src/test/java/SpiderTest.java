@@ -1,21 +1,35 @@
+import cn.hutool.core.date.DatePattern;
+import com.freesia.dto.SleepCommentHeaderDto;
+import com.freesia.net.builder.HttpBuilder;
 import com.freesia.net.component.HttpClientComponent;
+import com.freesia.net.dto.HttpClientDto;
 import com.freesia.util.UEmpty;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SpiderTest {
     @Test
     public void testTrustpilot() {
+        int maxPage = 31;
         String targetUrl = "";
-        for (int i = 1; i <= 31; i++) {
+        List<SleepCommentHeaderDto> sleepCommentHeaderDtoList = new ArrayList<>();
+        for (int i = 1; i <= maxPage; i++) {
             if (i == 1) {
                 targetUrl = "https://www.trustpilot.com/review/eightsleep.com";
             } else {
@@ -30,14 +44,46 @@ public class SpiderTest {
                 e.printStackTrace();
             }
             if (body != null) {
-                Elements elements = body.select("div.styles_wrapper__ie3f0");
-                if (UEmpty.isNotEmpty(elements)) {
-                    for (Element element : elements) {
-                        System.out.println(element.text());
+                SleepCommentHeaderDto dto = new SleepCommentHeaderDto();
+                dto.setSource("TrustPilot");
+
+                Elements elementList = body.select("div.styles_wrapper__ie3f0");
+                if (UEmpty.isNotEmpty(elementList)) {
+                    SimpleDateFormat sdf = new SimpleDateFormat(DatePattern.NORM_DATETIME_PATTERN);
+                    for (int j = 0; j < elementList.size(); j++) {
+                        Element element = elementList.get(i);
+                        Element userNameElement = element.selectFirst(".styles_reviewCardInnerHeader__8Xqy8 > aside > div > a > span");
+                        String username = userNameElement.text();
+                        System.out.println("userName: " + username);
+                        String operateTime = element.selectFirst("div > article > div > div.styles_reviewCardInnerHeader__8Xqy8 > div > time").attr("datetime");
+                        System.out.println("operateTime: " + operateTime);
+                        String levelStr = element.selectFirst("article > div > section > div.styles_reviewHeader__DzoAZ").attr("data-service-review-rating");
+                        if (UEmpty.isNotEmpty(levelStr)) {
+                            int level = Integer.parseInt(levelStr);
+                            dto.setLevel(levelStr);
+                            System.out.println("level: " + level);
+                        }
+                        String title = element.selectFirst("article > div > section > div.styles_reviewContent__tuXiN > a > h2").text();
+                        System.out.println("title: " + title);
+                        String content = element.selectFirst("article > div > section > div.styles_reviewContent__tuXiN > p").text();
+                        System.out.println("content: " + content);
+                        dto.setUserId(null);
+                        dto.setUserName(username);
+                        dto.setContent(content);
+                        try {
+                            dto.setOperateTime(sdf.parse(operateTime));
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        dto.setFloor(String.valueOf(j + 1));
+                        dto.setContentType("COMMENT");
+                        dto.setUrl(targetUrl);
                     }
                 }
+                sleepCommentHeaderDtoList.add(dto);
             }
         }
+//        saveUpdateBatch(sleepCommentHeaderDtoList);
     }
 
     @Test
@@ -88,13 +134,12 @@ public class SpiderTest {
             connect.header("sec-fetch-storage-access", "active");
             Element body = null;
             try {
-                Document document = connect.get();
-                System.out.println(document.html());
+                body = connect.get().body();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             if (body != null) {
-                Elements elements = body.select(".card.bpr-review.stack.dtm-review");
+                Elements elements = body.select(".card");
                 if (UEmpty.isNotEmpty(elements)) {
                     for (Element element : elements) {
                         System.out.println(element.text());

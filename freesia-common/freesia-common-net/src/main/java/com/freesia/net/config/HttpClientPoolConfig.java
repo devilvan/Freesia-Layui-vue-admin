@@ -27,7 +27,7 @@ public class HttpClientPoolConfig {
     }
 
     @Bean
-    public RequestConfig getBetriceRequestConfig() {
+    public RequestConfig getRequestConfig() {
         return RequestConfig.custom()
                 // 从连接池获取连接的timeout
                 .setConnectionRequestTimeout(1000)

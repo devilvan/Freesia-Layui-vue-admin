@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.mapper.SleepCommentHeaderMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.po.SleepCommentHeaderPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="SOURCE" property="source"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="USER_NAME" property="userName"/>
+        <result column="TITLE" property="title"/>
+        <result column="CONTENT" property="content"/>
+        <result column="LEVEL" property="level"/>
+        <result column="OPERATE_TIME" property="operateTime"/>
+        <result column="FLOOR" property="floor"/>
+        <result column="CONTENT_TYPE" property="contentType"/>
+        <result column="URL" property="url"/>
+        <result column="GRADE" property="grade"/>
+        <result column="COMMENT_NUM" property="commentNum"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, SOURCE, USER_ID, USER_NAME, TITLE, CONTENT, LEVEL, OPERATE_TIME, FLOOR, CONTENT_TYPE, URL, GRADE, COMMENT_NUM
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SLEEP_COMMENT_HEADER
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.source != null and dto.source != ''">
+            AND SOURCE = #{dto.source}
+        </if>
+        <if test="dto.userId != null and dto.userId != ''">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.userName != null and dto.userName != ''">
+            AND USER_NAME = #{dto.userName}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.content != null and dto.content != ''">
+            AND CONTENT = #{dto.content}
+        </if>
+        <if test="dto.level != null and dto.level != ''">
+            AND LEVEL = #{dto.level}
+        </if>
+        <if test="dto.operateTime != null">
+            AND OPERATE_TIME = #{dto.operateTime}
+        </if>
+        <if test="dto.floor != null and dto.floor != ''">
+            AND FLOOR = #{dto.floor}
+        </if>
+        <if test="dto.contentType != null and dto.contentType != ''">
+            AND CONTENT_TYPE = #{dto.contentType}
+        </if>
+        <if test="dto.url != null and dto.url != ''">
+            AND URL = #{dto.url}
+        </if>
+        <if test="dto.grade != null">
+            AND GRADE = #{dto.grade}
+        </if>
+        <if test="dto.commentNum != null">
+            AND COMMENT_NUM = #{dto.commentNum}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SLEEP_COMMENT_HEADER
+        WHERE LOGIC_DEL = 0
+        <if test="dto.source != null and dto.source != ''">
+            AND SOURCE = #{dto.source}
+        </if>
+        <if test="dto.userId != null and dto.userId != ''">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.userName != null and dto.userName != ''">
+            AND USER_NAME = #{dto.userName}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.content != null and dto.content != ''">
+            AND CONTENT = #{dto.content}
+        </if>
+        <if test="dto.level != null and dto.level != ''">
+            AND LEVEL = #{dto.level}
+        </if>
+        <if test="dto.operateTime != null">
+            AND OPERATE_TIME = #{dto.operateTime}
+        </if>
+        <if test="dto.floor != null and dto.floor != ''">
+            AND FLOOR = #{dto.floor}
+        </if>
+        <if test="dto.contentType != null and dto.contentType != ''">
+            AND CONTENT_TYPE = #{dto.contentType}
+        </if>
+        <if test="dto.url != null and dto.url != ''">
+            AND URL = #{dto.url}
+        </if>
+        <if test="dto.grade != null">
+            AND GRADE = #{dto.grade}
+        </if>
+        <if test="dto.commentNum != null">
+            AND COMMENT_NUM = #{dto.commentNum}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM SLEEP_COMMENT_HEADER
+        WHERE LOGIC_DEL = 0
+        <if test="dto.source != null and dto.source != ''">
+            AND SOURCE = #{dto.source}
+        </if>
+        <if test="dto.userId != null and dto.userId != ''">
+            AND USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.userName != null and dto.userName != ''">
+            AND USER_NAME = #{dto.userName}
+        </if>
+        <if test="dto.title != null and dto.title != ''">
+            AND TITLE = #{dto.title}
+        </if>
+        <if test="dto.content != null and dto.content != ''">
+            AND CONTENT = #{dto.content}
+        </if>
+        <if test="dto.level != null and dto.level != ''">
+            AND LEVEL = #{dto.level}
+        </if>
+        <if test="dto.operateTime != null">
+            AND OPERATE_TIME = #{dto.operateTime}
+        </if>
+        <if test="dto.floor != null and dto.floor != ''">
+            AND FLOOR = #{dto.floor}
+        </if>
+        <if test="dto.contentType != null and dto.contentType != ''">
+            AND CONTENT_TYPE = #{dto.contentType}
+        </if>
+        <if test="dto.url != null and dto.url != ''">
+            AND URL = #{dto.url}
+        </if>
+        <if test="dto.grade != null">
+            AND GRADE = #{dto.grade}
+        </if>
+        <if test="dto.commentNum != null">
+            AND COMMENT_NUM = #{dto.commentNum}
+        </if>
+        LIMIT 1
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO SLEEP_COMMENT_HEADER
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        SOURCE, 
+        USER_ID, 
+        USER_NAME, 
+        TITLE, 
+        CONTENT, 
+        LEVEL, 
+        OPERATE_TIME, 
+        FLOOR, 
+        CONTENT_TYPE, 
+        URL, 
+        GRADE, 
+        COMMENT_NUM
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.source}, 
+            #{item.userId}, 
+            #{item.userName}, 
+            #{item.title}, 
+            #{item.content}, 
+            #{item.level}, 
+            #{item.operateTime}, 
+            #{item.floor}, 
+            #{item.contentType}, 
+            #{item.url}, 
+            #{item.grade}, 
+            #{item.commentNum}
+            )
+        </foreach>
+    </insert>
+</mapper>

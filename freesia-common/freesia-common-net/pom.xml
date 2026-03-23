@@ -35,5 +35,9 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-framework</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
     </dependencies>
 </project>
