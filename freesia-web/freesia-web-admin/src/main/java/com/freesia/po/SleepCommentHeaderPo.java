@@ -76,12 +76,20 @@ public class SleepCommentHeaderPo extends BasePo implements Serializable {
     @TableField(value = "URL")
     @Column(name = "URL", columnDefinition = "TEXT(65,535) COMMENT 'URL'")
     private String url;
-    @Schema(description = "评分")
-    @TableField(value = "GRADE")
-    @Column(name = "GRADE", columnDefinition = "INT(10) COMMENT '评分'")
-    private Integer grade;
+    @Schema(description = "分页数")
+    @TableField(value = "PAGE")
+    @Column(name = "PAGE", columnDefinition = "INT(10) COMMENT '分页数'")
+    private Integer page;
     @Schema(description = "评论数")
     @TableField(value = "COMMENT_NUM")
     @Column(name = "COMMENT_NUM", columnDefinition = "INT(10) COMMENT '评论数'")
     private Integer commentNum;
+    @Schema(description = "上级ID")
+    @TableField(value = "PARENT_ID")
+    @Column(name = "PARENT_ID", columnDefinition = "VARCHAR(64) COMMENT '上级ID'")
+    private String parentId;
+    @Schema(description = "UUID")
+    @TableField(value = "UUID")
+    @Column(name = "UUID", columnDefinition = "VARCHAR(64) COMMENT 'UUID'")
+    private String uuid;
 }

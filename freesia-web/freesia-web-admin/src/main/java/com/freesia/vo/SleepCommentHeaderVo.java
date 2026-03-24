@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -23,6 +24,9 @@ public class SleepCommentHeaderVo extends BaseVo {
     @Schema(description = "来源")
     @JsonAlias(value = {"source"})
     private String source;
+    @Schema(description = "来源")
+    @JsonAlias(value = {"sourceList"})
+    private List<String> sourceList;
     @Schema(description = "评论人ID")
     @JsonAlias(value = {"userId"})
     private String userId;
@@ -50,10 +54,18 @@ public class SleepCommentHeaderVo extends BaseVo {
     @Schema(description = "URL")
     @JsonAlias(value = {"url"})
     private String url;
-    @Schema(description = "评分")
-    @JsonAlias(value = {"grade"})
-    private Integer grade;
+    @Schema(description = "分页数")
+    @JsonAlias(value = {"page"})
+    private Integer page;
     @Schema(description = "评论数")
     @JsonAlias(value = {"commentNum"})
     private Integer commentNum;
+    @Schema(description = "上级ID")
+    @JsonAlias(value = {"parentId"})
+    private String parentId;
+    @Schema(description = "UUID")
+    @JsonAlias(value = {"uuid"})
+    private String uuid;
+    private Integer maxPage;
+    private String targetUrlTemplate;
 }

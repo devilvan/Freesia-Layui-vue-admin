@@ -3,6 +3,7 @@ package com.freesia.service;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.dto.SleepCommentHeaderDto;
+import com.freesia.vo.SleepCommentHeaderVo;
 
 import java.util.List;
 
@@ -60,9 +61,11 @@ public interface SleepCommentHeaderService {
      */
     void deleteBatch(List<Long> idList);
 
-    void handleTrustPilot(String key);
+    void handleTrustPilot(SleepCommentHeaderVo sleepCommentHeaderVo);
 
     void handleReddit(String key);
 
     void handle3B(String key);
+
+    void exportTrustPilot(SleepCommentHeaderVo sleepCommentHeaderVo);
 }

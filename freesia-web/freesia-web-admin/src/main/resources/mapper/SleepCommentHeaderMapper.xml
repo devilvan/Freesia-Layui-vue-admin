@@ -21,11 +21,13 @@
         <result column="FLOOR" property="floor"/>
         <result column="CONTENT_TYPE" property="contentType"/>
         <result column="URL" property="url"/>
-        <result column="GRADE" property="grade"/>
+        <result column="PAGE" property="page"/>
         <result column="COMMENT_NUM" property="commentNum"/>
+        <result column="PARENT_ID" property="parentId"/>
+        <result column="UUID" property="uuid"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, SOURCE, USER_ID, USER_NAME, TITLE, CONTENT, LEVEL, OPERATE_TIME, FLOOR, CONTENT_TYPE, URL, GRADE, COMMENT_NUM
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, SOURCE, USER_ID, USER_NAME, TITLE, CONTENT, LEVEL, OPERATE_TIME, FLOOR, CONTENT_TYPE, URL, PAGE, COMMENT_NUM, PARENT_ID, UUID
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -63,11 +65,17 @@
         <if test="dto.url != null and dto.url != ''">
             AND URL = #{dto.url}
         </if>
-        <if test="dto.grade != null">
-            AND GRADE = #{dto.grade}
+        <if test="dto.page != null">
+            AND PAGE = #{dto.page}
         </if>
         <if test="dto.commentNum != null">
             AND COMMENT_NUM = #{dto.commentNum}
+        </if>
+        <if test="dto.parentId != null">
+            AND PARENT_ID = #{dto.parentId}
+        </if>
+        <if test="dto.uuid != null">
+            AND UUID = #{dto.uuid}
         </if>
         ORDER BY create_time DESC
     </select>
@@ -78,6 +86,12 @@
         WHERE LOGIC_DEL = 0
         <if test="dto.source != null and dto.source != ''">
             AND SOURCE = #{dto.source}
+        </if>
+        <if test="dto.sourceList != null and dto.sourceList.size() > 0">
+            AND SOURCE IN
+            <foreach collection="dto.sourceList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </if>
         <if test="dto.userId != null and dto.userId != ''">
             AND USER_ID = #{dto.userId}
@@ -106,13 +120,19 @@
         <if test="dto.url != null and dto.url != ''">
             AND URL = #{dto.url}
         </if>
-        <if test="dto.grade != null">
-            AND GRADE = #{dto.grade}
+        <if test="dto.page != null">
+            AND PAGE = #{dto.page}
         </if>
         <if test="dto.commentNum != null">
             AND COMMENT_NUM = #{dto.commentNum}
         </if>
-        ORDER BY MODIFY_TIME DESC
+        <if test="dto.parentId != null">
+            AND PARENT_ID = #{dto.parentId}
+        </if>
+        <if test="dto.uuid != null">
+            AND UUID = #{dto.uuid}
+        </if>
+        ORDER BY OPERATE_TIME DESC
     </select>
     <select id="findOne" resultMap="BaseResultMap">
         SELECT
@@ -149,11 +169,17 @@
         <if test="dto.url != null and dto.url != ''">
             AND URL = #{dto.url}
         </if>
-        <if test="dto.grade != null">
-            AND GRADE = #{dto.grade}
+        <if test="dto.page != null">
+            AND PAGE = #{dto.page}
         </if>
         <if test="dto.commentNum != null">
             AND COMMENT_NUM = #{dto.commentNum}
+        </if>
+        <if test="dto.parentId != null">
+            AND PARENT_ID = #{dto.parentId}
+        </if>
+        <if test="dto.uuid != null">
+            AND UUID = #{dto.uuid}
         </if>
         LIMIT 1
     </select>
@@ -169,18 +195,20 @@
         REC_VER,
         BUILD_IN,
         TENANT_ID,
-        SOURCE, 
-        USER_ID, 
-        USER_NAME, 
-        TITLE, 
-        CONTENT, 
-        LEVEL, 
-        OPERATE_TIME, 
-        FLOOR, 
-        CONTENT_TYPE, 
-        URL, 
-        GRADE, 
-        COMMENT_NUM
+        SOURCE,
+        USER_ID,
+        USER_NAME,
+        TITLE,
+        CONTENT,
+        LEVEL,
+        OPERATE_TIME,
+        FLOOR,
+        CONTENT_TYPE,
+        URL,
+        PAGE,
+        COMMENT_NUM,
+        PARENT_ID,
+        UUID
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -194,19 +222,20 @@
             #{item.recVer},
             #{item.buildIn},
             #{item.tenantId},
-            #{item.source}, 
-            #{item.userId}, 
-            #{item.userName}, 
-            #{item.title}, 
-            #{item.content}, 
-            #{item.level}, 
-            #{item.operateTime}, 
-            #{item.floor}, 
-            #{item.contentType}, 
-            #{item.url}, 
-            #{item.grade}, 
-            #{item.commentNum}
-            )
+            #{item.source},
+            #{item.userId},
+            #{item.userName},
+            #{item.title},
+            #{item.content},
+            #{item.level},
+            #{item.operateTime},
+            #{item.floor},
+            #{item.contentType},
+            #{item.url},
+            #{item.page},
+            #{item.commentNum},
+            #{item.parentId},
+            #{item.uuid}
         </foreach>
     </insert>
 </mapper>

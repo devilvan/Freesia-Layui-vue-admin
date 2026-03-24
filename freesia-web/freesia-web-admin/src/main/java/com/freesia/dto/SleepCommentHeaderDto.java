@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -20,6 +21,8 @@ import java.math.BigDecimal;
 public class SleepCommentHeaderDto extends BaseDto {
     @Schema(description = "来源")
     private String source;
+    @Schema(description = "来源")
+    private List<String> sourceList;
     @Schema(description = "评论人ID")
     private String userId;
     @Schema(description = "评论人名称")
@@ -38,8 +41,12 @@ public class SleepCommentHeaderDto extends BaseDto {
     private String contentType;
     @Schema(description = "URL")
     private String url;
-    @Schema(description = "评分")
-    private Integer grade;
+    @Schema(description = "分页数")
+    private Integer page;
     @Schema(description = "评论数")
     private Integer commentNum;
+    @Schema(description = "上级ID")
+    private String parentId;
+    @Schema(description = "UUID")
+    private String uuid;
 }

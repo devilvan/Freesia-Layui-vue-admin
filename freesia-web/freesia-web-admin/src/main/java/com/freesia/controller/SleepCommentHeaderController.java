@@ -114,8 +114,15 @@ public class SleepCommentHeaderController extends BaseController {
 
     @SaIgnore
     @PostMapping(value = "handleTrustPilot")
-    public R<Void> handleTrustPilot(@RequestParam(value = "key") String key) {
-        sleepCommentHeaderService.handleTrustPilot(key);
+    public R<Void> handleTrustPilot(@RequestBody SleepCommentHeaderVo sleepCommentHeaderVo) {
+        sleepCommentHeaderService.handleTrustPilot(sleepCommentHeaderVo);
+        return R.ok();
+    }
+
+    @SaIgnore
+    @PostMapping(value = "exportTrustPilot")
+    public R<Void> exportTrustPilot(@RequestBody SleepCommentHeaderVo sleepCommentHeaderVo) {
+        sleepCommentHeaderService.exportTrustPilot(sleepCommentHeaderVo);
         return R.ok();
     }
 
