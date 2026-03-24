@@ -16,8 +16,12 @@ public class ExportSleepEntity {
     private String userName;
     @ExcelProperty(value = "标题")
     private String title;
+    @ExcelProperty(value = "评论类型")
+    private String contentType;
     @ExcelProperty(value = "评论内容")
     private String content;
+    @ExcelProperty(value = "楼层")
+    private String floor;
     @ExcelProperty(value = "评分")
     private String level;
     @ExcelProperty(value = "发布时间")

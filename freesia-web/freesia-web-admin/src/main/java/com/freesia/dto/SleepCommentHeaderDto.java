@@ -1,11 +1,12 @@
 package com.freesia.dto;
 
-import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -49,4 +50,6 @@ public class SleepCommentHeaderDto extends BaseDto {
     private String parentId;
     @Schema(description = "UUID")
     private String uuid;
+    @Schema(description = "子评论列表")
+    private List<SleepCommentHeaderDto> children;
 }

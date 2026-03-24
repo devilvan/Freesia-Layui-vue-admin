@@ -31,7 +31,7 @@ public interface SleepCommentHeaderMapper extends BaseMapper<SleepCommentHeaderP
      * @param sleepCommentHeaderDto 查询条件
      * @return 分页信息
      */
-    List<SleepCommentHeaderDto> findList(@Param(value = "dto") SleepCommentHeaderDto sleepCommentHeaderDto);
+    List<SleepCommentHeaderPo> findList(@Param(value = "dto") SleepCommentHeaderDto sleepCommentHeaderDto);
 
     /**
      * 查询睡眠产品评论信息

@@ -20,7 +20,6 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SleepCommentHeaderRepository;
 import com.freesia.service.SleepCommentHeaderService;
-import com.freesia.util.UCopy;
 import com.freesia.util.UEmpty;
 import com.freesia.vo.SleepCommentHeaderVo;
 import lombok.NonNull;
@@ -33,8 +32,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -99,7 +96,7 @@ public class SleepCommentHeaderServiceImpl extends BaseServiceImpl<SleepCommentH
 
     @Override
     public List<SleepCommentHeaderDto> findList(SleepCommentHeaderDto dto) {
-        return sleepCommentHeaderMapper.findList(dto);
+        return sleepCommentHeaderConverter.convertBatchPo2Dto(sleepCommentHeaderMapper.findList(dto));
     }
 
     @Override
@@ -134,7 +131,7 @@ public class SleepCommentHeaderServiceImpl extends BaseServiceImpl<SleepCommentH
         List<SleepCommentHeaderDto> sleepCommentHeaderDtoList = new ArrayList<>();
         int count = 0;
         String source = sleepCommentHeaderVo.getSource();
-        for (int i = 1; i <= maxPage; i++) {
+        for (int i = 11; i <= maxPage; i++) {
             String targetUrl = "";
             if (i == 1) {
                 targetUrl = targetUrlTemplate;
@@ -145,7 +142,7 @@ public class SleepCommentHeaderServiceImpl extends BaseServiceImpl<SleepCommentH
 //                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 7890)))
                     .timeout(120000).maxBodySize(0);
             connect.header("Accept-Encoding", "gzip, deflate, br");
-            connect.header("Cookie", "TP.uuid=e570b4eb-4498-4a64-9006-525206942b86; ajs_anonymous_id=000da306-89e2-46fb-853a-bcf5efaee7f4; _ga=GA1.1.1252899102.1774231486; OptanonAlertBoxClosed=2026-03-23T02:04:49.041Z; _hjSessionUser_391767=eyJpZCI6ImIwMWFjN2ZmLTQ5NTYtNTY5OC05YmU5LWE0NWM4NmQ5OTU4NCIsImNyZWF0ZWQiOjE3NzQyMzE0ODI5NjEsImV4aXN0aW5nIjp0cnVlfQ==; _gcl_au=1.1.880488244.1774231486.381848436.1774234887.1774234928; tp-b2b-is-sso-saml-authenticated=false; tp-b2b-sso-saml-authenticated-business-account-id=; tp-b2b-sso-saml-recently-authenticated=false; analytics_session_id=1774235007262; _hjSessionUser_402766=eyJpZCI6ImFmNDkyZTI0LWE0NGQtNWY5MS04YjA1LWVjMmIxMjZjN2ZiMSIsImNyZWF0ZWQiOjE3NzQyMzUwMDc2MzAsImV4aXN0aW5nIjp0cnVlfQ==; analytics_session_id.last_access=1774235270198; amplitude_id_de1e2fc13cf22ef1024015ecc1bb8ccdtrustpilot.com=eyJkZXZpY2VJZCI6IjY3ZGM4Yjc1LTkxMjUtNGRlNy1hNzNiLTBiZTk4MTBkY2Q0ZlIiLCJ1c2VySWQiOm51bGwsIm9wdE91dCI6ZmFsc2UsInNlc3Npb25JZCI6MTc3NDIzNTAwNzI4MiwibGFzdEV2ZW50VGltZSI6MTc3NDIzNTI3MDIwNywiZXZlbnRJZCI6MTAsImlkZW50aWZ5SWQiOjMsInNlcXVlbmNlTnVtYmVyIjoxM30=; g_state={\"i_l\":0,\"i_ll\":1774235279782,\"i_e\":{\"enable_itp_optimization\":0}}; tp-consumer-id=69c0ae9607ee8af511fd5060; jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb25zdW1lcklkIjoiNjljMGFlOTYwN2VlOGFmNTExZmQ1MDYwIiwiaGFzQWNjZXB0ZWRUZXJtcyI6dHJ1ZSwiaXNCbG9ja2VkRm9yUmVwb3J0aW5nIjpmYWxzZSwiYWNjZXNzVG9rZW4iOiJ3RTlMV25zNThpaEtKTGxGZ0F0RHJiNTREVjlvIiwiYXV0aGVudGljYXRpb25Tb3VyY2UiOiJnb29nbGUiLCJpYXQiOjE3NzQyMzUyODksImV4cCI6MTc4MjAxMTI4OX0.xk23P7DjYwvHv09tyipK-AYbrQZ740-DfPiTlBN2VvY; ajs_user_id=9587c5cadd363eabd90cb57ffc4208078da21147; _hjSession_391767=eyJpZCI6IjBkNjNjODYxLTFjOTEtNDIwNS1hYTg0LTAwZjg5NWJlYTI4OCIsImMiOjE3NzQzMTk4MTgzMjksInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjowLCJzcCI6MH0=; amplitude_idundefinedtrustpilot.com=eyJvcHRPdXQiOmZhbHNlLCJzZXNzaW9uSWQiOm51bGwsImxhc3RFdmVudFRpbWUiOm51bGwsImV2ZW50SWQiOjAsImlkZW50aWZ5SWQiOjAsInNlcXVlbmNlTnVtYmVyIjowfQ==; _hjHasCachedUserAttributes=true; aws-waf-token=b632c024-342e-4180-a59e-8b6ed8df1557:AAoAbSYR4ogPAAAA:NPOkZ6nWTStBgt/uD7PlUy+nyuO4PTINwe1/0IHs4N7kIvU/UICV3+ZbZ7/tm6/CX5eoSJwYnAfZOes9/Wn6xgJEi8UYUDFMS5mTAYYt5jrko7r9/MC8F6lteGj5T65tLeAsJ2+ruHU9D9DeEaP1DQ6JXFkEdkcmiypN5Hc6OeZhdTJXw4ohkseBmo7hBh6ae67HzXsX56dqHHqH4zKv+q5vVRukOLb/mcrXKgHVfwcY3hx4tWJjmw5jIrf3djT/WCxtP6a55VLy; amplitude_id_67f7b7e6c8cb1b558b0c5bda2f747b07trustpilot.com=eyJkZXZpY2VJZCI6IjAwMGRhMzA2LTg5ZTItNDZmYi04NTNhLWJjZjVlZmFlZTdmNCIsInVzZXJJZCI6Ijk1ODdjNWNhZGQzNjNlYWJkOTBjYjU3ZmZjNDIwODA3OGRhMjExNDciLCJvcHRPdXQiOmZhbHNlLCJzZXNzaW9uSWQiOjE3NzQzMTk4MjA1NzcsImxhc3RFdmVudFRpbWUiOjE3NzQzMTk4Mjc5NDIsImV2ZW50SWQiOjExNywiaWRlbnRpZnlJZCI6OSwic2VxdWVuY2VOdW1iZXIiOjEyNn0=; _ga_11HBWMC274=GS2.1.s1774319821$o9$g0$t1774319829$j52$l0$h0; OptanonConsent=isGpcEnabled=0&datestamp=Tue+Mar+24+2026+10%3A37%3A10+GMT%2B0800+(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)&version=202602.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=edf4c6b2-a961-4d80-a42d-947aff8da6a5&interactionCount=1&isAnonUser=1&prevHadToken=0&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1&intType=1&crTime=1774231489853&geolocation=CN%3BGD&AwaitingReconsent=false");
+            connect.header("Cookie", "TP.uuid=47d081bd-ae20-4d12-82f3-0e1ec6fd5a61; _hjSession_391767=eyJpZCI6ImIyYWZmNDY3LTUzMmUtNGQxZi05Y2RiLTBkYzM0YTI0NmExYyIsImMiOjE3NzQzNTYyOTU3NzEsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxLCJzcCI6MH0=; ajs_anonymous_id=b1e369a7-99ef-4253-8ca2-3f5e4bb6cc69; amplitude_idundefinedtrustpilot.com=eyJvcHRPdXQiOmZhbHNlLCJzZXNzaW9uSWQiOm51bGwsImxhc3RFdmVudFRpbWUiOm51bGwsImV2ZW50SWQiOjAsImlkZW50aWZ5SWQiOjAsInNlcXVlbmNlTnVtYmVyIjowfQ==; _gcl_au=1.1.1608621595.1774356296; _hjHasCachedUserAttributes=true; _ga=GA1.1.1323577505.1774356297; OptanonAlertBoxClosed=2026-03-24T12:44:58.921Z; _hjSessionUser_391767=eyJpZCI6Ijc5M2E1ZjY2LTg4YzktNTI4MC1hNjA5LWE2MmU4MDQ3YjVhMSIsImNyZWF0ZWQiOjE3NzQzNTYyOTU3NzAsImV4aXN0aW5nIjp0cnVlfQ==; tp-b2b-is-sso-saml-authenticated=false; tp-b2b-sso-saml-authenticated-business-account-id=; tp-b2b-sso-saml-recently-authenticated=false; g_state={\"i_l\":0,\"i_ll\":1774356403011,\"i_e\":{\"enable_itp_optimization\":0}}; tp-consumer-id=69c0ae9607ee8af511fd5060; jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb25zdW1lcklkIjoiNjljMGFlOTYwN2VlOGFmNTExZmQ1MDYwIiwiaGFzQWNjZXB0ZWRUZXJtcyI6dHJ1ZSwiaXNCbG9ja2VkRm9yUmVwb3J0aW5nIjpmYWxzZSwiYWNjZXNzVG9rZW4iOiJKOFRtcG4zRXVaUmhHOUNnRWI5MWNYcVN5UW1CIiwiYXV0aGVudGljYXRpb25Tb3VyY2UiOiJnb29nbGUiLCJpYXQiOjE3NzQzNTY0NTAsImV4cCI6MTc4MjEzMjQ1MH0.xBmMaMOaD8U2ZJMZMV22xtkKVkHKODhW62XDUazb-jA; ajs_user_id=9587c5cadd363eabd90cb57ffc4208078da21147; amplitude_id_67f7b7e6c8cb1b558b0c5bda2f747b07trustpilot.com=eyJkZXZpY2VJZCI6ImIxZTM2OWE3LTk5ZWYtNDI1My04Y2EyLTNmNWU0YmI2Y2M2OSIsInVzZXJJZCI6Ijk1ODdjNWNhZGQzNjNlYWJkOTBjYjU3ZmZjNDIwODA3OGRhMjExNDciLCJvcHRPdXQiOmZhbHNlLCJzZXNzaW9uSWQiOjE3NzQzNTYyOTYxNDgsImxhc3RFdmVudFRpbWUiOjE3NzQzNTY0NTM5NDIsImV2ZW50SWQiOjE3LCJpZGVudGlmeUlkIjo1LCJzZXF1ZW5jZU51bWJlciI6MjJ9; aws-waf-token=b632c024-342e-4180-a59e-8b6ed8df1557:AAoAiR9YTXAEAAAA:feSLmz1DSnnfI5fyH/AyDLUp4rMs/9AK3gMpdyE+wp7UEDu4O1judb9rcfVFneO84Al3U0F59TEzlWNAisYWLfOjh9ODPY5y2usBAtjTjGv6ES9a+JCQ/QPF0+ZO92Y1uklHG7mLbHpZfbYoFYglpAUWl/RD5o3fqBxds1TrFhSYuVSAaW2iXeW9jpUDsMRSABn3bTaQqVs1h2CUELqGsCD6NvwaeUVMBE2VEtMqB21VHN7cbJude2o/9YOaIb9ZWxoNnTMZ+wQB; _ga_11HBWMC274=GS2.1.s1774356296$o1$g1$t1774356467$j60$l0$h0; OptanonConsent=isGpcEnabled=0&datestamp=Tue+Mar+24+2026+20%3A47%3A47+GMT%2B0800+(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)&version=202602.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=6613fd70-dc5f-4541-b6ea-59e561ba5bb6&interactionCount=1&isAnonUser=1&prevHadToken=0&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1&intType=1&geolocation=CN%3BGD&AwaitingReconsent=false");
             connect.header("Referer", targetUrlTemplate);
             Element body = null;
             try {
@@ -281,7 +278,28 @@ public class SleepCommentHeaderServiceImpl extends BaseServiceImpl<SleepCommentH
             dto.setSourceList(sourceList);
             List<SleepCommentHeaderDto> list = findList(dto);
             if (UEmpty.isNotEmpty(list)) {
-                List<ExportSleepEntity> sleepEntityList = UCopy.fullCopyList(list, ExportSleepEntity.class);
+                // 2. 按 id 分组，建立快速索引 Map
+                Map<String, SleepCommentHeaderDto> entityMap = list.stream()
+                        .collect(Collectors.toMap(SleepCommentHeaderDto::getUuid, item -> item));
+                // 3. 用于存储最终结果的列表 (顶级节点)
+                List<SleepCommentHeaderDto> resultList = new ArrayList<>();
+                // 4. 遍历所有节点，构建父子关系
+                for (SleepCommentHeaderDto node : list) {
+                    String parentId = node.getParentId();
+
+                    // 关键判断：如果 parentId 为 null 或空，或者父节点不存在，则视为顶级节点
+                    if (parentId == null || parentId.isEmpty() || !entityMap.containsKey(parentId)) {
+                        resultList.add(node);
+                    } else {
+                        // 找到父节点，将当前节点添加到父节点的 children 中
+                        SleepCommentHeaderDto parent = entityMap.get(parentId);
+                        if (parent.getChildren() == null) {
+                            parent.setChildren(new ArrayList<>());
+                        }
+                        parent.getChildren().add(node);
+                    }
+                }
+                List<ExportSleepEntity> sleepEntityList = buildExportSleepEntity(resultList);
                 Map<String, List<ExportSleepEntity>> groupingBySourceMapList = sleepEntityList.stream().collect(Collectors.groupingBy(ExportSleepEntity::getSource));
                 Set<Map.Entry<String, List<ExportSleepEntity>>> entrySet = groupingBySourceMapList.entrySet();
                 for (Map.Entry<String, List<ExportSleepEntity>> entry : entrySet) {
@@ -292,8 +310,43 @@ public class SleepCommentHeaderServiceImpl extends BaseServiceImpl<SleepCommentH
                             .build();
                     excelWriter.write(value, writeSheet);
                 }
+
             }
             excelWriter.finish();
         }
+    }
+
+    private List<ExportSleepEntity> buildExportSleepEntity(List<SleepCommentHeaderDto> resultList) {
+        List<ExportSleepEntity> exportSleepEntityList = new ArrayList<>();
+        for (SleepCommentHeaderDto sleepCommentHeaderDto : resultList) {
+            List<SleepCommentHeaderDto> children = sleepCommentHeaderDto.getChildren();
+            ExportSleepEntity exportSleepEntity = buildExportSleepEntity(sleepCommentHeaderDto);
+            exportSleepEntityList.add(exportSleepEntity);
+            if (UEmpty.isNotEmpty(children)) {
+                exportSleepEntityList.addAll(buildExportSleepEntity(children));
+            }
+        }
+        return exportSleepEntityList;
+    }
+
+    private static ExportSleepEntity buildExportSleepEntity(SleepCommentHeaderDto sleepCommentHeaderDto) {
+        ExportSleepEntity exportSleepEntity = new ExportSleepEntity();
+        exportSleepEntity.setSource(sleepCommentHeaderDto.getSource());
+        exportSleepEntity.setUserId(sleepCommentHeaderDto.getUserId());
+        exportSleepEntity.setUserName(sleepCommentHeaderDto.getUserName());
+        exportSleepEntity.setTitle(sleepCommentHeaderDto.getTitle());
+        String contentType = sleepCommentHeaderDto.getContentType();
+        if (contentType.equalsIgnoreCase("COMMENT")) {
+            exportSleepEntity.setContentType("评论");
+        } else if (contentType.equalsIgnoreCase("REPLY")) {
+            exportSleepEntity.setContentType("回复");
+        }
+        exportSleepEntity.setContent(sleepCommentHeaderDto.getContent());
+        exportSleepEntity.setFloor(sleepCommentHeaderDto.getFloor());
+        exportSleepEntity.setLevel(sleepCommentHeaderDto.getLevel());
+        exportSleepEntity.setOperateTime(sleepCommentHeaderDto.getOperateTime());
+        exportSleepEntity.setUrl(sleepCommentHeaderDto.getUrl());
+        exportSleepEntity.setPage(sleepCommentHeaderDto.getPage());
+        return exportSleepEntity;
     }
 }
