@@ -50,6 +50,8 @@ public class SleepCommentHeaderDto extends BaseDto {
     private String parentId;
     @Schema(description = "UUID")
     private String uuid;
+    @Schema(description = "域名")
+    private String domain;
     @Schema(description = "子评论列表")
     private List<SleepCommentHeaderDto> children;
 }

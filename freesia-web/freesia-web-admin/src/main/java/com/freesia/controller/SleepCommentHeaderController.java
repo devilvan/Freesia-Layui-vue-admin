@@ -7,7 +7,6 @@ import com.freesia.vo.SleepCommentHeaderVo;
 import com.freesia.dto.SleepCommentHeaderDto;
 import com.freesia.service.SleepCommentHeaderService;
 import com.freesia.converter.SleepCommentHeaderConverter;
-import com.freesia.controller.BaseController;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -128,15 +127,15 @@ public class SleepCommentHeaderController extends BaseController {
 
     @SaIgnore
     @PostMapping(value = "handleReddit")
-    public R<Void> handleReddit(@RequestParam(value = "key") String key) {
-        sleepCommentHeaderService.handleReddit(key);
+    public R<Void> handleReddit(@RequestBody SleepCommentHeaderVo sleepCommentHeaderVo) {
+        sleepCommentHeaderService.handleReddit(sleepCommentHeaderVo);
         return R.ok();
     }
 
     @SaIgnore
     @PostMapping(value = "handle3B")
-    public R<Void> handle3B(@RequestParam(value = "key") String key) {
-        sleepCommentHeaderService.handle3B(key);
+    public R<Void> handle3B(@RequestBody SleepCommentHeaderVo sleepCommentHeaderVo) {
+        sleepCommentHeaderService.handle3B(sleepCommentHeaderVo);
         return R.ok();
     }
 

@@ -25,9 +25,10 @@
         <result column="COMMENT_NUM" property="commentNum"/>
         <result column="PARENT_ID" property="parentId"/>
         <result column="UUID" property="uuid"/>
+        <result column="DOMAIN" property="domain"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, SOURCE, USER_ID, USER_NAME, TITLE, CONTENT, LEVEL, OPERATE_TIME, FLOOR, CONTENT_TYPE, URL, PAGE, COMMENT_NUM, PARENT_ID, UUID
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, SOURCE, USER_ID, USER_NAME, TITLE, CONTENT, LEVEL, OPERATE_TIME, FLOOR, CONTENT_TYPE, URL, PAGE, COMMENT_NUM, PARENT_ID, UUID, DOMAIN
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -76,6 +77,9 @@
         </if>
         <if test="dto.uuid != null">
             AND UUID = #{dto.uuid}
+        </if>
+        <if test="dto.domain != null and dto.domain != ''">
+            AND DOMAIN = #{dto.domain}
         </if>
         ORDER BY create_time DESC
     </select>
@@ -132,6 +136,9 @@
         <if test="dto.uuid != null">
             AND UUID = #{dto.uuid}
         </if>
+        <if test="dto.domain != null and dto.domain != ''">
+            AND DOMAIN = #{dto.domain}
+        </if>
         ORDER BY OPERATE_TIME DESC
     </select>
     <select id="findOne" resultMap="BaseResultMap">
@@ -181,6 +188,9 @@
         <if test="dto.uuid != null">
             AND UUID = #{dto.uuid}
         </if>
+        <if test="dto.domain != null and dto.domain != ''">
+            AND DOMAIN = #{dto.domain}
+        </if>
         LIMIT 1
     </select>
     <insert id="insertBatch" parameterType="java.util.List">
@@ -208,7 +218,8 @@
         PAGE,
         COMMENT_NUM,
         PARENT_ID,
-        UUID
+        UUID,
+        DOMAIN
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -235,7 +246,8 @@
             #{item.page},
             #{item.commentNum},
             #{item.parentId},
-            #{item.uuid}
+            #{item.uuid},
+            #{item.domain}
         </foreach>
     </insert>
 </mapper>

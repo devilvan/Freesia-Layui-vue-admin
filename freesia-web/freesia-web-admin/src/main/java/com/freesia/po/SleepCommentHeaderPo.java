@@ -92,4 +92,8 @@ public class SleepCommentHeaderPo extends BasePo implements Serializable {
     @TableField(value = "UUID")
     @Column(name = "UUID", columnDefinition = "VARCHAR(64) COMMENT 'UUID'")
     private String uuid;
+    @Schema(description = "域名")
+    @TableField(value = "DOMAIN")
+    @Column(name = "DOMAIN", columnDefinition = "VARCHAR(16) COMMENT '域名'")
+    private String domain;
 }

@@ -66,6 +66,9 @@ public class SleepCommentHeaderVo extends BaseVo {
     @Schema(description = "UUID")
     @JsonAlias(value = {"uuid"})
     private String uuid;
+    @Schema(description = "域名")
+    @JsonAlias(value = {"domain"})
+    private String domain;
     private Integer maxPage;
     private String targetUrlTemplate;
 }

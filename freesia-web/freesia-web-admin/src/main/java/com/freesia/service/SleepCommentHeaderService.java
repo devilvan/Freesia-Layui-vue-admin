@@ -63,9 +63,9 @@ public interface SleepCommentHeaderService {
 
     void handleTrustPilot(SleepCommentHeaderVo sleepCommentHeaderVo);
 
-    void handleReddit(String key);
+    void handleReddit(SleepCommentHeaderVo sleepCommentHeaderVo);
 
-    void handle3B(String key);
+    void handle3B(SleepCommentHeaderVo sleepCommentHeaderVo);
 
     void exportTrustPilot(SleepCommentHeaderVo sleepCommentHeaderVo);
 }
