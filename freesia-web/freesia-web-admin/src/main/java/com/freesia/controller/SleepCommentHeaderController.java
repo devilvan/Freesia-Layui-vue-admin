@@ -1,19 +1,23 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import com.freesia.converter.SleepCommentHeaderConverter;
+import com.freesia.dto.SleepCommentHeaderDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.vo.SleepCommentHeaderVo;
-import com.freesia.dto.SleepCommentHeaderDto;
 import com.freesia.service.SleepCommentHeaderService;
-import com.freesia.converter.SleepCommentHeaderConverter;
 import com.freesia.vo.R;
+import com.freesia.vo.SleepCommentHeaderVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -134,9 +138,28 @@ public class SleepCommentHeaderController extends BaseController {
 
     @SaIgnore
     @PostMapping(value = "handle3B")
-    public R<Void> handle3B(@RequestBody SleepCommentHeaderVo sleepCommentHeaderVo) {
-        sleepCommentHeaderService.handle3B(sleepCommentHeaderVo);
+    public R<Void> handle3B(HttpServletRequest request, @RequestBody SleepCommentHeaderVo sleepCommentHeaderVo) {
+        sleepCommentHeaderService.handle3B(sleepCommentHeaderVo, getHeadersAsMap(request));
         return R.ok();
     }
 
+    @SaIgnore
+    @PostMapping(value = "export3B")
+    public R<Void> export3B(@RequestBody SleepCommentHeaderVo sleepCommentHeaderVo) {
+        sleepCommentHeaderService.export3B(sleepCommentHeaderVo);
+        return R.ok();
+    }
+
+    public Map<String, String> getHeadersAsMap(HttpServletRequest request) {
+        Map<String, String> headersMap = new HashMap<>();
+        Enumeration<String> headerNames = request.getHeaderNames();
+
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            String headerValue = request.getHeader(headerName);
+            headersMap.put(headerName, headerValue);
+        }
+
+        return headersMap;
+    }
 }

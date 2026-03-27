@@ -2,13 +2,11 @@ package com.freesia.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
-import com.freesia.vo.BaseVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -69,6 +67,7 @@ public class SleepCommentHeaderVo extends BaseVo {
     @Schema(description = "域名")
     @JsonAlias(value = {"domain"})
     private String domain;
+    private Integer startPage;
     private Integer maxPage;
     private String targetUrlTemplate;
 }

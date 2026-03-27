@@ -6,6 +6,7 @@ import com.freesia.dto.SleepCommentHeaderDto;
 import com.freesia.vo.SleepCommentHeaderVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Evad.Wu
@@ -65,7 +66,9 @@ public interface SleepCommentHeaderService {
 
     void handleReddit(SleepCommentHeaderVo sleepCommentHeaderVo);
 
-    void handle3B(SleepCommentHeaderVo sleepCommentHeaderVo);
+    void handle3B(SleepCommentHeaderVo sleepCommentHeaderVo, Map<String, String> headersAsMap);
 
     void exportTrustPilot(SleepCommentHeaderVo sleepCommentHeaderVo);
+
+    void export3B(SleepCommentHeaderVo sleepCommentHeaderVo);
 }
