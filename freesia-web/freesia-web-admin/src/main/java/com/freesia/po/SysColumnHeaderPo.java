@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,12 +17,11 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.math.BigDecimal;
-import java.util.Set;
 
 /**
  * @author Evad.Wu
  * @Description 系统列头表 映射
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Setter
 @Getter
@@ -42,6 +44,10 @@ public class SysColumnHeaderPo extends BasePo implements Serializable {
     @TableField(value = "NAME")
     @Column(name = "NAME", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '组件名'")
     private String name;
+    @Schema(description = "组件描述")
+    @TableField(value = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", columnDefinition = "VARCHAR(64) COMMENT '组件描述'")
+    private String description;
     @Schema(description = "表格高度")
     @TableField(value = "HEIGHT")
     @Column(name = "HEIGHT", columnDefinition = "INT(10) COMMENT '表格高度'")
@@ -70,15 +76,4 @@ public class SysColumnHeaderPo extends BasePo implements Serializable {
     @TableField(value = "DEFAULT_TOOL_BAR_FLAG")
     @Column(name = "DEFAULT_TOOL_BAR_FLAG", columnDefinition = "BIT(1) COMMENT '是否启用默认工具栏（true-是；false-否）'")
     private Boolean defaultToolBarFlag;
-    @Schema(description = "组件名")
-    @TableField(value = "COMPONENT")
-    @Column(name = "COMPONENT", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '组件名'")
-    private String component;
-
-    @Schema(description = "系统列头在头-明细关系中的系统列明细数据")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @TableField(exist = false)
-    @OneToMany(targetEntity = SysColumnDetailPo.class, mappedBy = "sysColumnHeaderPo", fetch = FetchType.LAZY)
-    private Set<SysColumnDetailPo> sysColumnDetailPoSet;
 }

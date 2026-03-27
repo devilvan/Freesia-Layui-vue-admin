@@ -62,12 +62,12 @@ public class CodeGenerator {
             generateVo(dataBaseDto);
             generateDto(dataBaseDto);
             generatePo(dataBaseDto);
-            generateController(dataBaseDto);
-            generateService(dataBaseDto);
+//            generateController(dataBaseDto);
+//            generateService(dataBaseDto);
             generateServiceImpl(dataBaseDto);
-            generateConverter(dataBaseDto);
-            generateRepository(dataBaseDto);
-            generateMapper(dataBaseDto);
+//            generateConverter(dataBaseDto);
+//            generateRepository(dataBaseDto);
+//            generateMapper(dataBaseDto);
             generateMapperXml(dataBaseDto);
 
             /* 前端*/
@@ -420,7 +420,7 @@ public class CodeGenerator {
     }
 
     private static void generateType(DataBaseDto dataBaseDto) {
-        String parentPath = basicMap.get("projectDirectory") + "\\" + basicMap.get("path") + "\\vue\\type\\";
+        String parentPath = basicMap.get("projectDirectory") + "\\src\\main\\resources\\vue\\type\\";
         String templateName = "type.ftl";
         File mapperFile = new File(parentPath);
         if (!mapperFile.exists()) {
@@ -433,7 +433,7 @@ public class CodeGenerator {
     }
 
     private static void generateApi(DataBaseDto dataBaseDto) {
-        String parentPath = basicMap.get("projectDirectory") + "\\" + basicMap.get("path") + "\\vue\\api\\";
+        String parentPath = basicMap.get("projectDirectory") + "\\src\\main\\resources\\vue\\api\\";
         String templateName = "api.ftl";
         File mapperFile = new File(parentPath);
         if (!mapperFile.exists()) {
@@ -446,7 +446,7 @@ public class CodeGenerator {
     }
 
     private static void generateIndex(DataBaseDto dataBaseDto) {
-        String parentPath = basicMap.get("projectDirectory") + "\\" + basicMap.get("path") + "\\vue\\index\\";
+        String parentPath = basicMap.get("projectDirectory") + "\\src\\main\\resources\\vue\\index\\";
         String templateName = "index.ftl";
         File mapperFile = new File(parentPath);
         if (!mapperFile.exists()) {

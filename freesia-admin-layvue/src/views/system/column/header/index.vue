@@ -240,7 +240,6 @@ const columns = ref([
  {title: '是否允许单元格列宽拖动（true-是；false-否）', width: '130px', key: 'resizeFlag'},
  {title: '是否允许根据内容自动计算列宽（true-是；false-否）', width: '130px', key: 'autoColsWidthFlag'},
  {title: '是否启用默认工具栏（true-是；false-否）', width: '130px', key: 'defaultToolBarFlag'},
- {title: '组件名', width: '130px', key: 'component'},
  {
   title: '操作',
   width: '150px',

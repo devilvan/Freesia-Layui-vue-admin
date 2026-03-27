@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 持久层
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Mapper
 public interface SysColumnDetailMapper extends BaseMapper<SysColumnDetailPo> {
@@ -31,7 +31,7 @@ public interface SysColumnDetailMapper extends BaseMapper<SysColumnDetailPo> {
      * @param sysColumnDetailDto 查询条件
      * @return 分页信息
      */
-    List<SysColumnDetailDto> findList(@Param(value = "dto") SysColumnDetailDto sysColumnDetailDto);
+    List<SysColumnDetailPo> findList(@Param(value = "dto") SysColumnDetailDto sysColumnDetailDto);
 
     /**
      * 查询系统列明细表信息

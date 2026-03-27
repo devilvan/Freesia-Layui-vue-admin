@@ -15,6 +15,6 @@ export enum Operate {
 }
 
 export enum Sorted {
-    A = "asc",
-    D = "desc"
+    ASC = "asc",
+    DESC = "desc"
 }

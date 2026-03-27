@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 MapStruct转换器
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SysColumnDetailConverter extends MapStructConverter<SysColumnDetailVo, SysColumnDetailDto, SysColumnDetailPo> {

@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,12 +17,11 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.math.BigDecimal;
-import java.util.Set;
 
 /**
  * @author Evad.Wu
  * @Description 系统列中间表 映射
- * @date 2026-03-20
+ * @date 2026-03-27
  */
 @Setter
 @Getter
@@ -48,21 +50,6 @@ public class SysColumnMiddlePo extends BasePo implements Serializable {
     private String name;
     @Schema(description = "是否可用（true-是；false-否）")
     @TableField(value = "ENABLED")
-    @Column(name = "ENABLED", columnDefinition = "INT(10) COMMENT '是否可用（true-是；false-否）'")
-    private Integer enabled;
-
-    @Schema(description = "系统列中间表在头-中间表关系中的系统列头数据")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @TableField(exist = false)
-    @ManyToOne(targetEntity = SysColumnHeaderPo.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "HEADER_ID", referencedColumnName = "ID", insertable = false, updatable = false)
-    private SysColumnHeaderPo sysColumnHeaderPo;
-
-    @Schema(description = "系统列中间表在中间表-明细关系中的系统列明细数据")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @TableField(exist = false)
-    @OneToMany(targetEntity = SysColumnDetailPo.class, mappedBy = "sysColumnMiddlePo", fetch = FetchType.LAZY)
-    private Set<SysColumnDetailPo> sysColumnDetailPoSet;
+    @Column(name = "ENABLED", columnDefinition = "BIT(1) COMMENT '是否可用（true-是；false-否）'")
+    private Boolean enabled;
 }

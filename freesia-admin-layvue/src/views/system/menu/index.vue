@@ -568,66 +568,16 @@ const expandMenu = function (flag: any) {
   expandMenuFlag.value = flag
 }
 const columns = [
-  {
-    fixed: 'left',
-    type: 'checkbox',
-    width: '120px',
-    title: '复选',
-  },
-  {
-    title: '菜单名称',
-    key: 'menuName',
-    width: '200px',
-    customSlot: 'menuName'
-  },
-  {
-    title: '路由地址',
-    key: 'path',
-    width: '100px',
-    customSlot: 'path'
-  },
-  {
-    title: '排序',
-    width: '50px',
-    key: 'orderNum'
-  },
-  {
-    title: '菜单类型',
-    key: 'menuType',
-    width: '100px',
-    customSlot: 'menuType'
-  },
-  {
-    title: '启用',
-    key: 'status',
-    width: '40px',
-    customSlot: 'status'
-  },
-  {
-    title: '组件路径',
-    key: 'component',
-    width: '200px',
-    customSlot: 'component'
-  },
-  {
-    title: '权限标识',
-    key: 'perms',
-    width: '200px',
-    customSlot: 'perms'
-  },
-  {
-    title: '备注',
-    key: 'remark',
-    width: '200px',
-    customSlot: 'remark'
-  },
-  {
-    title: '操作',
-    key: 'option',
-    width: '150px',
-    fixed: 'right',
-    customSlot: 'option'
-  }
+  {fixed: 'left', type: 'checkbox', width: '120px', title: '复选',},
+  {title: '菜单名称', key: 'menuName', width: '200px', customSlot: 'menuName'},
+  {title: '路由地址', key: 'path', width: '100px', customSlot: 'path'},
+  {title: '排序', width: '50px', key: 'orderNum'},
+  {title: '菜单类型', key: 'menuType', width: '100px', customSlot: 'menuType'},
+  {title: '启用', key: 'status', width: '40px', customSlot: 'status'},
+  {title: '组件路径', key: 'component', width: '200px', customSlot: 'component'},
+  {title: '权限标识', key: 'perms', width: '200px', customSlot: 'perms'},
+  {title: '备注', key: 'remark', width: '200px', customSlot: 'remark'},
+  {title: '操作', key: 'option', width: '150px', fixed: 'right', customSlot: 'option'}
 ]
 const isShowOptions = ref([
   {

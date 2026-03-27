@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,14 +21,13 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 映射
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Setter
 @Getter
 @ToString
 @NoArgsConstructor
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
 @TableName(value = "SYS_COLUMN_DETAIL")
 
 @Entity
@@ -51,17 +53,17 @@ public class SysColumnDetailPo extends BasePo implements Serializable {
     @Column(name = "TITLE", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '列名'")
     private String title;
     @Schema(description = "属性名")
-    @TableField(value = "TITLE")
+    @TableField(value = "NAME")
     @Column(name = "NAME", columnDefinition = "VARCHAR(64) NOT NULL COMMENT '属性名'")
     private String name;
     @Schema(description = "是否启用（true-是；false-否）")
     @TableField(value = "ENABLED")
     @Column(name = "ENABLED", columnDefinition = "BIT(1) COMMENT '是否启用（true-是；false-否）'")
     private Boolean enabled;
-    @Schema(description = "是否固定（true-是；false-否）")
+    @Schema(description = "固定（null-不固定；left-左固定；right-右固定）")
     @TableField(value = "FIXED")
-    @Column(name = "FIXED", columnDefinition = "BIT(1) COMMENT '是否固定（true-是；false-否）'")
-    private Boolean fixed;
+    @Column(name = "FIXED", columnDefinition = "VARCHAR(8) COMMENT '固定（null-不固定；left-左固定；right-右固定）'")
+    private String fixed;
     @Schema(description = "是否过长省略（true-是；false-否）")
     @TableField(value = "ELLIPSIS_TOOLTIP")
     @Column(name = "ELLIPSIS_TOOLTIP", columnDefinition = "BIT(1) COMMENT '是否过长省略（true-是；false-否）'")
@@ -74,36 +76,16 @@ public class SysColumnDetailPo extends BasePo implements Serializable {
     @TableField(value = "MIN_WIDTH")
     @Column(name = "MIN_WIDTH", columnDefinition = "INT(10) COMMENT '最小列宽（单位：px）'")
     private Integer minWidth;
-    @Schema(description = "最大列宽（单位：px）")
-    @TableField(value = "MAX_WIDTH")
-    @Column(name = "MAX_WIDTH", columnDefinition = "INT(10) COMMENT '最大列宽（单位：px）'")
-    private Integer maxWidth;
     @Schema(description = "排序号")
     @TableField(value = "ORDER_NUM")
     @Column(name = "ORDER_NUM", columnDefinition = "INT(10) COMMENT '排序号'")
     private Integer orderNum;
-    @Schema(description = "是否排序（null-不排序；A-顺序；D-倒序）")
+    @Schema(description = "是否排序（null-不排序；asc-顺序；desc-倒序）")
     @TableField(value = "SORTED")
-    @Column(name = "SORTED", columnDefinition = "CHAR(1) COMMENT '是否排序（null-不排序；A-顺序；D-倒序）'")
+    @Column(name = "SORTED", columnDefinition = "VARCHAR(4) COMMENT '是否排序（null-不排序；asc-顺序；desc-倒序）'")
     private String sorted;
-    @Schema(description = "是否允许拖动（true-是；false-否）")
+    @Schema(description = "是否允许调整宽度（true-是；false-否）")
     @TableField(value = "RESIZE_FLAG")
-    @Column(name = "RESIZE_FLAG", columnDefinition = "BIT(1) COMMENT '是否允许拖动（true-是；false-否）'")
+    @Column(name = "RESIZE_FLAG", columnDefinition = "BIT(1) COMMENT '是否允许调整宽度（true-是；false-否）'")
     private Boolean resizeFlag;
-
-    @Schema(description = "系统列明细在头-明细关系中的系统列头数据")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @TableField(exist = false)
-    @ManyToOne(targetEntity = SysColumnHeaderPo.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "HEADER_ID", referencedColumnName = "ID", insertable = false, updatable = false)
-    private SysColumnHeaderPo sysColumnHeaderPo;
-
-    @Schema(description = "系统列明细在中间表-明细关系中的系统列中间表数据")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @TableField(exist = false)
-    @ManyToOne(targetEntity = SysColumnMiddlePo.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "MIDDLE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
-    private SysColumnMiddlePo sysColumnMiddlePo;
 }

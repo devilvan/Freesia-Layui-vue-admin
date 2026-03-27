@@ -80,7 +80,8 @@ public class RedisConfig implements WebMvcConfigurer {
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
                         freesiaRedisTemplate.getValueSerializer()))
                 // 不缓存null
-                .disableCachingNullValues();
+                .disableCachingNullValues()
+                ;
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(Objects.requireNonNull(freesiaRedisTemplate.getConnectionFactory()))

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列中间表 持久层
- * @date 2026-03-20
+ * @date 2026-03-27
  */
 @Mapper
 public interface SysColumnMiddleMapper extends BaseMapper<SysColumnMiddlePo> {

@@ -13,6 +13,7 @@
         <result column="TENANT_ID" property="tenantId"/>
         <result column="COMPONENT_ID" property="componentId"/>
         <result column="NAME" property="name"/>
+        <result column="DESCRIPTION" property="description"/>
         <result column="HEIGHT" property="height"/>
         <result column="MAX_HEIGHT" property="maxHeight"/>
         <result column="INIT_PAGE_SIZE" property="initPageSize"/>
@@ -22,7 +23,7 @@
         <result column="DEFAULT_TOOL_BAR_FLAG" property="defaultToolBarFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, COMPONENT_ID, NAME, HEIGHT, MAX_HEIGHT, INIT_PAGE_SIZE, ENABLED, RESIZE_FLAG, AUTO_COLS_WIDTH_FLAG, DEFAULT_TOOL_BAR_FLAG
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, COMPONENT_ID, NAME, DESCRIPTION, HEIGHT, MAX_HEIGHT, INIT_PAGE_SIZE, ENABLED, RESIZE_FLAG, AUTO_COLS_WIDTH_FLAG, DEFAULT_TOOL_BAR_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -35,6 +36,9 @@
         </if>
         <if test="dto.name != null and dto.name != ''">
             AND NAME = #{dto.name}
+        </if>
+        <if test="dto.description != null and dto.description != ''">
+            AND DESCRIPTION = #{dto.description}
         </if>
         <if test="dto.height != null">
             AND HEIGHT = #{dto.height}
@@ -70,6 +74,9 @@
         <if test="dto.name != null and dto.name != ''">
             AND NAME = #{dto.name}
         </if>
+        <if test="dto.description != null and dto.description != ''">
+            AND DESCRIPTION = #{dto.description}
+        </if>
         <if test="dto.height != null">
             AND HEIGHT = #{dto.height}
         </if>
@@ -103,6 +110,9 @@
         </if>
         <if test="dto.name != null and dto.name != ''">
             AND NAME = #{dto.name}
+        </if>
+        <if test="dto.description != null and dto.description != ''">
+            AND DESCRIPTION = #{dto.description}
         </if>
         <if test="dto.height != null">
             AND HEIGHT = #{dto.height}
@@ -139,14 +149,15 @@
         REC_VER,
         BUILD_IN,
         TENANT_ID,
-        COMPONENT_ID,
-        NAME,
-        HEIGHT,
-        MAX_HEIGHT,
-        INIT_PAGE_SIZE,
-        ENABLED,
-        RESIZE_FLAG,
-        AUTO_COLS_WIDTH_FLAG,
+        COMPONENT_ID, 
+        NAME, 
+        DESCRIPTION, 
+        HEIGHT, 
+        MAX_HEIGHT, 
+        INIT_PAGE_SIZE, 
+        ENABLED, 
+        RESIZE_FLAG, 
+        AUTO_COLS_WIDTH_FLAG, 
         DEFAULT_TOOL_BAR_FLAG
         )
         VALUES
@@ -161,14 +172,15 @@
             #{item.recVer},
             #{item.buildIn},
             #{item.tenantId},
-            #{item.componentId},
-            #{item.name},
-            #{item.height},
-            #{item.maxHeight},
-            #{item.initPageSize},
-            #{item.enabled},
-            #{item.resizeFlag},
-            #{item.autoColsWidthFlag},
+            #{item.componentId}, 
+            #{item.name}, 
+            #{item.description}, 
+            #{item.height}, 
+            #{item.maxHeight}, 
+            #{item.initPageSize}, 
+            #{item.enabled}, 
+            #{item.resizeFlag}, 
+            #{item.autoColsWidthFlag}, 
             #{item.defaultToolBarFlag}
             )
         </foreach>

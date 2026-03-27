@@ -251,13 +251,7 @@ const columns = ref([
  {title: '最大列宽（单位：px）', width: '130px', key: 'maxWidth'},
  {title: '排序号', width: '130px', key: 'orderNum'},
  {title: '是否排序（null-不排序；A-顺序；D-倒序）', width: '130px', key: 'sorted'},
- {
-  title: '操作',
-  width: '150px',
-  customSlot: 'operator',
-  key: 'operator',
-  fixed: 'right'
- }
+ {title: '操作',width: '150px',customSlot: 'operator',key: 'operator',fixed: 'right'}
 ])
 const loading = ref(false)
 const defaultToolbarFlag = ref(true)

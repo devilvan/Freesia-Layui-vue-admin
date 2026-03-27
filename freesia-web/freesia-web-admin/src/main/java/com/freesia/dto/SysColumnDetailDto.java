@@ -6,11 +6,12 @@ import lombok.*;
 
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 数据传输对象
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Data
 @NoArgsConstructor
@@ -30,20 +31,20 @@ public class SysColumnDetailDto extends BaseDto {
     private String name;
     @Schema(description = "是否启用（true-是；false-否）")
     private Boolean enabled;
-    @Schema(description = "是否固定（true-是；false-否）")
-    private Boolean fixed;
+    @Schema(description = "固定（null-不固定；left-左固定；right-右固定）")
+    private String fixed;
     @Schema(description = "是否过长省略（true-是；false-否）")
     private Boolean ellipsisTooltip;
     @Schema(description = "列宽（单位：px）")
     private Integer width;
     @Schema(description = "最小列宽（单位：px）")
     private Integer minWidth;
-    @Schema(description = "最大列宽（单位：px）")
-    private Integer maxWidth;
     @Schema(description = "排序号")
     private Integer orderNum;
-    @Schema(description = "是否排序（null-不排序；A-顺序；D-倒序）")
+    @Schema(description = "是否排序（null-不排序；asc-顺序；desc-倒序）")
     private String sorted;
-    @Schema(description = "是否允许拖动（true-是；false-否）")
+    @Schema(description = "是否允许调整宽度（true-是；false-否）")
     private Boolean resizeFlag;
+    @Schema(description = "系统列中间表ID列表")
+    private List<Long> middleIdList;
 }

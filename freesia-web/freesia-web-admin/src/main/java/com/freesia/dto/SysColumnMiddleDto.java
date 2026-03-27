@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * @author Evad.Wu
  * @Description 系统列中间表 数据传输对象
- * @date 2026-03-20
+ * @date 2026-03-27
  */
 @Data
 @NoArgsConstructor
@@ -25,5 +25,5 @@ public class SysColumnMiddleDto extends BaseDto {
     @Schema(description = "属性名")
     private String name;
     @Schema(description = "是否可用（true-是；false-否）")
-    private Integer enabled;
+    private Boolean enabled;
 }

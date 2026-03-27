@@ -1,23 +1,21 @@
 package com.freesia.dto;
 
+import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+import lombok.*;
 
+import java.util.Date;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * @author Evad.Wu
  * @Description 系统列头表 数据传输对象
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "系统列头表 数据传输对象")
 public class SysColumnHeaderDto extends BaseDto {
@@ -25,6 +23,8 @@ public class SysColumnHeaderDto extends BaseDto {
     private String componentId;
     @Schema(description = "组件名")
     private String name;
+    @Schema(description = "组件描述")
+    private String description;
     @Schema(description = "表格高度")
     private Integer height;
     @Schema(description = "表格最大高度")
@@ -39,8 +39,6 @@ public class SysColumnHeaderDto extends BaseDto {
     private Boolean autoColsWidthFlag;
     @Schema(description = "是否启用默认工具栏（true-是；false-否）")
     private Boolean defaultToolBarFlag;
-    @Schema(description = "组件名")
-    private String component;
     @Schema(description = "系统列明细")
     private List<SysColumnDetailDto> sysColumnDetailDtoList;
 }

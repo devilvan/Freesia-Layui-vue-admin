@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列头表 业务逻辑类
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Service
 @RequiredArgsConstructor
@@ -41,7 +41,7 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
 
     @Override
     protected JpaRepository<SysColumnHeaderPo, Long> getRepository() {
-        return sysColumnHeaderRepository;
+    return sysColumnHeaderRepository;
     }
 
     @Override
@@ -61,6 +61,7 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getId()), SysColumnHeaderPo::getId, sysColumnHeaderDto.getId())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getComponentId()), SysColumnHeaderPo::getComponentId, sysColumnHeaderDto.getComponentId())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getName()), SysColumnHeaderPo::getName, sysColumnHeaderDto.getName())
+                .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getDescription()), SysColumnHeaderPo::getDescription, sysColumnHeaderDto.getDescription())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getHeight()), SysColumnHeaderPo::getHeight, sysColumnHeaderDto.getHeight())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getMaxHeight()), SysColumnHeaderPo::getMaxHeight, sysColumnHeaderDto.getMaxHeight())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getInitPageSize()), SysColumnHeaderPo::getInitPageSize, sysColumnHeaderDto.getInitPageSize())
@@ -68,7 +69,6 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getResizeFlag()), SysColumnHeaderPo::getResizeFlag, sysColumnHeaderDto.getResizeFlag())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getAutoColsWidthFlag()), SysColumnHeaderPo::getAutoColsWidthFlag, sysColumnHeaderDto.getAutoColsWidthFlag())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getDefaultToolBarFlag()), SysColumnHeaderPo::getDefaultToolBarFlag, sysColumnHeaderDto.getDefaultToolBarFlag())
-                .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getComponent()), SysColumnHeaderPo::getComponent, sysColumnHeaderDto.getComponent())
                 ;
     }
 

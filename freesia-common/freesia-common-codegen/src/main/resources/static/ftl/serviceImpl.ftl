@@ -74,6 +74,7 @@ public class ${dataBaseDto.className}ServiceImpl extends BaseServiceImpl<${dataB
 
     @Override
     public List<${dataBaseDto.className}Dto> findList(${dataBaseDto.className}Dto dto) {
+        return ${dataBaseDto.className?uncap_first}Converter.convertBatchPo2Dto(${dataBaseDto.className?uncap_first}Mapper.findList(dto));
         return ${dataBaseDto.className?uncap_first}Mapper.findList(dto);
     }
 

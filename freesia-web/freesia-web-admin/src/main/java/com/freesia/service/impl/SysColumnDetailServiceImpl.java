@@ -23,12 +23,13 @@ import com.freesia.util.UEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 业务逻辑类
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Service
 @RequiredArgsConstructor
@@ -64,12 +65,17 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getId()), SysColumnDetailPo::getId, sysColumnDetailDto.getId())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getUserId()), SysColumnDetailPo::getUserId, sysColumnDetailDto.getUserId())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getHeaderId()), SysColumnDetailPo::getHeaderId, sysColumnDetailDto.getHeaderId())
+                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getMiddleId()), SysColumnDetailPo::getMiddleId, sysColumnDetailDto.getMiddleId())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getTitle()), SysColumnDetailPo::getTitle, sysColumnDetailDto.getTitle())
+                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getName()), SysColumnDetailPo::getName, sysColumnDetailDto.getName())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getEnabled()), SysColumnDetailPo::getEnabled, sysColumnDetailDto.getEnabled())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getFixed()), SysColumnDetailPo::getFixed, sysColumnDetailDto.getFixed())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getEllipsisTooltip()), SysColumnDetailPo::getEllipsisTooltip, sysColumnDetailDto.getEllipsisTooltip())
+                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getWidth()), SysColumnDetailPo::getWidth, sysColumnDetailDto.getWidth())
+                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getMinWidth()), SysColumnDetailPo::getMinWidth, sysColumnDetailDto.getMinWidth())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getOrderNum()), SysColumnDetailPo::getOrderNum, sysColumnDetailDto.getOrderNum())
                 .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getSorted()), SysColumnDetailPo::getSorted, sysColumnDetailDto.getSorted())
+                .eq(UEmpty.isNotEmpty(sysColumnDetailDto.getResizeFlag()), SysColumnDetailPo::getResizeFlag, sysColumnDetailDto.getResizeFlag())
                 ;
     }
 
@@ -86,14 +92,17 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
     }
 
     @Override
-    public List<SysColumnDetailDto> findList(SysColumnDetailDto dto) {
-        return sysColumnDetailMapper.findList(dto);
+    @Cacheable(cacheNames = CacheConstant.SYS_COLUMN_DETAIL, key = "#sysColumnDetailDto.headerId + '@' + #sysColumnDetailDto.userId")
+    public List<SysColumnDetailDto> findCacheList(SysColumnDetailDto sysColumnDetailDto) {
+        return super.findList(sysColumnDetailDto);
     }
 
     @Override
-    @Cacheable(cacheNames = CacheConstant.SYS_COLUMN_DETAIL, key = "#dto.headerId + '@' + #dto.userId")
     public List<SysColumnDetailDto> findMiddleList(SysColumnDetailDto dto) {
-        return sysColumnDetailMapper.findMiddleList(dto);
+        List<SysColumnDetailDto> middleList = sysColumnDetailMapper.findMiddleList(dto);
+        if (UEmpty.isEmpty(middleList)) {
+        }
+        return middleList;
     }
 
     @Override

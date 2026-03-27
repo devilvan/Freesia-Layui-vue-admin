@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列中间表 业务逻辑接口
- * @date 2026-03-20
+ * @date 2026-03-27
  */
 public interface SysColumnMiddleService {
     /**
@@ -32,7 +32,7 @@ public interface SysColumnMiddleService {
      * 查询系统列中间表信息
      *
      * @param sysColumnMiddleDto 查询条件
-     * @param pageQuery    分页条件
+     * @param pageQuery          分页条件
      * @return 分页信息
      */
     TableResult<SysColumnMiddleDto> findPage(SysColumnMiddleDto sysColumnMiddleDto, PageQuery pageQuery);
@@ -52,6 +52,14 @@ public interface SysColumnMiddleService {
      * @return 系统列中间表信息
      */
     List<SysColumnMiddleDto> findList(SysColumnMiddleDto sysColumnMiddleDto);
+
+    /**
+     * （缓存查询）条件查询系统列中间表信息
+     *
+     * @param sysColumnMiddleDto 查询条件
+     * @return 系统列中间表信息
+     */
+    List<SysColumnMiddleDto> findCacheList(SysColumnMiddleDto sysColumnMiddleDto);
 
     /**
      * 删除系统列中间表信息

@@ -27,12 +27,12 @@ export function handleFindSysColumn(name: string, defaultColumns: TableColumn[])
                 let sysColumnHeader: SysColumnHeaderEntity = res.data || {};
                 if (sysColumnDetailList && sysColumnDetailList.length > 0) {
                     sysColumnDetailList.forEach((item: SysColumnDetailEntity) => {
-                        let sorted = "";
+                        let sorted: boolean | string = false;
                         if (item.sorted) {
-                            if (item.sorted === "A") {
-                                sorted = Sorted.A;
-                            } else if (item.sorted === "D") {
-                                sorted = Sorted.D;
+                            if (item.sorted === Sorted.ASC) {
+                                sorted = Sorted.ASC;
+                            } else if (item.sorted === Sorted.DESC) {
+                                sorted = Sorted.DESC;
                             }
                         }
                         columns.push({
@@ -86,10 +86,10 @@ function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultColumnVo[
     return defaultColumns?.map(item => {
         let sorted = null;
         if (item.sort) {
-            if (item.sort === "A") {
-                sorted = Sorted.A;
-            } else if (item.sort === "D") {
-                sorted = Sorted.D;
+            if (item.sort === Sorted.ASC) {
+                sorted = Sorted.ASC;
+            } else if (item.sort === Sorted.DESC) {
+                sorted = Sorted.DESC;
             }
         }
         return {
@@ -98,10 +98,10 @@ function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultColumnVo[
             hide: item.hide || false,
             width: parseWidth2Number(item.width) || 120,
             minWidth: parseWidth2Number(item.minWidth) || 20,
-            sorted: sorted || null,
+            sorted: sorted,
             ellipsisTooltip: item.ellipsisTooltip || false,
             fixed: item.fixed || null,
-            resize: item.resize || '',
+            resizeFlag: item.resize || '',
         }
     })
 }

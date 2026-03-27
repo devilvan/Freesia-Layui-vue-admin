@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列明细表 业务逻辑接口
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 public interface SysColumnDetailService {
     /**
@@ -52,6 +52,14 @@ public interface SysColumnDetailService {
      * @return 系统列明细表信息
      */
     List<SysColumnDetailDto> findList(SysColumnDetailDto sysColumnDetailDto);
+
+    /**
+     * （缓存查询）条件查询系统列明细表信息
+     *
+     * @param sysColumnDetailDto 查询条件
+     * @return 系统列明细表信息
+     */
+    List<SysColumnDetailDto> findCacheList(SysColumnDetailDto sysColumnDetailDto);
 
     /**
      * 删除系统列明细表信息

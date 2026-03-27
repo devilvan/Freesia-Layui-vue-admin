@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import com.freesia.vo.BaseVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -14,11 +15,12 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列头表 值对象
- * @date 2026-03-17
+ * @date 2026-03-27
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "系统列头表 值对象")
 public class SysColumnHeaderVo extends BaseVo {
     @Schema(description = "组件ID")
@@ -27,6 +29,9 @@ public class SysColumnHeaderVo extends BaseVo {
     @Schema(description = "组件名")
     @JsonAlias(value = {"name"})
     private String name;
+    @Schema(description = "组件描述")
+    @JsonAlias(value = {"description"})
+    private String description;
     @Schema(description = "表格高度")
     @JsonAlias(value = {"height"})
     private Integer height;
@@ -48,8 +53,6 @@ public class SysColumnHeaderVo extends BaseVo {
     @Schema(description = "是否启用默认工具栏（true-是；false-否）")
     @JsonAlias(value = {"defaultToolBarFlag"})
     private Boolean defaultToolBarFlag;
-    @Schema(description = "组件名")
-    @JsonAlias(value = {"component"})
     private String component;
     @Schema(description = "默认列")
     private List<DefaultColumnVo> defaultColumnVoList;

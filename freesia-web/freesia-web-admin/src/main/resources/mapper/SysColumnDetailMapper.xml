@@ -21,13 +21,12 @@
         <result column="ELLIPSIS_TOOLTIP" property="ellipsisTooltip"/>
         <result column="WIDTH" property="width"/>
         <result column="MIN_WIDTH" property="minWidth"/>
-        <result column="MAX_WIDTH" property="maxWidth"/>
         <result column="ORDER_NUM" property="orderNum"/>
         <result column="SORTED" property="sorted"/>
         <result column="RESIZE_FLAG" property="resizeFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, USER_ID, HEADER_ID, MIDDLE_ID, TITLE, `NAME`, ENABLED, FIXED, ELLIPSIS_TOOLTIP, WIDTH, MIN_WIDTH, MAX_WIDTH, ORDER_NUM, SORTED, RESIZE_FLAG
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, USER_ID, HEADER_ID, MIDDLE_ID, TITLE, NAME, ENABLED, FIXED, ELLIPSIS_TOOLTIP, WIDTH, MIN_WIDTH, ORDER_NUM, SORTED, RESIZE_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -40,6 +39,9 @@
         </if>
         <if test="dto.headerId != null">
             AND HEADER_ID = #{dto.headerId}
+        </if>
+        <if test="dto.middleId != null">
+            AND MIDDLE_ID = #{dto.middleId}
         </if>
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
@@ -61,9 +63,6 @@
         </if>
         <if test="dto.minWidth != null">
             AND MIN_WIDTH = #{dto.minWidth}
-        </if>
-        <if test="dto.maxWidth != null">
-            AND MAX_WIDTH = #{dto.maxWidth}
         </if>
         <if test="dto.orderNum != null">
             AND ORDER_NUM = #{dto.orderNum}
@@ -87,6 +86,9 @@
         <if test="dto.headerId != null">
             AND HEADER_ID = #{dto.headerId}
         </if>
+        <if test="dto.middleId != null">
+            AND MIDDLE_ID = #{dto.middleId}
+        </if>
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
         </if>
@@ -108,9 +110,6 @@
         <if test="dto.minWidth != null">
             AND MIN_WIDTH = #{dto.minWidth}
         </if>
-        <if test="dto.maxWidth != null">
-            AND MAX_WIDTH = #{dto.maxWidth}
-        </if>
         <if test="dto.orderNum != null">
             AND ORDER_NUM = #{dto.orderNum}
         </if>
@@ -120,7 +119,7 @@
         <if test="dto.resizeFlag != null and dto.resizeFlag != ''">
             AND RESIZE_FLAG = #{dto.resizeFlag}
         </if>
-        ORDER BY ORDER_NUM , MODIFY_TIME DESC
+        ORDER BY MODIFY_TIME DESC
     </select>
     <select id="findOne" resultMap="BaseResultMap">
         SELECT
@@ -133,6 +132,9 @@
         <if test="dto.headerId != null">
             AND HEADER_ID = #{dto.headerId}
         </if>
+        <if test="dto.middleId != null">
+            AND MIDDLE_ID = #{dto.middleId}
+        </if>
         <if test="dto.title != null and dto.title != ''">
             AND TITLE = #{dto.title}
         </if>
@@ -154,14 +156,14 @@
         <if test="dto.minWidth != null">
             AND MIN_WIDTH = #{dto.minWidth}
         </if>
-        <if test="dto.maxWidth != null">
-            AND MAX_WIDTH = #{dto.maxWidth}
-        </if>
         <if test="dto.orderNum != null">
             AND ORDER_NUM = #{dto.orderNum}
         </if>
         <if test="dto.sorted != null and dto.sorted != ''">
             AND SORTED = #{dto.sorted}
+        </if>
+        <if test="dto.resizeFlag != null and dto.resizeFlag != ''">
+            AND RESIZE_FLAG = #{dto.resizeFlag}
         </if>
         LIMIT 1
     </select>
@@ -185,7 +187,6 @@
                DETAIL.ELLIPSIS_TOOLTIP,
                DETAIL.WIDTH,
                DETAIL.MIN_WIDTH,
-               DETAIL.MAX_WIDTH,
                DETAIL.ORDER_NUM,
                DETAIL.SORTED,
                DETAIL.RESIZE_FLAG
@@ -219,7 +220,6 @@
         ELLIPSIS_TOOLTIP,
         WIDTH,
         MIN_WIDTH,
-        MAX_WIDTH,
         ORDER_NUM,
         SORTED,
         RESIZE_FLAG
@@ -246,7 +246,6 @@
             #{item.ellipsisTooltip},
             #{item.width},
             #{item.minWidth},
-            #{item.maxWidth},
             #{item.orderNum},
             #{item.sorted},
             #{item.resizeFlag}

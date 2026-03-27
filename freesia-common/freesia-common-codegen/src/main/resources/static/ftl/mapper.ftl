@@ -31,7 +31,7 @@ public interface ${dataBaseDto.className}Mapper extends BaseMapper<${dataBaseDto
      * @param ${dataBaseDto.className?uncap_first}Dto 查询条件
      * @return 分页信息
      */
-    List<${dataBaseDto.className}Dto> findList(@Param(value = "dto") ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
+    List<${dataBaseDto.className}Po> findList(@Param(value = "dto") ${dataBaseDto.className}Dto ${dataBaseDto.className?uncap_first}Dto);
 
     /**
      * 查询${dataBaseDto.comment}信息

@@ -15,7 +15,6 @@ import com.freesia.service.SysColumnMiddleService;
 import com.freesia.converter.SysColumnMiddleConverter;
 import com.freesia.mapper.SysColumnMiddleMapper;
 import com.freesia.repository.SysColumnMiddleRepository;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ import java.util.List;
 /**
  * @author Evad.Wu
  * @Description 系统列中间表 业务逻辑类
- * @date 2026-03-20
+ * @date 2026-03-27
  */
 @Service
 @RequiredArgsConstructor
@@ -44,7 +43,7 @@ public class SysColumnMiddleServiceImpl extends BaseServiceImpl<SysColumnMiddleM
 
     @Override
     protected JpaRepository<SysColumnMiddlePo, Long> getRepository() {
-        return sysColumnMiddleRepository;
+    return sysColumnMiddleRepository;
     }
 
     @Override
@@ -70,12 +69,6 @@ public class SysColumnMiddleServiceImpl extends BaseServiceImpl<SysColumnMiddleM
     }
 
     @Override
-    @CachePut(cacheNames = CacheConstant.SYS_COLUMN_MIDDLE, key = "#dto.headerId")
-    public SysColumnMiddleDto saveUpdate(SysColumnMiddleDto dto) {
-        return super.saveUpdate(dto);
-    }
-
-    @Override
     public TableResult<SysColumnMiddleDto> findPage(SysColumnMiddleDto dto, PageQuery pageQuery) {
         Page<SysColumnMiddlePo> page = sysColumnMiddleMapper.findPage(dto, pageQuery.build());
         return TableResult.build(sysColumnMiddleConverter.convertPagePo2Dto(page));
@@ -83,8 +76,8 @@ public class SysColumnMiddleServiceImpl extends BaseServiceImpl<SysColumnMiddleM
 
     @Override
     @Cacheable(cacheNames = CacheConstant.SYS_COLUMN_MIDDLE, key = "#dto.headerId")
-    public List<SysColumnMiddleDto> findList(SysColumnMiddleDto dto) {
-        return sysColumnMiddleMapper.findList(dto);
+    public List<SysColumnMiddleDto> findCacheList(SysColumnMiddleDto dto) {
+        return super.findList(dto);
     }
 
     @Override
