@@ -84,6 +84,34 @@ public class SysColumnHeaderController extends BaseController {
         return sysColumnHeaderService.findPage(sysColumnHeaderDto, pageQuery);
     }
 
+
+    /**
+     * 条件查询系统列头表
+     *
+     * @param sysColumnHeaderVo 查询条件
+     * @return 形式返回
+     */
+    @Operation(summary = "条件查询系统列头表")
+    @GetMapping(value = "findListSysColumnHeader")
+    public R<List<SysColumnHeaderDto>> findListSysColumnHeader(SysColumnHeaderVo sysColumnHeaderVo) {
+        SysColumnHeaderDto sysColumnHeaderDto = sysColumnHeaderConverter.convertVo2Dto(sysColumnHeaderVo);
+        List<SysColumnHeaderDto> sysColumnHeaderDtoList = sysColumnHeaderService.findList(sysColumnHeaderDto);
+        return R.ok(sysColumnHeaderDtoList);
+    }
+
+    /**
+     * 删除系统列头表
+     *
+     * @param idList 主键
+     * @return 形式返回
+     */
+    @Operation(summary = "删除系统列头表")
+    @PostMapping(value = "deleteSysColumnHeader")
+    public R<Void> deleteSysColumnHeader(@RequestBody List<Long> idList) {
+        sysColumnHeaderService.deleteBatch(idList);
+        return R.ok();
+    }
+
     /**
      * 条件查询系统列头表
      *
@@ -146,32 +174,5 @@ public class SysColumnHeaderController extends BaseController {
             return UMessage.message("column.name.not.empty");
         }
         return null;
-    }
-
-    /**
-     * 条件查询系统列头表
-     *
-     * @param sysColumnHeaderVo 查询条件
-     * @return 形式返回
-     */
-    @Operation(summary = "条件查询系统列头表")
-    @GetMapping(value = "findListSysColumnHeader")
-    public R<List<SysColumnHeaderDto>> findListSysColumnHeader(SysColumnHeaderVo sysColumnHeaderVo) {
-        SysColumnHeaderDto sysColumnHeaderDto = sysColumnHeaderConverter.convertVo2Dto(sysColumnHeaderVo);
-        List<SysColumnHeaderDto> sysColumnHeaderDtoList = sysColumnHeaderService.findList(sysColumnHeaderDto);
-        return R.ok(sysColumnHeaderDtoList);
-    }
-
-    /**
-     * 删除系统列头表
-     *
-     * @param idList 主键
-     * @return 形式返回
-     */
-    @Operation(summary = "删除系统列头表")
-    @PostMapping(value = "deleteSysColumnHeader")
-    public R<Void> deleteSysColumnHeader(@RequestBody List<Long> idList) {
-        sysColumnHeaderService.deleteBatch(idList);
-        return R.ok();
     }
 }

@@ -1,12 +1,14 @@
 package com.freesia.chain.handler;
 
-import org.eclipse.core.resources.IProject;
+import com.freesia.dto.SysColumnHeaderDto;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Bliss.Wu
  * @Description 检查列 处理类
  * @date 2026-03-27
  */
+@Slf4j
 public abstract class AbstractCheckColumnHandler {
     /**
      * 检查系统列明细
@@ -45,19 +47,17 @@ public abstract class AbstractCheckColumnHandler {
      *
      * @param priority 需求优先级
      */
-    public final boolean handle(int priority) {
+    public final void handle(int priority, SysColumnHeaderDto sysColumnHeaderDto) {
         if (priority == this.priority) {
-            return this.response();
+            response(sysColumnHeaderDto);
         } else {
             // 后续有环节则继续推进请求
             if (this.nextHandler != null) {
-                this.nextHandler.handle(priority);
+                this.nextHandler.handle(priority, sysColumnHeaderDto);
             } else {
-                System.out.println("没有对应的处理器");
-                return false;
+                log.info("没有对应的处理器");
             }
         }
-        return false;
     }
 
     /**
@@ -72,5 +72,5 @@ public abstract class AbstractCheckColumnHandler {
     /**
      * 处理节点的响应
      */
-    protected abstract boolean response();
+    protected abstract void response(SysColumnHeaderDto sysColumnHeaderDto);
 }
