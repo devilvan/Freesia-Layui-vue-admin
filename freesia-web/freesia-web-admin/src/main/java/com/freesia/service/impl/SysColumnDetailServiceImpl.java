@@ -1,29 +1,29 @@
 package com.freesia.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.CacheConstant;
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
-import com.freesia.vo.SysColumnDetailVo;
-import com.freesia.dto.SysColumnDetailDto;
-import com.freesia.po.SysColumnDetailPo;
-import com.freesia.service.SysColumnDetailService;
 import com.freesia.converter.SysColumnDetailConverter;
+import com.freesia.dto.SysColumnDetailDto;
 import com.freesia.mapper.SysColumnDetailMapper;
+import com.freesia.po.SysColumnDetailPo;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
+import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysColumnDetailRepository;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
+import com.freesia.service.SysColumnDetailService;
 import com.freesia.util.UEmpty;
+import com.freesia.vo.SysColumnDetailVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -80,9 +80,16 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
     }
 
     @Override
-    @CachePut(cacheNames = CacheConstant.SYS_COLUMN_DETAIL, key = "#dto.headerId + '@' + #dto.userId")
-    public SysColumnDetailDto saveUpdate(SysColumnDetailDto dto) {
-        return super.saveUpdate(dto);
+    public List<SysColumnDetailDto> saveUpdateBatch(List<SysColumnDetailDto> list) {
+        List<SysColumnDetailDto> afterSaveDtoList = super.saveUpdateBatch(list);
+        if (UEmpty.isNotEmpty(afterSaveDtoList)) {
+            SysColumnDetailDto columnDetailDto = afterSaveDtoList.get(0);
+            String cacheKey = CacheConstant.SYS_COLUMN_DETAIL + '@' + columnDetailDto.getHeaderId() + '@' + columnDetailDto.getUserId();
+            URedis.put(cacheKey, columnDetailDto.getHeaderId().toString(), afterSaveDtoList);
+            URedis.expire(cacheKey, Duration.parse("P5HT" + RandomUtil.randomInt(2, 11) + "M"));
+            return afterSaveDtoList;
+        }
+        return null;
     }
 
     @Override
@@ -92,17 +99,22 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
     }
 
     @Override
-    @Cacheable(cacheNames = CacheConstant.SYS_COLUMN_DETAIL, key = "#sysColumnDetailDto.headerId + '@' + #sysColumnDetailDto.userId")
+    @SuppressWarnings("unchecked")
     public List<SysColumnDetailDto> findCacheList(SysColumnDetailDto sysColumnDetailDto) {
-        return super.findList(sysColumnDetailDto);
-    }
-
-    @Override
-    public List<SysColumnDetailDto> findMiddleList(SysColumnDetailDto dto) {
-        List<SysColumnDetailDto> middleList = sysColumnDetailMapper.findMiddleList(dto);
-        if (UEmpty.isEmpty(middleList)) {
+        Long headerId = sysColumnDetailDto.getHeaderId();
+        Long userId = sysColumnDetailDto.getUserId();
+        String cacheKey = CacheConstant.SYS_COLUMN_DETAIL + '@' + headerId + '@' + userId;
+        List<SysColumnDetailDto> sysColumnDetailDtoList = (List<SysColumnDetailDto>) URedis.hashGet(cacheKey, headerId.toString());
+        if (UEmpty.isNotEmpty(sysColumnDetailDtoList)) {
+            return sysColumnDetailDtoList;
         }
-        return middleList;
+        List<SysColumnDetailDto> list = super.findList(sysColumnDetailDto);
+        if (UEmpty.isNotEmpty(list)) {
+            URedis.put(cacheKey, headerId.toString(), list);
+            URedis.expire(cacheKey, Duration.parse("P5HT" + RandomUtil.randomInt(2, 11) + "M"));
+            return list;
+        }
+        return null;
     }
 
     @Override

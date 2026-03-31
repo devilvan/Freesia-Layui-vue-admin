@@ -25,7 +25,7 @@ public class DefaultColumnVo {
     @Schema(description = "是否排序（null-不排序；A-顺序；D-倒序）")
     private String sorted;
     @Schema(description = "是否过长省略（true-是；false-否）")
-    private String ellipsisTooltip;
+    private Boolean ellipsisTooltip;
     @Schema(description = "是否固定（left-左固定；right-右固定）")
     private String fixed;
     @Schema(description = "是否允许拖动（true-是；false-否）")

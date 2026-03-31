@@ -1,27 +1,29 @@
 package com.freesia.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.CacheConstant;
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
-import com.freesia.vo.SysColumnMiddleVo;
-import com.freesia.dto.SysColumnMiddleDto;
-import com.freesia.po.SysColumnMiddlePo;
-import com.freesia.service.SysColumnMiddleService;
 import com.freesia.converter.SysColumnMiddleConverter;
+import com.freesia.dto.SysColumnMiddleDto;
 import com.freesia.mapper.SysColumnMiddleMapper;
+import com.freesia.po.SysColumnMiddlePo;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
+import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysColumnMiddleRepository;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
+import com.freesia.service.SysColumnMiddleService;
 import com.freesia.util.UEmpty;
+import com.freesia.vo.SysColumnMiddleVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -43,7 +45,7 @@ public class SysColumnMiddleServiceImpl extends BaseServiceImpl<SysColumnMiddleM
 
     @Override
     protected JpaRepository<SysColumnMiddlePo, Long> getRepository() {
-    return sysColumnMiddleRepository;
+        return sysColumnMiddleRepository;
     }
 
     @Override
@@ -69,15 +71,41 @@ public class SysColumnMiddleServiceImpl extends BaseServiceImpl<SysColumnMiddleM
     }
 
     @Override
+    public List<SysColumnMiddleDto> saveUpdateBatch(List<SysColumnMiddleDto> list) {
+        List<SysColumnMiddleDto> sysColumnMiddleDtoList = super.saveUpdateBatch(list);
+        if (UEmpty.isNotEmpty(sysColumnMiddleDtoList)) {
+            SysColumnMiddleDto sysColumnMiddleDto = sysColumnMiddleDtoList.get(0);
+            Long headerId = sysColumnMiddleDto.getHeaderId();
+            String cacheKey = CacheConstant.SYS_COLUMN_MIDDLE + '@' + headerId;
+            URedis.put(cacheKey, headerId.toString(), sysColumnMiddleDtoList);
+            URedis.expire(cacheKey, Duration.parse("P5HT" + RandomUtil.randomInt(2, 11) + "M"));
+            return sysColumnMiddleDtoList;
+        }
+        return null;
+    }
+
+    @Override
     public TableResult<SysColumnMiddleDto> findPage(SysColumnMiddleDto dto, PageQuery pageQuery) {
         Page<SysColumnMiddlePo> page = sysColumnMiddleMapper.findPage(dto, pageQuery.build());
         return TableResult.build(sysColumnMiddleConverter.convertPagePo2Dto(page));
     }
 
     @Override
-    @Cacheable(cacheNames = CacheConstant.SYS_COLUMN_MIDDLE, key = "#dto.headerId")
+    @SuppressWarnings("unchecked")
     public List<SysColumnMiddleDto> findCacheList(SysColumnMiddleDto dto) {
-        return super.findList(dto);
+        Long headerId = dto.getHeaderId();
+        String cacheKey = CacheConstant.SYS_COLUMN_MIDDLE + '@' + headerId;
+        List<SysColumnMiddleDto> sysColumnMiddleDtoList = (List<SysColumnMiddleDto>) URedis.hashGet(cacheKey, headerId.toString());
+        if (UEmpty.isNotEmpty(sysColumnMiddleDtoList)) {
+            return sysColumnMiddleDtoList;
+        }
+        List<SysColumnMiddleDto> list = super.findList(dto);
+        if (UEmpty.isNotEmpty(list)) {
+            URedis.put(cacheKey, headerId.toString(), list);
+            URedis.expire(cacheKey, Duration.parse("P1DT" + RandomUtil.randomInt(2, 11) + "M"));
+            return list;
+        }
+        return null;
     }
 
     @Override

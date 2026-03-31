@@ -18,7 +18,7 @@ import {saveUpdate} from "@/api/system/ColumnDetail";
 export function handleFindSysColumn(name: string, defaultColumns: TableColumn[]): VNode {
     let param: SysColumnHeaderVo = {
         name: name,
-        // defaultColumnList: convertToDefaultColumn(defaultColumns),
+        defaultColumnList: convertToDefaultColumn(defaultColumns),
     }
     let columns: TableColumn[] = []
     findSysColumnHeader(param).then((res: R<SysColumnHeaderEntity>) => {

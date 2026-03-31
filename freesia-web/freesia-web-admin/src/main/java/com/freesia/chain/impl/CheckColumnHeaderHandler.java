@@ -29,7 +29,8 @@ public class CheckColumnHeaderHandler extends AbstractCheckColumnHandler {
         // 根据组件名查询列头是否存在，无则新增
         SysColumnHeaderDto one = sysColumnHeaderService.findOne(sysColumnHeaderDto);
         if (one == null) {
-            sysColumnHeaderService.saveUpdate(sysColumnHeaderDto);
+            SysColumnHeaderDto afterSaveDto = sysColumnHeaderService.saveUpdate(sysColumnHeaderDto);
         }
+
     }
 }

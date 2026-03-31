@@ -1,29 +1,29 @@
 package com.freesia.controller;
 
 import cn.hutool.http.HttpStatus;
-import com.freesia.dto.BaseDto;
+import com.freesia.converter.SysColumnHeaderConverter;
 import com.freesia.dto.SysColumnDetailDto;
+import com.freesia.dto.SysColumnHeaderDto;
 import com.freesia.dto.SysColumnMiddleDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysColumnDetailService;
+import com.freesia.service.SysColumnHeaderService;
 import com.freesia.service.SysColumnMiddleService;
+import com.freesia.util.UCollection;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
 import com.freesia.vo.DefaultColumnVo;
-import com.freesia.vo.SysColumnHeaderVo;
-import com.freesia.dto.SysColumnHeaderDto;
-import com.freesia.service.SysColumnHeaderService;
-import com.freesia.converter.SysColumnHeaderConverter;
 import com.freesia.vo.R;
+import com.freesia.vo.SysColumnHeaderVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -119,47 +119,122 @@ public class SysColumnHeaderController extends BaseController {
      * @return 形式返回
      */
     @Operation(summary = "条件查询系统列头表")
-    @GetMapping(value = "findSysColumnHeader")
-    public R<SysColumnHeaderDto> findSysColumnHeader(SysColumnHeaderVo sysColumnHeaderVo) {
+    @PostMapping(value = "findSysColumnHeader")
+    public R<SysColumnHeaderDto> findSysColumnHeader(@RequestBody SysColumnHeaderVo sysColumnHeaderVo) {
         String errorMsg = validFindSysColumnHeader(sysColumnHeaderVo);
         if (UEmpty.isEmpty(errorMsg)) {
             return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, errorMsg);
         }
-        SysColumnHeaderDto sysColumnHeaderDto = sysColumnHeaderService.findOne(sysColumnHeaderConverter.convertVo2Dto(sysColumnHeaderVo));
-        if (sysColumnHeaderDto != null) {
+        Long userId = USecurity.getUserId();
+        List<DefaultColumnVo> defaultColumnVoList = sysColumnHeaderVo.getDefaultColumnVoList();
+        SysColumnHeaderDto sysColumnHeaderDto = sysColumnHeaderConverter.convertVo2Dto(sysColumnHeaderVo);
+        SysColumnHeaderDto findHeader = sysColumnHeaderService.findOne(sysColumnHeaderDto);
+        if (findHeader != null) {
             SysColumnMiddleDto sysColumnMiddleDto = new SysColumnMiddleDto();
-            Long headerId = sysColumnHeaderDto.getId();
+            Long headerId = findHeader.getId();
             sysColumnMiddleDto.setHeaderId(headerId);
             List<SysColumnMiddleDto> sysColumnMiddleDtoList = sysColumnMiddleService.findCacheList(sysColumnMiddleDto);
-            List<SysColumnDetailDto> sysColumnDetailDtoList = new ArrayList<>();
             if (UEmpty.isNotEmpty(sysColumnMiddleDtoList)) {
-                List<Long> middleIdList = sysColumnMiddleDtoList.stream()
-                        .map(BaseDto::getId)
-                        .collect(Collectors.toList());
-                Long userId = USecurity.getUserId();
+                Map<String, SysColumnMiddleDto> middleNameMap = sysColumnMiddleDtoList.stream().collect(Collectors.toMap(SysColumnMiddleDto::getName, item -> item));
                 SysColumnDetailDto sysColumnDetailDto = new SysColumnDetailDto();
                 sysColumnDetailDto.setHeaderId(headerId);
-                sysColumnDetailDto.setMiddleIdList(middleIdList);
                 sysColumnDetailDto.setUserId(userId);
-                sysColumnDetailDtoList = sysColumnDetailService.findCacheList(sysColumnDetailDto);
-                if (UEmpty.isEmpty(sysColumnDetailDtoList)) {
+                List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.findCacheList(sysColumnDetailDto);
+                if (UEmpty.isNotEmpty(sysColumnDetailDtoList)) {
+                    findHeader.setSysColumnDetailDtoList(sysColumnDetailDtoList);
+                    return R.ok(findHeader);
+                } else {
                     // 无缓存
-
+                    List<SysColumnDetailDto> list = buildSysColumnDetailDtoList(defaultColumnVoList, userId, headerId, middleNameMap);
+                    if (UEmpty.isNotEmpty(list)) {
+                        findHeader.setSysColumnDetailDtoList(sysColumnDetailService.saveUpdateBatch(list));
+                        return R.ok(findHeader);
+                    }
                 }
             } else {
                 // 无则生成中间表数据
-
+                sysColumnMiddleDtoList = buildSysColumnMiddleDto(defaultColumnVoList, headerId);
+                if (UEmpty.isNotEmpty(sysColumnMiddleDtoList)) {
+                    sysColumnMiddleService.saveUpdateBatch(sysColumnMiddleDtoList);
+                }
+                Map<String, SysColumnMiddleDto> middleNameMap = sysColumnMiddleDtoList.stream().collect(Collectors.toMap(SysColumnMiddleDto::getName, item -> item));
+                // 生成明细数据
+                List<SysColumnDetailDto> list = buildSysColumnDetailDtoList(defaultColumnVoList, userId, headerId, middleNameMap);
+                if (UEmpty.isNotEmpty(list)) {
+                    findHeader.setSysColumnDetailDtoList(sysColumnDetailService.saveUpdateBatch(list));
+                    return R.ok(findHeader);
+                }
             }
-            sysColumnHeaderDto.setSysColumnDetailDtoList(sysColumnDetailDtoList);
         } else {
-            sysColumnHeaderDto = new SysColumnHeaderDto();
-            List<DefaultColumnVo> defaultColumnVoList = sysColumnHeaderVo.getDefaultColumnVoList();
-            if (UEmpty.isEmpty(defaultColumnVoList)) {
-                return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, UMessage.message("column.default.not.empty"));
+            SysColumnHeaderDto beforeSaveSysColumnHeaderDto = buildSysColumnHeaderDto(sysColumnHeaderDto);
+            findHeader = sysColumnHeaderService.saveUpdate(beforeSaveSysColumnHeaderDto);
+            if (findHeader != null) {
+                Long headerId = findHeader.getId();
+                // 无则生成中间表数据
+                List<SysColumnMiddleDto> sysColumnMiddleDtoList = buildSysColumnMiddleDto(defaultColumnVoList, headerId);
+                if (UEmpty.isNotEmpty(sysColumnMiddleDtoList)) {
+                    sysColumnMiddleService.saveUpdateBatch(sysColumnMiddleDtoList);
+                }
+                Map<String, SysColumnMiddleDto> middleNameMap = sysColumnMiddleDtoList.stream().collect(Collectors.toMap(SysColumnMiddleDto::getName, item -> item));
+                // 生成明细数据
+                List<SysColumnDetailDto> list = buildSysColumnDetailDtoList(defaultColumnVoList, userId, headerId, middleNameMap);
+                if (UEmpty.isNotEmpty(list)) {
+                    findHeader.setSysColumnDetailDtoList(sysColumnDetailService.saveUpdateBatch(list));
+                    return R.ok(findHeader);
+                }
             }
-            sysColumnHeaderService.saveUpdate(sysColumnHeaderDto);
         }
-        return R.ok(sysColumnHeaderDto);
+        return R.ok(findHeader);
+    }
+
+    private SysColumnHeaderDto buildSysColumnHeaderDto(SysColumnHeaderDto sysColumnHeaderDto) {
+        SysColumnHeaderDto beforeSaveSysColumnHeaderDto = new SysColumnHeaderDto();
+        beforeSaveSysColumnHeaderDto.setName(sysColumnHeaderDto.getName());
+        beforeSaveSysColumnHeaderDto.setDescription(sysColumnHeaderDto.getDescription());
+        beforeSaveSysColumnHeaderDto.setEnabled(true);
+        beforeSaveSysColumnHeaderDto.setResizeFlag(false);
+        beforeSaveSysColumnHeaderDto.setAutoColsWidthFlag(false);
+        beforeSaveSysColumnHeaderDto.setDefaultToolBarFlag(false);
+        return beforeSaveSysColumnHeaderDto;
+    }
+
+    private List<SysColumnMiddleDto> buildSysColumnMiddleDto(List<DefaultColumnVo> defaultColumnVoList, Long headerId) {
+        List<SysColumnMiddleDto> list = UCollection.optimizeInitialCapacityArrayList(defaultColumnVoList.size());
+        int orderNum = 10;
+        for (DefaultColumnVo item : defaultColumnVoList) {
+            SysColumnMiddleDto sysColumnMiddleDto = new SysColumnMiddleDto();
+            sysColumnMiddleDto.setHeaderId(headerId);
+            sysColumnMiddleDto.setTitle(sysColumnMiddleDto.getTitle());
+            sysColumnMiddleDto.setName(item.getKey());
+            sysColumnMiddleDto.setEnabled(true);
+            list.add(sysColumnMiddleDto);
+            orderNum += 10;
+        }
+        return list;
+    }
+
+    private List<SysColumnDetailDto> buildSysColumnDetailDtoList(List<DefaultColumnVo> defaultColumnVoList, Long userId, Long headerId, Map<String, SysColumnMiddleDto> middleNameMap) {
+        List<SysColumnDetailDto> list = UCollection.optimizeInitialCapacityArrayList(defaultColumnVoList.size());
+        int orderNum = 10;
+        for (DefaultColumnVo item : defaultColumnVoList) {
+            SysColumnDetailDto columnDetailDto = new SysColumnDetailDto();
+            columnDetailDto.setUserId(userId);
+            columnDetailDto.setHeaderId(headerId);
+            columnDetailDto.setMiddleId(middleNameMap.get(item.getKey()).getId());
+            columnDetailDto.setTitle(item.getTitle());
+            columnDetailDto.setName(item.getKey());
+            columnDetailDto.setEnabled(true);
+            columnDetailDto.setFixed(item.getFixed());
+            columnDetailDto.setEllipsisTooltip(item.getEllipsisTooltip());
+            columnDetailDto.setWidth(item.getWidth());
+            columnDetailDto.setMinWidth(item.getMinWidth());
+            columnDetailDto.setOrderNum(orderNum);
+            columnDetailDto.setSorted(item.getSorted());
+            columnDetailDto.setResizeFlag(item.getResizeFlag());
+            list.add(columnDetailDto);
+            orderNum += 10;
+        }
+        return list;
     }
 
     /**
@@ -172,6 +247,10 @@ public class SysColumnHeaderController extends BaseController {
         String name = sysColumnHeaderVo.getName();
         if (UEmpty.isEmpty(name)) {
             return UMessage.message("column.name.not.empty");
+        }
+        List<DefaultColumnVo> defaultColumnVoList = sysColumnHeaderVo.getDefaultColumnVoList();
+        if (UEmpty.isEmpty(defaultColumnVoList)) {
+            return UMessage.message("column.default.not.empty");
         }
         return null;
     }

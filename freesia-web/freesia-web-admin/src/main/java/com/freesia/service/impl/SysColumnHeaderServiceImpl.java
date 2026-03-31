@@ -3,22 +3,24 @@ package com.freesia.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.freesia.pojo.PageQuery;
-import com.freesia.pojo.TableResult;
+import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
-import com.freesia.vo.SysColumnHeaderVo;
-import com.freesia.dto.SysColumnHeaderDto;
-import com.freesia.po.SysColumnHeaderPo;
-import com.freesia.service.SysColumnHeaderService;
 import com.freesia.converter.SysColumnHeaderConverter;
+import com.freesia.dto.SysColumnHeaderDto;
 import com.freesia.mapper.SysColumnHeaderMapper;
+import com.freesia.po.SysColumnHeaderPo;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
+import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysColumnHeaderRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
+import com.freesia.service.SysColumnHeaderService;
 import com.freesia.util.UEmpty;
+import com.freesia.vo.SysColumnHeaderVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
 
     @Override
     protected JpaRepository<SysColumnHeaderPo, Long> getRepository() {
-    return sysColumnHeaderRepository;
+        return sysColumnHeaderRepository;
     }
 
     @Override
@@ -73,6 +75,16 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
     }
 
     @Override
+    public SysColumnHeaderDto saveUpdate(SysColumnHeaderDto dto) {
+        SysColumnHeaderDto afterSaveDto = super.saveUpdate(dto);
+        if (afterSaveDto != null) {
+            String cacheKey = CacheConstant.SYS_COLUMN_HEADER + '@' + afterSaveDto.getId();
+            URedis.set(cacheKey, afterSaveDto);
+        }
+        return afterSaveDto;
+    }
+
+    @Override
     public TableResult<SysColumnHeaderDto> findPage(SysColumnHeaderDto dto, PageQuery pageQuery) {
         Page<SysColumnHeaderPo> page = sysColumnHeaderMapper.findPage(dto, pageQuery.build());
         return TableResult.build(sysColumnHeaderConverter.convertPagePo2Dto(page));
@@ -85,6 +97,17 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
 
     @Override
     public SysColumnHeaderDto findOne(SysColumnHeaderDto dto) {
-        return sysColumnHeaderConverter.convertPo2Dto(sysColumnHeaderMapper.findOne(dto));
+        String cacheKey = CacheConstant.SYS_COLUMN_HEADER + '@' + dto.getId();
+        SysColumnHeaderDto sysColumnHeaderDto = URedis.get(cacheKey);
+        if (sysColumnHeaderDto != null) {
+            return sysColumnHeaderDto;
+        }
+        sysColumnHeaderDto = sysColumnHeaderConverter.convertPo2Dto(sysColumnHeaderMapper.findOne(dto));
+        if (sysColumnHeaderDto != null) {
+            cacheKey = CacheConstant.SYS_COLUMN_HEADER + '@' + sysColumnHeaderDto.getId();
+            URedis.set(cacheKey, sysColumnHeaderDto);
+            return sysColumnHeaderDto;
+        }
+        return null;
     }
 }
