@@ -264,7 +264,7 @@ const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
-  handleFindSysColumn("User", columns.value)
+  handleFindSysColumn("User", defaultColumns)
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   sysGenderListSelect.value = await sysDictValueSelect(sysGenderList.value)
   for (const path in avatarPathGlob) {
@@ -318,6 +318,16 @@ const columns = ref<TableColumn[]>([
     fixed: 'right'
   }
 ])
+const defaultColumns: TableColumn[] = [
+  {title: '用户名', width: '80px', key: 'userName'},
+  {title: '昵称', width: '80px', key: 'nickName'},
+  {title: '头像', width: '50px', key: 'avatar', customSlot: 'avatar'},
+  {title: '状态', width: '80px', key: 'accountStatus', customSlot: 'status'},
+  {title: '部门', width: '120px', key: 'deptName'},
+  {title: '邮箱', width: '150px', key: 'email'},
+  {title: '性别', width: '80px', key: 'gender', customSlot: 'gender'},
+  {title: '备注', width: '120px', key: 'remark', customSlot: 'remark'},
+]
 const updateFileList = ref([])
 const changeAssignDeptModalFlag = ref(false)
 const dataSourceTableRef = ref()

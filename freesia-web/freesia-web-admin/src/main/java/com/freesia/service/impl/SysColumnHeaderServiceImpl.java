@@ -61,7 +61,6 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
         return new LambdaQueryWrapper<SysColumnHeaderPo>()
                 .eq(SysColumnHeaderPo::getLogicDel, FlagConstant.DISABLED)
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getId()), SysColumnHeaderPo::getId, sysColumnHeaderDto.getId())
-                .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getComponentId()), SysColumnHeaderPo::getComponentId, sysColumnHeaderDto.getComponentId())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getName()), SysColumnHeaderPo::getName, sysColumnHeaderDto.getName())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getDescription()), SysColumnHeaderPo::getDescription, sysColumnHeaderDto.getDescription())
                 .eq(UEmpty.isNotEmpty(sysColumnHeaderDto.getHeight()), SysColumnHeaderPo::getHeight, sysColumnHeaderDto.getHeight())

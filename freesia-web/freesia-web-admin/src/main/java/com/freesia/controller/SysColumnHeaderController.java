@@ -122,7 +122,7 @@ public class SysColumnHeaderController extends BaseController {
     @PostMapping(value = "findSysColumnHeader")
     public R<SysColumnHeaderDto> findSysColumnHeader(@RequestBody SysColumnHeaderVo sysColumnHeaderVo) {
         String errorMsg = validFindSysColumnHeader(sysColumnHeaderVo);
-        if (UEmpty.isEmpty(errorMsg)) {
+        if (UEmpty.isNotEmpty(errorMsg)) {
             return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, errorMsg);
         }
         Long userId = USecurity.getUserId();
@@ -204,7 +204,7 @@ public class SysColumnHeaderController extends BaseController {
         for (DefaultColumnVo item : defaultColumnVoList) {
             SysColumnMiddleDto sysColumnMiddleDto = new SysColumnMiddleDto();
             sysColumnMiddleDto.setHeaderId(headerId);
-            sysColumnMiddleDto.setTitle(sysColumnMiddleDto.getTitle());
+            sysColumnMiddleDto.setTitle(item.getTitle());
             sysColumnMiddleDto.setName(item.getKey());
             sysColumnMiddleDto.setEnabled(true);
             list.add(sysColumnMiddleDto);

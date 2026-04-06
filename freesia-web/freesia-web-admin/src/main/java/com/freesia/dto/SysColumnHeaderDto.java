@@ -1,11 +1,11 @@
 package com.freesia.dto;
 
-import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -19,8 +19,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "系统列头表 数据传输对象")
 public class SysColumnHeaderDto extends BaseDto {
-    @Schema(description = "组件ID")
-    private String componentId;
     @Schema(description = "组件名")
     private String name;
     @Schema(description = "组件描述")

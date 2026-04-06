@@ -12,7 +12,7 @@ export interface SysColumnHeaderVo extends BaseVo {
     resizeFlag?: boolean;
     autoColsWidthFlag?: boolean;
     defaultToolBarFlag?: boolean;
-    defaultColumnList?: Array<DefaultColumnVo>;
+    defaultColumnVoList?: Array<DefaultColumnVo>;
 }
 
 export interface SysColumnHeaderEntity extends BaseEntity {

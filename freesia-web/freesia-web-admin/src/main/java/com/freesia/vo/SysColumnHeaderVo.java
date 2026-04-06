@@ -2,14 +2,11 @@ package com.freesia.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
-import com.freesia.vo.BaseVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -23,9 +20,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "系统列头表 值对象")
 public class SysColumnHeaderVo extends BaseVo {
-    @Schema(description = "组件ID")
-    @JsonAlias(value = {"componentId"})
-    private String componentId;
     @Schema(description = "组件名")
     @JsonAlias(value = {"name"})
     private String name;

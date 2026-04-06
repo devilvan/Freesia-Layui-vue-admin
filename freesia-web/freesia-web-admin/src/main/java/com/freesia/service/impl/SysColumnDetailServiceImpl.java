@@ -86,7 +86,7 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
             SysColumnDetailDto columnDetailDto = afterSaveDtoList.get(0);
             String cacheKey = CacheConstant.SYS_COLUMN_DETAIL + '@' + columnDetailDto.getHeaderId() + '@' + columnDetailDto.getUserId();
             URedis.put(cacheKey, columnDetailDto.getHeaderId().toString(), afterSaveDtoList);
-            URedis.expire(cacheKey, Duration.parse("P5HT" + RandomUtil.randomInt(2, 11) + "M"));
+            URedis.expire(cacheKey, Duration.parse("PT" + "5H" + RandomUtil.randomInt(2, 11) + "M"));
             return afterSaveDtoList;
         }
         return null;
@@ -111,7 +111,7 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
         List<SysColumnDetailDto> list = super.findList(sysColumnDetailDto);
         if (UEmpty.isNotEmpty(list)) {
             URedis.put(cacheKey, headerId.toString(), list);
-            URedis.expire(cacheKey, Duration.parse("P5HT" + RandomUtil.randomInt(2, 11) + "M"));
+            URedis.expire(cacheKey, Duration.parse("PT" + "5H" + RandomUtil.randomInt(2, 11) + "M"));
             return list;
         }
         return null;

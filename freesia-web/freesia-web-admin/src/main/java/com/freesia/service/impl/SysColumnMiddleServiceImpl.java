@@ -78,7 +78,7 @@ public class SysColumnMiddleServiceImpl extends BaseServiceImpl<SysColumnMiddleM
             Long headerId = sysColumnMiddleDto.getHeaderId();
             String cacheKey = CacheConstant.SYS_COLUMN_MIDDLE + '@' + headerId;
             URedis.put(cacheKey, headerId.toString(), sysColumnMiddleDtoList);
-            URedis.expire(cacheKey, Duration.parse("P5HT" + RandomUtil.randomInt(2, 11) + "M"));
+            URedis.expire(cacheKey, Duration.parse("PT" + "5H" + RandomUtil.randomInt(2, 11) + "M"));
             return sysColumnMiddleDtoList;
         }
         return null;

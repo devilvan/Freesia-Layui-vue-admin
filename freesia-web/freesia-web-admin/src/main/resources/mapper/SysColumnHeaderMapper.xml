@@ -11,7 +11,6 @@
         <result column="REC_VER" property="recVer"/>
         <result column="BUILD_IN" property="buildIn"/>
         <result column="TENANT_ID" property="tenantId"/>
-        <result column="COMPONENT_ID" property="componentId"/>
         <result column="NAME" property="name"/>
         <result column="DESCRIPTION" property="description"/>
         <result column="HEIGHT" property="height"/>
@@ -23,7 +22,7 @@
         <result column="DEFAULT_TOOL_BAR_FLAG" property="defaultToolBarFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, COMPONENT_ID, NAME, DESCRIPTION, HEIGHT, MAX_HEIGHT, INIT_PAGE_SIZE, ENABLED, RESIZE_FLAG, AUTO_COLS_WIDTH_FLAG, DEFAULT_TOOL_BAR_FLAG
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, NAME, DESCRIPTION, HEIGHT, MAX_HEIGHT, INIT_PAGE_SIZE, ENABLED, RESIZE_FLAG, AUTO_COLS_WIDTH_FLAG, DEFAULT_TOOL_BAR_FLAG
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -31,9 +30,6 @@
         FROM SYS_COLUMN_HEADER
         WHERE
         LOGIC_DEL = 0
-        <if test="dto.componentId != null and dto.componentId != ''">
-            AND COMPONENT_ID = #{dto.componentId}
-        </if>
         <if test="dto.name != null and dto.name != ''">
             AND NAME = #{dto.name}
         </if>
@@ -68,9 +64,6 @@
         <include refid="Base_Column_List"/>
         FROM SYS_COLUMN_HEADER
         WHERE LOGIC_DEL = 0
-        <if test="dto.componentId != null and dto.componentId != ''">
-            AND COMPONENT_ID = #{dto.componentId}
-        </if>
         <if test="dto.name != null and dto.name != ''">
             AND NAME = #{dto.name}
         </if>
@@ -105,9 +98,6 @@
         <include refid="Base_Column_List"/>
         FROM SYS_COLUMN_HEADER
         WHERE LOGIC_DEL = 0
-        <if test="dto.componentId != null and dto.componentId != ''">
-            AND COMPONENT_ID = #{dto.componentId}
-        </if>
         <if test="dto.name != null and dto.name != ''">
             AND NAME = #{dto.name}
         </if>
@@ -149,8 +139,7 @@
         REC_VER,
         BUILD_IN,
         TENANT_ID,
-        COMPONENT_ID, 
-        NAME, 
+        NAME,
         DESCRIPTION, 
         HEIGHT, 
         MAX_HEIGHT, 
@@ -172,8 +161,7 @@
             #{item.recVer},
             #{item.buildIn},
             #{item.tenantId},
-            #{item.componentId}, 
-            #{item.name}, 
+            #{item.name},
             #{item.description}, 
             #{item.height}, 
             #{item.maxHeight}, 
