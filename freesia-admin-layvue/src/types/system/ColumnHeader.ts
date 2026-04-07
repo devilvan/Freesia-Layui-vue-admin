@@ -26,7 +26,7 @@ export interface SysColumnHeaderEntity extends BaseEntity {
     resizeFlag?: boolean;
     autoColsWidthFlag?: boolean;
     defaultToolBarFlag?: boolean;
-    sysColumnDetailList?: Array<SysColumnDetailEntity>;
+    sysColumnDetailDtoList?: Array<SysColumnDetailEntity>;
 }
 
 export interface DefaultColumnVo {

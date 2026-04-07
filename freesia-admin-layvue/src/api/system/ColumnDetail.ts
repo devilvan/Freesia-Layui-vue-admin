@@ -30,3 +30,8 @@ export function findListSysColumnDetail(sysColumnDetailVo: SysColumnDetailVo): P
 export function deleteSysColumnDetail(idList: Array<string>): Promise<R<void>> {
  return Http.post("/api/sysColumnDetailController/deleteSysColumnDetail", idList);
 }
+
+export function toggleEnabled(id: string): Promise<R<void>> {
+ let param: SysColumnDetailVo = {id: id,}
+ return Http.post("/api/sysColumnDetailController/toggleEnabled", param);
+}

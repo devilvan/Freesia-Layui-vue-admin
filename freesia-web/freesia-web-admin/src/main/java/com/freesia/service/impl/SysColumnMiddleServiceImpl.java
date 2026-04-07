@@ -94,18 +94,18 @@ public class SysColumnMiddleServiceImpl extends BaseServiceImpl<SysColumnMiddleM
     @SuppressWarnings("unchecked")
     public List<SysColumnMiddleDto> findCacheList(SysColumnMiddleDto dto) {
         Long headerId = dto.getHeaderId();
-        String cacheKey = CacheConstant.SYS_COLUMN_MIDDLE + '@' + headerId;
-        List<SysColumnMiddleDto> sysColumnMiddleDtoList = (List<SysColumnMiddleDto>) URedis.hashGet(cacheKey, headerId.toString());
-        if (UEmpty.isNotEmpty(sysColumnMiddleDtoList)) {
-            return sysColumnMiddleDtoList;
-        }
+//        String cacheKey = CacheConstant.SYS_COLUMN_MIDDLE + '@' + headerId;
+//        List<SysColumnMiddleDto> sysColumnMiddleDtoList = (List<SysColumnMiddleDto>) URedis.hashGet(cacheKey, headerId.toString());
+//        if (UEmpty.isNotEmpty(sysColumnMiddleDtoList)) {
+//            return sysColumnMiddleDtoList;
+//        }
         List<SysColumnMiddleDto> list = super.findList(dto);
-        if (UEmpty.isNotEmpty(list)) {
-            URedis.put(cacheKey, headerId.toString(), list);
-            URedis.expire(cacheKey, Duration.parse("P1DT" + RandomUtil.randomInt(2, 11) + "M"));
-            return list;
-        }
-        return null;
+//        if (UEmpty.isNotEmpty(list)) {
+//            URedis.put(cacheKey, headerId.toString(), list);
+//            URedis.expire(cacheKey, Duration.parse("P1DT" + RandomUtil.randomInt(2, 11) + "M"));
+//            return list;
+//        }
+        return list;
     }
 
     @Override

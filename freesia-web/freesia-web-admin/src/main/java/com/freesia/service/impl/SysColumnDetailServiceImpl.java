@@ -103,18 +103,18 @@ public class SysColumnDetailServiceImpl extends BaseServiceImpl<SysColumnDetailM
     public List<SysColumnDetailDto> findCacheList(SysColumnDetailDto sysColumnDetailDto) {
         Long headerId = sysColumnDetailDto.getHeaderId();
         Long userId = sysColumnDetailDto.getUserId();
-        String cacheKey = CacheConstant.SYS_COLUMN_DETAIL + '@' + headerId + '@' + userId;
-        List<SysColumnDetailDto> sysColumnDetailDtoList = (List<SysColumnDetailDto>) URedis.hashGet(cacheKey, headerId.toString());
-        if (UEmpty.isNotEmpty(sysColumnDetailDtoList)) {
-            return sysColumnDetailDtoList;
-        }
+//        String cacheKey = CacheConstant.SYS_COLUMN_DETAIL + '@' + headerId + '@' + userId;
+//        List<SysColumnDetailDto> sysColumnDetailDtoList = (List<SysColumnDetailDto>) URedis.hashGet(cacheKey, headerId.toString());
+//        if (UEmpty.isNotEmpty(sysColumnDetailDtoList)) {
+//            return sysColumnDetailDtoList;
+//        }
         List<SysColumnDetailDto> list = super.findList(sysColumnDetailDto);
-        if (UEmpty.isNotEmpty(list)) {
-            URedis.put(cacheKey, headerId.toString(), list);
-            URedis.expire(cacheKey, Duration.parse("PT" + "5H" + RandomUtil.randomInt(2, 11) + "M"));
-            return list;
-        }
-        return null;
+//        if (UEmpty.isNotEmpty(list)) {
+//            URedis.put(cacheKey, headerId.toString(), list);
+//            URedis.expire(cacheKey, Duration.parse("PT" + "5H" + RandomUtil.randomInt(2, 11) + "M"));
+//            return list;
+//        }
+        return list;
     }
 
     @Override

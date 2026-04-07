@@ -606,7 +606,7 @@ const defaultToolBar = ref<TableDefaultToolbar[]>([
         content: () => h(
             "div",
             { class: "layui-table-tool-checkbox" },
-            columns.value.filter(item => item.title === '金额').map((column, columnIndex) => h(LayCheckbox, {
+            columns.value.map((column, columnIndex) => h(LayCheckbox, {
               skin: "primary",
               key: column.key || column.type || columnIndex,
               value: columnIndex,

@@ -49,7 +49,7 @@
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
-          :default-toolbar="true"
+          :default-toolbar="buildTableDefaultToolbar(columns)"
           :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
           @change="change"
@@ -254,7 +254,7 @@ import {upload, uploadTemp} from "@/api/system/Oss";
 import {parseImgPath, preview} from "@/util/UImage";
 import {SysDeptSelectEntity} from "@/types/system/Dept";
 import {findTreeAssignDeptSelect} from "@/api/system/Dept";
-import {handleFindSysColumn} from "@/util/UColumn";
+import {buildColumns, buildTableDefaultToolbar} from "@/util/UColumn";
 import {TableColumn} from "@layui/layui-vue/types/component/table/typing";
 
 /* INIT*/
@@ -264,7 +264,7 @@ const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
-  handleFindSysColumn("User", defaultColumns)
+  // columns = buildColumns('User', defaultColumns)
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   sysGenderListSelect.value = await sysDictValueSelect(sysGenderList.value)
   for (const path in avatarPathGlob) {
@@ -300,7 +300,7 @@ const pageQuery: PageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const columns = ref<TableColumn[]>([
+let columns = ref<TableColumn[]>([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '用户名', width: '80px', key: 'userName'},
   {title: '昵称', width: '80px', key: 'nickName'},

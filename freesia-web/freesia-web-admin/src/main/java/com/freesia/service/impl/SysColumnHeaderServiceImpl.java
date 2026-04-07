@@ -96,17 +96,17 @@ public class SysColumnHeaderServiceImpl extends BaseServiceImpl<SysColumnHeaderM
 
     @Override
     public SysColumnHeaderDto findOne(SysColumnHeaderDto dto) {
-        String cacheKey = CacheConstant.SYS_COLUMN_HEADER + '@' + dto.getId();
-        SysColumnHeaderDto sysColumnHeaderDto = URedis.get(cacheKey);
-        if (sysColumnHeaderDto != null) {
-            return sysColumnHeaderDto;
-        }
-        sysColumnHeaderDto = sysColumnHeaderConverter.convertPo2Dto(sysColumnHeaderMapper.findOne(dto));
-        if (sysColumnHeaderDto != null) {
-            cacheKey = CacheConstant.SYS_COLUMN_HEADER + '@' + sysColumnHeaderDto.getId();
-            URedis.set(cacheKey, sysColumnHeaderDto);
-            return sysColumnHeaderDto;
-        }
-        return null;
+//        String cacheKey = CacheConstant.SYS_COLUMN_HEADER + '@' + dto.getId();
+//        SysColumnHeaderDto sysColumnHeaderDto = URedis.get(cacheKey);
+//        if (sysColumnHeaderDto != null) {
+//            return sysColumnHeaderDto;
+//        }
+        SysColumnHeaderDto sysColumnHeaderDto = sysColumnHeaderConverter.convertPo2Dto(sysColumnHeaderMapper.findOne(dto));
+//        if (sysColumnHeaderDto != null) {
+//            cacheKey = CacheConstant.SYS_COLUMN_HEADER + '@' + sysColumnHeaderDto.getId();
+//            URedis.set(cacheKey, sysColumnHeaderDto);
+//            return sysColumnHeaderDto;
+//        }
+        return sysColumnHeaderDto;
     }
 }

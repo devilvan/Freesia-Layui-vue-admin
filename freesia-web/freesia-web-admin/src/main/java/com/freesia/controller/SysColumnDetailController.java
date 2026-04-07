@@ -1,17 +1,16 @@
 package com.freesia.controller;
 
+import com.freesia.converter.SysColumnDetailConverter;
+import com.freesia.dto.SysColumnDetailDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.vo.SysColumnDetailVo;
-import com.freesia.dto.SysColumnDetailDto;
 import com.freesia.service.SysColumnDetailService;
-import com.freesia.converter.SysColumnDetailConverter;
-import com.freesia.controller.BaseController;
 import com.freesia.vo.R;
+import com.freesia.vo.SysColumnDetailVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class SysColumnDetailController extends BaseController {
     /**
      * 保存系统列明细表信息
      *
-     * @param sysColumnDetailVo    待保存对象
+     * @param sysColumnDetailVo 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存系统列明细表信息")
@@ -45,7 +44,7 @@ public class SysColumnDetailController extends BaseController {
     /**
      * 批量保存系统列明细表信息
      *
-     * @param sysColumnDetailVoList    待保存对象
+     * @param sysColumnDetailVoList 待保存对象
      * @return 形式返回
      */
     @Operation(summary = "保存系统列明细表信息")
@@ -60,7 +59,7 @@ public class SysColumnDetailController extends BaseController {
      * 查询系统列明细表分页信息
      *
      * @param sysColumnDetailVo 查询条件
-     * @param pageQuery   分页条件
+     * @param pageQuery         分页条件
      * @return 形式返回
      */
     @Operation(summary = "查询系统列明细表分页信息")
@@ -85,11 +84,11 @@ public class SysColumnDetailController extends BaseController {
     }
 
     /**
-    * 条件查询系统列明细表
-    *
-    * @param sysColumnDetailVo 查询条件
-    * @return 形式返回
-    */
+     * 条件查询系统列明细表
+     *
+     * @param sysColumnDetailVo 查询条件
+     * @return 形式返回
+     */
     @Operation(summary = "条件查询系统列明细表")
     @GetMapping(value = "findListSysColumnDetail")
     public R<List<SysColumnDetailDto>> findListSysColumnDetail(SysColumnDetailVo sysColumnDetailVo) {
@@ -108,6 +107,23 @@ public class SysColumnDetailController extends BaseController {
     @PostMapping(value = "deleteSysColumnDetail")
     public R<Void> deleteSysColumnDetail(@RequestBody List<Long> idList) {
         sysColumnDetailService.deleteBatch(idList);
+        return R.ok();
+    }
+
+
+    /**
+     * 切换系统列状态
+     *
+     * @param sysColumnDetailVo 入参
+     * @return 形式返回
+     */
+    @Operation(summary = "切换系统列状态")
+    @PostMapping(value = "toggleEnabled")
+    public R<Void> toggleEnabled(@RequestBody SysColumnDetailVo sysColumnDetailVo) {
+        SysColumnDetailDto sysColumnDetailDto = sysColumnDetailConverter.convertVo2Dto(sysColumnDetailVo);
+        sysColumnDetailDto = sysColumnDetailService.findOne(sysColumnDetailDto);
+        sysColumnDetailDto.setEnabled(!sysColumnDetailDto.getEnabled());
+        sysColumnDetailService.saveUpdate(sysColumnDetailDto);
         return R.ok();
     }
 }
