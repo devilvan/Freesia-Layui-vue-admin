@@ -49,7 +49,7 @@
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
-          :default-toolbar="buildTableDefaultToolbar(columns)"
+          :default-toolbar="defaultToolbar"
           :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
           @change="change"
@@ -233,8 +233,8 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {onMounted, reactive, ref} from 'vue'
-import {layer} from '@layui/layui-vue'
+import {h, onMounted, reactive, ref} from 'vue'
+import {LayCheckbox, LayDropdown, layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
 import {FindPageSysUserListEntity, AssignDeptVo, SysUserVo} from "@/types/system/User";
 import {
@@ -255,7 +255,10 @@ import {parseImgPath, preview} from "@/util/UImage";
 import {SysDeptSelectEntity} from "@/types/system/Dept";
 import {findTreeAssignDeptSelect} from "@/api/system/Dept";
 import {buildColumns, buildTableDefaultToolbar} from "@/util/UColumn";
-import {TableColumn} from "@layui/layui-vue/types/component/table/typing";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {LayIcon} from "@layui/icons-vue";
+import {toggleEnabled} from "@/api/system/ColumnDetail";
+import {R} from "@/types/Result";
 
 /* INIT*/
 const ossPath = import.meta.env.VITE_APP_UPLOAD_PATH
@@ -264,7 +267,6 @@ const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
-  // columns = buildColumns('User', defaultColumns)
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   sysGenderListSelect.value = await sysDictValueSelect(sysGenderList.value)
   for (const path in avatarPathGlob) {
@@ -331,6 +333,46 @@ const defaultColumns: TableColumn[] = [
 const updateFileList = ref([])
 const changeAssignDeptModalFlag = ref(false)
 const dataSourceTableRef = ref()
+const defaultToolbar = ref<TableDefaultToolbar[]>([
+  {
+    title: '自定义列',
+    icon: 'layui-icon-slider',
+    render: () => {
+      var columnList: TableColumn[] = buildColumns('User', defaultColumns);
+      return h(LayDropdown, {placement: "bottom-end"}, {
+        default: () => h(
+            "div",
+            {
+              class: "layui-table-toolbar-item",
+              title: '自定义列',
+            },
+            h(LayIcon, {type: "layui-icon-slider"}),
+        ),
+        content: () => h(
+            "div",
+            {class: "layui-table-tool-checkbox"},
+            columns.value.map((column, columnIndex) => {
+              let find = columnList.find((item) => item.key === column.key);
+              return h(LayCheckbox, {
+                skin: "primary",
+                key: column.key || column.type || columnIndex,
+                value: columnIndex,
+                modelValue: !find?.hide,
+                hide: !find?.hide,
+                onChange: () => {
+                  column.hide = !column.hide
+                  console.log(column.hide)
+                  if (find && find.id) {
+                    toggleEnabled(find.id).then((res: R<void>) => res)
+                  }
+                },
+              }, () => column.title)
+            })
+        ),
+      });
+    }
+  }, "export", "print"
+])
 /* VAR*/
 
 /*FUNCTION*/

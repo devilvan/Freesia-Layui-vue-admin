@@ -20,8 +20,8 @@ export function buildTableDefaultToolbar(columns: Ref<TableColumn[]>): TableDefa
     ]
 }
 
-export function buildColumns(name: string, defaultColumns: TableColumn[]): Ref<TableColumn[]> {
-    let columns: Ref<TableColumn[]> = ref<TableColumn[]>([]);
+export function buildColumns(name: string, defaultColumns: TableColumn[]): TableColumn[] {
+    let columns: TableColumn[] = [];
     let param: SysColumnHeaderVo = {
         name: name,
         defaultColumnVoList: convertToDefaultColumn(defaultColumns),
@@ -40,11 +40,10 @@ export function buildColumns(name: string, defaultColumns: TableColumn[]): Ref<T
                             sorted = Sorted.DESC;
                         }
                     }
-                    columns.value.push({
+                    columns.push({
                         id: item.id || '',
-                        // modelValue: item.enabled || true,
                         key: item.name || '',
-                        hide: item.enabled || false,
+                        hide: !item.enabled || false,
                         title: item.title || '',
                         width: item.width + 'px' || "0px",
                         minWidth: item.minWidth + 'px' || "200px",
@@ -55,8 +54,9 @@ export function buildColumns(name: string, defaultColumns: TableColumn[]): Ref<T
                     })
                 })
             }
+            return columns;
         } else {
-            columns.value = defaultColumns;
+            columns = defaultColumns;
         }
     })
     return columns;
