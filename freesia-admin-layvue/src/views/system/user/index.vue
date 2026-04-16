@@ -254,7 +254,7 @@ import {upload, uploadTemp} from "@/api/system/Oss";
 import {parseImgPath, preview} from "@/util/UImage";
 import {SysDeptSelectEntity} from "@/types/system/Dept";
 import {findTreeAssignDeptSelect} from "@/api/system/Dept";
-import {buildColumns, buildTableDefaultToolbar} from "@/util/UColumn";
+import {buildColumns} from "@/util/UColumn";
 import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
 import {LayIcon} from "@layui/icons-vue";
 import {toggleEnabled} from "@/api/system/ColumnDetail";
@@ -267,6 +267,13 @@ const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
+  columnList.value = buildColumns('User', defaultColumns);
+  columns.value.map((item) => {
+    let find = columnList.value.find((i) => i.key === item.key)
+    if (find) {
+      find.hide = !item.hide
+    }
+  })
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   sysGenderListSelect.value = await sysDictValueSelect(sysGenderList.value)
   for (const path in avatarPathGlob) {
@@ -333,12 +340,12 @@ const defaultColumns: TableColumn[] = [
 const updateFileList = ref([])
 const changeAssignDeptModalFlag = ref(false)
 const dataSourceTableRef = ref()
+const columnList = ref<TableColumn[]>([])
 const defaultToolbar = ref<TableDefaultToolbar[]>([
   {
     title: '自定义列',
     icon: 'layui-icon-slider',
     render: () => {
-      var columnList: TableColumn[] = buildColumns('User', defaultColumns);
       return h(LayDropdown, {placement: "bottom-end"}, {
         default: () => h(
             "div",
@@ -352,16 +359,18 @@ const defaultToolbar = ref<TableDefaultToolbar[]>([
             "div",
             {class: "layui-table-tool-checkbox"},
             columns.value.map((column, columnIndex) => {
-              let find = columnList.find((item) => item.key === column.key);
+              let find = columnList.value.find((item) => item.key === column.key)
+              let hide = find?.hide;
+              if (hide) {
+                column.hide = hide
+              }
               return h(LayCheckbox, {
                 skin: "primary",
                 key: column.key || column.type || columnIndex,
                 value: columnIndex,
-                modelValue: !find?.hide,
-                hide: !find?.hide,
+                modelValue: !hide,
                 onChange: () => {
                   column.hide = !column.hide
-                  console.log(column.hide)
                   if (find && find.id) {
                     toggleEnabled(find.id).then((res: R<void>) => res)
                   }
