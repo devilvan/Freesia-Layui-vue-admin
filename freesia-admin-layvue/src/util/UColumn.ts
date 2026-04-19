@@ -20,46 +20,28 @@ export function buildTableDefaultToolbar(columns: Ref<TableColumn[]>): TableDefa
     ]
 }
 
-export function buildColumns(name: string, defaultColumns: TableColumn[]): TableColumn[] {
-    let columns: TableColumn[] = [];
-    let param: SysColumnHeaderVo = {
-        name: name,
-        defaultColumnVoList: convertToDefaultColumn(defaultColumns),
-    }
-    findSysColumnHeader(param).then((res: R<SysColumnHeaderEntity>) => {
-        if (res.code === 200 && res.data) {
-            let sysColumnDetailDtoList = res.data.sysColumnDetailDtoList;
-            let sysColumnHeader: SysColumnHeaderEntity = res.data || {};
-            if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
-                sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
-                    let sorted: boolean | string = false;
-                    if (item.sorted) {
-                        if (item.sorted === Sorted.ASC) {
-                            sorted = Sorted.ASC;
-                        } else if (item.sorted === Sorted.DESC) {
-                            sorted = Sorted.DESC;
-                        }
-                    }
-                    columns.push({
-                        id: item.id || '',
-                        key: item.name || '',
-                        hide: !item.enabled || false,
-                        title: item.title || '',
-                        width: item.width + 'px' || "0px",
-                        minWidth: item.minWidth + 'px' || "200px",
-                        sort: sorted,
-                        ellipsisTooltip: item.ellipsisTooltip || false,
-                        fixed: item.fixed ? "left" : (item.fixed || undefined),
-                        resize: sysColumnHeader.resizeFlag || false,
-                    })
-                })
-            }
-            return columns;
-        } else {
-            columns = defaultColumns;
+export function buildItem(item: SysColumnDetailEntity, sysColumnHeader: SysColumnHeaderEntity): TableColumn {
+    let sorted: boolean | string = false;
+    if (item.sorted) {
+        if (item.sorted === Sorted.ASC) {
+            sorted = Sorted.ASC;
+        } else if (item.sorted === Sorted.DESC) {
+            sorted = Sorted.DESC;
         }
-    })
-    return columns;
+    }
+    return {
+        id: item.id || '',
+        key: item.name || '',
+        hide: !item.enabled || false,
+        title: item.title || '',
+        width: item.width + 'px' || "0px",
+        minWidth: item.minWidth + 'px' || "200px",
+        sort: sorted,
+        ellipsisTooltip: item.ellipsisTooltip || false,
+        fixed: item.fixed ? "left" : (item.fixed || undefined),
+        resize: sysColumnHeader.resizeFlag || false,
+        customSlot: item.customSlot || '',
+    };
 }
 
 /**
@@ -79,17 +61,22 @@ function handleFindSysColumn(columns: Ref<TableColumn[]>) {
         content: () => h(
             "div",
             {class: "layui-table-tool-checkbox"},
-            columns.value.map((column, columnIndex) => h(LayCheckbox, {
-                skin: "primary",
-                key: column.key || column.type || columnIndex,
-                value: columnIndex,
-                modelValue: column.hide,
-                onChange: () => {
-                    column.hide = !column.hide
-                    // toggleEnabled(column.id).then((res: R<void>) => res)
-                },
-            }, () => column.title)),
-        ),
+            columns.value.map((column, columnIndex) => {
+                let find = columns.value.find((item) => item.key === column.key);
+                return h(LayCheckbox, {
+                    skin: "primary",
+                    key: column.key || column.type || columnIndex,
+                    value: columnIndex,
+                    modelValue: !find?.hide,
+                    onChange: () => {
+                        column.hide = !column.hide
+                        if (find && find.id) {
+                            toggleEnabled(find.id).then((res: R<void>) => res)
+                        }
+                    },
+                }, () => column.title)
+            })
+        )
     });
 }
 

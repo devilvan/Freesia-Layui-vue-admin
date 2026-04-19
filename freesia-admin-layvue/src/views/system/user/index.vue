@@ -254,13 +254,12 @@ import {upload, uploadTemp} from "@/api/system/Oss";
 import {parseImgPath, preview} from "@/util/UImage";
 import {SysDeptSelectEntity} from "@/types/system/Dept";
 import {findTreeAssignDeptSelect} from "@/api/system/Dept";
-import {buildColumns, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
 import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
 import {LayIcon} from "@layui/icons-vue";
-import {toggleEnabled} from "@/api/system/ColumnDetail";
-import {R} from "@/types/Result";
 import {findSysColumnHeader} from "@/api/system/ColumnHeader";
 import {SysColumnHeaderEntity, SysColumnHeaderVo} from "@/types/system/ColumnHeader";
+import {R} from "@/types/Result";
 import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
@@ -271,89 +270,28 @@ const userImportRoute = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
   let tempColumns: TableColumn[] = []
-  let param: SysColumnHeaderVo = {
+  findSysColumnHeader({
     name: 'User',
     defaultColumnVoList: convertToDefaultColumn(defaultColumns),
-  }
-  findSysColumnHeader(param).then((res: R<SysColumnHeaderEntity>) => {
+  }).then((res: R<SysColumnHeaderEntity>) => {
     if (res.code === 200 && res.data) {
       let sysColumnDetailDtoList = res.data.sysColumnDetailDtoList;
       let sysColumnHeader: SysColumnHeaderEntity = res.data || {};
       if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
         sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
-          let sorted: boolean | string = false;
-          if (item.sorted) {
-            if (item.sorted === Sorted.ASC) {
-              sorted = Sorted.ASC;
-            } else if (item.sorted === Sorted.DESC) {
-              sorted = Sorted.DESC;
-            }
-          }
-          tempColumns.push({
-            id: item.id || '',
-            key: item.name || '',
-            hide: !item.enabled || false,
-            title: item.title || '',
-            width: item.width + 'px' || "0px",
-            minWidth: item.minWidth + 'px' || "200px",
-            sort: sorted,
-            ellipsisTooltip: item.ellipsisTooltip || false,
-            fixed: item.fixed ? "left" : (item.fixed || undefined),
-            resize: sysColumnHeader.resizeFlag || false,
-            customSlot: item.customSlot || '',
-          })
+          tempColumns.push(buildItem(item, sysColumnHeader))
         })
-        console.log(tempColumns)
         columns.value = [
           {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
           ...tempColumns,
           {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
         ];
-        console.log(tempColumns)
       }
     } else {
       columns.value = defaultColumns;
     }
   })
-
-  defaultToolbar.value = [
-    {
-      title: '自定义列',
-      icon: 'layui-icon-slider',
-      render: () => {
-        return h(LayDropdown, {placement: "bottom-end"}, {
-          default: () => h(
-              "div",
-              {
-                class: "layui-table-toolbar-item",
-                title: '自定义列',
-              },
-              h(LayIcon, {type: "layui-icon-slider"}),
-          ),
-          content: () => h(
-              "div",
-              {class: "layui-table-tool-checkbox"},
-              columns.value.map((column, columnIndex) => {
-                let find = columns.value.find((item) => item.key === column.key);
-                return h(LayCheckbox, {
-                  skin: "primary",
-                  key: column.key || column.type || columnIndex,
-                  value: columnIndex,
-                  modelValue: !find?.hide,
-                  onChange: () => {
-                    column.hide = !column.hide
-                    if (find && find.id) {
-                      toggleEnabled(find.id).then((res: R<void>) => res)
-                    }
-                  },
-                }, () => column.title)
-              })
-          ),
-        });
-      }
-    }, "export", "print"
-  ]
-
+  defaultToolbar.value = buildTableDefaultToolbar(columns);
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   sysGenderListSelect.value = await sysDictValueSelect(sysGenderList.value)
   for (const path in avatarPathGlob) {
