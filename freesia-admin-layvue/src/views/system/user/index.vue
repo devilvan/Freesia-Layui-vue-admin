@@ -269,29 +269,7 @@ const $crypt = useCryptStore();
 const userImportRoute = import.meta.env.VITE_APP_AVATAR_UPLOAD_PATH
 const avatarPathGlob = import.meta.glob('@/assets/avatar/*')
 onMounted(async () => {
-  let tempColumns: TableColumn[] = []
-  findSysColumnHeader({
-    name: 'User',
-    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
-  }).then((res: R<SysColumnHeaderEntity>) => {
-    if (res.code === 200 && res.data) {
-      let sysColumnDetailDtoList = res.data.sysColumnDetailDtoList;
-      let sysColumnHeader: SysColumnHeaderEntity = res.data || {};
-      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
-        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
-          tempColumns.push(buildItem(item, sysColumnHeader))
-        })
-        columns.value = [
-          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
-          ...tempColumns,
-          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
-        ];
-      }
-    } else {
-      columns.value = defaultColumns;
-    }
-  })
-  defaultToolbar.value = buildTableDefaultToolbar(columns);
+  doBuildColumn()
   sysGenderList.value = await loadSysDictValue(Constants.SYS_GENDER)
   sysGenderListSelect.value = await sysDictValueSelect(sysGenderList.value)
   for (const path in avatarPathGlob) {
@@ -345,6 +323,32 @@ const defaultToolbar = ref<TableDefaultToolbar[]>()
 /* VAR*/
 
 /*FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'User',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    if (res.code === 200 && res.data) {
+      let sysColumnDetailDtoList = res.data.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = res.data || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+  defaultToolbar.value = buildTableDefaultToolbar(columns);
+}
+
 function toImport() {
   visibleImport.value = true
 }
