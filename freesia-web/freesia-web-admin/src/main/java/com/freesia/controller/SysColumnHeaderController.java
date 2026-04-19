@@ -139,8 +139,13 @@ public class SysColumnHeaderController extends BaseController {
                 SysColumnDetailDto sysColumnDetailDto = new SysColumnDetailDto();
                 sysColumnDetailDto.setHeaderId(headerId);
                 sysColumnDetailDto.setUserId(userId);
+                sysColumnDetailDto.setCustomSlot(sysColumnMiddleDto.getCustomSlot());
                 List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.findCacheList(sysColumnDetailDto);
                 if (UEmpty.isNotEmpty(sysColumnDetailDtoList)) {
+                    sysColumnDetailDtoList = sysColumnDetailDtoList.stream().map(item -> {
+                        item.setCustomSlot(middleNameMap.get(item.getName()).getCustomSlot());
+                        return item;
+                    }).collect(Collectors.toList());
                     findHeader.setSysColumnDetailDtoList(sysColumnDetailDtoList);
                     return R.ok(findHeader);
                 } else {
@@ -207,6 +212,7 @@ public class SysColumnHeaderController extends BaseController {
             sysColumnMiddleDto.setTitle(item.getTitle());
             sysColumnMiddleDto.setName(item.getKey());
             sysColumnMiddleDto.setEnabled(true);
+            sysColumnMiddleDto.setCustomSlot(item.getCustomSlot());
             list.add(sysColumnMiddleDto);
             orderNum += 10;
         }
@@ -220,7 +226,8 @@ public class SysColumnHeaderController extends BaseController {
             SysColumnDetailDto columnDetailDto = new SysColumnDetailDto();
             columnDetailDto.setUserId(userId);
             columnDetailDto.setHeaderId(headerId);
-            columnDetailDto.setMiddleId(middleNameMap.get(item.getKey()).getId());
+            SysColumnMiddleDto sysColumnMiddleDto = middleNameMap.get(item.getKey());
+            columnDetailDto.setMiddleId(sysColumnMiddleDto.getHeaderId());
             columnDetailDto.setTitle(item.getTitle());
             columnDetailDto.setName(item.getKey());
             columnDetailDto.setEnabled(true);
@@ -231,6 +238,7 @@ public class SysColumnHeaderController extends BaseController {
             columnDetailDto.setOrderNum(orderNum);
             columnDetailDto.setSorted(item.getSorted());
             columnDetailDto.setResizeFlag(item.getResizeFlag());
+            columnDetailDto.setCustomSlot(item.getCustomSlot());
             list.add(columnDetailDto);
             orderNum += 10;
         }

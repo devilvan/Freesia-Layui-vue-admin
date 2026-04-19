@@ -1,11 +1,11 @@
 package com.freesia.dto;
 
-import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -47,4 +47,6 @@ public class SysColumnDetailDto extends BaseDto {
     private Boolean resizeFlag;
     @Schema(description = "系统列中间表ID列表")
     private List<Long> middleIdList;
+    @Schema(description = "自定义插槽")
+    private String customSlot;
 }

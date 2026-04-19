@@ -2,14 +2,10 @@ package com.freesia.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import io.swagger.v3.oas.annotations.media.Schema;
-import com.freesia.vo.BaseVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
@@ -34,4 +30,7 @@ public class SysColumnMiddleVo extends BaseVo {
     @Schema(description = "是否可用（true-是；false-否）")
     @JsonAlias(value = {"enabled"})
     private Boolean enabled;
+    @Schema(description = "自定义插槽")
+    @JsonAlias(value = {"customSlot"})
+    private String customSlot;
 }

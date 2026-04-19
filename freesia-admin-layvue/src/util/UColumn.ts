@@ -93,7 +93,7 @@ function handleFindSysColumn(columns: Ref<TableColumn[]>) {
     });
 }
 
-function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultColumnVo[] {
+export function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultColumnVo[] {
     return defaultColumns?.map(item => {
         let sorted = null;
         if (item.sort) {
@@ -113,6 +113,7 @@ function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultColumnVo[
             ellipsisTooltip: item.ellipsisTooltip || false,
             fixed: item.fixed || null,
             resizeFlag: item.resize || '',
+            customSlot: item.customSlot || '',
         }
     })
 }
