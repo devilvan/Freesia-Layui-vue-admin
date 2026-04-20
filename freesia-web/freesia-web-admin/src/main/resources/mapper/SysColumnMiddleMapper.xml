@@ -15,9 +15,10 @@
         <result column="TITLE" property="title"/>
         <result column="NAME" property="name"/>
         <result column="ENABLED" property="enabled"/>
+        <result column="CUSTOM_SLOT" property="customSlot"/>
     </resultMap>
     <sql id="Base_Column_List">
-        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, HEADER_ID, TITLE, NAME, ENABLED
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, HEADER_ID, TITLE, NAME, ENABLED, CUSTOM_SLOT
     </sql>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
@@ -92,7 +93,8 @@
         HEADER_ID, 
         TITLE, 
         NAME, 
-        ENABLED
+        ENABLED,
+        CUSTOM_SLOT
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -109,7 +111,8 @@
             #{item.headerId}, 
             #{item.title}, 
             #{item.name}, 
-            #{item.enabled}
+            #{item.enabled},
+            #{item.customSlot}
             )
         </foreach>
     </insert>

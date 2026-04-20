@@ -28,4 +28,5 @@ export interface SysColumnDetailEntity extends BaseEntity {
     maxWidth?: number;
     orderNum?: number;
     sorted?: string;
+    customSlot?: string;
 }

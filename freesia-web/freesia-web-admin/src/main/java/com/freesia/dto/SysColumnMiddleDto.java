@@ -1,11 +1,10 @@
 package com.freesia.dto;
 
-import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
-import java.util.Date;
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Evad.Wu
@@ -26,4 +25,6 @@ public class SysColumnMiddleDto extends BaseDto {
     private String name;
     @Schema(description = "是否可用（true-是；false-否）")
     private Boolean enabled;
+    @Schema(description = "自定义插槽")
+    private String customSlot;
 }

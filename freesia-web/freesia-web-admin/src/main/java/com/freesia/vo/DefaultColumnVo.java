@@ -30,4 +30,6 @@ public class DefaultColumnVo {
     private String fixed;
     @Schema(description = "是否允许拖动（true-是；false-否）")
     private Boolean resizeFlag;
+    @Schema(description = "自定义插槽")
+    private String customSlot;
 }

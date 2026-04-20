@@ -2,7 +2,6 @@ package com.freesia.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.freesia.po.BasePo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +11,11 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.io.Serial;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
-import java.math.BigDecimal;
 
 /**
  * @author Evad.Wu
@@ -52,4 +51,8 @@ public class SysColumnMiddlePo extends BasePo implements Serializable {
     @TableField(value = "ENABLED")
     @Column(name = "ENABLED", columnDefinition = "BIT(1) COMMENT '是否可用（true-是；false-否）'")
     private Boolean enabled;
+    @Schema(description = "自定义插槽")
+    @TableField(value = "CUSTOM_SLOT")
+    @Column(name = "CUSTOM_SLOT", columnDefinition = "VARCHAR(64) COMMENT '自定义插槽'")
+    private String customSlot;
 }

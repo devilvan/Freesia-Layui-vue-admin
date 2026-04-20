@@ -545,9 +545,14 @@ import {useAccountCostStore} from "@/store/accountCost";
 import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
 import {LayIcon} from "@layui/icons-vue";
 import option from "@/views/system/log/option/index.vue";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
 onMounted(async () => {
+  doBuildColumn()
   paymentSignSelect.value = await loadSysDictValue(Constants.PAYMENT_SIGN)
   paymentSignSelectList.value = await sysDictValueSelect(paymentSignSelect.value)
   searchQuery.value.paymentTimeRange = buildRange(6)
@@ -593,19 +598,19 @@ const filterManualRef = ref(null);
 const defaultToolBar = ref<TableDefaultToolbar[]>([
   {
     title: '自定义列', icon: 'layui-icon-slider', render: () => {
-      return h(LayDropdown, { placement: "bottom-end" }, {
+      return h(LayDropdown, {placement: "bottom-end"}, {
         default: () => h(
             "div",
             {
               class: "layui-table-toolbar-item",
               title: '自定义列',
             },
-            h(LayIcon, { type: "layui-icon-slider" }),
+            h(LayIcon, {type: "layui-icon-slider"}),
         ),
 
         content: () => h(
             "div",
-            { class: "layui-table-tool-checkbox" },
+            {class: "layui-table-tool-checkbox"},
             columns.value.map((column, columnIndex) => h(LayCheckbox, {
               skin: "primary",
               key: column.key || column.type || columnIndex,
@@ -628,8 +633,8 @@ const pageQuery = reactive<PageQuery>({
   hideOnSinglePage: false,
   layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })
-const columns = ref<TableColumn[]>([
-  {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '描述', width: '130px', key: 'costDesc', fixed: 'left', ellipsisTooltipTheme: 'dark'},
   {title: '金额', width: '130px', key: 'outlay', sort: 'desc'},
   {title: '类型', width: '130px', key: 'icon', customSlot: 'iconType'},
@@ -641,14 +646,7 @@ const columns = ref<TableColumn[]>([
   {title: '记录人', width: '100px', key: 'acNickName', customSlot: 'acNickName'},
   {title: '所属账本', width: '100px', key: 'tenantName', customSlot: 'tenantName'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+]
 const showSelectTypeModalFlag = ref<Boolean>(false)
 const now = new Date()
 const expenseFromRules = ref({
@@ -722,9 +720,36 @@ const openKeys = ref<string[]>([]);
 const showModalFlag = ref<Boolean>(false)
 const addExpenseActive = ref(0)
 const operate = ref<Operate>();
+const defaultToolbar = ref<TableDefaultToolbar[]>()
 /* VAR*/
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Accounts',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    if (res.code === 200 && res.data) {
+      let sysColumnDetailDtoList = res.data.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = res.data || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+  defaultToolbar.value = buildTableDefaultToolbar(columns);
+}
+
 const loadDataSource = () => {
   searchQuery.value.allTenantFlag = accountCostStore.allTenantFlag || false
   findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<AccountCostEntity>) => {
