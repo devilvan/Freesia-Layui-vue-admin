@@ -80,6 +80,9 @@
         <include refid="Base_Column_List"/>
         FROM SYS_COLUMN_DETAIL
         WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}
+        </if>
         <if test="dto.userId != null">
             AND USER_ID = #{dto.userId}
         </if>
@@ -126,6 +129,9 @@
         <include refid="Base_Column_List"/>
         FROM SYS_COLUMN_DETAIL
         WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}
+        </if>
         <if test="dto.userId != null">
             AND USER_ID = #{dto.userId}
         </if>

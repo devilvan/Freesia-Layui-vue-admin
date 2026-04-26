@@ -217,12 +217,12 @@ import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
 import {TableResult} from "@/types/Result";
-import {deleteSysColumnDetail, findPageSysColumnDetail} from "@/api/account/SysColumnDetail";
-import {SysColumnDetailEntity, SysColumnDetailVo} from "@/types/account/SysColumnDetail";
+import {deleteSysColumnDetail, findPageSysColumnDetail} from "@/api/system/ColumnDetail";
+import {SysColumnDetailEntity, SysColumnDetailVo} from "@/types/system/ColumnDetail";
 import {Operate} from "@/types/Constants";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
-import {findSysColumnDetail, saveUpdate} from "@/api/account/SysColumnDetail";
+import {findSysColumnDetail, saveUpdate} from "@/api/system/ColumnDetail";
 
 /* INIT*/
 onMounted(async () => {

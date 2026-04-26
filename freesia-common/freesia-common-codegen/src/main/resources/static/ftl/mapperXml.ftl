@@ -42,6 +42,9 @@
         <include refid="Base_Column_List"/>
         FROM ${dataBaseDto.tableName}
         WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = <#noparse>#{</#noparse>dto.id}<#noparse>}</#noparse>
+        </if>
         <#list dataBaseDto.fieldList as field>
         <#if field.javaType == "String">
         <if test="dto.${field.fieldName} != null and dto.${field.fieldName} != ''">
@@ -60,6 +63,9 @@
         <include refid="Base_Column_List"/>
         FROM ${dataBaseDto.tableName}
         WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = <#noparse>#{</#noparse>dto.id}<#noparse>}</#noparse>
+        </if>
         <#list dataBaseDto.fieldList as field>
         <#if field.javaType == "String">
         <if test="dto.${field.fieldName} != null and dto.${field.fieldName} != ''">

@@ -45,6 +45,9 @@
         <include refid="Base_Column_List"/>
         FROM SYS_COLUMN_MIDDLE
         WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}
+        </if>
         <if test="dto.headerId != null">
             AND HEADER_ID = #{dto.headerId}
         </if>
@@ -64,6 +67,9 @@
         <include refid="Base_Column_List"/>
         FROM SYS_COLUMN_MIDDLE
         WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}
+        </if>
         <if test="dto.headerId != null">
             AND HEADER_ID = #{dto.headerId}
         </if>
