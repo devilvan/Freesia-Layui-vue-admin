@@ -9,6 +9,8 @@ import {R} from "@/types/Result";
 import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 import {Sorted} from "@/types/Constants";
 import {saveUpdate, toggleEnabled} from "@/api/system/ColumnDetail";
+import {useDraggable} from "vue-draggable-plus";
+import DraggableLayCheckbox from "@/layouts/global/draggableLayCheckbox/DraggableLayCheckbox.vue";
 
 export function buildTableDefaultToolbar(columns: Ref<TableColumn[]>): TableDefaultToolbar[] {
     return [
@@ -63,7 +65,7 @@ function handleFindSysColumn(columns: Ref<TableColumn[]>) {
             {class: "layui-table-tool-checkbox"},
             columns.value.map((column, columnIndex) => {
                 let find = columns.value.find((item) => item.key === column.key);
-                return h(LayCheckbox, {
+                return h(DraggableLayCheckbox, {
                     skin: "primary",
                     key: column.key || column.type || columnIndex,
                     value: columnIndex,

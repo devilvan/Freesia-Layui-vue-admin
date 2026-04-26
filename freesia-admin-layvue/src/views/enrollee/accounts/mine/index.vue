@@ -122,7 +122,7 @@
         v-model:selected-keys="selectedKeys"
         :columns="columns"
         :data-source="dataSource"
-        :default-toolbar="defaultToolBar"
+        :default-toolbar="defaultToolbar"
         :loading="loading"
         :page="pageQuery"
         :even="false"
@@ -595,36 +595,6 @@ const expenseAllocationTableRef = ref(null)
 const addExpenseModalShowFlag = ref(false)
 const dataSource = ref<Array<AccountCostEntity>>()
 const filterManualRef = ref(null);
-const defaultToolBar = ref<TableDefaultToolbar[]>([
-  {
-    title: '自定义列', icon: 'layui-icon-slider', render: () => {
-      return h(LayDropdown, {placement: "bottom-end"}, {
-        default: () => h(
-            "div",
-            {
-              class: "layui-table-toolbar-item",
-              title: '自定义列',
-            },
-            h(LayIcon, {type: "layui-icon-slider"}),
-        ),
-
-        content: () => h(
-            "div",
-            {class: "layui-table-tool-checkbox"},
-            columns.value.map((column, columnIndex) => h(LayCheckbox, {
-              skin: "primary",
-              key: column.key || column.type || columnIndex,
-              value: columnIndex,
-              modelValue: !column.hide,
-              // disabled: isValueArray(column.children),
-
-              onChange: () => column.hide = !column.hide,
-            }, () => column.title)),
-        ),
-      });
-    }
-  }, "export", "print"
-])
 const title = ref('新增')
 const pageQuery = reactive<PageQuery>({
   current: 1,
@@ -720,7 +690,7 @@ const openKeys = ref<string[]>([]);
 const showModalFlag = ref<Boolean>(false)
 const addExpenseActive = ref(0)
 const operate = ref<Operate>();
-const defaultToolbar = ref<TableDefaultToolbar[]>()
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /* VAR*/
 
 /* FUNCTION*/
