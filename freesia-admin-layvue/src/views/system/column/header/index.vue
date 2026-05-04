@@ -140,7 +140,7 @@
         </lay-form-item>
        </lay-col>
        <lay-col :md="6">
-        <lay-form-item label="是否启用（true-是；false-否）" prop="enabled">
+        <lay-form-item label="是否启用" prop="enabled">
           <lay-input
                   v-model="saveSysColumnHeaderVo.enabled"
                   :allow-clear="true"
@@ -149,7 +149,7 @@
         </lay-form-item>
        </lay-col>
        <lay-col :md="6">
-        <lay-form-item label="是否允许单元格列宽拖动（true-是；false-否）" prop="resizeFlag">
+        <lay-form-item label="是否允许单元格列宽拖动" prop="resizeFlag">
           <lay-input
                   v-model="saveSysColumnHeaderVo.resizeFlag"
                   :allow-clear="true"
@@ -158,7 +158,7 @@
         </lay-form-item>
        </lay-col>
        <lay-col :md="6">
-        <lay-form-item label="是否允许根据内容自动计算列宽（true-是；false-否）" prop="autoColsWidthFlag">
+        <lay-form-item label="是否允许根据内容自动计算列宽" prop="autoColsWidthFlag">
           <lay-input
                   v-model="saveSysColumnHeaderVo.autoColsWidthFlag"
                   :allow-clear="true"
@@ -167,7 +167,7 @@
         </lay-form-item>
        </lay-col>
        <lay-col :md="6">
-        <lay-form-item label="是否启用默认工具栏（true-是；false-否）" prop="defaultToolBarFlag">
+        <lay-form-item label="是否启用默认工具栏" prop="defaultToolBarFlag">
           <lay-input
                   v-model="saveSysColumnHeaderVo.defaultToolBarFlag"
                   :allow-clear="true"
@@ -236,10 +236,10 @@ const columns = ref([
  {title: '表格高度', width: '130px', key: 'height'},
  {title: '表格最大高度', width: '130px', key: 'maxHeight'},
  {title: '初始化分页大小', width: '130px', key: 'initPageSize'},
- {title: '是否启用（true-是；false-否）', width: '130px', key: 'enabled'},
- {title: '是否允许单元格列宽拖动（true-是；false-否）', width: '130px', key: 'resizeFlag'},
- {title: '是否允许根据内容自动计算列宽（true-是；false-否）', width: '130px', key: 'autoColsWidthFlag'},
- {title: '是否启用默认工具栏（true-是；false-否）', width: '130px', key: 'defaultToolBarFlag'},
+ {title: '是否启用', width: '130px', key: 'enabled'},
+ {title: '是否允许单元格列宽拖动', width: '130px', key: 'resizeFlag'},
+ {title: '是否允许根据内容自动计算列宽', width: '130px', key: 'autoColsWidthFlag'},
+ {title: '是否启用默认工具栏', width: '130px', key: 'defaultToolBarFlag'},
  {
   title: '操作',
   width: '150px',

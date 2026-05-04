@@ -1,8 +1,9 @@
 package com.freesia.service;
 
+import com.freesia.dto.SysColumnDetailDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
-import com.freesia.dto.SysColumnDetailDto;
+import com.freesia.vo.SysColumnHeaderVo;
 
 import java.util.List;
 
@@ -67,4 +68,11 @@ public interface SysColumnDetailService {
      * @param idList 主键
      */
     void deleteBatch(List<Long> idList);
+
+    /**
+     * 重新排序系统列明细表信息
+     *
+     * @param sysColumnHeaderVo 排序信息
+     */
+    void resorted(SysColumnHeaderVo sysColumnHeaderVo);
 }

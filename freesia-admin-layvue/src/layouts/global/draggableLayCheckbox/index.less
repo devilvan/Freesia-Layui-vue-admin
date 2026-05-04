@@ -21,8 +21,9 @@
 .set-size(@size, @font-size, @icon-size, @padding) {
   display: inline-block;
   & {
-    .layui-form-checkbox[lay-skin="primary"]  {
+    .layui-form-checkbox[lay-skin="primary"] {
       padding-left: @padding;
+
       .layui-icon {
         height: @size;
         box-sizing: border-box;
@@ -30,6 +31,7 @@
         line-height: @size;
         width: @size;
       }
+
       .layui-checkbox-label {
         height: @size;
         font-size: @font-size;
@@ -39,16 +41,19 @@
   }
 }
 
-.layui-checkbox{
+.layui-checkbox {
   &[size="lg"] {
     .set-size(@checkbox-lg, @checkbox-lg-font-size, @checkbox-lg-icon-size, @checkbox-padding-lg);
   }
+
   &[size="md"] {
     .set-size(@checkbox-md, @checkbox-md-font-size, @checkbox-md-icon-size, @checkbox-padding-md);
   }
+
   &[size="sm"] {
     .set-size(@checkbox-sm, @checkbox-sm-font-size, @checkbox-sm-icon-size, @checkbox-padding-sm);
   }
+
   &[size="xs"] {
     .set-size(@checkbox-xs, @checkbox-xs-font-size, @checkbox-xs-icon-size, @checkbox-padding-xs);
   }
@@ -59,52 +64,63 @@
   .layui-form-checkbox {
     height: 34px;
     line-height: 34px;
+
     .layui-checkbox-label {
       font-size: 15px;
     }
   }
+
   .layui-form-checkbox i {
     height: 34px;
     line-height: 34px;
     font-size: 22px;
   }
 }
+
 .layui-checkbox[size="md"] {
   .layui-form-checkbox {
     height: 30px;
     line-height: 30px;
+
     .layui-checkbox-label {
       font-size: 14px;
     }
   }
+
   .layui-form-checkbox i {
     height: 30px;
     line-height: 30px;
     font-size: 20px;
   }
 }
+
 .layui-checkbox[size="sm"] {
   .layui-form-checkbox {
     height: 26px;
     line-height: 26px;
+
     .layui-checkbox-label {
       font-size: 13px;
     }
-  }  
+  }
+
   .layui-form-checkbox i {
     height: 26px;
     line-height: 26px;
     font-size: 18px;
   }
 }
+
 .layui-checkbox[size="xs"] {
   .layui-form-checkbox {
     height: 22px;
     line-height: 22px;
+
     .layui-checkbox-label {
       font-size: 12px;
     }
-  } 
+  }
+
   .layui-form-checkbox i {
     height: 22px;
     line-height: 22px;

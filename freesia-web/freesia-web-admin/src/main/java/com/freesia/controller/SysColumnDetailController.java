@@ -7,6 +7,7 @@ import com.freesia.pojo.TableResult;
 import com.freesia.service.SysColumnDetailService;
 import com.freesia.vo.R;
 import com.freesia.vo.SysColumnDetailVo;
+import com.freesia.vo.SysColumnHeaderVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -124,6 +125,19 @@ public class SysColumnDetailController extends BaseController {
         sysColumnDetailDto = sysColumnDetailService.findOne(sysColumnDetailDto);
         sysColumnDetailDto.setEnabled(!sysColumnDetailDto.getEnabled());
         sysColumnDetailService.saveUpdate(sysColumnDetailDto);
+        return R.ok();
+    }
+
+    /**
+     * 自定义列重排序
+     *
+     * @param sysColumnHeaderVo 入参
+     * @return 形式返回
+     */
+    @Operation(summary = "自定义列重排序")
+    @PostMapping(value = "resorted")
+    public R<Void> resorted(@RequestBody SysColumnHeaderVo sysColumnHeaderVo) {
+        sysColumnDetailService.resorted(sysColumnHeaderVo);
         return R.ok();
     }
 }

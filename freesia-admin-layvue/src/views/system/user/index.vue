@@ -328,9 +328,10 @@ function doBuildColumn() {
     name: 'User',
     defaultColumnVoList: convertToDefaultColumn(defaultColumns),
   }).then((res: R<SysColumnHeaderEntity>) => {
-    if (res.code === 200 && res.data) {
-      let sysColumnDetailDtoList = res.data.sysColumnDetailDtoList;
-      let sysColumnHeader: SysColumnHeaderEntity = res.data || {};
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
       if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
         let tempColumns: TableColumn[] = []
         sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
@@ -341,12 +342,14 @@ function doBuildColumn() {
           ...tempColumns,
           {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
         ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
       }
     } else {
       columns.value = defaultColumns;
     }
   })
-  defaultToolbar.value = buildTableDefaultToolbar(columns);
 }
 
 function toImport() {

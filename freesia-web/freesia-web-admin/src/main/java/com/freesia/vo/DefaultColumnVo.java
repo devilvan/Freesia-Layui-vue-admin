@@ -11,6 +11,8 @@ import lombok.Data;
  */
 @Data
 public class DefaultColumnVo {
+    @Schema(description = "ID")
+    private Long id;
     @Schema(description = "列名")
     private String title;
     @Schema(description = "属性名")

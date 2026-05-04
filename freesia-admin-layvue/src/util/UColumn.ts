@@ -1,24 +1,44 @@
 // 系统自定义列工具类
 import {h, ref, Ref, VNode} from "vue";
-import {LayCheckbox, LayDropdown} from "@layui/layui-vue";
+import {LayCheckbox, LayDropdown, layer} from "@layui/layui-vue";
 import {LayIcon} from "@layui/icons-vue";
-import {findSysColumnHeader} from "@/api/system/ColumnHeader";
 import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
 import {DefaultColumnVo, SysColumnHeaderEntity, SysColumnHeaderVo} from "@/types/system/ColumnHeader";
 import {R} from "@/types/Result";
 import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 import {Sorted} from "@/types/Constants";
-import {saveUpdate, toggleEnabled} from "@/api/system/ColumnDetail";
+import {toggleEnabled} from "@/api/system/ColumnDetail";
 import {useDraggable} from "vue-draggable-plus";
 import DraggableLayCheckbox from "@/layouts/global/draggableLayCheckbox/DraggableLayCheckbox.vue";
+import GlobalTodoModal from "@/layouts/global/GlobalTodoModal.vue";
+import GlobalSysColumnModal from "@/layouts/global/GlobalSysColumnModal.vue";
 
-export function buildTableDefaultToolbar(columns: Ref<TableColumn[]>): TableDefaultToolbar[] {
+
+export function buildTableDefaultToolbar(headerId: string, columns: Ref<TableColumn[]>): TableDefaultToolbar[] {
     return [
+        // {
+        //     title: '自定义列',
+        //     icon: 'layui-icon-slider',
+        //     render: () => handleBuildSysColumn(columns)
+        // },
         {
             title: '自定义列',
             icon: 'layui-icon-slider',
-            render: () => handleFindSysColumn(columns)
-        }, "export", "print"
+            onClick: () => {
+                layer.open({
+                    type: 1,
+                    title: "自定义列",
+                    // area: ['300px', '75%'],
+                    content: h(GlobalSysColumnModal, {
+                        headerId: headerId,
+                        columns: validateColumns(columns.value)
+                    }),
+                    close: () => layer.closeAll()
+                })
+            }
+        },
+        "export",
+        "print"
     ]
 }
 
@@ -50,7 +70,7 @@ export function buildItem(item: SysColumnDetailEntity, sysColumnHeader: SysColum
  * 构建系统自定义列
  * @param columns 默认展示列表
  */
-function handleFindSysColumn(columns: Ref<TableColumn[]>) {
+function handleBuildSysColumn(columns: Ref<TableColumn[]>) {
     return h(LayDropdown, {placement: "bottom-end"}, {
         default: () => h(
             "div",
@@ -93,6 +113,7 @@ export function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultCo
             }
         }
         return {
+            id: item.id || '',
             key: item.key,
             title: item.title || '',
             hide: item.hide || false,
@@ -105,6 +126,10 @@ export function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultCo
             customSlot: item.customSlot || '',
         }
     })
+}
+
+function validateColumns(columns: TableColumn[]) {
+    return columns.filter(item => item.key !== 'operator' && item.type !== 'checkbox')
 }
 
 function parseWidth2Number(width: string | undefined): number {

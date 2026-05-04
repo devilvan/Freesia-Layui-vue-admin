@@ -122,7 +122,7 @@
         <if test="dto.resizeFlag != null and dto.resizeFlag != ''">
             AND RESIZE_FLAG = #{dto.resizeFlag}
         </if>
-        ORDER BY MODIFY_TIME DESC
+        ORDER BY ORDER_NUM
     </select>
     <select id="findOne" resultMap="BaseResultMap">
         SELECT
