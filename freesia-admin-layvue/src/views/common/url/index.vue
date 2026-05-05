@@ -34,7 +34,7 @@
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
-          :default-toolbar="true"
+          :default-toolbar="defaultToolbar"
           :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
           @change="change"
@@ -149,12 +149,18 @@ import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
 import {deleteUrlConfig, findPageUrlConfig, saveUpdate} from "@/api/common/Url";
 import {UrlConfigEntity, UrlConfigVo} from "@/types/common/Url";
-import {TableResult} from "@/types/Result";
+import {R, TableResult} from "@/types/Result";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
 onMounted(async () => {
+  doBuildColumn()
   requestTypeList.value = await loadSysDictValue(Constants.REQUEST_TYPE)
   requestTypeSelectList.value = await sysDictValueSelect(requestTypeList.value);
   loadDataSource()
@@ -194,7 +200,8 @@ const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '编号', width: '160px', key: 'id', fixed: 'left', sort: 'desc'},
   {title: '配置标识', width: '130px', key: 'code', fixed: 'left', sort: 'desc'},
@@ -204,17 +211,41 @@ const columns = ref([
   {title: '请求参数', width: '100px', key: 'param', sort: 'desc'},
   {title: '系统内置', width: '40px', key: 'buildIn', customSlot: 'buildIn'},
   {title: '内容形式', width: '160px', key: 'contentType'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+  {title: '操作', width: '150px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+]
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /* VAR*/
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Url',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 function toReset() {
   searchQuery.value = {}
 }

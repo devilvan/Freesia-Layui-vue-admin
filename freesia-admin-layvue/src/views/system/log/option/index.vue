@@ -53,7 +53,7 @@
           :total="pageQuery.total"
           :columns="columns"
           :loading="loading"
-          :default-toolbar="true"
+          :default-toolbar="defaultToolbar"
           :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
           @change="change"
@@ -206,22 +206,22 @@ import {PageQuery} from "@/types/Common";
 import {findPageOptionLog} from "@/api/system/SensitiveLog";
 import {SysSensitiveLogVo} from "@/types/system/SensitiveLog";
 import {defaultShortcuts} from "@/util/UDate";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {R} from "@/types/Result";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
+/*INIT*/
 onMounted(async () => {
+  doBuildColumn()
   await loadDataSource();
 })
+/*INIT*/
 
+/*VAR*/
 const searchQuery = ref<SysSensitiveLogVo>({})
-
-function toReset() {
-  searchQuery.value = {}
-}
-
-function toSearch() {
-  pageQuery.current = 1
-  change()
-}
-
 const tableHeight = '530px'
 const operateTimeRange = ref<Date[]>([]);
 const loading = ref(false)
@@ -232,7 +232,8 @@ const pageQuery = reactive<PageQuery>({
       total: 0
     }
 )
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '用户名', key: 'operatorName', sort: 'desc', width: '100px'},
   {title: '部门名称', key: 'deptName', sort: 'desc', width: '120px'},
   {title: 'IP地址', key: 'ipAddress', hide: true},
@@ -241,33 +242,13 @@ const columns = ref([
   {title: '所属模块', key: 'module', width: '200px'},
   {title: '子模块', key: 'subModule', width: '200px'},
   {title: '操作类型', key: 'type', width: '200px'},
-  {title: '操作系统',width: '300px',key: 'os',sort: 'desc',customSlot: 'os'},
+  {title: '操作系统', width: '300px', key: 'os', sort: 'desc', customSlot: 'os'},
   {title: '浏览器', key: 'browser', width: '100px'},
   {title: '操作时间', key: 'operateTime', width: '160px'},
   {title: '地点', key: 'location', width: '100px'},
   {title: '备注', key: 'remark', customSlot: 'remark', width: '200px'},
-])
-const change = () => {
-  loading.value = true
-  setTimeout(() => {
-    loadDataSource()
-    loading.value = false
-  }, 1000)
-}
-const sortChange = (key: any, sort: number) => {
-  layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
-}
+]
 const dataSource = ref([])
-const loadDataSource = async () => {
-  let operateTime = operateTimeRange.value;
-  if (operateTime && operateTime?.length > 0) {
-    searchQuery.value.operateTimeFrom = operateTime[0]
-    searchQuery.value.operateTimeTo = operateTime[1]
-  }
-  const {rows, total} = await findPageOptionLog(searchQuery.value, pageQuery)
-  dataSource.value = rows;
-  pageQuery.total = total;
-}
 const dataLayer = ref({
   id: '0',
   optionModule: '',
@@ -282,11 +263,76 @@ const dataLayer = ref({
   ipAddrees: ''
 })
 const visible11 = ref(false)
+const defaultToolbar = ref<TableDefaultToolbar[]>([]);
+/*VAR*/
+
+
+/*FUNCTION*/
+async function loadDataSource() {
+  let operateTime = operateTimeRange.value;
+  if (operateTime && operateTime?.length > 0) {
+    searchQuery.value.operateTimeFrom = operateTime[0]
+    searchQuery.value.operateTimeTo = operateTime[1]
+  }
+  const {rows, total} = await findPageOptionLog(searchQuery.value, pageQuery)
+  dataSource.value = rows;
+  pageQuery.total = total;
+}
+
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Option',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          ...tempColumns,
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
 
 function showDetail(row: any) {
   visible11.value = true
   dataLayer.value = row
 }
+
+const change = () => {
+  loading.value = true
+  setTimeout(() => {
+    loadDataSource()
+    loading.value = false
+  }, 1000)
+}
+const sortChange = (key: any, sort: number) => {
+  layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
+}
+
+
+function toReset() {
+  searchQuery.value = {}
+}
+
+function toSearch() {
+  pageQuery.current = 1
+  change()
+}
+
+/*FUNCTION*/
 </script>
 
 <style scoped>

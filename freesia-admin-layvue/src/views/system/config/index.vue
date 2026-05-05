@@ -45,13 +45,13 @@
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
-          :default-toolbar="true"
+          :default-toolbar="defaultToolbar"
           :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
           @change="change"
           @sortChange="sortChange">
         <template #buildIn="{ row }">
-<!--          @change="changeBuildIn($event, row)"-->
+          <!--          @change="changeBuildIn($event, row)"-->
           <lay-switch
               :model-value="row.buildIn"
           ></lay-switch>
@@ -126,9 +126,16 @@ import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
 import {deleteConfig, findPageSysConfig, saveConfig} from "@/api/system/Config";
 import {SysConfigEntity, SysConfigVo} from "@/types/system/Config";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {R} from "@/types/Result";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
 onMounted(() => {
+  doBuildColumn()
   loadDataSource()
 })
 const loadDataSource = () => {
@@ -164,24 +171,49 @@ const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '参数名称', width: '150px', key: 'configName'},
   {title: '参数键', width: '150px', key: 'configKey'},
   {title: '参数值', width: '100px', key: 'configValue'},
   {title: '系统内置', width: '40px', key: 'buildIn', customSlot: 'buildIn'},
   {title: '创建时间', width: '160px', key: 'createTime'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+  {title: '操作', width: '150px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+]
+const defaultToolbar = ref<TableDefaultToolbar[]>()
 /* VAR*/
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Config',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 function toReset() {
   searchQuery.value = {}
 }

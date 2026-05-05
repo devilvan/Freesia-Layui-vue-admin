@@ -4,7 +4,7 @@
       :page="pageQuery"
       :columns="columns"
       :loading="loading"
-      :default-toolbar="true"
+      :default-toolbar="defaultToolbar"
       :data-source="dataSource"
       :rowStyle="getRowStyle"
       v-model:selected-keys="selectedKeys"
@@ -118,6 +118,11 @@ import {formatDateTime, singleShortcuts, YMD} from "@/util/UDate";
 import {R, TableResult} from "@/types/Result";
 import {PageQuery} from "@/types/Common";
 import {useUserStore} from "@/store/user";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /*INIT*/
 onMounted(async () => {
@@ -143,21 +148,16 @@ const pageQuery = reactive<PageQuery>({
   hideOnSinglePage: false,
   layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '选项', width: '50px', type: 'checkbox', fixed: 'left'},
   {title: '标题', width: '80px', key: 'title'},
   {title: '内容', width: '260px', key: 'content', customSlot: 'content'},
   {title: '生效时间', width: '180px', key: 'effectiveTime', customSlot: 'effectiveTime'},
   {title: '发布人', width: '100px', key: 'publisherName'},
   {title: '发布时间', width: '150px', key: 'createTime'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+  {title: '操作', width: '150px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+]
 const loading = ref(true)
 const operate = ref<string>(Operate.ADD)
 const saveModalFlag = ref<boolean>(false)
@@ -171,9 +171,39 @@ const sdf_ymdhms = 'YYYY-MM-DD HH:mm:ss'
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const saveGroupFormRef = ref()
 const announcementTableRef = ref()
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /*VAR*/
 
 /*FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Announcement',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 function change() {
   loading.value = true
   setTimeout(() => {

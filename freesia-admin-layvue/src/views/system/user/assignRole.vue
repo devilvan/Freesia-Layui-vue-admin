@@ -1,6 +1,7 @@
 <template>
   <div style="height: 100%; width: 100%">
     <div style="height: calc(100% - 60px); width: 100%; overflow: auto">
+      <lay-button type="primary" style="margin-top: 20px;margin-left: 20px" @click="$tab.closeCurrent()">返回</lay-button>
       <lay-container :fluid="true">
         <lay-card>
           <lay-form label-position="top">
@@ -91,12 +92,19 @@ import {SysRoleEntity} from "@/types/system/Role";
 import {useTabStore} from "@/layouts/composable/useTabStore";
 import {findAllRoles} from "@/api/system/Role";
 import router from "@/router";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {R} from "@/types/Result";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
 const $route = useRoute();
 const $router = router;
 const $tab = useTabStore();
 onMounted(async () => {
+  doBuildColumn()
   sysDataScopeList.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   userId.value = $route.params && $route.params.userId as string;
   loadDataSource(userId.value)
@@ -120,7 +128,13 @@ const pageQuery: PageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10
 })
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const target = ref()
+nextTick(() => {
+  target.value = document.querySelector(".layui-body");
+})
+const defaultToolbar = ref<TableDefaultToolbar[]>()
+const defaultColumns: TableColumn[] = [
   {title: '选项', type: 'checkbox', fixed: 'left'},
   // {title: '编号', key: 'id', fixed: 'left'},
   {title: '角色名称', key: 'roleName'},
@@ -135,13 +149,37 @@ const columns = ref([
   //   key: 'operator',
   //   fixed: 'right'
   // }
-])
-const target = ref()
-nextTick(() => {
-  target.value = document.querySelector(".layui-body");
-})
+]
+/*/* VAR*/
 
-/* VAR*/
+/*FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'UserAssignRole',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
 
 function toImport() {
   visibleImport.value = true
@@ -178,4 +216,6 @@ function assign() {
     }
   })
 }
+
+/*FUNCTION*/
 </script>

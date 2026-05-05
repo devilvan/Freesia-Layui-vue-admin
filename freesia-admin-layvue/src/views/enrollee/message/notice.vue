@@ -4,7 +4,7 @@
       :page="pageQuery"
       :columns="columns"
       :loading="loading"
-      :default-toolbar="true"
+      :default-toolbar="defaultToolbar"
       :data-source="dataSource"
       :rowStyle="getRowStyle"
       v-model:selected-keys="selectedKeys"
@@ -134,9 +134,15 @@ import {deleteAccountCost, findAccountCost} from "@/api/account/Account";
 import {IconTreeType} from "@/types/common/icon/template/IconTemplateDetail";
 import {saveUpdateBatch} from "@/api/common/icon/template/IconTemplateDetail";
 import {useUserStore} from "@/store/user";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /*INIT*/
 onMounted(async () => {
+  doBuildColumn();
   sysNoticeTypeSelect.value = await loadSysDictValue(Constants.SYS_NOTICE_TYPE)
   sysNoticeTypeSelectList.value = await sysDictValueSelect(sysNoticeTypeSelect.value)
   sysNoticeCategorySelect.value = await loadSysDictValue(Constants.SYS_NOTICE_CATEGORY)
@@ -166,7 +172,8 @@ const pageQuery = reactive<PageQuery>({
   hideOnSinglePage: false,
   layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '选项', width: '50px', type: 'checkbox', fixed: 'left'},
   {title: '标题', width: '80px', key: 'title'},
   {title: '内容', width: '260px', key: 'content', customSlot: 'content'},
@@ -174,14 +181,8 @@ const columns = ref([
   {title: '发布人', width: '100px', key: 'publisherName'},
   {title: '发布时间', width: '150px', key: 'createTime'},
   {title: '所属模块', width: '80px', key: 'category', customSlot: 'category'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+  {title: '操作', width: '150px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+]
 const userStore = useUserStore();
 const loading = ref(true)
 const operate = ref<string>(Operate.ADD)
@@ -199,9 +200,39 @@ const dataSource = ref<SysNoticeEntity[]>();
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const saveGroupFormRef = ref()
 const noticeTableRef = ref()
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /*VAR*/
 
 /*FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Notice',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 function change() {
   loading.value = true
   setTimeout(() => {
@@ -215,6 +246,7 @@ const sortChange = (key: any, sort: any) => {
       `字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`
   )
 }
+
 function toRemove() {
   if (selectedKeys.value.length == 0) {
     layer.msg('您未选择数据，请先选择要删除的数据', {icon: 3, time: 2000})
@@ -341,6 +373,7 @@ function getRowStyle(row: any, rowIndex: number) {
   if (row.readFlag) return 'color:' + '#c2c2c2';
   return ''
 }
+
 /*FUNCTION*/
 </script>
 

@@ -47,7 +47,7 @@
           :columns="columns"
           children-column-name="children"
           :data-source="dataSource"
-          :default-toolbar="true"
+          :default-toolbar="defaultToolbar"
           :default-expand-all="expandMenuFlag"
           :expand-index="0"
           :resize="true"
@@ -481,8 +481,15 @@ import {FindTreeMenuSelectEntity, MenuType, SysDictValueEntity} from "@/types/sy
 import {LinkComponentType, RouterComponent} from "@/types/Menu";
 import {Flag, PROCEED_CODE} from "@/types/Constants";
 import {getParentPath} from "@/library/treeUtil";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {R} from "@/types/Result";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 /* INIT*/
 onMounted(async () => {
+  doBuildColumn()
   sysMenuTypeList.value = await loadSysDictValue(Constants.SYS_MENU_TYPE);
   sysMenuTypeListSelect.value = await sysDictValueSelect(sysMenuTypeList.value);
   await loadTreeMenuSelectList();
@@ -567,7 +574,8 @@ const sysLinkVo = ref<SysMenuVo>({
 const expandMenu = function (flag: any) {
   expandMenuFlag.value = flag
 }
-const columns = [
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {fixed: 'left', type: 'checkbox', width: '120px', title: '复选',},
   {title: '菜单名称', key: 'menuName', width: '200px', customSlot: 'menuName'},
   {title: '路由地址', key: 'path', width: '100px', customSlot: 'path'},
@@ -579,6 +587,8 @@ const columns = [
   {title: '备注', key: 'remark', width: '200px', customSlot: 'remark'},
   {title: '操作', key: 'option', width: '150px', fixed: 'right', customSlot: 'option'}
 ]
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
+
 const isShowOptions = ref([
   {
     label: '是',
@@ -822,6 +832,35 @@ function resetModal(menuType: any) {
 /* TOGGLE*/
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Menu',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 const changeSaveMenuVoModalFlag = (menuType: any) => {
   proceedCode.value = PROCEED_CODE.ADD
   if (MenuType.DIR === menuType) {

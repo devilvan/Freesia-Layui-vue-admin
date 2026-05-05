@@ -47,7 +47,7 @@
               :page="pageQuery"
               :columns="columns"
               :loading="loading"
-              :default-toolbar="true"
+              :default-toolbar="defaultToolbar"
               :data-source="dataSource"
               v-model:selected-keys="selectedKeys"
               @change="change"
@@ -166,17 +166,22 @@ export default {
 <script setup lang="ts">
 import {ref, reactive, onMounted} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {TableResult} from "@/types/Result";
+import {R, TableResult} from "@/types/Result";
 import {SysOssEntity} from "@/types/system/Oss";
 import {deleteSysOss, findPageSysOss, upload} from "@/api/system/Oss";
 import {PageQuery} from "@/types/Common";
 import Http from "@/api/Http";
 import app from "@/main";
 import {formatFileSize} from "../../../util/UFile";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
 onMounted(() => {
-  console.log(pubKey);
+  doBuildColumn()
   loadDataSource()
 })
 /* INIT*/
@@ -190,7 +195,8 @@ const visibleImport = ref(false)
 const fileList = ref([])
 const loading = ref(false)
 const selectedKeys = ref([])
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '文件路径', key: 'fileName', width: '120px', customSlot: 'fileName'},
   {title: '原名', key: 'originalName', customSlot: 'originalName'},
@@ -207,11 +213,41 @@ const columns = ref([
     key: 'operator',
     fixed: 'right'
   }
-])
+]
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 const uploadLimitSize = 10 * 1024 * 1024;
 /* VAR*/
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Oss',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 function toImport() {
   // layer.msg('导入')
   fileList.value = []

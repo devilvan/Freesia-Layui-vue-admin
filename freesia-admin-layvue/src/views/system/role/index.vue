@@ -46,7 +46,7 @@
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
-          :default-toolbar="true"
+          :default-toolbar="defaultToolbar"
           :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
           @change="change"
@@ -355,9 +355,16 @@ import router from "@/router";
 import {SysDeptSelectEntity} from "@/types/system/Dept";
 import {findTreeAssignDeptSelect} from "@/api/system/Dept";
 import LayTreeAdapter from "@/views/component/LayTreeAdapter.vue";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {R} from "@/types/Result";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 /* INIT*/
 const $ADMIN_ROLE = app.config.globalProperties.$ADMIN_ROLE
 onMounted(async () => {
+  doBuildColumn()
   sysDataScope.value = await loadSysDictValue(Constants.SYS_DATA_SCOPE)
   sysDataScopeSelect.value = await sysDictValueSelect(sysDataScope.value);
   await loadDataSource()
@@ -412,7 +419,8 @@ const menuTree = ref<Array<FindAllMenuTreeEntity>>()
 const selectRowRoleId = ref<string>("");
 const title = ref('新增')
 const dataSource = ref<Array<FindPageSysRoleListEntity>>()
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns : TableColumn[] = [
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '角色名称', width: '150px', key: 'roleName', sort: 'desc'},
   {title: '角色权限编码', width: '120px', key: 'roleKey', sort: 'asc'},
@@ -427,16 +435,46 @@ const columns = ref([
     key: 'operator',
     fixed: 'right'
   }
-])
+]
 const assignDeptVo = ref<AssignDeptVo>({});
 const changeAssignDeptModalFlag = ref(false)
 const deptTreeSelect = ref<SysDeptSelectEntity>({})
 const addVisibleFlag = ref(false)
 const editVisibleFlag = ref(false)
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /* VAR*/
 
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Role',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 function toReset() {
   searchQuery.value = {}
 }

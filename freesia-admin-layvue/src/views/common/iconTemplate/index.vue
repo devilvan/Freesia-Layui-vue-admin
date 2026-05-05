@@ -23,7 +23,7 @@
           v-model:selected-keys="selectedKeys"
           :columns="columns"
           :data-source="dataSource"
-          :default-toolbar="defaultToolbarFlag"
+          :default-toolbar="defaultToolbar"
           :loading="loading"
           :page="pageQuery"
           :even="evenFlag"
@@ -163,9 +163,15 @@ import {
 import {getWeekdayCn} from "@/util/UDate";
 import router from "@/router";
 import app from "@/main";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
 onMounted(async () => {
+  doBuildColumn()
   change()
 })
 /* INIT*/
@@ -179,7 +185,8 @@ const pageQuery = reactive<PageQuery>({
 })
 const dataSource = ref<Array<CommonIconTemplateHeaderEntity>>()
 const selectedKeys = ref<Array<string>>([])
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '模板名称', width: '130px', key: 'name', fixed: 'left'},
   {title: '排序', width: '80px', key: 'orderNum', sort: 'asc'},
@@ -187,25 +194,48 @@ const columns = ref([
   {title: '创建时间', width: '180px', key: 'createTime', customSlot: 'createTime', sort: 'desc'},
   {title: '修改时间', width: '180px', key: 'modifyTime', customSlot: 'modifyTime', sort: 'desc'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+  {title: '操作',width: '150px',customSlot: 'operator',key: 'operator',fixed: 'right'}
+]
 const loading = ref(true)
-const defaultToolbarFlag = ref(true)
 const evenFlag = ref(true)
 const showSaveModalFlag = ref(false)
 const saveModalTitle = ref('');
 const saveFormRef = ref(null)
 const saveVo = ref<CommonIconTemplateHeaderVo>(<CommonIconTemplateHeaderVo>{})
 const queryFormRef = ref(null)
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /* VAR*/
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'IconTemplate',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 /**
  * 初始化表格
  */

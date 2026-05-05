@@ -166,7 +166,11 @@ public class SysColumnHeaderController extends BaseController {
                 // 生成明细数据
                 List<SysColumnDetailDto> list = buildSysColumnDetailDtoList(defaultColumnVoList, userId, headerId, middleNameMap);
                 if (UEmpty.isNotEmpty(list)) {
-                    findHeader.setSysColumnDetailDtoList(sysColumnDetailService.saveUpdateBatch(list));
+                    List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.saveUpdateBatch(list);
+                    for (SysColumnDetailDto dto : sysColumnDetailDtoList) {
+                        dto.setCustomSlot(middleNameMap.get(dto.getName()).getCustomSlot());
+                    }
+                    findHeader.setSysColumnDetailDtoList(sysColumnDetailDtoList);
                     return R.ok(findHeader);
                 }
             }
@@ -184,7 +188,11 @@ public class SysColumnHeaderController extends BaseController {
                 // 生成明细数据
                 List<SysColumnDetailDto> list = buildSysColumnDetailDtoList(defaultColumnVoList, userId, headerId, middleNameMap);
                 if (UEmpty.isNotEmpty(list)) {
-                    findHeader.setSysColumnDetailDtoList(sysColumnDetailService.saveUpdateBatch(list));
+                    List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.saveUpdateBatch(list);
+                    for (SysColumnDetailDto dto : sysColumnDetailDtoList) {
+                        dto.setCustomSlot(middleNameMap.get(dto.getName()).getCustomSlot());
+                    }
+                    findHeader.setSysColumnDetailDtoList(sysColumnDetailDtoList);
                     return R.ok(findHeader);
                 }
             }

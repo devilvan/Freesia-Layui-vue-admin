@@ -103,33 +103,34 @@ function handleBuildSysColumn(columns: Ref<TableColumn[]>) {
 }
 
 export function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultColumnVo[] {
-    return defaultColumns?.map(item => {
-        let sorted = null;
-        if (item.sort) {
-            if (item.sort === Sorted.ASC) {
-                sorted = Sorted.ASC;
-            } else if (item.sort === Sorted.DESC) {
-                sorted = Sorted.DESC;
+    return validateColumns(defaultColumns)
+        .map(item => {
+            let sorted = null;
+            if (item.sort) {
+                if (item.sort === Sorted.ASC) {
+                    sorted = Sorted.ASC;
+                } else if (item.sort === Sorted.DESC) {
+                    sorted = Sorted.DESC;
+                }
             }
-        }
-        return {
-            id: item.id || '',
-            key: item.key,
-            title: item.title || '',
-            hide: item.hide || false,
-            width: parseWidth2Number(item.width) || 120,
-            minWidth: parseWidth2Number(item.minWidth) || 20,
-            sorted: sorted,
-            ellipsisTooltip: item.ellipsisTooltip || false,
-            fixed: item.fixed || null,
-            resizeFlag: item.resize || '',
-            customSlot: item.customSlot || '',
-        }
-    })
+            return {
+                id: item.id || '',
+                key: item.key,
+                title: item.title || '',
+                hide: item.hide || false,
+                width: parseWidth2Number(item.width) || 120,
+                minWidth: parseWidth2Number(item.minWidth) || 20,
+                sorted: sorted,
+                ellipsisTooltip: item.ellipsisTooltip || false,
+                fixed: item.fixed || null,
+                resizeFlag: item.resize || '',
+                customSlot: item.customSlot || '',
+            }
+        })
 }
 
 function validateColumns(columns: TableColumn[]) {
-    return columns.filter(item => item.key !== 'operator' && item.type !== 'checkbox')
+    return columns.filter(item => item.key && item.key !== 'operator' && item.type !== 'checkbox')
 }
 
 function parseWidth2Number(width: string | undefined): number {

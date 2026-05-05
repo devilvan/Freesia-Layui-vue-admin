@@ -99,7 +99,7 @@
             :page="pageQuery"
             :columns="columns"
             :loading="loading"
-            :default-toolbar="true"
+            :default-toolbar="defaultToolbar"
             :data-source="sysDictValueList"
             v-model:selected-keys="selectedKeys"
             @change="change"
@@ -372,9 +372,16 @@ import {
 import {PROCEED_CODE} from "@/types/Constants";
 import {defaultShortcuts} from "@/util/UDate";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {R} from "@/types/Result";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
 onMounted(async () => {
+  doBuildColumn()
   enabledStatusSelect.value = await loadSysDictValue(Constants.ENABLED_STATUS)
   enabledStatusSelectList.value = await sysDictValueSelect(enabledStatusSelect.value)
   selectedNode.value = {}
@@ -401,7 +408,8 @@ const pageQuery = reactive<PageQuery>({
   current: 1,
   limit: 10,
 })
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '字典值名', key: 'valueName', width: '200px'},
   {title: '字典值', key: 'value', width: '200px'},
@@ -410,14 +418,8 @@ const columns = ref([
   {title: '是否默认', width: '120px', key: 'isDefault', sort: 'desc', customSlot: 'isDefault'},
   {title: '创建时间', width: '160px', key: 'createTime', sort: 'desc'},
   {title: '备注', width: '160px', key: 'remark'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+  {title: '操作', width: '150px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+]
 const insertSysDictValueVo = ref<SysDictValueVo>({})
 const modifySysDictValueVo = ref<SysDictValueVo>({})
 const layFormRef11 = ref()
@@ -433,9 +435,39 @@ const modalTitle = ref('新建字典')
 const showImportSysDictValueFlag = ref(false)
 const importRoute = import.meta.env.VITE_APP_BASE_URL + "/"
 const fileList = ref([])
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /* VAR*/
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Dict',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 function toReset() {
   sysDictValueSearchQuery.value = {}
 }

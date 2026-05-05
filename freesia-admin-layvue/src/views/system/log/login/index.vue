@@ -108,7 +108,7 @@
           :page="pageQuery"
           :columns="columns"
           :loading="loading"
-          :default-toolbar="true"
+          :default-toolbar="defaultToolbar"
           :data-source="dataSource"
           v-model:selected-keys="selectedKeys"
           @change="change"
@@ -176,9 +176,16 @@ import {findPageLoginLog} from "@/api/system/SensitiveLog";
 import {PageQuery} from "@/types/Common";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {defaultShortcuts} from "@/util/UDate";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {R} from "@/types/Result";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /*INIT*/
 onMounted(async () => {
+  doBuildColumn()
   sysOperateResultList.value = await loadSysDictValue(Constants.SYS_OPERATE_RESULT);
   await loadDataSource();
 })
@@ -197,7 +204,8 @@ const pageQuery = reactive<PageQuery>({
 const operateTimeRange = ref<Date[]>();
 const sysOperateResultList = ref<Array<SysDictValueEntity>>([]);
 const dataSource = ref<Array<SysSensitiveEntity>>()
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '用户名', key: 'operatorName', sort: 'desc', width: '100px'},
   {title: '部门名称', key: 'deptName', sort: 'desc', width: '120px'},
   {title: 'IP地址', key: 'ipAddress', hide: true},
@@ -205,29 +213,44 @@ const columns = ref([
   {title: '所属模块', key: 'module', width: '100px'},
   {title: '子模块', key: 'subModule', width: '100px'},
   {title: '操作类型', key: 'type', width: '100px'},
-  {
-    title: '操作系统',
-    width: '300px',
-    key: 'os',
-    sort: 'desc',
-    customSlot: 'os'
-  },
-  // {title: '操作系统', key: 'os'},
-  {
-    title: '操作结果',
-    width: '80px',
-    key: 'result',
-    customSlot: 'result'
-  },
+  {title: '操作系统', width: '300px', key: 'os', sort: 'desc', customSlot: 'os'},
+  {title: '操作结果', width: '80px', key: 'result', customSlot: 'result'},
   {title: '浏览器', key: 'browser', width: '100px'},
   {title: '操作时间', key: 'operateTime', width: '160px'},
   {title: '地点', key: 'location', width: '100px'},
   {title: '备注', key: 'remark', customSlot: 'remark', width: '200px'},
-])
+]
 const expandCollapseFlag = ref<boolean>(false);
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /*VAR*/
 
 /*FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Login',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          ...tempColumns,
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
 
 function toReset() {
   searchQuery.value = {}

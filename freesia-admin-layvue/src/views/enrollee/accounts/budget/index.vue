@@ -48,7 +48,7 @@
           v-model:selected-keys="selectedKeys"
           :columns="columns"
           :data-source="dataSource"
-          :default-toolbar="defaultToolbarFlag"
+          :default-toolbar="defaultToolbar"
           :loading="loading.value"
           :page="pageQuery"
           :even="evenFlag"
@@ -200,16 +200,22 @@ export default {
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {PageQuery} from "@/types/Common";
-import {TableResult} from "@/types/Result";
+import {R, TableResult} from "@/types/Result";
 import {deleteAccountBudget, findPageAccountBudget} from "@/api/account/AccountBudget";
 import {AccountBudgetEntity, AccountBudgetVo} from "@/types/account/AccountBudget";
 import {Operate} from "@/types/Constants";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
 import {SysDictValueEntity} from "@/types/system/Dict";
 import {findAccountBudget, saveUpdate} from "@/api/account/AccountBudget";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /* INIT*/
 onMounted(async () => {
+  doBuildColumn();
   accountBudgetDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
   accountBudgetDurationTypeSelectList.value = await sysDictValueSelect(accountBudgetDurationTypeSelect.value)
   loadDataSource()
@@ -224,7 +230,8 @@ const pageQuery = reactive<PageQuery>({
 })
 const dataSource = ref<Array<AccountBudgetEntity>>()
 const selectedKeys = ref<Array<string>>([])
-const columns = ref([
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '选项', width: '55px', type: 'checkbox', fixed: 'left'},
   {title: '预算描述', width: '130px', key: 'budgetDesc', fixed: 'left'},
   {title: '预算金额', width: '130px', key: 'outlay', sort: 'desc'},
@@ -232,16 +239,9 @@ const columns = ref([
   {title: '时间范围从', width: '130px', key: 'durationFrom'},
   {title: '时间范围到', width: '130px', key: 'durationTo'},
   {title: '备注', width: '150px', key: 'remark', customSlot: 'remark'},
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
+  {title: '操作', width: '150px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+]
 const loading = ref(true)
-const defaultToolbarFlag = ref(true)
 const evenFlag = ref(true)
 const showModalFlag = ref(false)
 const saveModalTitle = ref('');
@@ -262,9 +262,39 @@ const saveFromRules = ref({
     }
   },
 })
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /* VAR*/
 
 /* FUNCTION*/
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'Budget',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+          ...tempColumns,
+          {title: '操作', width: '120px', customSlot: 'operator', key: 'operator', fixed: 'right'}
+        ];
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
+}
+
 /**
  * 初始化表格
  */
@@ -437,5 +467,6 @@ function confirm(row: any) {
 function cancel() {
   layer.msg('您已取消操作')
 }
+
 /* FUNCTION*/
 </script>
