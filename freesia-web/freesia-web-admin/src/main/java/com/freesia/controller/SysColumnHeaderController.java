@@ -142,9 +142,10 @@ public class SysColumnHeaderController extends BaseController {
                 sysColumnDetailDto.setCustomSlot(sysColumnMiddleDto.getCustomSlot());
                 List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.findCacheList(sysColumnDetailDto);
                 if (UEmpty.isNotEmpty(sysColumnDetailDtoList)) {
-                    sysColumnDetailDtoList = sysColumnDetailDtoList.stream().map(item -> {
-                        item.setCustomSlot(middleNameMap.get(item.getName()).getCustomSlot());
-                        return item;
+                    sysColumnDetailDtoList = sysColumnDetailDtoList.stream().map(dto -> {
+                        dto.setCustomSlot(middleNameMap.get(dto.getName()).getCustomSlot());
+                        dto.setTotalRow(middleNameMap.get(dto.getName()).getTotalRow());
+                        return dto;
                     }).collect(Collectors.toList());
                     findHeader.setSysColumnDetailDtoList(sysColumnDetailDtoList);
                     return R.ok(findHeader);
@@ -169,6 +170,7 @@ public class SysColumnHeaderController extends BaseController {
                     List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.saveUpdateBatch(list);
                     for (SysColumnDetailDto dto : sysColumnDetailDtoList) {
                         dto.setCustomSlot(middleNameMap.get(dto.getName()).getCustomSlot());
+                        dto.setTotalRow(middleNameMap.get(dto.getName()).getTotalRow());
                     }
                     findHeader.setSysColumnDetailDtoList(sysColumnDetailDtoList);
                     return R.ok(findHeader);
@@ -191,6 +193,7 @@ public class SysColumnHeaderController extends BaseController {
                     List<SysColumnDetailDto> sysColumnDetailDtoList = sysColumnDetailService.saveUpdateBatch(list);
                     for (SysColumnDetailDto dto : sysColumnDetailDtoList) {
                         dto.setCustomSlot(middleNameMap.get(dto.getName()).getCustomSlot());
+                        dto.setTotalRow(middleNameMap.get(dto.getName()).getTotalRow());
                     }
                     findHeader.setSysColumnDetailDtoList(sysColumnDetailDtoList);
                     return R.ok(findHeader);
@@ -221,6 +224,7 @@ public class SysColumnHeaderController extends BaseController {
             sysColumnMiddleDto.setName(item.getKey());
             sysColumnMiddleDto.setEnabled(true);
             sysColumnMiddleDto.setCustomSlot(item.getCustomSlot());
+            sysColumnMiddleDto.setTotalRow(item.getTotalRow());
             list.add(sysColumnMiddleDto);
             orderNum += 10;
         }

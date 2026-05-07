@@ -63,6 +63,7 @@ export function buildItem(item: SysColumnDetailEntity, sysColumnHeader: SysColum
         fixed: item.fixed ? "left" : (item.fixed || undefined),
         resize: sysColumnHeader.resizeFlag || false,
         customSlot: item.customSlot || '',
+        totalRow: item.totalRow || false,
     };
 }
 
@@ -125,6 +126,7 @@ export function convertToDefaultColumn(defaultColumns: TableColumn[]): DefaultCo
                 fixed: item.fixed || null,
                 resizeFlag: item.resize || '',
                 customSlot: item.customSlot || '',
+                totalRow: item.totalRow as boolean || false,
             }
         })
 }

@@ -29,4 +29,5 @@ export interface SysColumnDetailEntity extends BaseEntity {
     orderNum?: number;
     sorted?: string;
     customSlot?: string;
+    totalRow?: boolean;
 }

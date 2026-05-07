@@ -33,4 +33,7 @@ public class SysColumnMiddleVo extends BaseVo {
     @Schema(description = "自定义插槽")
     @JsonAlias(value = {"customSlot"})
     private String customSlot;
+    @Schema(description = "是否总行（true-是；false-否）")
+    @JsonAlias(value = {"totalRow"})
+    private Boolean totalRow;
 }

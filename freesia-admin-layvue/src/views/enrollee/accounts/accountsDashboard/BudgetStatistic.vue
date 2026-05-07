@@ -155,7 +155,7 @@
           v-model:selected-keys="selectedKeys"
           :columns="columns"
           :data-source="dataSource"
-          :default-toolbar="defaultToolbarFlag"
+          :default-toolbar="defaultToolbar"
           :loading="loading"
           :page="pageQuery"
           :even="evenFlag"
@@ -191,6 +191,11 @@ import {R, TableResult} from "@/types/Result";
 import {AccountReportEntity, AccountReportVo} from "@/types/account/AccountReport";
 import {PageQuery} from "@/types/Common";
 import {defaultShortcuts} from "@/util/UDate";
+import {findSysColumnHeader} from "@/api/system/ColumnHeader";
+import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
+import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
+import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
+import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 const props = defineProps({
   title: {
@@ -211,6 +216,7 @@ watch(
 );
 
 onMounted(async () => {
+  doBuildColumn()
   accountBudgetDurationTypeSelect.value = await loadSysDictValue(Constants.ACCOUNT_BUDGET_DURATION_TYPE)
   accountBudgetDurationTypeSelectList.value = await sysDictValueSelect(accountBudgetDurationTypeSelect.value)
 })
@@ -244,8 +250,8 @@ const pageQuery = reactive<PageQuery>({
   hideOnSinglePage: false,
   layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })
-const columns = ref([
-  // {title: '标题', width: '130px', key: 'title'},
+const columns = ref<TableColumn[]>([])
+const defaultColumns: TableColumn[] = [
   {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
   {title: '开始时间', width: '130px', key: 'billingTimeFrom'},
   {title: '结束时间', width: '130px', key: 'billingTimeTo'},
@@ -253,16 +259,27 @@ const columns = ref([
   {title: '支出金额', width: '130px', key: 'outlay', totalRow: true},
   {title: '攒钱', width: '130px', key: 'saveAmount', totalRow: true},
   {title: '收入金额', width: '130px', key: 'incomeAmount', totalRow: true},
-])
+]
 const dataSource = ref<Array<AccountReportEntity>>()
 const selectedKeys = ref<Array<string>>([])
 const loading = ref(false)
-const defaultToolbarFlag = ref(true)
 const evenFlag = ref(true)
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
+const defaultToolbar = ref<TableDefaultToolbar[]>([])
 /*VAR*/
 
 /*FUNCTION*/
+/**
+ * 刷新表格
+ */
+const change = () => {
+  loading.value = true
+  setTimeout(() => {
+    loadDataSource()
+    loading.value = false
+  }, 200)
+}
+
 /**
  * 初始化表格
  */
@@ -278,6 +295,34 @@ const loadDataSource = () => {
   }).catch(e => {
     layer.msg(e.msg)
   });
+}
+
+function doBuildColumn() {
+  findSysColumnHeader({
+    name: 'BudgetHistory',
+    defaultColumnVoList: convertToDefaultColumn(defaultColumns),
+  }).then((res: R<SysColumnHeaderEntity>) => {
+    let sysColumnHeaderEntity = res.data;
+    if (res.code === 200 && sysColumnHeaderEntity) {
+      let sysColumnDetailDtoList = sysColumnHeaderEntity.sysColumnDetailDtoList;
+      let sysColumnHeader: SysColumnHeaderEntity = sysColumnHeaderEntity || {};
+      if (sysColumnDetailDtoList && sysColumnDetailDtoList.length > 0) {
+        let tempColumns: TableColumn[] = []
+        sysColumnDetailDtoList.forEach((item: SysColumnDetailEntity) => {
+          tempColumns.push(buildItem(item, sysColumnHeader))
+        })
+        columns.value = [
+          ...tempColumns,
+        ];
+        console.log(columns.value)
+        if (sysColumnHeaderEntity.id != null) {
+          defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
+        }
+      }
+    } else {
+      columns.value = defaultColumns;
+    }
+  })
 }
 
 function changeBudgetUpdateModal(item: EchartCapacityOptionEntity) {
@@ -353,16 +398,6 @@ function saveBudgetTypeChange(value: any) {
   }
 }
 
-/**
- * 刷新表格
- */
-const change = () => {
-  loading.value = true
-  setTimeout(() => {
-    loadDataSource()
-    loading.value = false
-  }, 200)
-}
 /*FUNCTION*/
 </script>
 

@@ -38,5 +38,6 @@ export interface DefaultColumnVo {
     fixed: "left" | "right" | null;
     title: string;
     ellipsisTooltip: boolean;
-    key?: string
+    key?: string,
+    totalRow: boolean
 }

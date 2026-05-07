@@ -55,4 +55,8 @@ public class SysColumnMiddlePo extends BasePo implements Serializable {
     @TableField(value = "CUSTOM_SLOT")
     @Column(name = "CUSTOM_SLOT", columnDefinition = "VARCHAR(64) COMMENT '自定义插槽'")
     private String customSlot;
+    @Schema(description = "是否显示总行（true-是；false-否）")
+    @TableField(value = "TOTAL_ROW")
+    @Column(name = "TOTAL_ROW", columnDefinition = "TINYINT(1) COMMENT '是否显示总行（true-是；false-否）'")
+    private Boolean totalRow;
 }

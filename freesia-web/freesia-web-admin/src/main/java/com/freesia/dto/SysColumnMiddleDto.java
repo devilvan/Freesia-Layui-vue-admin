@@ -27,4 +27,6 @@ public class SysColumnMiddleDto extends BaseDto {
     private Boolean enabled;
     @Schema(description = "自定义插槽")
     private String customSlot;
+    @Schema(description = "是否显示总行（true-是；false-否）")
+    private Boolean totalRow;
 }
