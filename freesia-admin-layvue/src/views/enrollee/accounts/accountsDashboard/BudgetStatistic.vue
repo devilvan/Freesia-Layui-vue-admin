@@ -314,7 +314,6 @@ function doBuildColumn() {
         columns.value = [
           ...tempColumns,
         ];
-        console.log(columns.value)
         if (sysColumnHeaderEntity.id != null) {
           defaultToolbar.value = buildTableDefaultToolbar(sysColumnHeaderEntity.id, columns);
         }

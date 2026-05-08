@@ -31,7 +31,6 @@ import {useAccountCostStore} from "@/store/accountCost";
 
 /*INIT*/
 const props = defineProps({
-  // 数据
   title: {
     type: String,
     default: "近一年支付",
@@ -61,6 +60,10 @@ const monthCostRankRef = ref();
 let weekCostRankChart: echarts.ECharts | null = null;
 let monthCostRankChart: echarts.ECharts | null = null;
 const findRankByCostTypeVo = ref<FindRankByCostTypeVo>({});
+let currentHoverSeriesIndex = ref<number | null>(null);
+let currentHoverDataIndex = ref<number | null>(null);
+let seriesData = ref<any[]>([]);
+let yAxisData = ref<any[]>([]);
 /*VAR*/
 
 
@@ -79,13 +82,15 @@ function doFindCostRank() {
   findRankByCostType(findRankByCostTypeVo.value).then((res: R<EchartStackedHorizontalBarOptionEntity>) => {
     if (res.code === 200) {
       let echartStackedHorizontalBarOptionEntity: EchartStackedHorizontalBarOptionEntity | undefined = res.data;
+      seriesData.value = echartStackedHorizontalBarOptionEntity?.series || [];
+      yAxisData.value = echartStackedHorizontalBarOptionEntity?.yAxis || [];
       let series = echartStackedHorizontalBarOptionEntity?.series?.map(item => {
         return {
           name: item.name,
           type: 'bar',
           stack: 'total',
           label: {
-            show: true
+            show: false
           },
           emphasis: {
             focus: 'series'
@@ -106,7 +111,9 @@ function doFindCostRank() {
             let totalAmount = params.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value, 0);
             params.forEach((item: any) => {
               const percent = ((item.data / totalAmount) * 100).toFixed(2);
-              out += `<div>${item.marker} ${item.seriesName}：
+              const isHighlighted = currentHoverSeriesIndex.value === item.seriesIndex && currentHoverDataIndex.value === item.dataIndex;
+              const borderStyle = isHighlighted ? `border: 2px solid ${item.color}; padding: 2px 4px; border-radius: 4px; margin: 2px 0; background-color: rgba(${hexToRgb(item.color)}, 0.1);` : '';
+              out += `<div style="${borderStyle}">${item.marker} ${item.seriesName}：
                         <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${item.color}">${item.data?.toFixed(2)}</span>
                         <span style="border-radius:10px;font-weight:bold;color:${item.color}">(${percent}%)</span>
                       </div>`
@@ -135,15 +142,51 @@ function doFindCostRank() {
       if (currentIndex.value === '0') {
         weekCostRankChart = echarts.init(weekCostRankRef.value);
         weekCostRankChart.setOption(option)
+
+        weekCostRankChart.group = 'weekCostRank';
+
+        weekCostRankChart.on('mouseover', function (params: any) {
+          if (params.dataIndex !== undefined) {
+            currentHoverSeriesIndex.value = params.seriesIndex;
+            currentHoverDataIndex.value = params.dataIndex;
+          }
+        });
+
+        weekCostRankChart.on('mouseout', function () {
+          currentHoverSeriesIndex.value = null;
+          currentHoverDataIndex.value = null;
+        });
       } else if (currentIndex.value === '1') {
         monthCostRankChart = echarts.init(monthCostRankRef.value);
         monthCostRankChart.setOption(option)
+
+        monthCostRankChart.group = 'monthCostRank';
+
+        monthCostRankChart.on('mouseover', function (params: any) {
+          if (params.dataIndex !== undefined) {
+            currentHoverSeriesIndex.value = params.seriesIndex;
+            currentHoverDataIndex.value = params.dataIndex;
+          }
+        });
+
+        monthCostRankChart.on('mouseout', function () {
+          currentHoverSeriesIndex.value = null;
+          currentHoverDataIndex.value = null;
+        });
       }
 
     }
   }).catch(e => {
     layer.confirm(e.message)
   })
+}
+
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (result) {
+    return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
+  }
+  return '0, 0, 0';
 }
 
 /*FUNCTION*/
