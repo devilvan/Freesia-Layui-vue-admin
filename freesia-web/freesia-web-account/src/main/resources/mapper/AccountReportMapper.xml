@@ -28,6 +28,19 @@
     <sql id="Base_Column_List">
         ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, REMARK, USER_ID, BUDGET_ID, STRATEGY_ID, TITLE, BUDGET_TYPE, BUDGET_AMOUNT, OUTLAY, INCOME_AMOUNT, BILLING_TIME, BILLING_TIME_FROM, BILLING_TIME_TO, RECALCULATE_FLAG
     </sql>
+    <update id="updateBudgetAmount">
+        UPDATE ACCOUNT_REPORT
+        SET BUDGET_AMOUNT = #{budgetAmount}
+        WHERE
+        LOGIC_DEL = 0
+        AND BUDGET_ID = #{budgetId}
+        <if test="idList != null and idList.size() > 0">
+            AND ID IN
+            <foreach collection="idList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </update>
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>

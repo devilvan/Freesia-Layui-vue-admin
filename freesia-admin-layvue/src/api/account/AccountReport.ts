@@ -30,3 +30,7 @@ export function findListAccountReport(accountReportVo: AccountReportVo): Promise
 export function deleteAccountReport(idList: Array<string>): Promise<R<void>> {
  return Http.post("/api/accountReportController/deleteAccountReport", idList);
 }
+
+export function updateBudgetAmount(accountReportVo: AccountReportVo): Promise<R<void>> {
+ return Http.post("/api/accountReportController/updateBudgetAmount", accountReportVo);
+}

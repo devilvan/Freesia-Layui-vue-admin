@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.account.converter.AccountReportConverter;
+import com.freesia.account.dto.AccountBudgetDto;
 import com.freesia.account.dto.AccountReportDto;
 import com.freesia.account.entity.FindPageAccountReportEntity;
 import com.freesia.account.mapper.AccountReportMapper;
 import com.freesia.account.po.AccountReportPo;
 import com.freesia.account.repository.AccountReportRepository;
+import com.freesia.account.service.AccountBudgetService;
 import com.freesia.account.service.AccountReportService;
 import com.freesia.account.vo.AccountReportVo;
 import com.freesia.constant.FlagConstant;
@@ -36,6 +38,7 @@ public class AccountReportServiceImpl extends BaseServiceImpl<AccountReportMappe
     private final AccountReportRepository accountReportRepository;
     private final AccountReportConverter accountReportConverter;
     private final AccountReportMapper accountReportMapper;
+    private final AccountBudgetService accountBudgetService;
 
     @Override
     protected MapStructConverter<AccountReportVo, AccountReportDto, AccountReportPo> getMapStructConverter() {
@@ -113,5 +116,30 @@ public class AccountReportServiceImpl extends BaseServiceImpl<AccountReportMappe
     @Override
     public List<AccountReportDto> findBetweenBillingTime(AccountReportDto accountReportDto) {
         return accountReportMapper.findBetweenBillingTime(accountReportDto);
+    }
+
+    @Override
+    public void updateBudgetAmount(AccountReportVo accountReportVo) {
+        Long id = accountReportVo.getId();
+        List<Long> idList = accountReportVo.getIdList();
+        Long budgetId = accountReportVo.getBudgetId();
+        AccountBudgetDto queryParam = new AccountBudgetDto();
+        queryParam.setId(budgetId);
+        AccountBudgetDto accountBudgetDto = accountBudgetService.findOne(queryParam);
+        if (UEmpty.isNotEmpty(idList)) {
+            // 修改多个报表的预算金额
+            AccountReportDto accountReportDto = new AccountReportDto();
+            accountReportDto.setIdList(idList);
+            accountReportDto.setBudgetId(budgetId);
+            accountReportDto.setBudgetAmount(accountBudgetDto.getOutlay());
+            accountReportMapper.updateBudgetAmount(accountReportDto);
+        } else {
+            // 修改该预算下的所有报表的预算金额
+            // 修改单个报表的预算金额
+            AccountReportDto accountReportDto = new AccountReportDto();
+            accountReportDto.setBudgetId(budgetId);
+            accountReportDto.setBudgetAmount(accountBudgetDto.getOutlay());
+            accountReportMapper.updateBudgetAmount(accountReportDto);
+        }
     }
 }

@@ -74,4 +74,11 @@ public interface AccountReportMapper extends BaseMapper<AccountReportPo> {
      * @return 分页信息
      */
     Page<FindPageAccountReportEntity> findPageAccountReport(@Param("dto") AccountReportDto accountReportDto, @Param("page") Page<AccountReportPo> page);
+
+    /**
+     * 更新预算金额
+     *
+     * @param accountReportDto 更新入参
+     */
+    void updateBudgetAmount(AccountReportDto accountReportDto);
 }

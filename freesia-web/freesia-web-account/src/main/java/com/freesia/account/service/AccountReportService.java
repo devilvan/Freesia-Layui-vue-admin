@@ -2,6 +2,7 @@ package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountReportDto;
 import com.freesia.account.entity.FindPageAccountReportEntity;
+import com.freesia.account.vo.AccountReportVo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -93,4 +94,11 @@ public interface AccountReportService {
      * @return 结果集
      */
     List<AccountReportDto> findBetweenBillingTime(AccountReportDto accountReportDto);
+
+    /**
+     * 更新预算金额
+     *
+     * @param accountReportVo 更新入参
+     */
+    void updateBudgetAmount(AccountReportVo accountReportVo);
 }

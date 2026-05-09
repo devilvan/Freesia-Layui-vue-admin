@@ -1,6 +1,7 @@
 package com.freesia.account.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.hutool.http.HttpStatus;
 import com.freesia.account.converter.AccountReportConverter;
 import com.freesia.account.dto.AccountReportDto;
 import com.freesia.account.entity.FindPageAccountReportEntity;
@@ -15,6 +16,7 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.util.UEmpty;
+import com.freesia.util.UMessage;
 import com.freesia.util.UString;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -170,6 +172,17 @@ public class AccountReportController extends BaseController {
         recalculateReportScheduler.recalculateWeekReport();
         recalculateReportScheduler.recalculateMonthReport();
         recalculateReportScheduler.recalculateYearReport();
+        return R.ok();
+    }
+
+    @Operation(summary = "更新预算金额")
+    @PostMapping(value = "updateBudgetAmount")
+    public R<Void> updateBudgetAmount(@RequestBody AccountReportVo accountReportVo) {
+        Long budgetId = accountReportVo.getBudgetId();
+        if (budgetId == null) {
+            return R.failed(HttpStatus.HTTP_INTERNAL_ERROR, UMessage.message("budget.id.required"));
+        }
+        accountReportService.updateBudgetAmount(accountReportVo);
         return R.ok();
     }
 }

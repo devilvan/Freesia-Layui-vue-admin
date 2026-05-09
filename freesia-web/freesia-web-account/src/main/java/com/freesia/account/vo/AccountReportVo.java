@@ -6,11 +6,13 @@ import com.freesia.vo.BaseVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -20,6 +22,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "记账报表表 值对象")
 public class AccountReportVo extends BaseVo {
     @Schema(description = "备注")
@@ -65,4 +68,6 @@ public class AccountReportVo extends BaseVo {
     @Schema(description = "报表时间范围（查询）")
     @JsonAlias(value = {"billingTimeRange"})
     private String billingTimeRange;
+    @Schema(description = "ID")
+    private List<Long> idList;
 }

@@ -152,6 +152,7 @@
     </lay-card>
     <div style="padding: 20px" v-esc-close="toCancel">
       <lay-table
+          ref="tableRef"
           v-model:selected-keys="selectedKeys"
           :columns="columns"
           :data-source="dataSource"
@@ -166,6 +167,12 @@
         <template v-slot:toolbar>
           <lay-button size="sm" type="normal" @click="change()">查询</lay-button>
           <lay-button size="sm" @click="toResetReport()">重置</lay-button>
+          <lay-button border="green" border-style="dashed" size="xs" @click="doUpdateBudgetAmount()">
+            更新报表预算金额
+          </lay-button>
+          <lay-button border="red" border-style="dashed" size="xs" @click="doUpdateAllBudgetAmount()">
+            更新所有报表预算金额
+          </lay-button>
         </template>
       </lay-table>
     </div>
@@ -186,7 +193,7 @@ import {SysDictValueEntity} from "@/types/system/Dict";
 import {findAccountBudget, saveUpdate} from "@/api/account/AccountBudget";
 import {layer} from "@layui/layui-vue";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
-import {findAccountReport, findPageAccountReport} from "@/api/account/AccountReport";
+import {findAccountReport, findPageAccountReport, updateBudgetAmount} from "@/api/account/AccountReport";
 import {R, TableResult} from "@/types/Result";
 import {AccountReportEntity, AccountReportVo} from "@/types/account/AccountReport";
 import {PageQuery} from "@/types/Common";
@@ -196,6 +203,8 @@ import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/uti
 import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
 import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
 import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
+import {Operate} from "@/types/Constants";
+import {refreshCache} from "@/api/account/Account";
 
 const props = defineProps({
   title: {
@@ -252,6 +261,7 @@ const pageQuery = reactive<PageQuery>({
 })
 const columns = ref<TableColumn[]>([])
 const defaultColumns: TableColumn[] = [
+  {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '预算类型', width: '130px', key: 'budgetType', customSlot: 'budgetType'},
   {title: '开始时间', width: '130px', key: 'billingTimeFrom'},
   {title: '结束时间', width: '130px', key: 'billingTimeTo'},
@@ -266,6 +276,7 @@ const loading = ref(false)
 const evenFlag = ref(true)
 const dateRangeDefaultTime = ['00:00:00', '23:59:59'];
 const defaultToolbar = ref<TableDefaultToolbar[]>([])
+const tableRef = ref()
 /*VAR*/
 
 /*FUNCTION*/
@@ -277,6 +288,7 @@ const change = () => {
   setTimeout(() => {
     loadDataSource()
     loading.value = false
+    selectedKeys.value = []
   }, 200)
 }
 
@@ -312,6 +324,7 @@ function doBuildColumn() {
           tempColumns.push(buildItem(item, sysColumnHeader))
         })
         columns.value = [
+          {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
           ...tempColumns,
         ];
         if (sysColumnHeaderEntity.id != null) {
@@ -373,6 +386,7 @@ function doFindAccountReport(item: EchartCapacityOptionEntity) {
  */
 function toReset() {
   saveFormRef.value.reset();
+  selectedKeys.value = []
 }
 
 function toResetReport() {
@@ -395,6 +409,76 @@ function saveBudgetTypeChange(value: any) {
     saveAccountBudgetVo.value.durationFrom = null;
     saveAccountBudgetVo.value.durationTo = null;
   }
+}
+
+function doUpdateBudgetAmount() {
+  let checkDataList = tableRef.value.getCheckData();
+  if (!searchQuery.value.budgetId) {
+    return;
+  }
+  if (!checkDataList || checkDataList.length < 1) {
+    layer.msg('请选择数据')
+    return;
+  }
+  layer.confirm('确定更新选择报表的预算金额吗？', {
+    btn: [
+      {
+        text: '确定',
+        callback: () => {
+          let params: AccountReportVo = {
+            budgetId: searchQuery.value.budgetId,
+            idList: checkDataList.map((item: AccountReportEntity) => item.id)
+          }
+          updateBudgetAmount(params).then((res: any) => {
+            if (res.code === 200) {
+              selectedKeys.value = []
+              layer.msg('更新成功！', {icon: 1, time: 1000})
+              change()
+            }
+          })
+          layer.closeAll()
+        }
+      },
+      {
+        text: '取消',
+        callback: (id) => {
+          layer.close(id)
+        }
+      }
+    ]
+  })
+}
+
+function doUpdateAllBudgetAmount() {
+  if (!searchQuery.value.budgetId) {
+    return;
+  }
+  layer.confirm('确定更新所有报表的预算金额吗？', {
+    btn: [
+      {
+        text: '确定',
+        callback: () => {
+          let params: AccountReportVo = {
+            budgetId: searchQuery.value.budgetId,
+          }
+          updateBudgetAmount(params).then((res: any) => {
+            if (res.code === 200) {
+              selectedKeys.value = []
+              layer.msg('更新成功！', {icon: 1, time: 1000})
+              change()
+            }
+          })
+          layer.closeAll()
+        }
+      },
+      {
+        text: '取消',
+        callback: (id) => {
+          layer.close(id)
+        }
+      }
+    ]
+  })
 }
 
 /*FUNCTION*/

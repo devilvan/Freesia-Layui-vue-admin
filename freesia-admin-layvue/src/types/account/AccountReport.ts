@@ -13,14 +13,15 @@ export interface AccountReportVo extends BaseVo {
     billingTimeFrom?: string;
     billingTimeTo?: string;
     recalculateFlag?: boolean;
-    billingTimeRange?: Array<string>
+    billingTimeRange?: Array<string>;
+    idList?: Array<string>;
 }
 
 export interface AccountReportEntity extends BaseEntity {
     remark?: string;
-    userId?: number;
-    budgetId?: number;
-    strategyId?: number;
+    userId?: string;
+    budgetId?: string;
+    strategyId?: string;
     title?: string;
     budgetType?: string;
     outlay?: number;
