@@ -20,4 +20,32 @@
           AND acua.COST_ID = #{dto.costId}
         ORDER BY acua.ID
     </select>
+    <select id="findCollected" resultType="com.freesia.account.dto.RpFindAllocAmountDto$Alloc">
+        SELECT COLLECTED.ID,
+               COLLECTED.USER_ID,
+               COLLECTED.AMOUNT,
+               U.NICK_NAME,
+               AC.PAYMENT_TIME,
+               AC.COST_DESC,
+               AC.REMARK
+        FROM account_cost_user_alloc COLLECTED
+                 LEFT JOIN SYS_USER U ON U.ID = COLLECTED.USER_ID AND COLLECTED.ALLOC_FLAG = 0
+                 LEFT JOIN ACCOUNT_COST AC ON AC.ID = COLLECTED.COST_ID
+        where COLLECTED.LOGIC_DEL = 0
+          AND COLLECTED.USER_ID <![CDATA[<>]]> #{userId}
+          AND COLLECTED.ALLOC_FLAG = 0
+    </select>
+    <select id="findAllocated" resultType="com.freesia.account.dto.RpFindAllocAmountDto$Alloc">
+        SELECT ALLOCATED.ID,
+               ALLOCATED.USER_ID,
+               ALLOCATED.AMOUNT,
+               AC.PAYMENT_TIME,
+               AC.COST_DESC,
+               AC.REMARK
+        FROM account_cost_user_alloc ALLOCATED
+                 LEFT JOIN ACCOUNT_COST AC ON AC.ID = ALLOCATED.COST_ID
+        where ALLOCATED.LOGIC_DEL = 0
+          AND ALLOCATED.USER_ID = #{userId}
+          AND ALLOCATED.ALLOC_FLAG = 0
+    </select>
 </mapper>

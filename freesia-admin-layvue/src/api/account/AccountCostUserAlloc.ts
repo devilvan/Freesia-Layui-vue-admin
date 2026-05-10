@@ -2,7 +2,11 @@ import Http from "../Http";
 import {PageQuery} from "@/types/Common";
 import {R, TableResult} from "@/types/Result";
 import {buildPageUrlParam, buildUrlParam} from "@/util/URequest";
-import {AccountCostUserAllocEntity, AccountCostUserAllocVo} from "@/types/account/AccountCostUserAlloc";
+import {
+    AccountCostUserAllocEntity,
+    AccountCostUserAllocVo,
+    RpFindAllocAmountDto
+} from "@/types/account/AccountCostUserAlloc";
 import {FindPageSysUserListEntity} from "@/types/system/User";
 
 export function saveUpdate(accountCostUserAllocVo: AccountCostUserAllocVo) {
@@ -27,16 +31,20 @@ export function deleteAccountCostUserAlloc(idList: Array<string>) {
     return Http.post("/api/accountCostUserAllocController/deleteAccountCostUserAlloc", idList);
 }
 
-export function findListSysUserById(idList: string[]) : Promise<R<FindPageSysUserListEntity[]>>{
+export function findListSysUserById(idList: string[]): Promise<R<FindPageSysUserListEntity[]>> {
     let params = {
         idList: idList
     };
     return Http.get('/api/accountCostUserAllocController/findListSysUserById', params)
 }
 
-export function findListAllocByCostId(costId: string) : Promise<R<AccountCostUserAllocEntity[]>>{
+export function findListAllocByCostId(costId: string): Promise<R<AccountCostUserAllocEntity[]>> {
     let params = {
         costId: costId
     };
     return Http.get('/api/accountCostUserAllocController/findListAllocByCostId', params)
+}
+
+export function findAllocAmount(): Promise<R<RpFindAllocAmountDto>> {
+    return Http.post('/api/accountCostUserAllocController/findAllocAmount')
 }

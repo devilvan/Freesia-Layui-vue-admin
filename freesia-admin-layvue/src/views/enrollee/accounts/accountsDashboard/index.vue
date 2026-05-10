@@ -23,7 +23,7 @@
         <CostTypeRatePie/>
       </lay-col>
       <lay-col md="12">
-        <AccountBudget :dataSource="echartCapacityOptionEntityList"/>
+        <BudgetCapacity :dataSource="echartCapacityOptionEntityList"/>
       </lay-col>
     </lay-row>
     <lay-row :space="20">
@@ -49,19 +49,21 @@
 import CostTypeRatePie from "./CostTypeRatePie.vue";
 import CostCountCalendarNearYear from "./CostCountCalendarNearYear.vue";
 import CostLine from "./CostLine.vue";
-import AccountBudget from "./BudgetCapacity.vue";
+import BudgetCapacity from "./BudgetCapacity.vue";
 import BudgetStatistic from "@/views/enrollee/accounts/accountsDashboard/BudgetStatistic.vue";
 import RankStackHorizontal from "@/views/enrollee/accounts/accountsDashboard/RankStackHorizontal.vue";
+import TextDashboard from "@/views/enrollee/accounts/accountsDashboard/TextDashboard.vue";
 
 export default {
   name: "Accounts",
   components: {
-    AccountBudget,
+    BudgetCapacity,
     CostLine,
     CostCountCalendarNearYear,
     CostTypeRatePie,
     BudgetStatistic,
-    RankStackHorizontal
+    RankStackHorizontal,
+    TextDashboard
   },
 };
 </script>
@@ -69,11 +71,9 @@ export default {
 import {onBeforeUnmount, onMounted, ref} from 'vue'
 import {findBudgetCapacity} from "@/api/account/AccountBudget";
 import {AccountBudgetVo, EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
-import {defaultShortcuts} from "@/util/UDate";
 import {useAccountCostStore} from "@/store/accountCost";
 import {refreshCache} from "@/api/account/Account";
 import {layer} from "@layui/layui-vue";
-import {cancelAssignUser} from "@/api/system/Role";
 
 /*INIT*/
 onMounted(() => {
@@ -132,6 +132,7 @@ function doRefreshCache() {
 function closeRefreshConfirm() {
   layer.closeAll();
 }
+
 /*FUNCTION*/
 
 

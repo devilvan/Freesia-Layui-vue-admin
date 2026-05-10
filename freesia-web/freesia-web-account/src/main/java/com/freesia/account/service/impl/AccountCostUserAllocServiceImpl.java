@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.freesia.account.converter.AccountCostUserAllocConverter;
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindListSysUserByIdDto;
+import com.freesia.account.dto.RpFindAllocAmountDto;
 import com.freesia.account.mapper.AccountCostUserAllocMapper;
 import com.freesia.account.po.AccountCostUserAllocPo;
 import com.freesia.account.repository.AccountCostUserAllocRepository;
@@ -13,6 +14,7 @@ import com.freesia.account.vo.AccountCostUserAllocVo;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.entity.FindPageSysUserListEntity;
+import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysUserService;
 import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
@@ -90,5 +92,27 @@ public class AccountCostUserAllocServiceImpl extends BaseServiceImpl<AccountCost
     @Override
     public void deleteAccountCostUserAllocByCostId(List<Long> costIdList) {
         accountCostUserAllocRepository.deleteAccountCostUserAllocByCostId(costIdList);
+    }
+
+    @Override
+    public RpFindAllocAmountDto findAllocAmount() {
+        RpFindAllocAmountDto rpFindAllocAmountDto = new RpFindAllocAmountDto();
+        AccountCostUserAllocPo accountCostUserAllocPo = new AccountCostUserAllocPo();
+        accountCostUserAllocPo.setUserId(USecurity.getUserId());
+        // 他人未分摊
+        List<RpFindAllocAmountDto.Alloc> collectedList = accountCostUserAllocMapper.findCollected(accountCostUserAllocPo);
+        if (UEmpty.isNotEmpty(collectedList)) {
+            for (RpFindAllocAmountDto.Alloc alloc : collectedList) {
+                rpFindAllocAmountDto.addCollected(alloc);
+            }
+        }
+        // 本人未分摊
+        List<RpFindAllocAmountDto.Alloc> allocatedList = accountCostUserAllocMapper.findAllocated(accountCostUserAllocPo);
+        if (UEmpty.isNotEmpty(allocatedList)) {
+            for (RpFindAllocAmountDto.Alloc alloc : allocatedList) {
+                rpFindAllocAmountDto.addAllocated(alloc);
+            }
+        }
+        return rpFindAllocAmountDto;
     }
 }

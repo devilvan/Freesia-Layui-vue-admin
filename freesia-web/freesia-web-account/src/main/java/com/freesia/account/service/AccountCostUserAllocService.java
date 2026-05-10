@@ -2,6 +2,7 @@ package com.freesia.account.service;
 
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindListSysUserByIdDto;
+import com.freesia.account.dto.RpFindAllocAmountDto;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -75,4 +76,11 @@ public interface AccountCostUserAllocService {
      * @param costIdList 记账ID
      */
     void deleteAccountCostUserAllocByCostId(List<Long> costIdList);
+
+    /**
+     * 查询分摊金额（包括本人未分摊、他人未分摊）
+     *
+     * @return 分摊金额
+     */
+    RpFindAllocAmountDto findAllocAmount();
 }

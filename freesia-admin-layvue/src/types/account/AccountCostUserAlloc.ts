@@ -15,3 +15,20 @@ export interface AccountCostUserAllocEntity extends BaseEntity {
     operateTime?: Date;
     allocFlag?: boolean;
 }
+
+export interface RpFindAllocAmountDto {
+    collected?: Array<Alloc>;
+    totalCollected?: number;
+    allocated?: Array<Alloc>;
+    totalAllocated?: number;
+}
+
+export interface Alloc {
+    id?: number;
+    userId?: string;
+    nickName?: string;
+    amount?: number;
+    operateTime?: Date;
+    costDesc?: string;
+    remark?: string;
+}

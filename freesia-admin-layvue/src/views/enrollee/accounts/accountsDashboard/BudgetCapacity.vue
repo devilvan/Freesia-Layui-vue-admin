@@ -1,5 +1,6 @@
 <template>
   <lay-card shadow="hover">
+    <TextDashboard title="面板信息"/>
     <template #title>{{ props.title }}</template>
     <lay-row :space="20">
       <lay-col>
@@ -19,6 +20,7 @@ import {ref, watch} from "vue";
 import * as echarts from "echarts";
 import {AccountBudgetVo} from "@/types/account/AccountBudget";
 import {EchartCapacityOptionEntity} from "@/types/account/AccountBudget";
+import TextDashboard from "@/views/enrollee/accounts/accountsDashboard/TextDashboard.vue";
 
 const props = defineProps({
   title: {

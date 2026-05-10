@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.account.converter.AccountCostUserAllocConverter;
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindListSysUserByIdDto;
+import com.freesia.account.dto.RpFindAllocAmountDto;
 import com.freesia.account.service.AccountCostUserAllocService;
 import com.freesia.account.vo.AccountCostUserAllocVo;
 import com.freesia.constant.MenuPermission;
@@ -102,7 +103,7 @@ public class AccountCostUserAllocController extends BaseController {
     }
 
     @Operation(summary = "新增费用分摊-根据分摊用户ID查询用户信息")
-    @GetMapping("findListSysUserById")
+    @GetMapping(value = "findListSysUserById")
     @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
     public R<List<FindListSysUserByIdDto>> findListSysUserById(@RequestParam(value = "idList") List<Long> idList) {
         SysUserDto sysUserDto = new SysUserDto();
@@ -112,11 +113,18 @@ public class AccountCostUserAllocController extends BaseController {
     }
 
     @Operation(summary = "修改费用分摊-根据记账ID查询分摊信息")
-    @GetMapping("findListAllocByCostId")
+    @GetMapping(value = "findListAllocByCostId")
     public R<List<FindListSysUserByIdDto>> findListAllocByCostId(@RequestParam(value = "costId") Long costId) {
         AccountCostUserAllocDto accountCostUserAllocDto = new AccountCostUserAllocDto();
         accountCostUserAllocDto.setCostId(costId);
         List<FindListSysUserByIdDto> list = accountCostUserAllocService.findListAllocByCostId(accountCostUserAllocDto);
         return R.ok(list);
+    }
+
+    @Operation(summary = "查询分摊金额（包括本人未分摊、他人未分摊）")
+    @PostMapping(value = "findAllocAmount")
+    public R<RpFindAllocAmountDto> findAllocAmount() {
+        RpFindAllocAmountDto dto = accountCostUserAllocService.findAllocAmount();
+        return R.ok(dto);
     }
 }
