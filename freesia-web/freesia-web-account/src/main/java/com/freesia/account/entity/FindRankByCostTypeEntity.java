@@ -31,4 +31,6 @@ public class FindRankByCostTypeEntity extends BaseEntity {
     private String weekStart;
     @Schema(description = "周结束时间")
     private String weekEnd;
+    @Schema(description = "开销标识")
+    private String paymentSign;
 }

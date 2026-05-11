@@ -47,6 +47,7 @@ import com.freesia.sse.constant.SseTopic;
 import com.freesia.sse.dto.SseMessageDto;
 import com.freesia.sse.util.USse;
 import com.freesia.util.*;
+import groovy.lang.Tuple3;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -334,10 +335,10 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
     @Override
     public EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto) {
         String cacheKey = "findRankByCostType:" + findRankByCostTypeDto.getUserId() + "@" + findRankByCostTypeDto.getTenantId() + "@" + findRankByCostTypeDto.getDateScope();
-        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
-        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
-            return echartStackedHorizontalBarOptionEntity;
-        }
+//        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
+//        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
+//            return echartStackedHorizontalBarOptionEntity;
+//        }
         String dateScope = findRankByCostTypeDto.getDateScope();
         List<FindRankByCostTypeEntity> findRankByCostTypeEntityList;
         EchartStackedHorizontalBarOptionEntity entity = null;
@@ -348,9 +349,9 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
             findRankByCostTypeEntityList = accountCostMapper.findMonthRankByCostType(findRankByCostTypeDto);
             entity = buildMonthEchartStackedHorizontalBarOptionEntity(Optional.ofNullable(findRankByCostTypeEntityList).orElseGet(ArrayList::new));
         }
-        if (UEmpty.isNotNull(entity)) {
-            URedis.set(cacheKey, entity, Duration.ofHours(4));
-        }
+//        if (UEmpty.isNotNull(entity)) {
+//            URedis.set(cacheKey, entity, Duration.ofHours(4));
+//        }
         return entity;
     }
 
@@ -626,23 +627,32 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
 
     private List<EchartStackedHorizontalBarOptionEntity.Series> buildSortedSeries(Map<String, List<FindRankByCostTypeEntity>> groupingByDateSignMapList) {
         Set<Map.Entry<String, List<FindRankByCostTypeEntity>>> entrySet = groupingByDateSignMapList.entrySet();
-        Map<String, List<BigDecimal>> resultMap = new HashMap<>(16);
+        List<Tuple3<String, List<BigDecimal>, String>> tuple3List = new ArrayList<>();
         for (Map.Entry<String, List<FindRankByCostTypeEntity>> entry : entrySet) {
             List<FindRankByCostTypeEntity> groupingDateSignList = entry.getValue();
             int size = entrySet.size();
             for (FindRankByCostTypeEntity item : groupingDateSignList) {
-                resultMap.computeIfAbsent(item.getCostType(), e -> {
-                    List<BigDecimal> list = new ArrayList<>(size);
-                    for (int i = 0; i < size; i++) {
-                        list.add(i, null);
-                    }
-                    return list;
-                }).set(item.getRk() - 1, item.getOutlay().setScale(2, RoundingMode.FLOOR));
+                List<BigDecimal> list = new ArrayList<>(size);
+                for (int i = 0; i < size; i++) {
+                    list.add(i, null);
+                }
+                Tuple3<String, List<BigDecimal>, String> tuple3 = new Tuple3<>(item.getCostType(), list, item.getPaymentSign());
+                tuple3List.add(tuple3);
+                if (tuple3.getV1().equals(item.getCostType())) {
+                    tuple3.getV2().set(item.getRk() - 1, item.getOutlay().setScale(2, RoundingMode.FLOOR));
+                }
+//                resultMap.computeIfAbsent(item.getCostType(), e -> {
+//                    List<BigDecimal> list = new ArrayList<>(size);
+//                    for (int i = 0; i < size; i++) {
+//                        list.add(i, null);
+//                    }
+//                    return list;
+//                }).set(item.getRk() - 1, item.getOutlay().setScale(2, RoundingMode.FLOOR));
             }
         }
         List<EchartStackedHorizontalBarOptionEntity.Series> seriesList = new ArrayList<>();
-        resultMap.forEach((k, v) -> {
-            EchartStackedHorizontalBarOptionEntity.Series series = new EchartStackedHorizontalBarOptionEntity.Series(k, v);
+        tuple3List.forEach(tuple3 -> {
+            EchartStackedHorizontalBarOptionEntity.Series series = new EchartStackedHorizontalBarOptionEntity.Series(tuple3.getV1(), tuple3.getV2(), tuple3.getV3());
             seriesList.add(series);
         });
         return seriesList.stream().sorted(Comparator.comparing(item -> item.getValue().stream().filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add))).collect(Collectors.toList());

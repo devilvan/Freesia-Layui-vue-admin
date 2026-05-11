@@ -21,7 +21,7 @@ import {onBeforeUnmount, onMounted, ref} from "vue";
 import {
   DateScope,
   EchartStackedHorizontalBarOptionEntity,
-  FindRankByCostTypeVo
+  FindRankByCostTypeVo, PaymentSign
 } from "@/types/account/Account";
 import * as echarts from "echarts";
 import {findRankByCostType} from "@/api/account/Account";
@@ -85,17 +85,32 @@ function doFindCostRank() {
       seriesData.value = echartStackedHorizontalBarOptionEntity?.series || [];
       yAxisData.value = echartStackedHorizontalBarOptionEntity?.yAxis || [];
       let series = echartStackedHorizontalBarOptionEntity?.series?.map(item => {
-        return {
-          name: item.name,
-          type: 'bar',
-          stack: 'total',
-          label: {
-            show: false
-          },
-          emphasis: {
-            focus: 'series'
-          },
-          data: item.value
+        if (PaymentSign.EXPENSES === item.stack) {
+          return {
+            name: item.name,
+            type: 'bar',
+            stack: 'expenses',
+            label: {
+              show: false
+            },
+            emphasis: {
+              focus: 'series'
+            },
+            data: item.value
+          }
+        } else if (PaymentSign.INCOME === item.stack) {
+          return {
+            name: item.name,
+            type: 'bar',
+            stack: 'income',
+            label: {
+              show: false
+            },
+            emphasis: {
+              focus: 'series'
+            },
+            data: item.value
+          }
         }
       })
       let option = {

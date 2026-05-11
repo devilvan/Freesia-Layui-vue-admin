@@ -583,7 +583,8 @@
         T.DATE_SIGN,
         T.WEEK_START,
         T.WEEK_END,
-        DENSE_RANK() OVER (ORDER BY T.WEEK_START DESC ) AS RK
+        DENSE_RANK() OVER (ORDER BY T.WEEK_START DESC ) AS RK,
+        T.PAYMENT_SIGN
         FROM (SELECT AC.COST_TYPE,
         AC.COST_DESC,
         CONCAT(year(AC.PAYMENT_TIME), 'WK', LPAD(WEEK(AC.PAYMENT_TIME, 1), 2, '0')) as DATE_SIGN,
@@ -593,13 +594,14 @@
         STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ),
         INTERVAL 6 DAY
         ) AS WEEK_END,
-        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        AC.PAYMENT_SIGN
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
-        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.PAYMENT_SIGN IN ('EXPENSES', 'INCOME')
         <if test="accountCostDto.tenantId != null">
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
@@ -619,12 +621,13 @@
         STR_TO_DATE( CONCAT( YEAR ( AC.PAYMENT_TIME ), '-', WEEK ( AC.PAYMENT_TIME, 1 ), '-1' ), '%x-%v-%w' ),
         INTERVAL 6 DAY
         ) AS WEEK_END,
-        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        AC.PAYMENT_SIGN
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
-        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.PAYMENT_SIGN IN ('EXPENSES', 'INCOME')
         <if test="accountCostDto.tenantId != null">
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
@@ -642,17 +645,19 @@
         T.COST_DESC,
         SUM(T.OUTLAY) AS OUTLAY,
         T.DATE_SIGN,
-        DENSE_RANK() OVER (ORDER BY T.DATE_SIGN DESC ) AS RK
+        DENSE_RANK() OVER (ORDER BY T.DATE_SIGN DESC ) AS RK,
+        T.PAYMENT_SIGN
         FROM (SELECT AC.COST_TYPE,
         AC.COST_DESC,
         DATE_FORMAT(AC.PAYMENT_TIME, '%y%m') AS DATE_SIGN,
-        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        AC.PAYMENT_SIGN
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
         AND AC.LOGIC_DEL = 0
-        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.PAYMENT_SIGN IN ('EXPENSES', 'INCOME')
         <if test="accountCostDto.tenantId != null">
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>
@@ -665,12 +670,13 @@
         SELECT AC.COST_TYPE,
         AC.COST_DESC,
         DATE_FORMAT(AC.PAYMENT_TIME, '%y%m') AS DATE_SIGN,
-        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY
+        IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        AC.PAYMENT_SIGN
         FROM account_cost AC
         LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
         WHERE 1 = 1
-        AND AC.PAYMENT_SIGN = 'EXPENSES'
+        AND AC.PAYMENT_SIGN IN ('EXPENSES', 'INCOME')
         <if test="accountCostDto.tenantId != null">
             AND AC.TENANT_ID = #{accountCostDto.tenantId}
         </if>

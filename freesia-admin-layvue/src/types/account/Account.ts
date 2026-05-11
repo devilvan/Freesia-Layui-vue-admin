@@ -97,7 +97,11 @@ interface Series {
     /**
      * 值
      */
-    value?: number[]
+    value?: number[],
+    /**
+     * 栈
+     */
+    stack?: string,
 }
 
 

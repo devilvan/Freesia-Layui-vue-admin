@@ -40,6 +40,10 @@ public class EchartStackedHorizontalBarOptionEntity {
          * 值
          */
         private List<BigDecimal> value;
+        /**
+         * 堆叠组
+         */
+        private String stack;
     }
 
 }
