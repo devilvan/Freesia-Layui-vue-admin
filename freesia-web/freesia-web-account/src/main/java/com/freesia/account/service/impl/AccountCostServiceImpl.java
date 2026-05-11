@@ -335,10 +335,10 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
     @Override
     public EchartStackedHorizontalBarOptionEntity findRankByCostType(FindRankByCostTypeDto findRankByCostTypeDto) {
         String cacheKey = "findRankByCostType:" + findRankByCostTypeDto.getUserId() + "@" + findRankByCostTypeDto.getTenantId() + "@" + findRankByCostTypeDto.getDateScope();
-//        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
-//        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
-//            return echartStackedHorizontalBarOptionEntity;
-//        }
+        EchartStackedHorizontalBarOptionEntity echartStackedHorizontalBarOptionEntity = URedis.get(cacheKey);
+        if (UEmpty.isNotNull(echartStackedHorizontalBarOptionEntity)) {
+            return echartStackedHorizontalBarOptionEntity;
+        }
         String dateScope = findRankByCostTypeDto.getDateScope();
         List<FindRankByCostTypeEntity> findRankByCostTypeEntityList;
         EchartStackedHorizontalBarOptionEntity entity = null;
@@ -349,9 +349,9 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
             findRankByCostTypeEntityList = accountCostMapper.findMonthRankByCostType(findRankByCostTypeDto);
             entity = buildMonthEchartStackedHorizontalBarOptionEntity(Optional.ofNullable(findRankByCostTypeEntityList).orElseGet(ArrayList::new));
         }
-//        if (UEmpty.isNotNull(entity)) {
-//            URedis.set(cacheKey, entity, Duration.ofHours(4));
-//        }
+        if (UEmpty.isNotNull(entity)) {
+            URedis.set(cacheKey, entity, Duration.ofHours(4));
+        }
         return entity;
     }
 
@@ -641,13 +641,6 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
                 if (tuple3.getV1().equals(item.getCostType())) {
                     tuple3.getV2().set(item.getRk() - 1, item.getOutlay().setScale(2, RoundingMode.FLOOR));
                 }
-//                resultMap.computeIfAbsent(item.getCostType(), e -> {
-//                    List<BigDecimal> list = new ArrayList<>(size);
-//                    for (int i = 0; i < size; i++) {
-//                        list.add(i, null);
-//                    }
-//                    return list;
-//                }).set(item.getRk() - 1, item.getOutlay().setScale(2, RoundingMode.FLOOR));
             }
         }
         List<EchartStackedHorizontalBarOptionEntity.Series> seriesList = new ArrayList<>();
