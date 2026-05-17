@@ -105,11 +105,11 @@ class Http {
                     const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
                     const matches = filenameRegex.exec(contentDisposition);
                     if (matches != null && matches[1]) {
-                        let filename = matches[1].replace(/['"]/g, '');
+                        fileName = matches[1].replace(/['"]/g, '');
                         // 处理UTF-8编码的文件名
-                        if (filename.includes('%')) {
+                        if (fileName.includes('%')) {
                             try {
-                                filename = decodeURIComponent(filename);
+                                fileName = decodeURIComponent(fileName);
                             } catch (e) {
                                 layer.confirm('Error decoding filename: ' + e, {icon: 3});
                             }

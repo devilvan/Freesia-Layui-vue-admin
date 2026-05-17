@@ -242,7 +242,7 @@ public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssVo, S
         sysOssDto = Optional.of(sysOssDto).orElseThrow(() -> new OssException("oss.file.not.found", new Object[]{id}));
         // 设置响应体选项
         String originalName = sysOssDto.getOriginalName();
-        UOssFile.setAttachmentResponseHeader(response, originalName);
+        UOssFile.setAttachmentResponseHeader(response, sysOssDto.getFileName());
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE + ";charset=UTF-8");
         OssHandler ossHandler = OssFactory.getInstance(sysOssDto.getService());
         InputStream inputStream = ossHandler.getObjectContent(ossHandler.convertEndpoint2Domain(sysOssDto.getUrl()));
