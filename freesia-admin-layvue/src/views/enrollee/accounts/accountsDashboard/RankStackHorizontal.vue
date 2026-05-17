@@ -85,36 +85,21 @@ function doFindCostRank() {
       seriesData.value = echartStackedHorizontalBarOptionEntity?.series || [];
       yAxisData.value = echartStackedHorizontalBarOptionEntity?.yAxis || [];
       let series = echartStackedHorizontalBarOptionEntity?.series?.map(item => {
-        if (PaymentSign.EXPENSES === item.stack) {
-          return {
-            name: item.name,
-            type: 'bar',
-            stack: 'expenses',
-            label: {
-              show: false
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: item.value,
-            paymentSign: PaymentSign.EXPENSES
-          }
-        } else if (PaymentSign.INCOME === item.stack) {
-          return {
-            name: item.name,
-            type: 'bar',
-            stack: 'income',
-            label: {
-              show: false
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: item.value,
-            paymentSign: PaymentSign.INCOME
-          }
+        let stack = item.stack === PaymentSign.INCOME ? PaymentSign.INCOME : PaymentSign.EXPENSES;
+        return {
+          name: item.name,
+          type: 'bar',
+          stack: stack,
+          label: {
+            show: false
+          },
+          emphasis: {
+            focus: 'series'
+          },
+          data: item.value,
+          paymentSign: PaymentSign.EXPENSES
         }
-      })
+      }) || []
       let option = {
         tooltip: {
           trigger: 'axis',
@@ -124,13 +109,13 @@ function doFindCostRank() {
           },
           formatter: function (params: any, ticket: string, callback: (ticket: string, html: string) => {}) {
             params = params.filter((item: any) => item.value);
-            
+
             const isHoveringOnBar = currentHoverSeriesIndex.value !== null && currentHoverDataIndex.value !== null;
-            
+
             if (isHoveringOnBar) {
-              const hoveredItem = params.find((p: any) => 
-                p.seriesIndex === currentHoverSeriesIndex.value && 
-                p.dataIndex === currentHoverDataIndex.value
+              const hoveredItem = params.find((p: any) =>
+                  p.seriesIndex === currentHoverSeriesIndex.value &&
+                  p.dataIndex === currentHoverDataIndex.value
               );
               if (hoveredItem) {
                 const hoveredSeries = series.find((s: any, idx: number) => idx === hoveredItem.seriesIndex);
@@ -143,12 +128,12 @@ function doFindCostRank() {
                 }
               }
             }
-            
             params = params.sort((i1: any, i2: any) => i2.value - i1.value);
-            
             let out = `<div style="width: 200px;font-size: 12pt">${params[0]?.axisValue}</div></br>`;
-            
             if (isHoveringOnBar) {
+              const hoveredSeries = series.find((s: any, idx: number) => idx === currentHoverSeriesIndex.value);
+              const amountLabel = hoveredSeries?.stack === PaymentSign.EXPENSES ? '支出金额' : '收入金额';
+              out += `<div style="width: 200px;font-size: 12pt">${amountLabel}</div></br>`;
               let totalAmount = params.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value, 0);
               params.forEach((item: any) => {
                 const percent = ((item.data / totalAmount) * 100).toFixed(2);
@@ -159,25 +144,23 @@ function doFindCostRank() {
                           <span style="border-radius:10px;font-weight:bold;color:${item.color}">(${percent}%)</span>
                         </div>`
               })
-              const hoveredSeries = series.find((s: any, idx: number) => idx === currentHoverSeriesIndex.value);
-              const amountLabel = hoveredSeries?.stack === 'expenses' ? '支出金额' : '收入金额';
               out += `</br><div style="font-weight:bold">${amountLabel}：${totalAmount.toFixed(2)}元</div>`;
             } else {
               const expensesParams = params.filter((p: any) => {
                 const pSeries = series.find((s: any, idx: number) => idx === p.seriesIndex);
-                return pSeries && pSeries.stack === 'expenses';
+                return pSeries && pSeries.stack === PaymentSign.EXPENSES;
               });
               const incomeParams = params.filter((p: any) => {
                 const pSeries = series.find((s: any, idx: number) => idx === p.seriesIndex);
-                return pSeries && pSeries.stack === 'income';
+                return pSeries && pSeries.stack === PaymentSign.INCOME;
               });
-              
+
               const expensesTotal = expensesParams.reduce((acc: any, curr: any) => acc + curr.value, 0);
               const incomeTotal = incomeParams.reduce((acc: any, curr: any) => acc + curr.value, 0);
-              
+
               params.forEach((item: any) => {
                 const pSeries = series.find((s: any, idx: number) => idx === item.seriesIndex);
-                const totalAmount = pSeries?.stack === 'expenses' ? expensesTotal : incomeTotal;
+                const totalAmount = pSeries?.stack === PaymentSign.EXPENSES ? expensesTotal : incomeTotal;
                 const percent = totalAmount > 0 ? ((item.data / totalAmount) * 100).toFixed(2) : '0.00';
                 out += `<div>${item.marker} ${item.seriesName}：
                           <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${item.color}">${item.data?.toFixed(2)}</span>
@@ -187,7 +170,7 @@ function doFindCostRank() {
               out += `</br><div style="font-weight:bold">支出金额：${expensesTotal.toFixed(2)}元</div>`;
               out += `<div style="font-weight:bold">收入金额：${incomeTotal.toFixed(2)}元</div>`;
             }
-            
+
             return out;
           }
         },
