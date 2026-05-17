@@ -598,8 +598,8 @@ const filterManualRef = ref(null);
 const title = ref('新增')
 const pageQuery = reactive<PageQuery>({
   current: 1,
-  limit: 10,
-  limits: [10, 20, 50, 100],
+  limit: 50,
+  limits: [10, 20, 50, 100, 200],
   hideOnSinglePage: false,
   layout: ['count', 'prev', 'page', 'next', 'limits', 'refresh', 'skip'],
 })

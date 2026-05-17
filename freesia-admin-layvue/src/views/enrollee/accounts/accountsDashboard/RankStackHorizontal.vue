@@ -1,10 +1,10 @@
 <template>
   <lay-card>
     <lay-tab type="brief" v-model="currentIndex" @change="doFindCostRank">
-      <lay-tab-item title="周消费排名" id="0">
+      <lay-tab-item title="周收支排名" id="0">
         <div ref="weekCostRankRef" style="height: 600px"></div>
       </lay-tab-item>
-      <lay-tab-item title="月消费排名" id="1">
+      <lay-tab-item title="月收支排名" id="1">
         <div ref="monthCostRankRef" style="height: 600px"></div>
       </lay-tab-item>
     </lay-tab>
@@ -129,11 +129,11 @@ function doFindCostRank() {
               }
             }
             params = params.sort((i1: any, i2: any) => i2.value - i1.value);
-            let out = `<div style="width: 200px;font-size: 12pt">${params[0]?.axisValue}</div></br>`;
+            let out = `<div style="width: 200px;font-size: 12pt">${params[0]?.axisValue}</div>`;
             if (isHoveringOnBar) {
               const hoveredSeries = series.find((s: any, idx: number) => idx === currentHoverSeriesIndex.value);
               const amountLabel = hoveredSeries?.stack === PaymentSign.EXPENSES ? '支出金额' : '收入金额';
-              out += `<div style="width: 200px;font-size: 12pt">${amountLabel}</div></br>`;
+              out += `<div style="width: 200px;font-size: 10pt;font-weight: bold">${amountLabel}</div></br>`;
               let totalAmount = params.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value, 0);
               params.forEach((item: any) => {
                 const percent = ((item.data / totalAmount) * 100).toFixed(2);
