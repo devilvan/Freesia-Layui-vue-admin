@@ -96,7 +96,8 @@ function doFindCostRank() {
             emphasis: {
               focus: 'series'
             },
-            data: item.value
+            data: item.value,
+            paymentSign: PaymentSign.EXPENSES
           }
         } else if (PaymentSign.INCOME === item.stack) {
           return {
@@ -109,7 +110,8 @@ function doFindCostRank() {
             emphasis: {
               focus: 'series'
             },
-            data: item.value
+            data: item.value,
+            paymentSign: PaymentSign.INCOME
           }
         }
       })
@@ -121,19 +123,71 @@ function doFindCostRank() {
             animation: true,
           },
           formatter: function (params: any, ticket: string, callback: (ticket: string, html: string) => {}) {
-            params = params.filter((item: any) => item.value).sort((i1: any, i2: any) => i2.value - i1.value)
+            params = params.filter((item: any) => item.value);
+            
+            const isHoveringOnBar = currentHoverSeriesIndex.value !== null && currentHoverDataIndex.value !== null;
+            
+            if (isHoveringOnBar) {
+              const hoveredItem = params.find((p: any) => 
+                p.seriesIndex === currentHoverSeriesIndex.value && 
+                p.dataIndex === currentHoverDataIndex.value
+              );
+              if (hoveredItem) {
+                const hoveredSeries = series.find((s: any, idx: number) => idx === hoveredItem.seriesIndex);
+                if (hoveredSeries && hoveredSeries.stack) {
+                  const targetStack = hoveredSeries.stack;
+                  params = params.filter((p: any) => {
+                    const pSeries = series.find((s: any, idx: number) => idx === p.seriesIndex);
+                    return pSeries && pSeries.stack === targetStack;
+                  });
+                }
+              }
+            }
+            
+            params = params.sort((i1: any, i2: any) => i2.value - i1.value);
+            
             let out = `<div style="width: 200px;font-size: 12pt">${params[0]?.axisValue}</div></br>`;
-            let totalAmount = params.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value, 0);
-            params.forEach((item: any) => {
-              const percent = ((item.data / totalAmount) * 100).toFixed(2);
-              const isHighlighted = currentHoverSeriesIndex.value === item.seriesIndex && currentHoverDataIndex.value === item.dataIndex;
-              const borderStyle = isHighlighted ? `border: 2px solid ${item.color}; padding: 2px 4px; border-radius: 4px; margin: 2px 0; background-color: rgba(${hexToRgb(item.color)}, 0.1);` : '';
-              out += `<div style="${borderStyle}">${item.marker} ${item.seriesName}：
-                        <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${item.color}">${item.data?.toFixed(2)}</span>
-                        <span style="border-radius:10px;font-weight:bold;color:${item.color}">(${percent}%)</span>
-                      </div>`
-            })
-            out += `</br><div style="font-weight:bold">总金额：${totalAmount.toFixed(2)}元</div>`
+            
+            if (isHoveringOnBar) {
+              let totalAmount = params.reduce((accumulator: any, currentValue: any) => accumulator + currentValue.value, 0);
+              params.forEach((item: any) => {
+                const percent = ((item.data / totalAmount) * 100).toFixed(2);
+                const isHighlighted = currentHoverSeriesIndex.value === item.seriesIndex && currentHoverDataIndex.value === item.dataIndex;
+                const borderStyle = isHighlighted ? `border: 2px solid ${item.color}; padding: 2px 4px; border-radius: 4px; margin: 2px 0; background-color: rgba(${hexToRgb(item.color)}, 0.1);` : '';
+                out += `<div style="${borderStyle}">${item.marker} ${item.seriesName}：
+                          <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${item.color}">${item.data?.toFixed(2)}</span>
+                          <span style="border-radius:10px;font-weight:bold;color:${item.color}">(${percent}%)</span>
+                        </div>`
+              })
+              const hoveredSeries = series.find((s: any, idx: number) => idx === currentHoverSeriesIndex.value);
+              const amountLabel = hoveredSeries?.stack === 'expenses' ? '支出金额' : '收入金额';
+              out += `</br><div style="font-weight:bold">${amountLabel}：${totalAmount.toFixed(2)}元</div>`;
+            } else {
+              const expensesParams = params.filter((p: any) => {
+                const pSeries = series.find((s: any, idx: number) => idx === p.seriesIndex);
+                return pSeries && pSeries.stack === 'expenses';
+              });
+              const incomeParams = params.filter((p: any) => {
+                const pSeries = series.find((s: any, idx: number) => idx === p.seriesIndex);
+                return pSeries && pSeries.stack === 'income';
+              });
+              
+              const expensesTotal = expensesParams.reduce((acc: any, curr: any) => acc + curr.value, 0);
+              const incomeTotal = incomeParams.reduce((acc: any, curr: any) => acc + curr.value, 0);
+              
+              params.forEach((item: any) => {
+                const pSeries = series.find((s: any, idx: number) => idx === item.seriesIndex);
+                const totalAmount = pSeries?.stack === 'expenses' ? expensesTotal : incomeTotal;
+                const percent = totalAmount > 0 ? ((item.data / totalAmount) * 100).toFixed(2) : '0.00';
+                out += `<div>${item.marker} ${item.seriesName}：
+                          <span style="display:inline-block;margin-left:4px;margin-right:2px;border-radius:10px;font-weight:bold;color:${item.color}">${item.data?.toFixed(2)}</span>
+                          <span style="border-radius:10px;font-weight:bold;color:${item.color}">(${percent}%)</span>
+                        </div>`
+              })
+              out += `</br><div style="font-weight:bold">支出金额：${expensesTotal.toFixed(2)}元</div>`;
+              out += `<div style="font-weight:bold">收入金额：${incomeTotal.toFixed(2)}元</div>`;
+            }
+            
             return out;
           }
         },
