@@ -170,6 +170,9 @@
               <lay-icon style="font-size: 14pt" type="layui-icon-gitee" title="Gitee码云" @click="toGitee"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
+              <lay-icon style="font-size: 14pt" type="layui-icon-github" title="Github" @click="toGithub"></lay-icon>
+            </lay-menu-item>
+            <lay-menu-item>
               <lay-icon style="font-size: 14pt" type="layui-icon-read" title="接口文档" @click="toDoc"></lay-icon>
             </lay-menu-item>
             <lay-menu-item>
@@ -373,6 +376,10 @@ export default {
       window.open(import.meta.env.VITE_APP_GITEE_PATH, "_blank");
     }
 
+    function toGithub() {
+      window.open(import.meta.env.VITE_APP_GITHUB_PATH, "_blank");
+    }
+
     function resolveImgPath(imgPath: string) {
       if (!imgPath || imgPath == '') {
         return;
@@ -452,6 +459,7 @@ export default {
       changeTenantSelect,
       toDoc,
       toGitee,
+      toGithub,
       resolveImgPath,
       initSse,
       bootstrapImageUrl,
