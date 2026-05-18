@@ -1,6 +1,6 @@
 <template>
   <lay-row>
-    <lay-col :md="8">
+    <lay-col :md="12">
       <lay-tooltip trigger="hover">
         <scan class="allocContent">
           <lay-icon type="layui-icon-add-circle"/>
@@ -19,7 +19,7 @@
         </template>
       </lay-tooltip>
     </lay-col>
-    <lay-col :md="8">
+    <lay-col :md="12">
       <lay-tooltip trigger="hover">
         <scan class="allocContent">
           <lay-icon type="layui-icon-reduce-circle"/>
@@ -38,6 +38,23 @@
         </template>
       </lay-tooltip>
     </lay-col>
+  </lay-row>
+  <lay-row>
+    <scan class="allocContent">
+      <lay-icon type="layui-icon-rmb"/>
+      总金额：￥{{ dataSource.totalCollected - dataSource.totalAllocated }}
+    </scan>
+    <template #content>
+      <div class="hoverTable">
+        <lay-table
+            ref="collectedTableRef"
+            :columns="collectedColumns"
+            :data-source="dataSource.collected"
+            :default-toolbar="false"
+            :even="true">
+        </lay-table>
+      </div>
+    </template>
   </lay-row>
 </template>
 <script lang="ts">
