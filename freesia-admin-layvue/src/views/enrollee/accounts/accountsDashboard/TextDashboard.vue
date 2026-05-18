@@ -42,7 +42,7 @@
   <lay-row>
     <scan class="allocContent">
       <lay-icon type="layui-icon-rmb"/>
-      总金额：￥{{ dataSource.totalCollected - dataSource.totalAllocated }}
+      总金额：￥{{ (dataSource.totalCollected - dataSource.totalAllocated).toFixed(2) }}
     </scan>
     <template #content>
       <div class="hoverTable">
