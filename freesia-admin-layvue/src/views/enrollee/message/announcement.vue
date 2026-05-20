@@ -126,6 +126,7 @@ import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
 
 /*INIT*/
 onMounted(async () => {
+  doBuildColumn();
   sysNoticeTypeSelect.value = await loadSysDictValue(Constants.SYS_NOTICE_TYPE)
   sysNoticeTypeSelectList.value = await sysDictValueSelect(sysNoticeTypeSelect.value)
   setTimeout(() => {

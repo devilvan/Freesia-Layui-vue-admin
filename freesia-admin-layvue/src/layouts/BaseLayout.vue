@@ -195,7 +195,7 @@
               </lay-dropdown>
             </lay-menu-item>
             <lay-menu-item @click="changeVisible">
-              <lay-icon style="font-size: 14pt" type="layui-icon-more-vertical"></lay-icon>
+              <lay-icon style="font-size: 14pt" type="layui-icon-set"></lay-icon>
             </lay-menu-item>
           </lay-menu>
         </lay-header>
