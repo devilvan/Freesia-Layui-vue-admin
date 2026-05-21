@@ -59,6 +59,14 @@ public class SysLoginController extends BaseController {
     }
 
     @SaIgnore
+    @Operation(summary = "微信登录")
+    @PostMapping("wxLogin")
+    public R<Map<String, Object>> wxLogin(@Valid @RequestBody WxLoginDto wxLoginDto) {
+        Map<String, Object> result = sysLoginService.wxLogin(wxLoginDto);
+        return R.ok(result);
+    }
+
+    @SaIgnore
     @Operation(summary = "客户端登出")
     @PostMapping("sysLogOut")
     public R<Void> sysLogOut() {

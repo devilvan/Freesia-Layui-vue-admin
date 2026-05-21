@@ -5,18 +5,21 @@ import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
-import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.constant.*;
+import com.freesia.dto.SysClientDto;
+import com.freesia.dto.SysThirdpartyAuthDto;
+import com.freesia.dto.SysUserDto;
+import com.freesia.dto.WxLoginDto;
 import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.net.util.UServlet;
-import com.freesia.service.SysNoticeService;
 import com.freesia.po.SysDeptPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.po.SysUserPo;
 import com.freesia.properties.LoginPasswordProperties;
 import com.freesia.redis.util.URedis;
+import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.satoken.constant.DeviceType;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.model.SysRoleModel;
@@ -51,6 +54,8 @@ public class SysLoginServiceImpl implements SysLoginService {
     private final SysRoleService sysRoleService;
     private final SysMenuService sysMenuService;
     private final SysNoticeService sysNoticeService;
+    private final SysThirdpartyAuthService sysThirdpartyAuthService;
+    private final SysClientService sysClientService;
 
 
     @Override
@@ -87,6 +92,102 @@ public class SysLoginServiceImpl implements SysLoginService {
         // 20250930-Bliss 用户登录时检查是否生成用户未读的公告数据，无则生成
         sysNoticeService.checkSaveAnnouncement(userId);
         return StpUtil.getTokenValue();
+    }
+
+    @Override
+    public Map<String, Object> wxLogin(WxLoginDto wxLoginDto) {
+        String clientKey = wxLoginDto.getClientKey();
+        String clientSecret = wxLoginDto.getClientSecret();
+        validateClient(clientKey, clientSecret);
+        SysThirdpartyAuthDto queryDto = new SysThirdpartyAuthDto();
+        queryDto.setOpenId(wxLoginDto.getOpenId());
+        queryDto.setSource("WECHAT");
+        SysThirdpartyAuthDto existAuth = sysThirdpartyAuthService.findOne(queryDto);
+        SysUserPo sysUserPo;
+        if (ObjectUtil.isNull(existAuth)) {
+            sysUserPo = createUserByWxLogin(wxLoginDto);
+        } else {
+            String username = existAuth.getUserName();
+            sysUserPo = findByUsername(username);
+        }
+        updateThirdpartyAuth(wxLoginDto, sysUserPo.getUserName());
+        LoginUserModel loginUserModel = buildLoginUser(sysUserPo);
+        USecurity.loginByDevice(loginUserModel, DeviceType.PC);
+        recordWxLoginLog(sysUserPo.getUserName());
+        String token = StpUtil.getTokenValue();
+        String redirectUrl = wxLoginDto.getRedirectUrl();
+        if (UEmpty.isEmpty(redirectUrl)) {
+            redirectUrl = "/enrollee/accounts/accountsDashboard/index";
+        }
+        Map<String, Object> result = UCollection.optimizeInitialCapacityMap(2, UCollection.LOAD_FACTOR);
+        result.put(Constants.TOKEN, token);
+        result.put("redirectUrl", redirectUrl);
+        return result;
+    }
+
+    private void validateClient(String clientKey, String clientSecret) {
+        if (UEmpty.isEmpty(clientKey) || UEmpty.isEmpty(clientSecret)) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "client.key.secret.required");
+        }
+        SysClientDto sysClientDto = new SysClientDto();
+        sysClientDto.setClientKey(clientKey);
+        SysClientDto clientDto = sysClientService.findOne(sysClientDto);
+        if (ObjectUtil.isNull(clientDto)) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "client.not.found");
+        }
+        if (!clientSecret.equals(clientDto.getClientSecret())) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "client.secret.mismatch");
+        }
+    }
+
+    private SysUserPo createUserByWxLogin(WxLoginDto wxLoginDto) {
+        SysUserDto sysUserDto = new SysUserDto();
+        String generatedUsername = "wx_" + wxLoginDto.getOpenId();
+        sysUserDto.setUserName(generatedUsername);
+        sysUserDto.setNickName(wxLoginDto.getNickName());
+        sysUserDto.setAvatar(wxLoginDto.getAvatar());
+        boolean registered = sysUserService.register(sysUserDto);
+        if (!registered) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "wx.user.register.failed");
+        }
+        return sysUserService.findByUsername(generatedUsername);
+    }
+
+    private void updateThirdpartyAuth(WxLoginDto wxLoginDto, String username) {
+        SysThirdpartyAuthDto queryDto = new SysThirdpartyAuthDto();
+        queryDto.setOpenId(wxLoginDto.getOpenId());
+        queryDto.setSource("WECHAT");
+        SysThirdpartyAuthDto existAuth = sysThirdpartyAuthService.findOne(queryDto);
+        SysThirdpartyAuthDto authDto = new SysThirdpartyAuthDto();
+        authDto.setAuthId("WECHAT_" + wxLoginDto.getOpenId());
+        authDto.setSource("WECHAT");
+        authDto.setOpenId(wxLoginDto.getOpenId());
+        authDto.setUnionId(wxLoginDto.getUnionId());
+        authDto.setUserName(username);
+        authDto.setNickName(wxLoginDto.getNickName());
+        authDto.setAvatar(wxLoginDto.getAvatar());
+        authDto.setAccessToken(wxLoginDto.getCode());
+        if (ObjectUtil.isNull(existAuth)) {
+            sysThirdpartyAuthService.saveUpdate(authDto);
+        } else {
+            authDto.setId(existAuth.getId());
+            sysThirdpartyAuthService.saveUpdate(authDto);
+        }
+    }
+
+    private void recordWxLoginLog(String username) {
+        SysSensitiveLogBean loginLogEvent = USecurity.recordSensitiveLog(sysSensitiveLogBean -> {
+            LoginUserModel loginUser = Optional.ofNullable(USecurity.getLoginUser()).orElseGet(LoginUserModel::new);
+            sysSensitiveLogBean.setBeOperatedId(loginUser.getUserId());
+            sysSensitiveLogBean.setBeOperatedName(username);
+            sysSensitiveLogBean.setModule(UserModule.USER_MANAGEMENT);
+            sysSensitiveLogBean.setSubModule(UserModule.SubModule.LOGIN);
+            sysSensitiveLogBean.setType(UserModule.SubModule.LOGIN);
+            sysSensitiveLogBean.setResult(FlagConstant.SUCCESS);
+            sysSensitiveLogBean.setRemark("微信登录成功");
+            return sysSensitiveLogBean;
+        });
+        USpring.context().publishEvent(loginLogEvent);
     }
 
     /**

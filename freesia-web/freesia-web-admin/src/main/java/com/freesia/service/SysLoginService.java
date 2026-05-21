@@ -2,9 +2,11 @@ package com.freesia.service;
 
 
 import com.freesia.constant.LoginRetryType;
+import com.freesia.dto.WxLoginDto;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.po.SysUserPo;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -23,6 +25,14 @@ public interface SysLoginService {
      * @return 返回登录成功后生成的token
      */
     String login(String username, String password, String code, String captchaKey);
+
+    /**
+     * 微信登录验证
+     *
+     * @param wxLoginDto 微信登录信息
+     * @return 返回登录成功后生成的信息，包含token和重定向URL
+     */
+    Map<String, Object> wxLogin(WxLoginDto wxLoginDto);
 
     /**
      * 构建登录用户模型
