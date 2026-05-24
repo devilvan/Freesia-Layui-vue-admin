@@ -7,11 +7,15 @@ interface UserInfo {
   avatar?: string
   roles?: string[]
   permissions?: string[]
+  deptId?: string
+  deptName?: string
 }
 
 const state = reactive({
   token: uni.getStorageSync('token') || '',
-  userInfo: {} as UserInfo
+  userInfo: {} as UserInfo,
+  noticeCount: 0,
+  announcementCount: 0
 })
 
 export function useUserStore() {
@@ -37,8 +41,8 @@ export function useUserStore() {
 
   const getInfo = async () => {
     try {
-      const { login: { getInfo } } = await import('@/api/Login')
-      const res = await getInfo()
+      const loginModule = await import('@/api/Login')
+      const res = await loginModule.getInfo()
       if (res.code === 200) {
         setUserInfo(res.data)
         return res.data
@@ -50,11 +54,15 @@ export function useUserStore() {
 
   const logout = async () => {
     try {
-      const { login: { logout } } = await import('@/api/Login')
-      await logout()
+      const loginModule = await import('@/api/Login')
+      await loginModule.logout()
+    } catch(e) {
+      // continue with local cleanup
     } finally {
       clearToken()
       clearUserInfo()
+      state.noticeCount = 0
+      state.announcementCount = 0
     }
   }
 

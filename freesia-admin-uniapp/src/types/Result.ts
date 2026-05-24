@@ -13,7 +13,9 @@ export interface PageResult<T = any> {
 
 export interface TableResult<T = any> {
   total: number
-  records: T[]
+  rows?: T[]
+  records?: T[]
   list?: T[]
   pageNum?: number
+  current?: number
 }

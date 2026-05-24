@@ -10,20 +10,76 @@
     {
       "path": "pages/enrollee/accounts/mine/index",
       "style": {
-        "navigationBarTitleText": "个人中心"
+        "navigationBarTitleText": "记账"
       }
     },
     {
-      "path": "pages/index/index",
+      "path": "pages/enrollee/accounts/accountsDashboard/index",
       "style": {
-        "navigationBarTitleText": "首页"
+        "navigationBarTitleText": "看板"
+      }
+    },
+    {
+      "path": "pages/enrollee/accounts/add/index",
+      "style": {
+        "navigationBarTitleText": "新增"
+      }
+    },
+    {
+      "path": "pages/enrollee/message/index",
+      "style": {
+        "navigationBarTitleText": "消息"
+      }
+    },
+    {
+      "path": "pages/enrollee/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的"
       }
     }
   ],
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#009688",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/enrollee/accounts/mine/index",
+        "text": "记账",
+        "iconPath": "static/tabbar/account.png",
+        "selectedIconPath": "static/tabbar/account-active.png"
+      },
+      {
+        "pagePath": "pages/enrollee/accounts/accountsDashboard/index",
+        "text": "看板",
+        "iconPath": "static/tabbar/dashboard.png",
+        "selectedIconPath": "static/tabbar/dashboard-active.png"
+      },
+      {
+        "pagePath": "pages/enrollee/accounts/add/index",
+        "text": "记一笔",
+        "iconPath": "static/tabbar/add.png",
+        "selectedIconPath": "static/tabbar/add-active.png"
+      },
+      {
+        "pagePath": "pages/enrollee/message/index",
+        "text": "消息",
+        "iconPath": "static/tabbar/message.png",
+        "selectedIconPath": "static/tabbar/message-active.png"
+      },
+      {
+        "pagePath": "pages/enrollee/profile/index",
+        "text": "我的",
+        "iconPath": "static/tabbar/profile.png",
+        "selectedIconPath": "static/tabbar/profile-active.png"
+      }
+    ]
+  },
   "globalStyle": {
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "white",
     "navigationBarTitleText": "Freesia-Admin",
-    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarBackgroundColor": "#009688",
     "backgroundColor": "#f5f5f5"
   }
 }

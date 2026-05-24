@@ -160,7 +160,7 @@ export default {
             uni.setStorageSync('token', res.data.token)
             uni.showToast({title: '登录成功', icon: 'success'})
             setTimeout(() => {
-              uni.redirectTo({url: '/pages/enrollee/accounts/mine/index'})
+              uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
             }, 1000)
           } else {
             uni.showToast({title: res.msg || '登录失败', icon: 'none'})
@@ -263,7 +263,7 @@ export default {
 
 .login-side {
   padding: 40rpx 30rpx;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, #009688 0%, #007a71 100%);
   text-align: center;
   background-image: url('/static/login/login-bg.svg');
   background-repeat: no-repeat;
@@ -318,7 +318,7 @@ export default {
 }
 
 .tab-item.active {
-  color: #1890ff;
+  color: #009688;
 }
 
 .tab-item.active::after {
@@ -329,7 +329,7 @@ export default {
   transform: translateX(-50%);
   width: 60rpx;
   height: 4rpx;
-  background: #1890ff;
+  background: #009688;
   border-radius: 2rpx;
 }
 
@@ -360,7 +360,7 @@ export default {
 }
 
 .input-wrap:focus-within {
-  border-color: #1890ff;
+  border-color: #009688;
 }
 
 .input-icon {
@@ -414,7 +414,7 @@ export default {
 .login-btn {
   width: 100%;
   height: 88rpx;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, #009688 0%, #007a71 100%);
   color: #fff;
   border: none;
   border-radius: 8rpx;
@@ -468,7 +468,7 @@ export default {
   justify-content: center;
   gap: 8rpx;
   font-size: 26rpx;
-  color: #1890ff;
+  color: #009688;
 }
 
 .refresh-icon {
