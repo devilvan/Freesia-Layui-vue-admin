@@ -1,5 +1,16 @@
 <template>
   <view class="page-wrap">
+    <!-- 租户选择器 -->
+    <view class="tenant-bar" v-if="tenantList.length > 1">
+      <text class="tenant-label">当前账本：</text>
+      <picker mode="selector" :range="tenantNames" @change="onTenantChange" :value="currentTenantIndex">
+        <view class="tenant-picker">
+          <text>{{ currentTenantName }}</text>
+          <text class="arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+
     <!-- 搜索栏 -->
     <view class="search-bar">
       <view class="search-input-wrap">
@@ -222,6 +233,7 @@
 import {ref, reactive, onMounted, computed} from 'vue'
 import {findPageAccountCost, saveUpdate, deleteAccountCost, findListSelectCostType} from '@/api/account/Account'
 import {findPageSysUserWithoutDataScope} from '@/api/system/User'
+import {useUserStore} from '@/store/user'
 
 let _triggerAdd = null
 
@@ -257,6 +269,18 @@ export default {
       accountCostUserIdList: [], accountCostUserNameList: []
     })
 
+    const userStore = useUserStore()
+    const tenantList = computed(() => userStore.state.sysTenantDtoList || [])
+    const tenantNames = computed(() => tenantList.value.map(t => t.name || ''))
+    const currentTenantName = computed(() => {
+      const found = tenantList.value.find(t => t.id === userStore.state.currentTenantId)
+      return found ? found.name : (tenantList.value[0]?.name || '默认账本')
+    })
+    const currentTenantIndex = computed(() => {
+      const idx = tenantList.value.findIndex(t => t.id === userStore.state.currentTenantId)
+      return idx >= 0 ? idx : 0
+    })
+
     const typeOptions = ref([])
     const typeRange = computed(() => ['全部类型', ...typeOptions.value])
     const signOptions = ref([{label: '支出', value: 'EXPENSES'}, {label: '收入', value: 'INCOME'}])
@@ -289,6 +313,17 @@ export default {
     }
 
     const toggleAllTenant = () => { allTenantFlag.value = !allTenantFlag.value; toSearch() }
+
+    // 租户切换
+    const onTenantChange = (e) => {
+      const idx = e.detail.value
+      const tenant = tenantList.value[idx]
+      if (tenant && tenant.id) {
+        userStore.setCurrentTenant(tenant.id)
+        // 切换租户后刷新页面（模拟PC端的 window.location.reload）
+        doFindPageAccountCost()
+      }
+    }
     const toSearch = () => { pageQuery.current = 1; doFindPageAccountCost() }
 
     const queryFormReset = () => {
@@ -516,9 +551,10 @@ export default {
       searchQuery, pageQuery, pagination, dataSource,
       loading, showModal, operate, accountCostVo, typeOptions, typeRange,
       signOptions, signRange, allTenantFlag,
+      tenantList, tenantNames, currentTenantName, currentTenantIndex,
       toSearch, queryFormReset, prevPage, nextPage,
       onRowTap, showExpenseModal, closeModal,
-      submitForm, confirmDelete,
+      submitForm, confirmDelete, onTenantChange,
       onTypeChange, onSignChange, onStartDateChange, onEndDateChange,
       onFormTypeChange, onFormDateChange,
       formatDate, formatMoney, getRowStyle, toggleAllTenant,
@@ -534,6 +570,35 @@ export default {
 .page-wrap {
   min-height: 100vh;
   padding-bottom: 120rpx;
+}
+
+/* 租户选择栏 */
+.tenant-bar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  background: #fff;
+  gap: 16rpx;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tenant-label {
+  font-size: 26rpx;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.tenant-picker {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 8rpx 20rpx;
+  background: rgba(0, 150, 136, 0.08);
+  border: 1px solid rgba(0, 150, 136, 0.3);
+  border-radius: 4rpx;
+  font-size: 26rpx;
+  color: #009688;
+  font-weight: 500;
 }
 
 .filter-row {
@@ -561,7 +626,7 @@ export default {
 }
 
 .modal-input {
-  max-height: 60rpx;
+  max-height: 120rpx;
   max-width: 100%;
   box-sizing: border-box;
   width: 100%;

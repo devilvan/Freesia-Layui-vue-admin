@@ -101,6 +101,7 @@ import {login, findCaptchaEnabled} from '@/api/Login'
 import {getCaptchaCode} from '@/api/captcha/Captcha'
 import {loginQrcode} from '@/api/module/commone'
 import {useCryptStore} from '@/store/crypt'
+import {useUserStore} from '@/store/user'
 
 export default {
   data() {
@@ -154,10 +155,13 @@ export default {
         }
         const encryptedData = await cryptStore.encryptAes(loginData)
         const res = await login(encryptedData)
-        setTimeout(() => {
+        setTimeout(async () => {
           this.loging = false
           if (res.code === 200) {
             uni.setStorageSync('token', res.data.token)
+            // 加载用户信息以获取租户列表
+            const userStore = useUserStore()
+            await userStore.getInfo()
             uni.showToast({title: '登录成功', icon: 'success'})
             setTimeout(() => {
               uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})

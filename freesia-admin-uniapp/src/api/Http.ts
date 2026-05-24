@@ -18,6 +18,10 @@ class Http {
       if (token) {
         defaultHeader['Authorization'] = 'Bearer ' + token
       }
+      const tenantId = uni.getStorageSync('tenantId')
+      if (tenantId) {
+        defaultHeader['X-Tenant-Id'] = tenantId
+      }
       
       uni.request({
         url: baseURL + url,

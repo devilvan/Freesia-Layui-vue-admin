@@ -418,7 +418,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 500;
 }
 
 .lay-modal {
@@ -426,7 +426,6 @@ page {
   max-height: 80vh;
   background: #fff;
   border-radius: 4px;
-  overflow: hidden;
 }
 
 .lay-modal-header {
