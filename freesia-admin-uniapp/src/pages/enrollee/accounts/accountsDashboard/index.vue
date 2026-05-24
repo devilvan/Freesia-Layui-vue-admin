@@ -196,11 +196,15 @@ export default {
       try {
         const res = await findCostTypeRatePie({allTenantFlag: allTenantFlag.value})
         if (res.code === 200) {
-          // 接口返回格式可能是 {series: [{name, value}]} 或直接是数组
-          const data = res.data || []
-          const list = Array.isArray(data) ? data : (data.series || [])
-          pieList.value = list.filter(item => item.value > 0).sort((a, b) => (b.value || 0) - (a.value || 0))
-          pieTotal.value = pieList.value.reduce((sum, item) => sum + (item.value || 0), 0)
+          // 后端返回: { totalAmount: number, legends: string[], series: [{ name, value: string }] }
+          // value 是字符串，必须显式转 Number 否则 reduce 会做字符串拼接导致 NaN
+          const data = res.data
+          const rawSeries = data.series || []
+          pieList.value = rawSeries
+            .map(item => ({ name: item.name, value: Number(item.value) || 0 }))
+            .filter(item => item.value > 0)
+            .sort((a, b) => b.value - a.value)
+          pieTotal.value = data.totalAmount || pieList.value.reduce((sum, item) => sum + item.value, 0)
         }
       } catch (e) { console.error('加载分布失败', e) }
     }

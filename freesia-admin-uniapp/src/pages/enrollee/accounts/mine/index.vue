@@ -8,30 +8,11 @@
         <text v-if="searchQuery.costDesc" class="clear-icon" @click="searchQuery.costDesc = ''; toSearch()">✕</text>
       </view>
       <button class="lay-btn lay-btn-primary lay-btn-sm" @click="toSearch">查询</button>
+      <button class="lay-btn lay-btn-sm" @click="queryFormReset">重置</button>
     </view>
 
     <!-- 筛选区 -->
     <view class="lay-card">
-      <view class="filter-row">
-        <view class="filter-item">
-          <text class="lay-form-label">类型</text>
-          <picker mode="selector" :range="typeRange" @change="onTypeChange">
-            <view class="lay-select">
-              <text :class="{ placeholder: !searchQuery.costType }">{{ searchQuery.costType || '全部类型' }}</text>
-              <text class="arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="filter-item">
-          <text class="lay-form-label">标识</text>
-          <picker mode="selector" :range="signRange" range-key="label" @change="onSignChange">
-            <view class="lay-select">
-              <text :class="{ placeholder: !searchQuery.paymentSign }">{{ signRange.find(s => s.value === searchQuery.paymentSign)?.label || '全部标识' }}</text>
-              <text class="arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-      </view>
       <view class="filter-row">
         <view class="filter-item">
           <text class="lay-form-label">开始日期</text>
@@ -52,6 +33,26 @@
           </picker>
         </view>
       </view>
+      <view class="filter-row">
+        <view class="filter-item">
+          <text class="lay-form-label">类型</text>
+          <picker mode="selector" :range="typeRange" @change="onTypeChange">
+            <view class="lay-select">
+              <text :class="{ placeholder: !searchQuery.costType }">{{ searchQuery.costType || '全部类型' }}</text>
+              <text class="arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+        <view class="filter-item">
+          <text class="lay-form-label">标识</text>
+          <picker mode="selector" :range="signRange" range-key="label" @change="onSignChange">
+            <view class="lay-select">
+              <text :class="{ placeholder: !searchQuery.paymentSign }">{{ signRange.find(s => s.value === searchQuery.paymentSign)?.label || '全部标识' }}</text>
+              <text class="arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+      </view>
       <!-- 多租户开关 -->
       <view class="flex-row align-center justify-between" style="margin-top: 10rpx">
         <text class="text-muted" style="font-size: 24rpx">统计所有账本</text>
@@ -59,19 +60,16 @@
           <view class="lay-switch" :class="{ active: allTenantFlag }" @click="toggleAllTenant"></view>
         </view>
       </view>
-      <view class="lay-btn-group mt-sm">
-        <button class="lay-btn lay-btn-sm lay-btn-primary" @click="toSearch">筛选</button>
-        <button class="lay-btn lay-btn-sm" @click="queryFormReset">重置</button>
-      </view>
     </view>
 
     <!-- 数据表格 -->
     <view class="lay-card" style="padding: 0">
       <view class="lay-table-header">
-        <view class="lay-table-th" style="width: 100rpx">图标</view>
-        <view class="lay-table-th" style="flex: 1; text-align: left">类型</view>
+        <view class="lay-table-th" style="width: 60rpx">图标</view>
+        <view class="lay-table-th" style="width: 100rpx">类型</view>
         <view class="lay-table-th" style="width: 150rpx">金额</view>
-        <view class="lay-table-th" style="width: 180rpx">时间</view>
+        <view class="lay-table-th" style="width: 150rpx">时间</view>
+        <view class="lay-table-th" style="width: 150rpx">备注</view>
       </view>
 
       <view v-if="loading" class="lay-empty"><text class="empty-text">加载中...</text></view>
@@ -82,11 +80,11 @@
       <view v-else v-for="(row, index) in dataSource" :key="row.id"
             class="lay-table-row" :class="{ stripe: index % 2 === 0 }"
             :style="getRowStyle(row)" @click="onRowTap(row)">
-        <view class="lay-table-td" style="width: 100rpx">
+        <view class="lay-table-td" style="width: 60rpx">
           <image v-if="row.icon" :src="row.icon" mode="aspectFit" style="width: 52rpx; height: 52rpx; border-radius: 8rpx"/>
           <text v-else class="text-muted">--</text>
         </view>
-        <view class="lay-table-td" style="flex: 1; text-align: left">
+        <view class="lay-table-td" style="width: 100rpx">
           <text class="ellipsis">{{ row.costType || '--' }}</text>
         </view>
         <view class="lay-table-td" style="width: 150rpx">
@@ -94,7 +92,8 @@
             {{ row.paymentSign === 'INCOME' ? '+' : '-' }}{{ formatMoney(row.outlay) }}
           </text>
         </view>
-        <view class="lay-table-td" style="width: 180rpx; font-size: 22rpx">{{ formatDate(row.paymentTime) }}</view>
+        <view class="lay-table-td" style="width: 150rpx; font-size: 22rpx">{{ formatDate(row.paymentTime) }}</view>
+        <view class="lay-table-td" style="width: 150rpx; font-size: 22rpx">{{ row.remark || '--' }}</view>
       </view>
     </view>
 
@@ -164,9 +163,9 @@
             <!-- 关联用户 -->
             <view class="lay-form-item">
               <text class="lay-form-label">关联用户</text>
-              <view class="flex-row align-center gap-sm" style="flex-wrap: wrap">
+              <view>
                 <button class="lay-btn lay-btn-sm lay-btn-normal" @click="openUserPicker">选择用户</button>
-                <text v-if="selectedUserTags.length === 0" class="text-muted" style="font-size:24rpx">可选择多人进行费用分摊</text>
+                <text v-if="selectedUserTags.length === 0" class="text-muted" style="margin-left: 12rpx; font-size:24rpx">可选择多人进行费用分摊</text>
               </view>
               <view v-if="selectedUserTags.length > 0" class="user-tags">
                 <view v-for="(tag, idx) in selectedUserTags" :key="idx" class="user-tag-item">
@@ -550,7 +549,7 @@ export default {
 /* 弹窗内输入框宽度约束 */
 .lay-modal-expense {
   width: 88%;
-  max-height: 85vh;
+  max-height: 100vh;
   background: #fff;
   border-radius: 4px;
   display: flex;
@@ -562,6 +561,7 @@ export default {
 }
 
 .modal-input {
+  max-height: 60rpx;
   max-width: 100%;
   box-sizing: border-box;
   width: 100%;
