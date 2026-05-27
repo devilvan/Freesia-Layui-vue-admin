@@ -22,7 +22,12 @@ const state = reactive({
   userInfo: {} as UserInfo,
   noticeCount: 0,
   announcementCount: 0,
-  sysTenantDtoList: [] as TenantItem[],
+  sysTenantDtoList: (() => {
+    try {
+      const stored = uni.getStorageSync('sysTenantDtoList')
+      return stored ? JSON.parse(stored) : []
+    } catch (e) { return [] }
+  })() as TenantItem[],
   currentTenantId: uni.getStorageSync('tenantId') || ''
 })
 
@@ -49,6 +54,7 @@ export function useUserStore() {
 
   const setTenantList = (list: TenantItem[]) => {
     state.sysTenantDtoList = list || []
+    uni.setStorageSync('sysTenantDtoList', JSON.stringify(list || []))
   }
 
   const setCurrentTenant = (tenantId: string) => {
@@ -92,6 +98,7 @@ export function useUserStore() {
       state.sysTenantDtoList = []
       state.currentTenantId = ''
       uni.removeStorageSync('tenantId')
+      uni.removeStorageSync('sysTenantDtoList')
     }
   }
 

@@ -86,3 +86,13 @@ export function findRankByCostType(findRankByCostTypeVo: any) {
 export function refreshCache(): Promise<any> {
     return Http.post("/api/accountCostController/refreshCache");
 }
+
+export function findListSysUserById(idList: string[]): Promise<R<any[]>> {
+    const params = { idList: idList };
+    return Http.get('/api/accountCostUserAllocController/findListSysUserById', params);
+}
+
+export function findListAllocByCostId(costId: string): Promise<R<any[]>> {
+    const params = { costId: costId };
+    return Http.get('/api/accountCostUserAllocController/findListAllocByCostId', params);
+}

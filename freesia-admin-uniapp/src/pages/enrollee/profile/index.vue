@@ -40,21 +40,21 @@
     <!-- 基本信息 -->
     <view class="lay-card" v-if="activeTab === 'baseInfo'">
       <view class="lay-form">
-        <view class="lay-form-item">
-          <text class="lay-form-label">用户名</text>
-          <input class="lay-input" :value="profile.userName" disabled
-                 style="background: #f5f5f5; color: #999"/>
-        </view>
+<!--        <view class="lay-form-item">-->
+<!--          <text class="lay-form-label">用户名</text>-->
+<!--          <input class="lay-input" :value="profile.userName" disabled-->
+<!--                 style="background: #f5f5f5; color: #999"/>-->
+<!--        </view>-->
         <view class="lay-form-item">
           <text class="lay-form-label required">昵称</text>
           <input class="lay-input" placeholder="请输入昵称" v-model="editForm.nickName"/>
         </view>
         <view class="lay-form-item">
           <text class="lay-form-label">性别</text>
-          <picker mode="selector" :range="genderRange" @change="onGenderChange">
+          <picker mode="selector" :range="genderRange" @change="onGenderChange" :value="genderIndex">
             <view class="lay-select">
               <text :class="{ placeholder: !editForm.gender }">
-                {{ editForm.gender || '请选择性别' }}
+                {{ genderDisplay || '请选择性别' }}
               </text>
               <text class="arrow">▼</text>
             </view>
@@ -109,10 +109,10 @@
 </template>
 
 <script>
-import {ref, reactive, onMounted} from 'vue'
+import {ref, reactive, onMounted, computed} from 'vue'
 import {findCurrentUserProfile, saveUserInfo} from '@/api/system/User'
 import {findDeptById} from '@/api/system/Dept'
-import {findListSysDictValue} from '@/api/system/Dict'
+import {findCacheSysDictValueList} from '@/api/system/Dict'
 import {useCryptStore} from '@/store/crypt'
 import {useUserStore} from '@/store/user'
 
@@ -172,12 +172,12 @@ export default {
 
     const loadGenders = async () => {
       try {
-        const res = await findListSysDictValue('sys_gender')
+        const res = await findCacheSysDictValueList('SYS_GENDER')
         if (res.code === 200 && res.data) {
           genderOptions.value = res.data
-          genderRange.value = ['请选择', ...res.data.map(d => d.dictLabel || d.label || '')]
+          genderRange.value = ['请选择', ...res.data.map(d => d.valueName || d.dictLabel || d.label || '')]
         }
-      } catch (e) { /* ignore */ }
+      } catch (e) { console.error('加载性别选项失败', e) }
     }
 
     const onGenderChange = (e) => {
@@ -185,9 +185,23 @@ export default {
       if (idx === 0) {
         editForm.gender = ''
       } else {
-        editForm.gender = genderOptions.value[idx - 1]?.dictValue || genderOptions.value[idx - 1]?.value || genderRange.value[idx]
+        editForm.gender = genderOptions.value[idx - 1]?.value || genderOptions.value[idx - 1]?.dictValue || genderRange.value[idx]
       }
     }
+
+    const genderIndex = computed(() => {
+      if (!editForm.gender) return 0
+      const idx = genderOptions.value.findIndex(d => (d.value || d.dictValue) === editForm.gender)
+      return idx >= 0 ? idx + 1 : 0
+    })
+    const genderDisplay = computed(() => {
+      if (!editForm.gender) return ''
+      const idx = genderOptions.value.findIndex(d => (d.value || d.dictValue) === editForm.gender)
+      if (idx >= 0) {
+        return genderOptions.value[idx]?.valueName || genderOptions.value[idx]?.dictLabel || genderOptions.value[idx]?.label || ''
+      }
+      return editForm.gender
+    })
 
     const submitProfile = async () => {
       if (!editForm.nickName) {
@@ -202,7 +216,8 @@ export default {
       uni.showLoading({title: '保存中...'})
       try {
         const payload = {
-          ...profile,
+          id: profile.id,
+          userName: profile.userName,
           nickName: editForm.nickName,
           gender: editForm.gender,
           telNo: editForm.telNo,
@@ -266,7 +281,7 @@ export default {
 
     return {
       userStore, activeTab, profile, editForm, deptName,
-      genderRange, bindingList,
+      genderRange, genderIndex, genderDisplay, bindingList,
       onGenderChange, submitProfile, resetForm,
       showAvatarUpload, doLogout
     }

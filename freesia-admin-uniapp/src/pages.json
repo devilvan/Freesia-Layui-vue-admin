@@ -47,32 +47,32 @@
       {
         "pagePath": "pages/enrollee/accounts/mine/index",
         "text": "记账",
-        "iconPath": "static/tabbar/account.png",
-        "selectedIconPath": "static/tabbar/account-active.png"
+        "iconPath": "static/tabbar/account.svg",
+        "selectedIconPath": "static/tabbar/account-active.svg"
       },
       {
         "pagePath": "pages/enrollee/accounts/accountsDashboard/index",
         "text": "看板",
-        "iconPath": "static/tabbar/dashboard.png",
-        "selectedIconPath": "static/tabbar/dashboard-active.png"
+        "iconPath": "static/tabbar/dashboard.svg",
+        "selectedIconPath": "static/tabbar/dashboard-active.svg"
       },
       {
         "pagePath": "pages/enrollee/accounts/add/index",
         "text": "记一笔",
-        "iconPath": "static/tabbar/add.png",
-        "selectedIconPath": "static/tabbar/add-active.png"
+        "iconPath": "static/tabbar/add.svg",
+        "selectedIconPath": "static/tabbar/add-active.svg"
       },
       {
         "pagePath": "pages/enrollee/message/index",
         "text": "消息",
-        "iconPath": "static/tabbar/message.png",
-        "selectedIconPath": "static/tabbar/message-active.png"
+        "iconPath": "static/tabbar/message.svg",
+        "selectedIconPath": "static/tabbar/message-active.svg"
       },
       {
         "pagePath": "pages/enrollee/profile/index",
         "text": "我的",
-        "iconPath": "static/tabbar/profile.png",
-        "selectedIconPath": "static/tabbar/profile-active.png"
+        "iconPath": "static/tabbar/profile.svg",
+        "selectedIconPath": "static/tabbar/profile-active.svg"
       }
     ]
   },

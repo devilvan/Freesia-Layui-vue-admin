@@ -1,7 +1,7 @@
 <template>
   <view class="page-wrap">
     <!-- 租户选择器 -->
-    <view class="tenant-bar" v-if="tenantList.length > 1">
+    <view class="tenant-bar">
       <text class="tenant-label">当前账本：</text>
       <picker mode="selector" :range="tenantNames" @change="onTenantChange" :value="currentTenantIndex">
         <view class="tenant-picker">
@@ -127,69 +127,137 @@
           <text class="lay-modal-close" @click="closeModal">✕</text>
         </view>
         <view class="lay-modal-body">
-          <view class="lay-form modal-form">
-            <view class="lay-form-item">
-              <text class="lay-form-label required">描述</text>
-              <input class="lay-input modal-input" placeholder="请输入描述" v-model="accountCostVo.costDesc"/>
+          <!-- 步骤指示器 -->
+          <view class="step-indicator" v-if="accountCostVo.accountCostUserIdList && accountCostVo.accountCostUserIdList.length > 0">
+            <view class="step-item" :class="{ active: addExpenseActive === 0, done: addExpenseActive > 0 }">
+              <view class="step-dot">1</view>
+              <text class="step-label">记账</text>
             </view>
-            <view class="lay-form-item">
-              <text class="lay-form-label required">金额</text>
-              <input class="lay-input modal-input" type="digit" placeholder="请输入金额" v-model="accountCostVo.outlay"/>
+            <view class="step-line" :class="{ done: addExpenseActive > 0 }"></view>
+            <view class="step-item" :class="{ active: addExpenseActive === 1 }">
+              <view class="step-dot">2</view>
+              <text class="step-label">分摊</text>
             </view>
-            <view class="lay-form-item">
-              <text class="lay-form-label">类型</text>
-              <picker mode="selector" :range="typeOptions" @change="onFormTypeChange">
-                <view class="lay-select modal-input">
-                  <text :class="{ placeholder: !accountCostVo.costType }">{{ accountCostVo.costType || '请选择类型' }}</text>
-                  <text class="arrow">▼</text>
+          </view>
+
+          <!-- 步骤一：记账 -->
+          <view v-show="addExpenseActive === 0">
+            <view class="lay-form modal-form">
+              <view class="lay-form-item">
+                <text class="lay-form-label required">描述</text>
+                <input class="lay-input modal-input" placeholder="请输入描述" v-model="accountCostVo.costDesc"
+                       @input="onCostDescInput"/>
+                <view v-if="showSuggestion && suggestionList.length > 0" class="suggestion-dropdown">
+                  <view v-for="item in suggestionList" :key="item.value" class="suggestion-item"
+                        @click="selectSuggestion(item)">
+                    <image v-if="item.iconUrl" :src="item.iconUrl" mode="aspectFit"
+                           style="width:36rpx;height:36rpx;border-radius:6rpx"/>
+                    <text style="flex:1;font-size:26rpx">{{ item.value }}</text>
+                  </view>
                 </view>
-              </picker>
-            </view>
-            <view class="lay-form-item">
-              <text class="lay-form-label required">标识</text>
-              <view class="lay-radio-group">
-                <view class="lay-radio" :class="{ active: accountCostVo.paymentSign === 'EXPENSES' }"
-                      @click="accountCostVo.paymentSign = 'EXPENSES'">
-                  <view class="radio-dot"></view><text>支出</text>
+              </view>
+              <view class="lay-form-item">
+                <text class="lay-form-label required">金额</text>
+                <input class="lay-input modal-input" type="digit" placeholder="请输入金额" v-model="accountCostVo.outlay"/>
+              </view>
+              <view class="lay-form-item">
+                <text class="lay-form-label required">图标</text>
+                <view class="icon-pick-row">
+                  <view class="icon-pick-box" @click="openIconGrid">
+                    <image v-if="accountCostVo.icon" :src="accountCostVo.icon" mode="aspectFit" class="icon-pick-img"/>
+                    <text v-else class="icon-pick-empty">?</text>
+                  </view>
+                  <text class="text-muted" style="font-size:24rpx">点击图标选择</text>
                 </view>
-                <view class="lay-radio" :class="{ active: accountCostVo.paymentSign === 'INCOME' }"
-                      @click="accountCostVo.paymentSign = 'INCOME'">
-                  <view class="radio-dot"></view><text>收入</text>
+              </view>
+              <view class="lay-form-item">
+                <text class="lay-form-label required">类型</text>
+                <picker mode="selector" :range="typeOptions" @change="onFormTypeChange">
+                  <view class="lay-select modal-input">
+                    <text :class="{ placeholder: !accountCostVo.costType }">{{ accountCostVo.costType || '请选择类型' }}</text>
+                    <text class="arrow">▼</text>
+                  </view>
+                </picker>
+              </view>
+              <view class="lay-form-item">
+                <text class="lay-form-label required">标识</text>
+                <view class="lay-radio-group">
+                  <view class="lay-radio" :class="{ active: accountCostVo.paymentSign === 'EXPENSES' }"
+                        @click="accountCostVo.paymentSign = 'EXPENSES'">
+                    <view class="radio-dot"></view><text>支出</text>
+                  </view>
+                  <view class="lay-radio" :class="{ active: accountCostVo.paymentSign === 'INCOME' }"
+                        @click="accountCostVo.paymentSign = 'INCOME'">
+                    <view class="radio-dot"></view><text>收入</text>
+                  </view>
+                </view>
+              </view>
+              <view class="lay-form-item">
+                <text class="lay-form-label required">时间</text>
+                <picker mode="date" :value="accountCostVo.paymentTimeStr" @change="onFormDateChange">
+                  <view class="lay-select modal-input">
+                    <text :class="{ placeholder: !accountCostVo.paymentTimeStr }">{{ accountCostVo.paymentTimeStr || '请选择时间' }}</text>
+                    <text class="arrow">▼</text>
+                  </view>
+                </picker>
+              </view>
+              <view class="lay-form-item">
+                <text class="lay-form-label">备注</text>
+                <textarea class="lay-textarea modal-input" placeholder="请输入备注" v-model="accountCostVo.remark"></textarea>
+              </view>
+              <!-- 关联用户 -->
+              <view class="lay-form-item">
+                <text class="lay-form-label">关联用户</text>
+                <view>
+                  <button class="lay-btn lay-btn-sm lay-btn-normal" @click="openUserPicker">选择用户</button>
+                  <text v-if="selectedUserTags.length === 0" class="text-muted" style="margin-left: 12rpx; font-size:24rpx">可选择多人进行费用分摊</text>
+                </view>
+                <view v-if="selectedUserTags.length > 0" class="user-tags">
+                  <view v-for="(tag, idx) in selectedUserTags" :key="idx" class="user-tag-item">
+                    <text>{{ tag }}</text>
+                    <text class="tag-close" @click="removeUserTag(idx)">✕</text>
+                  </view>
                 </view>
               </view>
             </view>
-            <view class="lay-form-item">
-              <text class="lay-form-label">时间</text>
-              <picker mode="date" :value="accountCostVo.paymentTimeStr" @change="onFormDateChange">
-                <view class="lay-select modal-input">
-                  <text :class="{ placeholder: !accountCostVo.paymentTimeStr }">{{ accountCostVo.paymentTimeStr || '请选择时间' }}</text>
-                  <text class="arrow">▼</text>
-                </view>
-              </picker>
+          </view>
+
+          <!-- 步骤二：分摊 -->
+          <view v-show="addExpenseActive === 1">
+            <view class="alloc-summary">
+              <text class="alloc-total-label">总金额：</text>
+              <text class="alloc-total-amount">¥{{ formatMoney(accountCostVo.outlay) }}</text>
             </view>
-            <view class="lay-form-item">
-              <text class="lay-form-label">备注</text>
-              <textarea class="lay-textarea modal-input" placeholder="请输入备注" v-model="accountCostVo.remark"></textarea>
-            </view>
-            <!-- 关联用户 -->
-            <view class="lay-form-item">
-              <text class="lay-form-label">关联用户</text>
-              <view>
-                <button class="lay-btn lay-btn-sm lay-btn-normal" @click="openUserPicker">选择用户</button>
-                <text v-if="selectedUserTags.length === 0" class="text-muted" style="margin-left: 12rpx; font-size:24rpx">可选择多人进行费用分摊</text>
-              </view>
-              <view v-if="selectedUserTags.length > 0" class="user-tags">
-                <view v-for="(tag, idx) in selectedUserTags" :key="idx" class="user-tag-item">
-                  <text>{{ tag }}</text>
-                  <text class="tag-close" @click="removeUserTag(idx)">✕</text>
+            <view class="alloc-hint">提示：若所有费用金额为0或不填写，则默认平分金额</view>
+            <view class="alloc-list">
+              <view v-for="(item, idx) in accountCostVo.accountCostUserAllocVoList" :key="idx" class="alloc-item">
+                <view class="alloc-user-info">
+                  <text class="alloc-user-name">{{ item.nickName || item.userName }}</text>
+                </view>
+                <view class="alloc-input-row">
+                  <text class="alloc-label">金额</text>
+                  <input class="lay-input alloc-amount-input" type="digit" v-model="item.amount" placeholder="0.00"/>
+                </view>
+                <view class="alloc-switch-row">
+                  <text class="alloc-label">已分摊</text>
+                  <view class="lay-switch-wrap" style="transform: scale(0.7)">
+                    <view class="lay-switch" :class="{ active: item.allocFlag }" @click="item.allocFlag = !item.allocFlag"></view>
+                  </view>
                 </view>
               </view>
+            </view>
+            <view style="margin-top: 16rpx">
+              <button class="lay-btn lay-btn-sm lay-btn-normal" @click="allocRetainAmount">分摊剩余金额</button>
             </view>
           </view>
         </view>
         <view class="lay-modal-footer">
           <button class="lay-btn lay-btn-sm" @click="closeModal">取消</button>
-          <button class="lay-btn lay-btn-sm lay-btn-primary" @click="submitForm">确认</button>
+          <button v-if="accountCostVo.accountCostUserIdList && accountCostVo.accountCostUserIdList.length > 0 && addExpenseActive === 0"
+                  class="lay-btn lay-btn-sm lay-btn-primary" @click="toNext">下一步</button>
+          <button v-if="addExpenseActive === 1" class="lay-btn lay-btn-sm" @click="toPrevious">上一步</button>
+          <button v-if="!accountCostVo.accountCostUserIdList || accountCostVo.accountCostUserIdList.length === 0 || addExpenseActive === 1"
+                  class="lay-btn lay-btn-sm lay-btn-primary" @click="submitForm">保存</button>
         </view>
       </view>
     </view>
@@ -226,12 +294,42 @@
         </view>
       </view>
     </view>
+
+    <!-- 图标选择弹窗 -->
+    <view class="lay-modal-mask" v-if="showIconGrid" @click="showIconGrid = false">
+      <view class="lay-modal" @click.stop>
+        <view class="lay-modal-header">
+          <text class="lay-modal-title">选择图标</text>
+          <text class="lay-modal-close" @click="showIconGrid = false">✕</text>
+        </view>
+        <view class="lay-modal-body" style="max-height:600rpx;overflow-y:auto">
+          <view v-if="iconGridLoading" class="lay-empty"><text class="empty-text">加载中...</text></view>
+          <view v-else class="icon-grid">
+            <view v-for="item in iconGridList" :key="item.value"
+                  class="icon-grid-item" :class="{ selected: accountCostVo.costType === item.value }"
+                  @click="pickIcon(item)">
+              <image v-if="item.iconUrl" :src="item.iconUrl" mode="aspectFit" class="icon-grid-img"/>
+              <view v-else class="icon-grid-placeholder"></view>
+              <text class="icon-grid-name ellipsis">{{ item.value }}</text>
+            </view>
+          </view>
+        </view>
+        <view class="lay-modal-footer">
+          <text class="text-muted" style="flex:1;font-size:24rpx" v-if="accountCostVo.costType">
+            已选：{{ accountCostVo.costType }}
+          </text>
+          <button class="lay-btn lay-btn-sm" @click="showIconGrid = false">取消</button>
+          <button class="lay-btn lay-btn-sm lay-btn-primary" @click="showIconGrid = false">确定</button>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script>
 import {ref, reactive, onMounted, computed} from 'vue'
-import {findPageAccountCost, saveUpdate, deleteAccountCost, findListSelectCostType} from '@/api/account/Account'
+import {findPageAccountCost, saveUpdate, deleteAccountCost, findListSelectCostType, findCacheCostType, findListSysUserById, findListAllocByCostId} from '@/api/account/Account'
+import {PaymentSign} from '@/types/account/Account'
 import {findPageSysUserWithoutDataScope} from '@/api/system/User'
 import {useUserStore} from '@/store/user'
 
@@ -262,6 +360,7 @@ export default {
     const loading = ref(false)
     const showModal = ref(false)
     const operate = ref('ADD')
+    const addExpenseActive = ref(0)
 
     const accountCostVo = reactive({
       id: '', costDesc: '', outlay: '', costType: '',
@@ -294,6 +393,14 @@ export default {
     const pickedUserIds = ref([])
     const pickedUserNames = ref([])
     const selectedUserTags = ref([])
+
+    // 自动补全
+    const showSuggestion = ref(false)
+    const suggestionList = ref([])
+    // 图标选择
+    const showIconGrid = ref(false)
+    const iconGridList = ref([])
+    const iconGridLoading = ref(false)
 
     /* FUNCTION */
     const formatDateTime = (date) => {
@@ -369,35 +476,56 @@ export default {
 
     const showExpenseModal = (op, row) => {
       operate.value = op
+      addExpenseActive.value = 0
       if (op === 'ADD') {
         Object.assign(accountCostVo, {
-          id: '', costDesc: '', outlay: '', costType: '',
+          id: '', costDesc: '', outlay: '', costType: '', icon: '',
           paymentSign: 'EXPENSES', paymentTimeStr: '', paymentTime: null, remark: '',
-          accountCostUserIdList: [], accountCostUserNameList: []
+          accountCostUserIdList: [], accountCostUserNameList: [], accountCostUserAllocVoList: []
         })
         selectedUserTags.value = []
+        showSuggestion.value = false
       } else if (op === 'EDIT') {
         Object.assign(accountCostVo, {
           id: row.id || '', costDesc: row.costDesc || '',
           outlay: row.outlay != null ? String(row.outlay) : '',
-          costType: row.costType || '',
+          costType: row.costType || '', icon: row.icon || '',
           paymentSign: row.paymentSign || 'EXPENSES',
           paymentTimeStr: formatDate(row.paymentTime), paymentTime: row.paymentTime,
           remark: row.remark || '',
           accountCostUserIdList: row.accountCostUserId ? row.accountCostUserId.split(',') : [],
-          accountCostUserNameList: row.accountCostUserName ? row.accountCostUserName.split(',') : []
+          accountCostUserNameList: row.accountCostUserName ? row.accountCostUserName.split(',') : [],
+          accountCostUserAllocVoList: []
         })
         selectedUserTags.value = [...(accountCostVo.accountCostUserNameList || [])]
+        showSuggestion.value = false
       }
       showModal.value = true
     }
 
-    const closeModal = () => { showModal.value = false }
+    const closeModal = () => { showModal.value = false; addExpenseActive.value = 0 }
 
     const submitForm = async () => {
       if (!accountCostVo.costDesc) { uni.showToast({title: '请输入描述', icon: 'none'}); return }
       if (!accountCostVo.outlay || Number(accountCostVo.outlay) <= 0) { uni.showToast({title: '请输入有效金额', icon: 'none'}); return }
       if (!accountCostVo.paymentSign) { uni.showToast({title: '请选择标识', icon: 'none'}); return }
+
+      // 如果选择了关联用户且在第一步，跳到下一步
+      if (accountCostVo.accountCostUserIdList && accountCostVo.accountCostUserIdList.length > 0 && addExpenseActive.value === 0) {
+        toNext()
+        return
+      }
+
+      // 分摊金额校验
+      const allocList = accountCostVo.accountCostUserAllocVoList
+      if (allocList && allocList.length > 0) {
+        const totalAmount = allocList.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
+        const outlay = parseFloat(accountCostVo.outlay) || 0
+        if (totalAmount > outlay) {
+          uni.showToast({title: '费用分摊的合计金额不能超过总金额！', icon: 'none'})
+          return
+        }
+      }
 
       loading.value = true
       try {
@@ -406,11 +534,13 @@ export default {
           costDesc: accountCostVo.costDesc,
           outlay: Number(accountCostVo.outlay),
           costType: accountCostVo.costType || undefined,
+          icon: accountCostVo.icon || undefined,
           paymentSign: accountCostVo.paymentSign,
           paymentTime: accountCostVo.paymentTime || formatDateTime(new Date()),
           remark: accountCostVo.remark || undefined,
           accountCostUserIdList: accountCostVo.accountCostUserIdList || [],
-          accountCostUserNameList: accountCostVo.accountCostUserNameList || []
+          accountCostUserNameList: accountCostVo.accountCostUserNameList || [],
+          accountCostUserAllocVoList: accountCostVo.accountCostUserAllocVoList || []
         }
         const res = await saveUpdate(params)
         if (res.code === 200) {
@@ -480,6 +610,126 @@ export default {
       selectedUserTags.value.splice(idx, 1)
       accountCostVo.accountCostUserIdList.splice(idx, 1)
       accountCostVo.accountCostUserNameList.splice(idx, 1)
+    }
+
+    // ==================== 分摊步骤 ====================
+    const toNext = async () => {
+      if (!accountCostVo.costDesc) { uni.showToast({title: '请输入描述', icon: 'none'}); return }
+      if (!accountCostVo.outlay || Number(accountCostVo.outlay) <= 0) { uni.showToast({title: '请输入有效金额', icon: 'none'}); return }
+      if (!accountCostVo.paymentSign) { uni.showToast({title: '请选择标识', icon: 'none'}); return }
+
+      if (accountCostVo.accountCostUserIdList && accountCostVo.accountCostUserIdList.length > 0) {
+        if (accountCostVo.paymentSign !== PaymentSign.EXPENSES) {
+          uni.showToast({title: '关联用户后进入费用分摊要求标识为【支出】', icon: 'none'})
+          return
+        }
+        addExpenseActive.value = 1
+        if (operate.value === 'ADD') {
+          try {
+            const res = await findListSysUserById(accountCostVo.accountCostUserIdList)
+            if (res.code === 200 && res.data) {
+              accountCostVo.accountCostUserAllocVoList = res.data.map(item => ({...item, allocFlag: true}))
+            }
+          } catch (e) { console.error('查询用户失败', e) }
+        } else if (operate.value === 'EDIT' && accountCostVo.id) {
+          try {
+            const res = await findListAllocByCostId(accountCostVo.id)
+            if (res.code === 200) {
+              if (res.data && res.data.length > 0) {
+                accountCostVo.accountCostUserAllocVoList = res.data
+              } else {
+                const userRes = await findListSysUserById(accountCostVo.accountCostUserIdList)
+                if (userRes.code === 200 && userRes.data) {
+                  accountCostVo.accountCostUserAllocVoList = userRes.data.map(item => ({...item, allocFlag: true}))
+                }
+              }
+            }
+          } catch (e) { console.error('查询分摊数据失败', e) }
+        }
+      }
+    }
+
+    const toPrevious = () => { addExpenseActive.value = addExpenseActive.value - 1 }
+
+    const splitNumber = (total, parts) => {
+      if (parts <= 0 || !Number.isInteger(parts)) return []
+      if (total < 0) return []
+      const totalCents = Math.round(total * 100)
+      const baseValue = Math.floor(totalCents / parts)
+      const remainder = totalCents % parts
+      const result = []
+      for (let i = 0; i < parts; i++) {
+        if (i < remainder) { result.push((baseValue + 1) / 100) }
+        else { result.push(baseValue / 100) }
+      }
+      return result
+    }
+
+    const allocRetainAmount = () => {
+      const outlay = parseFloat(accountCostVo.outlay) || 0
+      const list = accountCostVo.accountCostUserAllocVoList
+      if (!list || list.length === 0) {
+        uni.showToast({title: '分摊数据不合法，请联系管理员', icon: 'none'})
+        return
+      }
+      // 检查已填金额
+      const totalAmount = list.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
+      if (totalAmount > outlay) {
+        uni.showToast({title: '费用分摊的合计金额不能超过总金额！', icon: 'none'})
+        return
+      }
+      const existAllocList = list.filter(item => item.amount && parseFloat(item.amount) > 0)
+      if (existAllocList.length === 0) {
+        // 都没填写，平分
+        const numbers = splitNumber(outlay, list.length)
+        list.forEach((item, i) => { item.amount = numbers[i] })
+      } else if (existAllocList.length !== list.length) {
+        // 部分填写，剩余金额平分给未填的
+        let remain = outlay - existAllocList.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
+        const notExistList = list.filter(item => !item.amount || parseFloat(item.amount) === 0)
+        const numbers = splitNumber(remain, notExistList.length)
+        notExistList.forEach((item, i) => { item.amount = numbers[i] })
+      }
+      // 触发响应式更新
+      accountCostVo.accountCostUserAllocVoList = [...list]
+    }
+
+    // ==================== 自动补全 ====================
+    const onCostDescInput = () => {
+      const val = accountCostVo.costDesc
+      if (!val || val.trim() === '') { showSuggestion.value = false; return }
+      findCacheCostType({ costDesc: val }).then((res) => {
+        if (res.code === 200 && res.data && res.data.length > 0) {
+          suggestionList.value = res.data.map(item => ({
+            value: item.value, iconUrl: item.iconUrl
+          })).filter(item => item.iconUrl) // 只显示有图标的
+          showSuggestion.value = suggestionList.value.length > 0
+        } else { showSuggestion.value = false }
+      }).catch(() => { showSuggestion.value = false })
+    }
+
+    const selectSuggestion = (item) => {
+      accountCostVo.icon = item.iconUrl || ''
+      accountCostVo.costType = item.value || ''
+      accountCostVo.costDesc = item.value || ''
+      showSuggestion.value = false
+    }
+
+    // ==================== 图标选择 ====================
+    const openIconGrid = () => {
+      iconGridLoading.value = true
+      findCacheCostType({ costDesc: '' }).then((res) => {
+        if (res.code === 200 && res.data) {
+          iconGridList.value = res.data.filter(item => item.iconUrl)
+        }
+        iconGridLoading.value = false
+      }).catch(() => { iconGridLoading.value = false })
+      showIconGrid.value = true
+    }
+
+    const pickIcon = (item) => {
+      accountCostVo.icon = item.iconUrl || ''
+      accountCostVo.costType = item.value || ''
     }
 
     // 筛选选择器
@@ -560,7 +810,10 @@ export default {
       formatDate, formatMoney, getRowStyle, toggleAllTenant,
       showUserPicker, userList, userListLoading, userSearchKeyword,
       pickedUserIds, selectedUserTags,
-      openUserPicker, doUserSearch, toggleUserPick, confirmUserPick, removeUserTag
+      openUserPicker, doUserSearch, toggleUserPick, confirmUserPick, removeUserTag,
+      showSuggestion, suggestionList, onCostDescInput, selectSuggestion,
+      showIconGrid, iconGridList, iconGridLoading, openIconGrid, pickIcon,
+      addExpenseActive, toNext, toPrevious, allocRetainAmount, splitNumber
     }
   }
 }
@@ -610,6 +863,43 @@ export default {
 .filter-item { flex: 1; }
 
 .clear-icon { font-size: 24rpx; color: #999; padding: 8rpx; }
+
+/* 自动补全下拉 */
+.suggestion-dropdown {
+  position: relative; z-index: 600;
+  background: #fff; border: 1px solid #e6e6e6; border-radius: 4px;
+  max-height: 300rpx; overflow-y: auto;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+  margin-top: 4rpx;
+}
+.suggestion-item {
+  display: flex; align-items: center; gap: 16rpx;
+  padding: 16rpx 20rpx; border-bottom: 1px solid #f5f5f5;
+  &:last-child { border-bottom: none; }
+  &:active { background: #f5f7fa; }
+}
+
+/* 图标选择 */
+.icon-pick-row { display: flex; align-items: center; gap: 20rpx; }
+.icon-pick-box {
+  width: 80rpx; height: 80rpx;
+  border: 2rpx dashed #ddd; border-radius: 8rpx;
+  display: flex; align-items: center; justify-content: center;
+  background: #fafafa;
+}
+.icon-pick-img { width: 64rpx; height: 64rpx; border-radius: 6rpx; }
+.icon-pick-empty { font-size: 40rpx; color: #ccc; }
+
+/* 图标网格 */
+.icon-grid { display: flex; flex-wrap: wrap; }
+.icon-grid-item {
+  width: 120rpx; display: flex; flex-direction: column; align-items: center;
+  padding: 16rpx 8rpx; border-radius: 8rpx; border: 2rpx solid transparent;
+  &.selected { border-color: #009688; background: rgba(0,150,136,0.06); }
+}
+.icon-grid-img { width: 56rpx; height: 56rpx; border-radius: 8rpx; }
+.icon-grid-placeholder { width: 56rpx; height: 56rpx; border-radius: 8rpx; background: #f0f0f0; }
+.icon-grid-name { font-size: 20rpx; color: #666; margin-top: 8rpx; max-width: 110rpx; text-align: center; }
 
 /* 弹窗内输入框宽度约束 */
 .lay-modal-expense {
@@ -665,5 +955,150 @@ export default {
   gap: 20rpx;
   padding: 20rpx;
   border-bottom: 1px solid #f0f0f0;
+}
+
+/* 步骤指示器 */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 0 30rpx;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.step-dot {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #e8e8e8;
+  color: #999;
+  font-size: 24rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.step-item.active .step-dot {
+  background: #009688;
+  color: #fff;
+}
+
+.step-item.done .step-dot {
+  background: #009688;
+  color: #fff;
+}
+
+.step-label {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.step-item.active .step-label,
+.step-item.done .step-label {
+  color: #009688;
+  font-weight: 500;
+}
+
+.step-line {
+  width: 80rpx;
+  height: 2rpx;
+  background: #e8e8e8;
+  margin: 0 16rpx;
+  margin-bottom: 28rpx;
+}
+
+.step-line.done {
+  background: #009688;
+}
+
+/* 分摊金额 */
+.alloc-summary {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  padding: 20rpx;
+  background: #f5f7fa;
+  border-radius: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.alloc-total-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.alloc-total-amount {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #009688;
+  font-family: sans-serif;
+}
+
+.alloc-hint {
+  text-align: center;
+  font-size: 22rpx;
+  color: #bbb;
+  padding: 10rpx 0 20rpx;
+}
+
+.alloc-list {
+  max-height: 500rpx;
+  overflow-y: auto;
+}
+
+.alloc-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1px solid #f5f5f5;
+  gap: 12rpx;
+}
+
+.alloc-user-info {
+  flex: 0 0 140rpx;
+  min-width: 0;
+}
+
+.alloc-user-name {
+  font-size: 24rpx;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.alloc-input-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.alloc-label {
+  font-size: 22rpx;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.alloc-amount-input {
+  flex: 1;
+  height: 56rpx;
+  font-size: 24rpx;
+  padding: 0 12rpx;
+}
+
+.alloc-switch-row {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  flex-shrink: 0;
 }
 </style>

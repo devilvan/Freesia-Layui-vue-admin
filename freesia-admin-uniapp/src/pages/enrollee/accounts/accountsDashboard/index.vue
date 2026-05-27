@@ -1,5 +1,16 @@
 <template>
   <view class="page-wrap">
+    <!-- 租户选择器 -->
+    <view class="tenant-bar">
+      <text class="tenant-label">当前账本：</text>
+      <picker mode="selector" :range="tenantNames" @change="onTenantChange" :value="currentTenantIndex">
+        <view class="tenant-picker">
+          <text>{{ currentTenantName }}</text>
+          <text class="arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+
     <!-- 统计所有账本开关 -->
     <view class="lay-card">
       <view class="flex-row align-center justify-between">
@@ -105,10 +116,23 @@
 import {ref, onMounted, computed} from 'vue'
 import {findBudgetCapacity} from '@/api/account/AccountBudget'
 import {findRankByCostType, findCostTypeRatePie} from '@/api/account/Account'
+import {useUserStore} from '@/store/user'
 
 export default {
   name: 'AccountsDashboard',
   setup() {
+    const userStore = useUserStore()
+    const tenantList = computed(() => userStore.state.sysTenantDtoList || [])
+    const tenantNames = computed(() => tenantList.value.map(t => t.name || ''))
+    const currentTenantName = computed(() => {
+      const found = tenantList.value.find(t => t.id === userStore.state.currentTenantId)
+      return found ? found.name : (tenantList.value[0]?.name || '默认账本')
+    })
+    const currentTenantIndex = computed(() => {
+      const idx = tenantList.value.findIndex(t => t.id === userStore.state.currentTenantId)
+      return idx >= 0 ? idx : 0
+    })
+
     const allTenantFlag = ref(true)
     const capacityList = ref([])
     const rankList = ref([])
@@ -209,6 +233,15 @@ export default {
       } catch (e) { console.error('加载分布失败', e) }
     }
 
+    const onTenantChange = (e) => {
+      const idx = e.detail.value
+      const tenant = tenantList.value[idx]
+      if (tenant && tenant.id) {
+        userStore.setCurrentTenant(tenant.id)
+        loadBudget(); loadRank(rankType.value); loadPie()
+      }
+    }
+
     const doChangeAllTenantFlag = () => {
       allTenantFlag.value = !allTenantFlag.value
       loadBudget(); loadRank(rankType.value); loadPie()
@@ -219,6 +252,8 @@ export default {
     return {
       allTenantFlag, capacityList, rankList, pieList, pieTotal,
       rankType, rankLoading, pieGradient,
+      tenantList, tenantNames, currentTenantName, currentTenantIndex,
+      onTenantChange,
       formatMoney, getPercent, getProgressColor,
       getPieColor, getPiePercent,
       getRankBarWidth, getRankBarColor,
@@ -230,6 +265,35 @@ export default {
 
 <style lang="scss" scoped>
 .page-wrap { min-height: 100vh; padding-bottom: 40rpx; }
+
+/* 租户选择栏 */
+.tenant-bar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  background: #fff;
+  gap: 16rpx;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tenant-label {
+  font-size: 26rpx;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.tenant-picker {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 8rpx 20rpx;
+  background: rgba(0, 150, 136, 0.08);
+  border: 1px solid rgba(0, 150, 136, 0.3);
+  border-radius: 4rpx;
+  font-size: 26rpx;
+  color: #009688;
+  font-weight: 500;
+}
 
 .budget-item {
   margin-bottom: 24rpx; padding-bottom: 20rpx;

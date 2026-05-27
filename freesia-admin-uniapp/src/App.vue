@@ -1,7 +1,18 @@
 <script>
+import {useUserStore} from '@/store/user'
+
 export default {
-  onLaunch: function () {
+  onLaunch: async function () {
     console.log('App Launch')
+    await uni.$getPublicKey()
+    const token = uni.getStorageSync('token')
+    if (token) {
+      try {
+        await useUserStore().getInfo()
+      } catch (e) {
+        console.error('加载用户信息失败', e)
+      }
+    }
   },
   onShow: function () {
     console.log('App Show')
