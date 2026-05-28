@@ -89,22 +89,35 @@
         <text class="empty-text">暂无数据</text>
       </view>
       <view v-else v-for="(row, index) in dataSource" :key="row.id"
-            class="lay-table-row" :class="{ stripe: index % 2 === 0 }"
+            class="lay-table-row-wrap" :class="{ stripe: index % 2 === 0 }"
             :style="getRowStyle(row)" @click="onRowTap(row)">
-        <view class="lay-table-td" style="width: 60rpx">
-          <image v-if="row.icon" :src="row.icon" mode="aspectFit" style="width: 52rpx; height: 52rpx; border-radius: 8rpx"/>
-          <text v-else class="text-muted">--</text>
+        <view class="lay-table-row">
+          <view class="lay-table-td" style="width: 60rpx">
+            <image v-if="row.icon" :src="row.icon" mode="aspectFit" style="width: 52rpx; height: 52rpx; border-radius: 8rpx"/>
+            <text v-else class="text-muted">--</text>
+          </view>
+          <view class="lay-table-td" style="width: 100rpx">
+            <text class="ellipsis">{{ row.costType || '--' }}</text>
+          </view>
+          <view class="lay-table-td" style="width: 150rpx">
+            <text :class="row.paymentSign === 'INCOME' ? 'text-income' : 'text-expense'" style="font-weight: 600">
+              {{ row.paymentSign === 'INCOME' ? '+' : '-' }}{{ formatMoney(row.outlay) }}
+            </text>
+          </view>
+          <view class="lay-table-td" style="width: 150rpx; font-size: 22rpx">{{ formatDate(row.paymentTime) }}</view>
+          <view class="lay-table-td" style="width: 150rpx; font-size: 22rpx">{{ row.remark || '--' }}</view>
         </view>
-        <view class="lay-table-td" style="width: 100rpx">
-          <text class="ellipsis">{{ row.costType || '--' }}</text>
+        <!-- 分摊明细 -->
+        <view v-if="row.accountCostUserAllocDtoList && row.accountCostUserAllocDtoList.length > 0" class="alloc-detail" @click.stop>
+          <view class="alloc-detail-tag">
+            <text :class="'alloc-badge ' + getAllocStatusClass(row)">{{ getAllocStatus(row) }}</text>
+          </view>
+          <view v-for="(alloc, ai) in row.accountCostUserAllocDtoList" :key="ai" class="alloc-detail-item">
+            <text class="alloc-detail-user">{{ alloc.sysUserDto?.nickName || alloc.nickName || alloc.userName || '--' }}</text>
+            <text class="alloc-detail-amount">¥{{ formatMoney(alloc.amount) }}</text>
+            <text :class="alloc.allocFlag ? 'alloc-flag-true' : 'alloc-flag-false'">{{ alloc.allocFlag ? '已分摊' : '未分摊' }}</text>
+          </view>
         </view>
-        <view class="lay-table-td" style="width: 150rpx">
-          <text :class="row.paymentSign === 'INCOME' ? 'text-income' : 'text-expense'" style="font-weight: 600">
-            {{ row.paymentSign === 'INCOME' ? '+' : '-' }}{{ formatMoney(row.outlay) }}
-          </text>
-        </view>
-        <view class="lay-table-td" style="width: 150rpx; font-size: 22rpx">{{ formatDate(row.paymentTime) }}</view>
-        <view class="lay-table-td" style="width: 150rpx; font-size: 22rpx">{{ row.remark || '--' }}</view>
       </view>
     </view>
 
@@ -763,6 +776,24 @@ export default {
     const formatMoney = (val) => {
       if (val == null) return '0.00'; return Number(val).toFixed(2)
     }
+    const getAllocStatus = (row) => {
+      const list = row.accountCostUserAllocDtoList
+      if (!list || list.length === 0) return ''
+      const allTrue = list.every(item => item.allocFlag)
+      const allFalse = list.every(item => !item.allocFlag)
+      if (allTrue) return '已分摊'
+      if (allFalse) return '未分摊'
+      return '部分分摊'
+    }
+    const getAllocStatusClass = (row) => {
+      const list = row.accountCostUserAllocDtoList
+      if (!list || list.length === 0) return ''
+      const allTrue = list.every(item => item.allocFlag)
+      const allFalse = list.every(item => !item.allocFlag)
+      if (allTrue) return 'alloc-done'
+      if (allFalse) return 'alloc-pending'
+      return 'alloc-partial'
+    }
     const getRowStyle = (row) => {
       if (!row.paymentTime) return ''
       const day = new Date(row.paymentTime).getDay()
@@ -808,6 +839,7 @@ export default {
       onTypeChange, onSignChange, onStartDateChange, onEndDateChange,
       onFormTypeChange, onFormDateChange,
       formatDate, formatMoney, getRowStyle, toggleAllTenant,
+      getAllocStatus, getAllocStatusClass,
       showUserPicker, userList, userListLoading, userSearchKeyword,
       pickedUserIds, selectedUserTags,
       openUserPicker, doUserSearch, toggleUserPick, confirmUserPick, removeUserTag,
@@ -1100,5 +1132,76 @@ export default {
   align-items: center;
   gap: 6rpx;
   flex-shrink: 0;
+}
+
+/* 列表中的分摊明细 */
+.lay-table-row-wrap {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.alloc-detail {
+  padding: 8rpx 20rpx 16rpx 20rpx;
+  border-top: 1px dashed #e8e8e8;
+}
+
+.alloc-detail-tag {
+  margin-bottom: 8rpx;
+}
+
+.alloc-badge {
+  display: inline-block;
+  padding: 2rpx 12rpx;
+  border-radius: 4rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+.alloc-badge.alloc-done {
+  background: rgba(95, 184, 120, 0.12);
+  color: #5fb878;
+}
+
+.alloc-badge.alloc-pending {
+  background: rgba(255, 87, 34, 0.1);
+  color: #ff5722;
+}
+
+.alloc-badge.alloc-partial {
+  background: rgba(255, 184, 0, 0.12);
+  color: #ffb800;
+}
+
+.alloc-detail-item {
+  display: flex;
+  align-items: center;
+  padding: 4rpx 0;
+  gap: 12rpx;
+}
+
+.alloc-detail-user {
+  flex: 1;
+  font-size: 22rpx;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.alloc-detail-amount {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #333;
+  min-width: 120rpx;
+  text-align: right;
+}
+
+.alloc-flag-true {
+  font-size: 20rpx;
+  color: #5fb878;
+}
+
+.alloc-flag-false {
+  font-size: 20rpx;
+  color: #ff5722;
 }
 </style>

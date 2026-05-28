@@ -1,0 +1,37 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="freesia-uniapp" type="docker-deploy" factoryName="dockerfile" server-name="freesia">
+    <deployment type="dockerfile">
+      <settings>
+        <option name="imageTag" value="freesia-uniapp:latest" />
+        <option name="containerName" value="freesia-uniapp" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="TZ" />
+              <option name="value" value="Asia/Shanghai" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="8386" />
+              <option name="hostPort" value="8386" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
+        <option name="commandLineOptions" value="--network freesia-net --restart=always" />
+        <option name="sourceFilePath" value="freesia-admin-uniapp/Dockerfile" />
+        <option name="volumeBindings">
+          <list>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/etc/nginx/conf.d/default.conf" />
+              <option name="hostPath" value="/home/freesia/conf/freesia-uniapp/nginx.conf" />
+            </DockerVolumeBindingImpl>
+          </list>
+        </option>
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
