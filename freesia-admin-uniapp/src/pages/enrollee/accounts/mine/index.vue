@@ -341,7 +341,7 @@
 
 <script>
 import {ref, reactive, onMounted, computed} from 'vue'
-import {findPageAccountCost, saveUpdate, deleteAccountCost, findListSelectCostType, findCacheCostType, findListSysUserById, findListAllocByCostId} from '@/api/account/Account'
+import {findPageAccountCost, findAccountCost, saveUpdate, deleteAccountCost, findListSelectCostType, findCacheCostType, findListSysUserById, findListAllocByCostId} from '@/api/account/Account'
 import {PaymentSign} from '@/types/account/Account'
 import {findPageSysUserWithoutDataScope} from '@/api/system/User'
 import {useUserStore} from '@/store/user'
@@ -499,6 +499,7 @@ export default {
         selectedUserTags.value = []
         showSuggestion.value = false
       } else if (op === 'EDIT') {
+        // 先以列表数据快速填充，再异步加载完整记录（含分摊信息）
         Object.assign(accountCostVo, {
           id: row.id || '', costDesc: row.costDesc || '',
           outlay: row.outlay != null ? String(row.outlay) : '',
@@ -508,10 +509,24 @@ export default {
           remark: row.remark || '',
           accountCostUserIdList: row.accountCostUserId ? row.accountCostUserId.split(',') : [],
           accountCostUserNameList: row.accountCostUserName ? row.accountCostUserName.split(',') : [],
-          accountCostUserAllocVoList: []
+          accountCostUserAllocVoList: row.accountCostUserAllocDtoList || []
         })
         selectedUserTags.value = [...(accountCostVo.accountCostUserNameList || [])]
         showSuggestion.value = false
+        // 异步加载完整记录（含 recVer 等后端需要的字段）
+        findAccountCost({id: row.id}).then((res) => {
+          if (res.code === 200 && res.data) {
+            const d = res.data
+            Object.assign(accountCostVo, d, {
+              outlay: d.outlay != null ? String(d.outlay) : accountCostVo.outlay,
+              paymentTimeStr: formatDate(d.paymentTime) || accountCostVo.paymentTimeStr,
+              accountCostUserIdList: d.accountCostUserId ? d.accountCostUserId.split(',') : (d.accountCostUserIdList || accountCostVo.accountCostUserIdList),
+              accountCostUserNameList: d.accountCostUserName ? d.accountCostUserName.split(',') : (d.accountCostUserNameList || accountCostVo.accountCostUserNameList),
+              accountCostUserAllocVoList: d.accountCostUserAllocVoList || d.accountCostUserAllocDtoList || []
+            })
+            selectedUserTags.value = [...(accountCostVo.accountCostUserNameList || [])]
+          }
+        }).catch(e => { console.error('加载记账详情失败', e) })
       }
       showModal.value = true
     }
@@ -532,8 +547,8 @@ export default {
       // 分摊金额校验
       const allocList = accountCostVo.accountCostUserAllocVoList
       if (allocList && allocList.length > 0) {
-        const totalAmount = allocList.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
-        const outlay = parseFloat(accountCostVo.outlay) || 0
+        const totalAmount = parseFloat(allocList.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0).toFixed(2))
+        const outlay = parseFloat(parseFloat(accountCostVo.outlay || 0).toFixed(2))
         if (totalAmount > outlay) {
           uni.showToast({title: '费用分摊的合计金额不能超过总金额！', icon: 'none'})
           return
@@ -543,18 +558,14 @@ export default {
       loading.value = true
       try {
         const params = {
-          id: accountCostVo.id || undefined,
-          costDesc: accountCostVo.costDesc,
+          ...accountCostVo,
           outlay: Number(accountCostVo.outlay),
-          costType: accountCostVo.costType || undefined,
-          icon: accountCostVo.icon || undefined,
-          paymentSign: accountCostVo.paymentSign,
           paymentTime: accountCostVo.paymentTime || formatDateTime(new Date()),
-          remark: accountCostVo.remark || undefined,
           accountCostUserIdList: accountCostVo.accountCostUserIdList || [],
           accountCostUserNameList: accountCostVo.accountCostUserNameList || [],
           accountCostUserAllocVoList: accountCostVo.accountCostUserAllocVoList || []
         }
+        if (!params.id) delete params.id
         const res = await saveUpdate(params)
         if (res.code === 200) {
           uni.showToast({title: operate.value === 'ADD' ? '新增成功' : '修改成功', icon: 'success'})
@@ -645,6 +656,10 @@ export default {
             }
           } catch (e) { console.error('查询用户失败', e) }
         } else if (operate.value === 'EDIT' && accountCostVo.id) {
+          // 如果已从 findAccountCost 加载了分摊数据则直接使用
+          if (accountCostVo.accountCostUserAllocVoList && accountCostVo.accountCostUserAllocVoList.length > 0) {
+            return
+          }
           try {
             const res = await findListAllocByCostId(accountCostVo.id)
             if (res.code === 200) {
@@ -686,7 +701,7 @@ export default {
         return
       }
       // 检查已填金额
-      const totalAmount = list.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
+      const totalAmount = parseFloat(list.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0).toFixed(2))
       if (totalAmount > outlay) {
         uni.showToast({title: '费用分摊的合计金额不能超过总金额！', icon: 'none'})
         return

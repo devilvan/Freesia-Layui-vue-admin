@@ -1,11 +1,12 @@
 <script>
 import {useUserStore} from '@/store/user'
+import {getToken} from '@/utils/storage'
 
 export default {
   onLaunch: async function () {
     console.log('App Launch')
     await uni.$getPublicKey()
-    const token = uni.getStorageSync('token')
+    const token = getToken()
     if (token) {
       try {
         await useUserStore().getInfo()

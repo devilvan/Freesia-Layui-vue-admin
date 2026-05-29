@@ -102,6 +102,7 @@ import {getCaptchaCode} from '@/api/captcha/Captcha'
 import {loginQrcode} from '@/api/module/commone'
 import {useCryptStore} from '@/store/crypt'
 import {useUserStore} from '@/store/user'
+import {setToken} from '@/utils/storage'
 
 export default {
   data() {
@@ -155,24 +156,24 @@ export default {
         }
         const encryptedData = await cryptStore.encryptAes(loginData)
         const res = await login(encryptedData)
-        setTimeout(async () => {
-          this.loging = false
-          if (res.code === 200) {
-            uni.setStorageSync('token', res.data.token)
-            // 加载用户信息以获取租户列表
-            const userStore = useUserStore()
-            await userStore.getInfo()
-            uni.showToast({title: '登录成功', icon: 'success'})
-            setTimeout(() => {
-              uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
-            }, 1000)
-          } else {
-            uni.showToast({title: res.msg || '登录失败', icon: 'none'})
-            if (this.captchaEnabled) {
-              this.toRefreshImg()
-            }
+        this.loging = false
+        if (res.code === 200) {
+          // 立即持久化 token（同时写入 storage 和 cookie），防止页面切换导致 token 丢失
+          setToken(res.data.token)
+          // 加载用户信息以获取租户列表
+          const userStore = useUserStore()
+          userStore.setToken(res.data.token)
+          await userStore.getInfo()
+          uni.showToast({title: '登录成功', icon: 'success'})
+          setTimeout(() => {
+            uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
+          }, 1000)
+        } else {
+          uni.showToast({title: res.msg || '登录失败', icon: 'none'})
+          if (this.captchaEnabled) {
+            this.toRefreshImg()
           }
-        }, 100)
+        }
       } catch (e) {
         this.loging = false
         uni.showToast({title: '登录失败', icon: 'none'})

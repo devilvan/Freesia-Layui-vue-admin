@@ -115,6 +115,7 @@ import {findDeptById} from '@/api/system/Dept'
 import {findCacheSysDictValueList} from '@/api/system/Dict'
 import {useCryptStore} from '@/store/crypt'
 import {useUserStore} from '@/store/user'
+import {removeToken, removeUserInfo} from '@/utils/storage'
 
 export default {
   name: 'Profile',
@@ -265,8 +266,8 @@ export default {
             try {
               await userStore.logout()
             } catch(e) { /* ignore */ }
-            uni.removeStorageSync('token')
-            uni.removeStorageSync('userInfo')
+            removeToken()
+            removeUserInfo()
             uni.reLaunch({url: '/pages/login/index'})
           }
         }

@@ -1,4 +1,18 @@
 import { reactive } from 'vue'
+import {
+  getToken as loadToken,
+  setToken as saveToken,
+  removeToken as deleteToken,
+  getTenantId,
+  setTenantId,
+  removeTenantId,
+  getUserInfo,
+  setUserInfo as saveUserInfo,
+  removeUserInfo,
+  getTenantList,
+  setTenantList as saveTenantList,
+  removeTenantList
+} from '@/utils/storage'
 
 interface UserInfo {
   id?: string
@@ -18,48 +32,48 @@ interface TenantItem {
 }
 
 const state = reactive({
-  token: uni.getStorageSync('token') || '',
+  token: loadToken() || '',
   userInfo: {} as UserInfo,
   noticeCount: 0,
   announcementCount: 0,
   sysTenantDtoList: (() => {
     try {
-      const stored = uni.getStorageSync('sysTenantDtoList')
+      const stored = getTenantList()
       return stored ? JSON.parse(stored) : []
     } catch (e) { return [] }
   })() as TenantItem[],
-  currentTenantId: uni.getStorageSync('tenantId') || ''
+  currentTenantId: getTenantId() || ''
 })
 
 export function useUserStore() {
   const setToken = (token: string) => {
     state.token = token
-    uni.setStorageSync('token', token)
+    saveToken(token)
   }
 
   const clearToken = () => {
     state.token = ''
-    uni.removeStorageSync('token')
+    deleteToken()
   }
 
   const setUserInfo = (info: UserInfo) => {
     state.userInfo = info
-    uni.setStorageSync('userInfo', JSON.stringify(info))
+    saveUserInfo(JSON.stringify(info))
   }
 
   const clearUserInfo = () => {
     state.userInfo = {} as UserInfo
-    uni.removeStorageSync('userInfo')
+    removeUserInfo()
   }
 
   const setTenantList = (list: TenantItem[]) => {
     state.sysTenantDtoList = list || []
-    uni.setStorageSync('sysTenantDtoList', JSON.stringify(list || []))
+    saveTenantList(JSON.stringify(list || []))
   }
 
   const setCurrentTenant = (tenantId: string) => {
     state.currentTenantId = tenantId
-    uni.setStorageSync('tenantId', tenantId)
+    setTenantId(tenantId)
   }
 
   const getInfo = async () => {
@@ -97,8 +111,8 @@ export function useUserStore() {
       state.announcementCount = 0
       state.sysTenantDtoList = []
       state.currentTenantId = ''
-      uni.removeStorageSync('tenantId')
-      uni.removeStorageSync('sysTenantDtoList')
+      removeTenantId()
+      removeTenantList()
     }
   }
 

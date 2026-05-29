@@ -1,3 +1,5 @@
+import { getToken, getTenantId, removeToken } from '@/utils/storage'
+
 const baseURL = import.meta.env.VITE_APP_BASE_URL as string
 
 class Http {
@@ -8,21 +10,21 @@ class Http {
     header?: object
   }) {
     const { url, method = 'GET', data = {}, header = {} } = options
-    
+
     return new Promise((resolve, reject) => {
-      const token = uni.getStorageSync('token')
+      const token = getToken()
       const defaultHeader: any = {
         'Content-Type': 'application/json'
       }
-      
+
       if (token) {
         defaultHeader['Authorization'] = 'Bearer ' + token
       }
-      const tenantId = uni.getStorageSync('tenantId')
+      const tenantId = getTenantId()
       if (tenantId) {
         defaultHeader['X-Tenant-Id'] = tenantId
       }
-      
+
       uni.request({
         url: baseURL + url,
         method: method as any,
@@ -34,7 +36,7 @@ class Http {
           if (responseData.code === 200) {
             resolve(responseData)
           } else if (responseData.code === 401) {
-            uni.removeStorageSync('token')
+            removeToken()
             uni.showToast({ title: '会话已过期', icon: 'none' })
             setTimeout(() => {
               uni.redirectTo({ url: '/pages/login/index' })
