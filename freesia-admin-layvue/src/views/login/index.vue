@@ -64,25 +64,25 @@
             </lay-tab>
             <lay-line>Other login methods</lay-line>
             <ul class="other-ways">
-              <li>
+              <li @click="oauthLogin('wechat_open')" style="cursor:pointer">
                 <div class="line-container">
                   <img class="icon" src="@/assets/login/w.svg"/>
                   <p class="text">微信</p>
                 </div>
               </li>
-              <li>
+              <li style="opacity:0.4">
                 <div class="line-container">
                   <img class="icon" src="@/assets/login/q.svg"/>
                   <p class="text">钉钉</p>
                 </div>
               </li>
-              <li>
+              <li @click="oauthLogin('gitee')" style="cursor:pointer">
                 <div class="line-container">
                   <img class="icon" src="@/assets/login/a.svg"/>
                   <p class="text">Gitee</p>
                 </div>
               </li>
-              <li>
+              <li @click="oauthLogin('github')" style="cursor:pointer">
                 <div class="line-container">
                   <img class="icon" src="@/assets/login/f.svg"/>
                   <p class="text">Github</p>
@@ -199,6 +199,14 @@ const toRefreshQrcode = async () => {
   } else {
     layer.msg(msg, {icon: 2})
   }
+}
+
+const oauthLogin = (provider: string) => {
+  const baseURL = import.meta.env.VITE_APP_BASE_URL as string
+  const frontendCallbackUrl = window.location.origin + '/oauth/callback/' + provider
+  const authorizeUrl = baseURL + '/api/sysLoginController/oauth/authorize/' + provider
+      + '?redirectUrl=' + encodeURIComponent(frontendCallbackUrl)
+  window.location.href = authorizeUrl
 }
 /* FUNCTION*/
 </script>

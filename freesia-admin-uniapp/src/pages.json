@@ -8,6 +8,12 @@
       }
     },
     {
+      "path": "pages/login/oauthCallback",
+      "style": {
+        "navigationBarTitleText": "登录中..."
+      }
+    },
+    {
       "path": "pages/enrollee/accounts/mine/index",
       "style": {
         "navigationBarTitleText": "记账"

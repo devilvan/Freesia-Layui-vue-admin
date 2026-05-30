@@ -215,8 +215,44 @@ export default {
       }
     },
     loginWith(type) {
-      const names = {wechat: '微信', dingding: '钉钉', gitee: 'Gitee', github: 'Github'}
-      uni.showToast({title: `即将跳转到${names[type]}登录`, icon: 'none'})
+      // 钉钉暂不支持
+      if (type === 'dingding') {
+        uni.showToast({title: '钉钉登录暂未支持', icon: 'none'})
+        return
+      }
+
+      // #ifdef MP-WEIXIN
+      if (type === 'wechat') {
+        uni.login({
+          provider: 'weixin',
+          success: async (loginRes) => {
+            try {
+              const res = await this.wxMiniProgramLogin(loginRes.code)
+              if (res && res.code === 200) {
+                uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
+              }
+            } catch (e) {
+              uni.showToast({title: '微信登录失败', icon: 'none'})
+            }
+          },
+          fail: () => {
+            uni.showToast({title: '微信授权失败', icon: 'none'})
+          }
+        })
+        return
+      }
+      // #endif
+
+      // #ifdef H5
+      const providerMap = {wechat: 'wechat_open', gitee: 'gitee', github: 'github'}
+      const provider = providerMap[type]
+      if (!provider) return
+      const baseURL = 'http://localhost:8570'
+      const frontendCallbackUrl = window.location.origin + '/#/pages/login/oauthCallback'
+      const authorizeUrl = baseURL + '/api/sysLoginController/oauth/authorize/' + provider
+          + '?redirectUrl=' + encodeURIComponent(frontendCallbackUrl)
+      window.location.href = authorizeUrl
+      // #endif
     }
   }
 }

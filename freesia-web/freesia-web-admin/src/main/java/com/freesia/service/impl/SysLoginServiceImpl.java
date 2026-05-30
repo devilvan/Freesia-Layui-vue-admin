@@ -360,7 +360,10 @@ public class SysLoginServiceImpl implements SysLoginService {
             if (ObjectUtil.isNull(loginUser)) {
                 return;
             }
-            StpUtil.logout();
+            // 单点登出：注销该用户在所有设备上的登录态
+            String loginId = StpUtil.getLoginIdAsString();
+            StpUtil.logout(loginId);
+            log.info("单点登出完成: {}", loginId);
         } catch (NotLoginException ignored) {
         }
     }

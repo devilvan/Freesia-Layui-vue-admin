@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,57 @@ public class SysLoginController extends BaseController {
     private final SysMenuService sysMenuService;
     private final SysTenantService sysTenantService;
     private final SysConfigService sysConfigService;
+    private final OAuthLoginService oAuthLoginService;
+
+    // ==================== OAuth 单点登录 ====================
+
+    @SaIgnore
+    @Operation(summary = "OAuth 授权跳转（重定向到第三方授权页）")
+    @GetMapping("oauth/authorize/{provider}")
+    public void oauthAuthorize(@PathVariable String provider,
+                               @RequestParam(required = false) String redirectUrl,
+                               javax.servlet.http.HttpServletResponse response) {
+        String authorizeUrl = oAuthLoginService.buildAuthorizeUrl(provider, redirectUrl);
+        try {
+            response.sendRedirect(authorizeUrl);
+        } catch (Exception e) {
+            throw new RuntimeException("OAuth 授权跳转失败: " + provider, e);
+        }
+    }
+
+    @SaIgnore
+    @Operation(summary = "OAuth 回调（第三方授权后回调到后端，完成登录后重定向到前端回调页）")
+    @GetMapping("oauth/callback/{provider}")
+    public void oauthCallback(@PathVariable String provider,
+                              @RequestParam String code,
+                              @RequestParam String state,
+                              javax.servlet.http.HttpServletResponse response) {
+        Map<String, Object> result = oAuthLoginService.handleCallback(provider, code, state);
+        String token = (String) result.get(Constants.TOKEN);
+        String frontendRedirectUrl = (String) result.getOrDefault("redirectUrl", "/");
+        try {
+            // 重定向到前端回调页，token 通过 URL 参数传递
+            String redirectTo = frontendRedirectUrl;
+            if (redirectTo.contains("?")) {
+                redirectTo += "&token=" + token;
+            } else {
+                redirectTo += "?token=" + token;
+            }
+            response.sendRedirect(redirectTo);
+        } catch (Exception e) {
+            throw new RuntimeException("OAuth 回调处理失败", e);
+        }
+    }
+
+    @SaIgnore
+    @Operation(summary = "OAuth 统一登录（POST 模式，适用于小程序等）")
+    @PostMapping("oauthLogin")
+    public R<Map<String, Object>> oauthLogin(@Valid @RequestBody OAuthLoginDto dto) {
+        Map<String, Object> result = oAuthLoginService.oauthLogin(dto);
+        return R.ok(result);
+    }
+
+    // ==================== 原有登录接口 ====================
 
     @SaIgnore
     @Operation(summary = "客户端登录")

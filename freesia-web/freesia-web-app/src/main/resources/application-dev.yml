@@ -155,6 +155,8 @@ security:
     # actuator 监控配置
     - /actuator
     - /actuator/**
+    # OAuth 单点登录（无需认证）
+    - /api/sysLoginController/oauth/**
 ---
 # 接口文档
 springdoc:
@@ -266,3 +268,26 @@ xxl:
       logpath: /logs/xxljob
       # 执行器日志文件保存天数 [选填] ： 过期日志自动清理, 限制值大于等于3时生效; 否则, 如-1, 关闭自动清理功能；
       logretentiondays: 7
+
+---
+# OAuth 第三方登录配置
+oauth:
+  providers:
+    gitee:
+      client-id: ${GITEE_CLIENT_ID:}
+      client-secret: ${GITEE_CLIENT_SECRET:}
+      redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/gitee
+      scopes:
+        - user_info
+    github:
+      client-id: ${GITHUB_CLIENT_ID:}
+      client-secret: ${GITHUB_CLIENT_SECRET:}
+      redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/github
+      scopes:
+        - user:email
+    wechat_open:
+      client-id: ${WECHAT_OPEN_APP_ID:}
+      client-secret: ${WECHAT_OPEN_APP_SECRET:}
+      redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/wechat_open
+      scopes:
+        - snsapi_login
