@@ -1,5 +1,7 @@
 package com.freesia.service.impl;
 
+import cn.dev33.satoken.stp.SaLoginModel;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.freesia.constant.Constants;
 import com.freesia.constant.FlagConstant;
@@ -141,7 +143,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
         LoginUserModel loginUserModel = sysLoginService.buildLoginUser(sysUserPo);
         USecurity.loginByDevice(loginUserModel, DeviceType.THIRD_PARTY_AUTH);
 
-        String token = cn.dev33.satoken.stp.StpUtil.getTokenValue();
+        String token = StpUtil.getTokenValue();
         Map<String, Object> result = new java.util.HashMap<>(4);
         result.put(Constants.TOKEN, token);
         result.put("redirectUrl", frontendRedirectUrl);
@@ -184,5 +186,71 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             authDto.setId(existAuth.getId());
             sysThirdpartyAuthService.saveUpdate(authDto);
         }
+    }
+
+    // ==================== 二维码扫码登录 ====================
+
+    private static final String QRCODE_TICKET_PREFIX = "qrcode:ticket:";
+    private static final long QRCODE_TTL = 5; // 分钟
+
+    @Override
+    public Map<String, Object> generateQrcodeTicket() {
+        String ticket = UUID.randomUUID().toString().replace("-", "");
+        Map<String, Object> data = new java.util.HashMap<>();
+        data.put("status", "pending");
+        URedis.set(QRCODE_TICKET_PREFIX + ticket, data, QRCODE_TTL, TimeUnit.MINUTES);
+
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("ticket", ticket);
+        result.put("expireIn", QRCODE_TTL * 60);
+        return result;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> checkQrcodeStatus(String ticket) {
+        Object obj = URedis.get(QRCODE_TICKET_PREFIX + ticket);
+        Map<String, Object> result = new java.util.HashMap<>();
+
+        if (obj == null) {
+            result.put("status", "expired");
+            return result;
+        }
+
+        Map<String, Object> data = (Map<String, Object>) obj;
+        String status = (String) data.get("status");
+        result.put("status", status);
+
+        if ("confirmed".equals(status)) {
+            String loginId = (String) data.get("loginId");
+            if (loginId != null) {
+                StpUtil.login(loginId, SaLoginModel.create()
+                        .setDevice("pc"));
+                String token = StpUtil.getTokenValue();
+                result.put("token", token);
+            }
+            URedis.delete(QRCODE_TICKET_PREFIX + ticket);
+        }
+        return result;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bindQrcodeTicket(String ticket) {
+        if (ticket == null || ticket.isEmpty()) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "qrcode.ticket.invalid");
+        }
+        Object obj = URedis.get(QRCODE_TICKET_PREFIX + ticket);
+        if (obj == null) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "qrcode.ticket.expired");
+        }
+        Map<String, Object> data = (Map<String, Object>) obj;
+        if (!"pending".equals(data.get("status"))) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "qrcode.ticket.used");
+        }
+        String loginId = StpUtil.getLoginIdAsString();
+        data.put("status", "confirmed");
+        data.put("loginId", loginId);
+        URedis.set(QRCODE_TICKET_PREFIX + ticket, data, 30, TimeUnit.SECONDS);
     }
 }

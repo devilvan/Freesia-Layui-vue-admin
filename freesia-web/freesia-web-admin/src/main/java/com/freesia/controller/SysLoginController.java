@@ -96,6 +96,32 @@ public class SysLoginController extends BaseController {
         return R.ok(result);
     }
 
+    // ==================== 二维码扫码登录 ====================
+
+    @SaIgnore
+    @Operation(summary = "生成扫码登录二维码 ticket")
+    @GetMapping("qrcode/generate")
+    public R<Map<String, Object>> qrcodeGenerate() {
+        Map<String, Object> result = oAuthLoginService.generateQrcodeTicket();
+        return R.ok(result);
+    }
+
+    @SaIgnore
+    @Operation(summary = "轮询扫码登录二维码状态")
+    @GetMapping("qrcode/status/{ticket}")
+    public R<Map<String, Object>> qrcodeStatus(@PathVariable String ticket) {
+        Map<String, Object> result = oAuthLoginService.checkQrcodeStatus(ticket);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "小程序扫码绑定 ticket 到当前用户（需已登录）")
+    @PostMapping("qrcode/bind")
+    public R<Void> qrcodeBind(@RequestBody Map<String, String> body) {
+        String ticket = body.get("ticket");
+        oAuthLoginService.bindQrcodeTicket(ticket);
+        return R.ok();
+    }
+
     // ==================== 原有登录接口 ====================
 
     @SaIgnore

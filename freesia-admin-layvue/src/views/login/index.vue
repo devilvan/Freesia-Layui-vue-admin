@@ -52,39 +52,51 @@
                 </div>
               </lay-tab-item>
               <lay-tab-item title="二维码" id="2">
-                <div style="width: 200px; height: 250px; margin: 0 auto">
-                  <lay-qrcode text="http://www.layui-vue.com" :width="200" color="#000"
-                              style="margin: 10px 0 20px"></lay-qrcode>
-                  <div style="text-align: center; cursor: pointer" @click="toRefreshQrcode">
-                    <lay-icon type="layui-icon-refresh-three"></lay-icon>
-                    刷新二维码
+                <div style="width: 220px; margin: 0 auto; text-align: center">
+                  <div v-if="qrcodeLoading" style="padding:40px 0">加载中...</div>
+                  <div v-else-if="qrcodeStatus === 'confirmed'" style="padding:40px 0;color:#36b368">
+                    <lay-icon type="layui-icon-ok-circle" size="48px"></lay-icon>
+                    <p>扫码成功，正在登录...</p>
+                  </div>
+                  <div v-else>
+                    <lay-qrcode :text="qrcodeTicket" :width="200" color="#000"
+                                style="margin: 10px 0 20px"></lay-qrcode>
+                    <p style="font-size:12px;color:#999;margin-bottom:10px">请使用小程序扫描二维码</p>
+                    <div v-if="qrcodeStatus === 'expired'" style="color:#ff5722;margin-bottom:10px">
+                      二维码已过期
+                    </div>
+                    <div style="cursor: pointer" @click="refreshQrcode">
+                      <lay-icon type="layui-icon-refresh-three"></lay-icon>
+                      刷新二维码
+                    </div>
                   </div>
                 </div>
               </lay-tab-item>
             </lay-tab>
-            <lay-line>Other login methods</lay-line>
+            <!--            <lay-line>Other login methods</lay-line>-->
+            <lay-line>其他登录方式</lay-line>
             <ul class="other-ways">
               <li @click="oauthLogin('wechat_open')" style="cursor:pointer">
                 <div class="line-container">
-                  <img class="icon" src="@/assets/login/w.svg"/>
+                  <img class="icon" src="@/assets/login/WX.svg"/>
                   <p class="text">微信</p>
                 </div>
               </li>
-              <li style="opacity:0.4">
+              <li style="cursor:pointer">
                 <div class="line-container">
-                  <img class="icon" src="@/assets/login/q.svg"/>
-                  <p class="text">钉钉</p>
+                  <img class="icon" src="@/assets/login/QQ.svg"/>
+                  <p class="text">QQ</p>
                 </div>
               </li>
               <li @click="oauthLogin('gitee')" style="cursor:pointer">
                 <div class="line-container">
-                  <img class="icon" src="@/assets/login/a.svg"/>
+                  <img class="icon" src="@/assets/login/Gitee.svg"/>
                   <p class="text">Gitee</p>
                 </div>
               </li>
               <li @click="oauthLogin('github')" style="cursor:pointer">
                 <div class="line-container">
-                  <img class="icon" src="@/assets/login/f.svg"/>
+                  <img class="icon" src="@/assets/login/Github.svg"/>
                   <p class="text">Github</p>
                 </div>
               </li>
@@ -105,7 +117,6 @@ import {LoginVo} from "@/types/login/LoginForm";
 import {login} from "@/api/Login";
 import {findCaptchaEnabled} from "@/api/Login";
 import {getCaptchaCode} from "@/api/captcha/Captcha";
-import {loginQrcode} from "@/api/module/commone";
 import router from "@/router";
 import {useCryptStore} from "@/store/crypt";
 import SvgIcon from "@/views/component/svg/SvgIcon.vue";
@@ -120,7 +131,7 @@ onMounted(async () => {
       toRefreshImg();
     }
   }
-  // toRefreshQrcode()
+  initQrcode()
 })
 /* INIT*/
 
@@ -132,7 +143,10 @@ const method = ref('1')
 const captchaImg = ref('')
 const loging = ref(false);
 const loading = ref(false);
-const loginQrcodeText = ref('')
+const qrcodeTicket = ref('')
+const qrcodeStatus = ref('pending')
+const qrcodeLoading = ref(false)
+let qrPollTimer: any = null
 const remember = ref(false)
 const loginForm: LoginVo = reactive<LoginVo>({})
 const loginFormRef = ref()
@@ -192,12 +206,55 @@ const toRefreshImg = () => {
   })
   // }, 1000)
 }
-const toRefreshQrcode = async () => {
-  let {data, code, msg} = await loginQrcode()
-  if (code == 200) {
-    loginQrcodeText.value = data.data
-  } else {
-    layer.msg(msg, {icon: 2})
+const initQrcode = async () => {
+  qrcodeLoading.value = true
+  try {
+    const res = await fetch(import.meta.env.VITE_APP_BASE_URL + '/api/sysLoginController/qrcode/generate')
+    const json = await res.json()
+    if (json.code === 200 && json.data) {
+      qrcodeTicket.value = json.data.ticket
+      qrcodeStatus.value = 'pending'
+      startQrPoll(json.data.ticket)
+    }
+  } catch (e) {
+    console.error('生成二维码失败', e)
+  }
+  qrcodeLoading.value = false
+}
+
+const refreshQrcode = () => {
+  stopQrPoll()
+  initQrcode()
+}
+
+const startQrPoll = (ticket: string) => {
+  stopQrPoll()
+  qrPollTimer = setInterval(async () => {
+    try {
+      const res = await fetch(import.meta.env.VITE_APP_BASE_URL + '/api/sysLoginController/qrcode/status/' + ticket)
+      const json = await res.json()
+      if (json.code === 200 && json.data) {
+        const status = json.data.status
+        qrcodeStatus.value = status
+        if (status === 'confirmed' && json.data.token) {
+          stopQrPoll()
+          userStore.token = json.data.token
+          await userStore.getInfo()
+          await userStore.getRouters()
+          router.push('/')
+        } else if (status === 'expired') {
+          stopQrPoll()
+        }
+      }
+    } catch (e) { /* ignore poll errors */
+    }
+  }, 2000)
+}
+
+const stopQrPoll = () => {
+  if (qrPollTimer) {
+    clearInterval(qrPollTimer)
+    qrPollTimer = null
   }
 }
 

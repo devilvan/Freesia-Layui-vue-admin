@@ -12,7 +12,7 @@
           <view class="login-side">
             <view class="login-bg-title">
               <text class="title">Freesia-Admin</text>
-              <text class="subtitle">开箱即用的 uniapp 企业级前端模板</text>
+<!--              <text class="subtitle">开箱即用的 uniapp 企业级前端模板</text>-->
             </view>
           </view>
           <view class="login-ID">
@@ -68,24 +68,25 @@
             </view>
             <view class="line-wrap">
               <view class="line"></view>
-              <text class="line-text">Other login methods</text>
+<!--              <text class="line-text">Other login methods</text>-->
+              <text class="line-text">其他登录方式</text>
               <view class="line"></view>
             </view>
             <view class="other-ways">
               <view class="way-item" @click="loginWith('wechat')">
-                <image class="way-icon" src="/static/login/w.svg" mode="aspectFit"/>
+                <image class="way-icon" src="/static/login/WX.svg" mode="aspectFit"/>
                 <text class="way-text">微信</text>
               </view>
-              <view class="way-item" @click="loginWith('dingding')">
-                <image class="way-icon" src="/static/login/q.svg" mode="aspectFit"/>
-                <text class="way-text">钉钉</text>
+              <view class="way-item" @click="loginWith('qq')">
+                <image class="way-icon" src="/static/login/QQ.svg" mode="aspectFit"/>
+                <text class="way-text">QQ</text>
               </view>
               <view class="way-item" @click="loginWith('gitee')">
-                <image class="way-icon" src="/static/login/a.svg" mode="aspectFit"/>
+                <image class="way-icon" src="/static/login/Gitee.svg" mode="aspectFit"/>
                 <text class="way-text">Gitee</text>
               </view>
               <view class="way-item" @click="loginWith('github')">
-                <image class="way-icon" src="/static/login/f.svg" mode="aspectFit"/>
+                <image class="way-icon" src="/static/login/Github.svg" mode="aspectFit"/>
                 <text class="way-text">Github</text>
               </view>
             </view>
@@ -332,6 +333,7 @@ export default {
 }
 
 .login-bg-title .title {
+  color: #009688;
   display: block;
   font-size: 48rpx;
   font-weight: bold;
@@ -339,6 +341,7 @@ export default {
 }
 
 .login-bg-title .subtitle {
+  color: #009688;
   display: block;
   font-size: 26rpx;
   opacity: 0.9;

@@ -88,6 +88,9 @@ security:
     - /actuator/**
     # OAuth 单点登录（无需认证）
     - /api/sysLoginController/oauth/**
+    # 二维码扫码登录（generate + status 无需认证，bind 需认证）
+    - /api/sysLoginController/qrcode/generate
+    - /api/sysLoginController/qrcode/status/**
 ---
 # 接口文档
 springdoc:

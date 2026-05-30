@@ -37,4 +37,26 @@ public interface OAuthLoginService {
      * @return token 和跳转地址 Map
      */
     Map<String, Object> oauthLogin(OAuthLoginDto dto);
+
+    /**
+     * 生成扫码登录临时 ticket，存入 Redis（TTL 5分钟）
+     *
+     * @return ticket 信息 Map
+     */
+    Map<String, Object> generateQrcodeTicket();
+
+    /**
+     * 轮询 ticket 状态：pending / confirmed（含 token）/ expired
+     *
+     * @param ticket 临时凭证
+     * @return 状态 + token
+     */
+    Map<String, Object> checkQrcodeStatus(String ticket);
+
+    /**
+     * 小程序扫码后将 ticket 与当前登录用户绑定
+     *
+     * @param ticket 临时凭证
+     */
+    void bindQrcodeTicket(String ticket);
 }
