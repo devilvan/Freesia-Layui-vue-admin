@@ -125,6 +125,20 @@ export default {
   },
   methods: {
     async init() {
+      // 已有 token 则直接跳转主页
+      const token = uni.getStorageSync('token')
+      if (token) {
+        try {
+          const userStore = useUserStore()
+          if (!userStore.state.sysTenantDtoList || userStore.state.sysTenantDtoList.length === 0) {
+            await userStore.getInfo()
+          }
+          uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
+          return
+        } catch (e) {
+          console.error('自动登录失败', e)
+        }
+      }
       await uni.$getPublicKey()
       const {data, code} = await findCaptchaEnabled()
       if (code === 200 && data === true) {
