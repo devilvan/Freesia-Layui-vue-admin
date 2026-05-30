@@ -274,7 +274,7 @@ export default {
           }
           uni.showLoading({title: '绑定中...'})
           try {
-            const apiRes: any = await Http.post('/api/sysLoginController/qrcode/bind', {ticket})
+            const apiRes = await Http.post('/api/sysLoginController/qrcode/bind', {ticket})
             if (apiRes.code === 200) {
               uni.showToast({title: 'PC端登录成功', icon: 'success'})
             } else {
