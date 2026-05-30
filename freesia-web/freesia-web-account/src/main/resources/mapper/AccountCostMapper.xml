@@ -727,6 +727,9 @@
         <if test="accountCostDto.costDesc != null and accountCostDto.costDesc != ''">
             AND AC.COST_DESC like CONCAT('%', #{accountCostDto.costDesc}, '%')
         </if>
+        <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
+            AND AC.COST_TYPE like CONCAT('%', #{accountCostDto.costType}, '%')
+        </if>
         <if test="accountCostDto.remark != null and accountCostDto.remark != ''">
             AND AC.REMARK LIKE CONCAT('%', #{accountCostDto.remark}, '%')
         </if>
@@ -770,6 +773,9 @@
         AND AC.USER_ID <![CDATA[<>]]> #{accountCostDto.userId}
         <if test="accountCostDto.costDesc != null and accountCostDto.costDesc != ''">
             AND AC.COST_DESC like CONCAT('%', #{accountCostDto.costDesc}, '%')
+        </if>
+        <if test="accountCostDto.costType != null and accountCostDto.costType != ''">
+            AND AC.COST_TYPE like CONCAT('%', #{accountCostDto.costType}, '%')
         </if>
         <if test="accountCostDto.remark != null and accountCostDto.remark != ''">
             AND AC.REMARK LIKE CONCAT('%', #{accountCostDto.remark}, '%')
