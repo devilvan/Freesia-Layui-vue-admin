@@ -41,4 +41,15 @@ public interface SysRoleRepository extends JpaRepository<SysRolePo, Long> {
                 DELETE FROM SysRoleDeptPo WHERE sysRoleDeptPk.roleId = :roleId
             """)
     void removeDeptRelationByRoleId(@Param("roleId") Long roleId);
+
+    /**
+     * 查询默认角色
+     *
+     * @return 默认角色信息
+     */
+    @Query(value = """
+                SELECT sysRolePo FROM SysRolePo sysRolePo WHERE sysRolePo.roleKey = :roleKey
+            """)
+    SysRolePo findCommonRole(@Param("roleKey") String roleKey);
+
 }

@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.freesia.dto.OAuthTokenResponse;
 import com.freesia.dto.OAuthUserInfo;
+import com.freesia.json.util.UJSON;
 import com.freesia.net.builder.HttpBuilder;
 import com.freesia.net.component.HttpClientComponent;
 import com.freesia.net.dto.HttpClientDto;
@@ -15,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +43,11 @@ public class GiteeOAuthProvider implements OAuthProvider {
         }
         StringBuilder url = new StringBuilder(OAuthProviderType.GITEE.getAuthorizeUrl());
         url.append("?client_id=").append(config.getClientId());
-        url.append("&redirect_uri=").append(redirectUri);
+        try {
+            url.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name()));
+        } catch (UnsupportedEncodingException e) {
+            url.append("&redirect_uri=").append(redirectUri);
+        }
         url.append("&response_type=code");
         url.append("&state=").append(state);
         if (config.getScopes() != null && !config.getScopes().isEmpty()) {
@@ -66,17 +74,13 @@ public class GiteeOAuthProvider implements OAuthProvider {
                 .build();
         String responseBody = httpClientComponent.doExecute(httpClientDto);
 
-        JSONObject json = JSONUtil.parseObj(responseBody);
-        if (json.containsKey("error")) {
-            throw new RuntimeException("Gitee OAuth Token 获取失败: " + json.getStr("error_description"));
+        OAuthTokenResponse response = UJSON.parseObject(responseBody, OAuthTokenResponse.class);
+        if (response != null) {
+            if (UEmpty.isNotEmpty(response.getError())) {
+                throw new RuntimeException("Gitee OAuth Token 获取失败: " + response.getErrorDescription());
+            }
         }
-        OAuthTokenResponse resp = new OAuthTokenResponse();
-        resp.setAccessToken(json.getStr("access_token"));
-        resp.setExpiresIn(json.getLong("expires_in"));
-        resp.setRefreshToken(json.getStr("refresh_token"));
-        resp.setTokenType(json.getStr("token_type"));
-        resp.setScope(json.getStr("scope"));
-        return resp;
+        return response;
     }
 
     @Override

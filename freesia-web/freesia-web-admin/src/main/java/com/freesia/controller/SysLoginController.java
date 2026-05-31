@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -69,18 +68,23 @@ public class SysLoginController extends BaseController {
     @GetMapping("oauth/callback/{provider}")
     public void oauthCallback(@PathVariable String provider,
                               @RequestParam String code,
-                              @RequestParam String state,
+                              @RequestParam(required = false) String state,
                               javax.servlet.http.HttpServletResponse response) {
         Map<String, Object> result = oAuthLoginService.handleCallback(provider, code, state);
         String token = (String) result.get(Constants.TOKEN);
         String frontendRedirectUrl = (String) result.getOrDefault("redirectUrl", "/");
         try {
-            // 重定向到前端回调页，token 通过 URL 参数传递
-            String redirectTo = frontendRedirectUrl;
-            if (redirectTo.contains("?")) {
-                redirectTo += "&token=" + token;
+            // 将 token 放在 hash 之前，hash 路由模式下才能读取到
+            String redirectTo;
+            int hashIdx = frontendRedirectUrl.indexOf('#');
+            if (hashIdx >= 0) {
+                redirectTo = frontendRedirectUrl.substring(0, hashIdx)
+                        + "?token=" + token
+                        + frontendRedirectUrl.substring(hashIdx);
+            } else if (frontendRedirectUrl.contains("?")) {
+                redirectTo = frontendRedirectUrl + "&token=" + token;
             } else {
-                redirectTo += "?token=" + token;
+                redirectTo = frontendRedirectUrl + "?token=" + token;
             }
             response.sendRedirect(redirectTo);
         } catch (Exception e) {
@@ -96,7 +100,7 @@ public class SysLoginController extends BaseController {
         return R.ok(result);
     }
 
-    // ==================== 二维码扫码登录 ====================
+    // ==================== 二维码扫码登录 ====================1
 
     @SaIgnore
     @Operation(summary = "生成扫码登录二维码 ticket")

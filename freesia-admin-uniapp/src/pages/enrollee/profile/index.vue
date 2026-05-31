@@ -99,11 +99,6 @@
       </view>
     </view>
 
-    <!-- 扫码登录PC端 -->
-    <view class="lay-card" style="margin-top: 30rpx">
-      <button class="lay-btn lay-btn-primary lay-btn-block" @click="scanQrcodeLogin">扫码登录PC端</button>
-    </view>
-
     <!-- 退出登录 -->
     <view class="lay-card" style="margin-top: 30rpx">
       <button class="lay-btn lay-btn-danger lay-btn-block" @click="doLogout">退出登录</button>
@@ -263,35 +258,6 @@ export default {
       uni.showToast({title: '头像上传功能开发中', icon: 'none'})
     }
 
-    const scanQrcodeLogin = () => {
-      uni.scanCode({
-        onlyFromCamera: true,
-        success: async (res) => {
-          const ticket = res.result?.trim()
-          if (!ticket) {
-            uni.showToast({title: '无效的二维码', icon: 'none'})
-            return
-          }
-          uni.showLoading({title: '绑定中...'})
-          try {
-            const apiRes = await Http.post('/api/sysLoginController/qrcode/bind', {ticket})
-            if (apiRes.code === 200) {
-              uni.showToast({title: 'PC端登录成功', icon: 'success'})
-            } else {
-              uni.showToast({title: apiRes.msg || '绑定失败', icon: 'none'})
-            }
-          } catch (e) {
-            uni.showToast({title: '网络错误', icon: 'none'})
-          } finally {
-            uni.hideLoading()
-          }
-        },
-        fail: () => {
-          // 用户取消扫码
-        }
-      })
-    }
-
     const doLogout = () => {
       uni.showModal({
         title: '确认退出',
@@ -319,7 +285,7 @@ export default {
       userStore, activeTab, profile, editForm, deptName,
       genderRange, genderIndex, genderDisplay, bindingList,
       onGenderChange, submitProfile, resetForm,
-      showAvatarUpload, scanQrcodeLogin, doLogout
+      showAvatarUpload, doLogout
     }
   }
 }

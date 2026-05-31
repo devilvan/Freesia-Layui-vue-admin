@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +42,11 @@ public class GithubOAuthProvider implements OAuthProvider {
         }
         StringBuilder url = new StringBuilder(OAuthProviderType.GITHUB.getAuthorizeUrl());
         url.append("?client_id=").append(config.getClientId());
-        url.append("&redirect_uri=").append(redirectUri);
+        try {
+            url.append("&redirect_uri=").append(URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name()));
+        } catch (UnsupportedEncodingException e) {
+            url.append("&redirect_uri=").append(redirectUri);
+        }
         url.append("&state=").append(state);
         if (config.getScopes() != null && !config.getScopes().isEmpty()) {
             url.append("&scope=").append(String.join(" ", config.getScopes()));

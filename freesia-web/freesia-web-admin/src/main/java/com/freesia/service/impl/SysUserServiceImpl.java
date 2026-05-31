@@ -1,12 +1,10 @@
 package com.freesia.service.impl;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
 import com.freesia.constant.UserModule;
@@ -30,8 +28,11 @@ import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.properties.LoginPasswordProperties;
+import com.freesia.repository.SysRoleRepository;
 import com.freesia.repository.SysUserRepository;
 import com.freesia.repository.SysUserRoleRepository;
+import com.freesia.satoken.bean.SysSensitiveLogBean;
+import com.freesia.satoken.constant.UserType;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysTenantService;
@@ -40,6 +41,7 @@ import com.freesia.util.*;
 import com.freesia.vo.SysUserVo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,7 @@ import java.util.stream.Collectors;
  * @Description 用户信息表 业务逻辑类
  * @date 2023-08-14
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo, SysUserDto, SysUserPo> implements SysUserService {
@@ -63,6 +66,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
     private final SysDeptMapper sysDeptMapper;
     private final SysTenantService sysTenantService;
     private final SysUserRoleRepository sysUserRoleRepository;
+    private final SysRoleRepository sysRoleRepository;
     private final SysUserConverter sysUserConverter;
     private final SysTenantConverter sysTenantConverter;
 
@@ -143,8 +147,36 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
     @Override
     @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.REGISTER, message = "user.register")
     public boolean register(SysUserDto sysUserDto) {
-        SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
-        return Convert.toBool(sysUserRepository.save(sysUserPo), false);
+        return Boolean.TRUE.equals(transactionTemplate.execute(status -> {
+            SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
+            sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
+            sysUserPo.setAccountStatus(FlagConstant.ENABLED);
+            sysUserPo.setLogicDel(false);
+            if (sysUserPo.getDeptId() == null) {
+                sysUserPo.setDeptId(1L);
+            }
+            if (UEmpty.isEmpty(sysUserPo.getUserType())) {
+                sysUserPo.setUserType(UserType.SYS_USER.getUserType());
+            }
+            sysUserPo = sysUserRepository.save(sysUserPo);
+
+            // 赋予默认角色并分配菜单权限
+            try {
+                SysRolePo defaultRole = sysRoleRepository.findById(2L).orElse(null);
+                if (ObjectUtil.isNotNull(defaultRole)) {
+                    SysUserRolePo ur = new SysUserRolePo();
+                    ur.setSysRoleMenuPk(new SysUserRolePk(sysUserPo.getId(), defaultRole.getId()));
+                    sysUserRoleRepository.saveAndFlush(ur);
+                    log.info("注册用户[{}]成功赋予角色: {}", sysUserDto.getUserName(), defaultRole.getRoleKey());
+                } else {
+                    log.warn("注册用户[{}]未找到默认角色(ID=2)", sysUserDto.getUserName());
+                }
+            } catch (Exception e) {
+                log.error("注册用户[{}]赋予默认角色失败: {}", sysUserDto.getUserName(), e.getMessage(), e);
+            }
+
+            return sysUserPo.getId() != null;
+        }));
     }
 
     @Override

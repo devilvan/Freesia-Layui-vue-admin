@@ -4,14 +4,10 @@ import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.freesia.constant.Constants;
-import com.freesia.constant.FlagConstant;
 import com.freesia.constant.UserModule;
-import com.freesia.dto.OAuthUserInfo;
-import com.freesia.dto.OAuthTokenResponse;
-import com.freesia.dto.SysThirdpartyAuthDto;
-import com.freesia.dto.SysUserDto;
-import com.freesia.dto.OAuthLoginDto;
+import com.freesia.dto.*;
 import com.freesia.exception.ServiceException;
+import com.freesia.po.SysDeptPo;
 import com.freesia.po.SysUserPo;
 import com.freesia.properties.OAuthProperties;
 import com.freesia.redis.util.URedis;
@@ -47,6 +43,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
     private final SysLoginService sysLoginService;
     private final SysUserService sysUserService;
     private final SysThirdpartyAuthService sysThirdpartyAuthService;
+    private final SysDeptService sysDeptService;
 
     @Override
     public String buildAuthorizeUrl(String provider, String redirectUrl) {
@@ -70,20 +67,19 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Object> handleCallback(String provider, String code, String state) {
-        // 校验 state
-        Object stateObj = URedis.get(OAUTH_STATE_PREFIX + state);
-        if (stateObj == null) {
-            throw new ServiceException(UserModule.SubModule.LOGIN, "oauth.state.invalid");
-        }
         String frontendRedirectUrl = "/";
-        if (stateObj instanceof Map) {
-            Map<String, String> stateData = (Map<String, String>) stateObj;
-            if (stateData.containsKey("redirectUrl")) {
-                frontendRedirectUrl = stateData.get("redirectUrl");
+        if (state != null && !state.isEmpty()) {
+            // 校验 state
+            Object stateObj = URedis.get(OAUTH_STATE_PREFIX + state);
+            if (stateObj instanceof Map) {
+                Map<String, String> stateData = (Map<String, String>) stateObj;
+                if (stateData.containsKey("redirectUrl")) {
+                    frontendRedirectUrl = stateData.get("redirectUrl");
+                }
             }
+            // 删除已使用的 state
+            URedis.delete(OAUTH_STATE_PREFIX + state);
         }
-        // 删除已使用的 state
-        URedis.delete(OAUTH_STATE_PREFIX + state);
 
         OAuthProviderType type = OAuthProviderType.getInstanceByCode(provider);
         if (type == null) {
@@ -123,6 +119,12 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             sysUserDto.setUserName(generatedUsername);
             sysUserDto.setNickName(userInfo.getNickName());
             sysUserDto.setAvatar(userInfo.getAvatar());
+            // 20260531-Bliss 查询默认部门
+            SysDeptPo defaultDept = sysDeptService.findCacheDefaultDept();
+            if (ObjectUtil.isNull(defaultDept)) {
+                throw new ServiceException(UserModule.SubModule.LOGIN, "default.dept.not.found");
+            }
+            sysUserDto.setDeptId(defaultDept.getId());
             boolean registered = sysUserService.register(sysUserDto);
             if (!registered) {
                 throw new ServiceException(UserModule.SubModule.LOGIN, "oauth.user.register.failed");
@@ -136,8 +138,10 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             }
         }
 
-        // Step 4: 保存/更新 SYS_THIRDPARTY_AUTH 绑定
-        saveOrUpdateThirdpartyAuth(userInfo, tokenResp, sysUserPo.getUserName(), existAuth);
+        // Step 4: 保存/更新 SYS_THIRDPARTY_AUTH 绑定（未过期则跳过更新）
+        if (isAuthExpired(existAuth)) {
+            saveOrUpdateThirdpartyAuth(userInfo, tokenResp, sysUserPo.getUserName(), existAuth);
+        }
 
         // Step 5: 登录
         LoginUserModel loginUserModel = sysLoginService.buildLoginUser(sysUserPo);
@@ -180,12 +184,24 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
         authDto.setTokenType(tokenResp.getTokenType());
         authDto.setScope(tokenResp.getScope());
         authDto.setEmail(userInfo.getEmail());
-        if (ObjectUtil.isNull(existAuth)) {
-            sysThirdpartyAuthService.saveUpdate(authDto);
-        } else {
-            authDto.setId(existAuth.getId());
-            sysThirdpartyAuthService.saveUpdate(authDto);
+        // 设置 token 过期时间（单位：毫秒）
+        if (tokenResp.getExpiresIn() != null && tokenResp.getExpiresIn() > 0) {
+            authDto.setExpireTimeout(System.currentTimeMillis() + tokenResp.getExpiresIn() * 1000);
         }
+        if (ObjectUtil.isNotNull(existAuth)) {
+            authDto.setId(existAuth.getId());
+        }
+        sysThirdpartyAuthService.saveUpdate(authDto);
+    }
+
+    /**
+     * 判断第三方授权记录是否已过期
+     */
+    private boolean isAuthExpired(SysThirdpartyAuthDto existAuth) {
+        if (ObjectUtil.isNull(existAuth)) return true; // 不存在 = 过期
+        Long expireTimeout = existAuth.getExpireTimeout();
+        if (expireTimeout == null || expireTimeout <= 0) return true; // 无过期时间 = 过期
+        return System.currentTimeMillis() > expireTimeout;
     }
 
     // ==================== 二维码扫码登录 ====================

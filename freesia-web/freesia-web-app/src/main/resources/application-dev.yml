@@ -277,8 +277,8 @@ xxl:
 oauth:
   providers:
     gitee:
-      client-id: ${GITEE_CLIENT_ID:}
-      client-secret: ${GITEE_CLIENT_SECRET:}
+      client-id: ${GITEE_CLIENT_ID:2968807b6c7d6403f62e59b4972e3ac15166fa2c1828c27ed4ca40c2fb79332d}
+      client-secret: ${GITEE_CLIENT_SECRET:eebc1bb2caf6cd34ae3f93c6ed1d098b16ce323b48129816240d9008f8389b8c}
       redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/gitee
       scopes:
         - user_info

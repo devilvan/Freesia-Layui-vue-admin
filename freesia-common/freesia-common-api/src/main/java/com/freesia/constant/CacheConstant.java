@@ -83,4 +83,8 @@ public final class CacheConstant {
      * 管理模块-查询自定义列中间表 缓存键
      */
     public static final String SYS_COLUMN_MIDDLE = "sys_column_middle";
+    /**
+     * 管理模块-查询部门树 缓存键
+     */
+    public static final String DEFAULT_DEPT = "default_dept";
 }

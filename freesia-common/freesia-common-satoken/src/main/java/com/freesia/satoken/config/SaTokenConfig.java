@@ -19,6 +19,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Evad.Wu
  * @Description Sa-Token 配置类
@@ -32,6 +35,12 @@ public class SaTokenConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 合并 YAML 配置的白名单 + 代码中硬编码的 OAuth 白名单
+        List<String> excludes = new ArrayList<>(securityProperties.getExcludes());
+        excludes.add("/api/sysLoginController/oauth/**");
+        excludes.add("/api/sysLoginController/qrcode/generate");
+        excludes.add("/api/sysLoginController/qrcode/status/**");
+
         // 注册路由拦截器，自定义验证规则
         registry.addInterceptor(new SaInterceptor(handler -> {
             MappingsComponent mappingsComponent = USpring.getBean("mappings", MappingsComponent.class);
@@ -43,7 +52,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     .check(StpUtil::checkLogin);
         })).addPathPatterns("/**")
                 // 排除不需要拦截的路径
-                .excludePathPatterns(securityProperties.getExcludes());
+                .excludePathPatterns(excludes.toArray(new String[0]));
     }
 
     @Bean

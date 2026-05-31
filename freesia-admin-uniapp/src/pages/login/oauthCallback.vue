@@ -18,10 +18,17 @@ export default {
 
     onMounted(async () => {
       try {
-        // H5 模式下从 URL query 读取 token
+        // H5 模式：优先从 search 读（token 在 hash 之前），其次从 hash 中解析
         // #ifdef H5
-        const urlParams = new URLSearchParams(window.location.search)
-        const token = urlParams.get('token')
+        let token = new URLSearchParams(window.location.search).get('token')
+        if (!token) {
+          // hash 路由下 token 可能在 # 之后：/#/pages/callback?token=xxx
+          const hash = window.location.hash
+          const qi = hash.indexOf('?')
+          if (qi >= 0) {
+            token = new URLSearchParams(hash.substring(qi)).get('token')
+          }
+        }
         // #endif
         // #ifndef H5
         const token = ''
