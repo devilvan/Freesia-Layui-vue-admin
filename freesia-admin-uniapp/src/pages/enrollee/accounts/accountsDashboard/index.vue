@@ -37,7 +37,10 @@
             backgroundColor: getProgressColor(item.outlay, item.budget)
           }"></view>
         </view>
-        <text class="text-muted" style="font-size:22rpx">{{ item.durationFrom || '--' }} ~ {{ item.durationTo || '--' }}</text>
+        <text class="text-muted" style="font-size:22rpx">{{ item.durationFrom || '--' }} ~ {{
+            item.durationTo || '--'
+          }}
+        </text>
         <view class="budget-actions">
           <text class="budget-action-btn" @click="openBudgetModal(item)">设置预算</text>
           <text class="budget-action-btn" @click="openReportModal(item)">历史数据</text>
@@ -60,13 +63,17 @@
             </view>
             <view class="lay-form-item">
               <text class="lay-form-label required">预算金额</text>
-              <input class="lay-input modal-input" type="digit" placeholder="请输入预算金额" v-model="budgetForm.outlay"/>
+              <input class="lay-input modal-input" type="digit" placeholder="请输入预算金额"
+                     v-model="budgetForm.outlay"/>
             </view>
             <view class="lay-form-item">
               <text class="lay-form-label required">预算日期类型</text>
               <picker mode="selector" :range="budgetTypeRange" @change="onBudgetTypeChange">
                 <view class="lay-select modal-input">
-                  <text :class="{ placeholder: !budgetForm.budgetTypeName }">{{ budgetForm.budgetTypeName || '请选择' }}</text>
+                  <text :class="{ placeholder: !budgetForm.budgetTypeName }">{{
+                      budgetForm.budgetTypeName || '请选择'
+                    }}
+                  </text>
                   <text class="arrow">▼</text>
                 </view>
               </picker>
@@ -76,7 +83,10 @@
                 <text class="lay-form-label required">时间范围从</text>
                 <picker mode="date" :value="budgetForm.durationFrom" @change="onBudgetFromChange">
                   <view class="lay-select modal-input">
-                    <text :class="{ placeholder: !budgetForm.durationFrom }">{{ budgetForm.durationFrom || '请选择' }}</text>
+                    <text :class="{ placeholder: !budgetForm.durationFrom }">{{
+                        budgetForm.durationFrom || '请选择'
+                      }}
+                    </text>
                     <text class="arrow">▼</text>
                   </view>
                 </picker>
@@ -85,7 +95,10 @@
                 <text class="lay-form-label required">时间范围到</text>
                 <picker mode="date" :value="budgetForm.durationTo" @change="onBudgetToChange">
                   <view class="lay-select modal-input">
-                    <text :class="{ placeholder: !budgetForm.durationTo }">{{ budgetForm.durationTo || '请选择' }}</text>
+                    <text :class="{ placeholder: !budgetForm.durationTo }">{{
+                        budgetForm.durationTo || '请选择'
+                      }}
+                    </text>
                     <text class="arrow">▼</text>
                   </view>
                 </picker>
@@ -93,7 +106,8 @@
             </view>
             <view class="lay-form-item">
               <text class="lay-form-label">备注</text>
-              <textarea class="lay-textarea modal-input" placeholder="请输入备注" v-model="budgetForm.remark"></textarea>
+              <textarea class="lay-textarea modal-input" placeholder="请输入备注"
+                        v-model="budgetForm.remark"></textarea>
             </view>
           </view>
         </view>
@@ -117,7 +131,10 @@
               <text class="lay-form-label">开始时间</text>
               <picker mode="date" :value="reportQuery.billingTimeFrom" @change="onReportFromChange">
                 <view class="lay-select">
-                  <text :class="{ placeholder: !reportQuery.billingTimeFrom }">{{ reportQuery.billingTimeFrom || '请选择' }}</text>
+                  <text :class="{ placeholder: !reportQuery.billingTimeFrom }">{{
+                      reportQuery.billingTimeFrom || '请选择'
+                    }}
+                  </text>
                   <text class="arrow">▼</text>
                 </view>
               </picker>
@@ -126,7 +143,10 @@
               <text class="lay-form-label">结束时间</text>
               <picker mode="date" :value="reportQuery.billingTimeTo" @change="onReportToChange">
                 <view class="lay-select">
-                  <text :class="{ placeholder: !reportQuery.billingTimeTo }">{{ reportQuery.billingTimeTo || '请选择' }}</text>
+                  <text :class="{ placeholder: !reportQuery.billingTimeTo }">{{
+                      reportQuery.billingTimeTo || '请选择'
+                    }}
+                  </text>
                   <text class="arrow">▼</text>
                 </view>
               </picker>
@@ -136,14 +156,19 @@
             <button class="lay-btn lay-btn-sm lay-btn-primary" @click="loadReportData">查询</button>
             <button class="lay-btn lay-btn-sm" @click="resetReportQuery">重置</button>
           </view>
-          <view v-if="reportLoading" class="lay-empty"><text class="empty-text">加载中...</text></view>
+          <view v-if="reportLoading" class="lay-empty">
+            <text class="empty-text">加载中...</text>
+          </view>
           <view v-else-if="reportList.length === 0" class="lay-empty">
             <text class="empty-text">暂无数据</text>
           </view>
           <view v-else class="report-list">
             <view v-for="(r, i) in reportList" :key="i" class="report-item">
               <view class="flex-row justify-between">
-                <text style="font-size:24rpx;color:#666">{{ r.billingTimeFrom || '--' }} ~ {{ r.billingTimeTo || '--' }}</text>
+                <text style="font-size:24rpx;color:#666">{{ r.billingTimeFrom || '--' }} ~ {{
+                    r.billingTimeTo || '--'
+                  }}
+                </text>
                 <text style="font-size:22rpx;color:#999">{{ getBudgetTypeName(r.budgetType) }}</text>
               </view>
               <view class="report-amount-grid">
@@ -168,7 +193,9 @@
           </view>
         </view>
         <view class="lay-modal-footer">
-          <button class="lay-btn lay-btn-sm" @click="updateOneBudgetAmount" :disabled="reportList.length === 0">更新报表预算金额</button>
+          <button class="lay-btn lay-btn-sm" @click="updateOneBudgetAmount" :disabled="reportList.length === 0">
+            更新报表预算金额
+          </button>
           <button class="lay-btn lay-btn-sm" @click="closeReportModal">关闭</button>
         </view>
       </view>
@@ -180,13 +207,17 @@
         <text>消费排名</text>
         <view class="lay-btn-group gap-xs">
           <button class="lay-btn lay-btn-sm" :class="{ 'lay-btn-primary': rankType === 'WEEK' }"
-                  @click="loadRank('WEEK')">周</button>
+                  @click="loadRank('WEEK')">周
+          </button>
           <button class="lay-btn lay-btn-sm" :class="{ 'lay-btn-primary': rankType === 'MONTH' }"
-                  @click="loadRank('MONTH')">月</button>
+                  @click="loadRank('MONTH')">月
+          </button>
         </view>
       </view>
 
-      <view v-if="rankLoading" class="lay-empty"><text class="empty-text">加载中...</text></view>
+      <view v-if="rankLoading" class="lay-empty">
+        <text class="empty-text">加载中...</text>
+      </view>
       <view v-else-if="rankList.length === 0" class="lay-empty">
         <text class="empty-icon">📊</text>
         <text class="empty-text">暂无排名数据</text>
@@ -203,7 +234,10 @@
             <text class="ellipsis" style="flex:1">{{ item.name }}</text>
             <view class="rank-amounts">
               <text class="text-expense" style="font-size:24rpx">支 {{ formatMoney(item.totalExpenses) }}</text>
-              <text class="text-income" style="font-size:24rpx; margin-left:10rpx">收 {{ formatMoney(item.totalIncome) }}</text>
+              <text class="text-income" style="font-size:24rpx; margin-left:10rpx">收 {{
+                  formatMoney(item.totalIncome)
+                }}
+              </text>
             </view>
           </view>
         </view>
@@ -224,7 +258,9 @@
               <view class="detail-dot" :style="{ backgroundColor: getDetailColor(i) }"></view>
               <text style="flex:1;font-size:26rpx">{{ d.name }}</text>
               <text style="font-size:26rpx;font-weight:bold;color:#ff5722">{{ formatMoney(d.value) }}</text>
-              <text style="font-size:22rpx;color:#999;margin-left:8rpx;min-width:70rpx;text-align:right">{{ getDetailPercent(d, rankDetailExpenseTotal) }}%</text>
+              <text style="font-size:22rpx;color:#999;margin-left:8rpx;min-width:70rpx;text-align:right">
+                {{ getDetailPercent(d, rankDetailExpenseTotal) }}%
+              </text>
             </view>
             <view class="rank-detail-total">
               <text>支出合计</text>
@@ -237,7 +273,9 @@
               <view class="detail-dot" :style="{ backgroundColor: getDetailColor(expenseDetails.length + i) }"></view>
               <text style="flex:1;font-size:26rpx">{{ d.name }}</text>
               <text style="font-size:26rpx;font-weight:bold;color:#5fb878">{{ formatMoney(d.value) }}</text>
-              <text style="font-size:22rpx;color:#999;margin-left:8rpx;min-width:70rpx;text-align:right">{{ getDetailPercent(d, rankDetailIncomeTotal) }}%</text>
+              <text style="font-size:22rpx;color:#999;margin-left:8rpx;min-width:70rpx;text-align:right">
+                {{ getDetailPercent(d, rankDetailIncomeTotal) }}%
+              </text>
             </view>
             <view class="rank-detail-total">
               <text>收入合计</text>
@@ -287,7 +325,8 @@
       <view v-for="item in pieList" :key="item.name" class="pie-legend-row">
         <view class="flex-row align-center gap-sm" style="flex:1">
           <view class="legend-dot" :style="{ backgroundColor: getPieColor(item) }"></view>
-          <image v-if="item.icon" :src="item.icon" mode="aspectFit" style="width:32rpx;height:32rpx;border-radius:6rpx"/>
+          <image v-if="item.icon" :src="item.icon" mode="aspectFit"
+                 style="width:32rpx;height:32rpx;border-radius:6rpx"/>
           <text class="ellipsis">{{ item.name }}</text>
         </view>
         <view class="flex-row align-center gap-sm">
@@ -349,18 +388,18 @@ export default {
     const expenseDetails = computed(() => {
       if (rankDetailIndex.value < 0) return []
       return rawRankSeries.value
-        .filter(s => s.stack !== 'INCOME')
-        .map(s => ({ name: s.name, value: s.value?.[rankDetailIndex.value] || 0 }))
-        .filter(d => d.value > 0)
-        .sort((a, b) => b.value - a.value)
+          .filter(s => s.stack !== 'INCOME')
+          .map(s => ({name: s.name, value: s.value?.[rankDetailIndex.value] || 0}))
+          .filter(d => d.value > 0)
+          .sort((a, b) => b.value - a.value)
     })
     const incomeDetails = computed(() => {
       if (rankDetailIndex.value < 0) return []
       return rawRankSeries.value
-        .filter(s => s.stack === 'INCOME')
-        .map(s => ({ name: s.name, value: s.value?.[rankDetailIndex.value] || 0 }))
-        .filter(d => d.value > 0)
-        .sort((a, b) => b.value - a.value)
+          .filter(s => s.stack === 'INCOME')
+          .map(s => ({name: s.name, value: s.value?.[rankDetailIndex.value] || 0}))
+          .filter(d => d.value > 0)
+          .sort((a, b) => b.value - a.value)
     })
     const rankDetailExpenseTotal = computed(() => expenseDetails.value.reduce((sum, d) => sum + d.value, 0))
     const rankDetailIncomeTotal = computed(() => incomeDetails.value.reduce((sum, d) => sum + d.value, 0))
@@ -379,13 +418,14 @@ export default {
     const reportList = ref([])
     const reportLoading = ref(false)
     const reportBudgetId = ref('')
-    const reportQuery = reactive({ billingTimeFrom: '', billingTimeTo: '' })
+    const reportQuery = reactive({billingTimeFrom: '', billingTimeTo: ''})
 
     // 饼图配色
     const pieColors = ['#ff5722', '#ffb800', '#1e9fff', '#5fb878', '#009688', '#3963bc', '#998adb', '#ff9a9e', '#36b368', '#2d8cf0']
 
     const formatMoney = (val) => {
-      if (val == null) return '0.00'; return Number(val).toFixed(2)
+      if (val == null) return '0.00';
+      return Number(val).toFixed(2)
     }
     const getPercent = (outlay, budget) => {
       if (!budget || budget === 0) return 0
@@ -393,7 +433,9 @@ export default {
     }
     const getProgressColor = (outlay, budget) => {
       const pct = getPercent(outlay, budget)
-      if (pct >= 90) return '#ff5722'; if (pct >= 70) return '#ffb800'; return '#5fb878'
+      if (pct >= 90) return '#ff5722';
+      if (pct >= 70) return '#ffb800';
+      return '#5fb878'
     }
 
     const getPieColor = (item) => {
@@ -423,7 +465,7 @@ export default {
     }
     const getRankBarColor = (idx) => {
       const colors = ['rgba(255, 87, 34, 0.15)', 'rgba(255, 184, 0, 0.12)', 'rgba(30, 159, 255, 0.12)',
-                       'rgba(95, 184, 120, 0.12)', 'rgba(0, 150, 136, 0.12)']
+        'rgba(95, 184, 120, 0.12)', 'rgba(0, 150, 136, 0.12)']
       return colors[idx] || 'rgba(0, 0, 0, 0.05)'
     }
 
@@ -443,8 +485,12 @@ export default {
     const loadBudget = async () => {
       try {
         const res = await findBudgetCapacity({allTenantFlag: allTenantFlag.value})
-        if (res.code === 200 && res.data) { capacityList.value = res.data || [] }
-      } catch (e) { console.error('加载预算失败', e) }
+        if (res.code === 200 && res.data) {
+          capacityList.value = res.data || []
+        }
+      } catch (e) {
+        console.error('加载预算失败', e)
+      }
     }
 
     const getBudgetColor = (val) => {
@@ -467,7 +513,9 @@ export default {
         if (res.code === 200 && res.data) {
           budgetTypeOptions.value = res.data
         }
-      } catch (e) { console.error('加载预算类型失败', e) }
+      } catch (e) {
+        console.error('加载预算类型失败', e)
+      }
     }
 
     const openBudgetModal = async (item) => {
@@ -477,18 +525,38 @@ export default {
           const d = res.data
           const bt = budgetTypeOptions.value.find(t => (t.value || t.dictValue) === d.budgetType)
           Object.assign(budgetForm, {
-            id: d.id || '', budgetDesc: d.budgetDesc || '', outlay: d.outlay != null ? String(d.outlay) : '',
-            budgetType: d.budgetType || '', budgetTypeName: bt ? (bt.valueName || bt.dictLabel || bt.label || '') : '',
-            durationFrom: d.durationFrom || '', durationTo: d.durationTo || '', remark: d.remark || ''
+            id: d.id || '',
+            recVer: d.recVer || '',
+            logicDel: d.logicDel || false,
+            budgetDesc: d.budgetDesc || '',
+            outlay: d.outlay != null ? String(d.outlay) : '',
+            budgetType: d.budgetType || '',
+            budgetTypeName: bt ? (bt.valueName || bt.dictLabel || bt.label || '') : '',
+            durationFrom: d.durationFrom || '',
+            durationTo: d.durationTo || '',
+            remark: d.remark || ''
           })
         }
-      } catch (e) { console.error('加载预算详情失败', e) }
+      } catch (e) {
+        console.error('加载预算详情失败', e)
+      }
       showBudgetModal.value = true
     }
 
     const closeBudgetModal = () => {
       showBudgetModal.value = false
-      Object.assign(budgetForm, {id: '', budgetDesc: '', outlay: '', budgetType: '', budgetTypeName: '', durationFrom: '', durationTo: '', remark: ''})
+      Object.assign(budgetForm, {
+        id: '',
+        recVer: '',
+        logicDel: false,
+        budgetDesc: '',
+        outlay: '',
+        budgetType: '',
+        budgetTypeName: '',
+        durationFrom: '',
+        durationTo: '',
+        remark: ''
+      })
     }
 
     const onBudgetTypeChange = (e) => {
@@ -502,19 +570,35 @@ export default {
       }
     }
 
-    const onBudgetFromChange = (e) => { budgetForm.durationFrom = e.detail.value }
-    const onBudgetToChange = (e) => { budgetForm.durationTo = e.detail.value }
+    const onBudgetFromChange = (e) => {
+      budgetForm.durationFrom = e.detail.value
+    }
+    const onBudgetToChange = (e) => {
+      budgetForm.durationTo = e.detail.value
+    }
 
     const submitBudget = async () => {
-      if (!budgetForm.budgetDesc) { uni.showToast({title: '请输入预算描述', icon: 'none'}); return }
-      if (!budgetForm.outlay || Number(budgetForm.outlay) <= 0) { uni.showToast({title: '请输入有效预算金额', icon: 'none'}); return }
-      if (!budgetForm.budgetType) { uni.showToast({title: '请选择预算日期类型', icon: 'none'}); return }
+      if (!budgetForm.budgetDesc) {
+        uni.showToast({title: '请输入预算描述', icon: 'none'});
+        return
+      }
+      if (!budgetForm.outlay || Number(budgetForm.outlay) <= 0) {
+        uni.showToast({title: '请输入有效预算金额', icon: 'none'});
+        return
+      }
+      if (!budgetForm.budgetType) {
+        uni.showToast({title: '请选择预算日期类型', icon: 'none'});
+        return
+      }
       if (budgetForm.budgetType === 'CUSTOM' && (!budgetForm.durationFrom || !budgetForm.durationTo)) {
-        uni.showToast({title: '自定义类型请选择时间范围', icon: 'none'}); return
+        uni.showToast({title: '自定义类型请选择时间范围', icon: 'none'});
+        return
       }
       try {
         const params = {
           id: budgetForm.id || undefined,
+          recVer: budgetForm.recVer || undefined,
+          logicDel: budgetForm.logicDel || false,
           budgetDesc: budgetForm.budgetDesc,
           outlay: Number(budgetForm.outlay),
           budgetType: budgetForm.budgetType,
@@ -528,7 +612,9 @@ export default {
           closeBudgetModal()
           loadBudget()
         }
-      } catch (e) { uni.showToast({title: '保存失败', icon: 'none'}) }
+      } catch (e) {
+        uni.showToast({title: '保存失败', icon: 'none'})
+      }
     }
 
     // ===== 历史数据弹窗 =====
@@ -541,10 +627,16 @@ export default {
       loadReportData()
     }
 
-    const closeReportModal = () => { showReportModal.value = false }
+    const closeReportModal = () => {
+      showReportModal.value = false
+    }
 
-    const onReportFromChange = (e) => { reportQuery.billingTimeFrom = e.detail.value }
-    const onReportToChange = (e) => { reportQuery.billingTimeTo = e.detail.value }
+    const onReportFromChange = (e) => {
+      reportQuery.billingTimeFrom = e.detail.value
+    }
+    const onReportToChange = (e) => {
+      reportQuery.billingTimeTo = e.detail.value
+    }
 
     const resetReportQuery = () => {
       reportQuery.billingTimeFrom = ''
@@ -555,7 +647,7 @@ export default {
     const loadReportData = async () => {
       reportLoading.value = true
       try {
-        const params = { budgetId: reportBudgetId.value }
+        const params = {budgetId: reportBudgetId.value}
         if (reportQuery.billingTimeFrom && reportQuery.billingTimeTo) {
           params.billingTimeRange = [reportQuery.billingTimeFrom + ' 00:00:00', reportQuery.billingTimeTo + ' 23:59:59']
         }
@@ -563,8 +655,11 @@ export default {
         if (res.code === 200) {
           reportList.value = res.rows || res.records || []
         }
-      } catch (e) { console.error('加载历史数据失败', e) }
-      finally { reportLoading.value = false }
+      } catch (e) {
+        console.error('加载历史数据失败', e)
+      } finally {
+        reportLoading.value = false
+      }
     }
 
     const updateOneBudgetAmount = async () => {
@@ -576,7 +671,9 @@ export default {
           loadReportData()
           loadBudget()
         }
-      } catch (e) { uni.showToast({title: '更新失败', icon: 'none'}) }
+      } catch (e) {
+        uni.showToast({title: '更新失败', icon: 'none'})
+      }
     }
 
     const onPieStartChange = (e) => {
@@ -589,7 +686,8 @@ export default {
     }
 
     const loadRank = async (type) => {
-      rankType.value = type; rankLoading.value = true
+      rankType.value = type;
+      rankLoading.value = true
       try {
         const res = await findRankByCostType({dateScope: type, allTenantFlag: allTenantFlag.value})
         if (res.code === 200 && res.data) {
@@ -608,8 +706,11 @@ export default {
             return item
           })
         }
-      } catch (e) { console.error('加载排名失败', e) }
-      finally { rankLoading.value = false }
+      } catch (e) {
+        console.error('加载排名失败', e)
+      } finally {
+        rankLoading.value = false
+      }
     }
 
     const loadPie = async () => {
@@ -625,12 +726,14 @@ export default {
           const data = res.data
           const rawSeries = data.series || []
           pieList.value = rawSeries
-            .map(item => ({ name: item.name, value: Number(item.value) || 0 }))
-            .filter(item => item.value > 0)
-            .sort((a, b) => b.value - a.value)
+              .map(item => ({name: item.name, value: Number(item.value) || 0}))
+              .filter(item => item.value > 0)
+              .sort((a, b) => b.value - a.value)
           pieTotal.value = data.totalAmount || pieList.value.reduce((sum, item) => sum + item.value, 0)
         }
-      } catch (e) { console.error('加载分布失败', e) }
+      } catch (e) {
+        console.error('加载分布失败', e)
+      }
     }
 
     const onTenantChange = (e) => {
@@ -638,13 +741,17 @@ export default {
       const tenant = tenantList.value[idx]
       if (tenant && tenant.id) {
         userStore.setCurrentTenant(tenant.id)
-        loadBudget(); loadRank(rankType.value); loadPie()
+        loadBudget();
+        loadRank(rankType.value);
+        loadPie()
       }
     }
 
     const doChangeAllTenantFlag = () => {
       allTenantFlag.value = !allTenantFlag.value
-      loadBudget(); loadRank(rankType.value); loadPie()
+      loadBudget();
+      loadRank(rankType.value);
+      loadPie()
     }
 
     const initPieDateRange = () => {
@@ -655,7 +762,13 @@ export default {
       pieDateStart.value = `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`
     }
 
-    onMounted(() => { loadBudgetTypes(); loadBudget(); loadRank('WEEK'); initPieDateRange(); loadPie() })
+    onMounted(() => {
+      loadBudgetTypes();
+      loadBudget();
+      loadRank('WEEK');
+      initPieDateRange();
+      loadPie()
+    })
 
     return {
       allTenantFlag, capacityList, rankList, pieList, pieTotal,
@@ -684,7 +797,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.page-wrap { min-height: 100vh; padding-bottom: 40rpx; }
+.page-wrap {
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
 
 /* 租户选择栏 */
 .tenant-bar {
@@ -716,16 +832,31 @@ export default {
 }
 
 .budget-item {
-  margin-bottom: 24rpx; padding-bottom: 20rpx;
+  margin-bottom: 24rpx;
+  padding-bottom: 20rpx;
   border-bottom: 1px solid #f0f0f0;
-  &:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
 }
 
 .progress-bar {
-  height: 16rpx; background: #f0f0f0;
-  border-radius: 8rpx; margin-bottom: 8rpx; overflow: hidden;
+  height: 16rpx;
+  background: #f0f0f0;
+  border-radius: 8rpx;
+  margin-bottom: 8rpx;
+  overflow: hidden;
 }
-.progress-fill { height: 100%; border-radius: 8rpx; transition: width 0.3s; min-width: 4rpx; }
+
+.progress-fill {
+  height: 100%;
+  border-radius: 8rpx;
+  transition: width 0.3s;
+  min-width: 4rpx;
+}
 
 /* 预算卡片操作按钮 */
 .budget-actions {
@@ -805,56 +936,130 @@ export default {
 
 /* 饼图 */
 .pie-visual {
-  display: flex; justify-content: center; padding: 30rpx 0;
+  display: flex;
+  justify-content: center;
+  padding: 30rpx 0;
 }
+
 .pie-ring {
-  width: 260rpx; height: 260rpx; border-radius: 50%;
+  width: 260rpx;
+  height: 260rpx;
+  border-radius: 50%;
   background: conic-gradient(#f0f0f0 0deg, #f0f0f0 360deg);
-  position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .pie-center {
-  position: absolute; z-index: 2;
-  display: flex; flex-direction: column; align-items: center;
-  background: #fff; width: 160rpx; height: 160rpx;
-  border-radius: 50%; justify-content: center;
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  justify-content: center;
 }
-.pie-total { font-size: 28rpx; font-weight: 700; color: #333; }
+
+.pie-total {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #333;
+}
 
 .pie-legend-row {
-  padding: 14rpx 0; border-bottom: 1px solid #f5f5f5;
-  &:last-child { border-bottom: none; }
+  padding: 14rpx 0;
+  border-bottom: 1px solid #f5f5f5;
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
-.legend-dot { width: 16rpx; height: 16rpx; border-radius: 50%; flex-shrink: 0; }
+
+.legend-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 .pie-mini-bar {
-  height: 8rpx; background: #f5f5f5; border-radius: 4rpx;
-  margin-top: 8rpx; overflow: hidden;
+  height: 8rpx;
+  background: #f5f5f5;
+  border-radius: 4rpx;
+  margin-top: 8rpx;
+  overflow: hidden;
 }
-.pie-mini-fill { height: 100%; border-radius: 4rpx; transition: width 0.3s; min-width: 4rpx; }
+
+.pie-mini-fill {
+  height: 100%;
+  border-radius: 4rpx;
+  transition: width 0.3s;
+  min-width: 4rpx;
+}
 
 /* 排名 */
 .rank-item {
-  position: relative; overflow: hidden;
-  margin-bottom: 4rpx; border-radius: 4rpx;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 4rpx;
+  border-radius: 4rpx;
 }
+
 .rank-bar-bg {
-  position: absolute; top: 0; left: 0; bottom: 0;
-  border-radius: 4rpx; transition: width 0.3s; z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  border-radius: 4rpx;
+  transition: width 0.3s;
+  z-index: 0;
 }
+
 .rank-item-content {
-  position: relative; z-index: 1;
-  display: flex; align-items: center; gap: 16rpx;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
   padding: 16rpx 12rpx;
 }
-.rank-amounts { display: flex; flex-direction: column; align-items: flex-end; }
+
+.rank-amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .rank-badge {
-  width: 44rpx; height: 44rpx; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22rpx; font-weight: bold; color: #fff; background: #999;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: bold;
+  color: #fff;
+  background: #999;
   flex-shrink: 0;
-  &.rank-1 { background: #ff5722; }
-  &.rank-2 { background: #ffb800; }
-  &.rank-3 { background: #1e9fff; }
+
+  &.rank-1 {
+    background: #ff5722;
+  }
+
+  &.rank-2 {
+    background: #ffb800;
+  }
+
+  &.rank-3 {
+    background: #1e9fff;
+  }
 }
 
 /* 饼图时间选择 - 单行 */
