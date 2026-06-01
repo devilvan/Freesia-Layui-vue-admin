@@ -27,6 +27,7 @@ public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
     private final SysOssConfigService sysOssConfigService;
     private final SysOssService sysOssService;
     private final CryptService cryptService;
+    private final SysRoleService sysRoleService;
     private final SysDeptService sysDeptService;
 
     @Override
@@ -47,7 +48,11 @@ public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
             cryptService.initRsa();
             log.info(UMessage.message("crypt.init.success"));
         }
-        sysDeptService.initDefaultDept();
+        // 检查并初始化默认角色
+        sysRoleService.buildInitDefaultSysRole();
+        log.info(UMessage.message("role.init.success"));
+        // 检查并初始化默认部门
+        sysDeptService.buildInitDefaultSysDept();
         log.info(UMessage.message("dept.init.success"));
     }
 

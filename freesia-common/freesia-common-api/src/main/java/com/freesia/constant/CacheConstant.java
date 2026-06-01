@@ -87,4 +87,8 @@ public final class CacheConstant {
      * 管理模块-查询部门树 缓存键
      */
     public static final String DEFAULT_DEPT = "default_dept";
+    /**
+     * 管理模块-查询默认角色 缓存键
+     */
+    public static final String DEFAULT_ROLE = "default_role";
 }

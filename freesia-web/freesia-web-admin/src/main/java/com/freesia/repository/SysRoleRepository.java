@@ -48,8 +48,8 @@ public interface SysRoleRepository extends JpaRepository<SysRolePo, Long> {
      * @return 默认角色信息
      */
     @Query(value = """
-                SELECT sysRolePo FROM SysRolePo sysRolePo WHERE sysRolePo.roleKey = :roleKey
+                SELECT sysRolePo FROM SysRolePo sysRolePo WHERE sysRolePo.roleKey = :roleKey and sysRolePo.buildIn = true
             """)
-    SysRolePo findCommonRole(@Param("roleKey") String roleKey);
+    SysRolePo findCacheDefaultRole(@Param("roleKey") String roleKey);
 
 }

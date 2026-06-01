@@ -13,6 +13,7 @@ import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.converter.SysDeptConverter;
 import com.freesia.dto.SysDeptDto;
+import com.freesia.dto.SysRoleDto;
 import com.freesia.entity.FindDeptRolesByDeptIdEntity;
 import com.freesia.entity.FindPageSysDeptListEntity;
 import com.freesia.entity.FindTreeDeptSelectEntity;
@@ -30,11 +31,11 @@ import com.freesia.pojo.TableResult;
 import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysDeptRepository;
 import com.freesia.repository.SysRoleDeptRepository;
-import com.freesia.repository.SysRoleRepository;
 import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysDeptService;
+import com.freesia.service.SysRoleService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
 import com.freesia.vo.SysDeptVo;
@@ -64,7 +65,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptVo
     private final SysRoleDeptRepository sysRoleDeptRepository;
     private final SysUserService sysUserService;
     private final SysDeptConverter sysDeptConverter;
-    private final SysRoleRepository sysRoleRepository;
+    private final SysRoleService sysRoleService;
 
 
     @Override
@@ -246,13 +247,10 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptVo
     }
 
     @Override
-    public SysDeptPo initDefaultDept() {
-        SysDeptPo sysDeptPo = (SysDeptPo) URedis.get(CacheConstant.DEFAULT_DEPT);
-        if (sysDeptPo != null) {
-            return sysDeptPo;
-        }
-        SysRolePo sysRolePo = sysRoleRepository.findCommonRole(AdminConstant.RoleKey.COMMON.getCode());
-        return transactionTemplate.execute(status -> {
+    public void buildInitDefaultSysDept() {
+        SysRoleDto sysRoleDto = sysRoleService.findCacheDefaultRole();
+        SysDeptPo sysDeptPo = sysDeptRepository.findCacheDefaultDept();
+        if (sysDeptPo == null) {
             SysDeptPo sysDeptPoParam = new SysDeptPo();
             sysDeptPoParam.setParentId(AdminConstant.DEPT_TOP_PARENT_ID);
             sysDeptPoParam.setAncestors(AdminConstant.DEPT_TOP_PARENT_ID + "");
@@ -261,20 +259,22 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptVo
             sysDeptPoParam.setLeader("system");
             sysDeptPoParam.setDeptStatus(FlagConstant.ENABLED);
             sysDeptPoParam.setBuildIn(true);
-            SysDeptPo sysDeptPoSave = sysDeptRepository.save(sysDeptPoParam);
-            if (sysRolePo != null) {
+            sysDeptPo = transactionTemplate.execute(status -> {
+                SysDeptPo sysDeptPoSave = sysDeptRepository.save(sysDeptPoParam);
                 // 绑定角色：普通用户
-                sysRoleDeptRepository.save(new SysRoleDeptPo(new SysRoleDeptPk(sysDeptPoSave.getId(), sysRolePo.getId())));
-            }
-            URedis.set(CacheConstant.DEFAULT_DEPT, sysDeptPoSave);
-            return sysDeptPoSave;
-        });
+                sysRoleDeptRepository.save(new SysRoleDeptPo(new SysRoleDeptPk(sysDeptPoSave.getId(), sysRoleDto.getId())));
+                URedis.set(CacheConstant.DEFAULT_DEPT, sysDeptPoSave);
+                return sysDeptPoSave;
+            });
+        }
+        SysDeptDto sysDeptDto = UCopy.copyPo2Dto(sysDeptPo, SysDeptDto.class);
+        URedis.set(CacheConstant.DEFAULT_DEPT, sysDeptDto);
     }
 
     @Override
-    public SysDeptPo findCacheDefaultDept() {
-        SysDeptPo sysDeptPo = (SysDeptPo) URedis.get(CacheConstant.DEFAULT_DEPT);
-        return sysDeptPo != null ? sysDeptPo : sysDeptRepository.findCacheDefaultDept();
+    public SysDeptDto findCacheDefaultDept() {
+        SysDeptDto sysDeptDto = (SysDeptDto) URedis.get(CacheConstant.DEFAULT_DEPT);
+        return sysDeptDto != null ? sysDeptDto : UCopy.copyPo2Dto(sysDeptRepository.findCacheDefaultDept(), SysDeptDto.class);
     }
 
     private FindTreeDeptSelectEntity buildDeptTopParent() {

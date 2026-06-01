@@ -11,6 +11,7 @@ import com.freesia.constant.UserModule;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.converter.SysTenantConverter;
 import com.freesia.converter.SysUserConverter;
+import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
@@ -28,13 +29,13 @@ import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.properties.LoginPasswordProperties;
-import com.freesia.repository.SysRoleRepository;
 import com.freesia.repository.SysUserRepository;
 import com.freesia.repository.SysUserRoleRepository;
 import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.satoken.constant.UserType;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.service.SysRoleService;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
@@ -66,7 +67,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
     private final SysDeptMapper sysDeptMapper;
     private final SysTenantService sysTenantService;
     private final SysUserRoleRepository sysUserRoleRepository;
-    private final SysRoleRepository sysRoleRepository;
+    private final SysRoleService sysRoleService;
     private final SysUserConverter sysUserConverter;
     private final SysTenantConverter sysTenantConverter;
 
@@ -152,9 +153,6 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
             sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
             sysUserPo.setAccountStatus(FlagConstant.ENABLED);
             sysUserPo.setLogicDel(false);
-            if (sysUserPo.getDeptId() == null) {
-                sysUserPo.setDeptId(1L);
-            }
             if (UEmpty.isEmpty(sysUserPo.getUserType())) {
                 sysUserPo.setUserType(UserType.SYS_USER.getUserType());
             }
@@ -162,7 +160,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
 
             // 赋予默认角色并分配菜单权限
             try {
-                SysRolePo defaultRole = sysRoleRepository.findById(2L).orElse(null);
+                SysRoleDto defaultRole = sysRoleService.findCacheDefaultRole();
                 if (ObjectUtil.isNotNull(defaultRole)) {
                     SysUserRolePo ur = new SysUserRolePo();
                     ur.setSysRoleMenuPk(new SysUserRolePk(sysUserPo.getId(), defaultRole.getId()));

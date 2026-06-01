@@ -7,7 +7,6 @@ import com.freesia.constant.Constants;
 import com.freesia.constant.UserModule;
 import com.freesia.dto.*;
 import com.freesia.exception.ServiceException;
-import com.freesia.po.SysDeptPo;
 import com.freesia.po.SysUserPo;
 import com.freesia.properties.OAuthProperties;
 import com.freesia.redis.util.URedis;
@@ -120,7 +119,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             sysUserDto.setNickName(userInfo.getNickName());
             sysUserDto.setAvatar(userInfo.getAvatar());
             // 20260531-Bliss 查询默认部门
-            SysDeptPo defaultDept = sysDeptService.findCacheDefaultDept();
+            SysDeptDto defaultDept = sysDeptService.findCacheDefaultDept();
             if (ObjectUtil.isNull(defaultDept)) {
                 throw new ServiceException(UserModule.SubModule.LOGIN, "default.dept.not.found");
             }

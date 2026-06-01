@@ -132,4 +132,16 @@ public interface SysRoleService {
      * @param sysRoleDto 入参
      */
     void deleteRole(SysRoleDto sysRoleDto);
+
+    /**
+     * 初始化默认角色
+     */
+    void buildInitDefaultSysRole();
+
+    /**
+     * 查询默认角色
+     *
+     * @return 默认角色
+     */
+    SysRoleDto findCacheDefaultRole();
 }
