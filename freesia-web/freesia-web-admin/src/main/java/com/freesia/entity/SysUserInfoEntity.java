@@ -2,6 +2,7 @@ package com.freesia.entity;
 
 import com.freesia.controller.SysLoginController;
 import com.freesia.dto.SysTenantDto;
+import com.freesia.dto.SysThirdpartyAuthDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -24,5 +25,7 @@ public class SysUserInfoEntity {
     private Set<String> permissions;
     @Schema(description = "租户信息")
     private List<SysTenantDto> sysTenantDtoList;
+    @Schema(description = "第三方平台授权绑定列表（含头像、邮箱、昵称等第三方平台信息）")
+    private List<SysThirdpartyAuthDto> sysThirdpartyAuthList;
 
 }

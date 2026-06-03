@@ -31,7 +31,7 @@ public interface SysThirdpartyAuthMapper extends BaseMapper<SysThirdpartyAuthPo>
      * @param sysThirdpartyAuthDto 查询条件
      * @return 分页信息
      */
-    List<SysThirdpartyAuthDto> findList(@Param(value = "dto") SysThirdpartyAuthDto sysThirdpartyAuthDto);
+    List<SysThirdpartyAuthPo> findList(@Param(value = "dto") SysThirdpartyAuthDto sysThirdpartyAuthDto);
 
     /**
      * 查询第三方平台授权表信息

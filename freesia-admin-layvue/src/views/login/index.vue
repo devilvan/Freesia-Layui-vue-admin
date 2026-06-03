@@ -131,7 +131,6 @@ onMounted(async () => {
       toRefreshImg();
     }
   }
-  initQrcode()
 })
 /* INIT*/
 
@@ -205,57 +204,6 @@ const toRefreshImg = () => {
     }
   })
   // }, 1000)
-}
-const initQrcode = async () => {
-  qrcodeLoading.value = true
-  try {
-    const res = await fetch(import.meta.env.VITE_APP_BASE_URL + '/api/sysLoginController/qrcode/generate')
-    const json = await res.json()
-    if (json.code === 200 && json.data) {
-      qrcodeTicket.value = json.data.ticket
-      qrcodeStatus.value = 'pending'
-      startQrPoll(json.data.ticket)
-    }
-  } catch (e) {
-    console.error('生成二维码失败', e)
-  }
-  qrcodeLoading.value = false
-}
-
-const refreshQrcode = () => {
-  stopQrPoll()
-  initQrcode()
-}
-
-const startQrPoll = (ticket: string) => {
-  stopQrPoll()
-  qrPollTimer = setInterval(async () => {
-    try {
-      const res = await fetch(import.meta.env.VITE_APP_BASE_URL + '/api/sysLoginController/qrcode/status/' + ticket)
-      const json = await res.json()
-      if (json.code === 200 && json.data) {
-        const status = json.data.status
-        qrcodeStatus.value = status
-        if (status === 'confirmed' && json.data.token) {
-          stopQrPoll()
-          userStore.token = json.data.token
-          await userStore.getInfo()
-          await userStore.getRouters()
-          router.push('/')
-        } else if (status === 'expired') {
-          stopQrPoll()
-        }
-      }
-    } catch (e) { /* ignore poll errors */
-    }
-  }, 2000)
-}
-
-const stopQrPoll = () => {
-  if (qrPollTimer) {
-    clearInterval(qrPollTimer)
-    qrPollTimer = null
-  }
 }
 
 const oauthLogin = (provider: string) => {

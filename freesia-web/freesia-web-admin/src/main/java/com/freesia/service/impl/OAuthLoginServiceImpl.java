@@ -118,6 +118,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             sysUserDto.setUserName(generatedUsername);
             sysUserDto.setNickName(userInfo.getNickName());
             sysUserDto.setAvatar(userInfo.getAvatar());
+            sysUserDto.setEmail(userInfo.getEmail());
             // 20260531-Bliss 查询默认部门
             SysDeptDto defaultDept = sysDeptService.findCacheDefaultDept();
             if (ObjectUtil.isNull(defaultDept)) {
@@ -131,7 +132,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             sysUserPo = sysUserService.findByUsername(generatedUsername);
         } else {
             String username = existAuth.getUserName();
-            sysUserPo = sysUserService.findOneByUsername(username);
+            sysUserPo = sysUserService.findByUsername(username);
             if (ObjectUtil.isNull(sysUserPo)) {
                 throw new ServiceException(UserModule.SubModule.LOGIN, "user.not.exists", new Object[]{username});
             }

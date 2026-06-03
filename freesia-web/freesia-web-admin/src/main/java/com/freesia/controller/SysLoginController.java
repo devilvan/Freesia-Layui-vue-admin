@@ -16,6 +16,7 @@ import com.freesia.satoken.util.USecurity;
 import com.freesia.service.*;
 import com.freesia.util.UCollection;
 import com.freesia.util.UCopy;
+import com.freesia.util.UEmpty;
 import com.freesia.util.UMessage;
 import com.freesia.vo.LoginVo;
 import com.freesia.vo.R;
@@ -46,6 +47,7 @@ public class SysLoginController extends BaseController {
     private final SysTenantService sysTenantService;
     private final SysConfigService sysConfigService;
     private final OAuthLoginService oAuthLoginService;
+    private final SysThirdpartyAuthService sysThirdpartyAuthService;
 
     // ==================== OAuth 单点登录 ====================
 
@@ -167,6 +169,16 @@ public class SysLoginController extends BaseController {
         SysUserInfoEntity sysUserInfoEntity = sysUserDto2Entity(sysUserDto, loginUserModel);
         List<SysTenantDto> sysTenantPoList = sysTenantService.findListSysTenantByUserId(loginUserModel.getUserId());
         sysUserInfoEntity.setSysTenantDtoList(sysTenantPoList);
+
+        // 查询第三方平台授权绑定列表（含头像、邮箱、昵称等第三方平台信息）
+        SysThirdpartyAuthDto queryAuth = new SysThirdpartyAuthDto();
+        queryAuth.setUserName(loginUserModel.getUsername());
+        List<SysThirdpartyAuthDto> authList = sysThirdpartyAuthService.findList(queryAuth);
+        sysUserInfoEntity.setSysThirdpartyAuthList(authList);
+
+        // 如果用户实体中缺少头像、邮箱、昵称，则从第三方授权记录中补充
+        enrichUserFromThirdpartyAuth(sysUserInfoEntity.getUser(), authList);
+
         return R.ok(sysUserInfoEntity);
     }
 
@@ -214,5 +226,33 @@ public class SysLoginController extends BaseController {
         sysUserInfoEntity.setRoles(loginUserModel.getRolePermission());
         sysUserInfoEntity.setPermissions(loginUserModel.getMenuPermission());
         return sysUserInfoEntity;
+    }
+
+    /**
+     * 当用户实体中缺少头像、邮箱、昵称时，从第三方授权记录中补充
+     * <p>
+     * 第三方登录（Gitee/GitHub/微信等）注册时虽然会把头像等写入 SYS_USER 表，
+     * 但后续第三方平台更新信息时只会更新 SYS_THIRDPARTY_AUTH 表。
+     * 此方法确保 getInfo 始终返回最新的第三方用户信息。
+     *
+     * @param userEntity 用户实体（会被直接修改）
+     * @param authList   第三方授权绑定列表
+     */
+    private void enrichUserFromThirdpartyAuth(SysUserEntity userEntity,
+                                               List<SysThirdpartyAuthDto> authList) {
+        if (userEntity == null || UEmpty.isEmpty(authList)) {
+            return;
+        }
+        for (SysThirdpartyAuthDto auth : authList) {
+            if (UEmpty.isEmpty(userEntity.getAvatar()) && UEmpty.isNotEmpty(auth.getAvatar())) {
+                userEntity.setAvatar(auth.getAvatar());
+            }
+            if (UEmpty.isEmpty(userEntity.getEmail()) && UEmpty.isNotEmpty(auth.getEmail())) {
+                userEntity.setEmail(auth.getEmail());
+            }
+            if (UEmpty.isEmpty(userEntity.getNickName()) && UEmpty.isNotEmpty(auth.getNickName())) {
+                userEntity.setNickName(auth.getNickName());
+            }
+        }
     }
 }
