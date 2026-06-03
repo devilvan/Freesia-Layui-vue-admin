@@ -29,6 +29,7 @@ public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
     private final CryptService cryptService;
     private final SysRoleService sysRoleService;
     private final SysDeptService sysDeptService;
+    private final SysMenuService sysMenuService;
 
     @Override
     public void run(ApplicationArguments args) {

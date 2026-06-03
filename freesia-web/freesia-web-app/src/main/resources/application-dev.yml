@@ -50,6 +50,18 @@ freesia:
       init-sys-dict: true
       # 是否初始化后端公钥
       init-secret-key: true
+    menu:
+      path:
+        - workSpace
+        - worldClock
+        - enrollee
+        - profile
+        - message
+        - accounts
+        - accountsDashboard
+        - mine
+        - accountsDashboard
+        - budget
     tenant:
       enabled: true
       tenant-column: TENANT_ID
@@ -99,7 +111,7 @@ login.password:
 # 生成验证码
 captcha:
   type: CALCULATE
-  strategy: CIRCLE
+  strategy: SHEAR
   numberLength: 1
   charLength: 4
 ---

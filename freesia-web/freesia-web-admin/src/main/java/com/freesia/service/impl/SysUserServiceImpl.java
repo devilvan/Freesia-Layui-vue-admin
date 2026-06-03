@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
+import com.freesia.constant.SysTenantType;
 import com.freesia.constant.UserModule;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.converter.SysTenantConverter;
@@ -29,6 +30,7 @@ import com.freesia.po.*;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.properties.LoginPasswordProperties;
+import com.freesia.repository.SysTenantUserRepository;
 import com.freesia.repository.SysUserRepository;
 import com.freesia.repository.SysUserRoleRepository;
 import com.freesia.satoken.bean.SysSensitiveLogBean;
@@ -70,6 +72,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
     private final SysRoleService sysRoleService;
     private final SysUserConverter sysUserConverter;
     private final SysTenantConverter sysTenantConverter;
+    private final SysTenantUserRepository sysTenantUserRepository;
 
     @Override
     protected MapStructConverter<SysUserVo, SysUserDto, SysUserPo> getMapStructConverter() {
@@ -172,7 +175,19 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
             } catch (Exception e) {
                 log.error("注册用户[{}]赋予默认角色失败: {}", sysUserDto.getUserName(), e.getMessage(), e);
             }
-
+            // 初始化租户
+            if (UEmpty.isEmpty(sysUserDto.getTenantId())) {
+                SysTenantDto sysTenantDto = new SysTenantDto();
+                String code = sysUserPo.getUserName() + "-" + "commonTenant";
+                sysTenantDto.setCode(code);
+                sysTenantDto.setName("我的账本");
+                sysTenantDto.setType(SysTenantType.INDIVIDUAL.getCode());
+                sysTenantDto.setStatus(true);
+                sysTenantDto.setRemark(code);
+                sysTenantDto.setContactName(sysUserPo.getUserName());
+                SysTenantDto saveSysTenantDto = sysTenantService.saveUpdate(sysTenantDto);
+                sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(saveSysTenantDto.getId(), sysUserPo.getId())));
+            }
             return sysUserPo.getId() != null;
         }));
     }
