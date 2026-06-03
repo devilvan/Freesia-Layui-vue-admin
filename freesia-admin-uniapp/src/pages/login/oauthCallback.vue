@@ -10,11 +10,15 @@
 <script>
 import {ref, onMounted} from 'vue'
 import {useUserStore} from '@/store/user'
+// #ifdef H5
+import {setToken} from '@/utils/storage'
+// #endif
 
 export default {
   name: 'OAuthCallback',
   setup() {
     const error = ref('')
+    const loging = ref(false)
 
     onMounted(async () => {
       try {
@@ -34,6 +38,8 @@ export default {
         const token = ''
         // #endif
 
+        console.log('[OAuthCallback] 解析到的 token:', token ? token.substring(0, 20) + '...' : '空')
+
         if (!token) {
           error.value = '缺少登录凭证'
           setTimeout(() => {
@@ -42,11 +48,34 @@ export default {
           return
         }
 
+        // 持久化 token（同时写入 storage 和 cookie），确保后续 API 请求能读取到
+        // #ifdef H5
+        setToken(token)
+        // #endif
         const userStore = useUserStore()
         userStore.setToken(token)
-        await userStore.getInfo()
-        uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
+        console.log('[OAuthCallback] token 已持久化，开始获取用户信息...')
+
+        // 加载用户信息以获取租户列表
+        const userData = await userStore.getInfo()
+        if (!userData) {
+          console.error('[OAuthCallback] 获取用户信息失败，返回值为空')
+          error.value = '获取用户信息失败，请重试'
+          setTimeout(() => {
+            uni.reLaunch({url: '/pages/login/index'})
+          }, 2000)
+          return
+        }
+
+        console.log('[OAuthCallback] 用户信息获取成功，跳转主页')
+        uni.showToast({title: '登录成功', icon: 'success'})
+        // 延迟跳转确保 token 和用户信息完全持久化，与登录页面行为一致
+        setTimeout(() => {
+          // 使用 reLaunch 彻底重置页面栈，避免 OAuth 回调页残留
+          uni.reLaunch({url: '/pages/enrollee/accounts/mine/index'})
+        }, 800)
       } catch (e) {
+        console.error('[OAuthCallback] 回调处理异常:', e)
         error.value = '登录失败'
         setTimeout(() => {
           uni.reLaunch({url: '/pages/login/index'})
@@ -54,7 +83,7 @@ export default {
       }
     })
 
-    return {error}
+    return {error, loging}
   }
 }
 </script>

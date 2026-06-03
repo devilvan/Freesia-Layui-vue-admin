@@ -29,10 +29,20 @@ export const router = createRouter({
  * @param from 来至
  */
 let isGetRouter: boolean = false
+// OAuth 回调、错误页面等无需登录即可访问的路径
+const whiteList = ['/oauth/callback', '/error', '/404']
+
 router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const userStore = useUserStore();
     NProgress.start();
     let token = userStore.token;
+
+    // 白名单路径：无需 token 验证，直接放行
+    if (whiteList.some(path => to.path.startsWith(path))) {
+        next()
+        return
+    }
+
     if (to.path === loginPath) {
         if (!token || token === '') {
             // 如果token不存在，直接跳转到登录页
@@ -44,6 +54,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         } else {
             next()
         }
+        return
     }
     if (token) {
         if (!isGetRouter) {
