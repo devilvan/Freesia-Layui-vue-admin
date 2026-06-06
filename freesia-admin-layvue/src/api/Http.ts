@@ -13,30 +13,97 @@ type TAxiosOption = {
 
 const config: TAxiosOption = {
     timeout: 30000,
-    // import.meta.env 是在运行时获取环境变量的值，适用于应用程序代码中需要动态获取环境变量的场合。（配置文件中获取不到，因为配置文件是在构建时被读取！！！）
     baseURL: import.meta.env.VITE_APP_BASE_URL as string
 }
+
+// ==================== Token 自动续期 ====================
+const RENEW_URL = '/api/sysLoginController/renewToken'
+const RENEW_BEFORE_SECONDS = 300 // 提前5分钟续期
+let renewPromise: Promise<string | null> | null = null
+
+/** 解析 JWT payload（不验证签名） */
+function parseJwt(token: string): { exp: number } | null {
+    try {
+        const base64Url = token.split('.')[1]
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+        const jsonPayload = decodeURIComponent(
+            atob(base64).split('').map(c =>
+                '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+            ).join('')
+        )
+        return JSON.parse(jsonPayload)
+    } catch {
+        return null
+    }
+}
+
+/** token 是否将在 RENEW_BEFORE_SECONDS 内过期 */
+function isTokenExpiringSoon(token: string): boolean {
+    const jwt = parseJwt(token)
+    if (!jwt || !jwt.exp) return false
+    return (jwt.exp - Math.floor(Date.now() / 1000)) < RENEW_BEFORE_SECONDS
+}
+
+/**
+ * 尝试续期，返回新token或null。
+ * 用 renewPromise 锁防止并发续期请求。
+ */
+async function tryRenewToken(currentToken: string): Promise<string | null> {
+    if (renewPromise) return renewPromise
+
+    renewPromise = (async () => {
+        try {
+            const res = await axios({
+                method: 'post',
+                url: config.baseURL + RENEW_URL,
+                headers: { Authorization: 'Bearer ' + currentToken },
+                timeout: 10000
+            })
+            if (res.data?.code === 200 && res.data?.data?.token) {
+                const newToken = res.data.data.token
+                useUserStore().token = newToken
+                return newToken
+            }
+            return null
+        } catch {
+            return null
+        } finally {
+            renewPromise = null
+        }
+    })()
+    return renewPromise
+}
+// ==================== Token 自动续期 END ====================
 
 class Http {
     service;
 
     constructor(config: TAxiosOption) {
         this.service = axios.create(config)
+
         /* 请求拦截 */
-        this.service.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+        this.service.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
             const userInfoStore = useUserStore();
-            if (userInfoStore.token) {
-                (config.headers as AxiosRequestHeaders).Authorization = "Bearer " + userInfoStore.token as string
+            let currentToken = userInfoStore.token;
+
+            // 非续期请求本身，检查token是否需要续期
+            if (currentToken && !config.url?.includes(RENEW_URL)) {
+                if (isTokenExpiringSoon(currentToken)) {
+                    const newToken = await tryRenewToken(currentToken)
+                    if (newToken) currentToken = newToken
+                }
+            }
+
+            if (currentToken) {
+                (config.headers as AxiosRequestHeaders).Authorization = "Bearer " + currentToken
             } else {
-                if (router.currentRoute.value.path !== loginPath) {
+                const path = router.currentRoute.value.path
+                if (path !== loginPath && !path.startsWith('/oauth/callback/')) {
                     router.push(loginPath).then(r => r)
                 }
             }
             config.headers['X-Tenant-Id'] = useAppStore().currentTenant
-            // GET请求
             if (config.method === 'get' && config.params) {
-                // 对查询参数进行 URL 编码
-                // 将编码后的查询参数赋值给原先的params
                 config.params = new URLSearchParams(config.params);
             }
             return config
@@ -52,45 +119,14 @@ class Http {
                 case 200:
                     return responseData;
                 case 401:
-                    router.replace('/error/401').then(r => r)
-                    layer.confirm(
-                        '会话认证失败, 请重新登录1',
-                        {
-                            icon: 2, yes: function () {
-                                userInfoStore.token = ''
-                                router.push(loginPath);
-                                layer.closeAll()
-                            }
-                        });
-                    layer.notify({
-                        title: "提示",
-                        content: "会话认证失败, 请重新登录"
-                    })
                     userInfoStore.token = ''
-                    router.push(loginPath);
-                    layer.closeAll()
-                    return responseData;
+                    router.replace(loginPath)
+                    return Promise.reject(responseData);
                 case 403:
                     router.replace('/error/403').then(r => r)
-                    layer.confirm(
-                        '没有权限访问网站',
-                        {
-                            icon: 2, yes: function () {
-                                router.push('/').then(r => r);
-                                layer.closeAll()
-                            }
-                        });
                     return responseData;
                 case 404:
                     router.replace('/error/404').then(r => r)
-                    layer.confirm(
-                        '找不到该页面',
-                        {
-                            icon: 2, yes: function () {
-                                userInfoStore.token = ''
-                                layer.closeAll()
-                            }
-                        });
                     return responseData;
                 case 500:
                     layer.confirm(responseData.msg, {icon: 2})
@@ -100,31 +136,28 @@ class Http {
             }
             if ('blob' === response.config.responseType) {
                 let contentDisposition = response.headers['content-disposition'];
-                let fileName = 'file'; // 默认文件名
+                let fileName = 'file';
                 if (contentDisposition && contentDisposition.includes('filename=')) {
                     const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
                     const matches = filenameRegex.exec(contentDisposition);
                     if (matches != null && matches[1]) {
                         fileName = matches[1].replace(/['"]/g, '');
-                        // 处理UTF-8编码的文件名
                         if (fileName.includes('%')) {
                             try {
                                 fileName = decodeURIComponent(fileName);
-                            } catch (e) {
-                                layer.confirm('Error decoding filename: ' + e, {icon: 3});
-                            }
+                            } catch (e) { /* ignore */ }
                         }
                     }
                 }
                 let contentType = response.headers["content-type"] as string;
                 const blob = new Blob([responseData], {type: contentType})
-                const fileLink = document.createElement('a') //创建一个a标签通过a标签的点击事件区下载文件
+                const fileLink = document.createElement('a')
                 fileLink.download = fileName
-                fileLink.href = window.URL.createObjectURL(blob) //使用blob创建一个指向类型数组的URL
+                fileLink.href = window.URL.createObjectURL(blob)
                 document.body.appendChild(fileLink)
                 fileLink.style.display = "none"
                 fileLink.click()
-                URL.revokeObjectURL(fileLink.href) // 释放URL 对象
+                URL.revokeObjectURL(fileLink.href)
                 document.body.removeChild(fileLink)
             }
         }, error => {
@@ -132,26 +165,18 @@ class Http {
         })
     }
 
-    /* GET 方法 */
     get<T>(url: string, params?: object, _object = {}): Promise<any> {
         return this.service.get(url, {params, ..._object})
     }
-
-    /* POST 方法 */
     post<T>(url: string, params?: object, _object = {}): Promise<any> {
         return this.service.post(url, params, _object)
     }
-
-    /* PUT 方法 */
     put<T>(url: string, params?: object, _object = {}): Promise<any> {
         return this.service.put(url, params, _object)
     }
-
-    /* DELETE 方法 */
     delete<T>(url: string, params?: any, _object = {}): Promise<any> {
         return this.service.delete(url, {params, ..._object})
     }
-
     getDownload(id: any): Promise<any> {
         return this.service.request({
             url: downloadPath + id,
@@ -159,7 +184,6 @@ class Http {
             responseType: 'blob'
         })
     }
-
     downloadUrl(url: any): Promise<any> {
         return this.service.request({
             url: url,

@@ -106,10 +106,20 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
 
         // Step 3: 查找或创建用户（复用 wxLogin 模式）
         String generatedUsername = type.getCode() + "_" + userInfo.getOpenId();
+        String expectedAuthId = type.name() + "_" + userInfo.getOpenId();
+
+        // 查询已存在的第三方授权记录（先按 openId + source 查）
         SysThirdpartyAuthDto queryDto = new SysThirdpartyAuthDto();
         queryDto.setOpenId(userInfo.getOpenId());
         queryDto.setSource(type.name());
         SysThirdpartyAuthDto existAuth = sysThirdpartyAuthService.findOne(queryDto);
+
+        // 回退查询：通过 authId 查找
+        if (ObjectUtil.isNull(existAuth)) {
+            SysThirdpartyAuthDto authIdQuery = new SysThirdpartyAuthDto();
+            authIdQuery.setAuthId(expectedAuthId);
+            existAuth = sysThirdpartyAuthService.findOne(authIdQuery);
+        }
 
         SysUserPo sysUserPo;
         if (ObjectUtil.isNull(existAuth)) {
@@ -138,10 +148,8 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             }
         }
 
-        // Step 4: 保存/更新 SYS_THIRDPARTY_AUTH 绑定（未过期则跳过更新）
-        if (isAuthExpired(existAuth)) {
-            saveOrUpdateThirdpartyAuth(userInfo, tokenResp, sysUserPo.getUserName(), existAuth);
-        }
+        // Step 4: 保存/更新 SYS_THIRDPARTY_AUTH 绑定（每次登录都刷新 token 和用户信息）
+        saveOrUpdateThirdpartyAuth(userInfo, tokenResp, sysUserPo.getUserName(), existAuth);
 
         // Step 5: 登录
         LoginUserModel loginUserModel = sysLoginService.buildLoginUser(sysUserPo);
@@ -171,6 +179,13 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
 
     private void saveOrUpdateThirdpartyAuth(OAuthUserInfo userInfo, OAuthTokenResponse tokenResp,
                                              String username, SysThirdpartyAuthDto existAuth) {
+        // 如果外部查询未找到，通过 authId 再做最后一次查找
+        if (ObjectUtil.isNull(existAuth)) {
+            SysThirdpartyAuthDto fallbackQuery = new SysThirdpartyAuthDto();
+            fallbackQuery.setAuthId(userInfo.getSource() + "_" + userInfo.getOpenId());
+            existAuth = sysThirdpartyAuthService.findOne(fallbackQuery);
+        }
+
         SysThirdpartyAuthDto authDto = new SysThirdpartyAuthDto();
         authDto.setAuthId(userInfo.getSource() + "_" + userInfo.getOpenId());
         authDto.setSource(userInfo.getSource());
@@ -190,18 +205,10 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
         }
         if (ObjectUtil.isNotNull(existAuth)) {
             authDto.setId(existAuth.getId());
+            authDto.setRecVer(existAuth.getRecVer());
+            authDto.setLogicDel(false);
         }
         sysThirdpartyAuthService.saveUpdate(authDto);
-    }
-
-    /**
-     * 判断第三方授权记录是否已过期
-     */
-    private boolean isAuthExpired(SysThirdpartyAuthDto existAuth) {
-        if (ObjectUtil.isNull(existAuth)) return true; // 不存在 = 过期
-        Long expireTimeout = existAuth.getExpireTimeout();
-        if (expireTimeout == null || expireTimeout <= 0) return true; // 无过期时间 = 过期
-        return System.currentTimeMillis() > expireTimeout;
     }
 
     // ==================== 二维码扫码登录 ====================

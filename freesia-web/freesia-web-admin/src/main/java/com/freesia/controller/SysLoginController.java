@@ -1,6 +1,7 @@
 package com.freesia.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
@@ -156,6 +157,23 @@ public class SysLoginController extends BaseController {
     public R<Void> sysLogOut() {
         sysLoginService.logout();
         return R.ok();
+    }
+
+    @Operation(summary = "续期Token，使用当前有效token换取新token以延长有效期")
+    @PostMapping("renewToken")
+    public R<Map<String, Object>> renewToken() {
+        String loginId = StpUtil.getLoginIdAsString();
+        LoginUserModel loginUser = USecurity.getLoginUser();
+        // 重新登录生成新JWT，is-share=true 时共享同一session，不会丢失用户信息
+        StpUtil.login(loginId);
+        // 确保新token session中有完整的用户信息
+        if (loginUser != null) {
+            StpUtil.getTokenSession().set(USecurity.LOGIN_USER_KEY, loginUser);
+        }
+        String newToken = StpUtil.getTokenValue();
+        Map<String, Object> result = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
+        result.put(Constants.TOKEN, newToken);
+        return R.ok(result);
     }
 
     @Operation(summary = "获取用户信息")

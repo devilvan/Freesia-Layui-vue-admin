@@ -39,3 +39,7 @@ export const sseDisconnect = function () {
 export function findCaptchaEnabled(): Promise<R<boolean>> {
     return Http.get("/api/sysLoginController/findCaptchaEnabled");
 }
+
+export const renewToken = function () {
+    return Http.post('/api/sysLoginController/renewToken')
+}
