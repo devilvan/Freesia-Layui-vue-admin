@@ -8,6 +8,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.freesia.constant.*;
 import com.freesia.dto.SysClientDto;
 import com.freesia.dto.SysThirdpartyAuthDto;
+import com.freesia.repository.SysDeptRepository;
 import com.freesia.dto.SysUserDto;
 import com.freesia.dto.WxLoginDto;
 import com.freesia.exception.ServiceException;
@@ -56,6 +57,7 @@ public class SysLoginServiceImpl implements SysLoginService {
     private final SysNoticeService sysNoticeService;
     private final SysThirdpartyAuthService sysThirdpartyAuthService;
     private final SysClientService sysClientService;
+    private final SysDeptRepository sysDeptRepository;
 
 
     @Override
@@ -198,8 +200,11 @@ public class SysLoginServiceImpl implements SysLoginService {
      */
     @Override
     public LoginUserModel buildLoginUser(SysUserPo sysUserPo) {
-        // 获取用户对应的部门
+        // 获取用户对应的部门：优先走 JPA 关联，懒加载失败则显式查询
         SysDeptPo sysDeptPo = sysUserPo.getSysDeptPo();
+        if (UEmpty.isNull(sysDeptPo) && sysUserPo.getDeptId() != null) {
+            sysDeptPo = sysDeptRepository.findById(sysUserPo.getDeptId()).orElse(null);
+        }
         if (UEmpty.isNull(sysDeptPo)) {
             throw new ServiceException(UserModule.SubModule.LOGIN, "user.dept.non.assign", new Object[] {sysUserPo.getUserName()});
         }
@@ -360,7 +365,10 @@ public class SysLoginServiceImpl implements SysLoginService {
             if (ObjectUtil.isNull(loginUser)) {
                 return;
             }
-            StpUtil.logout();
+            // 单点登出：注销该用户在所有设备上的登录态
+            String loginId = StpUtil.getLoginIdAsString();
+            StpUtil.logout(loginId);
+            log.info("单点登出完成: {}", loginId);
         } catch (NotLoginException ignored) {
         }
     }

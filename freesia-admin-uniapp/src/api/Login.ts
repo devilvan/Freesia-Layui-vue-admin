@@ -32,3 +32,7 @@ export const logout = function () {
 export function findCaptchaEnabled() {
   return Http.get("/api/sysLoginController/findCaptchaEnabled")
 }
+
+export const renewToken = function () {
+  return Http.post('/api/sysLoginController/renewToken')
+}

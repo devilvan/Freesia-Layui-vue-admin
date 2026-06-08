@@ -26,5 +26,5 @@ public class LoginPasswordProperties {
     /**
      * 初始化密码
      */
-    private String initPassword = "123456";
+    private String initPassword = "Yjl1048596";
 }

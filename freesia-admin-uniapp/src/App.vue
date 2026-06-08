@@ -1,7 +1,19 @@
 <script>
+import {useUserStore} from '@/store/user'
+import {getToken} from '@/utils/storage'
+
 export default {
-  onLaunch: function () {
+  onLaunch: async function () {
     console.log('App Launch')
+    await uni.$getPublicKey()
+    const token = getToken()
+    if (token) {
+      try {
+        await useUserStore().getInfo()
+      } catch (e) {
+        console.error('加载用户信息失败', e)
+      }
+    }
   },
   onShow: function () {
     console.log('App Show')
@@ -12,6 +24,21 @@ export default {
 }
 </script>
 
-<style>
-/*每个页面公共css */
+<style lang="scss">
+@import "./uni.scss";
+@import "./styles/layui-mobile.scss";
+
+/* 全局重置 */
+page {
+  background-color: #f5f5f5;
+}
+
+/* 滚动条样式 - 仅 H5 */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+}
 </style>

@@ -1,6 +1,9 @@
 package com.freesia.constant;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -93,4 +96,36 @@ public final class AdminConstant {
      * 链接组件标识
      */
     public static final String INNER_LINK = "InnerLink";
+
+    @Getter
+    @AllArgsConstructor
+    public static enum RoleKey {
+        ADMIN("admin"),
+        COMMON("common"),
+        DEPT_UNDERLING("dept_underling"),
+        OWN("own");
+
+        /**
+         * 编码
+         */
+        private final String code;
+
+        /**
+         * 根据编码获取实例
+         *
+         * @param code 编码
+         * @return 实例
+         */
+        public static RoleKey getInstanceByCode(String code) {
+            if (StrUtil.isEmpty(code)) {
+                return null;
+            }
+            for (RoleKey roleKey : RoleKey.values()) {
+                if (roleKey.getCode().equals(code)) {
+                    return roleKey;
+                }
+            }
+            return null;
+        }
+    }
 }

@@ -1,4 +1,18 @@
 import { reactive } from 'vue'
+import {
+  getToken as loadToken,
+  setToken as saveToken,
+  removeToken as deleteToken,
+  getTenantId,
+  setTenantId,
+  removeTenantId,
+  getUserInfo,
+  setUserInfo as saveUserInfo,
+  removeUserInfo,
+  getTenantList,
+  setTenantList as saveTenantList,
+  removeTenantList
+} from '@/utils/storage'
 
 interface UserInfo {
   id?: string
@@ -7,41 +21,77 @@ interface UserInfo {
   avatar?: string
   roles?: string[]
   permissions?: string[]
+  deptId?: string
+  deptName?: string
+}
+
+interface TenantItem {
+  id?: string
+  name?: string
+  code?: string
 }
 
 const state = reactive({
-  token: uni.getStorageSync('token') || '',
-  userInfo: {} as UserInfo
+  token: loadToken() || '',
+  userInfo: {} as UserInfo,
+  noticeCount: 0,
+  announcementCount: 0,
+  sysTenantDtoList: (() => {
+    try {
+      const stored = getTenantList()
+      return stored ? JSON.parse(stored) : []
+    } catch (e) { return [] }
+  })() as TenantItem[],
+  currentTenantId: getTenantId() || ''
 })
 
 export function useUserStore() {
   const setToken = (token: string) => {
     state.token = token
-    uni.setStorageSync('token', token)
+    saveToken(token)
   }
 
   const clearToken = () => {
     state.token = ''
-    uni.removeStorageSync('token')
+    deleteToken()
   }
 
   const setUserInfo = (info: UserInfo) => {
     state.userInfo = info
-    uni.setStorageSync('userInfo', JSON.stringify(info))
+    saveUserInfo(JSON.stringify(info))
   }
 
   const clearUserInfo = () => {
     state.userInfo = {} as UserInfo
-    uni.removeStorageSync('userInfo')
+    removeUserInfo()
+  }
+
+  const setTenantList = (list: TenantItem[]) => {
+    state.sysTenantDtoList = list || []
+    saveTenantList(JSON.stringify(list || []))
+  }
+
+  const setCurrentTenant = (tenantId: string) => {
+    state.currentTenantId = tenantId
+    setTenantId(tenantId)
   }
 
   const getInfo = async () => {
     try {
-      const { login: { getInfo } } = await import('@/api/Login')
-      const res = await getInfo()
+      const loginModule = await import('@/api/Login')
+      const res = await loginModule.getInfo()
       if (res.code === 200) {
-        setUserInfo(res.data)
-        return res.data
+        // PC端 getInfo 返回: { user, roles, permissions, sysTenantDtoList }
+        const data = res.data
+        setUserInfo(data.user || data)
+        if (data.sysTenantDtoList) {
+          setTenantList(data.sysTenantDtoList)
+          // 首次加载时若未选租户，默认选第一个
+          if (!state.currentTenantId && data.sysTenantDtoList.length > 0) {
+            setCurrentTenant(data.sysTenantDtoList[0].id)
+          }
+        }
+        return data
       }
     } catch (e) {
       console.error('获取用户信息失败', e)
@@ -50,11 +100,19 @@ export function useUserStore() {
 
   const logout = async () => {
     try {
-      const { login: { logout } } = await import('@/api/Login')
-      await logout()
+      const loginModule = await import('@/api/Login')
+      await loginModule.logout()
+    } catch(e) {
+      // continue with local cleanup
     } finally {
       clearToken()
       clearUserInfo()
+      state.noticeCount = 0
+      state.announcementCount = 0
+      state.sysTenantDtoList = []
+      state.currentTenantId = ''
+      removeTenantId()
+      removeTenantList()
     }
   }
 
@@ -64,6 +122,8 @@ export function useUserStore() {
     clearToken,
     setUserInfo,
     clearUserInfo,
+    setTenantList,
+    setCurrentTenant,
     getInfo,
     logout
   }

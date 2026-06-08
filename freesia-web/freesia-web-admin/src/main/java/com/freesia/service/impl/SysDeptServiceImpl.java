@@ -6,13 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.constant.AdminConstant;
+import com.freesia.constant.CacheConstant;
 import com.freesia.constant.DeptModule;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.converter.SysDeptConverter;
 import com.freesia.dto.SysDeptDto;
+import com.freesia.dto.SysRoleDto;
 import com.freesia.entity.FindDeptRolesByDeptIdEntity;
 import com.freesia.entity.FindPageSysDeptListEntity;
 import com.freesia.entity.FindTreeDeptSelectEntity;
@@ -27,11 +28,14 @@ import com.freesia.po.SysRoleDeptPo;
 import com.freesia.po.SysRolePo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.redis.util.URedis;
 import com.freesia.repository.SysDeptRepository;
 import com.freesia.repository.SysRoleDeptRepository;
+import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.SysDeptService;
+import com.freesia.service.SysRoleService;
 import com.freesia.service.SysUserService;
 import com.freesia.util.*;
 import com.freesia.vo.SysDeptVo;
@@ -61,6 +65,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptVo
     private final SysRoleDeptRepository sysRoleDeptRepository;
     private final SysUserService sysUserService;
     private final SysDeptConverter sysDeptConverter;
+    private final SysRoleService sysRoleService;
 
 
     @Override
@@ -239,6 +244,37 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptMapper, SysDeptVo
         // 获取角色
         Set<SysRolePo> sysRolePoSet = sysDeptPo.getSysRolePoSet();
         return buildFindDeptRolesByDeptIdEntity(sysDeptPo, sysRolePoSet);
+    }
+
+    @Override
+    public void buildInitDefaultSysDept() {
+        SysRoleDto sysRoleDto = sysRoleService.findCacheDefaultRole();
+        SysDeptPo sysDeptPo = sysDeptRepository.findCacheDefaultDept();
+        if (sysDeptPo == null) {
+            SysDeptPo sysDeptPoParam = new SysDeptPo();
+            sysDeptPoParam.setParentId(AdminConstant.DEPT_TOP_PARENT_ID);
+            sysDeptPoParam.setAncestors(AdminConstant.DEPT_TOP_PARENT_ID + "");
+            sysDeptPoParam.setDeptName("默认部门");
+            sysDeptPoParam.setOrderNum(1);
+            sysDeptPoParam.setLeader("system");
+            sysDeptPoParam.setDeptStatus(FlagConstant.ENABLED);
+            sysDeptPoParam.setBuildIn(true);
+            sysDeptPo = transactionTemplate.execute(status -> {
+                SysDeptPo sysDeptPoSave = sysDeptRepository.save(sysDeptPoParam);
+                // 绑定角色：普通用户
+                sysRoleDeptRepository.save(new SysRoleDeptPo(new SysRoleDeptPk(sysDeptPoSave.getId(), sysRoleDto.getId())));
+                URedis.set(CacheConstant.DEFAULT_DEPT, sysDeptPoSave);
+                return sysDeptPoSave;
+            });
+        }
+        SysDeptDto sysDeptDto = UCopy.copyPo2Dto(sysDeptPo, SysDeptDto.class);
+        URedis.set(CacheConstant.DEFAULT_DEPT, sysDeptDto);
+    }
+
+    @Override
+    public SysDeptDto findCacheDefaultDept() {
+        SysDeptDto sysDeptDto = (SysDeptDto) URedis.get(CacheConstant.DEFAULT_DEPT);
+        return sysDeptDto != null ? sysDeptDto : UCopy.copyPo2Dto(sysDeptRepository.findCacheDefaultDept(), SysDeptDto.class);
     }
 
     private FindTreeDeptSelectEntity buildDeptTopParent() {

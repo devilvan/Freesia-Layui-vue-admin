@@ -20,6 +20,11 @@ export const constantRoutes = [
         meta: {title: '工作空间'},
     },
     {
+        path: '/oauth/callback/:provider',
+        component: () => import('@/views/login/oauthCallback.vue'),
+        meta: {title: 'OAuth 登录回调'},
+    },
+    {
         path: '/error/:code',
         component: ErrorCode,
         meta: {title: '错误页面'},

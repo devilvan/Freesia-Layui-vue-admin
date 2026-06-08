@@ -44,7 +44,6 @@ public class SysConfigController extends BaseController {
         return sysConfigService.findPage(sysConfigDto, pageQuery);
     }
 
-    @SaCheckPermission(value = MenuPermission.SYSTEM_CONFIG_INDEX)
     @Operation(summary = "根据系统配置键获取配置值")
     @GetMapping(value = "findConfigByKey")
     public R<String> findPageSysConfig(HttpServletResponse response, @RequestParam String configKey) {

@@ -5,11 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.freesia.constant.*;
+import com.freesia.properties.MenuProperties;
+import com.freesia.redis.util.URedis;
 import com.freesia.satoken.bean.SysSensitiveLogBean;
-import com.freesia.constant.AdminConstant;
-import com.freesia.constant.FlagConstant;
-import com.freesia.constant.MenuModule;
-import com.freesia.constant.RoleModule;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.converter.SysRoleConverter;
 import com.freesia.converter.SysUserConverter;
@@ -58,6 +57,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
     private final SysRoleDeptRepository sysRoleDeptRepository;
     private final SysRoleConverter sysRoleConverter;
     private final SysUserConverter sysUserConverter;
+    private final MenuProperties menuProperties;
 
     @Override
     protected MapStructConverter<SysRoleVo, SysRoleDto, SysRolePo> getMapStructConverter() {
@@ -303,6 +303,54 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
             sysRoleRepository.delete(sysRolePo);
             return null;
         });
+    }
+
+    @Override
+    public void buildInitDefaultSysRole() {
+        SysRolePo sysRolePo = sysRoleRepository.findCacheDefaultRole(AdminConstant.RoleKey.COMMON.getCode());
+        if (sysRolePo == null) {
+            transactionTemplate.execute(status -> {
+                SysRolePo newSysRolePo = buildDefaultSysRolePo();
+                SysRolePo saveSysRolePo = sysRoleRepository.save(newSysRolePo);
+                SysRoleDto sysRoleDto = UCopy.copyPo2Dto(saveSysRolePo, SysRoleDto.class);
+                URedis.set(CacheConstant.DEFAULT_ROLE, sysRoleDto);
+                if (UEmpty.isNotEmpty(menuProperties.getPath())) {
+                    List<SysMenuPo> sysMenuPoList = sysMenuRepository.findByPathIn(menuProperties.getPath());
+                    List<Long> sysMenuIdList = sysMenuPoList.stream().map(BasePo::getId).toList();
+                    List<SysRoleMenuPo> sysRoleMenuList = sysMenuIdList.stream().map(menuId -> {
+                        return new SysRoleMenuPo(new SysRoleMenuPk(menuId, saveSysRolePo.getId()));
+                    }).toList();
+                    sysRoleMenuRepository.saveAll(sysRoleMenuList);
+                }
+                return null;
+            });
+        } else {
+            SysRoleDto sysRoleDto = UCopy.copyPo2Dto(sysRolePo, SysRoleDto.class);
+            URedis.set(CacheConstant.DEFAULT_ROLE, sysRoleDto);
+        }
+    }
+
+    private SysRolePo buildDefaultSysRolePo() {
+        SysRolePo newSysRolePo = new SysRolePo();
+        newSysRolePo.setRoleName("普通用户");
+        newSysRolePo.setRoleKey(AdminConstant.RoleKey.COMMON.getCode());
+        newSysRolePo.setStatus(FlagConstant.ENABLED);
+        newSysRolePo.setOrderNum(1);
+        newSysRolePo.setDataScope(DataScope.CUSTOM.getCode());
+        newSysRolePo.setMenuCheckStrictly(true);
+        newSysRolePo.setDeptCheckStrictly(true);
+        newSysRolePo.setRemark("普通用户角色");
+        newSysRolePo.setBuildIn(true);
+        return newSysRolePo;
+    }
+
+    @Override
+    public SysRoleDto findCacheDefaultRole() {
+        SysRoleDto sysRoleDto = URedis.get(CacheConstant.DEFAULT_ROLE);
+        if (UEmpty.isNotNull(sysRoleDto)) {
+            return sysRoleDto;
+        }
+        return UCopy.copyPo2Dto(sysRoleRepository.findCacheDefaultRole(AdminConstant.RoleKey.COMMON.getCode()), SysRoleDto.class);
     }
 
     private FindDeptRolesByRoleIdEntity buildFindDeptRolesByRoleIdEntity(SysRolePo sysRolePo, Set<SysDeptPo> sysDeptPoSet) {

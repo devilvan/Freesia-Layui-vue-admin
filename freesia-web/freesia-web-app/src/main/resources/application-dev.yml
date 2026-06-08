@@ -50,6 +50,18 @@ freesia:
       init-sys-dict: true
       # 是否初始化后端公钥
       init-secret-key: true
+    menu:
+      path:
+        - workSpace
+        - worldClock
+        - enrollee
+        - profile
+        - message
+        - accounts
+        - accountsDashboard
+        - mine
+        - accountsDashboard
+        - budget
     tenant:
       enabled: true
       tenant-column: TENANT_ID
@@ -99,7 +111,7 @@ login.password:
 # 生成验证码
 captcha:
   type: CALCULATE
-  strategy: CIRCLE
+  strategy: SHEAR
   numberLength: 1
   charLength: 4
 ---
@@ -155,6 +167,11 @@ security:
     # actuator 监控配置
     - /actuator
     - /actuator/**
+    # OAuth 单点登录（无需认证）
+    - /api/sysLoginController/oauth/**
+    # 二维码扫码登录（generate + status 无需认证，bind 需认证）
+    - /api/sysLoginController/qrcode/generate
+    - /api/sysLoginController/qrcode/status/**
 ---
 # 接口文档
 springdoc:
@@ -266,3 +283,26 @@ xxl:
       logpath: /logs/xxljob
       # 执行器日志文件保存天数 [选填] ： 过期日志自动清理, 限制值大于等于3时生效; 否则, 如-1, 关闭自动清理功能；
       logretentiondays: 7
+
+---
+# OAuth 第三方登录配置
+oauth:
+  providers:
+    gitee:
+      client-id: ${GITEE_CLIENT_ID:2968807b6c7d6403f62e59b4972e3ac15166fa2c1828c27ed4ca40c2fb79332d}
+      client-secret: ${GITEE_CLIENT_SECRET:eebc1bb2caf6cd34ae3f93c6ed1d098b16ce323b48129816240d9008f8389b8c}
+      redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/gitee
+      scopes:
+        - user_info
+    github:
+      client-id: ${GITHUB_CLIENT_ID:}
+      client-secret: ${GITHUB_CLIENT_SECRET:}
+      redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/github
+      scopes:
+        - user:email
+    wechat_open:
+      client-id: ${WECHAT_OPEN_APP_ID:}
+      client-secret: ${WECHAT_OPEN_APP_SECRET:}
+      redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/wechat_open
+      scopes:
+        - snsapi_login

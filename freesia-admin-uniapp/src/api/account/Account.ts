@@ -62,3 +62,37 @@ export function findCacheCostType(vo: FindCacheCostTypeVo): Promise<R<FindCacheC
     let params = buildUrlParam(vo)
     return Http.get("/api/accountCostController/findCacheCostType", params);
 }
+
+export function findCostTypeRatePie(accountCostVo: AccountCostVo) {
+    let params = buildUrlParam(accountCostVo);
+    return Http.get("/api/accountCostController/findCostTypeRatePie", params);
+}
+
+export function findCostLineChart(findCostLineChartVo: any) {
+    let params = buildUrlParam(findCostLineChartVo);
+    return Http.get("/api/accountCostController/findCostLineChart", params);
+}
+
+export function findCostSumCalendarNearYear(findCostSumCalendarNearYearVo: any) {
+    let params = buildUrlParam(findCostSumCalendarNearYearVo);
+    return Http.get("/api/accountCostController/findCostSumCalendarNearYear", params);
+}
+
+export function findRankByCostType(findRankByCostTypeVo: any) {
+    let params = buildUrlParam(findRankByCostTypeVo);
+    return Http.get("/api/accountCostController/findRankByCostType", params);
+}
+
+export function refreshCache(): Promise<any> {
+    return Http.post("/api/accountCostController/refreshCache");
+}
+
+export function findListSysUserById(idList: string[]): Promise<R<any[]>> {
+    const params = { idList: idList };
+    return Http.get('/api/accountCostUserAllocController/findListSysUserById', params);
+}
+
+export function findListAllocByCostId(costId: string): Promise<R<any[]>> {
+    const params = { costId: costId };
+    return Http.get('/api/accountCostUserAllocController/findListAllocByCostId', params);
+}

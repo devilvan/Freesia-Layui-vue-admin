@@ -12,7 +12,7 @@
           <view class="login-side">
             <view class="login-bg-title">
               <text class="title">Freesia-Admin</text>
-              <text class="subtitle">开箱即用的 uniapp 企业级前端模板</text>
+<!--              <text class="subtitle">开箱即用的 uniapp 企业级前端模板</text>-->
             </view>
           </view>
           <view class="login-ID">
@@ -68,24 +68,25 @@
             </view>
             <view class="line-wrap">
               <view class="line"></view>
-              <text class="line-text">Other login methods</text>
+<!--              <text class="line-text">Other login methods</text>-->
+              <text class="line-text">其他登录方式</text>
               <view class="line"></view>
             </view>
             <view class="other-ways">
               <view class="way-item" @click="loginWith('wechat')">
-                <image class="way-icon" src="/static/login/w.svg" mode="aspectFit"/>
+                <image class="way-icon" src="/static/login/WX.svg" mode="aspectFit"/>
                 <text class="way-text">微信</text>
               </view>
-              <view class="way-item" @click="loginWith('dingding')">
-                <image class="way-icon" src="/static/login/q.svg" mode="aspectFit"/>
-                <text class="way-text">钉钉</text>
+              <view class="way-item" @click="loginWith('qq')">
+                <image class="way-icon" src="/static/login/QQ.svg" mode="aspectFit"/>
+                <text class="way-text">QQ</text>
               </view>
               <view class="way-item" @click="loginWith('gitee')">
-                <image class="way-icon" src="/static/login/a.svg" mode="aspectFit"/>
+                <image class="way-icon" src="/static/login/Gitee.svg" mode="aspectFit"/>
                 <text class="way-text">Gitee</text>
               </view>
               <view class="way-item" @click="loginWith('github')">
-                <image class="way-icon" src="/static/login/f.svg" mode="aspectFit"/>
+                <image class="way-icon" src="/static/login/Github.svg" mode="aspectFit"/>
                 <text class="way-text">Github</text>
               </view>
             </view>
@@ -101,6 +102,8 @@ import {login, findCaptchaEnabled} from '@/api/Login'
 import {getCaptchaCode} from '@/api/captcha/Captcha'
 import {loginQrcode} from '@/api/module/commone'
 import {useCryptStore} from '@/store/crypt'
+import {useUserStore} from '@/store/user'
+import {setToken} from '@/utils/storage'
 
 export default {
   data() {
@@ -123,6 +126,20 @@ export default {
   },
   methods: {
     async init() {
+      // 已有 token 则直接跳转主页
+      const token = uni.getStorageSync('token')
+      if (token) {
+        try {
+          const userStore = useUserStore()
+          if (!userStore.state.sysTenantDtoList || userStore.state.sysTenantDtoList.length === 0) {
+            await userStore.getInfo()
+          }
+          uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
+          return
+        } catch (e) {
+          console.error('自动登录失败', e)
+        }
+      }
       await uni.$getPublicKey()
       const {data, code} = await findCaptchaEnabled()
       if (code === 200 && data === true) {
@@ -154,21 +171,24 @@ export default {
         }
         const encryptedData = await cryptStore.encryptAes(loginData)
         const res = await login(encryptedData)
-        setTimeout(() => {
-          this.loging = false
-          if (res.code === 200) {
-            uni.setStorageSync('token', res.data.token)
-            uni.showToast({title: '登录成功', icon: 'success'})
-            setTimeout(() => {
-              uni.redirectTo({url: '/pages/enrollee/accounts/mine/index'})
-            }, 1000)
-          } else {
-            uni.showToast({title: res.msg || '登录失败', icon: 'none'})
-            if (this.captchaEnabled) {
-              this.toRefreshImg()
-            }
+        this.loging = false
+        if (res.code === 200) {
+          // 立即持久化 token（同时写入 storage 和 cookie），防止页面切换导致 token 丢失
+          setToken(res.data.token)
+          // 加载用户信息以获取租户列表
+          const userStore = useUserStore()
+          userStore.setToken(res.data.token)
+          await userStore.getInfo()
+          uni.showToast({title: '登录成功', icon: 'success'})
+          setTimeout(() => {
+            uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
+          }, 1000)
+        } else {
+          uni.showToast({title: res.msg || '登录失败', icon: 'none'})
+          if (this.captchaEnabled) {
+            this.toRefreshImg()
           }
-        }, 100)
+        }
       } catch (e) {
         this.loging = false
         uni.showToast({title: '登录失败', icon: 'none'})
@@ -196,8 +216,44 @@ export default {
       }
     },
     loginWith(type) {
-      const names = {wechat: '微信', dingding: '钉钉', gitee: 'Gitee', github: 'Github'}
-      uni.showToast({title: `即将跳转到${names[type]}登录`, icon: 'none'})
+      // 钉钉暂不支持
+      if (type === 'dingding') {
+        uni.showToast({title: '钉钉登录暂未支持', icon: 'none'})
+        return
+      }
+
+      // #ifdef MP-WEIXIN
+      if (type === 'wechat') {
+        uni.login({
+          provider: 'weixin',
+          success: async (loginRes) => {
+            try {
+              const res = await this.wxMiniProgramLogin(loginRes.code)
+              if (res && res.code === 200) {
+                uni.switchTab({url: '/pages/enrollee/accounts/mine/index'})
+              }
+            } catch (e) {
+              uni.showToast({title: '微信登录失败', icon: 'none'})
+            }
+          },
+          fail: () => {
+            uni.showToast({title: '微信授权失败', icon: 'none'})
+          }
+        })
+        return
+      }
+      // #endif
+
+      // #ifdef H5
+      const providerMap = {wechat: 'wechat_open', gitee: 'gitee', github: 'github'}
+      const provider = providerMap[type]
+      if (!provider) return
+      const baseURL = 'http://localhost:8570'
+      const frontendCallbackUrl = window.location.origin + '/#/pages/login/oauthCallback'
+      const authorizeUrl = baseURL + '/api/sysLoginController/oauth/authorize/' + provider
+          + '?redirectUrl=' + encodeURIComponent(frontendCallbackUrl)
+      window.location.href = authorizeUrl
+      // #endif
     }
   }
 }
@@ -263,7 +319,7 @@ export default {
 
 .login-side {
   padding: 40rpx 30rpx;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, #009688 0%, #007a71 100%);
   text-align: center;
   background-image: url('/static/login/login-bg.svg');
   background-repeat: no-repeat;
@@ -277,6 +333,7 @@ export default {
 }
 
 .login-bg-title .title {
+  color: #009688;
   display: block;
   font-size: 48rpx;
   font-weight: bold;
@@ -284,6 +341,7 @@ export default {
 }
 
 .login-bg-title .subtitle {
+  color: #009688;
   display: block;
   font-size: 26rpx;
   opacity: 0.9;
@@ -318,7 +376,7 @@ export default {
 }
 
 .tab-item.active {
-  color: #1890ff;
+  color: #009688;
 }
 
 .tab-item.active::after {
@@ -329,7 +387,7 @@ export default {
   transform: translateX(-50%);
   width: 60rpx;
   height: 4rpx;
-  background: #1890ff;
+  background: #009688;
   border-radius: 2rpx;
 }
 
@@ -360,7 +418,7 @@ export default {
 }
 
 .input-wrap:focus-within {
-  border-color: #1890ff;
+  border-color: #009688;
 }
 
 .input-icon {
@@ -414,7 +472,7 @@ export default {
 .login-btn {
   width: 100%;
   height: 88rpx;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, #009688 0%, #007a71 100%);
   color: #fff;
   border: none;
   border-radius: 8rpx;
@@ -468,7 +526,7 @@ export default {
   justify-content: center;
   gap: 8rpx;
   font-size: 26rpx;
-  color: #1890ff;
+  color: #009688;
 }
 
 .refresh-icon {

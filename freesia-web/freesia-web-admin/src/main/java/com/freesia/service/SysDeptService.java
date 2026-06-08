@@ -4,9 +4,9 @@ import com.freesia.dto.SysDeptDto;
 import com.freesia.entity.FindDeptRolesByDeptIdEntity;
 import com.freesia.entity.FindPageSysDeptListEntity;
 import com.freesia.entity.FindTreeDeptSelectEntity;
-import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
+import com.freesia.satoken.model.LoginUserModel;
 
 import java.util.List;
 import java.util.Set;
@@ -121,4 +121,16 @@ public interface SysDeptService {
      * @return 部门与已分配角色的信息
      */
     FindDeptRolesByDeptIdEntity findDeptRolesByDeptId(Long deptId);
+
+    /**
+     * 查询默认部门
+     *
+     * @return 默认部门信息
+     */
+    SysDeptDto findCacheDefaultDept();
+
+    /**
+     * 初始化默认部门
+     */
+    void buildInitDefaultSysDept();
 }

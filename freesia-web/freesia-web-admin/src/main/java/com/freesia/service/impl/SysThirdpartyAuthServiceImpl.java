@@ -90,7 +90,7 @@ public class SysThirdpartyAuthServiceImpl extends BaseServiceImpl<SysThirdpartyA
 
     @Override
     public List<SysThirdpartyAuthDto> findList(SysThirdpartyAuthDto dto) {
-        return sysThirdpartyAuthMapper.findList(dto);
+        return sysThirdpartyAuthConverter.convertBatchPo2Dto(sysThirdpartyAuthMapper.findList(dto));
     }
 
     @Override

@@ -3,10 +3,7 @@ package com.freesia.runner;
 import com.freesia.constant.CacheConstant;
 import com.freesia.crypt.service.CryptService;
 import com.freesia.properties.WebCommonProperties;
-import com.freesia.service.SysConfigService;
-import com.freesia.service.SysDictValueService;
-import com.freesia.service.SysOssConfigService;
-import com.freesia.service.SysOssService;
+import com.freesia.service.*;
 import com.freesia.util.UMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +27,9 @@ public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
     private final SysOssConfigService sysOssConfigService;
     private final SysOssService sysOssService;
     private final CryptService cryptService;
+    private final SysRoleService sysRoleService;
+    private final SysDeptService sysDeptService;
+    private final SysMenuService sysMenuService;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -49,6 +49,12 @@ public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
             cryptService.initRsa();
             log.info(UMessage.message("crypt.init.success"));
         }
+        // 检查并初始化默认角色
+        sysRoleService.buildInitDefaultSysRole();
+        log.info(UMessage.message("role.init.success"));
+        // 检查并初始化默认部门
+        sysDeptService.buildInitDefaultSysDept();
+        log.info(UMessage.message("dept.init.success"));
     }
 
     @Override
