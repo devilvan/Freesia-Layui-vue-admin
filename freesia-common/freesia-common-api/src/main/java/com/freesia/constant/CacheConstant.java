@@ -83,4 +83,20 @@ public final class CacheConstant {
      * 管理模块-查询自定义列中间表 缓存键
      */
     public static final String SYS_COLUMN_MIDDLE = "sys_column_middle";
+    /**
+     * 管理模块-查询部门树 缓存键
+     */
+    public static final String DEFAULT_DEPT = "default_dept";
+    /**
+     * 管理模块-查询默认角色 缓存键
+     */
+    public static final String DEFAULT_ROLE = "default_role";
+    /**
+     * 管理模块-查询默认通用图标模板头表 缓存键
+     */
+    public static final String DEFAULT_COMMON_ICON_HEADER = "default_common_icon_header";
+    /**
+     * 管理模块-查询默认通用图标模板明细 缓存键
+     */
+    public static final String DEFAULT_COMMON_ICON_DETAIL = "default_common_icon_detail";
 }

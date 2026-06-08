@@ -3,6 +3,7 @@ package com.freesia.icon.service.impl;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.icon.converter.CommonIconTemplateHeaderConverter;
@@ -15,6 +16,7 @@ import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.icon.vo.CommonIconTemplateHeaderVo;
 import com.freesia.po.BasePo;
 import com.freesia.pojo.LaySelect;
+import com.freesia.redis.util.URedis;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
@@ -110,6 +112,21 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
     @Override
     public List<LaySelect> findCacheCostType(FindListSelectCostTypeDto dto) {
         return commonIconTemplateHeaderMapper.findCacheCostType(dto);
+    }
+
+    @Override
+    public CommonIconTemplateHeaderDto findCacheDefaultCommonIconHeader() {
+        CommonIconTemplateHeaderDto defaultCommonIconHeaderDto = (CommonIconTemplateHeaderDto) URedis.get(CacheConstant.DEFAULT_COMMON_ICON_HEADER);
+        if (UEmpty.isNotEmpty(defaultCommonIconHeaderDto) && defaultCommonIconHeaderDto.getId() != null) {
+            return defaultCommonIconHeaderDto;
+        }
+        CommonIconTemplateHeaderPo defaultCommonIconHeaderPo = commonIconTemplateHeaderRepository.findFirstByBuildInTrueOrderByCreateTime();
+        if (defaultCommonIconHeaderPo != null) {
+            URedis.set(CacheConstant.DEFAULT_COMMON_ICON_HEADER, commonIconTemplateHeaderConverter.convertPo2Dto(defaultCommonIconHeaderPo));
+        } else {
+            URedis.set(CacheConstant.DEFAULT_COMMON_ICON_HEADER, new CommonIconTemplateHeaderDto());
+        }
+        return defaultCommonIconHeaderDto;
     }
 
     private List<LaySelect> buildLaySelects(List<CommonIconTemplateHeaderPo> commonIconTemplateHeaderPoList) {

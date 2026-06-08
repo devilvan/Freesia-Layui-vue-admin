@@ -93,4 +93,11 @@ public interface CommonIconTemplateDetailService {
      * @param commonIconTemplateDetailDto 删除条件
      */
     void deleteGrouping(CommonIconTemplateDetailDto commonIconTemplateDetailDto);
+
+    /**
+     * 查询缓存默认通用图标模板明细
+     *
+     * @return 结果集
+     */
+    List<CommonIconTemplateDetailDto> findCacheDefaultCommonIconDetail();
 }

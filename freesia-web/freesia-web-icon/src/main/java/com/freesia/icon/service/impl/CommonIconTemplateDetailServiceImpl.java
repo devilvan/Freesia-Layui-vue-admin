@@ -3,6 +3,7 @@ package com.freesia.icon.service.impl;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.icon.converter.CommonIconTemplateDetailConverter;
@@ -16,6 +17,7 @@ import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
 import com.freesia.icon.vo.CommonIconTemplateDetailVo;
 import com.freesia.pojo.LaySelect;
+import com.freesia.redis.util.URedis;
 import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UTree;
@@ -116,5 +118,19 @@ public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonI
     public void deleteGrouping(CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
         Long parentId = commonIconTemplateDetailDto.getParentId();
         commonIconTemplateDetailRepository.deleteGrouping(parentId);
+    }
+
+    @Override
+    public List<CommonIconTemplateDetailDto> findCacheDefaultCommonIconDetail() {
+        List<CommonIconTemplateDetailDto> list = URedis.get(CacheConstant.DEFAULT_COMMON_ICON_DETAIL);
+        if (UEmpty.isNotEmpty(list)) {
+            return list;
+        }
+        List<CommonIconTemplateDetailPo> commonIconTemplateDetailPoList = commonIconTemplateDetailRepository.findAllByBuildInTrue();
+        if (UEmpty.isNotEmpty(commonIconTemplateDetailPoList)) {
+            list = commonIconTemplateDetailConverter.convertBatchPo2Dto(commonIconTemplateDetailPoList);
+            URedis.set(CacheConstant.DEFAULT_COMMON_ICON_DETAIL, list);
+        }
+        return list;
     }
 }

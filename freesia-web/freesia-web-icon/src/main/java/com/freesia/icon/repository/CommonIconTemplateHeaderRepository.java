@@ -5,8 +5,6 @@ import com.freesia.icon.po.CommonIconTemplateHeaderPo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 /**
  * @author Evad.Wu
  * @Description 通用图标模板头表 持久层
@@ -14,4 +12,10 @@ import java.util.List;
  */
 @Repository
 public interface CommonIconTemplateHeaderRepository extends JpaRepository<CommonIconTemplateHeaderPo, Long> {
+    /**
+     * 查询默认通用图标模板头表
+     *
+     * @return 默认通用图标模板头表
+     */
+    CommonIconTemplateHeaderPo findFirstByBuildInTrueOrderByCreateTime();
 }

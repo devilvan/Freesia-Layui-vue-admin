@@ -32,7 +32,7 @@ import java.io.Serializable;
 @Schema(description = "通用图标模板明细表 映射")
 public class CommonIconTemplateDetailPo extends BasePo implements Serializable {
     @Schema(description = "自定义分组")
-    @TableField(value = "GROUPING")
+    @TableField(value = "`GROUPING`")
     @Column(name = "`GROUPING`", columnDefinition = "VARCHAR(32) COMMENT '自定义分组'")
     private String grouping;
     @Schema(description = "通用图标模板头表ID")

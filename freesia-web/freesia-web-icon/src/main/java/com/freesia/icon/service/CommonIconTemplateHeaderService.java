@@ -84,4 +84,11 @@ public interface CommonIconTemplateHeaderService {
      * @return 结果集
      */
     List<LaySelect> findCacheCostType(FindListSelectCostTypeDto dto);
+
+    /**
+     * 查询默认通用图标模板头表
+     *
+     * @return 默认通用图标模板头表
+     */
+    CommonIconTemplateHeaderDto findCacheDefaultCommonIconHeader();
 }
