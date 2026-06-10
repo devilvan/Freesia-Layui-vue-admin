@@ -2,20 +2,19 @@
   <view class="page-wrap">
     <!-- 租户选择器 -->
     <view class="tenant-bar">
-      <text class="tenant-label">当前账本：</text>
-      <picker mode="selector" :range="tenantNames" @change="onTenantChange" :value="currentTenantIndex">
-        <view class="tenant-picker">
-          <text>{{ currentTenantName }}</text>
-          <text class="arrow">▼</text>
-        </view>
-      </picker>
-    </view>
-
-    <!-- 统计所有账本开关 -->
-    <view class="lay-card">
-      <view class="flex-row align-center justify-between">
-        <text class="lay-form-label" style="margin-bottom: 0">统计所有账本</text>
-        <view class="lay-switch-wrap">
+      <view class="filter-item">
+        <text class="tenant-label">当前账本：</text>
+        <picker mode="selector" :range="tenantNames" @change="onTenantChange" :value="currentTenantIndex">
+          <view class="tenant-picker">
+            <text>{{ currentTenantName }}</text>
+            <text class="arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      <view class="filter-item">
+        <!-- 多租户开关 -->
+        <text class="tenant-label">统计所有账本：</text>
+        <view style="padding: 8rpx 20rpx;margin-bottom: 0">
           <view class="lay-switch" :class="{ active: allTenantFlag }" @click="doChangeAllTenantFlag"></view>
         </view>
       </view>
@@ -1119,4 +1118,6 @@ export default {
   padding: 14rpx 0 6rpx;
   font-size: 26rpx;
 }
+
+.filter-item { flex: 1; }
 </style>

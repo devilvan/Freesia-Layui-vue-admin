@@ -2,13 +2,22 @@
   <view class="page-wrap">
     <!-- 租户选择器 -->
     <view class="tenant-bar">
-      <text class="tenant-label">当前账本：</text>
-      <picker mode="selector" :range="tenantNames" @change="onTenantChange" :value="currentTenantIndex">
-        <view class="tenant-picker">
-          <text>{{ currentTenantName }}</text>
-          <text class="arrow">▼</text>
+      <view class="filter-item">
+        <text class="tenant-label">当前账本：</text>
+        <picker mode="selector" :range="tenantNames" @change="onTenantChange" :value="currentTenantIndex">
+          <view class="tenant-picker">
+            <text>{{ currentTenantName }}</text>
+            <text class="arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      <view class="filter-item">
+        <!-- 多租户开关 -->
+        <text class="tenant-label" >统计所有账本：</text>
+        <view style="padding: 8rpx 20rpx;margin-bottom: 0">
+          <view class="lay-switch" :class="{ active: allTenantFlag }" @click="toggleAllTenant"></view>
         </view>
-      </picker>
+      </view>
     </view>
 
     <!-- 搜索栏 -->
@@ -26,7 +35,7 @@
     <view class="lay-card">
       <view class="filter-row">
         <view class="filter-item">
-          <text class="lay-form-label">开始日期</text>
+          <text class="lay-form-label">开始时间</text>
           <picker mode="date" :value="searchQuery.startDateDisplay" @change="onStartDateChange">
             <view class="lay-select">
               <text :class="{ placeholder: !searchQuery.startDateDisplay }">{{ searchQuery.startDateDisplay || '请选择' }}</text>
@@ -35,7 +44,7 @@
           </picker>
         </view>
         <view class="filter-item">
-          <text class="lay-form-label">结束日期</text>
+          <text class="lay-form-label">结束时间</text>
           <picker mode="date" :value="searchQuery.endDateDisplay" @change="onEndDateChange">
             <view class="lay-select">
               <text :class="{ placeholder: !searchQuery.endDateDisplay }">{{ searchQuery.endDateDisplay || '请选择' }}</text>
@@ -62,13 +71,6 @@
               <text class="arrow">▼</text>
             </view>
           </picker>
-        </view>
-      </view>
-      <!-- 多租户开关 -->
-      <view class="flex-row align-center justify-between" style="margin-top: 10rpx">
-        <text class="text-muted" style="font-size: 24rpx">统计所有账本</text>
-        <view class="lay-switch-wrap">
-          <view class="lay-switch" :class="{ active: allTenantFlag }" @click="toggleAllTenant"></view>
         </view>
       </view>
     </view>
@@ -892,6 +894,19 @@ export default {
   display: flex;
   align-items: center;
   gap: 10rpx;
+  padding: 8rpx 20rpx;
+  background: rgba(0, 150, 136, 0.08);
+  border: 1px solid rgba(0, 150, 136, 0.3);
+  border-radius: 4rpx;
+  font-size: 26rpx;
+  color: #009688;
+  font-weight: 500;
+}
+
+.tenant-switch-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
   padding: 8rpx 20rpx;
   background: rgba(0, 150, 136, 0.08);
   border: 1px solid rgba(0, 150, 136, 0.3);
