@@ -2,9 +2,10 @@ package com.freesia.service;
 
 
 import com.freesia.constant.LoginRetryType;
+import com.freesia.dto.SysUserDto;
 import com.freesia.dto.WxLoginDto;
-import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.po.SysUserPo;
+import com.freesia.satoken.model.LoginUserModel;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -18,10 +19,10 @@ public interface SysLoginService {
     /**
      * 登录验证
      *
-     * @param username 用户名
-     * @param password 密码
-     * @param code     验证码
-     * @param captchaKey     唯一标识
+     * @param username   用户名
+     * @param password   密码
+     * @param code       验证码
+     * @param captchaKey 唯一标识
      * @return 返回登录成功后生成的token
      */
     String login(String username, String password, String code, String captchaKey);
@@ -71,4 +72,9 @@ public interface SysLoginService {
      * 用户登出
      */
     void logout();
+
+    /**
+     * 初始化用户信息
+     */
+    void initUser(SysUserDto sysUserDto);
 }

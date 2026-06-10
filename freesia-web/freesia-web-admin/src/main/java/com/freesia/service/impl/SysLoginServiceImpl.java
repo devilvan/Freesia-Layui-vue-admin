@@ -6,11 +6,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.freesia.constant.*;
-import com.freesia.dto.SysClientDto;
-import com.freesia.dto.SysThirdpartyAuthDto;
+import com.freesia.dto.*;
 import com.freesia.repository.SysDeptRepository;
-import com.freesia.dto.SysUserDto;
-import com.freesia.dto.WxLoginDto;
 import com.freesia.exception.ServiceException;
 import com.freesia.exception.UserException;
 import com.freesia.log.annotation.LogRecord;
@@ -58,6 +55,7 @@ public class SysLoginServiceImpl implements SysLoginService {
     private final SysThirdpartyAuthService sysThirdpartyAuthService;
     private final SysClientService sysClientService;
     private final SysDeptRepository sysDeptRepository;
+    private final SysDeptService sysDeptService;
 
 
     @Override
@@ -206,7 +204,7 @@ public class SysLoginServiceImpl implements SysLoginService {
             sysDeptPo = sysDeptRepository.findById(sysUserPo.getDeptId()).orElse(null);
         }
         if (UEmpty.isNull(sysDeptPo)) {
-            throw new ServiceException(UserModule.SubModule.LOGIN, "user.dept.non.assign", new Object[] {sysUserPo.getUserName()});
+            throw new ServiceException(UserModule.SubModule.LOGIN, "user.dept.non.assign", new Object[]{sysUserPo.getUserName()});
         }
         // 是否管理员
         boolean isAdmin = isAdmin(sysUserPo);
@@ -311,7 +309,7 @@ public class SysLoginServiceImpl implements SysLoginService {
             String message = UMessage.message(loginRetryType.getRetryLimitExceed(), errorCount, loginPasswordProperties.getLockTime().toMinutes());
             SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
             USpring.context().publishEvent(sysSensitiveLogBean);
-            throw new UserException(loginRetryType.getRetryLimitExceed(), new Object[] {errorCount, loginPasswordProperties.getLockTime().toMinutes()});
+            throw new UserException(loginRetryType.getRetryLimitExceed(), new Object[]{errorCount, loginPasswordProperties.getLockTime().toMinutes()});
         }
         // 密码输入错误
         if (bcrptCheckpw.get()) {
@@ -323,7 +321,7 @@ public class SysLoginServiceImpl implements SysLoginService {
                 String message = UMessage.message(loginRetryType.getRetryLimitExceed(), errorCount, loginPasswordProperties.getLockTime().toMinutes());
                 SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
                 USpring.context().publishEvent(sysSensitiveLogBean);
-                throw new UserException(loginRetryType.getRetryLimitExceed(), new Object[] {errorCount, loginPasswordProperties.getLockTime().toMinutes()});
+                throw new UserException(loginRetryType.getRetryLimitExceed(), new Object[]{errorCount, loginPasswordProperties.getLockTime().toMinutes()});
             } else {
                 // 未达到最大重试次数
                 // 更新Redis中的密码错误次数，保存12小时
@@ -331,7 +329,7 @@ public class SysLoginServiceImpl implements SysLoginService {
                 String message = UMessage.message(loginRetryType.getRetryLimitCount(), errorCount);
                 SysSensitiveLogBean sysSensitiveLogBean = buildSysSensitiveLogBean(username, ip, message);
                 USpring.context().publishEvent(sysSensitiveLogBean);
-                throw new UserException(loginRetryType.getRetryLimitCount(), new Object[] {errorCount});
+                throw new UserException(loginRetryType.getRetryLimitCount(), new Object[]{errorCount});
             }
         }
         // 登录成功，清除登录失败次数
@@ -349,10 +347,10 @@ public class SysLoginServiceImpl implements SysLoginService {
         SysUserPo sysUserPo = sysUserService.findOneByUsername(username);
         if (ObjectUtil.isNull(sysUserPo)) {
             log.info("登录用户：{} 不存在.", username);
-            throw new UserException("user.not.exists", new Object[] {username});
+            throw new UserException("user.not.exists", new Object[]{username});
         } else if (FlagConstant.DISABLED.equals(sysUserPo.getAccountStatus()) || sysUserPo.getLogicDel()) {
             log.info("登录用户：{} 已被停用.", username);
-            throw new UserException("user.blocked", new Object[] {username});
+            throw new UserException("user.blocked", new Object[]{username});
         }
         return sysUserService.findByUsername(username);
     }
@@ -370,6 +368,20 @@ public class SysLoginServiceImpl implements SysLoginService {
             StpUtil.logout(loginId);
             log.info("单点登出完成: {}", loginId);
         } catch (NotLoginException ignored) {
+        }
+    }
+
+    @Override
+    public void initUser(SysUserDto sysUserDto) {
+        // 20260531-Bliss 查询默认部门
+        SysDeptDto defaultDept = sysDeptService.findCacheDefaultDept();
+        if (ObjectUtil.isNull(defaultDept)) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "default.dept.not.found");
+        }
+        sysUserDto.setDeptId(defaultDept.getId());
+        boolean registered = sysUserService.register(sysUserDto);
+        if (!registered) {
+            throw new ServiceException(UserModule.SubModule.LOGIN, "oauth.user.register.failed");
         }
     }
 

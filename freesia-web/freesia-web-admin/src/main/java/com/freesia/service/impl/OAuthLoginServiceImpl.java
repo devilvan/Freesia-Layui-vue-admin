@@ -36,7 +36,12 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class OAuthLoginServiceImpl implements OAuthLoginService {
     private static final String OAUTH_STATE_PREFIX = "oauth:state:";
-    private static final long STATE_TTL = 5; // 分钟
+    /**
+     * 分钟
+     */
+    private static final long STATE_TTL = 5;
+    public static final String REDIRECT_URL_KEY = "redirectUrl";
+
 
     private final OAuthProperties oAuthProperties;
     private final SysLoginService sysLoginService;
@@ -52,7 +57,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
         Map<String, String> stateData = new java.util.HashMap<>();
         stateData.put("provider", provider);
         if (redirectUrl != null && !redirectUrl.isEmpty()) {
-            stateData.put("redirectUrl", redirectUrl);
+            stateData.put(REDIRECT_URL_KEY, redirectUrl);
         }
         URedis.set(OAUTH_STATE_PREFIX + state, stateData, STATE_TTL, TimeUnit.MINUTES);
         OAuthProviderType type = oauthProvider.getProviderType();
@@ -72,8 +77,8 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             Object stateObj = URedis.get(OAUTH_STATE_PREFIX + state);
             if (stateObj instanceof Map) {
                 Map<String, String> stateData = (Map<String, String>) stateObj;
-                if (stateData.containsKey("redirectUrl")) {
-                    frontendRedirectUrl = stateData.get("redirectUrl");
+                if (stateData.containsKey(REDIRECT_URL_KEY)) {
+                    frontendRedirectUrl = stateData.get(REDIRECT_URL_KEY);
                 }
             }
             // 删除已使用的 state
@@ -129,16 +134,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
             sysUserDto.setNickName(userInfo.getNickName());
             sysUserDto.setAvatar(userInfo.getAvatar());
             sysUserDto.setEmail(userInfo.getEmail());
-            // 20260531-Bliss 查询默认部门
-            SysDeptDto defaultDept = sysDeptService.findCacheDefaultDept();
-            if (ObjectUtil.isNull(defaultDept)) {
-                throw new ServiceException(UserModule.SubModule.LOGIN, "default.dept.not.found");
-            }
-            sysUserDto.setDeptId(defaultDept.getId());
-            boolean registered = sysUserService.register(sysUserDto);
-            if (!registered) {
-                throw new ServiceException(UserModule.SubModule.LOGIN, "oauth.user.register.failed");
-            }
+            sysLoginService.initUser(sysUserDto);
             sysUserPo = sysUserService.findByUsername(generatedUsername);
         } else {
             String username = existAuth.getUserName();
@@ -158,7 +154,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
         String token = StpUtil.getTokenValue();
         Map<String, Object> result = new java.util.HashMap<>(4);
         result.put(Constants.TOKEN, token);
-        result.put("redirectUrl", frontendRedirectUrl);
+        result.put(REDIRECT_URL_KEY, frontendRedirectUrl);
         return result;
     }
 
