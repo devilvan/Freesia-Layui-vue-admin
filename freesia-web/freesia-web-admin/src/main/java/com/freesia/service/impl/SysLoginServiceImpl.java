@@ -56,6 +56,7 @@ public class SysLoginServiceImpl implements SysLoginService {
     private final SysClientService sysClientService;
     private final SysDeptRepository sysDeptRepository;
     private final SysDeptService sysDeptService;
+    private final SysRegisterService sysRegisterService;
 
 
     @Override
@@ -146,7 +147,7 @@ public class SysLoginServiceImpl implements SysLoginService {
         sysUserDto.setUserName(generatedUsername);
         sysUserDto.setNickName(wxLoginDto.getNickName());
         sysUserDto.setAvatar(wxLoginDto.getAvatar());
-        SysUserPo sysUserPo = sysUserService.register(sysUserDto);
+        SysUserPo sysUserPo = sysRegisterService.register(sysUserDto);
         if (sysUserPo == null || sysUserPo.getId() == null) {
             throw new ServiceException(UserModule.SubModule.LOGIN, "wx.user.register.failed");
         }
@@ -379,7 +380,7 @@ public class SysLoginServiceImpl implements SysLoginService {
             throw new ServiceException(UserModule.SubModule.LOGIN, "default.dept.not.found");
         }
         sysUserDto.setDeptId(defaultDept.getId());
-        SysUserPo sysUserPo = sysUserService.register(sysUserDto);
+        SysUserPo sysUserPo = sysRegisterService.register(sysUserDto);
         if (sysUserPo == null || sysUserPo.getId() == null) {
             throw new ServiceException(UserModule.SubModule.LOGIN, "oauth.user.register.failed");
         }

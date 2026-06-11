@@ -1,7 +1,6 @@
 package com.freesia.bean;
 
 import com.freesia.dto.BaseDto;
-import com.freesia.icon.entity.FindCommonIconEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,6 +38,4 @@ public class CommonIconTemplateDetailBean extends BaseDto {
     private String remark;
     @Schema(description = "主键集合")
     private List<Long> idList;
-    @Schema(description = "批量图标数据")
-    private List<FindCommonIconEntity> multipleIconList;
 }

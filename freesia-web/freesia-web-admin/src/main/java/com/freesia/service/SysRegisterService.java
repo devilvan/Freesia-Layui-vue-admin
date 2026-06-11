@@ -1,6 +1,8 @@
 package com.freesia.service;
 
 import com.freesia.dto.RegisterDto;
+import com.freesia.dto.SysUserDto;
+import com.freesia.po.SysUserPo;
 
 /**
  * @author Evad.Wu
@@ -11,7 +13,7 @@ public interface SysRegisterService {
     /**
      * 用户注册
      *
-     * @param registerDto 用户注册信息
+     * @param sysUserDto 用户注册信息
      */
-    void register(RegisterDto registerDto);
+    SysUserPo register(SysUserDto sysUserDto);
 }

@@ -142,7 +142,9 @@ public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonI
 
     @Override
     public Boolean findByHeaderIdExists(Long headerId) {
-        return commonIconTemplateDetailRepository.findByHeaderIdExists(headerId);
+        Wrapper<CommonIconTemplateDetailPo> queryWrapper = new LambdaQueryWrapper<CommonIconTemplateDetailPo>()
+                .eq(CommonIconTemplateDetailPo::getHeaderId, headerId);
+        return commonIconTemplateDetailMapper.exists(queryWrapper);
     }
 
     @Override

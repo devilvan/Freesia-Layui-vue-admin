@@ -2,6 +2,7 @@ package com.freesia.icon.controller;
 
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.convert.Convert;
 import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
@@ -14,6 +15,7 @@ import com.freesia.pojo.LaySelect;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.service.CommonIconTemplateHeaderProviderService;
 import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +36,7 @@ import java.util.List;
 public class CommonIconTemplateHeaderController extends BaseController {
     private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
     private final CommonIconTemplateHeaderConverter commonIconTemplateHeaderConverter;
+    private final CommonIconTemplateHeaderProviderService commonIconTemplateHeaderProviderService;
 
     /**
      * 保存通用图标模板头表信息
@@ -132,5 +135,13 @@ public class CommonIconTemplateHeaderController extends BaseController {
         Long userId = USecurity.getUserId();
         List<LaySelect> list = commonIconTemplateHeaderService.findSelectCommonIconHeader(userId);
         return R.ok(list);
+    }
+
+    @SaIgnore
+    @Operation(summary = "查询通用图标模板头表下拉数据")
+    @GetMapping(value = "testInitCommonIcon")
+    public R<Void> testInitCommonIcon() {
+        commonIconTemplateHeaderProviderService.initUserTemplateHeader(2L);
+        return R.ok();
     }
 }

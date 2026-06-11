@@ -32,6 +32,14 @@ public interface CommonIconTemplateDetailService {
     List<CommonIconTemplateDetailDto> saveUpdateBatch(CommonIconTemplateDetailDto dto);
 
     /**
+     * 批量保存通用图标模板表信息
+     *
+     * @param list 待保存的数据
+     * @return 保存回调对象
+     */
+    List<CommonIconTemplateDetailDto> saveUpdateBatch(List<CommonIconTemplateDetailDto> list);
+
+    /**
      * 查询通用图标模板表信息
      *
      * @param commonIconTemplateDetailDto 查询条件

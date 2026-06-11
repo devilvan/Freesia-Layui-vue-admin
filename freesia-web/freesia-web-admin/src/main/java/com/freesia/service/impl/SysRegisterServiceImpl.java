@@ -1,17 +1,27 @@
 package com.freesia.service.impl;
 
-import cn.dev33.satoken.secure.BCrypt;
+import cn.hutool.core.util.ObjectUtil;
+import com.freesia.constant.FlagConstant;
+import com.freesia.constant.SysTenantType;
+import com.freesia.constant.UserModule;
+import com.freesia.converter.SysUserConverter;
 import com.freesia.dto.RegisterDto;
+import com.freesia.dto.SysRoleDto;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.exception.UserException;
-import com.freesia.po.SysUserPo;
+import com.freesia.log.annotation.LogRecord;
+import com.freesia.po.*;
+import com.freesia.properties.LoginPasswordProperties;
+import com.freesia.repository.SysTenantUserRepository;
+import com.freesia.repository.SysUserRepository;
+import com.freesia.repository.SysUserRoleRepository;
 import com.freesia.satoken.constant.UserType;
-import com.freesia.service.CommonIconTemplateHeaderProviderService;
-import com.freesia.service.SysConfigService;
-import com.freesia.service.SysRegisterService;
-import com.freesia.service.SysUserService;
+import com.freesia.service.*;
+import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
@@ -32,33 +42,57 @@ public class SysRegisterServiceImpl implements SysRegisterService {
     private final SysUserService sysUserService;
     private final TransactionTemplate transactionTemplate;
     private final CommonIconTemplateHeaderProviderService commonIconTemplateHeaderProviderService;
+    private final SysUserConverter sysUserConverter;
+    private final LoginPasswordProperties loginPasswordProperties;
+    private final SysUserRepository sysUserRepository;
+    private final SysUserRoleRepository sysUserRoleRepository;
+    private final SysRoleService sysRoleService;
+    private final SysTenantService sysTenantService;
+    private final SysTenantUserRepository sysTenantUserRepository;
 
     @Override
-    public void register(RegisterDto registerDto) {
-        String username = registerDto.getUsername();
-        String password = registerDto.getPassword();
-        String userType = Optional.of(registerDto)
-                .map(RegisterDto::getUserType)
-                .map(UserType::getInstanceByKey)
-                .orElse(UserType.SYS_USER)
-                .getUserType();
-        sysConfigService.validateCaptcha(username, registerDto.getCode(), registerDto.getCaptchaKey());
-        SysUserDto sysUserDto = new SysUserDto();
-        sysUserDto.setUserName(username);
-        sysUserDto.setNickName(username);
-        sysUserDto.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
-        sysUserDto.setUserType(userType);
-        if (sysUserService.checkUserNameUnique(sysUserDto)) {
-            throw new UserException("user.register.not.unique", new Object[]{username});
-        }
-        transactionTemplate.execute(status -> {
-            SysUserPo sysUserPo = sysUserService.register(sysUserDto);
-            if (sysUserPo == null || sysUserPo.getId() == null) {
-                throw new UserException("user.register.error", new Object[]{});
+    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.REGISTER, message = "user.register")
+    public SysUserPo register(SysUserDto sysUserDto) {
+        return transactionTemplate.execute(status -> {
+            SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
+            sysUserPo.setPassword(org.springframework.security.crypto.bcrypt.BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
+            sysUserPo.setAccountStatus(FlagConstant.ENABLED);
+            sysUserPo.setLogicDel(false);
+            if (UEmpty.isEmpty(sysUserPo.getUserType())) {
+                sysUserPo.setUserType(UserType.SYS_USER.getUserType());
+            }
+            sysUserPo = sysUserRepository.save(sysUserPo);
+
+            // 赋予默认角色并分配菜单权限
+            try {
+                SysRoleDto defaultRole = sysRoleService.findCacheDefaultRole();
+                if (ObjectUtil.isNotNull(defaultRole)) {
+                    SysUserRolePo ur = new SysUserRolePo();
+                    ur.setSysRoleMenuPk(new SysUserRolePk(sysUserPo.getId(), defaultRole.getId()));
+                    sysUserRoleRepository.saveAndFlush(ur);
+                    log.info("注册用户[{}]成功赋予角色: {}", sysUserDto.getUserName(), defaultRole.getRoleKey());
+                } else {
+                    log.warn("注册用户[{}]未找到默认角色(ID=2)", sysUserDto.getUserName());
+                }
+            } catch (Exception e) {
+                log.error("注册用户[{}]赋予默认角色失败: {}", sysUserDto.getUserName(), e.getMessage(), e);
+            }
+            // 初始化租户
+            if (UEmpty.isEmpty(sysUserDto.getTenantId())) {
+                SysTenantDto sysTenantDto = new SysTenantDto();
+                String code = sysUserPo.getUserName() + "-" + "commonTenant";
+                sysTenantDto.setCode(code);
+                sysTenantDto.setName("我的账本");
+                sysTenantDto.setType(SysTenantType.INDIVIDUAL.getCode());
+                sysTenantDto.setStatus(true);
+                sysTenantDto.setRemark(code);
+                sysTenantDto.setContactName(sysUserPo.getUserName());
+                SysTenantDto saveSysTenantDto = sysTenantService.saveUpdate(sysTenantDto);
+                sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(saveSysTenantDto.getId(), sysUserPo.getId())));
             }
             // 初始化图标模板
             commonIconTemplateHeaderProviderService.initUserTemplateHeader(sysUserPo.getId());
-            return null;
+            return sysUserPo;
         });
     }
 }

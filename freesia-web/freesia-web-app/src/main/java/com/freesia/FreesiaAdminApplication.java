@@ -44,7 +44,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 })
 public class FreesiaAdminApplication {
     public static void main(String[] args) {
-//        SecureUtil.disableBouncyCastle();
         SpringApplication.run(FreesiaAdminApplication.class, args);
     }
 }

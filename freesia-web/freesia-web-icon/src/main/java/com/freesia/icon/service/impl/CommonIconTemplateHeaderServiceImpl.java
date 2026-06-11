@@ -7,14 +7,12 @@ import com.freesia.bean.CommonIconTemplateHeaderBean;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
-import com.freesia.exception.ServiceException;
 import com.freesia.icon.converter.CommonIconTemplateHeaderConverter;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.dto.FindListSelectCostTypeDto;
 import com.freesia.icon.mapper.CommonIconTemplateHeaderMapper;
 import com.freesia.icon.po.CommonIconTemplateHeaderPo;
-import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
 import com.freesia.icon.repository.CommonIconTemplateHeaderRepository;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
@@ -45,7 +43,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class CommonIconTemplateHeaderTemplateHeaderServiceImpl extends BaseServiceImpl<CommonIconTemplateHeaderMapper, CommonIconTemplateHeaderVo, CommonIconTemplateHeaderDto, CommonIconTemplateHeaderPo> implements CommonIconTemplateHeaderService, CommonIconTemplateHeaderProviderService {
+public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonIconTemplateHeaderMapper, CommonIconTemplateHeaderVo, CommonIconTemplateHeaderDto, CommonIconTemplateHeaderPo> implements CommonIconTemplateHeaderService, CommonIconTemplateHeaderProviderService {
     private final CommonIconTemplateHeaderRepository commonIconTemplateHeaderRepository;
     private final CommonIconTemplateHeaderMapper commonIconTemplateHeaderMapper;
     private final CommonIconTemplateHeaderConverter commonIconTemplateHeaderConverter;
@@ -131,13 +129,24 @@ public class CommonIconTemplateHeaderTemplateHeaderServiceImpl extends BaseServi
         CommonIconTemplateHeaderDto defaultCommonIconHeaderDto = new CommonIconTemplateHeaderDto();
         Boolean initDefaultCommonIconTemplateFlag = webCommonProperties.getInitDefaultCommonIconTemplateFlag();
         if (initDefaultCommonIconTemplateFlag != null && initDefaultCommonIconTemplateFlag) {
-            findAndCache(defaultCommonIconHeaderDto);
+            defaultCommonIconHeaderDto = findAndCache(defaultCommonIconHeaderDto);
         } else {
             defaultCommonIconHeaderDto = URedis.get(CacheConstant.DEFAULT_COMMON_ICON_HEADER);
             if (UEmpty.isNotEmpty(defaultCommonIconHeaderDto) && defaultCommonIconHeaderDto.getId() != null) {
                 return defaultCommonIconHeaderDto;
             }
-            findAndCache(defaultCommonIconHeaderDto);
+            defaultCommonIconHeaderDto = findAndCache(defaultCommonIconHeaderDto);
+        }
+        return defaultCommonIconHeaderDto;
+    }
+
+    private CommonIconTemplateHeaderDto findAndCache(CommonIconTemplateHeaderDto defaultCommonIconHeaderDto) {
+        CommonIconTemplateHeaderPo defaultCommonIconHeaderPo = commonIconTemplateHeaderRepository.findFirstByBuildInTrueOrderByCreateTime();
+        if (defaultCommonIconHeaderPo != null) {
+            defaultCommonIconHeaderDto = commonIconTemplateHeaderConverter.convertPo2Dto(defaultCommonIconHeaderPo);
+            URedis.set(CacheConstant.DEFAULT_COMMON_ICON_HEADER, defaultCommonIconHeaderDto);
+        } else {
+            URedis.set(CacheConstant.DEFAULT_COMMON_ICON_HEADER, defaultCommonIconHeaderDto);
         }
         return defaultCommonIconHeaderDto;
     }
@@ -155,33 +164,44 @@ public class CommonIconTemplateHeaderTemplateHeaderServiceImpl extends BaseServi
         if (findOne.isPresent()) {
             CommonIconTemplateHeaderPo commonIconTemplateHeaderPo = findOne.get();
             // 查询图标模板详情
-            Long headerId = commonIconTemplateHeaderPo.getId();
-            Boolean templateExistsFlag = commonIconTemplateDetailService.findByHeaderIdExists(headerId);
-            if (!templateExistsFlag) {
-                // 生成该用户默认的图标模板
-                List<CommonIconTemplateDetailDto> cacheDefaultCommonIconDetail = commonIconTemplateDetailService.findCacheDefaultCommonIconDetail();
-                if (UEmpty.isNotEmpty(cacheDefaultCommonIconDetail)) {
-                    cacheDefaultCommonIconDetail = cacheDefaultCommonIconDetail.stream().peek(item -> {
-                        item.setId(null);
-                        item.setRecVer(0L);
-                        item.setBuildIn(false);
-                        item.setLogicDel(false);
-                        item.setHeaderId(headerId);
-                    }).collect(Collectors.toList());
-                    List<CommonIconTemplateDetailDto> treeifyList = UTree.buildTree(cacheDefaultCommonIconDetail);
-                    saveTreeifyList(treeifyList);
+            buildSaveTemplateDetail(commonIconTemplateHeaderPo.getId());
+        } else {
+            CommonIconTemplateHeaderDto cacheDefaultCommonIconHeader = findCacheDefaultCommonIconHeader();
+            if (cacheDefaultCommonIconHeader != null && cacheDefaultCommonIconHeader.getId() != null) {
+                cacheDefaultCommonIconHeader.setId(null);
+                cacheDefaultCommonIconHeader.setRecVer(0L);
+                cacheDefaultCommonIconHeader.setBuildIn(false);
+                cacheDefaultCommonIconHeader.setLogicDel(false);
+                CommonIconTemplateHeaderDto headerDto = super.saveUpdate(cacheDefaultCommonIconHeader);
+                if (headerDto != null) {
+                    buildSaveTemplateDetail(headerDto.getId());
                 }
             }
         }
-
-
     }
 
-    private void saveTreeifyList(List<CommonIconTemplateDetailDto> treeifyList) {
+    private void buildSaveTemplateDetail(Long headerId) {
+        Boolean flag = commonIconTemplateDetailService.findByHeaderIdExists(headerId);
+        if (!flag) {
+            // 生成该用户默认的图标模板
+            List<CommonIconTemplateDetailDto> cacheDefaultCommonIconDetailList = commonIconTemplateDetailService.findCacheDefaultCommonIconDetail();
+            if (UEmpty.isNotEmpty(cacheDefaultCommonIconDetailList)) {
+                List<CommonIconTemplateDetailDto> treeifyList = UTree.buildTree(cacheDefaultCommonIconDetailList);
+                saveTreeifyList(headerId, treeifyList);
+            }
+        }
+    }
+
+    private void saveTreeifyList(Long headerId, List<CommonIconTemplateDetailDto> treeifyList) {
         if (UEmpty.isNotEmpty(treeifyList)) {
             for (CommonIconTemplateDetailDto commonIconTemplateDetailDto : treeifyList) {
-                List<CommonIconTemplateDetailDto> children = commonIconTemplateDetailDto.getChildren();
+                commonIconTemplateDetailDto.setId(null);
+                commonIconTemplateDetailDto.setRecVer(0L);
+                commonIconTemplateDetailDto.setBuildIn(false);
+                commonIconTemplateDetailDto.setLogicDel(false);
+                commonIconTemplateDetailDto.setHeaderId(headerId);
                 CommonIconTemplateDetailDto saveDto = commonIconTemplateDetailService.saveUpdate(commonIconTemplateDetailDto);
+                List<CommonIconTemplateDetailDto> children = commonIconTemplateDetailDto.getChildren();
                 if (saveDto != null && saveDto.getId() != null) {
                     children = children.stream().peek(item -> {
                         item.setId(null);
@@ -190,18 +210,10 @@ public class CommonIconTemplateHeaderTemplateHeaderServiceImpl extends BaseServi
                         item.setLogicDel(false);
                         item.setHeaderId(saveDto.getId());
                     }).collect(Collectors.toList());
-                    saveTreeifyList(children);
+                    commonIconTemplateDetailService.saveUpdateBatch(children);
+                    saveTreeifyList(headerId, children);
                 }
             }
-        }
-    }
-
-    private void findAndCache(CommonIconTemplateHeaderDto defaultCommonIconHeaderDto) {
-        CommonIconTemplateHeaderPo defaultCommonIconHeaderPo = commonIconTemplateHeaderRepository.findFirstByBuildInTrueOrderByCreateTime();
-        if (defaultCommonIconHeaderPo != null) {
-            URedis.set(CacheConstant.DEFAULT_COMMON_ICON_HEADER, commonIconTemplateHeaderConverter.convertPo2Dto(defaultCommonIconHeaderPo));
-        } else {
-            URedis.set(CacheConstant.DEFAULT_COMMON_ICON_HEADER, defaultCommonIconHeaderDto);
         }
     }
 

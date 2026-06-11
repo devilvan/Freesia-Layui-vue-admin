@@ -39,6 +39,4 @@ public interface CommonIconTemplateDetailRepository extends JpaRepository<Common
      * @return 结果集
      */
     List<CommonIconTemplateDetailPo> findAllByBuildInTrue();
-
-    Boolean findByHeaderIdExists(Long headerId);
 }

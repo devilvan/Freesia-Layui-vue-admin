@@ -37,6 +37,7 @@ import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.satoken.constant.UserType;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.service.CommonIconTemplateHeaderProviderService;
 import com.freesia.service.SysRoleService;
 import com.freesia.service.SysTenantService;
 import com.freesia.service.SysUserService;
@@ -73,6 +74,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
     private final SysUserConverter sysUserConverter;
     private final SysTenantConverter sysTenantConverter;
     private final SysTenantUserRepository sysTenantUserRepository;
+    private final CommonIconTemplateHeaderProviderService commonIconTemplateHeaderProviderService;
 
     @Override
     protected MapStructConverter<SysUserVo, SysUserDto, SysUserPo> getMapStructConverter() {
@@ -188,6 +190,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
                 SysTenantDto saveSysTenantDto = sysTenantService.saveUpdate(sysTenantDto);
                 sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(saveSysTenantDto.getId(), sysUserPo.getId())));
             }
+            // 初始化图标模板
+            commonIconTemplateHeaderProviderService.initUserTemplateHeader(sysUserPo.getId());
             return sysUserPo;
         });
     }

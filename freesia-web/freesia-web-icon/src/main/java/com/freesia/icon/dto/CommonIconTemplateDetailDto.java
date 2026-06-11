@@ -33,8 +33,6 @@ public class CommonIconTemplateDetailDto extends TreeDto<CommonIconTemplateDetai
     private String name;
     @Schema(description = "排序")
     private Integer orderNum;
-    @Schema(description = "父级ID")
-    private Long parentId;
     @Schema(description = "备注")
     private String remark;
     @Schema(description = "主键集合")
