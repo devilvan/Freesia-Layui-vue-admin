@@ -146,11 +146,11 @@ public class SysLoginServiceImpl implements SysLoginService {
         sysUserDto.setUserName(generatedUsername);
         sysUserDto.setNickName(wxLoginDto.getNickName());
         sysUserDto.setAvatar(wxLoginDto.getAvatar());
-        boolean registered = sysUserService.register(sysUserDto);
-        if (!registered) {
+        SysUserPo sysUserPo = sysUserService.register(sysUserDto);
+        if (sysUserPo == null || sysUserPo.getId() == null) {
             throw new ServiceException(UserModule.SubModule.LOGIN, "wx.user.register.failed");
         }
-        return sysUserService.findByUsername(generatedUsername);
+        return sysUserPo;
     }
 
     private void updateThirdpartyAuth(WxLoginDto wxLoginDto, String username) {
@@ -379,8 +379,8 @@ public class SysLoginServiceImpl implements SysLoginService {
             throw new ServiceException(UserModule.SubModule.LOGIN, "default.dept.not.found");
         }
         sysUserDto.setDeptId(defaultDept.getId());
-        boolean registered = sysUserService.register(sysUserDto);
-        if (!registered) {
+        SysUserPo sysUserPo = sysUserService.register(sysUserDto);
+        if (sysUserPo == null || sysUserPo.getId() == null) {
             throw new ServiceException(UserModule.SubModule.LOGIN, "oauth.user.register.failed");
         }
     }

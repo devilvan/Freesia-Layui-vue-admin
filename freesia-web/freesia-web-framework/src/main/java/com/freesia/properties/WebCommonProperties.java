@@ -20,4 +20,6 @@ public class WebCommonProperties {
     private Boolean initSysDict;
     @Schema(description = "是否初始化后端秘钥")
     private Boolean initSecretKey;
+    @Schema(description = "是否初始化默认图标模板")
+    private Boolean initDefaultCommonIconTemplateFlag;
 }

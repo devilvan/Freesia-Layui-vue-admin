@@ -150,8 +150,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
 
     @Override
     @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.REGISTER, message = "user.register")
-    public boolean register(SysUserDto sysUserDto) {
-        return Boolean.TRUE.equals(transactionTemplate.execute(status -> {
+    public SysUserPo register(SysUserDto sysUserDto) {
+        return transactionTemplate.execute(status -> {
             SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
             sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
             sysUserPo.setAccountStatus(FlagConstant.ENABLED);
@@ -188,8 +188,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
                 SysTenantDto saveSysTenantDto = sysTenantService.saveUpdate(sysTenantDto);
                 sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(saveSysTenantDto.getId(), sysUserPo.getId())));
             }
-            return sysUserPo.getId() != null;
-        }));
+            return sysUserPo;
+        });
     }
 
     @Override

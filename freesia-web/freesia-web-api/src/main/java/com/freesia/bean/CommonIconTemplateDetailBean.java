@@ -1,13 +1,13 @@
-package com.freesia.icon.dto;
+package com.freesia.bean;
 
 import com.freesia.dto.BaseDto;
-import com.freesia.dto.TreeDto;
 import com.freesia.icon.entity.FindCommonIconEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "通用图标模板明细表 数据传输对象")
-public class CommonIconTemplateDetailDto extends TreeDto<CommonIconTemplateDetailDto> {
+public class CommonIconTemplateDetailBean extends BaseDto {
     @Schema(description = "自定义分组")
     private String grouping;
     @Schema(description = "通用图标模板头表ID")

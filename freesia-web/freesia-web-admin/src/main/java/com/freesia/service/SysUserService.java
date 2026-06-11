@@ -82,7 +82,7 @@ public interface SysUserService {
      * @param sysUserDto 用户对象
      * @return flag
      */
-    boolean register(SysUserDto sysUserDto);
+    SysUserPo register(SysUserDto sysUserDto);
 
     /**
      * 查询用户列表分页数据

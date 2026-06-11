@@ -3,6 +3,7 @@ package com.freesia.icon.service.impl;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.freesia.bean.CommonIconTemplateDetailBean;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
@@ -17,7 +18,9 @@ import com.freesia.icon.repository.CommonIconTemplateDetailRepository;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
 import com.freesia.icon.vo.CommonIconTemplateDetailVo;
 import com.freesia.pojo.LaySelect;
+import com.freesia.properties.WebCommonProperties;
 import com.freesia.redis.util.URedis;
+import com.freesia.service.CommonIconTemplateDetailProviderService;
 import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
 import com.freesia.util.UTree;
@@ -36,10 +39,11 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonIconTemplateDetailMapper, CommonIconTemplateDetailVo, CommonIconTemplateDetailDto, CommonIconTemplateDetailPo> implements CommonIconTemplateDetailService {
+public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonIconTemplateDetailMapper, CommonIconTemplateDetailVo, CommonIconTemplateDetailDto, CommonIconTemplateDetailPo> implements CommonIconTemplateDetailService, CommonIconTemplateDetailProviderService {
     private final CommonIconTemplateDetailRepository commonIconTemplateDetailRepository;
     private final CommonIconTemplateDetailMapper commonIconTemplateDetailMapper;
     private final CommonIconTemplateDetailConverter commonIconTemplateDetailConverter;
+    private final WebCommonProperties webCommonProperties;
 
 
     @Override
@@ -122,10 +126,32 @@ public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonI
 
     @Override
     public List<CommonIconTemplateDetailDto> findCacheDefaultCommonIconDetail() {
-        List<CommonIconTemplateDetailDto> list = URedis.get(CacheConstant.DEFAULT_COMMON_ICON_DETAIL);
-        if (UEmpty.isNotEmpty(list)) {
-            return list;
+        List<CommonIconTemplateDetailDto> list = new ArrayList<>();
+        Boolean initDefaultCommonIconTemplateFlag = webCommonProperties.getInitDefaultCommonIconTemplateFlag();
+        if (initDefaultCommonIconTemplateFlag != null && initDefaultCommonIconTemplateFlag) {
+            list = findAndCache(list);
+        } else {
+            list = URedis.get(CacheConstant.DEFAULT_COMMON_ICON_DETAIL);
+            if (UEmpty.isNotEmpty(list)) {
+                return list;
+            }
+            list = findAndCache(list);
         }
+        return list;
+    }
+
+    @Override
+    public Boolean findByHeaderIdExists(Long headerId) {
+        return commonIconTemplateDetailRepository.findByHeaderIdExists(headerId);
+    }
+
+    @Override
+    public List<CommonIconTemplateDetailBean> findListDefaultCommonIconTemplate() {
+        List<CommonIconTemplateDetailDto> commonIconTemplateDetailDtoList = findCacheDefaultCommonIconDetail();
+        return commonIconTemplateDetailConverter.convertBatchDto2Bean(commonIconTemplateDetailDtoList);
+    }
+
+    private List<CommonIconTemplateDetailDto> findAndCache(List<CommonIconTemplateDetailDto> list) {
         List<CommonIconTemplateDetailPo> commonIconTemplateDetailPoList = commonIconTemplateDetailRepository.findAllByBuildInTrue();
         if (UEmpty.isNotEmpty(commonIconTemplateDetailPoList)) {
             list = commonIconTemplateDetailConverter.convertBatchPo2Dto(commonIconTemplateDetailPoList);

@@ -1,5 +1,6 @@
 package com.freesia.icon.converter;
 
+import com.freesia.bean.CommonIconTemplateDetailBean;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.icon.dto.CommonIconTemplateDetailDto;
 import com.freesia.icon.po.CommonIconTemplateDetailPo;
@@ -8,6 +9,8 @@ import com.freesia.icon.vo.FindMaxOrderNumVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+
+import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -36,4 +39,6 @@ public interface CommonIconTemplateDetailConverter extends MapStructConverter<Co
     @Mapping(target = "idList", ignore = true)
     @Mapping(target = "iconId", ignore = true)
     CommonIconTemplateDetailDto convertFindMaxOrderNumVo2CommonIconTemplateDetailDto(FindMaxOrderNumVo findMaxOrderNumVo);
+
+    List<CommonIconTemplateDetailBean> convertBatchDto2Bean(List<CommonIconTemplateDetailDto> commonIconTemplateDetailDtoList);
 }

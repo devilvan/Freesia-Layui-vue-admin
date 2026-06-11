@@ -4,13 +4,16 @@ import cn.dev33.satoken.secure.BCrypt;
 import com.freesia.dto.RegisterDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.exception.UserException;
+import com.freesia.po.SysUserPo;
 import com.freesia.satoken.constant.UserType;
+import com.freesia.service.CommonIconTemplateHeaderProviderService;
 import com.freesia.service.SysConfigService;
 import com.freesia.service.SysRegisterService;
 import com.freesia.service.SysUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
@@ -27,6 +30,8 @@ import java.util.Optional;
 public class SysRegisterServiceImpl implements SysRegisterService {
     private final SysConfigService sysConfigService;
     private final SysUserService sysUserService;
+    private final TransactionTemplate transactionTemplate;
+    private final CommonIconTemplateHeaderProviderService commonIconTemplateHeaderProviderService;
 
     @Override
     public void register(RegisterDto registerDto) {
@@ -46,9 +51,14 @@ public class SysRegisterServiceImpl implements SysRegisterService {
         if (sysUserService.checkUserNameUnique(sysUserDto)) {
             throw new UserException("user.register.not.unique", new Object[]{username});
         }
-        boolean flag = sysUserService.register(sysUserDto);
-        if (!flag) {
-            throw new UserException("user.register.error", new Object[]{});
-        }
+        transactionTemplate.execute(status -> {
+            SysUserPo sysUserPo = sysUserService.register(sysUserDto);
+            if (sysUserPo == null || sysUserPo.getId() == null) {
+                throw new UserException("user.register.error", new Object[]{});
+            }
+            // 初始化图标模板
+            commonIconTemplateHeaderProviderService.initUserTemplateHeader(sysUserPo.getId());
+            return null;
+        });
     }
 }

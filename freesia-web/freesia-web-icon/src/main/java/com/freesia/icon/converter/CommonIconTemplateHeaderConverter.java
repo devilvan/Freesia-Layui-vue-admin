@@ -1,5 +1,6 @@
 package com.freesia.icon.converter;
 
+import com.freesia.bean.CommonIconTemplateHeaderBean;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.icon.dto.CommonIconTemplateHeaderDto;
 import com.freesia.icon.po.CommonIconTemplateHeaderPo;
@@ -18,4 +19,6 @@ public interface CommonIconTemplateHeaderConverter extends MapStructConverter<Co
     @Mapping(target = "commonIconTemplateDetailPoSet", ignore = true)
     @Override
     CommonIconTemplateHeaderPo convertDto2Po(CommonIconTemplateHeaderDto source);
+
+    CommonIconTemplateHeaderBean convertDto2Bean(CommonIconTemplateHeaderDto cacheDefaultCommonIconHeader);
 }

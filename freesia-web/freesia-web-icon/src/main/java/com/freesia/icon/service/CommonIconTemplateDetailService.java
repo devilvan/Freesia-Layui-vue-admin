@@ -100,4 +100,11 @@ public interface CommonIconTemplateDetailService {
      * @return 结果集
      */
     List<CommonIconTemplateDetailDto> findCacheDefaultCommonIconDetail();
+
+    /**
+     * 查询通用图标模板明细是否存在
+     *
+     * @param headerId 通用图标模板表Id
+     */
+    Boolean findByHeaderIdExists(Long headerId);
 }

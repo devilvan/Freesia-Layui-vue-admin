@@ -50,6 +50,8 @@ freesia:
       init-sys-dict: true
       # 是否初始化后端公钥
       init-secret-key: true
+      # 是否初始化默认图标模板
+      init-default-common-icon-template-flag: true
     menu:
       path:
         - workSpace
