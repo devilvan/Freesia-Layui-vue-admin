@@ -77,14 +77,6 @@ public interface SysUserService {
     boolean checkUserNameUnique(SysUserDto sysUserDto);
 
     /**
-     * 保存注册的用户对象
-     *
-     * @param sysUserDto 用户对象
-     * @return flag
-     */
-    SysUserPo register(SysUserDto sysUserDto);
-
-    /**
      * 查询用户列表分页数据
      *
      * @param sysUserDto 查询条件

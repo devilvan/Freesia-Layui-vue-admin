@@ -5,11 +5,9 @@ import com.freesia.constant.FlagConstant;
 import com.freesia.constant.SysTenantType;
 import com.freesia.constant.UserModule;
 import com.freesia.converter.SysUserConverter;
-import com.freesia.dto.RegisterDto;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
-import com.freesia.exception.UserException;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.po.*;
 import com.freesia.properties.LoginPasswordProperties;
@@ -25,8 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.Optional;
 
 /**
  * @author Evad.Wu
@@ -91,7 +87,7 @@ public class SysRegisterServiceImpl implements SysRegisterService {
                 sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(saveSysTenantDto.getId(), sysUserPo.getId())));
             }
             // 初始化图标模板
-            commonIconTemplateHeaderProviderService.initUserTemplateHeader(sysUserPo.getId());
+            commonIconTemplateHeaderProviderService.initUserIconTemplate(sysUserPo.getId());
             return sysUserPo;
         });
     }

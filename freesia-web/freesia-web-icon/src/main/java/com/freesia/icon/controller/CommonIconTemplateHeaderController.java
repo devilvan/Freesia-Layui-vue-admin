@@ -141,7 +141,7 @@ public class CommonIconTemplateHeaderController extends BaseController {
     @Operation(summary = "查询通用图标模板头表下拉数据")
     @GetMapping(value = "testInitCommonIcon")
     public R<Void> testInitCommonIcon() {
-        commonIconTemplateHeaderProviderService.initUserTemplateHeader(2L);
+        commonIconTemplateHeaderProviderService.initUserIconTemplate(2L);
         return R.ok();
     }
 }

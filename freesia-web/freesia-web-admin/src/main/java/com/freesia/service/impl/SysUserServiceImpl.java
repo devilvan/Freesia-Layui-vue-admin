@@ -151,52 +151,6 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
     }
 
     @Override
-    @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.REGISTER, message = "user.register")
-    public SysUserPo register(SysUserDto sysUserDto) {
-        return transactionTemplate.execute(status -> {
-            SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
-            sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
-            sysUserPo.setAccountStatus(FlagConstant.ENABLED);
-            sysUserPo.setLogicDel(false);
-            if (UEmpty.isEmpty(sysUserPo.getUserType())) {
-                sysUserPo.setUserType(UserType.SYS_USER.getUserType());
-            }
-            sysUserPo = sysUserRepository.save(sysUserPo);
-
-            // 赋予默认角色并分配菜单权限
-            try {
-                SysRoleDto defaultRole = sysRoleService.findCacheDefaultRole();
-                if (ObjectUtil.isNotNull(defaultRole)) {
-                    SysUserRolePo ur = new SysUserRolePo();
-                    ur.setSysRoleMenuPk(new SysUserRolePk(sysUserPo.getId(), defaultRole.getId()));
-                    sysUserRoleRepository.saveAndFlush(ur);
-                    log.info("注册用户[{}]成功赋予角色: {}", sysUserDto.getUserName(), defaultRole.getRoleKey());
-                } else {
-                    log.warn("注册用户[{}]未找到默认角色(ID=2)", sysUserDto.getUserName());
-                }
-            } catch (Exception e) {
-                log.error("注册用户[{}]赋予默认角色失败: {}", sysUserDto.getUserName(), e.getMessage(), e);
-            }
-            // 初始化租户
-            if (UEmpty.isEmpty(sysUserDto.getTenantId())) {
-                SysTenantDto sysTenantDto = new SysTenantDto();
-                String code = sysUserPo.getUserName() + "-" + "commonTenant";
-                sysTenantDto.setCode(code);
-                sysTenantDto.setName("我的账本");
-                sysTenantDto.setType(SysTenantType.INDIVIDUAL.getCode());
-                sysTenantDto.setStatus(true);
-                sysTenantDto.setRemark(code);
-                sysTenantDto.setContactName(sysUserPo.getUserName());
-                SysTenantDto saveSysTenantDto = sysTenantService.saveUpdate(sysTenantDto);
-                sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(saveSysTenantDto.getId(), sysUserPo.getId())));
-            }
-            // 初始化图标模板
-            commonIconTemplateHeaderProviderService.initUserTemplateHeader(sysUserPo.getId());
-            return sysUserPo;
-        });
-    }
-
-    @Override
     public TableResult<FindPageSysUserListEntity> findPageSysUserList(SysUserDto sysUserDto, PageQuery pageQuery) {
         // 构建SQL 通过部门权限限制查询当前用户下能够查找的用户的列表
         Wrapper<SysUserPo> sysUserPoWrapper = buildQueryWrapper(sysUserDto);

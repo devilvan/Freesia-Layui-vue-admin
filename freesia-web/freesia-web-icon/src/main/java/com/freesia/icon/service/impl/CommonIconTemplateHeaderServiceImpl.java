@@ -4,6 +4,7 @@ import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.freesia.bean.CommonIconTemplateHeaderBean;
+import com.freesia.constant.AdminConstant;
 import com.freesia.constant.CacheConstant;
 import com.freesia.constant.FlagConstant;
 import com.freesia.convert.MapStructConverter;
@@ -158,7 +159,7 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
     }
 
     @Override
-    public void initUserTemplateHeader(Long userId) {
+    public void initUserIconTemplate(Long userId) {
         // 根据用户ID查询用户是否已初始化图标模板
         Optional<CommonIconTemplateHeaderPo> findOne = commonIconTemplateHeaderRepository.findById(userId);
         if (findOne.isPresent()) {
@@ -172,6 +173,8 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
                 cacheDefaultCommonIconHeader.setRecVer(0L);
                 cacheDefaultCommonIconHeader.setBuildIn(false);
                 cacheDefaultCommonIconHeader.setLogicDel(false);
+                cacheDefaultCommonIconHeader.setUserId(userId);
+                cacheDefaultCommonIconHeader.setDefaultFlag(true);
                 CommonIconTemplateHeaderDto headerDto = super.saveUpdate(cacheDefaultCommonIconHeader);
                 if (headerDto != null) {
                     buildSaveTemplateDetail(headerDto.getId());
@@ -186,33 +189,26 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
             // 生成该用户默认的图标模板
             List<CommonIconTemplateDetailDto> cacheDefaultCommonIconDetailList = commonIconTemplateDetailService.findCacheDefaultCommonIconDetail();
             if (UEmpty.isNotEmpty(cacheDefaultCommonIconDetailList)) {
+                cacheDefaultCommonIconDetailList = cacheDefaultCommonIconDetailList.stream().peek(item -> {
+                    item.setHeaderId(headerId);
+                }).collect(Collectors.toList());
                 List<CommonIconTemplateDetailDto> treeifyList = UTree.buildTree(cacheDefaultCommonIconDetailList);
-                saveTreeifyList(headerId, treeifyList);
+                saveTreeifyList(AdminConstant.MENU_TOP_PARENT_ID, treeifyList);
             }
         }
     }
 
-    private void saveTreeifyList(Long headerId, List<CommonIconTemplateDetailDto> treeifyList) {
-        if (UEmpty.isNotEmpty(treeifyList)) {
+    private void saveTreeifyList(Long parentId, List<CommonIconTemplateDetailDto> treeifyList) {
+        if (UEmpty.isNotEmpty(treeifyList) && parentId != null) {
             for (CommonIconTemplateDetailDto commonIconTemplateDetailDto : treeifyList) {
                 commonIconTemplateDetailDto.setId(null);
                 commonIconTemplateDetailDto.setRecVer(0L);
                 commonIconTemplateDetailDto.setBuildIn(false);
                 commonIconTemplateDetailDto.setLogicDel(false);
-                commonIconTemplateDetailDto.setHeaderId(headerId);
+                commonIconTemplateDetailDto.setParentId(parentId);
                 CommonIconTemplateDetailDto saveDto = commonIconTemplateDetailService.saveUpdate(commonIconTemplateDetailDto);
                 List<CommonIconTemplateDetailDto> children = commonIconTemplateDetailDto.getChildren();
-                if (saveDto != null && saveDto.getId() != null) {
-                    children = children.stream().peek(item -> {
-                        item.setId(null);
-                        item.setRecVer(0L);
-                        item.setBuildIn(false);
-                        item.setLogicDel(false);
-                        item.setHeaderId(saveDto.getId());
-                    }).collect(Collectors.toList());
-                    commonIconTemplateDetailService.saveUpdateBatch(children);
-                    saveTreeifyList(headerId, children);
-                }
+                saveTreeifyList(saveDto.getId(), children);
             }
         }
     }

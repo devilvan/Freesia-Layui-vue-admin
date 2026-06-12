@@ -115,4 +115,12 @@ public interface CommonIconTemplateDetailService {
      * @param headerId 通用图标模板表Id
      */
     Boolean findByHeaderIdExists(Long headerId);
+
+    /**
+     * 查询通用图标模板明细列表
+     *
+     * @param commonIconTemplateDetailDto 查询Dto对象
+     * @return 结果集
+     */
+    List<CommonIconTemplateDetailDto> findList(CommonIconTemplateDetailDto commonIconTemplateDetailDto);
 }

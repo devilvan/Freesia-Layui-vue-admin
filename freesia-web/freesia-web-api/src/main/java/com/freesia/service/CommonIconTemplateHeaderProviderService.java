@@ -18,5 +18,5 @@ public interface CommonIconTemplateHeaderProviderService {
     /**
      * 初始化用户默认通用图标模板头
      */
-    void initUserTemplateHeader(Long userId);
+    void initUserIconTemplate(Long userId);
 }

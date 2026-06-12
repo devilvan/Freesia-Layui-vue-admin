@@ -28,6 +28,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +72,14 @@ public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonI
     protected Wrapper<CommonIconTemplateDetailPo> buildQueryWrapper(@NonNull CommonIconTemplateDetailDto commonIconTemplateDetailDto) {
         return new LambdaQueryWrapper<CommonIconTemplateDetailPo>()
                 .eq(CommonIconTemplateDetailPo::getLogicDel, FlagConstant.DISABLED)
+                .eq(UEmpty.isNotEmpty(commonIconTemplateDetailDto.getHeaderId()), CommonIconTemplateDetailPo::getHeaderId, commonIconTemplateDetailDto.getHeaderId())
                 .eq(UEmpty.isNotEmpty(commonIconTemplateDetailDto.getId()), CommonIconTemplateDetailPo::getId, commonIconTemplateDetailDto.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
+    public CommonIconTemplateDetailDto saveUpdate(CommonIconTemplateDetailDto dto) {
+        return super.saveUpdate(dto);
     }
 
     @Override
@@ -145,6 +154,11 @@ public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonI
         Wrapper<CommonIconTemplateDetailPo> queryWrapper = new LambdaQueryWrapper<CommonIconTemplateDetailPo>()
                 .eq(CommonIconTemplateDetailPo::getHeaderId, headerId);
         return commonIconTemplateDetailMapper.exists(queryWrapper);
+    }
+
+    @Override
+    public List<CommonIconTemplateDetailDto> findList(CommonIconTemplateDetailDto dto) {
+        return super.findList(dto);
     }
 
     @Override
