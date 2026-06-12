@@ -37,7 +37,7 @@ import java.util.*;
 @Aspect
 @Component
 public class IdempotentAspect {
-    public static final ThreadLocal<String> submitKeyThreadLocal = new ThreadLocal<>();
+    public static final ThreadLocal<String> SUBMIT_KEY_THREAD_LOCAL = new ThreadLocal<>();
 
     @Around(value = "@annotation(idempotent)")
     protected Object around(ProceedingJoinPoint proceedingJoinPoint, Idempotent idempotent) throws Throwable {
@@ -99,7 +99,7 @@ public class IdempotentAspect {
     }
 
     private void idempotentAfterHandler(ProceedingJoinPoint proceedingJoinPoint, Object proceed, Idempotent idempotent) {
-        String repeatSubmitKey = submitKeyThreadLocal.get();
+        String repeatSubmitKey = SUBMIT_KEY_THREAD_LOCAL.get();
         if (UEmpty.isNotNull(proceed)) {
             try {
                 if (proceed instanceof R<?> r) {
@@ -114,7 +114,7 @@ public class IdempotentAspect {
                     }
                 }
             } finally {
-                submitKeyThreadLocal.remove();
+                SUBMIT_KEY_THREAD_LOCAL.remove();
             }
         }
     }
@@ -134,7 +134,7 @@ public class IdempotentAspect {
         String uri = Optional.ofNullable(request).map(HttpServletRequest::getRequestURI).orElse("");
         String argsMd5Str = UCrypt.md5Encrypt(args);
         String repeatSubmitKey = CacheConstant.REPEAT_SUBMIT_KEY + uri + ":" + SaManager.getConfig().getTokenName() + ":" + argsMd5Str;
-        submitKeyThreadLocal.set(repeatSubmitKey);
+        SUBMIT_KEY_THREAD_LOCAL.set(repeatSubmitKey);
         String now = Constants.SDF_YMD.format(new Date());
         log.info("{} repeatSubmitKey：{}", now, repeatSubmitKey);
         boolean flag = URedis.setNx(repeatSubmitKey, uuid, interval);
