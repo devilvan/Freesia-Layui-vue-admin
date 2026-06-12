@@ -136,12 +136,4 @@ public class CommonIconTemplateHeaderController extends BaseController {
         List<LaySelect> list = commonIconTemplateHeaderService.findSelectCommonIconHeader(userId);
         return R.ok(list);
     }
-
-    @SaIgnore
-    @Operation(summary = "查询通用图标模板头表下拉数据")
-    @GetMapping(value = "testInitCommonIcon")
-    public R<Void> testInitCommonIcon() {
-        commonIconTemplateHeaderProviderService.initUserIconTemplate(2L);
-        return R.ok();
-    }
 }
