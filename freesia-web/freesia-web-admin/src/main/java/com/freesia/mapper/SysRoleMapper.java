@@ -76,4 +76,12 @@ public interface SysRoleMapper extends BaseMapper<SysRolePo> {
      * @return 查询【分配按钮权限】功能，在角色-菜单表中需要清空的按钮ID
      */
     List<Long> findListButtonIdByRoleId(@Param("roleId") Long roleId);
+
+    /**
+     * 查询角色-菜单关联表中是否存在该角色对应菜单
+     *
+     * @param roleId 角色ID
+     * @return 标识
+     */
+    Boolean findRoleMenuExistsByRoleId(@Param("roleId") Long roleId);
 }

@@ -11,6 +11,7 @@ import com.freesia.dto.SysUserDto;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.po.*;
 import com.freesia.properties.LoginPasswordProperties;
+import com.freesia.repository.SysTenantRepository;
 import com.freesia.repository.SysTenantUserRepository;
 import com.freesia.repository.SysUserRepository;
 import com.freesia.repository.SysUserRoleRepository;
@@ -43,7 +44,7 @@ public class SysRegisterServiceImpl implements SysRegisterService {
     private final SysUserRepository sysUserRepository;
     private final SysUserRoleRepository sysUserRoleRepository;
     private final SysRoleService sysRoleService;
-    private final SysTenantService sysTenantService;
+    private final SysTenantRepository sysTenantRepository;
     private final SysTenantUserRepository sysTenantUserRepository;
 
     @Override
@@ -75,16 +76,16 @@ public class SysRegisterServiceImpl implements SysRegisterService {
             }
             // 初始化租户
             if (UEmpty.isEmpty(sysUserDto.getTenantId())) {
-                SysTenantDto sysTenantDto = new SysTenantDto();
+                SysTenantPo sysTenantPo = new SysTenantPo();
                 String code = sysUserPo.getUserName() + "-" + "commonTenant";
-                sysTenantDto.setCode(code);
-                sysTenantDto.setName("我的账本");
-                sysTenantDto.setType(SysTenantType.INDIVIDUAL.getCode());
-                sysTenantDto.setStatus(true);
-                sysTenantDto.setRemark(code);
-                sysTenantDto.setContactName(sysUserPo.getUserName());
-                SysTenantDto saveSysTenantDto = sysTenantService.saveUpdate(sysTenantDto);
-                sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(saveSysTenantDto.getId(), sysUserPo.getId())));
+                sysTenantPo.setCode(code);
+                sysTenantPo.setName("我的账本");
+                sysTenantPo.setType(SysTenantType.INDIVIDUAL.getCode());
+                sysTenantPo.setStatus(true);
+                sysTenantPo.setRemark(code);
+                sysTenantPo.setContactName(sysUserPo.getUserName());
+                sysTenantPo = sysTenantRepository.save(sysTenantPo);
+                sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(sysTenantPo.getId(), sysUserPo.getId())));
             }
             // 初始化图标模板
             commonIconTemplateHeaderProviderService.initUserIconTemplate(sysUserPo.getId());

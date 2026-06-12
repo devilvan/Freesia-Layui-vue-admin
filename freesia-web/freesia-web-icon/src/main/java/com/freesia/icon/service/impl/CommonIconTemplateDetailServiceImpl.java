@@ -28,7 +28,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -77,7 +76,6 @@ public class CommonIconTemplateDetailServiceImpl extends BaseServiceImpl<CommonI
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     public CommonIconTemplateDetailDto saveUpdate(CommonIconTemplateDetailDto dto) {
         return super.saveUpdate(dto);
     }

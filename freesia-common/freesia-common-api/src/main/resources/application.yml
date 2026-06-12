@@ -31,8 +31,12 @@ spring:
       # 配置检测连接是否有效
       validation-query: SELECT 1
       test-while-idle: true
-      test-on-borrow: false
+      test-on-borrow: true
       test-on-return: false
+      # 开启keepAlive，定期检测空闲连接，防止MySQL wait_timeout导致连接被关闭
+      keep-alive: true
+      # 空闲连接被驱逐前的最小空闲时间（毫秒），默认30分钟，这里设为5分钟
+      min-evictable-idle-time-millis: 300000
       # 打开PSCache，并且指定每个连接上PSCache的大小
       pool-prepared-statements: true
       # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙

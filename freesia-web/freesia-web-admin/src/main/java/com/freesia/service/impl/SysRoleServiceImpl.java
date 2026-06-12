@@ -317,9 +317,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
                 if (UEmpty.isNotEmpty(menuProperties.getPath())) {
                     List<SysMenuPo> sysMenuPoList = sysMenuRepository.findByPathIn(menuProperties.getPath());
                     List<Long> sysMenuIdList = sysMenuPoList.stream().map(BasePo::getId).toList();
-                    List<SysRoleMenuPo> sysRoleMenuList = sysMenuIdList.stream().map(menuId -> {
-                        return new SysRoleMenuPo(new SysRoleMenuPk(menuId, saveSysRolePo.getId()));
-                    }).toList();
+                    List<SysRoleMenuPo> sysRoleMenuList = sysMenuIdList.stream().map(menuId -> new SysRoleMenuPo(new SysRoleMenuPk(menuId, saveSysRolePo.getId()))).toList();
                     sysRoleMenuRepository.saveAll(sysRoleMenuList);
                 }
                 return null;
@@ -327,6 +325,13 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
         } else {
             SysRoleDto sysRoleDto = UCopy.copyPo2Dto(sysRolePo, SysRoleDto.class);
             URedis.set(CacheConstant.DEFAULT_ROLE, sysRoleDto);
+            Boolean flag = sysRoleMapper.findRoleMenuExistsByRoleId(sysRoleDto.getId());
+            if (!flag && UEmpty.isNotEmpty(menuProperties.getPath())) {
+                List<SysMenuPo> sysMenuPoList = sysMenuRepository.findByPathIn(menuProperties.getPath());
+                List<Long> sysMenuIdList = sysMenuPoList.stream().map(BasePo::getId).toList();
+                List<SysRoleMenuPo> sysRoleMenuList = sysMenuIdList.stream().map(menuId -> new SysRoleMenuPo(new SysRoleMenuPk(menuId, sysRoleDto.getId()))).toList();
+                sysRoleMenuRepository.saveAll(sysRoleMenuList);
+            }
         }
     }
 

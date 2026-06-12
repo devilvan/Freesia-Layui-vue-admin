@@ -75,6 +75,11 @@
           AND M.MENU_TYPE = 'B'
           AND SRM.ROLE_ID = #{roleId}
     </select>
+    <select id="findRoleMenuExistsByRoleId" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1
+                      FROM SYS_ROLE_MENU SRM
+                      WHERE SRM.ROLE_ID = #{roleId})
+    </select>
     <resultMap id="findPageUserByRoleIdResultMap" type="com.freesia.po.SysUserPo">
         <result property="id" column="USER_ID"/>
         <result property="userName" column="USER_NAME"/>

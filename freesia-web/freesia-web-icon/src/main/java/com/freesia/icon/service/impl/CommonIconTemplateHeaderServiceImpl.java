@@ -95,10 +95,8 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
                 commonIconTemplateHeaderRepository.saveAll(commonIconTemplateHeaderPoList);
             }
         }
-        CommonIconTemplateHeaderPo commonIconTemplateHeaderPo = commonIconTemplateHeaderConverter.convertDto2Po(commonIconTemplateHeaderDto);
-        commonIconTemplateHeaderPo.setUserId(userId);
-        CommonIconTemplateHeaderDto resultDto = new CommonIconTemplateHeaderDto();
-        return super.saveUpdate(resultDto);
+        commonIconTemplateHeaderDto.setUserId(userId);
+        return super.saveUpdate(commonIconTemplateHeaderDto);
     }
 
     @Override
@@ -161,12 +159,13 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
     @Override
     public void initUserIconTemplate(Long userId) {
         // 根据用户ID查询用户是否已初始化图标模板
-        Optional<CommonIconTemplateHeaderPo> findOne = commonIconTemplateHeaderRepository.findById(userId);
+        Optional<CommonIconTemplateHeaderPo> findOne = commonIconTemplateHeaderRepository.findByUserId(userId);
         if (findOne.isPresent()) {
             CommonIconTemplateHeaderPo commonIconTemplateHeaderPo = findOne.get();
-            // 查询图标模板详情
+            // 如果已存在模板头，补充初始化缺失的模板详情
             buildSaveTemplateDetail(commonIconTemplateHeaderPo.getId());
         } else {
+            // 用户未初始化图标模板，基于默认模板创建用户专属模板
             CommonIconTemplateHeaderDto cacheDefaultCommonIconHeader = findCacheDefaultCommonIconHeader();
             if (cacheDefaultCommonIconHeader != null && cacheDefaultCommonIconHeader.getId() != null) {
                 cacheDefaultCommonIconHeader.setId(null);
@@ -176,7 +175,7 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
                 cacheDefaultCommonIconHeader.setUserId(userId);
                 cacheDefaultCommonIconHeader.setDefaultFlag(true);
                 CommonIconTemplateHeaderDto headerDto = super.saveUpdate(cacheDefaultCommonIconHeader);
-                if (headerDto != null) {
+                if (headerDto != null && headerDto.getId() != null) {
                     buildSaveTemplateDetail(headerDto.getId());
                 }
             }
@@ -207,8 +206,12 @@ public class CommonIconTemplateHeaderServiceImpl extends BaseServiceImpl<CommonI
                 commonIconTemplateDetailDto.setLogicDel(false);
                 commonIconTemplateDetailDto.setParentId(parentId);
                 CommonIconTemplateDetailDto saveDto = commonIconTemplateDetailService.saveUpdate(commonIconTemplateDetailDto);
-                List<CommonIconTemplateDetailDto> children = commonIconTemplateDetailDto.getChildren();
-                saveTreeifyList(saveDto.getId(), children);
+                if (saveDto != null && saveDto.getId() != null) {
+                    List<CommonIconTemplateDetailDto> children = commonIconTemplateDetailDto.getChildren();
+                    if (UEmpty.isNotEmpty(children)) {
+                        saveTreeifyList(saveDto.getId(), children);
+                    }
+                }
             }
         }
     }
