@@ -10,7 +10,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * @author Evad.Wu
@@ -35,7 +34,7 @@ public class SysUserRolePo extends RelationPo {
     private static final long serialVersionUID = 8813520811387381993L;
     @EmbeddedId
     @Schema(description = "用户-角色 联合主键")
-    protected SysUserRolePk sysRoleMenuPk;
+    protected SysUserRolePk sysUserRolePk;
 
     @Schema(description = "用户-角色关系表对应的用户")
     @ToString.Exclude

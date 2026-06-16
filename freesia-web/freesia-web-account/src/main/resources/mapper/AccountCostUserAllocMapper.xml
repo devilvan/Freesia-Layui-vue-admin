@@ -47,5 +47,25 @@
         where ALLOCATED.LOGIC_DEL = 0
           AND ALLOCATED.USER_ID = #{userId}
           AND ALLOCATED.ALLOC_FLAG = 0
+        GROUP BY AC.ID
+
+        UNION ALL
+
+        SELECT ALLOCATED.ID,
+               ALLOCATED.USER_ID,
+               ALLOCATED.AMOUNT,
+               AC.PAYMENT_TIME,
+               AC.COST_DESC,
+               AC.REMARK
+        FROM account_cost_user_alloc ALLOCATED
+                 LEFT JOIN ACCOUNT_COST AC ON AC.ID = ALLOCATED.COST_ID
+        WHERE 1 = 1
+          AND AC.LOGIC_DEL = 0
+          AND ALLOCATED.ALLOC_FLAG = 0
+          AND AC.ID IN (SELECT DISTINCT ACUA2.COST_ID
+                        FROM account_cost_user_alloc ACUA2
+                        WHERE ACUA2.USER_ID = #{userId})
+          AND AC.USER_ID <![CDATA[<>]]> #{userId}
+        GROUP BY AC.ID
     </select>
 </mapper>

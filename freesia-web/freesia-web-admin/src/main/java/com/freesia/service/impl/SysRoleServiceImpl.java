@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.*;
-import com.freesia.properties.MenuProperties;
 import com.freesia.redis.util.URedis;
 import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.convert.MapStructConverter;
@@ -57,7 +56,6 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
     private final SysRoleDeptRepository sysRoleDeptRepository;
     private final SysRoleConverter sysRoleConverter;
     private final SysUserConverter sysUserConverter;
-    private final MenuProperties menuProperties;
 
     @Override
     protected MapStructConverter<SysRoleVo, SysRoleDto, SysRolePo> getMapStructConverter() {
@@ -190,7 +188,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
             SysUserRolePk sysUserRolePk = new SysUserRolePk();
             sysUserRolePk.setRoleId(roleId);
             sysUserRolePk.setUserId(userId);
-            sysUserRolePo.setSysRoleMenuPk(sysUserRolePk);
+            sysUserRolePo.setSysUserRolePk(sysUserRolePk);
             sysUserRolePoSet.add(sysUserRolePo);
         }
         sysRolePo.setSysUserRolePoSet(sysUserRolePoSet);
@@ -307,44 +305,31 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
 
     @Override
     public void buildInitDefaultSysRole() {
-        SysRolePo sysRolePo = sysRoleRepository.findCacheDefaultRole(AdminConstant.RoleKey.COMMON.getCode());
+        SysRolePo sysRolePo = sysRoleRepository.findCacheDefaultRole(AdminConstant.RoleKey.OWN.getCode());
         if (sysRolePo == null) {
             transactionTemplate.execute(status -> {
                 SysRolePo newSysRolePo = buildDefaultSysRolePo();
                 SysRolePo saveSysRolePo = sysRoleRepository.save(newSysRolePo);
                 SysRoleDto sysRoleDto = UCopy.copyPo2Dto(saveSysRolePo, SysRoleDto.class);
                 URedis.set(CacheConstant.DEFAULT_ROLE, sysRoleDto);
-                if (UEmpty.isNotEmpty(menuProperties.getPath())) {
-                    List<SysMenuPo> sysMenuPoList = sysMenuRepository.findByPathIn(menuProperties.getPath());
-                    List<Long> sysMenuIdList = sysMenuPoList.stream().map(BasePo::getId).toList();
-                    List<SysRoleMenuPo> sysRoleMenuList = sysMenuIdList.stream().map(menuId -> new SysRoleMenuPo(new SysRoleMenuPk(menuId, saveSysRolePo.getId()))).toList();
-                    sysRoleMenuRepository.saveAll(sysRoleMenuList);
-                }
                 return null;
             });
         } else {
             SysRoleDto sysRoleDto = UCopy.copyPo2Dto(sysRolePo, SysRoleDto.class);
             URedis.set(CacheConstant.DEFAULT_ROLE, sysRoleDto);
-            Boolean flag = sysRoleMapper.findRoleMenuExistsByRoleId(sysRoleDto.getId());
-            if (!flag && UEmpty.isNotEmpty(menuProperties.getPath())) {
-                List<SysMenuPo> sysMenuPoList = sysMenuRepository.findByPathIn(menuProperties.getPath());
-                List<Long> sysMenuIdList = sysMenuPoList.stream().map(BasePo::getId).toList();
-                List<SysRoleMenuPo> sysRoleMenuList = sysMenuIdList.stream().map(menuId -> new SysRoleMenuPo(new SysRoleMenuPk(menuId, sysRoleDto.getId()))).toList();
-                sysRoleMenuRepository.saveAll(sysRoleMenuList);
-            }
         }
     }
 
     private SysRolePo buildDefaultSysRolePo() {
         SysRolePo newSysRolePo = new SysRolePo();
-        newSysRolePo.setRoleName("普通用户");
-        newSysRolePo.setRoleKey(AdminConstant.RoleKey.COMMON.getCode());
+        newSysRolePo.setRoleName("仅个人");
+        newSysRolePo.setRoleKey(AdminConstant.RoleKey.OWN.getCode());
         newSysRolePo.setStatus(FlagConstant.ENABLED);
         newSysRolePo.setOrderNum(1);
-        newSysRolePo.setDataScope(DataScope.CUSTOM.getCode());
+        newSysRolePo.setDataScope(DataScope.OWN.getCode());
         newSysRolePo.setMenuCheckStrictly(true);
         newSysRolePo.setDeptCheckStrictly(true);
-        newSysRolePo.setRemark("普通用户角色");
+        newSysRolePo.setRemark("仅个人用户角色");
         newSysRolePo.setBuildIn(true);
         return newSysRolePo;
     }

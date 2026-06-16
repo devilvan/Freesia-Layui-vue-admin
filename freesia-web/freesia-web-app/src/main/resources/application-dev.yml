@@ -64,6 +64,10 @@ freesia:
         - mine
         - accountsDashboard
         - budget
+        - billing
+        - bill
+        - common
+        - iconTemplate
     tenant:
       enabled: true
       tenant-column: TENANT_ID

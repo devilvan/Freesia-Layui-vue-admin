@@ -7,12 +7,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.MenuModule;
-import com.freesia.constant.SysTenantType;
 import com.freesia.constant.UserModule;
 import com.freesia.convert.MapStructConverter;
 import com.freesia.converter.SysTenantConverter;
 import com.freesia.converter.SysUserConverter;
-import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysTenantDto;
 import com.freesia.dto.SysUserDto;
 import com.freesia.entity.FindPageSysUserByDeptEntity;
@@ -34,7 +32,6 @@ import com.freesia.repository.SysTenantUserRepository;
 import com.freesia.repository.SysUserRepository;
 import com.freesia.repository.SysUserRoleRepository;
 import com.freesia.satoken.bean.SysSensitiveLogBean;
-import com.freesia.satoken.constant.UserType;
 import com.freesia.satoken.model.LoginUserModel;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.service.CommonIconTemplateHeaderProviderService;
@@ -223,13 +220,13 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
         Set<SysUserRolePo> beforeSysUserRolePoSet = UCollection.optimizeInitialCapacitySet(afterRoleIdSet.size());
         for (Long beforeRoleId : beforeRoleIdList) {
             SysUserRolePo sysUserRolePo = new SysUserRolePo();
-            sysUserRolePo.setSysRoleMenuPk(new SysUserRolePk(userId, beforeRoleId));
+            sysUserRolePo.setSysUserRolePk(new SysUserRolePk(userId, beforeRoleId));
             beforeSysUserRolePoSet.add(sysUserRolePo);
         }
         Set<SysUserRolePo> afterSysUserRolePoSet = UCollection.optimizeInitialCapacitySet(afterRoleIdSet.size());
         for (Long roleId : afterRoleIdSet) {
             SysUserRolePo sysUserRolePo = new SysUserRolePo();
-            sysUserRolePo.setSysRoleMenuPk(new SysUserRolePk(userId, roleId));
+            sysUserRolePo.setSysUserRolePk(new SysUserRolePk(userId, roleId));
             afterSysUserRolePoSet.add(sysUserRolePo);
         }
         transactionTemplate.execute(status -> {

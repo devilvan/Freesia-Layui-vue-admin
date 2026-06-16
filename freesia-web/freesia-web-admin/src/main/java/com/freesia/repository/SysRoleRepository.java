@@ -26,7 +26,7 @@ public interface SysRoleRepository extends JpaRepository<SysRolePo, Long> {
      */
     @Modifying
     @Query(value = """
-                DELETE FROM SysUserRolePo WHERE sysRoleMenuPk.roleId = :roleId and sysRoleMenuPk.userId in (:userIdList)
+                DELETE FROM SysUserRolePo WHERE sysUserRolePk.roleId = :roleId and sysUserRolePk.userId in (:userIdList)
             """)
     @Transactional(rollbackFor = Exception.class)
     void cancelAssignUser(@Param("roleId") Long roleId, @Param("userIdList") List<Long> userIdList);
