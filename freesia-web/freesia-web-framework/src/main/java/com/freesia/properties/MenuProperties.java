@@ -18,4 +18,6 @@ import java.util.List;
 public class MenuProperties {
     @Schema(description = "初始化菜单的path")
     private List<String> path;
+    @Schema(description = "初始化菜单的权限")
+    private List<String> permission;
 }

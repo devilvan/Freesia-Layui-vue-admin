@@ -10,10 +10,14 @@ import com.freesia.dto.SysUserDto;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.po.*;
 import com.freesia.properties.LoginPasswordProperties;
-import com.freesia.properties.MenuProperties;
-import com.freesia.repository.*;
+import com.freesia.repository.SysTenantRepository;
+import com.freesia.repository.SysTenantUserRepository;
+import com.freesia.repository.SysUserRepository;
+import com.freesia.repository.SysUserRoleRepository;
 import com.freesia.satoken.constant.UserType;
-import com.freesia.service.*;
+import com.freesia.service.CommonIconTemplateHeaderProviderService;
+import com.freesia.service.SysRegisterService;
+import com.freesia.service.SysRoleService;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +25,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.List;
 
 /**
  * @author Evad.Wu
@@ -43,9 +45,6 @@ public class SysRegisterServiceImpl implements SysRegisterService {
     private final SysRoleService sysRoleService;
     private final SysTenantRepository sysTenantRepository;
     private final SysTenantUserRepository sysTenantUserRepository;
-    private final MenuProperties menuProperties;
-    private final SysMenuRepository sysMenuRepository;
-    private final SysRoleMenuRepository sysRoleMenuRepository;
 
     @Override
     @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.REGISTER, message = "user.register")
@@ -70,17 +69,11 @@ public class SysRegisterServiceImpl implements SysRegisterService {
                     defaultRole.setRecVer(0L);
                     defaultRole.setBuildIn(false);
                     SysRoleDto afterSaveSysRoleDto = sysRoleService.saveUpdate(defaultRole);
-                    ur.setSysUserRolePk(new SysUserRolePk(sysUserPo.getId(), afterSaveSysRoleDto.getId()));
+                    Long roleId = afterSaveSysRoleDto.getId();
+                    ur.setSysUserRolePk(new SysUserRolePk(sysUserPo.getId(), roleId));
                     sysUserRoleRepository.saveAndFlush(ur);
                     log.info("注册用户[{}]成功赋予角色: {}", sysUserDto.getUserName(), defaultRole.getRoleKey());
-                    // 分配菜单权限
-                    if (UEmpty.isNotEmpty(menuProperties.getPath())) {
-                        List<SysMenuPo> sysMenuPoList = sysMenuRepository.findByPathIn(menuProperties.getPath());
-                        List<Long> sysMenuIdList = sysMenuPoList.stream().map(BasePo::getId).toList();
-                        List<SysRoleMenuPo> sysRoleMenuList = sysMenuIdList.stream().map(menuId -> new SysRoleMenuPo(new SysRoleMenuPk(menuId, afterSaveSysRoleDto.getId()))).toList();
-                        sysRoleMenuRepository.saveAll(sysRoleMenuList);
-                    }
-
+                    sysRoleService.saveInitRoleMenu(roleId);
                 } else {
                     log.warn("注册用户[{}]未找到默认角色", sysUserDto.getUserName());
                 }

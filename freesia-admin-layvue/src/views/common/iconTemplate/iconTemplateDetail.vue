@@ -1,14 +1,14 @@
 <template>
   <lay-panel style="margin: 10px" :shadow="'hover'">
-    <lay-button type="normal" size="sm" @click="showSaveGroupingModal(Operate.ADD, null)">
+    <lay-button type="normal" size="sm" @click="showSaveGroupingModal(Operate.ADD, null)" v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_DETAIL_ADD_GROUP]">
       <lay-icon type="layui-icon-addition"></lay-icon>
       新建图标分组
     </lay-button>
-    <lay-button type="primary" size="sm" @click="showSingleSaveIconModal(Operate.ADD, null)">
+    <lay-button type="primary" size="sm" @click="showSingleSaveIconModal(Operate.ADD, null)" v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_DETAIL_ADD_ICON]">
       <lay-icon type="layui-icon-addition"></lay-icon>
       添加图标
     </lay-button>
-    <lay-button type="warm" size="sm" @click="showMultipleSaveIconModal(Operate.ADD, null)">
+    <lay-button type="warm" size="sm" @click="showMultipleSaveIconModal(Operate.ADD, null)" v-permission="[$MENU_PERMISSION.COMMON_ICON_TEMPLATE_DETAIL_ADD_MULTI_ICON]">
       <lay-icon type="layui-icon-addition"></lay-icon>
       批量添加图标
     </lay-button>

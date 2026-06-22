@@ -144,4 +144,11 @@ public interface SysRoleService {
      * @return 默认角色
      */
     SysRoleDto findCacheDefaultRole();
+
+    /**
+     * 初始化角色菜单权限
+     *
+     * @param roleId 角色ID
+     */
+    void saveInitRoleMenu(Long roleId);
 }

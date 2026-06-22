@@ -68,6 +68,13 @@ freesia:
         - bill
         - common
         - iconTemplate
+      permission:
+        - account:cost:add
+        - account:cost:edit
+        - account:cost:delete
+        - common:iconTemplate:setupDetail
+        - common:iconTemplate:addGrouping
+        - common:iconTemplate:addIcon
     tenant:
       enabled: true
       tenant-column: TENANT_ID

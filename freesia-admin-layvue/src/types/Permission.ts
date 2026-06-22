@@ -72,4 +72,7 @@ export enum MenuPermission {
     COMMON_ICON_TEMPLATE_HEADER_EDIT = "common:iconTemplate:edit",
     COMMON_ICON_TEMPLATE_HEADER_DELETE = "common:iconTemplate:delete",
     COMMON_ICON_TEMPLATE_HEADER_SETUP_DETAIL = "common:iconTemplate:setupDetail",
+    COMMON_ICON_TEMPLATE_DETAIL_ADD_GROUP = "common:iconTemplate:addGrouping",
+    COMMON_ICON_TEMPLATE_DETAIL_ADD_ICON = "common:iconTemplate:addIcon",
+    COMMON_ICON_TEMPLATE_DETAIL_ADD_MULTI_ICON = "common:iconTemplate:addMultiIcon",
 }

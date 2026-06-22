@@ -65,6 +65,7 @@
         AND CI.ICON_PARTITION = SDV.VALUE
         WHERE 1 = 1
         AND CI.LOGIC_DEL = 0
+        AND CI.BUILD_IN = 1
         <if test="commonIconDto.id != null and commonIconDto.id != 0">
             AND CI.ID = #{commonIconDto.id}
         </if>

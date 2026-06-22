@@ -40,4 +40,15 @@ public interface SysMenuRepository extends JpaRepository<SysMenuPo, Long> {
                 SELECT sysMenuPo FROM SysMenuPo sysMenuPo WHERE sysMenuPo.logicDel = false and  sysMenuPo.path IN (:path)
             """)
     List<SysMenuPo> findByPathIn(@Param("path") List<String> path);
+
+    /**
+     * 根据权限查询菜单
+     *
+     * @param permission 权限列表
+     * @return 菜单列表
+     */
+    @Query(value = """
+                SELECT sysMenuPo FROM SysMenuPo sysMenuPo WHERE sysMenuPo.logicDel = false and  sysMenuPo.perms IN (:permission)
+            """)
+    List<SysMenuPo> findByPermsIn(@Param("permission") List<String> permission);
 }

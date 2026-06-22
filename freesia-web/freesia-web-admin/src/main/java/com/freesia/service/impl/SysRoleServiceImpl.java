@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.constant.*;
+import com.freesia.properties.MenuProperties;
 import com.freesia.redis.util.URedis;
 import com.freesia.satoken.bean.SysSensitiveLogBean;
 import com.freesia.convert.MapStructConverter;
@@ -34,6 +35,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +58,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
     private final SysRoleDeptRepository sysRoleDeptRepository;
     private final SysRoleConverter sysRoleConverter;
     private final SysUserConverter sysUserConverter;
+    private final MenuProperties menuProperties;
 
     @Override
     protected MapStructConverter<SysRoleVo, SysRoleDto, SysRolePo> getMapStructConverter() {
@@ -341,6 +344,32 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
             return sysRoleDto;
         }
         return UCopy.copyPo2Dto(sysRoleRepository.findCacheDefaultRole(AdminConstant.RoleKey.COMMON.getCode()), SysRoleDto.class);
+    }
+
+
+    @Override
+    public void saveInitRoleMenu(Long roleId) {
+        List<SysRoleMenuPo> sysRoleMenuList = new ArrayList<>();
+        // 分配菜单权限
+        if (UEmpty.isNotEmpty(menuProperties.getPath())) {
+            List<SysMenuPo> sysMenuPoList = sysMenuRepository.findByPathIn(menuProperties.getPath());
+            List<Long> sysMenuIdList = sysMenuPoList.stream().map(BasePo::getId).toList();
+            List<SysRoleMenuPo> list = sysMenuIdList.stream().map(menuId -> new SysRoleMenuPo(new SysRoleMenuPk(menuId, roleId))).toList();
+            if (UEmpty.isNotEmpty(list)) {
+                sysRoleMenuList.addAll(list);
+            }
+        }
+        if (UEmpty.isNotEmpty(menuProperties.getPermission())) {
+            List<SysMenuPo> sysMenuPoList = sysMenuRepository.findByPermsIn(menuProperties.getPermission());
+            List<Long> sysMenuIdList = sysMenuPoList.stream().map(BasePo::getId).toList();
+            List<SysRoleMenuPo> list = sysMenuIdList.stream().map(menuId -> new SysRoleMenuPo(new SysRoleMenuPk(menuId, roleId))).toList();
+            if (UEmpty.isNotEmpty(list)) {
+                sysRoleMenuList.addAll(list);
+            }
+        }
+        if (UEmpty.isNotEmpty(sysRoleMenuList)) {
+            sysRoleMenuRepository.saveAll(sysRoleMenuList);
+        }
     }
 
     private FindDeptRolesByRoleIdEntity buildFindDeptRolesByRoleIdEntity(SysRolePo sysRolePo, Set<SysDeptPo> sysDeptPoSet) {
