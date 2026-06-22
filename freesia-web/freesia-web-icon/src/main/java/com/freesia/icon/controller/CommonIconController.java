@@ -200,7 +200,7 @@ public class CommonIconController extends BaseController {
      */
     @Operation(summary = "查询通用图标选择器")
     @GetMapping(value = "findCommonIconPicker")
-//    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_INDEX})
+    @SaCheckPermission(value = {MenuPermission.COMMON_ICON_TEMPLATE_DETAIL_ADD_ICON})
     public R<Map<String, List<FindCommonIconEntity>>> findCommonIconPicker(CommonIconVo commonIconVo) {
         CommonIconDto commonIconDto = commonIconConverter.convertVo2Dto(commonIconVo);
         Map<String, List<FindCommonIconEntity>> resultMap = commonIconService.findCommonIconPicker(commonIconDto);

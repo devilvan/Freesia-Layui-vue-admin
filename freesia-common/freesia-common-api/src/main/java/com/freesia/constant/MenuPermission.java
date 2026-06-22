@@ -101,5 +101,6 @@ public class MenuPermission {
             COMMON_ICON_TEMPLATE_DETAIL_EDIT_GROUP = "common:iconTemplate:detail:edit:group",
             COMMON_ICON_TEMPLATE_DETAIL_EDIT_ICON = "common:iconTemplate:detail:edit:icon",
             COMMON_ICON_TEMPLATE_DETAIL_DELETE_GROUP = "common:iconTemplate:detail:delete:group",
-            COMMON_ICON_TEMPLATE_DETAIL_DELETE_ICON = "common:iconTemplate:detail:delete:icon";
+            COMMON_ICON_TEMPLATE_DETAIL_DELETE_ICON = "common:iconTemplate:detail:delete:icon",
+            COMMON_ICON_TEMPLATE_DETAIL_ADD_MULTI_ICON = "common:iconTemplate:add:multi:icon";
 }
