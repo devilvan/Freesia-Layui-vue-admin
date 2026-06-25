@@ -319,13 +319,24 @@
         </view>
         <view class="lay-modal-body" style="max-height:600rpx;overflow-y:auto">
           <view v-if="iconGridLoading" class="lay-empty"><text class="empty-text">加载中...</text></view>
-          <view v-else class="icon-grid">
-            <view v-for="item in iconGridList" :key="item.value"
-                  class="icon-grid-item" :class="{ selected: accountCostVo.costType === item.value }"
-                  @click="pickIcon(item)">
-              <image v-if="item.iconUrl" :src="item.iconUrl" mode="aspectFit" class="icon-grid-img"/>
-              <view v-else class="icon-grid-placeholder"></view>
-              <text class="icon-grid-name ellipsis">{{ item.value }}</text>
+          <view v-else>
+            <view v-for="group in iconGridList" :key="group.name" class="icon-group">
+              <!-- 分组标题（可折叠） -->
+              <view class="icon-group-header" @click="toggleGroup(group.name)">
+                <text class="icon-group-arrow" :class="{ collapsed: collapsedGroups[group.name] }">▶</text>
+                <text class="icon-group-title">{{ group.name }}</text>
+                <text class="icon-group-count">{{ (group.children || []).length }}个</text>
+              </view>
+              <!-- 分组图标网格 -->
+              <view class="icon-grid" v-show="!collapsedGroups[group.name]">
+                <view v-for="item in group.children" :key="item.name"
+                      class="icon-grid-item" :class="{ selected: accountCostVo.costType === item.name }"
+                      @click="pickIcon(item)">
+                  <image v-if="item.url" :src="item.url" mode="aspectFit" class="icon-grid-img"/>
+                  <view v-else class="icon-grid-placeholder"></view>
+                  <text class="icon-grid-name ellipsis">{{ item.name }}</text>
+                </view>
+              </view>
             </view>
           </view>
         </view>
@@ -347,6 +358,8 @@ import {findPageAccountCost, findAccountCost, saveUpdate, deleteAccountCost, fin
 import {PaymentSign} from '@/types/account/Account'
 import {findPageSysUserWithoutDataScope} from '@/api/system/User'
 import {useUserStore} from '@/store/user'
+import {findCustomIconTemplateDetail} from '@/api/common/icon/template/IconTemplateDetail'
+import {findSelectCommonIconHeader} from '@/api/common/icon/template/IconTemplateHeader'
 
 let _triggerAdd = null
 
@@ -414,8 +427,10 @@ export default {
     const suggestionList = ref([])
     // 图标选择
     const showIconGrid = ref(false)
-    const iconGridList = ref([])
+    const iconGridList = ref([])        // 树形分组数据
     const iconGridLoading = ref(false)
+    const collapsedGroups = ref({})     // 分组折叠状态：{ groupName: true/false }
+    const selectedIconName = ref('')    // 当前选中的图标名称
 
     /* FUNCTION */
     const formatDateTime = (date) => {
@@ -746,20 +761,60 @@ export default {
     }
 
     // ==================== 图标选择 ====================
-    const openIconGrid = () => {
+    const openIconGrid = async () => {
       iconGridLoading.value = true
-      findCacheCostType({ costDesc: '' }).then((res) => {
-        if (res.code === 200 && res.data) {
-          iconGridList.value = res.data.filter(item => item.iconUrl)
-        }
-        iconGridLoading.value = false
-      }).catch(() => { iconGridLoading.value = false })
       showIconGrid.value = true
+      try {
+        // 先获取默认的图标模板头 ID
+        const headerRes = await findSelectCommonIconHeader()
+        let headerId = ''
+        if (headerRes.code === 200 && headerRes.data) {
+          const defaultHeader = headerRes.data.find((item) => item.defaultFlag)
+          if (defaultHeader && defaultHeader.value) {
+            headerId = defaultHeader.value
+          } else if (headerRes.data.length > 0) {
+            headerId = headerRes.data[0].value || ''
+          }
+        }
+        // 查询图标分组树
+        const res = await findCustomIconTemplateDetail({ headerId })
+        if (res.code === 200 && res.data) {
+          iconGridList.value = res.data
+          // 默认全部展开
+          const state = {}
+          res.data.forEach((group) => {
+            if (group.name) state[group.name] = false
+          })
+          collapsedGroups.value = state
+        }
+      } catch (e) {
+        // 失败时回退到旧 API
+        try {
+          const res = await findCacheCostType({ costDesc: '' })
+          if (res.code === 200 && res.data) {
+            iconGridList.value = [{
+              name: '全部',
+              children: res.data.filter((item) => item.iconUrl).map((item) => ({
+                name: item.value,
+                url: item.iconUrl
+              }))
+            }]
+            collapsedGroups.value = { '全部': false }
+          }
+        } catch (e2) { /* ignore */ }
+      } finally {
+        iconGridLoading.value = false
+      }
+    }
+
+    const toggleGroup = (groupName) => {
+      collapsedGroups.value[groupName] = !collapsedGroups.value[groupName]
     }
 
     const pickIcon = (item) => {
-      accountCostVo.icon = item.iconUrl || ''
-      accountCostVo.costType = item.value || ''
+      accountCostVo.icon = item.url || ''
+      accountCostVo.costType = item.name || ''
+      selectedIconName.value = item.name || ''
     }
 
     // 筛选选择器
@@ -861,7 +916,7 @@ export default {
       pickedUserIds, selectedUserTags,
       openUserPicker, doUserSearch, toggleUserPick, confirmUserPick, removeUserTag,
       showSuggestion, suggestionList, onCostDescInput, selectSuggestion,
-      showIconGrid, iconGridList, iconGridLoading, openIconGrid, pickIcon,
+      showIconGrid, iconGridList, iconGridLoading, collapsedGroups, openIconGrid, toggleGroup, pickIcon,
       addExpenseActive, toNext, toPrevious, allocRetainAmount, splitNumber
     }
   }
@@ -952,8 +1007,45 @@ export default {
 .icon-pick-img { width: 64rpx; height: 64rpx; border-radius: 6rpx; }
 .icon-pick-empty { font-size: 40rpx; color: #ccc; }
 
+/* 图标分组 */
+.icon-group {
+  margin-bottom: 8rpx;
+}
+
+.icon-group-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 16rpx 20rpx;
+  background: #f8f8f8;
+  border-radius: 6rpx;
+  font-size: 26rpx;
+}
+
+.icon-group-arrow {
+  font-size: 20rpx;
+  color: #999;
+  transition: transform 0.25s;
+  display: inline-block;
+}
+
+.icon-group-arrow.collapsed {
+  transform: rotate(90deg);
+}
+
+.icon-group-title {
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
+.icon-group-count {
+  font-size: 22rpx;
+  color: #bbb;
+}
+
 /* 图标网格 */
-.icon-grid { display: flex; flex-wrap: wrap; }
+.icon-grid { display: flex; flex-wrap: wrap; padding: 12rpx 0; }
 .icon-grid-item {
   width: 120rpx; display: flex; flex-direction: column; align-items: center;
   padding: 16rpx 8rpx; border-radius: 8rpx; border: 2rpx solid transparent;
