@@ -178,11 +178,17 @@
               <view class="lay-form-item">
                 <text class="lay-form-label required">图标</text>
                 <view class="icon-pick-row">
-                  <view class="icon-pick-box" @click="openIconGrid">
-                    <image v-if="accountCostVo.icon" :src="accountCostVo.icon" mode="aspectFit" class="icon-pick-img"/>
-                    <text v-else class="icon-pick-empty">?</text>
+                  <view class="icon-pick-left">
+                    <view class="icon-pick-box" @click="openIconGrid">
+                      <image v-if="accountCostVo.icon" :src="accountCostVo.icon" mode="aspectFit" class="icon-pick-img"/>
+                      <text v-else class="icon-pick-empty">?</text>
+                    </view>
+                    <text class="text-muted" style="font-size:24rpx">点击图标选择</text>
                   </view>
-                  <text class="text-muted" style="font-size:24rpx">点击图标选择</text>
+                  <view class="icon-pick-actions">
+                    <button class="lay-btn lay-btn-sm lay-btn-normal" @click="openAddGroupModal">新增分组</button>
+                    <button class="lay-btn lay-btn-sm lay-btn-primary" @click="openAddIconModal">新增图标</button>
+                  </view>
                 </view>
               </view>
               <view class="lay-form-item">
@@ -349,6 +355,108 @@
         </view>
       </view>
     </view>
+
+    <!-- 新增图标弹窗 -->
+    <view class="lay-modal-mask" v-if="showAddIconModal" @click="hideAddIconModal">
+      <view class="lay-modal" @click.stop>
+        <view class="lay-modal-header">
+          <text class="lay-modal-title">新增图标</text>
+          <text class="lay-modal-close" @click="hideAddIconModal">✕</text>
+        </view>
+        <view class="lay-modal-body" style="max-height:600rpx;overflow-y:auto">
+          <view class="lay-form modal-form">
+            <!-- 分组选择 -->
+            <view class="lay-form-item">
+              <text class="lay-form-label required">所属分组</text>
+              <picker mode="selector" :range="groupingList" range-key="label" @change="onAddIconGroupChange">
+                <view class="lay-select">
+                  <text :class="{ placeholder: !addIconForm.parentId }">{{ findGroupLabel(addIconForm.parentId) || '请选择分组' }}</text>
+                  <text class="arrow">▼</text>
+                </view>
+              </picker>
+            </view>
+            <!-- 图标名称 -->
+            <view class="lay-form-item">
+              <text class="lay-form-label required">图标名称</text>
+              <input class="lay-input modal-input" placeholder="请输入图标名称" v-model="addIconForm.name"/>
+            </view>
+            <!-- 图标选择 -->
+            <view class="lay-form-item">
+              <text class="lay-form-label required">选择图标</text>
+              <view class="icon-pick-row">
+                <view class="icon-pick-box" @click="showAddIconPicker = !showAddIconPicker">
+                  <image v-if="addIconForm.iconUrl" :src="addIconForm.iconUrl" mode="aspectFit" class="icon-pick-img"/>
+                  <text v-else class="icon-pick-empty">?</text>
+                </view>
+                <text v-if="addIconForm.originName" class="text-muted" style="font-size:24rpx">{{ addIconForm.originName }}</text>
+                <text v-else class="text-muted" style="font-size:24rpx">点击图标选择</text>
+              </view>
+              <!-- 内嵌图标选择器 -->
+              <view v-if="showAddIconPicker" class="add-icon-picker-wrap">
+                <view v-for="(icons, key) in addIconPickerList" :key="key" class="add-icon-group">
+                  <view class="add-icon-group-header" @click="toggleAddIconGroup(key)">
+                    <text class="icon-group-arrow" :class="{ collapsed: addIconCollapsed[key] }">▶</text>
+                    <text class="icon-group-title">{{ key }}</text>
+                  </view>
+                  <view class="icon-grid" v-show="!addIconCollapsed[key]">
+                    <view v-for="item in icons" :key="item.id"
+                          class="icon-grid-item icon-grid-item-square" :class="{ selected: addIconForm.iconId === item.id }"
+                          @click="pickAddIcon(item)">
+                      <image v-if="item.url" :src="item.url" mode="aspectFit" class="icon-grid-img"/>
+                      <view v-else class="icon-grid-placeholder"></view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+            <!-- 排序 -->
+            <view class="lay-form-item">
+              <text class="lay-form-label">排序</text>
+              <input class="lay-input modal-input" type="number" placeholder="排序号" v-model="addIconForm.orderNum"/>
+            </view>
+            <!-- 备注 -->
+            <view class="lay-form-item">
+              <text class="lay-form-label">备注</text>
+              <textarea class="lay-textarea modal-input" placeholder="请输入备注" v-model="addIconForm.remark"></textarea>
+            </view>
+          </view>
+        </view>
+        <view class="lay-modal-footer">
+          <button class="lay-btn lay-btn-sm" @click="hideAddIconModal">取消</button>
+          <button class="lay-btn lay-btn-sm lay-btn-primary" :disabled="addIconLoading" @click="submitAddIcon">保存</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 新增图标分组弹窗 -->
+    <view class="lay-modal-mask" v-if="showAddGroupModal" @click="hideAddGroupModal">
+      <view class="lay-modal" @click.stop>
+        <view class="lay-modal-header">
+          <text class="lay-modal-title">新增图标分组</text>
+          <text class="lay-modal-close" @click="hideAddGroupModal">✕</text>
+        </view>
+        <view class="lay-modal-body">
+          <view class="lay-form modal-form">
+            <view class="lay-form-item">
+              <text class="lay-form-label required">分区名称</text>
+              <input class="lay-input modal-input" placeholder="请输入分区名称" v-model="addGroupForm.name"/>
+            </view>
+            <view class="lay-form-item">
+              <text class="lay-form-label">排序</text>
+              <input class="lay-input modal-input" type="number" placeholder="排序号" v-model="addGroupForm.orderNum"/>
+            </view>
+            <view class="lay-form-item">
+              <text class="lay-form-label">备注</text>
+              <textarea class="lay-textarea modal-input" placeholder="请输入备注" v-model="addGroupForm.remark"></textarea>
+            </view>
+          </view>
+        </view>
+        <view class="lay-modal-footer">
+          <button class="lay-btn lay-btn-sm" @click="hideAddGroupModal">取消</button>
+          <button class="lay-btn lay-btn-sm lay-btn-primary" :disabled="addGroupLoading" @click="submitAddGroup">保存</button>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -358,8 +466,9 @@ import {findPageAccountCost, findAccountCost, saveUpdate, deleteAccountCost, fin
 import {PaymentSign} from '@/types/account/Account'
 import {findPageSysUserWithoutDataScope} from '@/api/system/User'
 import {useUserStore} from '@/store/user'
-import {findCustomIconTemplateDetail} from '@/api/common/icon/template/IconTemplateDetail'
+import {findCustomIconTemplateDetail, findGrouping, saveUpdateIconTemplateDetail, findMaxOrderNum} from '@/api/common/icon/template/IconTemplateDetail'
 import {findSelectCommonIconHeader} from '@/api/common/icon/template/IconTemplateHeader'
+import {findCommonIconPicker} from '@/api/common/icon/Icon'
 
 let _triggerAdd = null
 
@@ -431,6 +540,33 @@ export default {
     const iconGridLoading = ref(false)
     const collapsedGroups = ref({})     // 分组折叠状态：{ groupName: true/false }
     const selectedIconName = ref('')    // 当前选中的图标名称
+
+    // 新增图标（默认模板）
+    const defaultHeaderId = ref('')     // 默认图标模板头ID
+    const showAddIconModal = ref(false)
+    const addIconForm = reactive({
+      parentId: '',                     // 分组ID
+      name: '',                         // 图标名称
+      iconId: '',                       // 选中的通用图标ID
+      iconUrl: '',                      // 选中的图标URL（展示用）
+      originName: '',                   // 图标原始名称
+      orderNum: 0,
+      remark: ''
+    })
+    const groupingList = ref([])        // 分组下拉数据
+    const addIconPickerList = ref({})   // 通用图标选择器数据：{ partition: [...] }
+    const addIconPickerOpenKeys = ref([]) // 图标选择器折叠keys
+    const addIconCollapsed = ref({})    // 图标选择器分组折叠状态
+    const addIconLoading = ref(false)   // 新增图标提交loading
+
+    // 新增图标分组
+    const showAddGroupModal = ref(false)
+    const addGroupForm = reactive({
+      name: '',
+      orderNum: 0,
+      remark: ''
+    })
+    const addGroupLoading = ref(false)
 
     /* FUNCTION */
     const formatDateTime = (date) => {
@@ -761,31 +897,17 @@ export default {
     }
 
     // ==================== 图标选择 ====================
-    const openIconGrid = async () => {
-      iconGridLoading.value = true
-      showIconGrid.value = true
+    const loadIconGridData = async (headerId) => {
       try {
-        // 先获取默认的图标模板头 ID
-        const headerRes = await findSelectCommonIconHeader()
-        let headerId = ''
-        if (headerRes.code === 200 && headerRes.data) {
-          const defaultHeader = headerRes.data.find((item) => item.defaultFlag)
-          if (defaultHeader && defaultHeader.value) {
-            headerId = defaultHeader.value
-          } else if (headerRes.data.length > 0) {
-            headerId = headerRes.data[0].value || ''
-          }
-        }
-        // 查询图标分组树
         const res = await findCustomIconTemplateDetail({ headerId })
         if (res.code === 200 && res.data) {
           iconGridList.value = res.data
-          // 默认全部展开
           const state = {}
           res.data.forEach((group) => {
             if (group.name) state[group.name] = false
           })
           collapsedGroups.value = state
+          return true
         }
       } catch (e) {
         // 失败时回退到旧 API
@@ -800,11 +922,30 @@ export default {
               }))
             }]
             collapsedGroups.value = { '全部': false }
+            return true
           }
         } catch (e2) { /* ignore */ }
-      } finally {
-        iconGridLoading.value = false
       }
+      return false
+    }
+
+    const openIconGrid = async () => {
+      iconGridLoading.value = true
+      showIconGrid.value = true
+      let headerId = ''
+      try {
+        const headerRes = await findSelectCommonIconHeader()
+        if (headerRes.code === 200 && headerRes.data) {
+          const defaultHeader = headerRes.data.find((item) => item.defaultFlag)
+          if (defaultHeader && defaultHeader.value) {
+            headerId = defaultHeader.value
+          } else if (headerRes.data.length > 0) {
+            headerId = headerRes.data[0].value || ''
+          }
+        }
+      } catch (e) { /* ignore */ }
+      await loadIconGridData(headerId)
+      iconGridLoading.value = false
     }
 
     const toggleGroup = (groupName) => {
@@ -815,6 +956,189 @@ export default {
       accountCostVo.icon = item.url || ''
       accountCostVo.costType = item.name || ''
       selectedIconName.value = item.name || ''
+    }
+
+    // ==================== 新增图标 ====================
+    // 内嵌图标选择器的展开状态
+    const showAddIconPicker = ref(false)
+
+    const initDefaultHeaderId = async () => {
+      if (defaultHeaderId.value) return
+      try {
+        const headerRes = await findSelectCommonIconHeader()
+        if (headerRes.code === 200 && headerRes.data) {
+          const defaultHeader = headerRes.data.find((item) => item.defaultFlag)
+          if (defaultHeader && defaultHeader.value) {
+            defaultHeaderId.value = defaultHeader.value
+          } else if (headerRes.data.length > 0) {
+            defaultHeaderId.value = headerRes.data[0].value || ''
+          }
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    const openAddIconModal = async () => {
+      // 重置表单
+      addIconForm.parentId = ''
+      addIconForm.name = ''
+      addIconForm.iconId = ''
+      addIconForm.iconUrl = ''
+      addIconForm.originName = ''
+      addIconForm.orderNum = 0
+      addIconForm.remark = ''
+      showAddIconPicker.value = false
+
+      // 确保有默认 headerId
+      await initDefaultHeaderId()
+      if (!defaultHeaderId.value) {
+        uni.showToast({ title: '未找到默认图标模板，无法新增', icon: 'none' })
+        return
+      }
+
+      // 加载分组
+      const groupRes = await findGrouping({ headerId: defaultHeaderId.value })
+      if (groupRes.code === 200 && groupRes.data) {
+        // findGrouping 返回数组 [{label, value}, ...]
+        groupingList.value = Array.isArray(groupRes.data) ? groupRes.data : []
+      }
+
+      // 加载通用图标选择器数据
+      const pickerRes = await findCommonIconPicker({})
+      if (pickerRes.code === 200 && pickerRes.data) {
+        addIconPickerList.value = pickerRes.data
+        const state = {}
+        Object.keys(pickerRes.data).forEach((key) => { state[key] = false })
+        addIconCollapsed.value = state
+      }
+
+      showAddIconModal.value = true
+    }
+
+    const hideAddIconModal = () => {
+      showAddIconModal.value = false
+      showAddIconPicker.value = false
+    }
+
+    const onAddIconGroupChange = (e) => {
+      const idx = e.detail.value
+      const item = groupingList.value[idx]
+      if (item) {
+        addIconForm.parentId = item.value
+        // 查询该分组下的最大排序号
+        findMaxOrderNum({
+          parentId: item.value,
+          headerId: defaultHeaderId.value,
+          iconTreeType: 'L'
+        }).then((res) => {
+          if (res.code === 200 && res.data != null) {
+            addIconForm.orderNum = res.data
+          }
+        })
+      }
+    }
+
+    const findGroupLabel = (value) => {
+      const found = groupingList.value.find((g) => g.value === value)
+      return found ? found.label : ''
+    }
+
+    const toggleAddIconGroup = (key) => {
+      addIconCollapsed.value[key] = !addIconCollapsed.value[key]
+    }
+
+    const pickAddIcon = (item) => {
+      addIconForm.iconId = item.id || ''
+      addIconForm.iconUrl = item.url || ''
+      addIconForm.originName = item.name || ''
+    }
+
+    const submitAddIcon = async () => {
+      if (!addIconForm.parentId) { uni.showToast({ title: '请选择所属分组', icon: 'none' }); return }
+      if (!addIconForm.name) { uni.showToast({ title: '请输入图标名称', icon: 'none' }); return }
+      if (!addIconForm.iconId) { uni.showToast({ title: '请选择图标', icon: 'none' }); return }
+
+      addIconLoading.value = true
+      try {
+        const res = await saveUpdateIconTemplateDetail({
+          headerId: defaultHeaderId.value,
+          parentId: addIconForm.parentId,
+          name: addIconForm.name,
+          iconId: addIconForm.iconId,
+          iconTreeType: 'L',
+          orderNum: addIconForm.orderNum || 0,
+          remark: addIconForm.remark
+        })
+        if (res.code === 200) {
+          uni.showToast({ title: '新增图标成功', icon: 'success' })
+          hideAddIconModal()
+          // 静默刷新图标选择器数据
+          loadIconGridData(defaultHeaderId.value)
+        } else {
+          uni.showToast({ title: res.msg || '新增失败', icon: 'none' })
+        }
+      } catch (e) {
+        uni.showToast({ title: '新增图标失败', icon: 'none' })
+      } finally {
+        addIconLoading.value = false
+      }
+    }
+
+    // ==================== 新增图标分组 ====================
+    const openAddGroupModal = async () => {
+      addGroupForm.name = ''
+      addGroupForm.orderNum = 0
+      addGroupForm.remark = ''
+
+      await initDefaultHeaderId()
+      if (!defaultHeaderId.value) {
+        uni.showToast({ title: '未找到默认图标模板，无法新增', icon: 'none' })
+        return
+      }
+
+      // 查询最大排序号
+      findMaxOrderNum({
+        headerId: defaultHeaderId.value,
+        iconTreeType: 'R'
+      }).then((res) => {
+        if (res.code === 200 && res.data != null) {
+          addGroupForm.orderNum = res.data
+        }
+      })
+
+      showAddGroupModal.value = true
+    }
+
+    const hideAddGroupModal = () => {
+      showAddGroupModal.value = false
+    }
+
+    const submitAddGroup = async () => {
+      if (!addGroupForm.name) { uni.showToast({ title: '请输入分区名称', icon: 'none' }); return }
+
+      addGroupLoading.value = true
+      try {
+        const res = await saveUpdateIconTemplateDetail({
+          headerId: defaultHeaderId.value,
+          parentId: '-1',
+          name: addGroupForm.name,
+          grouping: addGroupForm.name,
+          iconTreeType: 'R',
+          orderNum: addGroupForm.orderNum || 0,
+          remark: addGroupForm.remark
+        })
+        if (res.code === 200) {
+          uni.showToast({ title: '新增分组成功', icon: 'success' })
+          hideAddGroupModal()
+          // 静默刷新图标选择器数据
+          loadIconGridData(defaultHeaderId.value)
+        } else {
+          uni.showToast({ title: res.msg || '新增失败', icon: 'none' })
+        }
+      } catch (e) {
+        uni.showToast({ title: '新增分组失败', icon: 'none' })
+      } finally {
+        addGroupLoading.value = false
+      }
     }
 
     // 筛选选择器
@@ -917,6 +1241,12 @@ export default {
       openUserPicker, doUserSearch, toggleUserPick, confirmUserPick, removeUserTag,
       showSuggestion, suggestionList, onCostDescInput, selectSuggestion,
       showIconGrid, iconGridList, iconGridLoading, collapsedGroups, openIconGrid, toggleGroup, pickIcon,
+      showAddIconModal, addIconForm, groupingList, addIconPickerList, addIconCollapsed,
+      showAddIconPicker, addIconLoading,
+      openAddIconModal, hideAddIconModal, onAddIconGroupChange, findGroupLabel,
+      toggleAddIconGroup, pickAddIcon, submitAddIcon,
+      showAddGroupModal, addGroupForm, addGroupLoading,
+      openAddGroupModal, hideAddGroupModal, submitAddGroup,
       addExpenseActive, toNext, toPrevious, allocRetainAmount, splitNumber
     }
   }
@@ -997,7 +1327,9 @@ export default {
 }
 
 /* 图标选择 */
-.icon-pick-row { display: flex; align-items: center; gap: 20rpx; }
+.icon-pick-row { display: flex; align-items: center; justify-content: space-between; }
+.icon-pick-left { display: flex; align-items: center; gap: 20rpx; }
+.icon-pick-actions { display: flex; flex-shrink: 0; gap: 12rpx; }
 .icon-pick-box {
   width: 80rpx; height: 80rpx;
   border: 2rpx dashed #ddd; border-radius: 8rpx;
@@ -1006,6 +1338,53 @@ export default {
 }
 .icon-pick-img { width: 64rpx; height: 64rpx; border-radius: 6rpx; }
 .icon-pick-empty { font-size: 40rpx; color: #ccc; }
+
+/* 新增图标-内嵌图标选择器 */
+.add-icon-picker-wrap {
+  margin-top: 16rpx;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  padding: 12rpx;
+  max-height: 400rpx;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+.add-icon-picker-wrap .icon-grid-item {
+  width: 25%;
+  padding: 10rpx 6rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-icon-picker-wrap .icon-grid-img {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 8rpx;
+}
+
+.add-icon-picker-wrap .icon-grid-placeholder {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 8rpx;
+  background: #e8e8e8;
+}
+
+.add-icon-group {
+  margin-bottom: 4rpx;
+}
+
+.add-icon-group-header {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 10rpx 14rpx;
+  font-size: 24rpx;
+  background: #f0f0f0;
+  border-radius: 4rpx;
+}
 
 /* 图标分组 */
 .icon-group {

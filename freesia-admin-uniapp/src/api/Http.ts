@@ -129,7 +129,7 @@ class Http {
     })
   }
 
-  get(url: string, params?: object) {
+  get(url: string, params?: object): Promise<any> {
     return this.request({
       url: url,
       method: 'GET',
@@ -137,7 +137,7 @@ class Http {
     })
   }
 
-  post(url: string, params?: object) {
+  post(url: string, params?: object): Promise<any> {
     return this.request({
       url: url,
       method: 'POST',
@@ -145,7 +145,7 @@ class Http {
     })
   }
 
-  put(url: string, params?: object) {
+  put(url: string, params?: object): Promise<any> {
     return this.request({
       url: url,
       method: 'PUT',
@@ -153,7 +153,7 @@ class Http {
     })
   }
 
-  delete(url: string, params?: object) {
+  delete(url: string, params?: object): Promise<any> {
     return this.request({
       url: url,
       method: 'DELETE',
