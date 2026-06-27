@@ -185,7 +185,7 @@ public class SysUserController extends BaseController {
 
     @Operation(summary = "获取用户列表分页（不过滤数据权限）")
     @GetMapping("findPageSysUserWithoutDataScope")
-    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
+//    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
     public TableResult<FindPageSysUserListEntity> findPageSysUserWithoutDataScope(SysUserVo sysUserVo, PageQuery pageQuery) {
         SysUserDto sysUserDto = sysUserConverter.convertVo2Dto(sysUserVo);
         return sysUserService.findPageSysUserWithoutDataScope(sysUserDto, pageQuery);

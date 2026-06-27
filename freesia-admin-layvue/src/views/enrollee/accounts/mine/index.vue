@@ -1074,11 +1074,11 @@ function changeShowModalFlag() {
 
 function searchUserModalConfirm() {
   let checkData = userModalTableRef.value.getCheckData();
-  if (checkData && checkData.length <= 1) {
-    // 必须选择超过一个用户
-    layer.msg('关联用户数量需要大于1个', {icon: 3})
-    return;
-  }
+  // if (checkData && checkData.length <= 1) {
+  //   // 必须选择超过一个用户
+  //   layer.msg('关联用户数量需要大于1个', {icon: 3})
+  //   return;
+  // }
   searchQuery.value.accountCostUserNameList = checkData.map((v: any) => v.nickName)
   searchQuery.value.accountCostUserIdList = checkData.map((v: any) => v.id)
   showModalFlag.value = !showModalFlag.value

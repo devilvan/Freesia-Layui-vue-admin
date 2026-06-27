@@ -1,13 +1,11 @@
 package com.freesia.account.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.freesia.account.converter.AccountCostUserAllocConverter;
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindListSysUserByIdDto;
 import com.freesia.account.dto.RpFindAllocAmountDto;
 import com.freesia.account.service.AccountCostUserAllocService;
 import com.freesia.account.vo.AccountCostUserAllocVo;
-import com.freesia.constant.MenuPermission;
 import com.freesia.controller.BaseController;
 import com.freesia.dto.SysUserDto;
 import com.freesia.pojo.PageQuery;
@@ -104,7 +102,7 @@ public class AccountCostUserAllocController extends BaseController {
 
     @Operation(summary = "新增费用分摊-根据分摊用户ID查询用户信息")
     @GetMapping(value = "findListSysUserById")
-    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
+//    @SaCheckPermission(value = {MenuPermission.SYSTEM_USER_INDEX})
     public R<List<FindListSysUserByIdDto>> findListSysUserById(@RequestParam(value = "idList") List<Long> idList) {
         SysUserDto sysUserDto = new SysUserDto();
         sysUserDto.setIdList(idList);

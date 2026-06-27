@@ -760,7 +760,7 @@
 
         SELECT AC.ID, AC.PAYMENT_TIME, AC.MODIFY_TIME
         FROM account_cost AC
-        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{accountCostDto.userId}
+        LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
         WHERE AC.LOGIC_DEL = 0
         <if test="accountCostDto.tenantId != null">
             AND AC.TENANT_ID = #{accountCostDto.tenantId}

@@ -181,10 +181,16 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
 
     @Override
     public TableResult<FindPageAccountCostEntity> findPageAccountCost(AccountCostDto accountCost, PageQuery pageQuery) {
+        Long userId = accountCost.getUserId();
+        // 20260627-Bliss 关联用户查询时，过滤掉本人的ID
+        List<Long> accountCostUserIdList = accountCost.getAccountCostUserIdList();
+        if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+            accountCostUserIdList.removeIf(item -> item.equals(userId));
+        }
         Page<Long> idPage = accountCostMapper.findPageAccountCostId(accountCost, pageQuery.build());
         if (idPage != null && UEmpty.isNotEmpty(idPage.getRecords())) {
             AccountCostDto accountCostDto = new AccountCostDto();
-            accountCostDto.setUserId(accountCost.getUserId());
+            accountCostDto.setUserId(userId);
             accountCostDto.setTenantId(accountCost.getTenantId());
             accountCostDto.setIdList(idPage.getRecords());
             List<FindPageAccountCostEntity> findPageAccountCostEntityList = accountCostMapper.findPageAccountCost(accountCostDto);
