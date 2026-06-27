@@ -279,6 +279,7 @@
           <button v-if="addExpenseActive === 1" class="lay-btn lay-btn-sm" @click="toPrevious">上一步</button>
           <button v-if="!accountCostVo.accountCostUserIdList || accountCostVo.accountCostUserIdList.length === 0 || addExpenseActive === 1"
                   class="lay-btn lay-btn-sm lay-btn-primary" @click="submitForm">保存</button>
+          <button class="lay-btn lay-btn-sm" @click="closeModal">取消</button>
         </view>
       </view>
     </view>
@@ -644,9 +645,15 @@ export default {
       operate.value = op
       addExpenseActive.value = 0
       if (op === 'ADD') {
+        const now = new Date()
+        const pad = (n) => String(n).padStart(2, '0')
+        const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
         Object.assign(accountCostVo, {
           id: '', costDesc: '', outlay: '', costType: '', icon: '',
-          paymentSign: 'EXPENSES', paymentTimeStr: '', paymentTime: null, remark: '',
+          paymentSign: 'EXPENSES',
+          paymentTimeStr: todayStr,
+          paymentTime: formatDateTime(now),
+          remark: '',
           accountCostUserIdList: [], accountCostUserNameList: [], accountCostUserAllocVoList: []
         })
         selectedUserTags.value = []
@@ -722,7 +729,25 @@ export default {
         const res = await saveUpdate(params)
         if (res.code === 200) {
           uni.showToast({title: operate.value === 'ADD' ? '新增成功' : '修改成功', icon: 'success'})
-          closeModal(); doFindPageAccountCost()
+          doFindPageAccountCost()
+          if (operate.value === 'ADD') {
+            // 保存后不关闭弹窗，清空除日期外的输入信息
+            const savedDate = accountCostVo.paymentTimeStr
+            const savedTime = accountCostVo.paymentTime
+            Object.assign(accountCostVo, {
+              id: '', costDesc: '', outlay: '', costType: '', icon: '',
+              paymentSign: 'EXPENSES',
+              paymentTimeStr: savedDate,
+              paymentTime: savedTime,
+              remark: '',
+              accountCostUserIdList: [], accountCostUserNameList: [], accountCostUserAllocVoList: []
+            })
+            selectedUserTags.value = []
+            showSuggestion.value = false
+            addExpenseActive.value = 0
+          } else {
+            closeModal()
+          }
         } else { uni.showToast({title: res.msg || '操作失败', icon: 'none'}) }
       } catch (e) { uni.showToast({title: '操作失败', icon: 'none'}) }
       finally { loading.value = false }
