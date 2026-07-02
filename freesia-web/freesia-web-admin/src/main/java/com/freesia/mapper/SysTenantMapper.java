@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.freesia.annotation.DataColumn;
 import com.freesia.annotation.DataPermission;
+import com.freesia.dto.SysTenantDto;
 import com.freesia.po.SysTenantPo;
+import com.freesia.pojo.TableResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -47,4 +49,13 @@ public interface SysTenantMapper extends BaseMapper<SysTenantPo> {
             @DataColumn(key = "userName", value = "STU.USER_ID"),
     })
     Page<SysTenantPo> findPageSysTenant(@Param("page") Page<SysTenantPo> page, @Param(Constants.WRAPPER) Wrapper<SysTenantPo> wrapper);
+
+    /**
+     * 分页查询租户信息表信息
+     *
+     * @param page 分页参数
+     * @param dto  查询参数
+     * @return 结果集
+     */
+    Page<SysTenantDto> findPage(@Param("page") Page<SysTenantPo> page, @Param("dto") SysTenantDto dto);
 }

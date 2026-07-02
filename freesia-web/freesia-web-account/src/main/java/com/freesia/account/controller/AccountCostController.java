@@ -424,6 +424,21 @@ public class AccountCostController extends BaseController {
     }
 
 
+    /**
+     * 移到账本 - 批量修改记账数据的租户
+     *
+     * @param accountCostMoveVo 入参（idList + targetTenantId）
+     * @return 形式返回
+     */
+    @Idempotent
+    @Operation(summary = "移到账本")
+    @PostMapping(value = "moveTenant")
+    @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_MOVE)
+    public R<Void> moveTenant(@RequestBody AccountCostMoveVo accountCostMoveVo) {
+        accountCostService.moveTenant(accountCostMoveVo.getIdList(), accountCostMoveVo.getTargetTenantId());
+        return R.ok();
+    }
+
     @Operation(summary = "自动完成-根据输入查询图标类型和URL")
     @GetMapping(value = "findCacheCostType")
     public R<List<FindCacheCostTypeEntity>> findCacheCostType(FindCacheCostTypeVo findCacheCostTypeVo) {

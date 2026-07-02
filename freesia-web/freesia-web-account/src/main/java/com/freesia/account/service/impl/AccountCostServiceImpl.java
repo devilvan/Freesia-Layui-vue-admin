@@ -12,6 +12,7 @@ import com.freesia.account.entity.*;
 import com.freesia.account.exception.AccountException;
 import com.freesia.account.mapper.AccountCostMapper;
 import com.freesia.account.po.AccountCostPo;
+import com.freesia.account.po.AccountCostUserAllocPo;
 import com.freesia.account.repository.AccountCostRepository;
 import com.freesia.account.service.AccountBudgetService;
 import com.freesia.account.service.AccountCostService;
@@ -146,37 +147,40 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
             if (originAccountCostPo != null) {
                 // 20260302-Bliss 修改金额或收支类型时，标记已生成的预算账单的重算标识为false
                 if (!(accountCostDto.getPaymentSign().equals(originAccountCostPo.getPaymentSign()) && accountCostDto.getOutlay().compareTo(originAccountCostPo.getOutlay()) == 0)) {
-                    // 查询预算
-                    String findBudget = CacheConstant.FIND_BUDGET + userId;
-                    List<AccountBudgetDto> accountBudgetDtoList = URedis.get(findBudget);
-                    if (UEmpty.isEmpty(accountBudgetDtoList)) {
-                        // 如果没有缓存预算则尝试缓存一次
-                        accountBudgetService.cacheBudget(userId);
-                        return;
-                    }
-                    Set<Long> reportIdSet = new HashSet<>();
-                    for (AccountBudgetDto accountBudgetDto : accountBudgetDtoList) {
-                        BudgetType budgetType = BudgetType.getInstanceByCode(accountBudgetDto.getBudgetType());
-                        if (budgetType == null) {
-                            continue;
-                        }
-                        AccountReportDto accountReportDto = new AccountReportDto();
-                        accountReportDto.setUserId(userId);
-                        accountReportDto.setTenantId(tenantId);
-                        accountReportDto.setBudgetType(accountBudgetDto.getBudgetType());
-                        accountReportDto.setBillingTime(accountCostDto.getPaymentTime());
-                        List<AccountReportDto> accountReportDtoList = accountReportService.findBetweenBillingTime(accountReportDto);
-                        if (UEmpty.isEmpty(accountReportDtoList)) {
-                            continue;
-                        }
-                        reportIdSet.addAll(accountReportDtoList.stream().map(BaseDto::getId).collect(Collectors.toSet()));
-                    }
-                    if (UEmpty.isNotEmpty(reportIdSet)) {
-                        accountReportService.changeRecalculateFlag(reportIdSet);
-                    }
+                    handleChangeRecalculateFlag(accountCostDto, userId);
                 }
             }
         });
+    }
+
+    private void handleChangeRecalculateFlag(AccountCostDto accountCostDto, Long userId) {
+        // 查询预算
+        String findBudget = CacheConstant.FIND_BUDGET + userId;
+        List<AccountBudgetDto> accountBudgetDtoList = URedis.get(findBudget);
+        if (UEmpty.isEmpty(accountBudgetDtoList)) {
+            // 如果没有缓存预算则尝试缓存一次
+            accountBudgetService.cacheBudget(userId);
+            return;
+        }
+        Set<Long> reportIdSet = new HashSet<>();
+        for (AccountBudgetDto accountBudgetDto : accountBudgetDtoList) {
+            BudgetType budgetType = BudgetType.getInstanceByCode(accountBudgetDto.getBudgetType());
+            if (budgetType == null) {
+                continue;
+            }
+            AccountReportDto accountReportDto = new AccountReportDto();
+            accountReportDto.setUserId(userId);
+            accountReportDto.setBudgetType(accountBudgetDto.getBudgetType());
+            accountReportDto.setBillingTime(accountCostDto.getPaymentTime());
+            List<AccountReportDto> accountReportDtoList = accountReportService.findBetweenBillingTime(accountReportDto);
+            if (UEmpty.isEmpty(accountReportDtoList)) {
+                continue;
+            }
+            reportIdSet.addAll(accountReportDtoList.stream().map(BaseDto::getId).collect(Collectors.toSet()));
+        }
+        if (UEmpty.isNotEmpty(reportIdSet)) {
+            accountReportService.changeRecalculateFlag(reportIdSet);
+        }
     }
 
     @Override
@@ -232,6 +236,9 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         List<Long> costIdList = UCollection.optimizeInitialCapacityArrayList(accountCostPoList.size());
         for (AccountCostPo accountCostPo : accountCostPoList) {
             costIdList.add(accountCostPo.getId());
+            AccountCostDto accountCostDto = accountCostConverter.convertPo2Dto(accountCostPo);
+            // 20260702-Bliss 删除时，也调整报表的重算状态
+            handleChangeRecalculateFlag(accountCostDto, accountCostPo.getUserId());
         }
         accountCostUserAllocService.deleteAccountCostUserAllocByCostId(costIdList);
         accountCostRepository.deleteAllByIdInBatch(idList);
@@ -683,6 +690,28 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
             }
         }
         return series;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void moveTenant(List<Long> idList, Long targetTenantId) {
+        List<AccountCostPo> accountCostPoList = accountCostRepository.findAllById(idList);
+        if (UEmpty.isNotEmpty(accountCostPoList)) {
+            List<Long> costIdList = accountCostPoList.stream().map(AccountCostPo::getId).collect(Collectors.toList());
+            // 更新记账记录的租户ID
+            for (AccountCostPo accountCostPo : accountCostPoList) {
+                accountCostPo.setTenantId(targetTenantId);
+            }
+            accountCostRepository.saveAll(accountCostPoList);
+            // 同时更新关联的费用分摊记录的租户ID
+            List<AccountCostUserAllocPo> allocPoList = accountCostUserAllocService.findListByCostIdList(costIdList);
+            if (UEmpty.isNotEmpty(allocPoList)) {
+                for (AccountCostUserAllocPo allocPo : allocPoList) {
+                    allocPo.setTenantId(targetTenantId);
+                }
+                accountCostUserAllocService.saveBatch(allocPoList);
+            }
+        }
     }
 
     private EchartLineOptionEntity buildEchartLineOptionEntity(List<FindCostLineChartEntity> findCostLineChartEntityList) {

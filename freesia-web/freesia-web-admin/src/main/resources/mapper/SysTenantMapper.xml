@@ -45,4 +45,35 @@
                  LEFT JOIN SYS_TENANT_USER STU ON T.ID = STU.TENANT_ID
             ${ew.getCustomSqlSegment}
     </select>
+    <select id="findPage" resultType="com.freesia.dto.SysTenantDto">
+        SELECT TENANT.ID,
+        TENANT.CREATOR,
+        TENANT.CREATE_TIME,
+        TENANT.MODIFIER,
+        TENANT.MODIFY_TIME,
+        TENANT.LOGIC_DEL,
+        TENANT.REC_VER,
+        TENANT.BUILD_IN,
+        TENANT.TENANT_ID,
+        TENANT.CODE,
+        TENANT.NAME,
+        TENANT.TYPE,
+        TENANT.STATUS,
+        TENANT.REMARK,
+        TENANT.CONTACT_NAME,
+        TENANT.CONTACT_TEL,
+        TENANT.CONTACT_EMAIL,
+        TENANT.ADDRESS,
+        TENANT.BUSINESS_HOURS_FROM,
+        TENANT.TENANT_ID
+        FROM sys_tenant TENANT
+        LEFT JOIN sys_tenant_user TU ON TENANT.id = TU.TENANT_ID
+        WHERE LOGIC_DEL = 0
+        <if test="dto.userId != null">
+            AND TU.USER_ID = #{dto.userId}
+        </if>
+        <if test="dto.id != null">
+            AND TENANT.ID = #{dto.id}
+        </if>
+    </select>
 </mapper>

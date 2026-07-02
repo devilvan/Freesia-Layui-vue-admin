@@ -115,4 +115,14 @@ public class AccountCostUserAllocServiceImpl extends BaseServiceImpl<AccountCost
         }
         return rpFindAllocAmountDto;
     }
+
+    @Override
+    public List<AccountCostUserAllocPo> findListByCostIdList(List<Long> costIdList) {
+        return accountCostUserAllocRepository.findByCostIdIn(costIdList);
+    }
+
+    @Override
+    public void saveBatch(List<AccountCostUserAllocPo> allocPoList) {
+        accountCostUserAllocRepository.saveAll(allocPoList);
+    }
 }

@@ -86,6 +86,7 @@ public class SysTenantController extends BaseController {
     @GetMapping(value = "findPageSysTenant")
     public TableResult<SysTenantDto> findPageSysTenant(SysTenantVo sysTenantVo, PageQuery pageQuery) {
         SysTenantDto sysTenantDto = sysTenantConverter.convertVo2Dto(sysTenantVo);
+        sysTenantDto.setUserId(USecurity.getUserId());
         return sysTenantService.findPage(sysTenantDto, pageQuery);
     }
 

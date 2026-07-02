@@ -88,3 +88,12 @@ export function findCacheCostType(vo: FindCacheCostTypeVo): Promise<R<FindCacheC
     return Http.get("/api/accountCostController/findCacheCostType", params);
 }
 
+export interface AccountCostMoveVo {
+    idList: Array<string>;
+    targetTenantId: string;
+}
+
+export function moveTenant(accountCostMoveVo: AccountCostMoveVo) {
+    return Http.post("/api/accountCostController/moveTenant", accountCostMoveVo);
+}
+

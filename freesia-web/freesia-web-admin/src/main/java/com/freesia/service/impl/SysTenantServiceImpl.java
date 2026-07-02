@@ -14,6 +14,8 @@ import com.freesia.mapper.SysTenantMapper;
 import com.freesia.po.SysTenantPo;
 import com.freesia.po.SysTenantUserPk;
 import com.freesia.po.SysTenantUserPo;
+import com.freesia.pojo.PageQuery;
+import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysTenantRepository;
 import com.freesia.service.SysTenantService;
 import com.freesia.tenant.constant.TenantModule;
@@ -138,5 +140,10 @@ public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTe
             throw new TenantException("tenant.query.failed", new Object[]{sysTenantDto});
         }
         return resultSysTenantDto;
+    }
+
+    @Override
+    public TableResult<SysTenantDto> findPage(SysTenantDto dto, PageQuery pageQuery) {
+        return TableResult.build(sysTenantMapper.findPage(pageQuery.build(), dto));
     }
 }

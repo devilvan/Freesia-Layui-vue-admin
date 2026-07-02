@@ -212,6 +212,11 @@
           <lay-icon class="layui-icon-up"></lay-icon>
           按时间导出
         </lay-button>
+        <lay-button border="red" v-permission="[$ACCOUNT_MENU_PERMISSION.ACCOUNT_COST_MOVE]" size="sm"
+                    @click="showMoveTenantModal">
+          <lay-icon class="layui-icon-transfer"></lay-icon>
+          移到账本
+        </lay-button>
         <lay-switch style="margin-left: 10px"
                     v-model="accountCostStore.allTenantFlag"
                     onswitch-text="统计所有账本"
@@ -488,6 +493,30 @@
         </div>
       </div>
     </lay-layer>
+    <lay-layer v-model="moveTenantModalFlag" :title="'移到账本'" :area="['800px', '500px']">
+      <div v-esc-close="hideMoveTenantModal">
+        <lay-table
+            ref="moveTenantTableRef"
+            :page="moveTenantPageQuery"
+            :columns="moveTenantColumns"
+            :loading="moveTenantLoading"
+            :data-source="moveTenantDataSource"
+            v-model:selected-keys="moveTenantSelectedKey"
+            @change="loadMoveTenantData"
+        >
+          <template v-slot:toolbar>
+            <lay-button size="sm" type="normal" @click="loadMoveTenantData">
+              <lay-icon class="layui-icon-addition"></lay-icon>
+              查询
+            </lay-button>
+            <lay-button size="sm" type="danger" @click="doMoveTenant">
+              <lay-icon class="layui-icon-addition"></lay-icon>
+              确认
+            </lay-button>
+          </template>
+        </lay-table>
+      </div>
+    </lay-layer>
   </lay-container>
 </template>
 <script lang="ts">
@@ -512,7 +541,8 @@ import {
   findPageAccountCost,
   findAccountCost,
   saveUpdate,
-  accountsImport, accountsExport, findSelectCostTypeList, findCacheCostType
+  accountsImport, accountsExport, findSelectCostTypeList, findCacheCostType,
+  moveTenant, AccountCostMoveVo
 } from "@/api/account/Account";
 import router from "@/router";
 import {Operate} from "@/types/Constants";
@@ -549,6 +579,8 @@ import {findSysColumnHeader} from "@/api/system/ColumnHeader";
 import {buildItem, buildTableDefaultToolbar, convertToDefaultColumn} from "@/util/UColumn";
 import {SysColumnHeaderEntity} from "@/types/system/ColumnHeader";
 import {SysColumnDetailEntity} from "@/types/system/ColumnDetail";
+import {findPageSysTenant} from "@/api/system/Tenant";
+import {SysTenantEntity, SysTenantVo} from "@/types/system/Tenant";
 
 /* INIT*/
 onMounted(async () => {
@@ -691,6 +723,21 @@ const showModalFlag = ref<Boolean>(false)
 const addExpenseActive = ref(0)
 const operate = ref<Operate>();
 const defaultToolbar = ref<TableDefaultToolbar[]>([])
+const moveTenantModalFlag = ref(false)
+const moveTenantTableRef = ref()
+const moveTenantLoading = ref(false)
+const moveTenantDataSource = ref<Array<SysTenantEntity>>()
+const moveTenantSelectedKey = ref<Array<string>>([])
+const moveTenantPageQuery = reactive<PageQuery>({
+  current: 1,
+  limit: 200,
+})
+const moveTenantColumns = [
+  {title: '选项', type: 'radio', fixed: 'left'},
+  {title: '账本编码', key: 'code'},
+  {title: '账本名称', key: 'name'},
+  {title: '类型', key: 'type'},
+]
 /* VAR*/
 
 /* FUNCTION*/
@@ -1320,6 +1367,81 @@ function setAvgAmountReminder(avgAmountReminder: number) {
 function doChangeAllTenantFlag() {
   accountCostStore.changeAllTenantFlag()
   window.location.reload()
+}
+
+function showMoveTenantModal() {
+  if (selectedKeys.value.length == 0) {
+    layer.msg('您未选择数据，请先选择要移动的数据', {icon: 3, time: 2000})
+    return
+  }
+  moveTenantModalFlag.value = true
+  loadMoveTenantData()
+}
+
+function hideMoveTenantModal() {
+  moveTenantModalFlag.value = false
+  moveTenantSelectedKey.value = []
+}
+
+function loadMoveTenantData() {
+  moveTenantLoading.value = true
+  setTimeout(() => {
+    let vo: SysTenantVo = {}
+    findPageSysTenant(vo, moveTenantPageQuery).then((res: any) => {
+      if (res.code == 200) {
+        // 过滤掉当前账本
+        let currentTenantId = useStore.currentTenant
+        moveTenantDataSource.value = (res.rows || []).filter((item: SysTenantEntity) => {
+          return item.id != currentTenantId
+        })
+        moveTenantPageQuery.total = res.total
+      }
+      moveTenantLoading.value = false
+    }).catch(e => {
+      layer.confirm(e.msg, {icon: 2})
+      moveTenantLoading.value = false
+    })
+  }, 200)
+}
+
+function doMoveTenant() {
+  if (!moveTenantSelectedKey.value || moveTenantSelectedKey.value.length == 0) {
+    layer.msg('请选择目标账本', {icon: 3, time: 2000})
+    return
+  }
+  let targetTenantId = moveTenantSelectedKey.value[0]
+  layer.confirm('确定要将选中的' + selectedKeys.value.length + '条记录移动到目标账本吗？', {
+    title: '提示',
+    btn: [
+      {
+        text: '确定',
+        callback: (id: any) => {
+          let moveVo: AccountCostMoveVo = {
+            idList: selectedKeys.value,
+            targetTenantId: targetTenantId
+          }
+          moveTenant(moveVo).then((res: any) => {
+            if (res.code === 200) {
+              layer.msg('移动成功', {icon: 1})
+              moveTenantModalFlag.value = false
+              moveTenantSelectedKey.value = []
+              selectedKeys.value = []
+              loadDataSource()
+            }
+          }).catch(e => {
+            layer.confirm(e.msg, {icon: 2})
+          })
+          layer.close(id)
+        }
+      },
+      {
+        text: '取消',
+        callback: (id: any) => {
+          layer.close(id)
+        }
+      }
+    ]
+  })
 }
 
 /* FUNCTION*/

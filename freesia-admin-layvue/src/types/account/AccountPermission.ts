@@ -6,4 +6,5 @@ export enum AccountMenuPermission {
     ACCOUNT_COST_DELETE = "account:cost:delete",
     ACCOUNT_COST_IMPORT = "account:cost:import",
     ACCOUNT_COST_EXPORT = "account:cost:export",
+    ACCOUNT_COST_MOVE = "account:cost:move",
 }

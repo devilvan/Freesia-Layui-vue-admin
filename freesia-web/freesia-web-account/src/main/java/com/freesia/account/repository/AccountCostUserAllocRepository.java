@@ -30,4 +30,12 @@ public interface AccountCostUserAllocRepository extends JpaRepository<AccountCos
             """)
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     void deleteAccountCostUserAllocByCostId(@Param(value = "costIdList") List<Long> costIdList);
+
+    /**
+     * 根据记账ID集合查询费用分摊记录
+     *
+     * @param costIdList 记账ID集合
+     * @return 费用分摊记录
+     */
+    List<AccountCostUserAllocPo> findByCostIdIn(@Param(value = "costIdList") List<Long> costIdList);
 }

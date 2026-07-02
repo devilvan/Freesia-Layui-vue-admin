@@ -148,4 +148,12 @@ public interface AccountCostService {
      * @return 开销表信息
      */
     List<FindPageAccountCostEntity> findListAccountCost(AccountCostDto accountCostDto);
+
+    /**
+     * 移到账本 - 批量修改记账数据的租户
+     *
+     * @param idList         记账ID集合
+     * @param targetTenantId 目标租户ID
+     */
+    void moveTenant(List<Long> idList, Long targetTenantId);
 }

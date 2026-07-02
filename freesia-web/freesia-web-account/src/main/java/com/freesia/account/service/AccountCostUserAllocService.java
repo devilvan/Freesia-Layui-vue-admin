@@ -3,6 +3,7 @@ package com.freesia.account.service;
 import com.freesia.account.dto.AccountCostUserAllocDto;
 import com.freesia.account.dto.FindListSysUserByIdDto;
 import com.freesia.account.dto.RpFindAllocAmountDto;
+import com.freesia.account.po.AccountCostUserAllocPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 
@@ -83,4 +84,19 @@ public interface AccountCostUserAllocService {
      * @return 分摊金额
      */
     RpFindAllocAmountDto findAllocAmount();
+
+    /**
+     * 根据记账ID集合查询费用分摊记录
+     *
+     * @param costIdList 记账ID集合
+     * @return 费用分摊记录
+     */
+    List<AccountCostUserAllocPo> findListByCostIdList(List<Long> costIdList);
+
+    /**
+     * 批量保存费用分摊记录
+     *
+     * @param allocPoList 费用分摊记录集合
+     */
+    void saveBatch(List<AccountCostUserAllocPo> allocPoList);
 }
