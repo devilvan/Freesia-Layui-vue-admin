@@ -501,7 +501,7 @@
             :columns="moveTenantColumns"
             :loading="moveTenantLoading"
             :data-source="moveTenantDataSource"
-            v-model:selected-keys="moveTenantSelectedKey"
+            v-model:selected-key="moveTenantSelectedKey"
             @change="loadMoveTenantData"
         >
           <template v-slot:toolbar>
@@ -727,7 +727,7 @@ const moveTenantModalFlag = ref(false)
 const moveTenantTableRef = ref()
 const moveTenantLoading = ref(false)
 const moveTenantDataSource = ref<Array<SysTenantEntity>>()
-const moveTenantSelectedKey = ref<Array<string>>([])
+const moveTenantSelectedKey = ref<string>()
 const moveTenantPageQuery = reactive<PageQuery>({
   current: 1,
   limit: 200,
@@ -1380,7 +1380,7 @@ function showMoveTenantModal() {
 
 function hideMoveTenantModal() {
   moveTenantModalFlag.value = false
-  moveTenantSelectedKey.value = []
+  moveTenantSelectedKey.value = ''
 }
 
 function loadMoveTenantData() {
@@ -1405,11 +1405,11 @@ function loadMoveTenantData() {
 }
 
 function doMoveTenant() {
-  if (!moveTenantSelectedKey.value || moveTenantSelectedKey.value.length == 0) {
+  if (!moveTenantSelectedKey.value) {
     layer.msg('请选择目标账本', {icon: 3, time: 2000})
     return
   }
-  let targetTenantId = moveTenantSelectedKey.value[0]
+  let targetTenantId = moveTenantSelectedKey.value
   layer.confirm('确定要将选中的' + selectedKeys.value.length + '条记录移动到目标账本吗？', {
     title: '提示',
     btn: [
