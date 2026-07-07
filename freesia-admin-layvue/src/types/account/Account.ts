@@ -34,7 +34,7 @@ export interface AccountCostEntity extends BaseEntity {
     remark?: string;
     accountCostUserId?: string
     accountCostUserName?: string
-    accountCostUserAllocVoList?: AccountCostUserAllocVo[]
+    accountCostUserAllocDtoList?: AccountCostUserAllocVo[]
     allocAmount?: number
     allocStatus?: string
     tenantName?: string

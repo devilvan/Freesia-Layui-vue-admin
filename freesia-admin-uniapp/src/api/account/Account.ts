@@ -5,6 +5,7 @@ import { buildPageUrlParam, buildUrlParam } from "../../util/URequest";
 import {
     AccountCostEntity,
     AccountCostVo,
+    AccountCostMoveVo,
     FindCacheCostTypeEntity,
     FindCacheCostTypeVo
 } from "../../types/account/Account";
@@ -95,4 +96,8 @@ export function findListSysUserById(idList: string[]): Promise<R<any[]>> {
 export function findListAllocByCostId(costId: string): Promise<R<any[]>> {
     const params = { costId: costId };
     return Http.get('/api/accountCostUserAllocController/findListAllocByCostId', params);
+}
+
+export function moveTenant(accountCostMoveVo: AccountCostMoveVo) {
+    return Http.post("/api/accountCostController/moveTenant", accountCostMoveVo);
 }

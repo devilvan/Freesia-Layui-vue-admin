@@ -107,3 +107,8 @@ export interface CostCalendarEntity {
     date?: string;
     value?: number;
 }
+
+export interface AccountCostMoveVo {
+    idList: Array<string>;
+    targetTenantId: string;
+}

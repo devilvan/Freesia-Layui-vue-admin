@@ -119,6 +119,7 @@
     </lay-card>
     <!-- table -->
     <lay-table
+        ref="dataSourceTableRef"
         v-model:selected-keys="selectedKeys"
         :columns="columns"
         :data-source="dataSource"
@@ -558,7 +559,7 @@ import {SysDictValueEntity} from "@/types/system/Dict";
 import {buildRange, defaultShortcuts, singleShortcuts, getWeekdayCn} from "@/util/UDate";
 import AccountTypeIconPicker from "@/views/component/svg/AccountTypeIconPicker.vue";
 import {FindPageSysUserListEntity, SysUserEntity, SysUserVo} from "@/types/system/User";
-import {findPageSysUserWithoutDataScope} from "@/api/system/User";
+import {findPageSysUserWithoutDataScope, findPageUserByTenantId} from "@/api/system/User";
 import app from "@/main";
 import IconPicker from "@/views/component/svg/IconPicker.vue";
 import {FindCommonIconEntity} from "@/types/common/icon/Icon";
@@ -570,7 +571,7 @@ import Http from "@/api/Http";
 import {findConfigByKey} from "@/api/system/Config";
 import {SysConfigKey} from "@/types/system/Config";
 import {findListAllocByCostId, findListSysUserById} from "@/api/account/AccountCostUserAlloc";
-import {AccountCostUserAllocVo} from "@/types/account/AccountCostUserAlloc";
+import {AccountCostUserAllocDto, AccountCostUserAllocVo} from "@/types/account/AccountCostUserAlloc";
 import {useAccountCostStore} from "@/store/accountCost";
 import {TableColumn, TableDefaultToolbar} from "@layui/layui-vue/types/component/table/typing";
 import {LayIcon} from "@layui/icons-vue";
@@ -723,6 +724,8 @@ const showModalFlag = ref<Boolean>(false)
 const addExpenseActive = ref(0)
 const operate = ref<Operate>();
 const defaultToolbar = ref<TableDefaultToolbar[]>([])
+const dataSourceTableRef = ref(null)
+const moveTenantRequiredUserIds = ref<string[]>([])
 const moveTenantModalFlag = ref(false)
 const moveTenantTableRef = ref()
 const moveTenantLoading = ref(false)
@@ -736,7 +739,6 @@ const moveTenantColumns = [
   {title: '选项', type: 'radio', fixed: 'left'},
   {title: '账本编码', key: 'code'},
   {title: '账本名称', key: 'name'},
-  {title: '类型', key: 'type'},
 ]
 /* VAR*/
 
@@ -928,7 +930,7 @@ function toSubmit(clickFlag: boolean) {
       if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
         // 计算费用分摊合计金额是否超过总金额
         let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
-            .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0)
+            .reduce((sum: number, item: AccountCostUserAllocDto) => sum + parseFloat(item.amount || 0), 0)
             .toFixed(2);
         let outlay = parseFloat(accountCostVo.value.outlay).toFixed(2);
         let subtract = ((outlay || 0) - totalAmount).toFixed(2);
@@ -1282,7 +1284,7 @@ function allocRetainAmount() {
   if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
     // 计算费用分摊合计金额是否超过总金额
     let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
-        .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
+        .reduce((sum: number, item: AccountCostUserAllocDto) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
     if (!outlay || totalAmount > outlay) {
       layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
       return;
@@ -1295,7 +1297,7 @@ function allocRetainAmount() {
       return item.amount && item.amount > 0
     })
     let totalAmount: number = existAllocList
-        .reduce((sum: number, item: AccountCostUserAllocVo) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
+        .reduce((sum: number, item: AccountCostUserAllocDto) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
     totalAmount = outlay - totalAmount
     if (!existAllocList || existAllocList.length === 0) {
       // 如果都没填写，则直接平分
@@ -1374,6 +1376,29 @@ function showMoveTenantModal() {
     layer.msg('您未选择数据，请先选择要移动的数据', {icon: 3, time: 2000})
     return
   }
+
+  // 获取选中行的完整数据，校验单人记账与多人记账（关联记账）不能混合移动
+  const checkData = dataSourceTableRef.value?.getCheckData() || []
+  const singlePersonRecords = checkData.filter((row: AccountCostEntity) => !row.accountCostUserAllocDtoList || row.accountCostUserAllocDtoList.length === 0)
+  const multiPersonRecords = checkData.filter((row: AccountCostEntity) => row.accountCostUserAllocDtoList && row.accountCostUserAllocDtoList.length > 0)
+
+  if (singlePersonRecords.length > 0 && multiPersonRecords.length > 0) {
+    layer.msg('单人记账与多人记账（关联记账）数据不能混合移动，请分开选择', {icon: 3, time: 3000})
+    return
+  }
+
+  // 多人记账：收集所有关联用户ID，用于后续过滤目标账本
+  if (multiPersonRecords.length > 0) {
+    const userIdSet = new Set<string>()
+    multiPersonRecords.forEach((row: any) => {
+      const ids = row.accountCostUserAllocDtoList.map((item: AccountCostUserAllocVo) => item.userId || '')
+      ids.forEach((id: string) => userIdSet.add(id.trim()))
+    })
+    moveTenantRequiredUserIds.value = Array.from(userIdSet)
+  } else {
+    moveTenantRequiredUserIds.value = []
+  }
+
   moveTenantModalFlag.value = true
   loadMoveTenantData()
 }
@@ -1381,20 +1406,47 @@ function showMoveTenantModal() {
 function hideMoveTenantModal() {
   moveTenantModalFlag.value = false
   moveTenantSelectedKey.value = ''
+  moveTenantRequiredUserIds.value = []
 }
 
 function loadMoveTenantData() {
   moveTenantLoading.value = true
-  setTimeout(() => {
+  setTimeout(async () => {
     let vo: SysTenantVo = {}
-    findPageSysTenant(vo, moveTenantPageQuery).then((res: any) => {
+    findPageSysTenant(vo, moveTenantPageQuery).then(async (res: any) => {
       if (res.code == 200) {
-        // 过滤掉当前账本
         let currentTenantId = useStore.currentTenant
-        moveTenantDataSource.value = (res.rows || []).filter((item: SysTenantEntity) => {
+        let tenants = (res.rows || []).filter((item: SysTenantEntity) => {
           return item.id != currentTenantId
         })
-        moveTenantPageQuery.total = res.total
+
+        // 多人记账：仅展示所有关联用户都存在的目标账本
+        if (moveTenantRequiredUserIds.value.length > 0 && tenants.length > 0) {
+          try {
+            const tenantChecks = await Promise.all(
+              tenants.map(async (tenant: SysTenantEntity) => {
+                const userRes = await findPageUserByTenantId(
+                  {id: tenant.id} as SysTenantVo,
+                  {current: 1, limit: 9999}
+                )
+                if (userRes.code === 200) {
+                  const tenantUserIds = (userRes.rows || []).map((u: any) => String(u.id))
+                  const allPresent = moveTenantRequiredUserIds.value.every(
+                    uid => tenantUserIds.includes(uid)
+                  )
+                  return allPresent ? tenant : null
+                }
+                return null
+              })
+            )
+            tenants = tenantChecks.filter(Boolean) as SysTenantEntity[]
+          } catch (e) {
+            // 查询失败则降级展示所有账本
+          }
+        }
+
+        moveTenantDataSource.value = tenants
+        moveTenantPageQuery.total = tenants.length
       }
       moveTenantLoading.value = false
     }).catch(e => {

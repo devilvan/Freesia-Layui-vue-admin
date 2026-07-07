@@ -159,6 +159,10 @@
           <view v-show="addExpenseActive === 0">
             <view class="lay-form modal-form">
               <view class="lay-form-item">
+                <text class="lay-form-label required">金额</text>
+                <input class="lay-input modal-input" type="digit" placeholder="请输入金额" v-model="accountCostVo.outlay"/>
+              </view>
+              <view class="lay-form-item">
                 <text class="lay-form-label required">描述</text>
                 <input class="lay-input modal-input" placeholder="请输入描述" v-model="accountCostVo.costDesc"
                        @input="onCostDescInput"/>
@@ -170,10 +174,6 @@
                     <text style="flex:1;font-size:26rpx">{{ item.value }}</text>
                   </view>
                 </view>
-              </view>
-              <view class="lay-form-item">
-                <text class="lay-form-label required">金额</text>
-                <input class="lay-input modal-input" type="digit" placeholder="请输入金额" v-model="accountCostVo.outlay"/>
               </view>
               <view class="lay-form-item">
                 <text class="lay-form-label required">图标</text>
@@ -279,7 +279,6 @@
           <button v-if="addExpenseActive === 1" class="lay-btn lay-btn-sm" @click="toPrevious">上一步</button>
           <button v-if="!accountCostVo.accountCostUserIdList || accountCostVo.accountCostUserIdList.length === 0 || addExpenseActive === 1"
                   class="lay-btn lay-btn-sm lay-btn-primary" @click="submitForm">保存</button>
-          <button class="lay-btn lay-btn-sm" @click="closeModal">取消</button>
         </view>
       </view>
     </view>
@@ -458,14 +457,48 @@
         </view>
       </view>
     </view>
+
+    <!-- 移到账本弹窗 -->
+    <view class="lay-modal-mask" v-if="showMoveTenantModal" @click="closeMoveTenantModal">
+      <view class="lay-modal" @click.stop>
+        <view class="lay-modal-header">
+          <text class="lay-modal-title">移到账本</text>
+          <text class="lay-modal-close" @click="closeMoveTenantModal">✕</text>
+        </view>
+        <view class="lay-modal-body" style="max-height: 500rpx; overflow-y: auto">
+          <view v-if="moveTenantRow" style="padding: 10rpx 0 20rpx">
+            <text style="font-size:26rpx;color:#666">移动记录：</text>
+            <text style="font-size:28rpx;font-weight:600;color:#333">{{ moveTenantRow.costDesc || '--' }}</text>
+            <text style="font-size:22rpx;color:#999;margin-left:12rpx">
+              {{ moveTenantRow.paymentSign === 'INCOME' ? '+' : '-' }}{{ formatMoney(moveTenantRow.outlay) }}
+            </text>
+          </view>
+          <view v-if="moveTenantRow && moveTenantRow.accountCostUserId" style="padding: 0 0 16rpx">
+            <text style="font-size:22rpx;color:#ffb800">关联记账：包含 {{ moveTenantRequiredUserIds.length }} 个关联用户</text>
+          </view>
+          <view v-if="moveTenantLoading" class="lay-empty"><text class="empty-text">加载中...</text></view>
+          <view v-else-if="moveTenantTargetList.length === 0" class="lay-empty">
+            <text class="empty-text">{{ moveTenantRow && moveTenantRow.accountCostUserId ? '未找到所有关联用户都存在的账本' : '暂无可选账本' }}</text>
+          </view>
+          <view v-else v-for="tenant in moveTenantTargetList" :key="tenant.id" class="user-pick-row"
+                @click="doMoveTenant(tenant.id)">
+            <text style="flex:1;font-size:28rpx">{{ tenant.name }}</text>
+            <text class="text-muted" style="font-size:22rpx">{{ tenant.code || '' }}</text>
+          </view>
+        </view>
+        <view class="lay-modal-footer">
+          <button class="lay-btn lay-btn-sm" @click="closeMoveTenantModal">取消</button>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script>
 import {ref, reactive, onMounted, computed} from 'vue'
-import {findPageAccountCost, findAccountCost, saveUpdate, deleteAccountCost, findListSelectCostType, findCacheCostType, findListSysUserById, findListAllocByCostId} from '@/api/account/Account'
+import {findPageAccountCost, findAccountCost, saveUpdate, deleteAccountCost, findListSelectCostType, findCacheCostType, findListSysUserById, findListAllocByCostId, moveTenant} from '@/api/account/Account'
 import {PaymentSign} from '@/types/account/Account'
-import {findPageSysUserWithoutDataScope} from '@/api/system/User'
+import {findPageSysUserWithoutDataScope, findPageUserByTenantId} from '@/api/system/User'
 import {useUserStore} from '@/store/user'
 import {findCustomIconTemplateDetail, findGrouping, saveUpdateIconTemplateDetail, findMaxOrderNum} from '@/api/common/icon/template/IconTemplateDetail'
 import {findSelectCommonIconHeader} from '@/api/common/icon/template/IconTemplateHeader'
@@ -569,6 +602,13 @@ export default {
     })
     const addGroupLoading = ref(false)
 
+    // 移到账本
+    const showMoveTenantModal = ref(false)
+    const moveTenantRow = ref(null)
+    const moveTenantTargetList = ref([])
+    const moveTenantLoading = ref(false)
+    const moveTenantRequiredUserIds = ref([])
+
     /* FUNCTION */
     const formatDateTime = (date) => {
       const pad = (n) => String(n).padStart(2, '0')
@@ -633,10 +673,11 @@ export default {
 
     const onRowTap = (row) => {
       uni.showActionSheet({
-        itemList: ['编辑', '删除'],
+        itemList: ['编辑', '删除', '移到账本'],
         success: (res) => {
           if (res.tapIndex === 0) showExpenseModal('EDIT', row)
           else if (res.tapIndex === 1) confirmDelete(row)
+          else if (res.tapIndex === 2) onMoveTenant(row)
         }
       })
     }
@@ -1230,6 +1271,74 @@ export default {
       return colors[day] || ''
     }
 
+    // ==================== 移到账本 ====================
+    const onMoveTenant = async (row) => {
+      moveTenantRow.value = row
+      moveTenantLoading.value = true
+      showMoveTenantModal.value = true
+
+      const currentId = userStore.state.currentTenantId
+      let candidates = tenantList.value.filter(t => t.id !== currentId)
+
+      // 多人记账：收集关联用户ID，过滤仅展示所有关联用户都存在的账本
+      if (row.accountCostUserId) {
+        const userIds = row.accountCostUserId.split(',').map(s => s.trim()).filter(Boolean)
+        moveTenantRequiredUserIds.value = userIds
+        if (userIds.length > 0 && candidates.length > 0) {
+          try {
+            const checks = await Promise.all(
+              candidates.map(async (tenant) => {
+                const res = await findPageUserByTenantId(
+                  {id: tenant.id}, {current: 1, limit: 9999}
+                )
+                if (res.code === 200) {
+                  const tenantUserIds = (res.rows || res.records || []).map(u => String(u.id))
+                  const allPresent = userIds.every(uid => tenantUserIds.includes(uid))
+                  return allPresent ? tenant : null
+                }
+                return null
+              })
+            )
+            candidates = checks.filter(Boolean)
+          } catch (e) { /* 查询失败则降级展示所有候选账本 */ }
+        }
+      } else {
+        moveTenantRequiredUserIds.value = []
+      }
+
+      moveTenantTargetList.value = candidates
+      moveTenantLoading.value = false
+    }
+
+    const doMoveTenant = async (targetTenantId) => {
+      if (!moveTenantRow.value) return
+      moveTenantLoading.value = true
+      try {
+        const res = await moveTenant({
+          idList: [moveTenantRow.value.id],
+          targetTenantId: targetTenantId
+        })
+        if (res.code === 200) {
+          uni.showToast({title: '移动成功', icon: 'success'})
+          showMoveTenantModal.value = false
+          moveTenantRow.value = null
+          doFindPageAccountCost()
+        } else {
+          uni.showToast({title: res.msg || '移动失败', icon: 'none'})
+        }
+      } catch (e) {
+        uni.showToast({title: '移动失败', icon: 'none'})
+      } finally {
+        moveTenantLoading.value = false
+      }
+    }
+
+    const closeMoveTenantModal = () => {
+      showMoveTenantModal.value = false
+      moveTenantRow.value = null
+      moveTenantRequiredUserIds.value = []
+    }
+
     const loadCostTypes = async () => {
       try {
         const res = await findListSelectCostType()
@@ -1272,7 +1381,9 @@ export default {
       toggleAddIconGroup, pickAddIcon, submitAddIcon,
       showAddGroupModal, addGroupForm, addGroupLoading,
       openAddGroupModal, hideAddGroupModal, submitAddGroup,
-      addExpenseActive, toNext, toPrevious, allocRetainAmount, splitNumber
+      addExpenseActive, toNext, toPrevious, allocRetainAmount, splitNumber,
+      showMoveTenantModal, moveTenantRow, moveTenantTargetList, moveTenantLoading,
+      onMoveTenant, doMoveTenant, closeMoveTenantModal
     }
   }
 }

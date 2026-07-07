@@ -22,3 +22,8 @@ export const findPageSysUserWithoutDataScope = function (searchQuery: any, pageQ
     const params = buildPageUrlParam(searchQuery, pageQuery);
     return Http.get('/api/sysUserController/findPageSysUserWithoutDataScope', params)
 }
+
+export const findPageUserByTenantId = function (sysTenantVo: any, pageQuery: PageQuery) {
+    const params = buildPageUrlParam(sysTenantVo, pageQuery);
+    return Http.get('/api/sysUserController/findPageUserByTenantId', params)
+}
