@@ -98,24 +98,8 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="联系人姓名" prop="contactName" required>
-                <lay-input v-model="sysTenantVo.contactName"></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="营业时间" prop="businessHoursFrom">
-                <lay-date-picker type="yearmonth" v-model="sysTenantVo.businessHoursFrom"
-                                 format="YYYY-MM"></lay-date-picker>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
               <lay-form-item label="租户名称" prop="name" required>
                 <lay-input v-model="sysTenantVo.name" :allow-clear="true"></lay-input>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="6">
-              <lay-form-item label="联系人电话" prop="contactTel" required>
-                <lay-input v-model="sysTenantVo.contactTel"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
@@ -133,19 +117,34 @@
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="联系人邮箱" prop="contactEmail" required>
-                <lay-input v-model="sysTenantVo.contactEmail"></lay-input>
-              </lay-form-item>
-            </lay-col>
-
-            <lay-col :md="6">
               <lay-form-item label="租户状态" prop="status" required>
                 <lay-switch v-model="sysTenantVo.status"></lay-switch>
               </lay-form-item>
             </lay-col>
             <lay-col :md="6">
-              <lay-form-item label="租户地址" prop="address" required>
+              <lay-form-item label="联系人姓名" prop="contactName" required>
+                <lay-input v-model="sysTenantVo.contactName"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="联系人电话" prop="contactTel">
+                <lay-input v-model="sysTenantVo.contactTel"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="联系人邮箱" prop="contactEmail">
+                <lay-input v-model="sysTenantVo.contactEmail"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="租户地址" prop="address">
                 <lay-input v-model="sysTenantVo.address"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="6">
+              <lay-form-item label="营业时间" prop="businessHoursFrom">
+                <lay-date-picker type="yearmonth" v-model="sysTenantVo.businessHoursFrom"
+                                 format="YYYY-MM"></lay-date-picker>
               </lay-form-item>
             </lay-col>
           </lay-row>
