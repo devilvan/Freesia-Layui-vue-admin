@@ -17,6 +17,7 @@ import com.freesia.po.SysTenantUserPo;
 import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.repository.SysTenantRepository;
+import com.freesia.repository.SysTenantUserRepository;
 import com.freesia.service.SysTenantService;
 import com.freesia.tenant.constant.TenantModule;
 import com.freesia.tenant.exception.TenantException;
@@ -26,6 +27,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +44,8 @@ public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTe
     private final SysTenantRepository sysTenantRepository;
     private final SysTenantMapper sysTenantMapper;
     private final SysTenantConverter sysTenantConverter;
+    private final TransactionTemplate transactionTemplate;
+    private final SysTenantUserRepository sysTenantUserRepository;
 
 
     @Override
@@ -80,7 +84,12 @@ public class SysTenantServiceImpl extends BaseServiceImpl<SysTenantMapper, SysTe
             if (flag != 0) {
                 throw new ServiceException(TenantModule.TENANT_MANAGEMENT, "tenant.code.exists", new Object[]{sysTenantDto.getCode()});
             }
-            return super.saveUpdate(sysTenantDto);
+            return transactionTemplate.execute(status -> {
+                SysTenantDto source = super.saveUpdate(sysTenantDto);
+                // 20260715-Bliss 创建租户后，租户-用户关联关系添加创建人
+                sysTenantUserRepository.save(new SysTenantUserPo(new SysTenantUserPk(source.getId(), sysTenantDto.getUserId())));
+                return source;
+            });
         }
         Wrapper<SysTenantPo> queryWrapper = buildQueryWrapper(sysTenantDto);
         SysTenantPo sysTenantPo = getOne(queryWrapper);

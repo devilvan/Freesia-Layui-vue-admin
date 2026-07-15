@@ -52,6 +52,7 @@ public class SysTenantController extends BaseController {
     @PostMapping(value = "saveUpdate")
     public R<Void> saveUpdate(@RequestBody SysTenantVo sysTenantVo) {
         SysTenantDto sysTenantDto = sysTenantConverter.convertVo2Dto(sysTenantVo);
+        sysTenantDto.setUserId(USecurity.getUserId());
         sysTenantService.saveUpdate(sysTenantDto);
         return R.ok();
     }
