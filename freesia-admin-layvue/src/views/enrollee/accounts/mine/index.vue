@@ -1280,53 +1280,38 @@ function splitNumber(total: number, parts: number): number[] {
 }
 
 function allocRetainAmount() {
-  let outlay: number = accountCostVo.value.outlay || 0
-  if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
-    // 计算费用分摊合计金额是否超过总金额
-    let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
-        .reduce((sum: number, item: AccountCostUserAllocDto) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
-    if (!outlay || totalAmount > outlay) {
-      layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
-      return;
-    }
-  }
-  // 先查询填写了金额的行，与总金额计算差值
-  let accountCostUserAllocVoList = accountCostVo.value.accountCostUserAllocVoList;
-  if (accountCostUserAllocVoList && accountCostUserAllocVoList.length > 0) {
-    let existAllocList = accountCostUserAllocVoList.filter(item => {
-      return item.amount && item.amount > 0
-    })
-    let totalAmount: number = existAllocList
-        .reduce((sum: number, item: AccountCostUserAllocDto) => sum + parseFloat(item.amount || 0), 0).toFixed(2);
-    totalAmount = outlay - totalAmount
-    if (!existAllocList || existAllocList.length === 0) {
-      // 如果都没填写，则直接平分
-      let numbers = splitNumber(totalAmount, accountCostUserAllocVoList.length);
-      if (numbers.length > 0) {
-        let length = accountCostVo.value.accountCostUserAllocVoList.length;
-        for (let i = 0; i < length; i++) {
-          accountCostVo.value.accountCostUserAllocVoList[i].amount = numbers[i];
-        }
-      }
-    } else if (existAllocList && existAllocList.length !== accountCostUserAllocVoList.length) {
-      // 部分赋值，则减去赋值的金额后再平分给未赋值的数据
-      let notExistAllocList = accountCostUserAllocVoList.filter(item => {
-        return !item.amount || item.amount === 0
-      })
-      existAllocList.forEach(item => {
-        outlay -= item.amount || 0
-      })
-      let numbers = splitNumber(outlay, notExistAllocList.length);
-      for (let i = 0; i < numbers.length; i++) {
-        notExistAllocList.forEach(item => {
-          if (!item.amount || item.amount == 0) {
-            item.amount = numbers[i];
-          }
-        })
-      }
-    }
-  } else {
+  const outlay = parseFloat(accountCostVo.value.outlay as string) || 0
+  const list = accountCostVo.value.accountCostUserAllocVoList
+  if (!list || list.length === 0) {
     layer.msg('分摊数据不合法，请联系管理员', {icon: 3})
+    return
+  }
+  const existAllocList = list.filter(item => item.amount && parseFloat(item.amount as string) > 0)
+  if (existAllocList.length === 0) {
+    // 都没填写，则直接平分
+    const numbers = splitNumber(outlay, list.length)
+    if (numbers.length > 0) {
+      list.forEach((item, i) => { item.amount = numbers[i] })
+    }
+  } else if (existAllocList.length !== list.length) {
+    // 检查已填金额是否超过总金额
+    const filledTotal = parseFloat(existAllocList
+        .reduce((sum: number, item: AccountCostUserAllocDto) => sum + (parseFloat(item.amount as string) || 0), 0).toFixed(2))
+    if (filledTotal > outlay) {
+      layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
+      return
+    }
+    // 部分填写，剩余金额平分给未填的
+    const remain = parseFloat((outlay - filledTotal).toFixed(2))
+    const notExistList = list.filter(item => !item.amount || parseFloat(item.amount as string) === 0)
+    const numbers = splitNumber(remain, notExistList.length)
+    for (let i = 0; i < numbers.length; i++) {
+      notExistList.forEach(item => {
+        if (!item.amount || parseFloat(item.amount as string) === 0) {
+          item.amount = numbers[i]
+        }
+      })
+    }
   }
 }
 
