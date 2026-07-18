@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-Freesia 是一款基于 SpringBoot、Layui-vue-Admin、Layui-vue 的后台权限管理和记账系统。它在 Layui-vue-Admin 的前端模板基础上对接了完整的后端功能，实现了从前端页面到后端逻辑的全流程功能。
+Freesia 是一款基于 SpringBoot、Layui-vue-Admin、Layui-vue 和 UniApp 的全栈后台权限管理和记账系统。它在 Layui-vue-Admin 的前端模板基础上对接了完整的后端功能，同时提供了 UniApp 移动端应用，实现了从前端页面到后端逻辑的全流程功能。
 
 ### 项目特点
 
@@ -12,17 +12,18 @@ Freesia 是一款基于 SpringBoot、Layui-vue-Admin、Layui-vue 的后台权限
 - **多租户架构**：支持个人、企业、组织等不同类型的租户
 - **国际化支持**：内置多语言支持
 - **响应式设计**：适配不同屏幕尺寸
-- **完整的技术栈**：前端 Vue3 + TypeScript + Layui-vue，后端 SpringBoot + MyBatis-Plus
+- **移动端支持**：基于 UniApp 的跨平台移动应用
+- **完整的技术栈**：前端 Vue3 + TypeScript + Layui-vue + UniApp，后端 SpringBoot + MyBatis-Plus
 
 ## 技术栈
 
-### 前端技术栈
+### 前端技术栈（管理后台）
 
 | 技术 | 版本 | 用途 |
 |------|------|------|
 | Vue | 3.3.4 | 前端框架 |
 | TypeScript | 4.5.4 | 类型系统 |
-| Layui-vue | 2.22.0 | UI组件库 |
+| Layui-vue | 2.23.3 | UI组件库 |
 | Layui-vue-admin | - | 前端模板 |
 | Pinia | 2.0.32 | 状态管理 |
 | Vite | 6.2.2 | 构建工具 |
@@ -30,6 +31,15 @@ Freesia 是一款基于 SpringBoot、Layui-vue-Admin、Layui-vue 的后台权限
 | ECharts | 5.4.1 | 数据可视化 |
 | NodeJS | 18.12.1 | 运行环境 |
 | pnpm | 10.6.5 | 包管理工具 |
+
+### 前端技术栈（移动端）
+
+| 技术 | 版本 | 用途 |
+|------|------|------|
+| Vue | 3.5.34 | 前端框架 |
+| UniApp | 3.0.0-5000720260410001 | 跨平台框架 |
+| Vite | 5.2.8 | 构建工具 |
+| Sass | 1.99.0 | CSS预处理器 |
 
 ### 后端技术栈
 
@@ -55,46 +65,137 @@ Freesia 是一款基于 SpringBoot、Layui-vue-Admin、Layui-vue 的后台权限
 
 ```
 Freesia/
-├── freesia-admin-layvue/       # 前端项目
+├── freesia-admin-layvue/       # 前端管理后台项目
+├── freesia-admin-uniapp/       # 前端移动端项目（UniApp）
 ├── freesia-common/             # 后端公共模块
+│   ├── freesia-common-api/     # API通用模块
+│   ├── freesia-common-cache/   # 缓存模块
+│   ├── freesia-common-codegen/ # 代码生成模块
+│   ├── freesia-common-crypt/   # 加密模块
+│   ├── freesia-common-desensitization/ # 脱敏模块
+│   ├── freesia-common-doc/     # 文档模块
+│   ├── freesia-common-excel/   # Excel模块
+│   ├── freesia-common-framework/ # 框架模块
+│   ├── freesia-common-idempotent/ # 幂等模块
+│   ├── freesia-common-jdbc/    # JDBC模块
+│   ├── freesia-common-json/    # JSON模块
+│   ├── freesia-common-log/     # 日志模块
+│   ├── freesia-common-mail/    # 邮件模块
+│   ├── freesia-common-net/     # 网络模块
+│   ├── freesia-common-oss/     # 对象存储模块
+│   ├── freesia-common-redis/   # Redis模块
+│   ├── freesia-common-satoken/ # Sa-Token模块
+│   ├── freesia-common-sse/     # SSE模块
+│   ├── freesia-common-tenant/  # 租户模块
+│   └── freesia-common-validation/ # 验证模块
 ├── freesia-extends/            # 后端扩展模块
+│   ├── freesia-spring-admin/   # Spring Admin模块
+│   └── freesia-xxl-job/        # XXL-Job定时任务模块
 ├── freesia-web/                # 后端Web模块
+│   ├── freesia-web-account/    # 后端记账模块
 │   ├── freesia-web-admin/      # 后端管理模块
 │   ├── freesia-web-api/        # 后端API模块
 │   ├── freesia-web-app/        # 后端应用模块
+│   ├── freesia-web-chat/       # 后端聊天模块
+│   ├── freesia-web-framework/  # 后端框架模块
 │   ├── freesia-web-icon/       # 后端图标模块
-│   └── freesia-web-account/    # 后端记账模块
+│   └── freesia-web-worldclock/ # 后端世界时钟模块
 ├── sql/                        # 数据库脚本
+├── logs/                       # 日志文件
+├── .run/                       # IDE运行配置
+├── .vscode/                    # VS Code配置
 ├── .gitignore                  # Git忽略文件
 ├── LICENSE                     # 许可证文件
 ├── README.md                   # 项目说明
-└── pom.xml                     # Maven配置文件
+├── pom.xml                     # Maven配置文件
+└── 设计模式改进建议报告.md       # 设计模式改进报告
 ```
 
-### 前端项目结构
+### 前端管理后台项目结构
 
 ```
 freesia-admin-layvue/
 ├── public/                     # 静态资源
+│   ├── flag/                   # 国旗图标
+│   └── svg/                    # SVG图标
 ├── src/
 │   ├── api/                    # API接口
+│   │   ├── account/            # 记账相关API
+│   │   ├── captcha/            # 验证码API
+│   │   ├── common/             # 公共API
+│   │   ├── dashboard/          # 仪表盘API
+│   │   ├── system/             # 系统管理API
+│   │   └── worldclock/         # 世界时钟API
 │   ├── assets/                 # 资源文件
-│   ├── directives/             # 指令
+│   │   ├── avatar/             # 用户头像
+│   │   ├── login/              # 登录页面资源
+│   │   ├── svg/                # SVG图标
+│   │   └── svgIcon/            # 业务图标
+│   ├── directives/             # 自定义指令
 │   ├── lang/                   # 国际化
 │   ├── layouts/                # 布局组件
+│   │   ├── composable/         # 组合式函数
+│   │   └── global/             # 全局布局组件
 │   ├── library/                # 工具库
-│   ├── router/                 # 路由
+│   ├── router/                 # 路由配置
 │   ├── store/                  # 状态管理
 │   ├── styles/                 # 样式文件
-│   ├── types/                  # 类型定义
+│   ├── types/                  # TypeScript类型定义
 │   ├── util/                   # 工具函数
 │   ├── views/                  # 页面组件
+│   │   ├── common/             # 公共页面
+│   │   ├── component/          # 组件页面
+│   │   ├── dashboard/          # 仪表盘页面
+│   │   ├── directive/          # 指令页面
+│   │   ├── enrollee/           # 用户中心页面
+│   │   ├── error/              # 错误页面
+│   │   ├── form/               # 表单页面
+│   │   ├── iframe/             # 内嵌页面
+│   │   ├── login/              # 登录页面
+│   │   ├── page/               # 文档页面
+│   │   ├── result/             # 结果页面
+│   │   ├── system/             # 系统管理页面
+│   │   ├── table/              # 表格页面
+│   │   └── workSpace/          # 工作台页面
 │   ├── App.vue                 # 根组件
 │   └── main.ts                 # 入口文件
 ├── .env.development            # 开发环境配置
 ├── .env.production             # 生产环境配置
 ├── package.json                # 前端依赖
 └── vite.config.ts              # Vite配置
+```
+
+### 前端移动端项目结构
+
+```
+freesia-admin-uniapp/
+├── src/
+│   ├── api/                    # API接口
+│   │   ├── account/            # 记账相关API
+│   │   ├── captcha/            # 验证码API
+│   │   ├── common/             # 公共API
+│   │   └── system/             # 系统管理API
+│   ├── assets/                 # 资源文件
+│   ├── pages/                  # 页面组件
+│   │   ├── enrollee/           # 用户中心页面
+│   │   └── login/              # 登录页面
+│   ├── static/                 # 静态资源
+│   │   ├── login/              # 登录页面资源
+│   │   └── tabbar/             # TabBar图标
+│   ├── store/                  # 状态管理
+│   ├── styles/                 # 样式文件
+│   ├── types/                  # TypeScript类型定义
+│   ├── util/                   # 工具函数
+│   ├── utils/                  # 通用工具
+│   ├── App.vue                 # 根组件
+│   ├── main.js                 # 入口文件
+│   ├── manifest.json           # 应用配置
+│   ├── pages.json              # 页面路由配置
+│   └── uni.scss                # 全局样式
+├── .env.development            # 开发环境配置
+├── .env.production             # 生产环境配置
+├── package.json                # 前端依赖
+└── vite.config.js              # Vite配置
 ```
 
 ### 后端项目结构
@@ -119,6 +220,12 @@ freesia-web/
 │   │   ├── entity/             # 实体类
 │   │   ├── mapper/             # 数据映射
 │   │   └── po/                 # 持久对象
+├── freesia-web-api/            # API模块
+├── freesia-web-app/            # 应用模块
+├── freesia-web-chat/           # 聊天模块
+├── freesia-web-framework/      # 框架模块
+├── freesia-web-icon/           # 图标模块
+├── freesia-web-worldclock/     # 世界时钟模块
 └── pom.xml                     # Maven配置
 ```
 
@@ -167,9 +274,18 @@ freesia-web/
 
 提供全球时区时钟功能，支持多地区时间显示和管理。
 
+### 6. 移动端功能
+
+| 模块 | 功能描述 |
+|------|----------|
+| 账户管理 | 记账账户管理、预算查看 |
+| 支出记录 | 移动端支出记录添加 |
+| 消息中心 | 系统消息、通知提醒 |
+| 个人中心 | 用户信息、设置管理 |
+
 ## 快速开始
 
-### 前端准备
+### 前端管理后台准备
 
 1. **进入前端目录**
    ```bash
@@ -194,6 +310,27 @@ freesia-web/
    yarn run dev
    ```
 
+### 前端移动端准备
+
+1. **进入移动端目录**
+   ```bash
+   cd freesia-admin-uniapp
+   ```
+
+2. **安装依赖**
+   ```bash
+   pnpm install
+   ```
+
+3. **启动开发服务器**
+   ```bash
+   # H5开发
+   pnpm run dev:h5
+   
+   # 微信小程序开发
+   pnpm run dev:mp-weixin
+   ```
+
 ### 后端准备
 
 1. **启动依赖服务**
@@ -215,13 +352,14 @@ freesia-web/
 
 ### 访问系统
 
-- **前端地址**：`http://localhost:5173`
+- **前端管理后台地址**：`http://localhost:5173`
+- **前端移动端地址（H5）**：`http://localhost:5174`
 - **后端地址**：`http://localhost:8570`
 - **API文档**：`http://localhost:8570/swagger-ui.html`
 
 ## 配置说明
 
-### 前端配置
+### 前端管理后台配置
 
 前端配置文件位于 `freesia-admin-layvue/.env.development` 和 `.env.production`：
 
@@ -238,9 +376,20 @@ VITE_APP_SPRING_DOC_PATH = '${VITE_APP_BASE_URL}/swagger-ui.html'
 VITE_APP_UPLOAD_PATH = '${VITE_APP_BASE_URL}/common/sysOssController/upload'
 ```
 
+### 前端移动端配置
+
+移动端配置文件位于 `freesia-admin-uniapp/.env.development` 和 `.env.production`：
+
+```env
+# 环境
+VITE_APP_ENV = 'development'
+# 后端地址
+VITE_APP_BASE_URL = 'http://localhost:8570'
+```
+
 ### 后端配置
 
-后端配置文件通过 Maven  profiles 管理，支持 dev、test、prod 三种环境：
+后端配置文件通过 Maven profiles 管理，支持 dev、test、prod 三种环境：
 
 ```xml
 <profiles>
@@ -260,7 +409,7 @@ VITE_APP_UPLOAD_PATH = '${VITE_APP_BASE_URL}/common/sysOssController/upload'
 
 ## 部署指南
 
-### 前端部署
+### 前端管理后台部署
 
 1. **构建生产版本**
    ```bash
@@ -288,6 +437,20 @@ VITE_APP_UPLOAD_PATH = '${VITE_APP_BASE_URL}/common/sysOssController/upload'
            proxy_set_header X-Real-IP $remote_addr;
        }
    }
+   ```
+
+### 前端移动端部署
+
+1. **构建H5版本**
+   ```bash
+   cd freesia-admin-uniapp
+   pnpm run build:h5
+   ```
+
+2. **构建微信小程序**
+   ```bash
+   cd freesia-admin-uniapp
+   pnpm run build:mp-weixin
    ```
 
 ### 后端部署
@@ -344,6 +507,8 @@ VITE_APP_UPLOAD_PATH = '${VITE_APP_BASE_URL}/common/sysOssController/upload'
 9. **SQL监控**：集成 P6spy 实现 SQL 执行监控，便于性能优化
 
 10. **工具类集成**：集成 Hutool、FastJson2 等常用工具，提高开发效率
+
+11. **移动端支持**：基于 UniApp 的跨平台移动应用，支持 H5 和微信小程序
 
 ## 贡献指南
 

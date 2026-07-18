@@ -19,6 +19,7 @@
         <module>freesia-web-account</module>
         <module>freesia-web-icon</module>
         <module>freesia-web-worldclock</module>
+        <module>freesia-web-chat</module>
     </modules>
 
     <dependencyManagement>
@@ -158,6 +159,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-xxl-job</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-web-chat</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>

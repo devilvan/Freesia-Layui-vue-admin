@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.freesia</groupId>
+        <artifactId>freesia-web</artifactId>
+        <version>1.5.0</version>
+    </parent>
+
+    <artifactId>freesia-web-chat</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <deepseek.version>1.5.0</deepseek.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.pig-mesh.ai</groupId>
+            <artifactId>deepseek-spring-boot-starter</artifactId>
+            <version>${deepseek.version}</version>
+        </dependency>
+        <!--基础模块-->
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-web-admin</artifactId>
+        </dependency>
+    </dependencies>
+</project>
