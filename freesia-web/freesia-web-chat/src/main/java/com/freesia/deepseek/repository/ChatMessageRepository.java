@@ -4,6 +4,7 @@ package com.freesia.deepseek.repository;
 import com.freesia.deepseek.po.ChatMessagePo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,4 +15,9 @@ import java.util.List;
  */
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessagePo, Long> {
+
+    List<ChatMessagePo> findByConversationIdOrderByOrderNumAsc(Long conversationId);
+
+    @Transactional
+    void deleteByConversationId(Long conversationId);
 }

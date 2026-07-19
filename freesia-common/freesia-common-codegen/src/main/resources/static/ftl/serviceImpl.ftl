@@ -16,6 +16,7 @@ import ${packageName}.mapper.${dataBaseDto.className}Mapper;
 import ${packageName}.repository.${dataBaseDto.className}Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,6 @@ public class ${dataBaseDto.className}ServiceImpl extends BaseServiceImpl<${dataB
     @Override
     public List<${dataBaseDto.className}Dto> findList(${dataBaseDto.className}Dto dto) {
         return ${dataBaseDto.className?uncap_first}Converter.convertBatchPo2Dto(${dataBaseDto.className?uncap_first}Mapper.findList(dto));
-        return ${dataBaseDto.className?uncap_first}Mapper.findList(dto);
     }
 
     @Override

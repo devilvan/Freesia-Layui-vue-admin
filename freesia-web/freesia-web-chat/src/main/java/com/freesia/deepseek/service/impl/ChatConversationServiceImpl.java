@@ -16,6 +16,7 @@ import com.freesia.deepseek.mapper.ChatConversationMapper;
 import com.freesia.deepseek.repository.ChatConversationRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import com.freesia.service.impl.BaseServiceImpl;
 import com.freesia.util.UEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,6 @@ public class ChatConversationServiceImpl extends BaseServiceImpl<ChatConversatio
     @Override
     public List<ChatConversationDto> findList(ChatConversationDto dto) {
         return chatConversationConverter.convertBatchPo2Dto(chatConversationMapper.findList(dto));
-        return chatConversationMapper.findList(dto);
     }
 
     @Override

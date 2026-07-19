@@ -52,4 +52,8 @@ public class ChatConversationPo extends BasePo implements Serializable {
     @TableField(value = "CHAT_MODE")
     @Column(name = "CHAT_MODE", columnDefinition = "VARCHAR(32) COMMENT '对话模式(runtime/fde)'")
     private String chatMode;
+    @Schema(description = "客户端会话标识(UUID)")
+    @TableField(value = "EXT_ID")
+    @Column(name = "EXT_ID", columnDefinition = "VARCHAR(64) COMMENT '客户端会话标识'")
+    private String extId;
 }

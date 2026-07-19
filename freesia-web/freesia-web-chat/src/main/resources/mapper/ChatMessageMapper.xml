@@ -45,7 +45,7 @@
         FROM CHAT_MESSAGE
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.conversationId != null">
             AND CONVERSATION_ID = #{dto.conversationId}
@@ -67,7 +67,7 @@
         FROM CHAT_MESSAGE
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.conversationId != null">
             AND CONVERSATION_ID = #{dto.conversationId}

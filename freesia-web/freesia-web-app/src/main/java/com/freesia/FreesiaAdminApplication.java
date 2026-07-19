@@ -36,12 +36,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.freesia.account.repository",
         "com.freesia.icon.repository",
         "com.freesia.worldclock.repository",
+        "com.freesia.deepseek.repository",
 })
 @EntityScan(basePackages = {
         "com.freesia.po",
         "com.freesia.account.po",
         "com.freesia.icon.po",
         "com.freesia.worldclock.po",
+        "com.freesia.deepseek.po",
 })
 public class FreesiaAdminApplication {
     public static void main(String[] args) {

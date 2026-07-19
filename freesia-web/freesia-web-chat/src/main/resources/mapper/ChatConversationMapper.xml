@@ -15,6 +15,7 @@
         <result column="USER_ID" property="userId"/>
         <result column="TITLE" property="title"/>
         <result column="CHAT_MODE" property="chatMode"/>
+        <result column="EXT_ID" property="extId"/>
     </resultMap>
     <sql id="Base_Column_List">
         ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, PROVIDER_CODE, USER_ID, TITLE, CHAT_MODE
@@ -45,7 +46,7 @@
         FROM CHAT_CONVERSATION
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.providerCode != null and dto.providerCode != ''">
             AND PROVIDER_CODE = #{dto.providerCode}
@@ -67,7 +68,7 @@
         FROM CHAT_CONVERSATION
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.providerCode != null and dto.providerCode != ''">
             AND PROVIDER_CODE = #{dto.providerCode}

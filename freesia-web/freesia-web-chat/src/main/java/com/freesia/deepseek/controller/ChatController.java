@@ -1,57 +1,54 @@
 package com.freesia.deepseek.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.freesia.deepseek.entity.ChatConversation;
-import com.freesia.deepseek.entity.ChatMessage;
-import com.freesia.deepseek.service.ChatService;
+import com.freesia.deepseek.dto.ChatConversationDto;
+import com.freesia.deepseek.dto.ChatMessageDto;
+import com.freesia.deepseek.po.ChatConversationPo;
+import com.freesia.deepseek.po.ChatMessagePo;
+import com.freesia.deepseek.repository.ChatConversationRepository;
+import com.freesia.deepseek.repository.ChatMessageRepository;
+import com.freesia.deepseek.service.ChatConversationService;
+import com.freesia.deepseek.service.ChatMessageService;
 import com.freesia.satoken.util.USecurity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
-@Tag(name = "ChatController", description = "ÂØπËØù‰ºöËØùÁÆ°ÁêÜ ÊéßÂà∂Âô®")
+@Tag(name = "ChatController", description = "∂‘ª∞ª·ª∞π‹¿Ì øÿ÷∆∆˜")
 public class ChatController {
 
-    private final ChatService chatService;
+    private final ChatConversationService conversationService;
+    private final ChatMessageService messageService;
+    private final ChatConversationRepository conversationRepository;
+    private final ChatMessageRepository messageRepository;
 
     @SaCheckLogin
     @GetMapping("/conversations")
-    @Operation(summary = "Ëé∑ÂèñÂØπËØùÂàóË°®")
+    @Operation(summary = "ªÒ»°∂‘ª∞¡–±Ì")
     public Map<String, Object> getConversations(
-            @RequestParam(value = "userId", required = false) String userIdParam,
             @RequestParam(value = "chatMode", required = false) String chatMode) {
         Long userId = USecurity.getUserId();
-        List<ChatConversation> conversations = chatService.listConversations(userId, chatMode);
-
-        List<Map<String, Object>> list = conversations.stream().map(conv -> {
+        ChatConversationDto query = new ChatConversationDto();
+        query.setUserId(userId);
+        if (chatMode != null && !chatMode.isEmpty()) {
+            query.setChatMode(chatMode);
+        }
+        List<ChatConversationDto> conversations = conversationService.findList(query);
+        List<Map<String, Object>> list = conversations.stream().map(dto -> {
             Map<String, Object> item = new HashMap<>();
-            item.put("conversationId", conv.getId());
-            item.put("title", conv.getTitle());
-            if (conv.getChatMode() != null) {
-                item.put("chatMode", conv.getChatMode());
-            }
-            item.put("createdAt", conv.getCreatedAt() != null ? conv.getCreatedAt().toString() : null);
-            item.put("updatedAt", conv.getUpdatedAt() != null ? conv.getUpdatedAt().toString() : null);
+            item.put("conversationId", String.valueOf(dto.getId()));
+            item.put("title", dto.getTitle() != null ? dto.getTitle() : "–¬∂‘ª∞");
+            if (dto.getChatMode() != null) item.put("chatMode", dto.getChatMode());
             return item;
         }).collect(Collectors.toList());
-
         Map<String, Object> result = new HashMap<>();
         result.put("conversations", list);
         return result;
@@ -59,22 +56,23 @@ public class ChatController {
 
     @SaCheckLogin
     @GetMapping("/{id}/history")
-    @Operation(summary = "Ëé∑ÂèñÂØπËØùÂéÜÂè≤")
+    @Operation(summary = "ªÒ»°∂‘ª∞¿˙ ∑")
     public Map<String, Object> getHistory(@PathVariable String id) {
-        List<ChatMessage> messages = chatService.getMessages(id);
-
+        ChatConversationPo conv = findConversation(id);
+        if (conv == null) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("messages", Collections.emptyList());
+            return result;
+        }
+        List<ChatMessagePo> messages = messageRepository.findByConversationIdOrderByOrderNumAsc(conv.getId());
         List<Map<String, Object>> msgList = messages.stream().map(msg -> {
             Map<String, Object> item = new HashMap<>();
-            item.put("id", msg.getId());
+            item.put("id", String.valueOf(msg.getId()));
             item.put("role", msg.getRole());
             item.put("content", msg.getContent());
-            item.put("timestamp", msg.getTimestamp());
-            if (msg.getCards() != null) {
-                item.put("cards", msg.getCards());
-            }
+            if (msg.getOrderNum() != null) item.put("orderNum", msg.getOrderNum());
             return item;
         }).collect(Collectors.toList());
-
         Map<String, Object> result = new HashMap<>();
         result.put("messages", msgList);
         return result;
@@ -82,23 +80,49 @@ public class ChatController {
 
     @SaCheckLogin
     @PutMapping("/{id}/history")
-    @Operation(summary = "‰øùÂ≠òÂØπËØùÂéÜÂè≤")
-    @SuppressWarnings("unchecked")
+    @Operation(summary = "±£¥Ê∂‘ª∞¿˙ ∑")
+    @Transactional
     public Map<String, Object> saveHistory(@PathVariable String id, @RequestBody Map<String, Object> body) {
-        String title = (String) body.getOrDefault("title", "Êñ∞ÂØπËØù");
-        List<Map<String, Object>> messages = (List<Map<String, Object>>) body.get("messages");
-
-        ChatConversation existing = chatService.getConversation(id);
-        if (existing == null) {
-            Long userId = USecurity.getUserId();
+        ChatConversationPo conv = findConversation(id);
+        Long userId = USecurity.getUserId();
+        if (conv == null) {
+            String title = (String) body.getOrDefault("title", "–¬∂‘ª∞");
             String chatMode = (String) body.get("chatMode");
-            chatService.createConversation(id, userId, title, chatMode);
+            ChatConversationDto dto = new ChatConversationDto();
+            dto.setUserId(userId);
+            dto.setTitle(title);
+            dto.setChatMode(chatMode);
+            ChatConversationDto saved = conversationService.saveUpdate(dto);
+            try { Long.parseLong(id); } catch (NumberFormatException e) {
+                ChatConversationPo po = conversationRepository.findById(saved.getId()).orElse(null);
+                if (po != null) { po.setExtId(id); conversationRepository.save(po); }
+            }
+            conv = conversationRepository.findById(saved.getId()).orElse(null);
+        } else {
+            String title = (String) body.getOrDefault("title", null);
+            if (title != null && !title.equals(conv.getTitle())) {
+                ChatConversationDto dto = new ChatConversationDto();
+                dto.setId(conv.getId());
+                dto.setTitle(title);
+                dto.setUserId(conv.getUserId());
+                dto.setChatMode(conv.getChatMode());
+                conversationService.saveUpdate(dto);
+            }
         }
-
-        if (messages != null) {
-            chatService.saveHistory(id, title, messages);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> messages = (List<Map<String, Object>>) body.get("messages");
+        if (messages != null && conv != null) {
+            messageRepository.deleteByConversationId(conv.getId());
+            int orderNum = 0;
+            for (Map<String, Object> msg : messages) {
+                ChatMessageDto msgDto = new ChatMessageDto();
+                msgDto.setConversationId(conv.getId());
+                msgDto.setRole((String) msg.getOrDefault("role", "user"));
+                msgDto.setContent((String) msg.getOrDefault("content", ""));
+                msgDto.setOrderNum(orderNum++);
+                messageService.saveUpdate(msgDto);
+            }
         }
-
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         return result;
@@ -106,10 +130,14 @@ public class ChatController {
 
     @SaCheckLogin
     @DeleteMapping("/{id}")
-    @Operation(summary = "Âà†Èô§ÂØπËØù")
+    @Operation(summary = "…æ≥˝∂‘ª∞")
+    @Transactional
     public Map<String, Object> deleteConversation(@PathVariable String id) {
-        chatService.deleteConversation(id);
-
+        ChatConversationPo conv = findConversation(id);
+        if (conv != null) {
+            messageRepository.deleteByConversationId(conv.getId());
+            conversationService.deleteBatch(Collections.singletonList(conv.getId()));
+        }
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         return result;
@@ -117,13 +145,30 @@ public class ChatController {
 
     @SaCheckLogin
     @PatchMapping("/{id}/title")
-    @Operation(summary = "ÈáçÂëΩÂêçÂØπËØù")
+    @Operation(summary = "÷ÿ√¸√˚∂‘ª∞")
     public Map<String, Object> renameConversation(@PathVariable String id, @RequestBody Map<String, Object> body) {
+        ChatConversationPo conv = findConversation(id);
+        if (conv == null) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", false);
+            return result;
+        }
         String title = (String) body.get("title");
-        boolean ok = chatService.renameConversation(id, title);
-
+        ChatConversationDto dto = new ChatConversationDto();
+        dto.setId(conv.getId());
+        dto.setTitle(title);
+        dto.setUserId(conv.getUserId());
+        dto.setChatMode(conv.getChatMode());
+        conversationService.saveUpdate(dto);
         Map<String, Object> result = new HashMap<>();
-        result.put("success", ok);
+        result.put("success", true);
         return result;
+    }
+
+    private ChatConversationPo findConversation(String id) {
+        ChatConversationPo conv = conversationRepository.findByExtId(id).orElse(null);
+        if (conv != null) return conv;
+        try { return conversationRepository.findById(Long.parseLong(id)).orElse(null); }
+        catch (NumberFormatException e) { return null; }
     }
 }
