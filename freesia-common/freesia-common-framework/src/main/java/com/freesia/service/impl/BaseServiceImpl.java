@@ -173,6 +173,12 @@ public abstract class BaseServiceImpl<MAPPER extends BaseMapper<PO>, VO extends 
      * @param dto DTO
      */
     protected void beforeSave(PO po, DTO dto) {
+        if (po.getBuildIn() == null) {
+            po.setBuildIn(false);
+        }
+        if (po.getLogicDel() == null) {
+            po.setLogicDel(false);
+        }
     }
 
     /**

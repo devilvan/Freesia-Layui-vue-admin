@@ -1,8 +1,10 @@
 package com.freesia.deepseek.controller;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.freesia.deepseek.dto.ChatConversationDto;
 import com.freesia.deepseek.dto.ChatMessageDto;
+import com.freesia.deepseek.dto.response.RpFindConversationDto;
+import com.freesia.deepseek.dto.response.RpFindHistoryDto;
 import com.freesia.deepseek.po.ChatConversationPo;
 import com.freesia.deepseek.po.ChatMessagePo;
 import com.freesia.deepseek.repository.ChatConversationRepository;
@@ -10,13 +12,17 @@ import com.freesia.deepseek.repository.ChatMessageRepository;
 import com.freesia.deepseek.service.ChatConversationService;
 import com.freesia.deepseek.service.ChatMessageService;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.util.UEmpty;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,11 +36,10 @@ public class ChatController {
     private final ChatConversationRepository conversationRepository;
     private final ChatMessageRepository messageRepository;
 
-    @SaCheckLogin
+    @SaIgnore
     @GetMapping("/conversations")
     @Operation(summary = "获取对话列表")
-    public Map<String, Object> getConversations(
-            @RequestParam(value = "chatMode", required = false) String chatMode) {
+    public RpFindConversationDto findConversations(@RequestParam(value = "chatMode", required = false) String chatMode) {
         Long userId = USecurity.getUserId();
         ChatConversationDto query = new ChatConversationDto();
         query.setUserId(userId);
@@ -42,43 +47,49 @@ public class ChatController {
             query.setChatMode(chatMode);
         }
         List<ChatConversationDto> conversations = conversationService.findList(query);
-        List<Map<String, Object>> list = conversations.stream().map(dto -> {
-            Map<String, Object> item = new HashMap<>();
-            item.put("conversationId", String.valueOf(dto.getId()));
-            item.put("title", dto.getTitle() != null ? dto.getTitle() : "新对话");
-            if (dto.getChatMode() != null) item.put("chatMode", dto.getChatMode());
+        if (UEmpty.isEmpty(conversations)) {
+            return new RpFindConversationDto(Collections.emptyList());
+        }
+        List<RpFindConversationDto.Conversation> list = conversations.stream().map(dto -> {
+            RpFindConversationDto.Conversation item = new RpFindConversationDto.Conversation();
+            item.setConversationId(String.valueOf(dto.getId()));
+            item.setTitle(dto.getTitle() != null ? dto.getTitle() : "新对话");
+            if (dto.getChatMode() != null) item.setChatMode(dto.getChatMode());
             return item;
         }).collect(Collectors.toList());
-        Map<String, Object> result = new HashMap<>();
-        result.put("conversations", list);
+        RpFindConversationDto result = new RpFindConversationDto();
+        result.setConversations(list);
         return result;
     }
 
-    @SaCheckLogin
+    @SaIgnore
     @GetMapping("/{id}/history")
     @Operation(summary = "获取对话历史")
-    public Map<String, Object> getHistory(@PathVariable String id) {
+    public RpFindHistoryDto findHistory(@PathVariable String id) {
         ChatConversationPo conv = findConversation(id);
         if (conv == null) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("messages", Collections.emptyList());
+            RpFindHistoryDto result = new RpFindHistoryDto();
+            result.setMessages(Collections.emptyList());
             return result;
         }
         List<ChatMessagePo> messages = messageRepository.findByConversationIdOrderByOrderNumAsc(conv.getId());
-        List<Map<String, Object>> msgList = messages.stream().map(msg -> {
-            Map<String, Object> item = new HashMap<>();
-            item.put("id", String.valueOf(msg.getId()));
-            item.put("role", msg.getRole());
-            item.put("content", msg.getContent());
-            if (msg.getOrderNum() != null) item.put("orderNum", msg.getOrderNum());
+        if (UEmpty.isEmpty(messages)) {
+            return new RpFindHistoryDto(Collections.emptyList());
+        }
+        List<RpFindHistoryDto.Message> msgList = messages.stream().map(msg -> {
+            RpFindHistoryDto.Message item = new RpFindHistoryDto.Message();
+            item.setId(String.valueOf(msg.getId()));
+            item.setRole(msg.getRole());
+            item.setContent(msg.getContent());
+            if (msg.getOrderNum() != null) item.setOrderNum(msg.getOrderNum());
             return item;
         }).collect(Collectors.toList());
-        Map<String, Object> result = new HashMap<>();
-        result.put("messages", msgList);
+        RpFindHistoryDto result = new RpFindHistoryDto();
+        result.setMessages(msgList);
         return result;
     }
 
-    @SaCheckLogin
+    @SaIgnore
     @PutMapping("/{id}/history")
     @Operation(summary = "保存对话历史")
     @Transactional
@@ -92,10 +103,16 @@ public class ChatController {
             dto.setUserId(userId);
             dto.setTitle(title);
             dto.setChatMode(chatMode);
+            dto.setProviderCode("DeepSeek");
             ChatConversationDto saved = conversationService.saveUpdate(dto);
-            try { Long.parseLong(id); } catch (NumberFormatException e) {
+            try {
+                Long.parseLong(id);
+            } catch (NumberFormatException e) {
                 ChatConversationPo po = conversationRepository.findById(saved.getId()).orElse(null);
-                if (po != null) { po.setExtId(id); conversationRepository.save(po); }
+                if (po != null) {
+                    po.setExtId(id);
+                    conversationRepository.save(po);
+                }
             }
             conv = conversationRepository.findById(saved.getId()).orElse(null);
         } else {
@@ -128,7 +145,7 @@ public class ChatController {
         return result;
     }
 
-    @SaCheckLogin
+    @SaIgnore
     @DeleteMapping("/{id}")
     @Operation(summary = "删除对话")
     @Transactional
@@ -143,7 +160,7 @@ public class ChatController {
         return result;
     }
 
-    @SaCheckLogin
+    @SaIgnore
     @PatchMapping("/{id}/title")
     @Operation(summary = "重命名对话")
     public Map<String, Object> renameConversation(@PathVariable String id, @RequestBody Map<String, Object> body) {
@@ -168,7 +185,10 @@ public class ChatController {
     private ChatConversationPo findConversation(String id) {
         ChatConversationPo conv = conversationRepository.findByExtId(id).orElse(null);
         if (conv != null) return conv;
-        try { return conversationRepository.findById(Long.parseLong(id)).orElse(null); }
-        catch (NumberFormatException e) { return null; }
+        try {
+            return conversationRepository.findById(Long.parseLong(id)).orElse(null);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

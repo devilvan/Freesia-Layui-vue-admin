@@ -36,7 +36,7 @@ CREATE TABLE `chat_message` (
   `CONVERSATION_ID` bigint(20) NOT NULL COMMENT '会话ID',
   `ROLE` varchar(20) NOT NULL COMMENT '角色(user/assistant)',
   `CONTENT` text COMMENT '消息内容',
-  `ORDER_NUM` int(11) DEFAULT 0 COMMENT '排序号',
+  `ORDER_NUM` int(11) DEFAULT 1 COMMENT '排序号',
   PRIMARY KEY (`ID`),
   KEY `IDX_CONVERSATION_ID` (`CONVERSATION_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交互式会话-消息';
