@@ -25,6 +25,19 @@ export const constantRoutes = [
         meta: {title: 'OAuth 登录回调'},
     },
     {
+        path: '/chat/deepseek',
+        component: BaseLayout,
+        meta: {title: 'DeepSeek AI 对话'},
+        children: [
+            {
+                path: 'index',
+                component: () => import('@/views/chat/deepseek/index.vue'),
+                name: 'DeepseekChat',
+                meta: {title: 'DeepSeek AI 对话', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
+    {
         path: '/error/:code',
         component: ErrorCode,
         meta: {title: '错误页面'},

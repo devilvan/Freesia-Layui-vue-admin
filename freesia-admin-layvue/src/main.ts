@@ -18,6 +18,9 @@ import SvgIcon from "./views/component/svg/SvgIcon.vue";
 import {AccountMenuPermission} from "./types/account/AccountPermission";
 import escClose from "@/directives/escClose";
 import layer from "@layui/layui-vue";
+// @fses/ai-chat 依赖的 ant-design-vue 基础样式
+import 'ant-design-vue/dist/reset.css'
+import { FsesAiChatPlugin } from '@fses/ai-chat'
 // 导入 svgIcon
 
 /**
@@ -34,6 +37,9 @@ app.use(LayJsonSchemaForm)
 app.use(Store);
 app.use(Router);
 app.use(layer);
+app.use(FsesAiChatPlugin, {
+  apiBaseUrl: (import.meta.env.VITE_APP_BASE_URL as string) + '/api',
+})
 app.component("DictTag", DictTag)
 app.component("DictScan", DictScan)
 app.component("InnerLink", InnerLink)
@@ -50,6 +56,11 @@ app.config.globalProperties.$cleanupEscListener = () => {
         delete document.__escLayerListener;
     }
 };
+
+app.config.errorHandler = (err, instance, info) => {
+  console.error('[Vue Error]', err, info)
+}
+
 app.mount('#app');
 
 /**

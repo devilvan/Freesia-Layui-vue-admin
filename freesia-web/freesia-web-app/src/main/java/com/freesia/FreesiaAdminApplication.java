@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.freesia.account.mapper",
         "com.freesia.icon.mapper",
         "com.freesia.worldclock.mapper",
+        "com.freesia.deepseek.mapper",
 })
 @EnableJpaRepositories(basePackages = {
         "com.freesia.repository",

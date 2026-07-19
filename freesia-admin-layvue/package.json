@@ -9,6 +9,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@fses/ai-chat": "^0.2.15",
     "@layui/icons-vue": "^1.1.3",
     "@layui/json-schema-form": "^1.0.15",
     "@layui/layui-vue": "2.23.3",
