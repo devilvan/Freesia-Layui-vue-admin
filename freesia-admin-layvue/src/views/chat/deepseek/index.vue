@@ -6,6 +6,7 @@
       welcome-text="开始和 DeepSeek 对话吧"
       :enable-chat-history="true"
       :auto-load-conversations="true"
+      :chatMode="'runtime'"
       @error="onError"
     />
   </div>
@@ -39,7 +40,7 @@ const transport: FsesAiChatTransport = async (ctx) => {
     .map((m) => ({ role: m.role, content: m.content }))
 
   try {
-    const response = await fetch(`${baseUrl}/api/deepseek/chat/stream`, {
+    const response = await fetch(`${baseUrl}/api/chat/stream`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: input, messages: historyMessages }),
