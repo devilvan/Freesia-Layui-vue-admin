@@ -79,7 +79,10 @@ const transport: FsesAiChatTransport = async (ctx) => {
         try {
           const parsed = JSON.parse(data)
           const delta = parsed?.choices?.[0]?.delta?.content
-          if (delta) assistantMsg.content += delta
+          if (delta) {
+            if (assistantMsg.loading) assistantMsg.loading = false
+            assistantMsg.content += delta
+          }
         } catch {
           // skip
         }
@@ -93,7 +96,10 @@ const transport: FsesAiChatTransport = async (ctx) => {
         try {
           const parsed = JSON.parse(data)
           const delta = parsed?.choices?.[0]?.delta?.content
-          if (delta) assistantMsg.content += delta
+          if (delta) {
+            if (assistantMsg.loading) assistantMsg.loading = false
+            assistantMsg.content += delta
+          }
         } catch { /* skip */ }
       }
     }
