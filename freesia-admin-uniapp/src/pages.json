@@ -32,6 +32,12 @@
       }
     },
     {
+      "path": "pages/chat/deepseek/index",
+      "style": {
+        "navigationBarTitleText": "AI 对话"
+      }
+    },
+    {
       "path": "pages/enrollee/message/index",
       "style": {
         "navigationBarTitleText": "消息"
@@ -67,6 +73,12 @@
         "text": "记一笔",
         "iconPath": "static/tabbar/add.svg",
         "selectedIconPath": "static/tabbar/add-active.svg"
+      },
+      {
+        "pagePath": "pages/chat/deepseek/index",
+        "text": "对话",
+        "iconPath": "static/tabbar/chat.svg",
+        "selectedIconPath": "static/tabbar/chat-active.svg"
       },
       {
         "pagePath": "pages/enrollee/message/index",
