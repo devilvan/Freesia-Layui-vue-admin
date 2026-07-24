@@ -105,6 +105,16 @@ public class UCollection extends CollUtil {
     /**
      * 根据期望的容量初始化集合
      *
+     * @param <T> 集合元素的类型
+     * @return 初始化的集合
+     */
+    public static <T> Map<String, T> optimizeInitialCapacityMap() {
+        return optimizeInitialCapacityMap(16);
+    }
+
+    /**
+     * 根据期望的容量初始化集合
+     *
      * @param expectSize 期望的容量
      * @param <T>        集合元素的类型
      * @return 初始化的集合

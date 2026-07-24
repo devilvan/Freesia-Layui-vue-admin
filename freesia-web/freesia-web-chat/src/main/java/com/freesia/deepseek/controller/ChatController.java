@@ -2,6 +2,7 @@ package com.freesia.deepseek.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.freesia.constant.Constants;
+import com.freesia.controller.BaseController;
 import com.freesia.deepseek.dto.ChatConversationDto;
 import com.freesia.deepseek.dto.ChatMessageDto;
 import com.freesia.deepseek.dto.ChatRequestCommand;
@@ -15,6 +16,7 @@ import com.freesia.deepseek.repository.ChatMessageRepository;
 import com.freesia.deepseek.service.ChatConversationService;
 import com.freesia.deepseek.service.ChatMessageService;
 import com.freesia.satoken.util.USecurity;
+import com.freesia.util.UCollection;
 import com.freesia.util.UEmpty;
 import io.github.pigmesh.ai.deepseek.core.DeepSeekClient;
 import io.github.pigmesh.ai.deepseek.core.chat.ChatCompletionRequest;
@@ -24,28 +26,34 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author Bliss.Wu
+ * @Description ËÅäÂ§©‰ºöËØùÊé•Âè£
+ * @date 2026-07-19
+ */
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
-@Tag(name = "ChatController", description = "∂‘ª∞ª·ª∞π‹¿Ì øÿ÷∆∆˜")
-public class ChatController {
+@Tag(name = "ChatController", description = "ËÅäÂ§©‰ºöËØùÊé•Âè£")
+public class ChatController extends BaseController {
     private final DeepSeekClient deepSeekClient;
     private final ChatConversationService chatConversationService;
     private final ChatMessageService chatMessageService;
     private final ChatConversationRepository chatConversationRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final TransactionTemplate transactionTemplate;
 
     @SaIgnore
-    @Operation(summary = "¡˜ Ω∂‘ª∞", description = "÷ß≥÷∂‡¬÷∂‘ª∞µƒ¡˜ ΩSSEΩ”ø⁄")
+    @Operation(summary = "ËÅäÂ§©ÊµÅ")
     @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ChatCompletionResponse> chatStream(@RequestBody ChatRequestCommand command) {
         ChatCompletionRequest.Builder builder = ChatCompletionRequest.builder()
@@ -57,16 +65,17 @@ public class ChatController {
                 if (msg.getRole() == null || msg.getContent() == null) {
                     continue;
                 }
-                switch (msg.getRole()) {
-                    case "system":
+                Constants.Role role = Constants.Role.getInstanceByCode(msg.getRole());
+                switch (role) {
+                    case SYSTEM:
                         builder.addSystemMessage(msg.getContent());
                         break;
-                    case "assistant":
+                    case ASSISTANT:
                         builder.addAssistantMessage(msg.getContent());
                         break;
-                    case "user":
-                    default:
+                    case USER:
                         builder.addUserMessage(msg.getContent());
+                    default:
                         break;
                 }
             }
@@ -77,7 +86,7 @@ public class ChatController {
 
     @SaIgnore
     @GetMapping("/conversations")
-    @Operation(summary = "ªÒ»°∂‘ª∞¡–±Ì")
+    @Operation(summary = "Ëé∑ÂèñËÅäÂ§©‰ºöËØùÂàóË°®")
     public RpFindConversationDto findConversations(@RequestParam(value = "chatMode", required = false) String chatMode) {
         Long userId = USecurity.getUserId();
         ChatConversationDto query = new ChatConversationDto();
@@ -92,8 +101,10 @@ public class ChatController {
         List<RpFindConversationDto.Conversation> list = conversations.stream().map(dto -> {
             RpFindConversationDto.Conversation item = new RpFindConversationDto.Conversation();
             item.setConversationId(String.valueOf(dto.getId()));
-            item.setTitle(dto.getTitle() != null ? dto.getTitle() : "–¬∂‘ª∞");
-            if (dto.getChatMode() != null) item.setChatMode(dto.getChatMode());
+            item.setTitle(dto.getTitle() != null ? dto.getTitle() : "Êñ∞‰ºöËØù");
+            if (UEmpty.isEmpty(dto.getChatMode())) {
+                item.setChatMode(dto.getChatMode());
+            }
             return item;
         }).collect(Collectors.toList());
         RpFindConversationDto result = new RpFindConversationDto();
@@ -103,7 +114,7 @@ public class ChatController {
 
     @SaIgnore
     @GetMapping("/{id}/history")
-    @Operation(summary = "ªÒ»°∂‘ª∞¿˙ ∑")
+    @Operation(summary = "Ëé∑ÂèñËÅäÂ§©ËÆ∞ÂΩïÂéÜÂè≤")
     public RpFindHistoryDto findHistory(@PathVariable String id) {
         ChatConversationPo conv = findConversation(id);
         if (conv == null) {
@@ -120,7 +131,9 @@ public class ChatController {
             item.setId(String.valueOf(msg.getId()));
             item.setRole(msg.getRole());
             item.setContent(msg.getContent());
-            if (msg.getOrderNum() != null) item.setOrderNum(msg.getOrderNum());
+            if (msg.getOrderNum() != null) {
+                item.setOrderNum(msg.getOrderNum());
+            }
             return item;
         }).collect(Collectors.toList());
         RpFindHistoryDto result = new RpFindHistoryDto();
@@ -130,8 +143,7 @@ public class ChatController {
 
     @SaIgnore
     @PutMapping("/{id}/history")
-    @Operation(summary = "±£¥Ê∂‘ª∞¿˙ ∑")
-    @Transactional
+    @Operation(summary = "‰øùÂ≠òËÅäÂ§©ËÆ∞ÂΩïÂéÜÂè≤")
     public Map<String, Object> saveHistory(@PathVariable String id, @RequestBody RqSaveHistoryDto rqSaveHistoryDto) {
         ChatConversationPo conv = findConversation(id);
         if (conv == null) {
@@ -149,10 +161,9 @@ public class ChatController {
                 ChatConversationPo po = chatConversationRepository.findById(saved.getId()).orElse(null);
                 if (po != null) {
                     po.setExtId(id);
-                    chatConversationRepository.save(po);
+                    conv = chatConversationRepository.save(po);
                 }
             }
-            conv = chatConversationRepository.findById(saved.getId()).orElse(null);
         } else {
             String title = rqSaveHistoryDto.getTitle();
             if (title != null && !title.equals(conv.getTitle())) {
@@ -165,45 +176,49 @@ public class ChatController {
             }
         }
         List<RqSaveHistoryDto.Message> messages = rqSaveHistoryDto.getMessages();
-        if (messages != null) {
-            assert conv != null && conv.getId() != null;
-            chatMessageRepository.deleteByConversationId(conv.getId());
-            int orderNum = 0;
-            for (RqSaveHistoryDto.Message msg : messages) {
-                ChatMessageDto msgDto = new ChatMessageDto();
-                msgDto.setConversationId(conv.getId());
-                msgDto.setRole(msg.getRole());
-                msgDto.setContent(msg.getContent());
-                msgDto.setOrderNum(orderNum++);
-                chatMessageService.saveUpdate(msgDto);
-            }
+        if (messages != null && conv != null) {
+            Long covId = conv.getId();
+            transactionTemplate.execute(status -> {
+                chatMessageRepository.deleteByConversationId(covId);
+                int orderNum = 0;
+                for (RqSaveHistoryDto.Message msg : messages) {
+                    ChatMessageDto msgDto = new ChatMessageDto();
+                    msgDto.setConversationId(covId);
+                    msgDto.setRole(msg.getRole());
+                    msgDto.setContent(msg.getContent());
+                    msgDto.setOrderNum(orderNum++);
+                    chatMessageService.saveUpdate(msgDto);
+                }
+                return null;
+            });
         }
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = UCollection.optimizeInitialCapacityMap();
         result.put("success", true);
         return result;
     }
 
     @SaIgnore
     @DeleteMapping("/{id}")
-    @Operation(summary = "…æ≥˝∂‘ª∞")
-    @Transactional
+    @Operation(summary = "Âà†Èô§ËÅäÂ§©‰ºöËØù")
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> deleteConversation(@PathVariable String id) {
         ChatConversationPo conv = findConversation(id);
         if (conv != null) {
             chatMessageRepository.deleteByConversationId(conv.getId());
             chatConversationService.deleteBatch(Collections.singletonList(conv.getId()));
         }
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = UCollection.optimizeInitialCapacityMap();
         result.put("success", true);
         return result;
     }
 
     @PatchMapping("/{id}/title")
-    @Operation(summary = "÷ÿ√¸√˚∂‘ª∞")
+    @Operation(summary = "ÈáçÂëΩÂêçËÅäÂ§©‰ºöËØù")
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> renameConversation(@PathVariable String id, @RequestBody Map<String, Object> body) {
         ChatConversationPo conv = findConversation(id);
         if (conv == null) {
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = UCollection.optimizeInitialCapacityMap();
             result.put("success", false);
             return result;
         }
@@ -214,14 +229,16 @@ public class ChatController {
         dto.setUserId(conv.getUserId());
         dto.setChatMode(conv.getChatMode());
         chatConversationService.saveUpdate(dto);
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = UCollection.optimizeInitialCapacityMap();
         result.put("success", true);
         return result;
     }
 
     private ChatConversationPo findConversation(String id) {
         ChatConversationPo conv = chatConversationRepository.findByExtId(id).orElse(null);
-        if (conv != null) return conv;
+        if (conv != null) {
+            return conv;
+        }
         try {
             return chatConversationRepository.findById(Long.parseLong(id)).orElse(null);
         } catch (NumberFormatException e) {

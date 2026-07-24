@@ -16,7 +16,8 @@ public final class Constants {
     @AllArgsConstructor
     public enum Role {
         USER("user", "用户"),
-        ASSISTANT("assistant", "助手");
+        ASSISTANT("assistant", "助手"),
+        SYSTEM("system", "系统");
 
         /**
          * 角色编码

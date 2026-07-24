@@ -46,7 +46,7 @@ public class ChatMessagePo extends BasePo implements Serializable {
     private String role;
     @Schema(description = "消息内容")
     @TableField(value = "CONTENT")
-    @Column(name = "CONTENT", columnDefinition = "LONGTEXT(2,147,483,647) COMMENT '消息内容'")
+    @Column(name = "CONTENT", columnDefinition = "LONGTEXT COMMENT '消息内容'")
     private String content;
     @Schema(description = "消息排序")
     @TableField(value = "ORDER_NUM")
