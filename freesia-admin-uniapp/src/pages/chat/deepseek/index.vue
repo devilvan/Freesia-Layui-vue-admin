@@ -55,9 +55,8 @@
 
         <view v-for="msg in messages" :key="msg.id" :id="'msg-' + msg.id">
           <view :class="['chat-msg-row', msg.role === 'user' ? 'chat-msg-row--right' : 'chat-msg-row--left']">
-            <view class="chat-avatar" :class="msg.role === 'user' ? 'chat-avatar--user' : 'chat-avatar--ai'">
-              {{ msg.role === 'user' ? '我' : 'AI' }}
-            </view>
+            <!-- AI: 头像在左 -->
+            <view v-if="msg.role === 'assistant'" class="chat-avatar chat-avatar--ai">AI</view>
             <view class="chat-msg-body">
               <view :class="['chat-bubble', msg.role === 'user' ? 'chat-bubble--user' : 'chat-bubble--ai']">
                 <!-- 思考中动画 -->
@@ -80,6 +79,8 @@
                 <text class="chat-action-btn" @click="copyMessage(msg)">复制</text>
               </view>
             </view>
+            <!-- 用户: 头像在右 -->
+            <view v-if="msg.role === 'user'" class="chat-avatar chat-avatar--user">我</view>
           </view>
         </view>
 
@@ -596,7 +597,7 @@ async function saveHistory() {
   margin-bottom: 28rpx;
 
   &--left { justify-content: flex-start; }
-  &--right { justify-content: flex-end; flex-direction: row-reverse; }
+  &--right { justify-content: flex-end; }
 }
 
 .chat-avatar {
@@ -612,13 +613,12 @@ async function saveHistory() {
   &--ai {
     background: #e0e7ff;
     color: #4f46e5;
-    margin-right: 16rpx;
+    margin-right: 12rpx;
   }
   &--user {
     background: #4f46e5;
     color: #fff;
     margin-left: 12rpx;
-    margin-right: 0;
   }
 }
 
@@ -643,7 +643,6 @@ async function saveHistory() {
     background: #4f46e5;
     color: #fff;
     border-top-right-radius: 4rpx;
-    text-align: right;
   }
 }
 
