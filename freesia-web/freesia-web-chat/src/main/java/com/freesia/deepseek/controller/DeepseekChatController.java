@@ -1,6 +1,8 @@
 package com.freesia.deepseek.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import com.alibaba.excel.EasyExcel;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.freesia.constant.Constants;
 import com.freesia.deepseek.dto.ChatConversationDto;
 import com.freesia.deepseek.dto.ChatMessageDto;
@@ -15,7 +17,7 @@ import com.freesia.deepseek.repository.ChatMessageRepository;
 import com.freesia.deepseek.service.ChatConversationService;
 import com.freesia.deepseek.service.ChatMessageService;
 import com.freesia.satoken.util.USecurity;
-import com.alibaba.excel.EasyExcel;
+import com.freesia.sse.dto.SseEmitterUTF8;
 import com.freesia.util.UCollection;
 import com.freesia.util.UEmpty;
 import io.github.pigmesh.ai.deepseek.core.DeepSeekClient;
@@ -33,9 +35,13 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -56,37 +62,44 @@ public class DeepseekChatController {
     private final ChatConversationRepository chatConversationRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final TransactionTemplate transactionTemplate;
+    private final ObjectMapper objectMapper;
 
     @SaIgnore
     @Operation(summary = "聊天流")
     @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatCompletionResponse> chatStream(@RequestBody ChatRequestCommand command) {
+    public SseEmitterUTF8 chatStream(@RequestBody ChatRequestCommand command) {
         ChatCompletionRequest.Builder builder = ChatCompletionRequest.builder()
                 .model("deepseek-chat")
                 .stream(true);
 
         if (command.getMessages() != null) {
             for (ChatRequestCommand.Message msg : command.getMessages()) {
-                if (msg.getRole() == null || msg.getContent() == null) {
-                    continue;
-                }
+                if (msg.getRole() == null || msg.getContent() == null) continue;
                 Constants.Role role = Constants.Role.getInstanceByCode(msg.getRole());
                 switch (role) {
-                    case SYSTEM:
-                        builder.addSystemMessage(msg.getContent());
-                        break;
-                    case ASSISTANT:
-                        builder.addAssistantMessage(msg.getContent());
-                        break;
-                    case USER:
-                        builder.addUserMessage(msg.getContent());
-                    default:
-                        break;
+                    case SYSTEM: builder.addSystemMessage(msg.getContent()); break;
+                    case ASSISTANT: builder.addAssistantMessage(msg.getContent()); break;
+                    default: builder.addUserMessage(msg.getContent()); break;
                 }
             }
         }
 
-        return deepSeekClient.chatFluxCompletion(builder.build());
+        SseEmitterUTF8 emitter = new SseEmitterUTF8(0L);
+        Flux<ChatCompletionResponse> flux = deepSeekClient.chatFluxCompletion(builder.build());
+
+        flux.subscribe(
+            r -> {
+                try {
+                    emitter.send(r);
+                } catch (IOException e) {
+                    emitter.completeWithError(e);
+                }
+            },
+            err -> emitter.completeWithError(err),
+            () -> emitter.complete()
+        );
+
+        return emitter;
     }
 
     @SaIgnore
