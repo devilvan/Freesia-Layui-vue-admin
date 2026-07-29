@@ -77,14 +77,8 @@
       {
         "pagePath": "pages/chat/deepseek/index",
         "text": "对话",
-        "iconPath": "static/tabbar/chat.svg",
-        "selectedIconPath": "static/tabbar/chat-active.svg"
-      },
-      {
-        "pagePath": "pages/enrollee/message/index",
-        "text": "消息",
-        "iconPath": "static/tabbar/message.svg",
-        "selectedIconPath": "static/tabbar/message-active.svg"
+        "iconPath": "static/tabbar/agent.svg",
+        "selectedIconPath": "static/tabbar/agent-active.svg"
       },
       {
         "pagePath": "pages/enrollee/profile/index",

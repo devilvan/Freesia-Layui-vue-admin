@@ -1,5 +1,6 @@
 <template>
   <view class="chat-page">
+    <MessageBell />
     <!-- 顶部工具栏 -->
     <view class="chat-toolbar">
       <text class="chat-toolbar-toggle" @click="showHistory = !showHistory">☰</text>
@@ -43,14 +44,14 @@
           <image :src="'/src/assets/logo/deepseek.png'" style="width:160rpx;height:160rpx" mode="aspectFit"/>
           <text class="chat-empty-title">DeepSeek AI</text>
           <text class="chat-empty-desc">基于 DeepSeek 大模型的智能对话助手</text>
-          <view class="chat-suggestions">
-            <view
-              v-for="(item, idx) in suggestions"
-              :key="idx"
-              class="chat-suggestion-item"
-              @click="handleSend(item)"
-            >{{ item }}</view>
-          </view>
+<!--          <view class="chat-suggestions">-->
+<!--            <view-->
+<!--              v-for="(item, idx) in suggestions"-->
+<!--              :key="idx"-->
+<!--              class="chat-suggestion-item"-->
+<!--              @click="handleSend(item)"-->
+<!--            >{{ item }}</view>-->
+<!--          </view>-->
         </view>
 
         <view v-for="msg in messages" :key="msg.id" :id="'msg-' + msg.id">
@@ -114,8 +115,10 @@
 <script setup>
 import { ref, nextTick, onMounted } from 'vue'
 import { Marked } from 'marked'
+import Http from '@/api/Http'
+import { getToken } from '@/utils/storage'
 const baseUrl = import.meta.env.VITE_APP_BASE_URL || ''
-const apiBaseUrl = `${baseUrl}/api/chat`
+const apiBaseUrl = `/api/chat`
 
 // --- Markdown 渲染器 ---
 const marked = new Marked({
@@ -129,6 +132,7 @@ const isStreaming = ref(false)
 const messages = ref([])
 const conversations = ref([])
 const activeId = ref(null)
+const pendingTitle = ref('') // 新会话的待定标题（由首条消息生成）
 const scrollToId = ref('')
 const showHistory = ref(false)
 let abortController = null
@@ -147,42 +151,34 @@ onMounted(() => {
 // --- 会话管理 ---
 async function loadConversations() {
   try {
-    const res = await uni.request({
-      url: `${apiBaseUrl}/conversations?chatMode=runtime`,
-      method: 'GET',
-    })
-    if (res.statusCode === 200) {
-      conversations.value = (res.data.conversations || []).map(c => ({
-        id: c.conversationId,
-        title: c.title || '新会话',
-      }))
-    }
+    const res = await Http.get(`${apiBaseUrl}/conversations?chatMode=runtime`)
+    conversations.value = (res.conversations || []).map(c => ({
+      id: c.conversationId,
+      title: c.title,
+    }))
   } catch { /* ignore */ }
 }
 
 function startNewChat() {
   activeId.value = null
   messages.value = []
+  pendingTitle.value = ''
   showHistory.value = false
 }
 
 async function switchConversation(conv) {
   activeId.value = conv.id
   messages.value = []
+  pendingTitle.value = ''
   try {
-    const res = await uni.request({
-      url: `${apiBaseUrl}/${conv.id}/history`,
-      method: 'GET',
-    })
-    if (res.statusCode === 200) {
-      messages.value = (res.data.messages || []).map(m => ({
-        id: m.id,
-        role: m.role,
-        content: m.content,
-      }))
-      await nextTick()
-      scrollToBottom()
-    }
+    const res = await Http.get(`${apiBaseUrl}/${conv.id}/history`)
+    messages.value = (res.messages || []).map(m => ({
+      id: m.id,
+      role: m.role,
+      content: m.content,
+    }))
+    await nextTick()
+    scrollToBottom()
   } catch { /* ignore */ }
 }
 
@@ -197,10 +193,7 @@ async function deleteConversation(conv) {
   if (!res.confirm) return
 
   try {
-    await uni.request({
-      url: `${apiBaseUrl}/${conv.id}`,
-      method: 'DELETE',
-    })
+    await Http.delete(`${apiBaseUrl}/${conv.id}`)
     conversations.value = conversations.value.filter(c => c.id !== conv.id)
     if (activeId.value === conv.id) {
       activeId.value = null
@@ -252,6 +245,8 @@ async function handleSend(text) {
 
   if (!activeId.value) {
     activeId.value = `conv-${Date.now()}`
+    // 用首条用户消息生成会话标题
+    pendingTitle.value = content.length > 20 ? content.substring(0, 20) + '…' : content
   }
 
   let assistantMsg = { id: `a-${Date.now()}`, role: 'assistant', content: '', loading: true, streaming: false }
@@ -269,9 +264,14 @@ async function handleSend(text) {
     const streamUrl = `${baseUrl}/api/chat/stream`
     console.log('[Chat] 请求:', streamUrl)
 
+    const headers = { 'Content-Type': 'application/json' }
+    const token = getToken()
+    if (token) {
+      headers['Authorization'] = 'Bearer ' + token
+    }
     const response = await fetch(streamUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ prompt: content, messages: historyMessages }),
       signal: abortController.signal,
     })
@@ -397,15 +397,10 @@ async function saveHistory() {
   if (msgs.length === 0) return
 
   try {
-    await uni.request({
-      url: `${apiBaseUrl}/${activeId.value}/history`,
-      method: 'PUT',
-      header: { 'Content-Type': 'application/json' },
-      data: {
-        title: conversations.value.find(c => c.id === activeId.value)?.title || '新会话',
-        chatMode: 'runtime',
-        messages: msgs,
-      },
+    await Http.put(`${apiBaseUrl}/${activeId.value}/history`, {
+      title: conversations.value.find(c => c.id === activeId.value)?.title || pendingTitle.value || '新会话',
+      chatMode: 'runtime',
+      messages: msgs,
     })
     loadConversations()
   } catch { /* ignore */ }
@@ -416,7 +411,7 @@ async function saveHistory() {
 .chat-page {
   display: flex;
   flex-direction: column;
-  height: 90vh;
+  height: 88vh;
   overflow: hidden;
   background: #f0f2f5;
 }
@@ -623,7 +618,7 @@ async function saveHistory() {
 }
 
 .chat-msg-body {
-  max-width: 75%;
+  max-width: 83%;
   min-width: 0;
 }
 

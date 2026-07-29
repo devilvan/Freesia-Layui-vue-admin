@@ -4,6 +4,7 @@
       ref="chatRef"
       :api-base-url="apiBaseUrl"
       :transport="transport"
+      :headers="authHeaders"
       welcome-text="开始和 DeepSeek 对话吧"
       :enable-chat-history="true"
       :auto-load-conversations="true"
@@ -20,9 +21,30 @@ import { FsesAiChat } from '@fses/ai-chat'
 import type { FsesAiChatTransport } from '@fses/ai-chat'
 import '@fses/ai-chat/dist/style.css'
 import '@opentiny/tiny-robot/dist/style.css'
+import { useUserStore } from '@/store/user'
+import { useAppStore } from '@/store/app'
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL as string
 const apiBaseUrl = `${baseUrl}/api`
+
+const userStore = useUserStore()
+const appStore = useAppStore()
+
+// FsesAiChat 的 headers getter —— 每次请求前调用，注入认证信息
+const authHeaders = () => {
+  const headers: Record<string, string> = {}
+  if (userStore.token) headers['Authorization'] = `Bearer ${userStore.token}`
+  if (appStore.currentTenant) headers['X-Tenant-Id'] = appStore.currentTenant
+  return headers
+}
+
+// 构建 fetch 用的 headers
+function buildFetchHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {}
+  if (userStore.token) headers['Authorization'] = `Bearer ${userStore.token}`
+  if (appStore.currentTenant) headers['X-Tenant-Id'] = appStore.currentTenant
+  return headers
+}
 
 const chatRef = ref<any>(null)
 // 缓存待分析的文件内容，仅加入 DeepSeek 请求，不存入 DB
@@ -45,6 +67,7 @@ async function uploadAndParse(file: File, fileName: string): Promise<string> {
   formData.append('file', file, fileName)
   const res = await fetch(`${baseUrl}/api/chat/upload`, {
     method: 'POST',
+    headers: buildFetchHeaders(),
     body: formData,
   })
   if (!res.ok) throw new Error(`上传失败: HTTP ${res.status}`)
@@ -127,7 +150,7 @@ const transport: FsesAiChatTransport = async (ctx) => {
   try {
     const response = await fetch(`${baseUrl}/api/chat/stream`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...buildFetchHeaders() },
       body: JSON.stringify({ prompt: input, messages: historyMessages }),
       signal,
     })

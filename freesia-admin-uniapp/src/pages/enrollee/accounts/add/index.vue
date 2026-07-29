@@ -1,5 +1,7 @@
 <template>
-  <view></view>
+  <view>
+    <MessageBell />
+  </view>
 </template>
 
 <script>

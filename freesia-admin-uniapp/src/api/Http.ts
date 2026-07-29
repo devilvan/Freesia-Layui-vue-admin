@@ -106,10 +106,15 @@ class Http {
         header: { ...defaultHeader, ...header },
         timeout: 30000,
         success: (res) => {
-          const responseData = res.data
-          if (responseData.code === 200) {
+          const responseData = res.data as any
+          // 非标准响应（无 code 字段），直接返回原始数据
+          if (responseData && responseData.code === undefined) {
             resolve(responseData)
-          } else if (responseData.code === 401) {
+            return
+          }
+          if (responseData?.code === 200) {
+            resolve(responseData)
+          } else if (responseData?.code === 401) {
             removeToken()
             uni.showToast({ title: '会话已过期，请重新登录', icon: 'none' })
             setTimeout(() => {
@@ -117,7 +122,7 @@ class Http {
             }, 1500)
             reject(responseData)
           } else {
-            uni.showToast({ title: responseData.msg || '请求失败', icon: 'none' })
+            uni.showToast({ title: responseData?.msg || '请求失败', icon: 'none' })
             reject(responseData)
           }
         },

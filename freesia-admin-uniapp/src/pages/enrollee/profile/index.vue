@@ -1,5 +1,6 @@
 <template>
   <view class="page-wrap">
+    <MessageBell />
     <!-- 用户信息卡片 -->
     <view class="lay-card">
       <view class="flex-col align-center" style="padding: 30rpx 0">

@@ -3,9 +3,11 @@ import App from "./App.vue";
 import { JSEncrypt } from "encryptlong";
 import { getPublicKey, wrapEncryptPub2 } from "./api/Crypt";
 import { useCryptStore } from "./store/crypt";
+import MessageBell from "./components/MessageBell.vue";
 
 export function createApp() {
   const app = createSSRApp(App);
+  app.component('MessageBell', MessageBell);
   
   /**
    * 加密数据

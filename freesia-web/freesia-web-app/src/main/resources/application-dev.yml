@@ -112,6 +112,8 @@ freesia:
         - SYS_COLUMN_HEADER
         - SYS_COLUMN_DETAIL
         - SYS_COLUMN_MIDDLE
+        - CHAT_CONVERSATION
+        - CHAT_MESSAGE
 ---
 login.password:
   # 密码最大错误次数

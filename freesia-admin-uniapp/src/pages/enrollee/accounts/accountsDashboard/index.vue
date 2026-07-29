@@ -1,5 +1,6 @@
 <template>
   <view class="page-wrap">
+    <MessageBell />
     <!-- 租户选择器 -->
     <view class="tenant-bar">
       <view class="filter-item">

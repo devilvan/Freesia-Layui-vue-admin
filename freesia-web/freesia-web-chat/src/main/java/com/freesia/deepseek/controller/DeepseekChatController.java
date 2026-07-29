@@ -2,7 +2,6 @@ package com.freesia.deepseek.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.excel.EasyExcel;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.freesia.constant.Constants;
 import com.freesia.deepseek.dto.ChatConversationDto;
 import com.freesia.deepseek.dto.ChatMessageDto;
@@ -62,7 +61,6 @@ public class DeepseekChatController {
     private final ChatConversationRepository chatConversationRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final TransactionTemplate transactionTemplate;
-    private final ObjectMapper objectMapper;
 
     @SaIgnore
     @Operation(summary = "聊天流")
@@ -74,12 +72,20 @@ public class DeepseekChatController {
 
         if (command.getMessages() != null) {
             for (ChatRequestCommand.Message msg : command.getMessages()) {
-                if (msg.getRole() == null || msg.getContent() == null) continue;
+                if (msg.getRole() == null || msg.getContent() == null) {
+                    continue;
+                }
                 Constants.Role role = Constants.Role.getInstanceByCode(msg.getRole());
                 switch (role) {
-                    case SYSTEM: builder.addSystemMessage(msg.getContent()); break;
-                    case ASSISTANT: builder.addAssistantMessage(msg.getContent()); break;
-                    default: builder.addUserMessage(msg.getContent()); break;
+                    case SYSTEM:
+                        builder.addSystemMessage(msg.getContent());
+                        break;
+                    case ASSISTANT:
+                        builder.addAssistantMessage(msg.getContent());
+                        break;
+                    default:
+                        builder.addUserMessage(msg.getContent());
+                        break;
                 }
             }
         }
@@ -88,21 +94,20 @@ public class DeepseekChatController {
         Flux<ChatCompletionResponse> flux = deepSeekClient.chatFluxCompletion(builder.build());
 
         flux.subscribe(
-            r -> {
-                try {
-                    emitter.send(r);
-                } catch (IOException e) {
-                    emitter.completeWithError(e);
-                }
-            },
-            err -> emitter.completeWithError(err),
-            () -> emitter.complete()
+                r -> {
+                    try {
+                        emitter.send(r);
+                    } catch (IOException e) {
+                        emitter.completeWithError(e);
+                    }
+                },
+                emitter::completeWithError,
+                emitter::complete
         );
 
         return emitter;
     }
 
-    @SaIgnore
     @GetMapping("/conversations")
     @Operation(summary = "获取聊天会话列表")
     public RpFindConversationDto findConversations(@RequestParam(value = "chatMode", required = false) String chatMode) {
@@ -130,7 +135,6 @@ public class DeepseekChatController {
         return result;
     }
 
-    @SaIgnore
     @GetMapping("/{id}/history")
     @Operation(summary = "获取聊天记录历史")
     public RpFindHistoryDto findHistory(@PathVariable String id) {
@@ -159,7 +163,6 @@ public class DeepseekChatController {
         return result;
     }
 
-    @SaIgnore
     @PutMapping("/{id}/history")
     @Operation(summary = "保存聊天记录历史")
     public Map<String, Object> saveHistory(@PathVariable String id, @RequestBody RqSaveHistoryDto rqSaveHistoryDto) {
@@ -215,7 +218,6 @@ public class DeepseekChatController {
         return result;
     }
 
-    @SaIgnore
     @DeleteMapping("/{id}")
     @Operation(summary = "删除聊天会话")
     @Transactional(rollbackFor = Exception.class)
