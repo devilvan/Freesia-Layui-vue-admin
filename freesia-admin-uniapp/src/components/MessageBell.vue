@@ -3,7 +3,7 @@
   <Teleport to="body">
     <!-- 铃铛图标 - 固定在导航栏右上角，未登录时隐藏 -->
     <view class="message-bell" v-if="isLoggedIn" @click="openPopup">
-      <image class="bell-icon" :src="'/src/static/tabbar/notice.svg'" mode="aspectFit"/>
+      <image class="bell-icon" src="@/static/tabbar/notice.svg" mode="aspectFit"/>
       <view v-if="totalUnread > 0" class="unread-badge">{{ totalUnread > 99 ? '99+' : totalUnread }}</view>
     </view>
     <!-- 消息弹窗 -->
@@ -121,7 +121,7 @@
           </view>
         </scroll-view>
         <view class="detail-footer">
-          <button class="lay-btn lay-btn-sm lay-btn-primary" @click="detailVisible = false">关闭</button>
+          <button class="lay-btn lay-btn-sm" @click="detailVisible = false">关闭</button>
         </view>
       </view>
     </view>
@@ -277,7 +277,7 @@ onMounted(() => {
 .message-bell {
   position: fixed;
   top: calc(var(--status-bar-height, 0px) + 5px);
-  right: 100px;
+  right: 20px;
   width: 40px;
   height: 34px;
   display: flex;
@@ -326,8 +326,7 @@ onMounted(() => {
 /* 消息弹窗主体 */
 .message-popup {
   margin-top: calc(var(--status-bar-height, 0px) + 44px);
-  width: 92vw;
-  max-width: 700rpx;
+  width: 95vw;
   max-height: calc(100vh - var(--status-bar-height, 0px) - 88px);
   background: #fff;
   border-radius: 16rpx;
@@ -416,17 +415,21 @@ onMounted(() => {
 .popup-body {
   flex: 1;
   overflow-y: auto;
-  padding: 16rpx 24rpx;
+  padding: 8rpx 12rpx;
 }
 
 /* 消息卡片 */
 .msg-card {
+  width: 90%;
   background: #fff;
   padding: 20rpx 24rpx;
   margin-bottom: 12rpx;
   border-radius: 12rpx;
   border: 1px solid #f0f0f0;
   cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 
   &.unread {
     border-left: 4rpx solid var(--global-primary-color, #009688);
@@ -435,14 +438,21 @@ onMounted(() => {
 }
 
 .msg-title {
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 500;
   color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .msg-content {
-  font-size: 26rpx;
-  line-height: 1.5;
+  font-size: 24rpx;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 16rpx;
 }
 
 .dot-badge {
@@ -529,6 +539,7 @@ onMounted(() => {
 }
 
 .detail-meta {
+  max-width: 90%;
   display: flex;
   justify-content: space-between;
   margin-bottom: 30rpx;
@@ -537,6 +548,7 @@ onMounted(() => {
 }
 
 .detail-text {
+  max-width: 90%;
   font-size: 28rpx;
   line-height: 1.8;
   color: #333;

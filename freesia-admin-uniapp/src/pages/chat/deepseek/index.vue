@@ -41,7 +41,7 @@
         :scroll-with-animation="true"
       >
         <view v-if="messages.length === 0" class="chat-empty">
-          <image :src="'/src/assets/logo/deepseek.png'" style="width:160rpx;height:160rpx" mode="aspectFit"/>
+          <image src="@/assets/logo/deepseek.png" style="width:160rpx;height:160rpx" mode="aspectFit"/>
           <text class="chat-empty-title">DeepSeek AI</text>
           <text class="chat-empty-desc">基于 DeepSeek 大模型的智能对话助手</text>
 <!--          <view class="chat-suggestions">-->
@@ -411,7 +411,7 @@ async function saveHistory() {
 .chat-page {
   display: flex;
   flex-direction: column;
-  height: 88vh;
+  height: 86vh;
   overflow: hidden;
   background: #f0f2f5;
 }
@@ -618,7 +618,7 @@ async function saveHistory() {
 }
 
 .chat-msg-body {
-  max-width: 83%;
+  max-width: 88%;
   min-width: 0;
 }
 
