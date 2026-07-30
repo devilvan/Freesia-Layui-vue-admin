@@ -16,13 +16,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { FsesAiChat } from '@fses/ai-chat'
 import type { FsesAiChatTransport } from '@fses/ai-chat'
 import '@fses/ai-chat/dist/style.css'
 import '@opentiny/tiny-robot/dist/style.css'
 import { useUserStore } from '@/store/user'
 import { useAppStore } from '@/store/app'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/atom-one-dark.css'
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL as string
 const apiBaseUrl = `${baseUrl}/api`
@@ -53,6 +55,90 @@ const fileCache = ref<{ fileName: string; content: string } | null>(null)
 const onError = (err: Error) => {
   console.error('[DeepseekChat]', err)
 }
+
+// ---- 代码块增强：语言标签 + 复制按钮 ----
+let codeBlockObserver: MutationObserver | null = null
+
+function enhanceCodeBlocks(container: HTMLElement) {
+  // 暂停观察，避免 highlightElement 修改 DOM 时触发自身
+  codeBlockObserver?.disconnect()
+  const pres = container.querySelectorAll<HTMLElement>('pre:not([data-code-enhanced])')
+  pres.forEach(pre => {
+    const code = pre.querySelector('code')
+    // 提取语言
+    const langClass = code?.className?.match(/language-(\w+)/)
+    const lang = langClass ? langClass[1] : ''
+
+    // 语法高亮
+    if (code) {
+      try {
+        if (lang && hljs.getLanguage(lang)) {
+          code.className = `hljs language-${lang}`
+          hljs.highlightElement(code)
+        } else {
+          code.className = 'hljs'
+          hljs.highlightElement(code)
+        }
+      } catch {
+        // 高亮失败则保持原样
+      }
+    }
+
+    // 工具栏
+    const toolbar = document.createElement('div')
+    toolbar.className = 'code-block-toolbar'
+    if (lang) {
+      const langTag = document.createElement('span')
+      langTag.className = 'code-block-lang'
+      langTag.textContent = lang
+      toolbar.appendChild(langTag)
+    }
+    const copyBtn = document.createElement('button')
+    copyBtn.className = 'code-block-copy-btn'
+    copyBtn.textContent = '复制'
+    copyBtn.onclick = () => {
+      const text = code?.textContent || pre.textContent || ''
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = '已复制'
+        setTimeout(() => { copyBtn.textContent = '复制' }, 2000)
+      })
+    }
+    toolbar.appendChild(copyBtn)
+
+    pre.style.position = 'relative'
+    pre.insertBefore(toolbar, pre.firstChild)
+    // 标记已处理
+    pre.setAttribute('data-code-enhanced', '')
+  })
+  // 恢复观察
+  codeBlockObserver?.observe(container, { childList: true, subtree: true })
+}
+
+function setupCodeBlockObserver() {
+  const container = document.querySelector('.deepseek-chat-container')
+  if (!container) return
+  // 初始扫描
+  enhanceCodeBlocks(container)
+  // 监听新增内容
+  codeBlockObserver = new MutationObserver(() => {
+    enhanceCodeBlocks(container)
+  })
+  codeBlockObserver.observe(container, { childList: true, subtree: true })
+}
+
+function destroyCodeBlockObserver() {
+  codeBlockObserver?.disconnect()
+  codeBlockObserver = null
+}
+
+onMounted(() => {
+  nextTick(() => setupCodeBlockObserver())
+})
+
+onUnmounted(() => {
+  destroyCodeBlockObserver()
+})
+// ---- 代码块增强 END ----
 
 function isBinaryFile(fileName: string, mimeType: string): boolean {
   const lower = fileName.toLowerCase()
@@ -137,6 +223,12 @@ const transport: FsesAiChatTransport = async (ctx) => {
   const historyMessages: any[] = messages
     .filter((m) => m.role === 'user' || m.role === 'assistant')
     .map((m) => ({ role: m.role, content: m.content }))
+
+  // 系统指令：要求代码块使用标准 markdown 格式
+  historyMessages.unshift({
+    role: 'system',
+    content: '你是一个专业的编程助手。回答中涉及代码时，必须使用标准 markdown 代码块格式：\n\n```语言标识\n代码内容\n```\n\n例如 ```python、```javascript、```java、```sql、```bash 等。不要使用缩进方式表示代码，不要省略语言标识，不要将代码直接写在段落中。',
+  })
 
   // 如果有缓存的文件内容，作为 system 消息注入到 DeepSeek 请求中
   // 注意：不修改 ctx.messages，文件内容不会被保存到数据库
@@ -241,4 +333,90 @@ const transport: FsesAiChatTransport = async (ctx) => {
 .deepseek-chat-container .chat-workspace__prompt {
   display: none !important;
 }
+
+/* 代码块增强 */
+.deepseek-chat-container .code-block-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+
+.deepseek-chat-container .code-block-lang {
+  font-size: 12px;
+  color: #94a3b8;
+  font-family: monospace;
+  text-transform: lowercase;
+}
+
+.deepseek-chat-container .code-block-copy-btn {
+  padding: 2px 10px;
+  font-size: 12px;
+  color: #94a3b8;
+  background: transparent;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.deepseek-chat-container .code-block-copy-btn:hover {
+  color: #e2e8f0;
+  border-color: #64748b;
+  background: #334155;
+}
+
+/* 代码块整体统一深色主题 */
+.deepseek-chat-container pre {
+  padding-top: 0 !important;
+  margin: 12px 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  background: #1e293b !important;
+  border: 1px solid #334155;
+}
+
+.deepseek-chat-container pre code {
+  display: block;
+  padding: 12px 16px !important;
+  background: #1e293b !important;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+/* highlight.js 主题中的代码颜色优先级提升 */
+.deepseek-chat-container pre code .hljs-keyword,
+.deepseek-chat-container pre code .hljs-selector-tag,
+.deepseek-chat-container pre code .hljs-literal,
+.deepseek-chat-container pre code .hljs-section,
+.deepseek-chat-container pre code .hljs-link { color: #c678dd; }
+.deepseek-chat-container pre code .hljs-string,
+.deepseek-chat-container pre code .hljs-title,
+.deepseek-chat-container pre code .hljs-name,
+.deepseek-chat-container pre code .hljs-type,
+.deepseek-chat-container pre code .hljs-attr,
+.deepseek-chat-container pre code .hljs-symbol,
+.deepseek-chat-container pre code .hljs-bullet,
+.deepseek-chat-container pre code .hljs-addition,
+.deepseek-chat-container pre code .hljs-variable,
+.deepseek-chat-container pre code .hljs-template-tag,
+.deepseek-chat-container pre code .hljs-template-variable { color: #98c379; }
+.deepseek-chat-container pre code .hljs-comment,
+.deepseek-chat-container pre code .hljs-quote,
+.deepseek-chat-container pre code .hljs-deletion,
+.deepseek-chat-container pre code .hljs-meta { color: #5c6370; font-style: italic; }
+.deepseek-chat-container pre code .hljs-number,
+.deepseek-chat-container pre code .hljs-regexp,
+.deepseek-chat-container pre code .hljs-selector-id,
+.deepseek-chat-container pre code .hljs-selector-class { color: #d19a66; }
+.deepseek-chat-container pre code .hljs-attr,
+.deepseek-chat-container pre code .hljs-attribute,
+.deepseek-chat-container pre code .hljs-selector-attr,
+.deepseek-chat-container pre code .hljs-selector-pseudo { color: #e5c07b; }
+.deepseek-chat-container pre code .hljs-built_in,
+.deepseek-chat-container pre code .hljs-class .hljs-title { color: #e6c07b; }
 </style>

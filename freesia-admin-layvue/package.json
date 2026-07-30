@@ -19,6 +19,7 @@
     "echarts": "^5.4.1",
     "encryptlong": "^3.1.4",
     "event-source-polyfill": "^1.0.31",
+    "highlight.js": "^11.11.1",
     "js-base64": "^3.7.2",
     "jsencrypt": "^3.3.2",
     "md-editor-v3": "^6.4.0",
