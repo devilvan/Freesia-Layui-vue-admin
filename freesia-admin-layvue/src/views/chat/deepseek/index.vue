@@ -98,10 +98,31 @@ function enhanceCodeBlocks(container: HTMLElement) {
     copyBtn.textContent = '复制'
     copyBtn.onclick = () => {
       const text = code?.textContent || pre.textContent || ''
-      navigator.clipboard.writeText(text).then(() => {
-        copyBtn.textContent = '已复制'
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          copyBtn.textContent = '已复制'
+          setTimeout(() => { copyBtn.textContent = '复制' }, 2000)
+        }).catch(() => {
+          copyBtn.textContent = '失败'
+          setTimeout(() => { copyBtn.textContent = '复制' }, 1500)
+        })
+      } else {
+        // HTTP 环境降级：document.execCommand
+        const textarea = document.createElement('textarea')
+        textarea.value = text
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
+        try {
+          document.execCommand('copy')
+          copyBtn.textContent = '已复制'
+        } catch {
+          copyBtn.textContent = '失败'
+        }
+        document.body.removeChild(textarea)
         setTimeout(() => { copyBtn.textContent = '复制' }, 2000)
-      })
+      }
     }
     toolbar.appendChild(copyBtn)
 
