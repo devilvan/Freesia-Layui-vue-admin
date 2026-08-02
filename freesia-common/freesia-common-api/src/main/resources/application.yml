@@ -16,61 +16,93 @@ server:
 ---
 spring:
   datasource:
-    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-    url: jdbc:p6spy:mysql://localhost:3306/freesia?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&generateSimpleParameterMetadata=true&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
-    username: root
-    password: lklpos
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      # 初始连接数
-      initial-size: 5
-      # 最小连接池数量
-      min-idle: 5
-      # 最大连接池数量
-      max-active: 20
-      # 配置检测连接是否有效
-      validation-query: SELECT 1
-      test-while-idle: true
-      test-on-borrow: true
-      test-on-return: false
-      # 开启keepAlive，定期检测空闲连接，防止MySQL wait_timeout导致连接被关闭
-      keep-alive: true
-      # 空闲连接被驱逐前的最小空闲时间（毫秒），默认30分钟，这里设为5分钟
-      min-evictable-idle-time-millis: 300000
-      # 打开PSCache，并且指定每个连接上PSCache的大小
-      pool-prepared-statements: true
-      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
-      max-pool-prepared-statement-per-connection-size: 20
-      filter:
-        stat:
+    # ========== MySQL 数据源（主数据源，供 MyBatis-Plus 使用）==========
+    mysql:
+      # ⚠️ 注意：P6Spy 的配置方式需要调整为下面这种写法
+      driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+      # P6Spy 的 URL 格式：jdbc:p6spy:真实驱动://...
+      jdbc-url: jdbc:p6spy:mysql://localhost:3306/freesia?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&generateSimpleParameterMetadata=true&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
+      username: root
+      password: lklpos
+      type: com.alibaba.druid.pool.DruidDataSource
+      druid:
+        # 初始连接数
+        initial-size: 5
+        # 最小连接池数量
+        min-idle: 5
+        # 最大连接池数量
+        max-active: 20
+        # 配置检测连接是否有效
+        validation-query: SELECT 1
+        test-while-idle: true
+        test-on-borrow: true
+        test-on-return: false
+        # 开启keepAlive，定期检测空闲连接
+        keep-alive: true
+        # 空闲连接被驱逐前的最小空闲时间
+        min-evictable-idle-time-millis: 300000
+        # 打开PSCache
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+        # 连接池过滤器配置
+        filter:
+          stat:
+            enabled: true
+            log-slow-sql: true
+            slow-sql-millis: 2000
+            merge-sql: true
+          wall:
+            config:
+              multi-statement-allow: true
+        use-global-data-source-stat: true
+        connect-properties:
+          druid.stat.mergeSql: true
+          druid.stat.slowSqlMillis: 5000
+          useCursorFetch: true
+          defaultFetchSize: 1000
+        # Druid 监控页面（只有 MySQL 配置，因为通常只需一个监控入口）
+        stat-view-servlet:
           enabled: true
-          log-slow-sql: true
-          slow-sql-millis: 2000
-          merge-sql: true
-        wall:
-          config:
-            multi-statement-allow: true
-      use-global-data-source-stat: true
-      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-      connect-properties:
-        druid.stat.mergeSql: true
-        druid.stat.slowSqlMillis: 5000
-        useCursorFetch: true
-        defaultFetchSize: 1000
-      # 配置监控服务器
-      stat-view-servlet:
-        enabled: true
-        login-username: Devilvan
-        login-password: 741258963hjkl
-        reset-enable: false
-        url-pattern: /druid/*
-        # 设置白名单，不填则允许所有访问
-        allow: 127.0.0.1
-      web-stat-filter:
-        # 添加过滤规则
-        url-pattern: /*
-        # 忽略过滤格式
-        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+          login-username: Devilvan
+          login-password: 741258963hjkl
+          reset-enable: false
+          url-pattern: /druid/*
+          allow: 127.0.0.1
+        web-stat-filter:
+          url-pattern: /*
+          exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+
+    # ========== PostgreSQL 数据源（供 JPA 使用）==========
+    pgsql:
+      # ⚠️ 如果想对 PostgreSQL 也用 P6Spy，需要单独配置，但通常不推荐（日志量会翻倍）
+      # 方案A：不用 P6Spy，直接使用原生驱动
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://43.139.239.186:5432/freesia_dev?currentSchema=public
+      username: postgres
+      password: WjwXYjl0057Urlbound
+      type: com.alibaba.druid.pool.DruidDataSource
+      druid:
+        initial-size: 5
+        min-idle: 5
+        max-active: 20
+        validation-query: SELECT 1
+        test-while-idle: true
+        test-on-borrow: true
+        test-on-return: false
+        keep-alive: true
+        min-evictable-idle-time-millis: 300000
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+        filter:
+          stat:
+            enabled: true
+            log-slow-sql: true
+            slow-sql-millis: 2000
+            merge-sql: true
+        use-global-data-source-stat: true
+        connect-properties:
+          druid.stat.mergeSql: true
+          druid.stat.slowSqlMillis: 5000
 ---
 spring:
   data:

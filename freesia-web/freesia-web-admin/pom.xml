@@ -17,6 +17,11 @@
     </properties>
 
     <dependencies>
+        <!-- PostgreSQL 驱动 -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
         <!-- justAuth 第三方授权，在线文档：https://justauth.cn/-->
         <dependency>
             <groupId>me.zhyd.oauth</groupId>

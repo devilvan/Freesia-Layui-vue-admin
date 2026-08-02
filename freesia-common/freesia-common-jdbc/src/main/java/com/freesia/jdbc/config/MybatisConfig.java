@@ -5,8 +5,18 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
+import javax.sql.DataSource;
 
 /**
  * @author Evad.Wu
@@ -32,6 +42,45 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class MybatisConfig {
+    /**
+     * 创建 MySQL 数据源
+     */
+    @Primary
+    @Bean(name = "mysqlDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.mysql")
+    public DataSource mysqlDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    /**
+     * 创建 MyBatis-Plus 的 SqlSessionFactory
+     */
+    @Primary
+    @Bean(name = "mysqlSqlSessionFactory")
+    public SqlSessionFactory mysqlSqlSessionFactory(
+            @Qualifier("mysqlDataSource") DataSource dataSource) throws Exception {
+        MybatisSqlSessionFactoryBean sessionFactory = new MybatisSqlSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource);
+        sessionFactory.setTypeAliasesPackage("com.freesia.*.po");
+        // Mapper XML 文件位置（如果有）
+        sessionFactory.setMapperLocations(
+                new PathMatchingResourcePatternResolver()
+                        .getResources("classpath*:/mapper/*.xml")
+        );
+        // 添加 MyBatis-Plus 插件（如分页插件）
+        sessionFactory.setPlugins(mybatisPlusInterceptor());
+        return sessionFactory.getObject();
+    }
+
+    /**
+     * 创建 MyBatis 事务管理器（供 MyBatis-Plus 使用）
+     */
+    @Bean(name = "mybatisTransactionManager")
+    public DataSourceTransactionManager mybatisTransactionManager(
+            @Qualifier("mysqlDataSource") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
     /**
      * Mybatis-Plus拦截器
      */

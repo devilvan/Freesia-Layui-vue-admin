@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.freesia.icon.mapper",
         "com.freesia.worldclock.mapper",
         "com.freesia.deepseek.mapper",
-})
+}, sqlSessionFactoryRef = "mysqlSqlSessionFactory")
 @EnableJpaRepositories(basePackages = {
         "com.freesia.repository",
         "com.freesia.account.repository",

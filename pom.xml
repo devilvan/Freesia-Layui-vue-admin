@@ -53,6 +53,7 @@
         <lombok.version>1.18.24</lombok.version>
         <xxljob.version>2.3.1</xxljob.version>
         <justauth.version>1.16.7</justauth.version>
+        <postgresql.version>42.6.0</postgresql.version>
     </properties>
 
     <profiles>
@@ -314,6 +315,12 @@
                 <groupId>me.zhyd.oauth</groupId>
                 <artifactId>JustAuth</artifactId>
                 <version>${justauth.version}</version>
+            </dependency>
+            <!-- PostgreSQL 驱动 -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
             </dependency>
             <!-- 基础模块-->
             <dependency>
