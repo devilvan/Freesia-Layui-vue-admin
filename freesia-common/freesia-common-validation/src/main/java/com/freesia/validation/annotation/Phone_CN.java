@@ -2,8 +2,8 @@ package com.freesia.validation.annotation;
 
 import com.freesia.validation.handler.PhoneCnConstraintValidator;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 /**

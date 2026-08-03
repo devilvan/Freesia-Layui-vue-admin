@@ -17,10 +17,10 @@
     </properties>
 
     <dependencies>
-        <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
+        <!-- Sa-Token 权限认证 (Spring Boot 3 专用 starter), 在线文档：http://sa-token.dev33.cn/ -->
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-spring-boot-starter</artifactId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
         </dependency>
         <!-- Sa-Token 整合 jwt -->
         <dependency>

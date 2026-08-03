@@ -1,7 +1,7 @@
 package com.freesia.net.util;
 
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
 import com.freesia.constant.Constants;
@@ -16,8 +16,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +30,45 @@ import java.util.Set;
  * @date 2023-08-13
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UServlet extends ServletUtil {
+public class UServlet {
     /**
      * localhost IPv6
      */
     public static final String LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
     public static final String LOCALHOST = "127.0.0.1";
+    private static final String UNKNOWN = "unknown";
+    private static final String[] IP_HEADER_CANDIDATES = new String[]{
+            "X-Forwarded-For",
+            "X-Real-IP",
+            "Proxy-Client-IP",
+            "WL-Proxy-Client-IP",
+            "HTTP_CLIENT_IP",
+            "HTTP_X_FORWARDED_FOR"
+    };
+
+    /**
+     * 获取客户端IP地址, 模拟 hutool 5.8.x ServletUtil.getClientIP 行为, 但使用 jakarta.servlet
+     *
+     * @param request HttpServletRequest
+     * @return 客户端IP地址
+     */
+    public static String getClientIP(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        for (String header : IP_HEADER_CANDIDATES) {
+            String ip = request.getHeader(header);
+            if (StrUtil.isNotBlank(ip) && !UNKNOWN.equalsIgnoreCase(ip)) {
+                // X-Forwarded-For 可能包含多个IP, 第一个为客户端真实IP
+                int commaIndex = ip.indexOf(',');
+                if (commaIndex > 0) {
+                    ip = ip.substring(0, commaIndex);
+                }
+                return ip.trim();
+            }
+        }
+        return request.getRemoteAddr();
+    }
 
     /**
      * 获取当前请求的请求方式

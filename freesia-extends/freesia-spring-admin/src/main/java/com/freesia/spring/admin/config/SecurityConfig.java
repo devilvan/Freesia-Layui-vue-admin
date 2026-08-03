@@ -23,13 +23,13 @@ public class SecurityConfig {
         SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         successHandler.setTargetUrlParameter("redirectTo");
         successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
-        // 构建过滤链并返回
-        return http.authorizeRequests((authorizeRequests) -> {
-                            authorizeRequests
-                                    .antMatchers(this.adminServer.path("/applications")).authenticated()
-                                    .antMatchers(this.adminServer.path("/instances/**")).authenticated()
-                                    .antMatchers(this.adminServer.path("/instances/**")).authenticated()
-                                    .antMatchers(this.adminServer.path("/swagger-ui/**")).authenticated()
+        // 构建过滤链并返回 (Spring Security 6: authorizeRequests → authorizeHttpRequests, antMatchers → requestMatchers)
+        return http.authorizeHttpRequests((authorize) -> {
+                            authorize
+                                    .requestMatchers(this.adminServer.path("/applications")).authenticated()
+                                    .requestMatchers(this.adminServer.path("/instances/**")).authenticated()
+                                    .requestMatchers(this.adminServer.path("/instances/**")).authenticated()
+                                    .requestMatchers(this.adminServer.path("/swagger-ui/**")).authenticated()
                                     .anyRequest().permitAll();
                         }
                 )

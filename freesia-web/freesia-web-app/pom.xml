@@ -156,7 +156,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.7.0</version>
+                <version>${springboot.version}</version>
                 <configuration>
                     <!-- 如果没有该配置，devtools不会生效 -->
                     <fork>true</fork>

@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +57,7 @@ public class SysLoginController extends BaseController {
     @GetMapping("oauth/authorize/{provider}")
     public void oauthAuthorize(@PathVariable String provider,
                                @RequestParam(required = false) String redirectUrl,
-                               javax.servlet.http.HttpServletResponse response) {
+                               jakarta.servlet.http.HttpServletResponse response) {
         String authorizeUrl = oAuthLoginService.buildAuthorizeUrl(provider, redirectUrl);
         try {
             response.sendRedirect(authorizeUrl);
@@ -72,7 +72,7 @@ public class SysLoginController extends BaseController {
     public void oauthCallback(@PathVariable String provider,
                               @RequestParam String code,
                               @RequestParam(required = false) String state,
-                              javax.servlet.http.HttpServletResponse response) {
+                              jakarta.servlet.http.HttpServletResponse response) {
         Map<String, Object> result = oAuthLoginService.handleCallback(provider, code, state);
         String token = (String) result.get(Constants.TOKEN);
         String frontendRedirectUrl = (String) result.getOrDefault("redirectUrl", "/");

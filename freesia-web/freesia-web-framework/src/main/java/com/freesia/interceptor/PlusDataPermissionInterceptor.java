@@ -9,7 +9,6 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SelectBody;
 import net.sf.jsqlparser.statement.select.SetOperationList;
 import net.sf.jsqlparser.statement.update.Update;
 import org.apache.ibatis.executor.Executor;
@@ -63,12 +62,10 @@ public class PlusDataPermissionInterceptor extends JsqlParserSupport implements 
 
     @Override
     protected void processSelect(Select select, int index, String sql, Object obj) {
-        SelectBody selectBody = select.getSelectBody();
-        if (selectBody instanceof PlainSelect) {
-            this.setWhere((PlainSelect) selectBody, (String) obj);
-        } else if (selectBody instanceof SetOperationList setOperationList) {
-            List<SelectBody> selectBodyList = setOperationList.getSelects();
-            selectBodyList.forEach(s -> this.setWhere((PlainSelect) s, (String) obj));
+        if (select instanceof PlainSelect) {
+            this.setWhere((PlainSelect) select, (String) obj);
+        } else if (select instanceof SetOperationList setOperationList) {
+            setOperationList.getSelects().forEach(s -> this.setWhere((PlainSelect) s, (String) obj));
         }
     }
 

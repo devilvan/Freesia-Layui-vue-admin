@@ -5,7 +5,7 @@ import com.freesia.validation.strategy.ValidationStrategy;
 import com.freesia.validation.util.USpringValidation;
 import com.freesia.validation.pojo.MaxValidPojo;
 
-import javax.validation.constraints.Max;
+import jakarta.validation.constraints.Max;
 
 
 /**

@@ -14,11 +14,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;

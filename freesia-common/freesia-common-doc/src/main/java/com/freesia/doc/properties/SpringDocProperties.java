@@ -7,7 +7,7 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.tags.Tag;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.Constants;
+import org.springdoc.core.utils.Constants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;

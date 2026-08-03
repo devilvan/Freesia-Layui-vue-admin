@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.annotation.Resource;
-import javax.validation.Validator;
+import jakarta.annotation.Resource;
+import jakarta.validation.Validator;
 import java.util.Properties;
 
 /**

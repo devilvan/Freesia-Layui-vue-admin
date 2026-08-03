@@ -7,7 +7,7 @@ import com.freesia.dto.BaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 import java.util.Date;
 import java.math.BigDecimal;
 import java.util.List;

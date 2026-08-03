@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.0</version>
+        <version>3.5.0</version>
     </parent>
     <groupId>com.freesia</groupId>
     <artifactId>freesia</artifactId>
@@ -20,7 +20,7 @@
     <packaging>pom</packaging>
     <properties>
         <freesia.version>1.5.0</freesia.version>
-        <springboot.version>2.7.0</springboot.version>
+        <springboot.version>3.5.0</springboot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -30,30 +30,30 @@
 
         <log4j.version>1.2.17</log4j.version>
         <mysql.version>8.3.0</mysql.version>
-        <druid.version>1.2.16</druid.version>
-        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
-        <logback-core.version>1.2.3</logback-core.version>
+        <druid.version>1.2.23</druid.version>
+        <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <fastjson.version>2.0.50</fastjson.version>
-        <hutool.version>5.8.18</hutool.version>
+        <hutool.version>5.8.27</hutool.version>
         <jsoup.verison>1.11.3</jsoup.verison>
-        <redisson.version>3.17.3</redisson.version>
-        <easyexcel.version>3.2.1</easyexcel.version>
+        <redisson.version>3.36.0</redisson.version>
+        <easyexcel.version>4.0.3</easyexcel.version>
         <ip2region.version>2.7.0</ip2region.version>
-        <querydsl-jpa.version>5.0.0</querydsl-jpa.version>
-        <springdoc-openapi.version>1.8.0</springdoc-openapi.version>
+        <querydsl-jpa.version>5.1.0</querydsl-jpa.version>
+        <springdoc-openapi.version>2.6.0</springdoc-openapi.version>
         <knife.version>3.0.3</knife.version>
         <p6spy.version>3.9.1</p6spy.version>
-        <satoken.version>1.35.0.RC</satoken.version>
+        <satoken.version>1.40.0</satoken.version>
         <aws-java-sdk-s3.version>1.12.540</aws-java-sdk-s3.version>
         <bcprov-jdk15to18.version>1.78</bcprov-jdk15to18.version>
-        <spring-security-crypto.version>5.7.11</spring-security-crypto.version>
-        <lock4j-redisson.version>2.2.7</lock4j-redisson.version>
+        <lock4j-redisson.version>2.4.4</lock4j-redisson.version>
         <javax.mail.version>1.6.2</javax.mail.version>
-        <mapstruct.version>1.5.3.Final</mapstruct.version>
-        <lombok.version>1.18.24</lombok.version>
-        <xxljob.version>2.3.1</xxljob.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <lombok.version>1.18.34</lombok.version>
+        <xxljob.version>2.4.2</xxljob.version>
         <justauth.version>1.16.7</justauth.version>
-        <postgresql.version>42.6.0</postgresql.version>
+        <postgresql.version>42.7.3</postgresql.version>
+        <spring-boot-admin.version>3.5.0</spring-boot-admin.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
 
     <profiles>
@@ -98,7 +98,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>2021.0.3</version>
+                <version>${spring-cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -142,16 +142,16 @@
                 <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
-            <!-- Druid-->
+            <!-- Druid (Spring Boot 3 专用 starter) -->
             <dependency>
                 <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-starter</artifactId>
+                <artifactId>druid-spring-boot-3-starter</artifactId>
                 <version>${druid.version}</version>
             </dependency>
-            <!--Mybatis Plus-->
+            <!--Mybatis Plus (Spring Boot 3 专用 starter) -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
             <!--Log4j-->
@@ -160,11 +160,7 @@
                 <artifactId>log4j</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${logback-core.version}</version>
-            </dependency>
+            <!-- logback-classic + logback-core 由 Spring Boot 3.5 BOM 统一管理版本, 禁止单独声明以避免版本不匹配导致 NoSuchFieldError: configurationLock -->
             <!--FastJSON-->
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -194,20 +190,10 @@
                 <artifactId>spring-boot-starter-freemarker</artifactId>
                 <version>${springboot.version}</version>
             </dependency>
-            <!-- SpringDoc OpenApi-->
+            <!-- SpringDoc OpenApi (Spring Boot 3 使用 2.x starter) -->
             <dependency>
                 <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-webmvc-core</artifactId>
-                <version>${springdoc-openapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-ui</artifactId>
-                <version>${springdoc-openapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-javadoc</artifactId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc-openapi.version}</version>
             </dependency>
             <!-- querydsl -->
@@ -228,10 +214,10 @@
                 <artifactId>p6spy</artifactId>
                 <version>${p6spy.version}</version>
             </dependency>
-            <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
+            <!-- Sa-Token 权限认证 (Spring Boot 3 专用 starter), 在线文档：http://sa-token.dev33.cn/ -->
             <dependency>
                 <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-spring-boot-starter</artifactId>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
                 <version>${satoken.version}</version>
             </dependency>
             <!-- Sa-Token 整合 jwt -->
@@ -252,12 +238,7 @@
                 <artifactId>aws-java-sdk-s3</artifactId>
                 <version>${aws-java-sdk-s3.version}</version>
             </dependency>
-            <!-- 加密模块-->
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-crypto</artifactId>
-                <version>${spring-security-crypto.version}</version>
-            </dependency>
+            <!-- 加密模块 (spring-security-crypto 由 Spring Boot 3.5 统一管理版本)-->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15to18</artifactId>
@@ -269,17 +250,17 @@
                 <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
                 <version>${lock4j-redisson.version}</version>
             </dependency>
-            <!-- 邮件模块-->
+            <!-- Spring Boot Admin (3.x 适配 SpringBoot 3.x) -->
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-server</artifactId>
-                <version>${springboot.version}</version>
+                <version>${spring-boot-admin.version}</version>
             </dependency>
             <!-- Admin Client -->
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-client</artifactId>
-                <version>${springboot.version}</version>
+                <version>${spring-boot-admin.version}</version>
             </dependency>
             <!--  MapStruct-->
             <dependency>

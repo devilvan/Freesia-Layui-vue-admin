@@ -5,7 +5,7 @@ import com.freesia.validation.strategy.ValidationStrategy;
 import com.freesia.validation.util.USpringValidation;
 import com.freesia.validation.pojo.MinValidPojo;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 
 /**
