@@ -258,8 +258,13 @@ springdoc:
       paths-to-match: /api/sysNoticeController/**
     - group: 14. 系统授权模块
       paths-to-match:
-        -  api/sysClientController/**
-        -  api/sysThirdpartyAuthController/**
+        - /api/sysClientController/**
+        - /api/sysThirdpartyAuthController/**
+    - group: 15. AI聊天模块
+      paths-to-match:
+        - /api/chatConversationController/**
+        - /api/chatMessageController/**
+        - /api/chat/**
 # knife4j的增强配置，不需要增强可以不配
 #knife4j:
 #  enable: true
@@ -304,8 +309,8 @@ xxl:
 oauth:
   providers:
     gitee:
-      client-id: ${GITEE_CLIENT_ID:2968807b6c7d6403f62e59b4972e3ac15166fa2c1828c27ed4ca40c2fb79332d}
-      client-secret: ${GITEE_CLIENT_SECRET:eebc1bb2caf6cd34ae3f93c6ed1d098b16ce323b48129816240d9008f8389b8c}
+      client-id: ${GITEE_CLIENT_ID:}
+      client-secret: ${GITEE_CLIENT_SECRET:}
       redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/gitee
       scopes:
         - user_info
@@ -321,3 +326,5 @@ oauth:
       redirect-uri: http://localhost:8570/api/sysLoginController/oauth/callback/wechat_open
       scopes:
         - snsapi_login
+deepseek:
+  api-key: ${DEEPSEEK_API_KEY:}

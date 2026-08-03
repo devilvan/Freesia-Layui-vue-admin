@@ -523,7 +523,7 @@ async function saveHistory() {
 }
 .chat-history-item-title {
   flex: 1;
-  font-size: 22rpx;
+  font-size: 26rpx;
   color: #333;
   overflow: hidden;
   text-overflow: ellipsis;
