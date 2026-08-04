@@ -49,8 +49,8 @@ public class PgSqlConfig {
         Map<String, Object> properties = new HashMap<>(16);
         // Hibernate 方言（PostgreSQL）
         properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        // 生产环境请谨慎使用
-        properties.put("hibernate.hbm2ddl.auto", "update");
+        // 禁止 Hibernate 启动时自动执行 DDL（如 alter table），避免擅自修改表结构
+        properties.put("hibernate.hbm2ddl.auto", "none");
         properties.put("hibernate.show_sql", "true");
         properties.put("hibernate.format_sql", "true");
         // 物理命名策略（可选项，将驼峰转为下划线）

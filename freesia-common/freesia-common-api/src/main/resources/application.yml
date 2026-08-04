@@ -77,9 +77,9 @@ spring:
       # ⚠️ 如果想对 PostgreSQL 也用 P6Spy，需要单独配置，但通常不推荐（日志量会翻倍）
       # 方案A：不用 P6Spy，直接使用原生驱动
       driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://43.139.239.186:5432/freesia_dev?currentSchema=public
+      jdbc-url: jdbc:postgresql://localhost:5432/postgres?currentSchema=public
       username: postgres
-      password: WjwXYjl0057Urlbound
+      password: lklpos
       type: com.alibaba.druid.pool.DruidDataSource
       druid:
         initial-size: 5
@@ -135,19 +135,20 @@ spring:
       max-request-size: 100MB
 ---
 spring:
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    lettuce:
-      pool:
-        # 最大活动数量
-        max-active: 8
-        # 当池耗尽时，在引发异常之前，连接分配应该阻塞的最长时间。使用负值可以无限期阻止。
-        max-wait: -1
-        # 最大闲置时间，单位：s
-        max-idle: 500
-        # 超时关闭时间
-      shutdown-timeout: 0
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      lettuce:
+        pool:
+          # 最大活动数量
+          max-active: 8
+          # 当池耗尽时，在引发异常之前，连接分配应该阻塞的最长时间。使用负值可以无限期阻止。
+          max-wait: -1
+          # 最大闲置时间，单位：s
+          max-idle: 500
+          # 超时关闭时间
+        shutdown-timeout: 0
 ---
 spring:
   jpa:
@@ -157,7 +158,9 @@ spring:
     show-sql: false
     open-in-view: true
     hibernate:
-      ddl-auto: update
+      # 禁止 Hibernate 启动时自动执行 DDL（如 alter table），避免擅自修改表结构
+      # JPA 查询/关系映射功能不受影响；表结构变更应通过 flyway/liquibase 或手工 SQL 管理
+      ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:

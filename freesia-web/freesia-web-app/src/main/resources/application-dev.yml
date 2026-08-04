@@ -248,10 +248,6 @@ springdoc:
     - group: 11. 记账模块
       paths-to-match:
         - /api/account*/**
-        - /api/account*/**
-        - /api/account*/**
-        - /api/account*/**
-        - /api/account*/**
     - group: 12. 通用图标模块
       paths-to-match: /common/commonIcon*/**
     - group: 13. 通知公告模块

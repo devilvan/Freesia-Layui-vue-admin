@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FreesiaAdminApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.freesia.FreesiaAdminApplication" />
+    <module name="freesia-web-app" />
+    <option name="VM_PARAMETERS" value="-Dfile.encoding=UTF-8" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,106 @@
+[31m2026-08-05 04:11:11[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.freesia.FreesiaAdminApplication[0;39m [33m[StartupInfoLogger.java : 53]
+[0;39m * Starting FreesiaAdminApplication using Java 17.0.9 with PID 18448 (C:\Project\Freesia\freesia-web\freesia-web-app\target\classes started by Bliss in C:\Project\Freesia\freesia-web\freesia-web-app)
+[31m2026-08-05 04:11:11[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.freesia.FreesiaAdminApplication[0;39m [33m[SpringApplication.java : 658]
+[0;39m * The following 1 profile is active: "dev"
+[31m2026-08-05 04:11:12[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m [33m[RepositoryConfigurationDelegate.java : 294]
+[0;39m * Multiple Spring Data modules found, entering strict repository configuration mode
+[31m2026-08-05 04:11:12[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m [33m[RepositoryConfigurationDelegate.java : 145]
+[0;39m * Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[31m2026-08-05 04:11:12[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m [33m[RepositoryConfigurationDelegate.java : 213]
+[0;39m * Finished Spring Data repository scanning in 4 ms. Found 0 JPA repository interfaces.
+[31m2026-08-05 04:11:12[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m [33m[RepositoryConfigurationDelegate.java : 294]
+[0;39m * Multiple Spring Data modules found, entering strict repository configuration mode
+[31m2026-08-05 04:11:12[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m [33m[RepositoryConfigurationDelegate.java : 145]
+[0;39m * Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[31m2026-08-05 04:11:12[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m [33m[RepositoryConfigurationDelegate.java : 213]
+[0;39m * Finished Spring Data repository scanning in 140 ms. Found 34 JPA repository interfaces.
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.b.w.e.tomcat.TomcatWebServer[0;39m [33m[TomcatWebServer.java : 111]
+[0;39m * Tomcat initialized with port 8089 (http)
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.a.catalina.core.StandardService[0;39m [33m[DirectJDKLog.java : 168]
+[0;39m * Starting service [Tomcat]
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.a.catalina.core.StandardEngine[0;39m [33m[DirectJDKLog.java : 168]
+[0;39m * Starting Servlet engine: [Apache Tomcat/10.1.41]
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.a.c.c.C.[Tomcat].[localhost].[/][0;39m [33m[DirectJDKLog.java : 168]
+[0;39m * Initializing Spring embedded WebApplicationContext
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.b.w.s.c.ServletWebServerApplicationContext[0;39m [33m[ServletWebServerApplicationContext.java : 301]
+[0;39m * Root WebApplicationContext: initialization completed in 1478 ms
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.h.jpa.internal.util.LogHelper[0;39m [33m[LogHelper.java : 31]
+[0;39m * HHH000204: Processing PersistenceUnitInfo [name: mysql]
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35morg.hibernate.Version[0;39m [33m[Version.java : 44]
+[0;39m * HHH000412: Hibernate ORM core version 6.6.15.Final
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.h.c.i.RegionFactoryInitiator[0;39m [33m[RegionFactoryInitiator.java : 50]
+[0;39m * HHH000026: Second-level cache disabled
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.o.j.p.SpringPersistenceUnitInfo[0;39m [33m[SpringPersistenceUnitInfo.java : 87]
+[0;39m * No LoadTimeWeaver setup: ignoring JPA class transformer
+[31m2026-08-05 04:11:13[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.HikariDataSource[0;39m [33m[HikariDataSource.java : 109]
+[0;39m * HikariPool-1 - Starting...
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.pool.HikariPool[0;39m [33m[HikariPool.java : 575]
+[0;39m * HikariPool-1 - Added connection com.p6spy.engine.wrapper.ConnectionWrapper@251d64d6
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.HikariDataSource[0;39m [33m[HikariDataSource.java : 122]
+[0;39m * HikariPool-1 - Start completed.
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.hibernate.orm.connections.pooling[0;39m [33m[JdbcEnvironmentInitiator.java : 163]
+[0;39m * HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.h.e.t.j.p.i.JtaPlatformInitiator[0;39m [33m[JtaPlatformInitiator.java : 59]
+[0;39m * HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.o.j.LocalContainerEntityManagerFactoryBean[0;39m [33m[AbstractEntityManagerFactoryBean.java : 447]
+[0;39m * Initialized JPA EntityManagerFactory for persistence unit 'mysql'
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.h.jpa.internal.util.LogHelper[0;39m [33m[LogHelper.java : 31]
+[0;39m * HHH000204: Processing PersistenceUnitInfo [name: pgsql]
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.h.c.i.RegionFactoryInitiator[0;39m [33m[RegionFactoryInitiator.java : 50]
+[0;39m * HHH000026: Second-level cache disabled
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.o.j.p.SpringPersistenceUnitInfo[0;39m [33m[SpringPersistenceUnitInfo.java : 87]
+[0;39m * No LoadTimeWeaver setup: ignoring JPA class transformer
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.HikariDataSource[0;39m [33m[HikariDataSource.java : 109]
+[0;39m * HikariPool-2 - Starting...
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.pool.HikariPool[0;39m [33m[HikariPool.java : 575]
+[0;39m * HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@3519f35
+[31m2026-08-05 04:11:14[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.HikariDataSource[0;39m [33m[HikariDataSource.java : 122]
+[0;39m * HikariPool-2 - Start completed.
+[31m2026-08-05 04:11:15[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.hibernate.orm.connections.pooling[0;39m [33m[JdbcEnvironmentInitiator.java : 163]
+[0;39m * HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
+	Database driver: undefined/unknown
+	Database version: 16.14
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+[31m2026-08-05 04:11:15[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.h.e.t.j.p.i.JtaPlatformInitiator[0;39m [33m[JtaPlatformInitiator.java : 59]
+[0;39m * HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[31m2026-08-05 04:11:15[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.o.j.LocalContainerEntityManagerFactoryBean[0;39m [33m[AbstractEntityManagerFactoryBean.java : 447]
+[0;39m * Initialized JPA EntityManagerFactory for persistence unit 'pgsql'
+[31m2026-08-05 04:11:15[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.d.j.r.query.QueryEnhancerFactory[0;39m [33m[QueryEnhancerFactory.java : 126]
+[0;39m * JSqlParser is in classpath; If applicable, JSqlParser will be used.
+[31m2026-08-05 04:11:15[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.d.j.r.query.QueryEnhancerFactory[0;39m [33m[QueryEnhancerFactory.java : 49]
+[0;39m * Hibernate is in classpath; If applicable, HQL parser will be used.
+[31m2026-08-05 04:11:16[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35morg.redisson.Version[0;39m [33m[Version.java : 43]
+[0;39m * Redisson 3.36.0
+[31m2026-08-05 04:11:16[0;39m [32m[redisson-netty-1-4][0;39m [34mINFO [0;39m [1;35mo.r.connection.ConnectionsHolder[0;39m [33m[ConnectionsHolder.java : 130]
+[0;39m * 1 connections initialized for 127.0.0.1/127.0.0.1:6379
+[31m2026-08-05 04:11:16[0;39m [32m[redisson-netty-1-19][0;39m [34mINFO [0;39m [1;35mo.r.connection.ConnectionsHolder[0;39m [33m[ConnectionsHolder.java : 130]
+[0;39m * 24 connections initialized for 127.0.0.1/127.0.0.1:6379
+[31m2026-08-05 04:11:17[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.o.j.LocalContainerEntityManagerFactoryBean[0;39m [33m[AbstractEntityManagerFactoryBean.java : 660]
+[0;39m * Closing JPA EntityManagerFactory for persistence unit 'pgsql'
+[31m2026-08-05 04:11:17[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.HikariDataSource[0;39m [33m[HikariDataSource.java : 349]
+[0;39m * HikariPool-2 - Shutdown initiated...
+[31m2026-08-05 04:11:17[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.HikariDataSource[0;39m [33m[HikariDataSource.java : 351]
+[0;39m * HikariPool-2 - Shutdown completed.
+[31m2026-08-05 04:11:17[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.o.j.LocalContainerEntityManagerFactoryBean[0;39m [33m[AbstractEntityManagerFactoryBean.java : 660]
+[0;39m * Closing JPA EntityManagerFactory for persistence unit 'mysql'
+[31m2026-08-05 04:11:17[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.HikariDataSource[0;39m [33m[HikariDataSource.java : 349]
+[0;39m * HikariPool-1 - Shutdown initiated...
+[31m2026-08-05 04:11:17[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mcom.zaxxer.hikari.HikariDataSource[0;39m [33m[HikariDataSource.java : 351]
+[0;39m * HikariPool-1 - Shutdown completed.
+[31m2026-08-05 04:11:17[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.a.catalina.core.StandardService[0;39m [33m[DirectJDKLog.java : 168]
+[0;39m * Stopping service [Tomcat]
+[31m2026-08-05 04:11:17[0;39m [32m[main][0;39m [34mINFO [0;39m [1;35mo.s.b.a.l.ConditionEvaluationReportLogger[0;39m [33m[ConditionEvaluationReportLogger.java : 82]
+[0;39m * 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.

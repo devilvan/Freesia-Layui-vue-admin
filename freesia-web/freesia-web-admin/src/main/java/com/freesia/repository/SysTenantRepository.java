@@ -42,7 +42,7 @@ public interface SysTenantRepository extends JpaRepository<SysTenantPo, Long> {
     @Modifying
     @Query(value = """
             UPDATE SysTenantPo
-                SET logicDel = 1
+                SET logicDel = false
             WHERE 1=1
                 AND id IN (:idList)
             """)

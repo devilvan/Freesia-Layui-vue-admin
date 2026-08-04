@@ -22,13 +22,17 @@ public interface SysNoticeRepository extends JpaRepository<SysNoticePo, Long> {
      * 标记已读
      *
      * @param markReadDto 更新条件
+     *
+     * Hibernate 6 / Spring Boot 3 说明:
+     *   严格模式下 JPQL 解析器不识别 Spring SpEL 参数语法 :#{...} 。
+     *   本方法是简单批量 UPDATE, 改用 native SQL 绕过 JPQL 验证, 方法签名/调用点均保持不变。
      */
     @Modifying
     @Query(value = """
-            UPDATE SysNoticePo
-                SET readFlag = 1
-            WHERE id IN (:#{#markReadDto.idList})
-            """)
+            UPDATE SYS_NOTICE
+               SET READ_FLAG = 1
+             WHERE ID IN (:#{#markReadDto.idList})
+            """, nativeQuery = true)
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     void markRead(@Param("markReadDto") MarkReadDto markReadDto);
 }

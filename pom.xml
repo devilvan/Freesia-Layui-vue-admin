@@ -262,7 +262,7 @@
                 <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>${spring-boot-admin.version}</version>
             </dependency>
-            <!--  MapStruct-->
+            <!--  MapStruct -->
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
@@ -322,44 +322,81 @@
         </dependencies>
     </dependencyManagement>
 
+    <!--
+      全局 dependencies (所有子模块通过继承获得):
+      注解处理器 JAR 声明为 provided scope — 编译时可见 (IDEA useClasspath=true 需要从 classpath 发现处理器),
+      但不打包到最终 JAR。
+      Maven 编译时 maven-compiler-plugin 的 annotationProcessorPaths 优先, 不会从此处重复发现处理器。
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok-mapstruct-binding</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <fork>true</fork>
-                    <meminitial>512m</meminitial>
-                    <maxmem>1024m</maxmem>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>0.2.0</version>
-                        </path>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${mapstruct.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <!-- MapStruct不能添加这句，否则在target中会出现两个一样的converter bean，导致启动报错-->
-                    <!--<generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>-->
-                    <compilerArgs>
-                        <compilerArg>-Amapstruct.defaultComponentModel=spring</compilerArg>
-                        <compilerArg>-Amapstruct.unmappedTargetPolicy=IGNORE</compilerArg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <!--
+                  放在 pluginManagement 中, 与 Spring Boot-dependencies BOM 中的 maven-compiler-plugin 配置正确合并
+                  (version 与 Spring Boot 3.5 BOM 保持一致: 3.14.0; 避免两个插件实例导致的双重处理器执行)
+                -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.14.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <release>${java.version}</release>
+                        <parameters>true</parameters>
+                        <!--
+                          显式列出处理器类名, 禁止 javac 从 classpath 扫描 META-INF/services 自动发现。
+                          这是本项目避免双重处理器执行的关键:
+                            - freesia-common-api 中 lombok 为 compile scope (下游源码 import lombok 注解所需),
+                              因此其 META-INF/services/javax.annotation.processing.Processor 始终在 classpath 上;
+                            - 若同时开启 annotationProcessorPaths, 就会出现 processorpath + classpath
+                              双重发现 → 处理器运行两次 → 生成两份 *ConverterImpl.java → Spring 启动冲突。
+                          通过显式 <processors> 阻断自动发现, 只运行以下三个处理器:
+                            (顺序必须是: lombok 处理器 → lombok-mapstruct-binding → mapstruct-processor)
+                        -->
+                        <processors>
+                            <processor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</processor>
+                            <processor>lombok.launch.AnnotationProcessorHider$ClaimingProcessor</processor>
+                            <processor>org.mapstruct.ap.MappingProcessor</processor>
+                        </processors>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>0.2.0</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                        <compilerArgs>
+                            <compilerArg>-Amapstruct.defaultComponentModel=spring</compilerArg>
+                            <compilerArg>-Amapstruct.unmappedTargetPolicy=IGNORE</compilerArg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <repositories>

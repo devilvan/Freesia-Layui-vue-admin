@@ -38,11 +38,16 @@ public abstract class BasePo implements Serializable {
     /**
      * 巨坑，mybatis-plus的保存API出现问题，原因就是主键必须叫做'ID'，不能叫别的
      * 当字段被 {@link TableId} 修饰时，不需要再添加 {@link TableField}，否则启动会出现很多提示
+     *
+     * Hibernate 6 注意:
+     *   旧版 strategy="FullyQualifiedClassName" (字符串形式) 在 Spring Boot 3.x 的 Hibernate 6 中
+     *   类加载器在多模块下不稳定, 常静默失败导致 EntityBinder 跳过该 @Id 字段 → 报错 "Entity has no identifier"。
+     *   必须改用 Hibernate 6 推荐的 type=Class<IdentifierGenerator> (类引用形式) 直接加载, 无反射字符串解析问题。
      */
     @Id
     @Column(name = "ID", columnDefinition = "BIGINT(20) COMMENT '主键'")
     @TableId(type = IdType.ASSIGN_ID)
-    @GenericGenerator(name = "snowFlakeIdGenerator", strategy = "com.freesia.component.SnowFlakeIdGenerator")
+    @GenericGenerator(name = "snowFlakeIdGenerator", type = com.freesia.component.SnowFlakeIdGenerator.class)
     @GeneratedValue(generator = "snowFlakeIdGenerator")
     @Schema(description = "主键ID")
     private Long id;

@@ -95,10 +95,18 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
-        <!-- Lombok-->
+        <!--
+          lombok / mapstruct API: 保持 compile scope (下游源码会直接 import 它们的注解/API 类)。
+          处理器 JAR (mapstruct-processor / lombok-mapstruct-binding) 由根 pom <dependencies> 统一声明
+          (provided scope), 所有子模块通过继承获得, IDEA useClasspath=true 可发现, Maven annotationProcessorPaths 优先不冲突。
+        -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
@@ -107,10 +115,6 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-extra</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
         </dependency>
     </dependencies>
 </project>

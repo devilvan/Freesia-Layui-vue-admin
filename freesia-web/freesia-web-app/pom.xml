@@ -158,8 +158,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${springboot.version}</version>
                 <configuration>
-                    <!-- 如果没有该配置，devtools不会生效 -->
-                    <fork>true</fork>
+                    <!-- Windows 下 JDK17 默认 file.encoding=GBK, 导致 logback 以 UTF-8 输出到 GBK 控制台时中文乱码 -->
+                    <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
