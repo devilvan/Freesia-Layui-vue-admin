@@ -324,13 +324,21 @@ oauth:
         - snsapi_login
 deepseek:
   api-key: ${DEEPSEEK_API_KEY:}
+  model: deepseek-v4-flash
 ---
 spring:
   ai:
+    openai:
+      api-key: ${DEEPSEEK_API_KEY:}
+      # 指向 DeepSeek 的官方 API 地址
+      base-url: https://api.deepseek.com
+      model: deepseek-v4-flash
+      temperature: 0.7
     vectorstore:
       pgvector:
-        # 指向 PostgreSQL 数据源
-        data-source-name: pgsqlDataSource
+        # 注意：Spring AI 1.1.x 的 PgVectorStoreProperties 没有 data-source 属性，
+        # 无法通过配置指定数据源，自动配置只会用主数据源(MySQL)。
+        # 这里的数据源绑定由 com.freesia.deepseek.config.PgVectorStoreConfig 完成。
         # 索引类型，HNSW性能较好
         index-type: HNSW
         # 距离算法，用余弦相似度

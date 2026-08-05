@@ -24,14 +24,10 @@
 
     <appender name="info_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logRecord.path}/info.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 每天一归档 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${logRecord.path}/zip/info.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>${maxFileSize}</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxFileSize>${maxFileSize}</maxFileSize>
         </rollingPolicy>
         <encoder>
             <pattern>${logPattern}</pattern>
@@ -45,14 +41,10 @@
 
     <appender name="warn_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logRecord.path}/warn.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 每天一归档 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${logRecord.path}/zip/warn.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>${maxFileSize}</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxFileSize>${maxFileSize}</maxFileSize>
         </rollingPolicy>
         <encoder>
             <pattern>${logPattern}</pattern>
@@ -64,17 +56,12 @@
         </filter>
     </appender>
 
-
     <appender name="error_file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logRecord.path}/error.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 每天一归档 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${logRecord.path}/zip/error.%d{yyyy-MM-dd}-%i.zip</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>${maxFileSize}</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxFileSize>${maxFileSize}</maxFileSize>
         </rollingPolicy>
         <encoder>
             <pattern>${logPattern}</pattern>
@@ -86,8 +73,7 @@
         </filter>
     </appender>
 
-    <root>
-        <level value="info"/>
+    <root level="info">
         <appender-ref ref="console"/>
         <appender-ref ref="info_file"/>
         <appender-ref ref="warn_file"/>

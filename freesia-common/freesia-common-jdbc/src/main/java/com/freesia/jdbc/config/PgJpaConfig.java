@@ -23,11 +23,6 @@ import java.util.Objects;
  */
 @Configuration
 @EnableJpaRepositories(basePackages = {
-        "com.freesia.repository.pgsql",
-        "com.freesia.account.repository.pgsql",
-        "com.freesia.icon.repository.pgsql",
-        "com.freesia.worldclock.repository.pgsql",
-        "com.freesia.deepseek.repository.pgsql",
 }, entityManagerFactoryRef = "pgsqlEntityManagerFactory", transactionManagerRef = "pgsqlTransactionManager")
 public class PgJpaConfig {
     /**
