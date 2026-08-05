@@ -56,7 +56,7 @@ public class MysqlJpaConfig {
      * 创建 MySQL JPA 事务管理器（默认）
      */
     @Primary
-    @Bean(name = "mysqlTransactionManager")
+    @Bean(name = "transactionManager")
     public PlatformTransactionManager mysqlTransactionManager(
             @Qualifier("entityManagerFactory") LocalContainerEntityManagerFactoryBean entityManagerFactory) {
         return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory.getObject()));
@@ -68,7 +68,7 @@ public class MysqlJpaConfig {
     @Primary
     @Bean(name = "transactionTemplate")
     public TransactionTemplate transactionTemplate(
-            @Qualifier("mysqlTransactionManager") PlatformTransactionManager transactionManager) {
+            @Qualifier("transactionManager") PlatformTransactionManager transactionManager) {
         return new TransactionTemplate(transactionManager);
     }
 }
