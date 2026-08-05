@@ -29,7 +29,7 @@ import java.util.Objects;
         "com.freesia.worldclock.repository.pgsql",
         "com.freesia.deepseek.repository.pgsql",
 }, entityManagerFactoryRef = "pgsqlEntityManagerFactory", transactionManagerRef = "pgsqlTransactionManager")
-public class PgSqlConfig {
+public class PgJpaConfig {
     /**
      * 创建 PostgreSQL 数据源
      */

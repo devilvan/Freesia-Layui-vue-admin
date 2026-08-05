@@ -45,7 +45,7 @@
         <satoken.version>1.40.0</satoken.version>
         <aws-java-sdk-s3.version>1.12.540</aws-java-sdk-s3.version>
         <bcprov-jdk15to18.version>1.78</bcprov-jdk15to18.version>
-        <lock4j-redisson.version>2.4.4</lock4j-redisson.version>
+        <lock4j-redisson.version>2.2.7</lock4j-redisson.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok.version>1.18.34</lombok.version>
@@ -54,6 +54,7 @@
         <postgresql.version>42.7.3</postgresql.version>
         <spring-boot-admin.version>3.5.0</spring-boot-admin.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
+        <spring.ai.verison>1.1.8</spring.ai.verison>
     </properties>
 
     <profiles>
@@ -303,6 +304,14 @@
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
             </dependency>
+            <!-- SpringAI-->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring.ai.verison}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- 基础模块-->
             <dependency>
                 <groupId>com.freesia</groupId>
@@ -357,21 +366,21 @@
                         <target>${java.version}</target>
                         <release>${java.version}</release>
                         <parameters>true</parameters>
-                        <!--
-                          显式列出处理器类名, 禁止 javac 从 classpath 扫描 META-INF/services 自动发现。
-                          这是本项目避免双重处理器执行的关键:
-                            - freesia-common-api 中 lombok 为 compile scope (下游源码 import lombok 注解所需),
-                              因此其 META-INF/services/javax.annotation.processing.Processor 始终在 classpath 上;
-                            - 若同时开启 annotationProcessorPaths, 就会出现 processorpath + classpath
-                              双重发现 → 处理器运行两次 → 生成两份 *ConverterImpl.java → Spring 启动冲突。
-                          通过显式 <processors> 阻断自动发现, 只运行以下三个处理器:
-                            (顺序必须是: lombok 处理器 → lombok-mapstruct-binding → mapstruct-processor)
-                        -->
-                        <processors>
-                            <processor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</processor>
-                            <processor>lombok.launch.AnnotationProcessorHider$ClaimingProcessor</processor>
-                            <processor>org.mapstruct.ap.MappingProcessor</processor>
-                        </processors>
+<!--                        &lt;!&ndash;-->
+<!--                          显式列出处理器类名, 禁止 javac 从 classpath 扫描 META-INF/services 自动发现。-->
+<!--                          这是本项目避免双重处理器执行的关键:-->
+<!--                            - freesia-common-api 中 lombok 为 compile scope (下游源码 import lombok 注解所需),-->
+<!--                              因此其 META-INF/services/javax.annotation.processing.Processor 始终在 classpath 上;-->
+<!--                            - 若同时开启 annotationProcessorPaths, 就会出现 processorpath + classpath-->
+<!--                              双重发现 → 处理器运行两次 → 生成两份 *ConverterImpl.java → Spring 启动冲突。-->
+<!--                          通过显式 <processors> 阻断自动发现, 只运行以下三个处理器:-->
+<!--                            (顺序必须是: lombok 处理器 → lombok-mapstruct-binding → mapstruct-processor)-->
+<!--                        &ndash;&gt;-->
+<!--                        <processors>-->
+<!--                            <processor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</processor>-->
+<!--                            <processor>lombok.launch.AnnotationProcessorHider$ClaimingProcessor</processor>-->
+<!--                            <processor>org.mapstruct.ap.MappingProcessor</processor>-->
+<!--                        </processors>-->
                         <annotationProcessorPaths>
                             <path>
                                 <groupId>org.projectlombok</groupId>

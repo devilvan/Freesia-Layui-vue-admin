@@ -324,3 +324,18 @@ oauth:
         - snsapi_login
 deepseek:
   api-key: ${DEEPSEEK_API_KEY:}
+---
+spring:
+  ai:
+    vectorstore:
+      pgvector:
+        # 指向 PostgreSQL 数据源
+        data-source-name: pgsqlDataSource
+        # 索引类型，HNSW性能较好
+        index-type: HNSW
+        # 距离算法，用余弦相似度
+        distance-type: COSINE_DISTANCE
+        # 向量维度，与你建表时保持一致
+        dimensions: 1536
+        # 关键配置！让Spring AI自动帮你创建表
+        initialize-schema: true
