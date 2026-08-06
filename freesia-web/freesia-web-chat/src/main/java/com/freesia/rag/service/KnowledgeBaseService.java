@@ -5,6 +5,7 @@ import com.freesia.json.util.UJSON;
 import com.freesia.net.builder.HttpBuilder;
 import com.freesia.net.component.HttpClientComponent;
 import com.freesia.net.dto.HttpClientDto;
+import com.freesia.redis.util.URedis;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +18,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -31,21 +35,29 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class KnowledgeBaseService {
+    private static final String SOURCE_README = "README";
+    private static final String SOURCE_SWAGGER = "swagger";
+    private static final String SOURCE_HASH_KEY_PREFIX = "rag:source:hash:";
+
     private final RagService ragService;
     private final HttpClientComponent httpClientComponent;
 
     /**
-     * 主入口：投喂所有文档
+     * 主入口：按来源投喂所有文档（内容未变化则跳过，节省 embedding token）
+     *
+     * @return 每个来源的处理结果（刷新成功 / 跳过 / 失败）
      */
-    public void loadAllKnowledge() {
-        loadReadmeDocument();
-        loadSwaggerDocument();
+    public Map<String, String> loadAllKnowledge() {
+        Map<String, String> result = new LinkedHashMap<>(4);
+        result.put(SOURCE_README, loadReadmeDocument());
+        result.put(SOURCE_SWAGGER, loadSwaggerDocument());
+        return result;
     }
 
     /**
      * 1. 处理 README.md 文件
      */
-    private void loadReadmeDocument() {
+    private String loadReadmeDocument() {
         Resource resource = null;
         String readme = "README.md";
         // 1. 先尝试从文件系统读取（适用于本地开发）
@@ -67,29 +79,50 @@ public class KnowledgeBaseService {
         // 3. 如果都不存在，打印警告并跳过
         if (resource == null || !resource.exists()) {
             log.warn(readme + " 文件不存在，跳过加载");
-            return;
+            return "跳过（README.md 不存在）";
         }
 
-        DocumentReader reader = new TikaDocumentReader(resource);
-        List<Document> documents = reader.read();
+        try {
+            // 内容哈希：未变化则跳过，避免重复消耗 embedding token
+            String hash = DigestUtils.md5DigestAsHex(resource.getInputStream());
+            if (hash.equals(getSourceHash(SOURCE_README))) {
+                log.info("来源 [{}] 内容未变化，跳过 embedding", SOURCE_README);
+                return "跳过（内容未变化）";
+            }
 
-        documents.forEach(doc -> {
-            doc.getMetadata().put("source", "README");
-            doc.getMetadata().put("type", "system_overview");
-        });
+            DocumentReader reader = new TikaDocumentReader(resource);
+            List<Document> documents = reader.read();
 
-        processAndStore(documents);
-        log.info(readme + " 加载成功，共 {} 个文档", documents.size());
+            documents.forEach(doc -> {
+                doc.getMetadata().put("source", SOURCE_README);
+                doc.getMetadata().put("type", "system_overview");
+            });
+
+            int count = processAndStore(documents);
+            saveSourceHash(SOURCE_README, hash);
+            log.info(readme + " 加载成功，共 {} 个文档", documents.size());
+            return "刷新成功（" + count + " 个文档块）";
+        } catch (Exception e) {
+            log.error("处理 " + readme + " 失败", e);
+            return "失败：" + e.getMessage();
+        }
     }
 
     /**
      * 加载 Swagger 文档（优化版）
      */
-    private void loadSwaggerDocument() {
+    private String loadSwaggerDocument() {
         String swaggerUrl = "http://localhost:8570/v3/api-docs";
-        HttpClientDto httpClientDto = HttpBuilder.create().setHttpRequest(RequestMethod.POST, swaggerUrl).build();
-        String responseBody = httpClientComponent.doExecute(httpClientDto);
         try {
+            HttpClientDto httpClientDto = HttpBuilder.create().setHttpRequest(RequestMethod.POST, swaggerUrl).build();
+            String responseBody = httpClientComponent.doExecute(httpClientDto);
+            // 内容哈希：未变化则跳过，避免重复消耗 embedding token
+            String hash = DigestUtils.md5DigestAsHex(responseBody.getBytes(StandardCharsets.UTF_8));
+            if (hash.equals(getSourceHash(SOURCE_SWAGGER))) {
+                log.info("来源 [{}] 内容未变化，跳过 embedding", SOURCE_SWAGGER);
+                return "跳过（内容未变化）";
+            }
+
             JsonNode root = UJSON.getObjectMapper().readTree(responseBody);
             // 1. 提取系统基本信息
             List<Document> documents = new ArrayList<>();
@@ -109,9 +142,13 @@ public class KnowledgeBaseService {
             // 4. 提取 Schema 定义（数据模型）单独成块
             documents.add(createSchemaDocument(root));
             // 切分并存入
-            processAndStore(documents);
+            int count = processAndStore(documents);
+            saveSourceHash(SOURCE_SWAGGER, hash);
+            log.info("Swagger 文档加载成功，共 {} 个文档", documents.size());
+            return "刷新成功（" + count + " 个文档块）";
         } catch (Exception e) {
             log.error("解析 Swagger 文档失败", e);
+            return "失败：" + e.getMessage();
         }
     }
 
@@ -334,8 +371,9 @@ public class KnowledgeBaseService {
      * 统一的切分与存储逻辑（幂等：按来源先删旧数据再写入，保证知识库与最新文档同步）
      *
      * @param documents 文档
+     * @return 实际写入的文档块总数
      */
-    private void processAndStore(List<Document> documents) {
+    private int processAndStore(List<Document> documents) {
         // 因为每个文档块已经是按模块划分的，可以适当增大块大小
         TextSplitter splitter = new TokenTextSplitter(
                 // 每块最大 token 数（增大一些）
@@ -351,16 +389,48 @@ public class KnowledgeBaseService {
         // 按来源分组（README / swagger 等），避免删除时误删其他来源
         Map<String, List<Document>> bySource = documents.stream()
                 .collect(Collectors.groupingBy(doc -> String.valueOf(doc.getMetadata().getOrDefault("source", "unknown"))));
+        AtomicInteger total = new AtomicInteger(0);
         bySource.forEach((source, docs) -> {
             try {
                 List<Document> chunks = splitter.apply(docs);
-                // 先删除该来源的旧数据，再写入最新数据，保证每次启动知识库与最新文档同步
+                // 先删除该来源的旧数据，再写入最新数据，保证每次刷新知识库与最新文档同步
                 ragService.deleteBySource(source);
                 ragService.storeDocument(chunks);
+                total.addAndGet(chunks.size());
                 log.info("已重新投喂来源 [{}]，共 {} 个文档块", source, chunks.size());
             } catch (Exception e) {
                 log.error("投喂来源 [{}] 失败，保留旧数据: {}", source, e.getMessage());
             }
         });
+        return total.get();
+    }
+
+    /**
+     * 读取某来源最近一次成功投喂时的内容哈希（Redis 不可用时返回 null，视为已变更）
+     *
+     * @param source 来源
+     * @return 内容哈希
+     */
+    private String getSourceHash(String source) {
+        try {
+            return URedis.get(SOURCE_HASH_KEY_PREFIX + source);
+        } catch (Exception e) {
+            log.warn("读取来源 [{}] 内容哈希失败，视为已变更: {}", source, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 保存某来源的内容哈希（长期保留，内容变化时覆盖）
+     *
+     * @param source 来源
+     * @param hash   内容哈希
+     */
+    private void saveSourceHash(String source, String hash) {
+        try {
+            URedis.set(SOURCE_HASH_KEY_PREFIX + source, hash);
+        } catch (Exception e) {
+            log.warn("保存来源 [{}] 内容哈希失败: {}", source, e.getMessage());
+        }
     }
 }

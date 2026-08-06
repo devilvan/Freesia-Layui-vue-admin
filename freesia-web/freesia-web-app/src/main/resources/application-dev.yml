@@ -261,6 +261,7 @@ springdoc:
         - /api/chatConversationController/**
         - /api/chatMessageController/**
         - /api/chat/**
+        - /api/rag/**
 # knife4j的增强配置，不需要增强可以不配
 #knife4j:
 #  enable: true
@@ -353,7 +354,14 @@ spring:
         index-type: HNSW
         # 距离算法，用余弦相似度
         distance-type: COSINE_DISTANCE
-        # 向量维度必须与 embedding 输出维度一致（text-embedding-v3 = 1024）
-        dimensions: 1024
+        # 向量维度必须与 embedding 输出维度一致（text-embedding-v2 = 1536）
+        dimensions: 1536
         # 关键配置！让Spring AI自动帮你创建表
         initialize-schema: true
+---
+# RAG 知识库检索配置
+freesia:
+  rag:
+    # 相似度阈值(0~1)：低于该相似度的检索片段视为无关，不注入对话上下文。
+    # 调低更易命中知识库（但可能混入无关内容），调高更严格（可能过滤掉部分相关片段）。
+    similarity-threshold: 0.5

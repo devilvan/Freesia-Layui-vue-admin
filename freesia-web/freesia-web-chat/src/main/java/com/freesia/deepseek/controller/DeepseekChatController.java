@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -64,6 +65,11 @@ public class DeepseekChatController {
     private final ChatMessageRepository chatMessageRepository;
     private final TransactionTemplate transactionTemplate;
     private final RagService ragService;
+    /**
+     * RAG 相似度阈值（0~1）：低于该相似度的检索片段视为无关，不注入对话上下文
+     */
+    @Value("${freesia.rag.similarity-threshold:0.5}")
+    private double ragSimilarityThreshold;
 
     @SaIgnore
     @Operation(summary = "聊天流")
@@ -363,7 +369,7 @@ public class DeepseekChatController {
         }
         List<Document> hits;
         try {
-            hits = ragService.searchSimilar(query);
+            hits = ragService.searchSimilar(query, 5, ragSimilarityThreshold);
         } catch (Exception e) {
             log.warn("知识库检索失败，本次对话跳过 RAG 上下文: {}", e.getMessage());
             return;
@@ -372,8 +378,7 @@ public class DeepseekChatController {
             return;
         }
         StringBuilder context = new StringBuilder();
-        context.append("你是一个基于知识库回答问题的智能助手。请优先依据下面检索到的知识库内容回答用户问题，并尽量说明信息来源；"
-                + "如果检索内容与问题无关或信息不足，请如实说明，不要编造。\n\n");
+        context.append("以下是关于本项目(Freesia后台管理系统)知识库中检索到的相关资料，仅在回答\"系统相关问题\"时作为参考：\n\n");
         for (int i = 0; i < hits.size(); i++) {
             Document doc = hits.get(i);
             Object source = doc.getMetadata().get("source");
@@ -385,6 +390,10 @@ public class DeepseekChatController {
                     .append(doc.getText())
                     .append("\n\n");
         }
+        context.append("\n请遵循以下规则：\n"
+                + "1. 如果用户问题与本系统（功能、接口、架构、使用方法等）相关，请优先依据上述知识库内容回答，并注明信息来源。\n"
+                + "2. 如果用户问题是通用知识或与知识库无关（如常识、通用技术问题等），请直接使用你自己的知识正常回答，不受上述检索内容限制。\n"
+                + "3. 如果上述检索内容与用户问题明显无关，请忽略它们，不要编造或生搬硬套。\n");
         builder.addSystemMessage(context.toString());
     }
 

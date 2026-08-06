@@ -42,5 +42,10 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-web-admin</artifactId>
         </dependency>
+        <!-- XXL-Job 定时任务 -->
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-xxl-job</artifactId>
+        </dependency>
     </dependencies>
 </project>

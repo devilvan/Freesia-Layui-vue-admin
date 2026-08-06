@@ -5,7 +5,6 @@ import com.freesia.crypt.service.CryptService;
 import com.freesia.icon.service.CommonIconTemplateDetailService;
 import com.freesia.icon.service.CommonIconTemplateHeaderService;
 import com.freesia.properties.WebCommonProperties;
-import com.freesia.rag.service.KnowledgeBaseService;
 import com.freesia.service.*;
 import com.freesia.util.UMessage;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +33,9 @@ public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
     private final SysDeptService sysDeptService;
     private final CommonIconTemplateHeaderService commonIconTemplateHeaderService;
     private final CommonIconTemplateDetailService commonIconTemplateDetailService;
-    private final KnowledgeBaseService knowledgeBaseService;
 
     @Override
     public void run(ApplicationArguments args) {
-        // 20260806-Bliss 添加知识库投喂
-        knowledgeBaseService.loadAllKnowledge();
         sysOssConfigService.loadSysOssConfig();
         sysOssService.initDeleteTempFile();
         log.info(UMessage.message("oss.load.success", CacheConstant.SYS_OSS_DEFAULT_CONFIG));
