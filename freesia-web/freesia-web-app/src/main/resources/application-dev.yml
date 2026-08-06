@@ -331,9 +331,17 @@ spring:
     openai:
       api-key: ${DEEPSEEK_API_KEY:}
       # 指向 DeepSeek 的官方 API 地址
+      # 注意: chat 由 pig-mesh 的 DeepSeekClient 直接调用, 不走 Spring AI 的 OpenAiChatModel
+      # 此处 base-url 仅作为默认值, embedding 会在下面单独覆盖
       base-url: https://api.deepseek.com
-      model: deepseek-v4-flash
-      temperature: 0.7
+      # Embedding 单独走阿里云 DashScope (DeepSeek 不提供 /v1/embeddings 接口, 调用会返回 404)
+      embedding:
+        api-key: ${DASHSCOPE_API_KEY:}
+        base-url: https://dashscope.aliyuncs.com/compatible-mode
+        options:
+          # text-embedding-v3 默认 1024 维, 显式指定 1536 维以与 PgVectorStore 的 dimensions 保持一致
+          model: text-embedding-v3
+          dimensions: 1536
     vectorstore:
       pgvector:
         # 注意：Spring AI 1.1.x 的 PgVectorStoreProperties 没有 data-source 属性，

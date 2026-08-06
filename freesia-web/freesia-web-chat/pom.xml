@@ -29,6 +29,10 @@
             <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-tika-document-reader</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.github.pig-mesh.ai</groupId>
             <artifactId>deepseek-spring-boot-starter</artifactId>
             <version>${deepseek.version}</version>
