@@ -13,7 +13,6 @@ import org.springframework.ai.document.DocumentReader;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
-import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Bliss.Wu
@@ -31,7 +31,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class KnowledgeBaseService {
-    private final VectorStore vectorStore;
+    private final RagService ragService;
     private final HttpClientComponent httpClientComponent;
 
     /**
@@ -331,7 +331,7 @@ public class KnowledgeBaseService {
     }
 
     /**
-     * 统一的切分与存储逻辑（适当调整参数）
+     * 统一的切分与存储逻辑（幂等：按来源先删旧数据再写入，保证知识库与最新文档同步）
      *
      * @param documents 文档
      */
@@ -348,8 +348,19 @@ public class KnowledgeBaseService {
                 15000,
                 // 是否保留元数据
                 true, List.of('.', '?', '!', '\n'));
-        List<Document> chunks = splitter.apply(documents);
-        vectorStore.add(chunks);
-        log.info("已存入 {} 个文档块（优化分块策略）", chunks.size());
+        // 按来源分组（README / swagger 等），避免删除时误删其他来源
+        Map<String, List<Document>> bySource = documents.stream()
+                .collect(Collectors.groupingBy(doc -> String.valueOf(doc.getMetadata().getOrDefault("source", "unknown"))));
+        bySource.forEach((source, docs) -> {
+            try {
+                List<Document> chunks = splitter.apply(docs);
+                // 先删除该来源的旧数据，再写入最新数据，保证每次启动知识库与最新文档同步
+                ragService.deleteBySource(source);
+                ragService.storeDocument(chunks);
+                log.info("已重新投喂来源 [{}]，共 {} 个文档块", source, chunks.size());
+            } catch (Exception e) {
+                log.error("投喂来源 [{}] 失败，保留旧数据: {}", source, e.getMessage());
+            }
+        });
     }
 }

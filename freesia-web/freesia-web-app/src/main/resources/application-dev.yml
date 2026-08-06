@@ -336,10 +336,10 @@ spring:
       base-url: https://api.deepseek.com
       # Embedding 单独走阿里云 DashScope (DeepSeek 不提供 /v1/embeddings 接口, 调用会返回 404)
       embedding:
-        api-key: sk-ws-H.ERIHHRD.woKe.MEUCIQCayXh_1h3RWiVP2j4aeF3jQ7ijrMJM5w0n9zvn79Q_tgIgNggIvQ2487cpmxIwI2p0xQ9E8SWMpb0tync4kOAOP3U
+        api-key: ${ALIYUN_API_KEY:}
         # Spring AI 会自动在 base-url 后拼接 /v1/embeddings，因此这里填 compatible-mode（不带 /v1）；
         # 原 /api/v1 是 DashScope 原生接口路径，会被拼成 .../api/v1/v1/embeddings 导致 404。
-        base-url: https://ws-yia8n3kgup9wgpya.cn-beijing.maas.aliyuncs.com/compatible-mode
+        base-url: ${ALIYUN_OPEN_AI_BASE_URL:}
         options:
           # text-embedding-v3 仅支持 1024/768/512/256/128/64 维，1536 超出上限（需与 pgvector.dimensions 一致）
           model: text-embedding-v2
