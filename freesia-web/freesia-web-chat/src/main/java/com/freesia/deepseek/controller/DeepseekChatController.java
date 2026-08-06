@@ -15,6 +15,7 @@ import com.freesia.deepseek.repository.ChatConversationRepository;
 import com.freesia.deepseek.repository.ChatMessageRepository;
 import com.freesia.deepseek.service.ChatConversationService;
 import com.freesia.deepseek.service.ChatMessageService;
+import com.freesia.rag.service.RagService;
 import com.freesia.satoken.util.USecurity;
 import com.freesia.sse.dto.SseEmitterUTF8;
 import com.freesia.util.UCollection;
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.document.Document;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -61,6 +63,7 @@ public class DeepseekChatController {
     private final ChatConversationRepository chatConversationRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final TransactionTemplate transactionTemplate;
+    private final RagService ragService;
 
     @SaIgnore
     @Operation(summary = "聊天流")
@@ -69,6 +72,9 @@ public class DeepseekChatController {
         ChatCompletionRequest.Builder builder = ChatCompletionRequest.builder()
                 .model("deepseek-chat")
                 .stream(true);
+
+        // RAG：用最近一次用户提问在知识库中检索相关内容，作为系统上下文注入
+        injectKnowledgeContext(builder, command);
 
         if (command.getMessages() != null) {
             for (ChatRequestCommand.Message msg : command.getMessages()) {
@@ -337,6 +343,49 @@ public class DeepseekChatController {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * RAG：将知识库检索到的内容作为系统上下文注入，让模型基于系统知识回答
+     */
+    private void injectKnowledgeContext(ChatCompletionRequest.Builder builder, ChatRequestCommand command) {
+        String query = null;
+        if (command.getMessages() != null) {
+            for (ChatRequestCommand.Message msg : command.getMessages()) {
+                if (msg.getRole() != null && msg.getContent() != null
+                        && Constants.Role.USER == Constants.Role.getInstanceByCode(msg.getRole())) {
+                    query = msg.getContent();
+                }
+            }
+        }
+        if (UEmpty.isEmpty(query)) {
+            return;
+        }
+        List<Document> hits;
+        try {
+            hits = ragService.searchSimilar(query);
+        } catch (Exception e) {
+            log.warn("知识库检索失败，本次对话跳过 RAG 上下文: {}", e.getMessage());
+            return;
+        }
+        if (UEmpty.isEmpty(hits)) {
+            return;
+        }
+        StringBuilder context = new StringBuilder();
+        context.append("你是一个基于知识库回答问题的智能助手。请优先依据下面检索到的知识库内容回答用户问题，并尽量说明信息来源；"
+                + "如果检索内容与问题无关或信息不足，请如实说明，不要编造。\n\n");
+        for (int i = 0; i < hits.size(); i++) {
+            Document doc = hits.get(i);
+            Object source = doc.getMetadata().get("source");
+            Object type = doc.getMetadata().get("type");
+            context.append("【片段").append(i + 1).append("】")
+                    .append(source != null ? "（来源：" + source + "）" : "")
+                    .append(type != null ? "【" + type + "】" : "")
+                    .append("\n")
+                    .append(doc.getText())
+                    .append("\n\n");
+        }
+        builder.addSystemMessage(context.toString());
     }
 
     private ChatConversationPo findConversation(String id) {

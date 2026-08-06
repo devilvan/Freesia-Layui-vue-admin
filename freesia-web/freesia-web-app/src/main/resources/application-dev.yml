@@ -336,11 +336,13 @@ spring:
       base-url: https://api.deepseek.com
       # Embedding 单独走阿里云 DashScope (DeepSeek 不提供 /v1/embeddings 接口, 调用会返回 404)
       embedding:
-        api-key: ${DASHSCOPE_API_KEY:}
-        base-url: https://dashscope.aliyuncs.com/compatible-mode
+        api-key: sk-ws-H.ERIHHRD.woKe.MEUCIQCayXh_1h3RWiVP2j4aeF3jQ7ijrMJM5w0n9zvn79Q_tgIgNggIvQ2487cpmxIwI2p0xQ9E8SWMpb0tync4kOAOP3U
+        # Spring AI 会自动在 base-url 后拼接 /v1/embeddings，因此这里填 compatible-mode（不带 /v1）；
+        # 原 /api/v1 是 DashScope 原生接口路径，会被拼成 .../api/v1/v1/embeddings 导致 404。
+        base-url: https://ws-yia8n3kgup9wgpya.cn-beijing.maas.aliyuncs.com/compatible-mode
         options:
-          # text-embedding-v3 默认 1024 维, 显式指定 1536 维以与 PgVectorStore 的 dimensions 保持一致
-          model: text-embedding-v3
+          # text-embedding-v3 仅支持 1024/768/512/256/128/64 维，1536 超出上限（需与 pgvector.dimensions 一致）
+          model: text-embedding-v2
           dimensions: 1536
     vectorstore:
       pgvector:
@@ -351,7 +353,7 @@ spring:
         index-type: HNSW
         # 距离算法，用余弦相似度
         distance-type: COSINE_DISTANCE
-        # 向量维度，与你建表时保持一致
-        dimensions: 1536
+        # 向量维度必须与 embedding 输出维度一致（text-embedding-v3 = 1024）
+        dimensions: 1024
         # 关键配置！让Spring AI自动帮你创建表
         initialize-schema: true
