@@ -105,7 +105,6 @@ freesia:
         - COMMON_ICON_TEMPLATE_DETAIL
         - SYS_NOTICE
         - WORLD_CLOCK_CITY
-        - WORLD_CLOCK_SUNRISE_SUNSET
         - COMMON_TODO
         - SYS_CLIENT
         - SYS_THIRDPARTY_AUTH
@@ -365,3 +364,4 @@ freesia:
     # 相似度阈值(0~1)：低于该相似度的检索片段视为无关，不注入对话上下文。
     # 调低更易命中知识库（但可能混入无关内容），调高更严格（可能过滤掉部分相关片段）。
     similarity-threshold: 0.5
+    swagger-url: ${RAG_SWAGGER_URL:http://localhost:${server.port}/v3/api-docs}

@@ -14,6 +14,7 @@ import org.springframework.ai.document.DocumentReader;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -41,6 +42,14 @@ public class KnowledgeBaseService {
 
     private final RagService ragService;
     private final HttpClientComponent httpClientComponent;
+
+    /**
+     * Swagger 文档抓取地址。
+     * 本地开发默认 localhost；生产环境（Docker 容器 freesia-server）由 application-prod.yml 覆盖为
+     * http://freesia-server:8570/v3/api-docs，Docker 内部 DNS 会自动解析到容器 IP。
+     */
+    @Value("${freesia.rag.swagger-url:http://localhost:8570/v3/api-docs}")
+    private String swaggerUrl;
 
     /**
      * 主入口：按来源投喂所有文档（内容未变化则跳过，节省 embedding token）
@@ -112,7 +121,6 @@ public class KnowledgeBaseService {
      * 加载 Swagger 文档（优化版）
      */
     private String loadSwaggerDocument() {
-        String swaggerUrl = "http://localhost:8570/v3/api-docs";
         try {
             HttpClientDto httpClientDto = HttpBuilder.create().setHttpRequest(RequestMethod.POST, swaggerUrl).build();
             String responseBody = httpClientComponent.doExecute(httpClientDto);
