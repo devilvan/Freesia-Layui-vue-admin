@@ -11,7 +11,6 @@ import LayJsonSchemaForm from "@layui/json-schema-form";
 import "@layui/json-schema-form/lib/index.css";
 // @ts-ignore
 import {JSEncrypt} from "encryptlong";
-import {getPublicKey, wrapEncryptPub2} from "./api/Crypt";
 import {useCryptStore} from "./store/crypt";
 import 'virtual:svg-icons-register'
 import SvgIcon from "./views/component/svg/SvgIcon.vue";
@@ -63,17 +62,6 @@ app.config.errorHandler = (err, instance, info) => {
 
 app.mount('#app');
 
-/**
- * 待加密数据
- * @param publicKey 公钥
- * @param data 待加密的数据
- */
-app.config.globalProperties.$encryptedData = function (publicKey: string, data: string) {
-    let encrypt = new JSEncrypt();
-    encrypt.setPublicKey(publicKey);
-    return encrypt.encryptLong(data)
-}
-
 app.config.globalProperties.$decryptedData = function (privateKey: string, data: string) {
     let decrypt = new JSEncrypt();
     decrypt.setPrivateKey(privateKey);
@@ -81,29 +69,8 @@ app.config.globalProperties.$decryptedData = function (privateKey: string, data:
 }
 
 /**
- * 获取RSA公钥，挂载到Vue上，可通过this.$getPublicKey调用
+ * 启动时预热密钥交换（纯内存，不落盘）。
+ * 若失败不阻塞启动，首个加密调用会通过 ensureKeys 重新触发交换。
  */
-app.config.globalProperties.$getPublicKey = function () {
-    let crypt = useCryptStore();
-    getPublicKey().then((res: any) => {
-        if (res.code === 200) {
-            //将获取到得公钥，又保存在Vue原形上的自定义变量$PUB1上
-            let pub1 = res.data;
-            let rsa = new JSEncrypt();
-            // let pub2 = removeStartEndWith(rsa.getPublicKey());
-            let pub2 = rsa.getPublicKeyB64();
-            let pri2 = rsa.getPrivateKeyB64();
-            crypt.setPri2(pri2).then(r => r);
-            // 根据PUB1加密后的PUB2
-            let encryptPub2 = this.$encryptedData(pub1, pub2);
-            encryptPub2 = encodeURI(encryptPub2)
-            wrapEncryptPub2(encryptPub2).then((wrapEncryptPub2Res: any) => {
-                if (wrapEncryptPub2Res.code === 200) {
-                    crypt.setAes(wrapEncryptPub2Res.data).then(r => r);
-                }
-            })
-        }
-    })
-}
-app.config.globalProperties.$getPublicKey();
+useCryptStore().ensureKeys().catch(() => {});
 export default app;

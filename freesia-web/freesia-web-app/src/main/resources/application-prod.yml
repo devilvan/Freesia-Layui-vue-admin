@@ -6,6 +6,11 @@ spring:
     name: freesia-admin
 ---
 freesia:
+  crypt:
+    # AES密钥轮换周期（分钟），前端定时重取间隔需小于该值
+    aes-rotation-minutes: 60
+    # 上一把密钥宽限期（分钟）
+    aes-grace-minutes: 10
   web:
     common:
       # 是否初始化系统配置
