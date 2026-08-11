@@ -13,7 +13,6 @@
     <modules>
         <module>freesia-spring-admin</module>
         <module>freesia-xxl-job</module>
-        <module>freesia-crawl</module>
     </modules>
     <name>freesia-extends</name>
     <description>第三方软件</description>
