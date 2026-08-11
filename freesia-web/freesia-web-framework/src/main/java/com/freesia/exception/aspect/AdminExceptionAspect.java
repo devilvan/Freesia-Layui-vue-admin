@@ -5,6 +5,7 @@ import cn.hutool.http.HttpStatus;
 import com.freesia.constant.UserModule;
 import com.freesia.vo.R;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Slf4j
 @Component
 @RestControllerAdvice
+@Order(1)
 public class AdminExceptionAspect {
     /**
      * 权限管理模块异常处理
