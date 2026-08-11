@@ -3,12 +3,14 @@ package com.freesia.crypt.service.impl;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.freesia.constant.CacheConstant;
 import com.freesia.crypt.constant.CryptModule;
+import com.freesia.crypt.service.AesKeyManager;
 import com.freesia.crypt.service.CryptService;
 import com.freesia.crypt.util.UCrypt;
 import com.freesia.crypt.exception.CryptException;
 import com.freesia.exception.ServiceException;
 import com.freesia.redis.util.URedis;
 import com.freesia.util.UEmpty;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,7 +21,10 @@ import java.util.Optional;
  * @date 2024-03-19
  */
 @Service
+@RequiredArgsConstructor
 public class CryptServiceImpl implements CryptService {
+
+    private final AesKeyManager aesKeyManager;
 
     @Override
     public void initRsa() {
@@ -45,6 +50,6 @@ public class CryptServiceImpl implements CryptService {
             throw new CryptException("crypt.get.pri1.failed", new Object[] {});
         }
         final String pub2 = UCrypt.rsaDecrypt(pri1, encryptPub2);
-        return UCrypt.rsaEncrypt(pub2, UCrypt.KEY);
+        return UCrypt.rsaEncrypt(pub2, aesKeyManager.getCurrentKey());
     }
 }

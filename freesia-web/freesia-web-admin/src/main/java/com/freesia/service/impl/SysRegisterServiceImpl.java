@@ -51,7 +51,7 @@ public class SysRegisterServiceImpl implements SysRegisterService {
     public SysUserPo register(SysUserDto sysUserDto) {
         return transactionTemplate.execute(status -> {
             SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
-            sysUserPo.setPassword(org.springframework.security.crypto.bcrypt.BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
+            sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
             sysUserPo.setAccountStatus(FlagConstant.ENABLED);
             sysUserPo.setLogicDel(false);
             if (UEmpty.isEmpty(sysUserPo.getUserType())) {
@@ -64,16 +64,10 @@ public class SysRegisterServiceImpl implements SysRegisterService {
                 SysRoleDto defaultRole = sysRoleService.findCacheDefaultRole();
                 if (ObjectUtil.isNotNull(defaultRole)) {
                     SysUserRolePo ur = new SysUserRolePo();
-                    // 构建用户对应的角色
-                    defaultRole.setId(null);
-                    defaultRole.setRecVer(0L);
-                    defaultRole.setBuildIn(false);
-                    SysRoleDto afterSaveSysRoleDto = sysRoleService.saveUpdate(defaultRole);
-                    Long roleId = afterSaveSysRoleDto.getId();
-                    ur.setSysUserRolePk(new SysUserRolePk(sysUserPo.getId(), roleId));
+                    ur.setSysUserRolePk(new SysUserRolePk(sysUserPo.getId(), defaultRole.getId()));
                     sysUserRoleRepository.saveAndFlush(ur);
                     log.info("注册用户[{}]成功赋予角色: {}", sysUserDto.getUserName(), defaultRole.getRoleKey());
-                    sysRoleService.saveInitRoleMenu(roleId);
+//                    sysRoleService.saveInitRoleMenu(defaultRole.getId());
                 } else {
                     log.warn("注册用户[{}]未找到默认角色", sysUserDto.getUserName());
                 }

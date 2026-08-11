@@ -325,14 +325,14 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
 
     private SysRolePo buildDefaultSysRolePo() {
         SysRolePo newSysRolePo = new SysRolePo();
-        newSysRolePo.setRoleName("仅个人");
-        newSysRolePo.setRoleKey(AdminConstant.RoleKey.OWN.getCode());
+        newSysRolePo.setRoleName("Freesia普通角色");
+        newSysRolePo.setRoleKey(AdminConstant.RoleKey.COMMON.getCode());
         newSysRolePo.setStatus(FlagConstant.ENABLED);
         newSysRolePo.setOrderNum(1);
         newSysRolePo.setDataScope(DataScope.OWN.getCode());
         newSysRolePo.setMenuCheckStrictly(true);
         newSysRolePo.setDeptCheckStrictly(true);
-        newSysRolePo.setRemark("仅个人用户角色");
+        newSysRolePo.setRemark("Freesia普通角色");
         newSysRolePo.setBuildIn(true);
         return newSysRolePo;
     }

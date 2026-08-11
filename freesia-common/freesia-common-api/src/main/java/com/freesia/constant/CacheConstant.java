@@ -56,6 +56,18 @@ public final class CacheConstant {
      */
     public static final String CRYPT_PRI = "crypt_pri1";
     /**
+     * 当前AES密钥（Base64串） 缓存键
+     */
+    public static final String CRYPT_AES = "crypt_aes";
+    /**
+     * 当前AES密钥生成时间戳（epoch millis） 缓存键
+     */
+    public static final String CRYPT_AES_TS = "crypt_aes_ts";
+    /**
+     * 宽限期内的上一把AES密钥（Base64串） 缓存键
+     */
+    public static final String CRYPT_AES_PREVIOUS = "crypt_aes_prev";
+    /**
      * 防止重复提交 缓存建
      */
     public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";
