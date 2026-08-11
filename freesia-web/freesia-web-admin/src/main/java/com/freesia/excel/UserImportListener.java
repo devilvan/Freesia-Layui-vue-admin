@@ -60,7 +60,7 @@ public class UserImportListener<T extends BaseImportEntity> extends BaseImportEn
         if (UEmpty.isNotEmpty(errorMsg)) {
             throw new ServiceException(UCollection.join(errorMsg, "\n"));
         }
-        if (sysUserDtoList.size() > 0) {
+        if (UEmpty.isNotEmpty(sysUserDtoList)) {
             // 过滤相同用户名的数据
             UCopy.SyncAdditionCollectionDto<SysUserDto> sysUserDtoSyncAdditionCollectionDto = UCopy.syncAddition(
                     sysUserDtoList,
