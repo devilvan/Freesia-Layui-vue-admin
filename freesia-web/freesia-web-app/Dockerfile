@@ -1,5 +1,5 @@
 # dockerfile for java project
-FROM openjdk:17
+FROM openjdk:21
 # 设置工作目录
 WORKDIR /
 # 将构建好的 JAR 文件复制到容器内
