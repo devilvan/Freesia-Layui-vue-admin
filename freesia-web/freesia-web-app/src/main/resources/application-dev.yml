@@ -124,6 +124,21 @@ freesia:
     # 调低更易命中知识库（但可能混入无关内容），调高更严格（可能过滤掉部分相关片段）。
     similarity-threshold: 0.5
     swagger-url: ${RAG_SWAGGER_URL:http://localhost:${server.port}/v3/api-docs}
+  xss:
+    # 启用XSS过滤（默认true）
+    enabled: true
+    # 严格模式：移除所有HTML标签
+    strict: false
+    # 过滤请求体
+    filter-body: true
+    # 过滤请求头
+    filter-headers: false
+    exclude-urls: # 排除过滤的URL
+      - /api/upload/**
+      - /api/export/**
+    exclude-headers: # 排除过滤的请求头
+      - Authorization
+      - Cookie
 ---
 login.password:
   # 密码最大错误次数
