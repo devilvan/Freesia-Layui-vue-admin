@@ -774,10 +774,13 @@ function doBuildColumn() {
 }
 
 const loadDataSource = () => {
+  loading.value = true
   searchQuery.value.allTenantFlag = accountCostStore.allTenantFlag || false
   findPageAccountCost(searchQuery.value, pageQuery).then((res: TableResult<AccountCostEntity>) => {
     pageQuery.total = res.total;
     dataSource.value = res.rows
+  }).finally(() => {
+    loading.value = false
   })
 }
 
@@ -795,10 +798,8 @@ function toSearch() {
 
 const change = () => {
   doFindSelectCostTypeList()
-  loading.value = true
   setTimeout(() => {
     loadDataSource()
-    loading.value = false
   }, 200)
 }
 const sortChange = (key: any, sort: string) => {
