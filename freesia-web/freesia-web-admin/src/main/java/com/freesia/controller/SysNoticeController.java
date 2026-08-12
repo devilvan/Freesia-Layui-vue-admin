@@ -21,11 +21,12 @@ import com.freesia.vo.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Evad.Wu
@@ -39,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 public class SysNoticeController extends BaseController {
     private final SysNoticeService sysNoticeService;
     private final SseEmitterManager sseEmitterManager;
-    private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    private final @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor;
     private final SysNoticeConverter sysNoticeConverter;
 
     /**
@@ -87,12 +88,19 @@ public class SysNoticeController extends BaseController {
                 sysNoticeVo.setEffectiveTimeFrom(calendar.getTime());
             }
             sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
-            scheduledThreadPoolExecutor.schedule(() -> {
+            // 虚拟线程中睡眠5秒后推送SSE，替代原ScheduledThreadPoolExecutor延时调度
+            taskExecutor.execute(() -> {
+                try {
+                    Thread.sleep(Duration.ofSeconds(5));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
                 SseMessageDto sseMessageDto = new SseMessageDto();
                 sseMessageDto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
                 sseMessageDto.setContent(sysNoticeDto.getContent());
                 sseEmitterManager.publishAll(sseMessageDto);
-            }, 5, TimeUnit.SECONDS);
+            });
         } else {
             sysNoticeDto = sysNoticeConverter.convertVo2Dto(sysNoticeVo);
         }

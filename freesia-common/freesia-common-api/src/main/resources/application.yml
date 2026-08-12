@@ -6,6 +6,11 @@ spring:
     # 根据当前活跃环境指定对应的 application文件
     active: @profiles.active@
 ---
+spring:
+  threads:
+    virtual:
+      enabled: true
+---
 server:
   tomcat:
     uri-encoding: UTF-8

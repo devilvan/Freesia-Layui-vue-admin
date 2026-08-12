@@ -111,7 +111,7 @@ public class SysNoticeServiceImpl extends BaseServiceImpl<SysNoticeMapper, SysNo
     }
 
     @Override
-    @Async("threadPoolTaskExecutor")
+    @Async
     public void checkSaveAnnouncement(Long userId) {
         List<FindPublishedAnnouncementEntity> publishedAnnouncementList = sysNoticeMapper.findPublishedAnnouncement();
         if (UEmpty.isNotEmpty(publishedAnnouncementList)) {

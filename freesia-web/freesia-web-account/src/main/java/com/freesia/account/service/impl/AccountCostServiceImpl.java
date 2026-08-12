@@ -51,8 +51,9 @@ import com.freesia.util.*;
 import groovy.lang.Tuple3;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -81,7 +82,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
     private final SysUserService sysUserService;
     private final AccountCostUserAllocService accountCostUserAllocService;
     private final AccountCostConverter accountCostConverter;
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor;
     private final AccountReportService accountReportService;
     private final AccountBudgetService accountBudgetService;
 
@@ -143,7 +144,7 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
      */
     private void executeChangeReportRecalculateFlag(AccountCostDto accountCostDto, Long userId, Long tenantId) {
         AccountCostPo originAccountCostPo = accountCostRepository.findById(accountCostDto.getId()).orElse(null);
-        threadPoolTaskExecutor.execute(() -> {
+        taskExecutor.execute(() -> {
             if (originAccountCostPo != null) {
                 // 20260302-Bliss 修改金额或收支类型时，标记已生成的预算账单的重算标识为false
                 if (!(accountCostDto.getPaymentSign().equals(originAccountCostPo.getPaymentSign()) && accountCostDto.getOutlay().compareTo(originAccountCostPo.getOutlay()) == 0)) {
