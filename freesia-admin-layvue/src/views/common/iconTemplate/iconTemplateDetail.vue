@@ -15,32 +15,35 @@
   </lay-panel>
   <lay-collapse v-model="openKeys">
     <div v-for="(item, index) in dataSource" :key="item.name">
-      <lay-dropdown :trigger="'contextMenu'" alignPoint>
-        <lay-collapse-item :title="item.name" :id="item.name">
-          <ul class="site-doc-icon">
-            <li v-if="item.children" v-for="(cItem, cIndex) of item.children" :key="cIndex">
-              <lay-tooltip :visible="false" trigger="hover" :content="cItem.name">
-                <lay-dropdown :trigger="triggerType" alignPoint>
-                  <SvgIcon :name="cItem.url" :desc="cItem.name"></SvgIcon>
-                  <template #content>
-                    <lay-dropdown-menu>
-                      <lay-dropdown-menu-item @click="showSingleSaveIconModal(Operate.EDIT, cItem)">编辑
-                      </lay-dropdown-menu-item>
-                      <lay-dropdown-menu-item @click="deleteIcon(cItem)">删除</lay-dropdown-menu-item>
-                    </lay-dropdown-menu>
-                  </template>
-                </lay-dropdown>
-              </lay-tooltip>
-            </li>
-          </ul>
-        </lay-collapse-item>
-        <template #content>
-          <lay-dropdown-menu>
-            <lay-dropdown-menu-item @click="showSaveGroupingModal(Operate.EDIT, item)">编辑</lay-dropdown-menu-item>
-            <lay-dropdown-menu-item @click="deleteGroup(key, item)">删除</lay-dropdown-menu-item>
-          </lay-dropdown-menu>
+      <lay-collapse-item :id="item.name">
+        <template #title>
+          <lay-dropdown :trigger="'contextMenu'" alignPoint>
+            <span class="collapse-title-dropdown">{{ item.name }}</span>
+            <template #content>
+              <lay-dropdown-menu>
+                <lay-dropdown-menu-item @click="showSaveGroupingModal(Operate.EDIT, item)">编辑</lay-dropdown-menu-item>
+                <lay-dropdown-menu-item @click="deleteGroup(key, item)">删除</lay-dropdown-menu-item>
+              </lay-dropdown-menu>
+            </template>
+          </lay-dropdown>
         </template>
-      </lay-dropdown>
+        <ul class="site-doc-icon">
+          <li v-if="item.children" v-for="(cItem, cIndex) of item.children" :key="cIndex">
+            <lay-tooltip :visible="false" trigger="hover" :content="cItem.name">
+              <lay-dropdown :trigger="triggerType" alignPoint>
+                <SvgIcon :name="cItem.url" :desc="cItem.name"></SvgIcon>
+                <template #content>
+                  <lay-dropdown-menu>
+                    <lay-dropdown-menu-item @click="showSingleSaveIconModal(Operate.EDIT, cItem)">编辑
+                    </lay-dropdown-menu-item>
+                    <lay-dropdown-menu-item @click="deleteIcon(cItem)">删除</lay-dropdown-menu-item>
+                  </lay-dropdown-menu>
+                </template>
+              </lay-dropdown>
+            </lay-tooltip>
+          </li>
+        </ul>
+      </lay-collapse-item>
     </div>
   </lay-collapse>
 
@@ -652,6 +655,18 @@ function deleteGroup(key: string, value: any) {
 </script>
 
 <style>
+/* 外层dropdown触发元素：撑满整个折叠面板标题行，实现整行右键弹出分组菜单 */
+.collapse-title-dropdown {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  padding: 0 15px 0 35px;
+}
+
 .site-doc-icon {
   margin-bottom: 10px;
   font-size: 0;
