@@ -25,7 +25,7 @@ public class SysNoticeEventListener {
      * @param sysNoticeDto 敏感日志对象
      */
     @EventListener
-    @Async("threadPoolTaskExecutor")
+    @Async
     public void recordSysNotice(SysNoticeDto sysNoticeDto) {
         sysNoticeService.saveUpdate(sysNoticeDto);
     }

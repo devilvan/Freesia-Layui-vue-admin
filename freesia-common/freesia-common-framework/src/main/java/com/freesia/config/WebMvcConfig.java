@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.async.TimeoutCallableProcessingInterceptor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -31,8 +31,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //    private FastJsonHttpMessageConverter fastJsonHttpMessageConverter;
     @Resource
     private ObjectMapper objectMapper;
-    @Resource(name = "threadPoolTaskExecutor")
-    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    @Resource(name = "applicationTaskExecutor")
+    private AsyncTaskExecutor taskExecutor;
 
     /**
      * 项目资源注册器
@@ -93,7 +93,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void configureAsyncSupport(final AsyncSupportConfigurer configurer) {
         configurer.setDefaultTimeout(60 * 1000L);
         configurer.registerCallableInterceptors(timeoutInterceptor());
-        configurer.setTaskExecutor(threadPoolTaskExecutor);
+        configurer.setTaskExecutor(taskExecutor);
     }
 
     @Bean

@@ -21,7 +21,8 @@ import com.freesia.util.UEmpty;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -43,7 +44,7 @@ public class GenerateReportTaskScheduler {
     private final AccountBudgetService accountBudgetService;
     private final AccountCostService accountCostService;
     private final AccountReportService accountReportService;
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor;
     private final SysUserRepository sysUserRepository;
     private final SysTenantService sysTenantService;
 
@@ -69,7 +70,7 @@ public class GenerateReportTaskScheduler {
             if (sysUserDto.getId() == null) {
                 continue;
             }
-            threadPoolTaskExecutor.execute(() -> {
+            taskExecutor.execute(() -> {
                 generateReport(sysUserDto);
             });
         }

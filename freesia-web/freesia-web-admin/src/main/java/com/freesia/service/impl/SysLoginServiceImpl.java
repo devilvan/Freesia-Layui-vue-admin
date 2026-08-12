@@ -29,10 +29,12 @@ import com.freesia.sse.util.USse;
 import com.freesia.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -45,7 +47,7 @@ import java.util.function.Supplier;
 @Service
 @RequiredArgsConstructor
 public class SysLoginServiceImpl implements SysLoginService {
-    private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    private final @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor;
     private final LoginPasswordProperties loginPasswordProperties;
     private final SysConfigService sysConfigService;
     private final SysUserService sysUserService;
@@ -83,13 +85,20 @@ public class SysLoginServiceImpl implements SysLoginService {
         });
         USpring.context().publishEvent(loginLogEvent);
         Long userId = USecurity.getUserId();
-        scheduledThreadPoolExecutor.schedule(() -> {
+        // 虚拟线程中睡眠5秒后推送欢迎SSE，替代原ScheduledThreadPoolExecutor延时调度
+        taskExecutor.execute(() -> {
+            try {
+                Thread.sleep(Duration.ofSeconds(5));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
             SseMessageDto dto = new SseMessageDto();
             dto.setContent("欢迎登录Freesia后台管理系统");
             dto.setTopicList(Collections.singletonList(SseTopic.GLOBAL_SSE.getKey()));
             dto.setUserIdList(List.of(userId));
             USse.publish(dto);
-        }, 5, TimeUnit.SECONDS);
+        });
         // 20250930-Bliss 用户登录时检查是否生成用户未读的公告数据，无则生成
         sysNoticeService.checkSaveAnnouncement(userId);
         return StpUtil.getTokenValue();
