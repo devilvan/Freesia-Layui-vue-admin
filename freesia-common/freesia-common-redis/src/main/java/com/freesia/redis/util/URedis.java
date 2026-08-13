@@ -3,11 +3,13 @@ package com.freesia.redis.util;
 import cn.hutool.core.convert.Convert;
 import com.freesia.util.USpring;
 import lombok.NonNull;
+import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -363,6 +365,35 @@ public class URedis {
      */
     public static Long delete(Collection<String> keyList) {
         return Convert.toLong(REDIS_TEMPLATE.delete(keyList), 0L);
+    }
+
+    /**
+     * 执行 Lua 脚本（原子操作）。
+     * <p>
+     * 注意：key 与参数均按 UTF-8 字节编码发送，避免 freesiaRedisTemplate 的
+     * Jackson value 序列化器对 Lua 参数（ARGV）的干扰。
+     *
+     * @param script Lua脚本
+     * @param keys   Redis key列表（KEYS）
+     * @param args   脚本参数（ARGV），统一按字符串编码
+     * @return 脚本返回结果（ReturnType.INTEGER，通常为计数结果）
+     */
+    public static Long executeLua(String script, List<String> keys, Object... args) {
+        return REDIS_TEMPLATE.execute((RedisCallback<Long>) connection -> {
+            List<byte[]> keysAndArgs = new ArrayList<>(keys.size() + args.length);
+            for (String key : keys) {
+                keysAndArgs.add(key.getBytes(StandardCharsets.UTF_8));
+            }
+            for (Object arg : args) {
+                keysAndArgs.add(String.valueOf(arg).getBytes(StandardCharsets.UTF_8));
+            }
+            return (Long) connection.eval(
+                    script.getBytes(StandardCharsets.UTF_8),
+                    ReturnType.INTEGER,
+                    keys.size(),
+                    keysAndArgs.toArray(new byte[0][])
+            );
+        });
     }
 
     /**
