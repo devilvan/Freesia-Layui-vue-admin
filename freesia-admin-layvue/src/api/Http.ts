@@ -19,7 +19,7 @@ const config: TAxiosOption = {
 // ==================== Token 自动续期 ====================
 const RENEW_URL = '/api/sysLoginController/renewToken'
 const RENEW_BEFORE_SECONDS = 300 // 提前5分钟续期
-let renewPromise: Promise<string | null> | null = null
+let renewPromise: Promise<string | null | 'error'> | null = null
 
 /** 解析 JWT payload（不验证签名） */
 function parseJwt(token: string): { exp: number } | null {
@@ -45,10 +45,10 @@ function isTokenExpiringSoon(token: string): boolean {
 }
 
 /**
- * 尝试续期，返回新token或null。
+ * 尝试续期，返回新token、null（服务端明确拒绝，需登出）或 'error'（网络/服务异常，不登出）。
  * 用 renewPromise 锁防止并发续期请求。
  */
-async function tryRenewToken(currentToken: string): Promise<string | null> {
+async function tryRenewToken(currentToken: string): Promise<string | null | 'error'> {
     if (renewPromise) return renewPromise
 
     renewPromise = (async () => {
@@ -64,9 +64,9 @@ async function tryRenewToken(currentToken: string): Promise<string | null> {
                 useUserStore().token = newToken
                 return newToken
             }
-            return null
+            return null // 服务端明确拒绝续期（如 token 已失效）
         } catch {
-            return null
+            return 'error' // 网络/服务异常，不贸然登出
         } finally {
             renewPromise = null
         }
@@ -74,6 +74,28 @@ async function tryRenewToken(currentToken: string): Promise<string | null> {
     return renewPromise
 }
 // ==================== Token 自动续期 END ====================
+
+// ==================== 401 统一处理 ====================
+let handling401 = false
+/**
+ * 401 统一登出处理：
+ * 1. 防并发 401 风暴——token 过期瞬间多个在飞请求同时 401，只处理一次
+ * 2. 已在登录页时不重复跳转
+ */
+function handle401(data: any = null): void {
+    if (handling401) return
+    handling401 = true
+    const userInfoStore = useUserStore()
+    // 清空用户状态（token、用户信息、权限等），避免旧数据残留
+    userInfoStore.$reset()
+    layer.msg(data?.msg || '登录已过期，请重新登录', { icon: 2 })
+    if (router.currentRoute.value.path !== loginPath) {
+        router.replace(loginPath).finally(() => (handling401 = false))
+    } else {
+        handling401 = false
+    }
+}
+// ==================== 401 统一处理 END ====================
 
 class Http {
     service;
@@ -89,8 +111,15 @@ class Http {
             // 非续期请求本身，检查token是否需要续期
             if (currentToken && !config.url?.includes(RENEW_URL)) {
                 if (isTokenExpiringSoon(currentToken)) {
-                    const newToken = await tryRenewToken(currentToken)
-                    if (newToken) currentToken = newToken
+                    const renewResult = await tryRenewToken(currentToken)
+                    if (typeof renewResult === 'string') {
+                        currentToken = renewResult
+                    } else if (renewResult === null) {
+                        // 服务端拒绝续期：token 已不可用，直接登出，不再用旧 token 发起请求
+                        handle401()
+                        return Promise.reject({ code: 401, msg: '登录已过期，请重新登录' })
+                    }
+                    // renewResult === 'error'：网络/服务异常，放行旧 token，交由后续请求判断
                 }
             }
 
@@ -113,14 +142,12 @@ class Http {
 
         /* 响应拦截 */
         this.service.interceptors.response.use((response: AxiosResponse<any>) => {
-            const userInfoStore = useUserStore();
             let responseData = response.data;
             switch (responseData.code) {
                 case 200:
                     return responseData;
                 case 401:
-                    userInfoStore.token = ''
-                    router.replace(loginPath)
+                    handle401(responseData)
                     return Promise.reject(responseData);
                 case 403:
                     router.replace('/error/403').then(r => r)
@@ -161,6 +188,10 @@ class Http {
                 document.body.removeChild(fileLink)
             }
         }, error => {
+            // HTTP 层 401（如 Sa-Token Filter / 网关直接返回）也走统一登出
+            if (error?.response?.status === 401) {
+                handle401(error.response.data)
+            }
             return Promise.reject(error)
         })
     }

@@ -31,7 +31,15 @@ public class AdminExceptionAspect {
      */
     @ExceptionHandler(NotLoginException.class)
     public R<Void> notLoginException(HttpServletRequest request, NotLoginException e) {
-        String message = e.getMessage();
+        // 根据未登录类型给出差异化提示，前端统一处理并引导重新登录
+        String message = switch (e.getType()) {
+            case NotLoginException.TOKEN_TIMEOUT -> "登录已过期，请重新登录";
+            case NotLoginException.INVALID_TOKEN -> "登录状态无效，请重新登录";
+            case NotLoginException.BE_REPLACED -> "账号已在别处登录，请重新登录";
+            case NotLoginException.KICK_OUT -> "账号已被强制下线，请重新登录";
+            case NotLoginException.TOKEN_FREEZE -> "账号已被冻结，请联系管理员";
+            default -> "未登录，请先登录";
+        };
         log.error("所属模块：【{}】，请求地址：【{}】，错误信息：{}", UserModule.SubModule.LOGIN, request.getRequestURL(), message);
         return R.failed(HttpStatus.HTTP_UNAUTHORIZED, message);
     }

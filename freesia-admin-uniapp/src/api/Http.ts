@@ -5,7 +5,7 @@ const baseURL = import.meta.env.VITE_APP_BASE_URL as string
 // ==================== Token 自动续期 ====================
 const RENEW_URL = '/api/sysLoginController/renewToken'
 const RENEW_BEFORE_SECONDS = 300 // 提前5分钟续期
-let renewPromise: Promise<string | null> | null = null
+let renewPromise: Promise<string | null | 'error'> | null = null
 
 /** 解析 JWT payload（不验证签名） */
 function parseJwt(token: string): { exp: number } | null {
@@ -31,10 +31,10 @@ function isTokenExpiringSoon(token: string): boolean {
 }
 
 /**
- * 尝试续期，返回新token或null。
+ * 尝试续期，返回新token、null（服务端明确拒绝，需登出）或 'error'（网络/服务异常，不登出）。
  * 用 renewPromise 锁防止并发续期请求。
  */
-async function tryRenewToken(currentToken: string): Promise<string | null> {
+async function tryRenewToken(currentToken: string): Promise<string | null | 'error'> {
   if (renewPromise) return renewPromise
 
   renewPromise = (async () => {
@@ -56,9 +56,9 @@ async function tryRenewToken(currentToken: string): Promise<string | null> {
         setToken(newToken)
         return newToken
       }
-      return null
+      return null // 服务端明确拒绝续期（如 token 已失效）
     } catch {
-      return null
+      return 'error' // 网络/服务异常，不贸然登出
     } finally {
       renewPromise = null
     }
@@ -66,6 +66,25 @@ async function tryRenewToken(currentToken: string): Promise<string | null> {
   return renewPromise
 }
 // ==================== Token 自动续期 END ====================
+
+// ==================== 401 统一处理 ====================
+let handling401 = false
+/** 401 统一登出处理：防并发 401 风暴（只处理一次），已在登录页时不重复跳转 */
+function handle401(): void {
+  if (handling401) return
+  handling401 = true
+  removeToken()
+  uni.showToast({ title: '会话已过期，请重新登录', icon: 'none' })
+  const pages = getCurrentPages()
+  const currentRoute = pages[pages.length - 1]?.route
+  setTimeout(() => {
+    handling401 = false
+    if (currentRoute !== 'pages/login/index') {
+      uni.redirectTo({ url: '/pages/login/index' })
+    }
+  }, 1500)
+}
+// ==================== 401 统一处理 END ====================
 
 class Http {
   async request(options: {
@@ -81,8 +100,15 @@ class Http {
     // 非续期请求本身，检查token是否需要续期
     if (token && !url.includes(RENEW_URL)) {
       if (isTokenExpiringSoon(token)) {
-        const newToken = await tryRenewToken(token)
-        if (newToken) token = newToken
+        const renewResult = await tryRenewToken(token)
+        if (typeof renewResult === 'string') {
+          token = renewResult
+        } else if (renewResult === null) {
+          // 服务端拒绝续期：token 已不可用，直接登出
+          handle401()
+          return Promise.reject({ code: 401, msg: '会话已过期，请重新登录' })
+        }
+        // renewResult === 'error'：网络/服务异常，放行旧 token，交由后续请求判断
       }
     }
 
@@ -107,6 +133,12 @@ class Http {
         timeout: 30000,
         success: (res) => {
           const responseData = res.data as any
+          // HTTP 401（如网关 / Filter 直接返回）统一走登出
+          if (res.statusCode === 401) {
+            handle401()
+            reject(responseData || { code: 401, msg: '会话已过期，请重新登录' })
+            return
+          }
           // 非标准响应（无 code 字段），直接返回原始数据
           if (responseData && responseData.code === undefined) {
             resolve(responseData)
@@ -115,11 +147,7 @@ class Http {
           if (responseData?.code === 200) {
             resolve(responseData)
           } else if (responseData?.code === 401) {
-            removeToken()
-            uni.showToast({ title: '会话已过期，请重新登录', icon: 'none' })
-            setTimeout(() => {
-              uni.redirectTo({ url: '/pages/login/index' })
-            }, 1500)
+            handle401()
             reject(responseData)
           } else {
             uni.showToast({ title: responseData?.msg || '请求失败', icon: 'none' })
