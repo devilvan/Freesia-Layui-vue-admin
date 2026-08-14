@@ -14,10 +14,6 @@ export function saveUpdate(accountCostVo: AccountCostVo) {
     return Http.post("/api/accountCostController/saveUpdate", accountCostVo);
 }
 
-export function saveUpdateBatch(accountCostVoList: Array<AccountCostVo>) {
-    return Http.post("/api/accountCostController/saveUpdateBatch", accountCostVoList);
-}
-
 export function findPageAccountCost(accountCostVo: AccountCostVo, pageQuery: PageQuery): Promise<TableResult<AccountCostEntity>> {
     let params = buildPageUrlParam(accountCostVo, pageQuery);
     return Http.get("/api/accountCostController/findPageAccountCost", params);

@@ -126,6 +126,13 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         if (UEmpty.isNull(costId)) {
             // 新增
             AccountCostPo afterInsertAccountCostPo = handleInsert(accountCostDto, accountCostPo, accountCostUserIdList, userId, sysUserDto);
+            // 20260814 新增也会影响已生成的报表，异步标记归属人及分摊用户报表的重算标识为false
+            Set<Long> affectedUserIdSet = new HashSet<>();
+            affectedUserIdSet.add(userId);
+            if (UEmpty.isNotEmpty(accountCostUserIdList)) {
+                affectedUserIdSet.addAll(accountCostUserIdList);
+            }
+            taskExecutor.execute(() -> markReportRecalculateFlag(accountCostDto, affectedUserIdSet));
             return accountCostConverter.convertPo2Dto(afterInsertAccountCostPo);
         } else {
             // 修改
@@ -144,14 +151,55 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
      */
     private void executeChangeReportRecalculateFlag(AccountCostDto accountCostDto, Long userId, Long tenantId) {
         AccountCostPo originAccountCostPo = accountCostRepository.findById(accountCostDto.getId()).orElse(null);
+        // 20260814 旧分摊用户需在 handleUpdate 替换分摊记录前查出（主线程），避免异步任务读到新分摊数据导致漏标
+        Set<Long> originAllocUserIdSet = new HashSet<>();
+        if (originAccountCostPo != null) {
+            List<AccountCostUserAllocPo> originAllocPoList = accountCostUserAllocService.findListByCostIdList(Collections.singletonList(originAccountCostPo.getId()));
+            if (UEmpty.isNotEmpty(originAllocPoList)) {
+                originAllocPoList.forEach(allocPo -> originAllocUserIdSet.add(allocPo.getUserId()));
+            }
+        }
         taskExecutor.execute(() -> {
-            if (originAccountCostPo != null) {
-                // 20260302-Bliss 修改金额或收支类型时，标记已生成的预算账单的重算标识为false
-                if (!(accountCostDto.getPaymentSign().equals(originAccountCostPo.getPaymentSign()) && accountCostDto.getOutlay().compareTo(originAccountCostPo.getOutlay()) == 0)) {
-                    handleChangeRecalculateFlag(accountCostDto, userId);
+            if (originAccountCostPo == null) {
+                return;
+            }
+            // 20260814 金额、收支类型、记账日期任一变化，都会影响已生成的报表，标记重算标识为false
+            boolean paymentSignChanged = !Objects.equals(accountCostDto.getPaymentSign(), originAccountCostPo.getPaymentSign());
+            boolean outlayChanged = accountCostDto.getOutlay() == null
+                    || originAccountCostPo.getOutlay() == null
+                    || accountCostDto.getOutlay().compareTo(originAccountCostPo.getOutlay()) != 0;
+            boolean paymentTimeChanged = !Objects.equals(accountCostDto.getPaymentTime(), originAccountCostPo.getPaymentTime());
+            if (paymentSignChanged || outlayChanged || paymentTimeChanged) {
+                // 受影响用户：操作者 + 记录归属人 + 旧分摊用户 + 新关联用户
+                Set<Long> affectedUserIdSet = new HashSet<>();
+                affectedUserIdSet.add(userId);
+                affectedUserIdSet.add(originAccountCostPo.getUserId());
+                affectedUserIdSet.addAll(originAllocUserIdSet);
+                if (UEmpty.isNotEmpty(accountCostDto.getAccountCostUserIdList())) {
+                    affectedUserIdSet.addAll(accountCostDto.getAccountCostUserIdList());
+                }
+                // 标记新记账日期所在报表
+                markReportRecalculateFlag(accountCostDto, affectedUserIdSet);
+                // 记账日期变更时，旧日期的报表也要重算（该记录已不在原报表期间内）
+                if (paymentTimeChanged) {
+                    AccountCostDto originAccountCostDto = new AccountCostDto();
+                    originAccountCostDto.setPaymentTime(originAccountCostPo.getPaymentTime());
+                    markReportRecalculateFlag(originAccountCostDto, affectedUserIdSet);
                 }
             }
         });
+    }
+
+    /**
+     * 标记多个用户报表的重算标识
+     *
+     * @param accountCostDto 记账对象（仅使用记账日期）
+     * @param userIdSet      受影响用户ID集合
+     */
+    private void markReportRecalculateFlag(AccountCostDto accountCostDto, Set<Long> userIdSet) {
+        for (Long affectedUserId : userIdSet) {
+            handleChangeRecalculateFlag(accountCostDto, affectedUserId);
+        }
     }
 
     private void handleChangeRecalculateFlag(AccountCostDto accountCostDto, Long userId) {
@@ -161,6 +209,10 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         if (UEmpty.isEmpty(accountBudgetDtoList)) {
             // 如果没有缓存预算则尝试缓存一次
             accountBudgetService.cacheBudget(userId);
+            accountBudgetDtoList = URedis.get(findBudget);
+        }
+        // 20260814 无预算则不存在需要重算的报表，直接返回（避免空集合NPE，delete路径为同步调用）
+        if (UEmpty.isEmpty(accountBudgetDtoList)) {
             return;
         }
         Set<Long> reportIdSet = new HashSet<>();
@@ -238,8 +290,20 @@ public class AccountCostServiceImpl extends BaseServiceImpl<AccountCostMapper, A
         for (AccountCostPo accountCostPo : accountCostPoList) {
             costIdList.add(accountCostPo.getId());
             AccountCostDto accountCostDto = accountCostConverter.convertPo2Dto(accountCostPo);
-            // 20260702-Bliss 删除时，也调整报表的重算状态
+            // 20260814 删除时，标记归属人报表的重算状态
             handleChangeRecalculateFlag(accountCostDto, accountCostPo.getUserId());
+        }
+        // 20260814 分摊记录也参与报表聚合（支出按本人分摊金额计入），删除时同步标记分摊用户报表的重算状态
+        List<AccountCostUserAllocPo> allocPoList = accountCostUserAllocService.findListByCostIdList(costIdList);
+        if (UEmpty.isNotEmpty(allocPoList)) {
+            Map<Long, AccountCostPo> costPoMap = accountCostPoList.stream()
+                    .collect(Collectors.toMap(AccountCostPo::getId, Function.identity()));
+            for (AccountCostUserAllocPo allocPo : allocPoList) {
+                AccountCostPo costPo = costPoMap.get(allocPo.getCostId());
+                if (costPo != null) {
+                    handleChangeRecalculateFlag(accountCostConverter.convertPo2Dto(costPo), allocPo.getUserId());
+                }
+            }
         }
         accountCostUserAllocService.deleteAccountCostUserAllocByCostId(costIdList);
         accountCostRepository.deleteAllByIdInBatch(idList);

@@ -33,14 +33,6 @@ public interface AccountCostService {
     AccountCostDto saveUpdate(AccountCostDto accountCostDto);
 
     /**
-     * 批量保存开销表信息
-     *
-     * @param list 控制层处理后的数据传输对象集合
-     * @return 保存回调对象
-     */
-    List<AccountCostDto> saveUpdateBatch(List<AccountCostDto> list);
-
-    /**
      * 查询开销表信息
      *
      * @param accountCostDto 查询条件
