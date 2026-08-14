@@ -105,36 +105,6 @@ public class AccountCostController extends BaseController {
     }
 
     /**
-     * 批量保存开销表信息
-     *
-     * @param accountCostVoList 待保存对象
-     * @return 形式返回
-     */
-    @Idempotent
-    @Operation(summary = "保存开销表信息")
-    @PostMapping(value = "saveUpdateBatch")
-    @SaCheckOr(permission = {
-            @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_ADD),
-            @SaCheckPermission(value = MenuPermission.ACCOUNT_COST_EDIT)
-    })
-    public R<Void> saveUpdateBatch(@RequestBody List<AccountCostVo> accountCostVoList) {
-        Long tenantId = USecurity.getTenantId();
-        List<AccountCostDto> accountCostDtoList = new ArrayList<>();
-        accountCostVoList.forEach(accountCostVo -> {
-            AccountCostDto accountCostDto = accountCostConverter.convertVo2Dto(accountCostVo);
-            if (!accountCostVo.getAllTenantFlag()) {
-                accountCostDto.setTenantId(tenantId);
-            } else {
-                accountCostDto.setTenantId(null);
-            }
-            accountCostDto.setAccountCostUserIdList(accountCostVo.getAccountCostUserIdList());
-            accountCostDtoList.add(accountCostDto);
-        });
-        accountCostService.saveUpdateBatch(accountCostDtoList);
-        return R.ok();
-    }
-
-    /**
      * 查询开销表分页信息
      *
      * @param accountCostVo 查询条件
