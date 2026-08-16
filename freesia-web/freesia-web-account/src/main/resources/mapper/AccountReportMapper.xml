@@ -91,6 +91,12 @@
         <include refid="Base_Column_List"/>
         FROM ACCOUNT_REPORT
         WHERE LOGIC_DEL = 0
+        <if test="dto.idList != null and dto.idList.size() > 0">
+            AND ID IN
+            <foreach collection="dto.idList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         <if test="dto.remark != null and dto.remark != ''">
             AND REMARK = #{dto.remark}
         </if>

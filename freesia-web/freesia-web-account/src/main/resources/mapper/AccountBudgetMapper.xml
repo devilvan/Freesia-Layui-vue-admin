@@ -23,8 +23,7 @@
         TENANT.NAME AS TENANT_NAME
         FROM account_budget AB
         LEFT JOIN sys_tenant TENANT ON AB.TENANT_ID = TENANT.ID
-        WHERE 1=1
-        AND AB.LOGIC_DEL = 0
+        WHERE AB.LOGIC_DEL = 0
         <if test="accountBudgetDto.tenantId != null and accountBudgetDto.tenantId != 0">
             AND AB.TENANT_ID = #{accountBudgetDto.tenantId}
         </if>
@@ -34,124 +33,162 @@
     </select>
     <select id="findDayBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
         SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
-               CONCAT(CURDATE(), ' 00:00:00') AS DURATION_FROM,
-               CONCAT(CURDATE(), ' 23:59:59') AS DURATION_TO
+               #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
+               #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
                  LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID = #{findBudgetCapacityDto.userId}
-          AND DATE(AC.PAYMENT_TIME) = CURDATE()
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
 
         UNION ALL
 
         SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
-               CONCAT(CURDATE(), ' 00:00:00') AS DURATION_FROM,
-               CONCAT(CURDATE(), ' 23:59:59') AS DURATION_TO
+               #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
+               #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
                  LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID <![CDATA[<>]]> #{findBudgetCapacityDto.userId}
           AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
-          AND DATE(AC.PAYMENT_TIME) = CURDATE()
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
     </select>
     <select id="findWeekBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY)        AS OUTLAY,
-               DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)                           AS DURATION_FROM,
-               DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AS DURATION_TO
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+               #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
+               #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA ON AC.ID = ACUA.COST_ID
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
+
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID = #{findBudgetCapacityDto.userId}
-          AND AC.PAYMENT_TIME BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
-            AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY)
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
 
         UNION ALL
 
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY)        AS OUTLAY,
-               DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)                           AS DURATION_FROM,
-               DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY) AS DURATION_TO
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+               #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
+               #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
-                 LEFT JOIN account_cost_user_alloc ACUA
-                           ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
+                 LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID <![CDATA[<>]]> #{findBudgetCapacityDto.userId}
           AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
-          AND AC.PAYMENT_TIME BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
-            AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 6 DAY)
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
     </select>
     <select id="findMonthBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
         SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
-               DATE_FORMAT(CURDATE(), '%Y-%m-01')                                      AS DURATION_FROM,
-               LAST_DAY(CURDATE())                                                     AS DURATION_TO
+               #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
+               #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
                  LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID = #{findBudgetCapacityDto.userId}
-          AND AC.PAYMENT_TIME BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
 
         UNION ALL
 
-        SELECT ACUA.AMOUNT                        AS OUTLAY,
-               DATE_FORMAT(CURDATE(), '%Y-%m-01') AS DURATION_FROM,
-               LAST_DAY(CURDATE())                AS DURATION_TO
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+               #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
+               #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
                  LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID <![CDATA[<>]]> #{findBudgetCapacityDto.userId}
           AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
-          AND AC.PAYMENT_TIME BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
     </select>
     <select id="findYearBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
         SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
-               DATE_FORMAT(CURDATE(), '%Y-01-01') AS DURATION_FROM,
-               DATE_FORMAT(CURDATE(), '%Y-12-31') AS DURATION_TO
+               #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
+               #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
                  LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
-          AND AC.USER_ID = #{findBudgetCapacityDto.userId}
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
-          AND AC.PAYMENT_TIME BETWEEN DATE_FORMAT(CURDATE(), '%Y-01-01') AND DATE_FORMAT(CURDATE(), '%Y-12-31')
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
+          AND AC.USER_ID = #{findBudgetCapacityDto.userId}
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
 
         UNION ALL
 
         SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
-               DATE_FORMAT(CURDATE(), '%Y-01-01') AS DURATION_FROM,
-               DATE_FORMAT(CURDATE(), '%Y-12-31') AS DURATION_TO
+               #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
+               #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
                  LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+        WHERE AC.LOGIC_DEL = 0
+          AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID <![CDATA[<>]]> #{findBudgetCapacityDto.userId}
           AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
-          AND AC.PAYMENT_SIGN = 'EXPENSES'
-          AND AC.PAYMENT_TIME BETWEEN DATE_FORMAT(CURDATE(), '%Y-01-01') AND DATE_FORMAT(CURDATE(), '%Y-12-31')
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
     </select>
     <select id="findCustomBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
@@ -161,12 +198,16 @@
         FROM account_cost AC
                  LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID = #{findBudgetCapacityDto.userId}
-          AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
-          AND AC.PAYMENT_TIME BETWEEN #{findBudgetCapacityDto.durationFrom} AND #{findBudgetCapacityDto.durationTo}
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
 
         UNION ALL
@@ -177,12 +218,17 @@
         FROM account_cost AC
                  LEFT JOIN account_cost_user_alloc ACUA ON ACUA.COST_ID = AC.ID AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
 
-        WHERE 1 = 1
-          AND AC.LOGIC_DEL = 0
+        WHERE AC.LOGIC_DEL = 0
           AND AC.PAYMENT_SIGN = 'EXPENSES'
+          <if test="findBudgetCapacityDto.tenantId != null">
+              AND AC.TENANT_ID = #{findBudgetCapacityDto.tenantId}
+          </if>
           AND AC.USER_ID <![CDATA[<>]]> #{findBudgetCapacityDto.userId}
           AND ACUA.USER_ID = #{findBudgetCapacityDto.userId}
-          AND AC.PAYMENT_TIME BETWEEN #{findBudgetCapacityDto.durationFrom} AND #{findBudgetCapacityDto.durationTo}
+          <if test="findBudgetCapacityDto.durationFrom != null and findBudgetCapacityDto.durationTo != null">
+              AND AC.PAYMENT_TIME <![CDATA[>=]]> #{findBudgetCapacityDto.durationFrom}
+              AND AC.PAYMENT_TIME <![CDATA[<=]]> #{findBudgetCapacityDto.durationTo}
+          </if>
         GROUP BY AC.ID
     </select>
 </mapper>

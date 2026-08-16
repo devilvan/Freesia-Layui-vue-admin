@@ -83,6 +83,15 @@ public class RecalculateReportScheduler {
 
 
     /**
+     * 根据ID集合重算报表数据
+     *
+     * @param idList 报表ID集合
+     */
+    public void recalculateReport(List<Long> idList) {
+        handleRecalculateReport(idList);
+    }
+
+    /**
      * 查询重算标识为false的报表数据
      *
      * @return 报表ID

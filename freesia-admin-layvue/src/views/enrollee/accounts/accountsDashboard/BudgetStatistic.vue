@@ -176,6 +176,9 @@
           <lay-button border="red" border-style="dashed" size="xs" @click="doUpdateAllBudgetAmount()">
             更新所有报表预算金额
           </lay-button>
+          <lay-button border="orange" border-style="dashed" size="xs" @click="doRecalculateReport()">
+            重算
+          </lay-button>
         </template>
       </lay-table>
     </div>
@@ -196,7 +199,7 @@ import {SysDictValueEntity} from "@/types/system/Dict";
 import {findAccountBudget, saveUpdate} from "@/api/account/AccountBudget";
 import {layer} from "@layui/layui-vue";
 import {Constants, loadSysDictValue, sysDictValueSelect} from "@/util/UDict";
-import {findAccountReport, findPageAccountReport, updateBudgetAmount} from "@/api/account/AccountReport";
+import {findAccountReport, findPageAccountReport, updateBudgetAmount, recalculateReport} from "@/api/account/AccountReport";
 import {R, TableResult} from "@/types/Result";
 import {AccountReportEntity, AccountReportVo} from "@/types/account/AccountReport";
 import {PageQuery} from "@/types/Common";
@@ -436,6 +439,38 @@ function doUpdateBudgetAmount() {
             if (res.code === 200) {
               selectedKeys.value = []
               layer.msg('更新成功！', {icon: 1, time: 1000})
+              change()
+            }
+          })
+          layer.closeAll()
+        }
+      },
+      {
+        text: '取消',
+        callback: (id) => {
+          layer.close(id)
+        }
+      }
+    ]
+  })
+}
+
+function doRecalculateReport() {
+  let checkDataList = tableRef.value.getCheckData();
+  if (!checkDataList || checkDataList.length < 1) {
+    layer.msg('请选择数据')
+    return;
+  }
+  layer.confirm('确定重算选中报表的数据吗？', {
+    btn: [
+      {
+        text: '确定',
+        callback: () => {
+          let idList = checkDataList.map((item: AccountReportEntity) => item.id)
+          recalculateReport(idList).then((res: any) => {
+            if (res.code === 200) {
+              selectedKeys.value = []
+              layer.msg('重算成功！', {icon: 1, time: 1000})
               change()
             }
           })

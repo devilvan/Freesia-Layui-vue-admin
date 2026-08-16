@@ -185,4 +185,17 @@ public class AccountReportController extends BaseController {
         accountReportService.updateBudgetAmount(accountReportVo);
         return R.ok();
     }
+
+    /**
+     * 根据ID集合重算报表数据
+     *
+     * @param idList 报表ID集合
+     * @return 形式返回
+     */
+    @Operation(summary = "根据ID集合重算报表数据")
+    @PostMapping(value = "recalculateReportByIdList")
+    public R<Void> recalculateReportByIdList(@RequestBody List<Long> idList) {
+        recalculateReportScheduler.recalculateReport(idList);
+        return R.ok();
+    }
 }
