@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  * @Description 重算报表 定时器
  * @date 2026-03-02
  */
+@SuppressWarnings("UnusedReturnValue")
 @Component
 @RequiredArgsConstructor
 public class RecalculateReportScheduler {

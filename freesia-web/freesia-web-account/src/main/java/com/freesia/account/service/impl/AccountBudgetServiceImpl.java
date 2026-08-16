@@ -237,6 +237,7 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
         sumOutlay = findBudgetCapacityEntityList.stream().map(AccountBudgetDto::getOutlay).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal rate = sumOutlay.divide(accountBudgetDto.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
+        echartCapacityOptionEntity.setSaveUp(accountBudgetDto.getOutlay().subtract(sumOutlay));
         echartCapacityOptionEntity.setValue(rate);
         // 如果是自定义类型，则赋值自定义的时间范围
         if (BudgetType.CUSTOM.getCode().equals(accountBudgetDto.getBudgetType())) {

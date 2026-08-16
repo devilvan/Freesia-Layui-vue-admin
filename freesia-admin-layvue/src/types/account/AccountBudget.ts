@@ -28,4 +28,5 @@ export interface EchartCapacityOptionEntity {
     durationFrom?: string;
     durationTo?: string;
     tenantName?: string;
+    saveUp?: number;
 }

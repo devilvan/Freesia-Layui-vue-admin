@@ -11,6 +11,9 @@
             <div v-if="item.durationFrom" style="font-size: 10pt;text-align: center;height: 30px">
               {{ item.durationFrom }} - {{ item.durationTo }}
             </div>
+            <div style="font-size: 13pt;text-align: center;height: 30px;margin-bottom: 5px">
+              攒钱：￥{{ (item.saveUp || 0).toFixed(2) }}
+            </div>
             <div style="font-size: 20pt">
               <div style="display: flex;justify-content: center" :style="
                     item.value >= 0 && item.value <= 50 ?
