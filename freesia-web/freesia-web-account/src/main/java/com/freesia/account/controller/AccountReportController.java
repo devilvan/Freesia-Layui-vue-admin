@@ -172,6 +172,7 @@ public class AccountReportController extends BaseController {
         recalculateReportScheduler.recalculateWeekReport();
         recalculateReportScheduler.recalculateMonthReport();
         recalculateReportScheduler.recalculateYearReport();
+        recalculateReportScheduler.recalculateCustomReport();
         return R.ok();
     }
 

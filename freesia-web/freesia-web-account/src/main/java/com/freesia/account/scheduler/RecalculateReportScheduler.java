@@ -81,6 +81,16 @@ public class RecalculateReportScheduler {
         return ReturnT.SUCCESS;
     }
 
+    @XxlJob("recalculateCustomReport")
+    public ReturnT<String> recalculateCustomReport() {
+        List<Long> idList = findRecalculateIdList(BudgetType.CUSTOM);
+        if (UEmpty.isEmpty(idList)) {
+            return ReturnT.FAIL;
+        }
+        handleRecalculateReport(idList);
+        return ReturnT.SUCCESS;
+    }
+
 
     /**
      * 根据ID集合重算报表数据
