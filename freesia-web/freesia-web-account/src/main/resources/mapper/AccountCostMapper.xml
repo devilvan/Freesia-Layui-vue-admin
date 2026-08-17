@@ -637,7 +637,7 @@
         AND AC.PAYMENT_TIME <![CDATA[>=]]> DATE_SUB(DATE_SUB(CURDATE(), INTERVAL 3 WEEK), INTERVAL
         WEEKDAY(DATE_SUB(CURDATE(), INTERVAL 3 WEEK)) DAY)
         GROUP BY AC.ID,AC.COST_TYPE) T
-        GROUP BY T.COST_TYPE, T.DATE_SIGN
+        GROUP BY T.COST_TYPE, T.DATE_SIGN, T.PAYMENT_SIGN
         ORDER BY T.DATE_SIGN DESC, OUTLAY DESC
     </select>
     <select id="findMonthRankByCostType" resultType="com.freesia.account.entity.FindRankByCostTypeEntity">
@@ -685,7 +685,7 @@
         AND ACUA.USER_ID = #{accountCostDto.userId}
         AND AC.PAYMENT_TIME >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-01')
         GROUP BY AC.ID,AC.COST_TYPE) T
-        GROUP BY T.COST_TYPE, T.DATE_SIGN
+        GROUP BY T.COST_TYPE, T.DATE_SIGN, T.PAYMENT_SIGN
         ORDER BY T.DATE_SIGN DESC, OUTLAY DESC
     </select>
     <select id="findSelectCostTypeList" resultType="com.freesia.account.po.AccountCostPo">
