@@ -32,7 +32,7 @@
         </if>
     </select>
     <select id="findDayBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -52,7 +52,7 @@
 
         UNION ALL
 
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -72,7 +72,7 @@
         GROUP BY AC.ID
     </select>
     <select id="findWeekBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -92,7 +92,7 @@
 
         UNION ALL
 
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -112,7 +112,7 @@
         GROUP BY AC.ID
     </select>
     <select id="findMonthBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -132,7 +132,7 @@
 
         UNION ALL
 
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -152,7 +152,7 @@
         GROUP BY AC.ID
     </select>
     <select id="findYearBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -172,7 +172,7 @@
 
         UNION ALL
 
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -192,7 +192,7 @@
         GROUP BY AC.ID
     </select>
     <select id="findCustomBudgetCapacity" resultType="com.freesia.account.entity.FindBudgetCapacityEntity">
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC
@@ -212,7 +212,7 @@
 
         UNION ALL
 
-        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT > 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
+        SELECT IF(ACUA.AMOUNT IS NOT NULL AND ACUA.AMOUNT >= 0, ACUA.AMOUNT, AC.OUTLAY) AS OUTLAY,
                #{findBudgetCapacityDto.durationFrom} AS DURATION_FROM,
                #{findBudgetCapacityDto.durationTo}   AS DURATION_TO
         FROM account_cost AC

@@ -11,7 +11,6 @@ import com.freesia.util.UEmpty;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Bliss.Wu
@@ -44,10 +43,10 @@ public class AccountReportSchedulerHelper {
      * @param reportPo                  待修改的报表实体
      */
     public static void buildReportOutlayIncome(Long userId, List<FindPageAccountCostEntity> findAccountCostEntityList, AccountReportDto reportPo) {
-        // 赋值收支金额
-        BigDecimal outlay = BigDecimal.ZERO;
-        BigDecimal income = BigDecimal.ZERO;
         if (UEmpty.isNotEmpty(findAccountCostEntityList)) {
+            // 赋值收支金额
+            BigDecimal outlay = BigDecimal.ZERO;
+            BigDecimal income = BigDecimal.ZERO;
             for (FindPageAccountCostEntity entity : findAccountCostEntityList) {
                 String paymentSign = entity.getPaymentSign();
                 CostType costType = CostType.getInstanceByCode(paymentSign);
@@ -58,37 +57,21 @@ public class AccountReportSchedulerHelper {
                     // 收入金额直接获取
                     income = income.add(entity.getOutlay());
                 } else if (costType.equals(CostType.EXPENSE)) {
-                    // 支出金额，先判断是否存在关联分摊
+                    // 支出金额，先判断是否存在关联，存在关联则取本人关联的分摊金额，否则取记录金额
                     List<AccountCostUserAllocDto> accountCostUserAllocDtoList = entity.getAccountCostUserAllocDtoList();
                     if (UEmpty.isNotEmpty(accountCostUserAllocDtoList)) {
-                        if (Objects.equals(entity.getUserId(), userId)) {
-                            // 本人为记录人：记录金额扣除其他分摊人分摊金额合计，剩余部分由本人承担
-                            BigDecimal otherAllocSum = accountCostUserAllocDtoList.stream()
-                                    .filter(Objects::nonNull)
-                                    .filter(allocDto -> !Objects.equals(allocDto.getUserId(), userId))
-                                    .map(AccountCostUserAllocDto::getAmount)
-                                    .filter(Objects::nonNull)
-                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-                            BigDecimal recordOutlay = entity.getOutlay();
-                            BigDecimal outlayTmp = recordOutlay == null ? BigDecimal.ZERO : recordOutlay.subtract(otherAllocSum).max(BigDecimal.ZERO);
-                            outlay = outlay.add(outlayTmp);
-                        } else {
-                            // 本人为被分摊人：支出金额取本人分摊金额
-                            BigDecimal outlayTmp = accountCostUserAllocDtoList.stream()
-                                    .filter(Objects::nonNull)
-                                    .filter(allocDto -> Objects.equals(allocDto.getUserId(), userId))
-                                    .findFirst()
-                                    .map(AccountCostUserAllocDto::getAmount)
-                                    .orElse(BigDecimal.ZERO);
-                            outlay = outlay.add(outlayTmp);
-                        }
+                        BigDecimal outlayTmp = accountCostUserAllocDtoList.stream()
+                                .filter(allocDto -> allocDto.getUserId().equals(userId))
+                                .findFirst().map(AccountCostUserAllocDto::getAmount)
+                                .orElse(BigDecimal.ZERO);
+                        outlay = outlay.add(outlayTmp);
                     } else {
                         outlay = outlay.add(entity.getOutlay());
                     }
                 }
+                reportPo.setOutlay(outlay);
+                reportPo.setIncomeAmount(income);
             }
-            reportPo.setOutlay(outlay);
-            reportPo.setIncomeAmount(income);
         }
     }
 }
