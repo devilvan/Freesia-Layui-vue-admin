@@ -264,22 +264,31 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
         echartCapacityOptionEntity.setBudgetType(accountBudgetDto.getBudgetType());
         echartCapacityOptionEntity.setValue(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
         echartCapacityOptionEntity.setTenantName(accountBudgetDto.getTenantName());
-        if (UEmpty.isEmpty(findBudgetCapacityEntityList)) {
-            return echartCapacityOptionEntity;
-        }
-        FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
-        sumOutlay = findBudgetCapacityEntityList.stream().map(AccountBudgetDto::getOutlay).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal rate = sumOutlay.divide(accountBudgetDto.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
-        echartCapacityOptionEntity.setSaveUp(accountBudgetDto.getOutlay().subtract(sumOutlay));
-        echartCapacityOptionEntity.setValue(rate);
-        // 如果是自定义类型，则赋值自定义的时间范围
-        if (BudgetType.CUSTOM.getCode().equals(accountBudgetDto.getBudgetType())) {
-            echartCapacityOptionEntity.setDurationFrom(accountBudgetDto.getDurationFrom());
-            echartCapacityOptionEntity.setDurationTo(accountBudgetDto.getDurationTo());
+        if (UEmpty.isNotEmpty(findBudgetCapacityEntityList)) {
+            FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
+            sumOutlay = findBudgetCapacityEntityList.stream().map(AccountBudgetDto::getOutlay).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal rate = sumOutlay.divide(accountBudgetDto.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+            echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
+            echartCapacityOptionEntity.setSaveUp(accountBudgetDto.getOutlay().subtract(sumOutlay));
+            echartCapacityOptionEntity.setValue(rate);
+            // 如果是自定义类型，则赋值自定义的时间范围
+            if (BudgetType.CUSTOM.getCode().equals(accountBudgetDto.getBudgetType())) {
+                echartCapacityOptionEntity.setDurationFrom(accountBudgetDto.getDurationFrom());
+                echartCapacityOptionEntity.setDurationTo(accountBudgetDto.getDurationTo());
+            } else {
+                echartCapacityOptionEntity.setDurationFrom(findBudgetCapacityEntity.getDurationFrom());
+                echartCapacityOptionEntity.setDurationTo(findBudgetCapacityEntity.getDurationTo());
+            }
         } else {
-            echartCapacityOptionEntity.setDurationFrom(findBudgetCapacityEntity.getDurationFrom());
-            echartCapacityOptionEntity.setDurationTo(findBudgetCapacityEntity.getDurationTo());
+            BigDecimal rate = sumOutlay.divide(accountBudgetDto.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+            echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
+            echartCapacityOptionEntity.setSaveUp(accountBudgetDto.getOutlay().subtract(sumOutlay));
+            echartCapacityOptionEntity.setValue(rate);
+            // 如果是自定义类型，则赋值自定义的时间范围
+            if (BudgetType.CUSTOM.getCode().equals(accountBudgetDto.getBudgetType())) {
+                echartCapacityOptionEntity.setDurationFrom(accountBudgetDto.getDurationFrom());
+                echartCapacityOptionEntity.setDurationTo(accountBudgetDto.getDurationTo());
+            }
         }
         return echartCapacityOptionEntity;
     }
