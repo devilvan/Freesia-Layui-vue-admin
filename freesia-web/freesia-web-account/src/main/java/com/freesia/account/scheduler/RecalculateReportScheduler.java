@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  * @Description 重算报表 定时器
  * @date 2026-03-02
  */
+@SuppressWarnings("UnusedReturnValue")
 @Component
 @RequiredArgsConstructor
 public class RecalculateReportScheduler {
@@ -80,6 +81,25 @@ public class RecalculateReportScheduler {
         return ReturnT.SUCCESS;
     }
 
+    @XxlJob("recalculateCustomReport")
+    public ReturnT<String> recalculateCustomReport() {
+        List<Long> idList = findRecalculateIdList(BudgetType.CUSTOM);
+        if (UEmpty.isEmpty(idList)) {
+            return ReturnT.FAIL;
+        }
+        handleRecalculateReport(idList);
+        return ReturnT.SUCCESS;
+    }
+
+
+    /**
+     * 根据ID集合重算报表数据
+     *
+     * @param idList 报表ID集合
+     */
+    public void recalculateReport(List<Long> idList) {
+        handleRecalculateReport(idList);
+    }
 
     /**
      * 查询重算标识为false的报表数据

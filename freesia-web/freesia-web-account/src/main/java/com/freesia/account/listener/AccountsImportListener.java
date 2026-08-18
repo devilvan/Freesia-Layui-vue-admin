@@ -54,7 +54,9 @@ public class AccountsImportListener<T extends BaseImportEntity> extends BaseImpo
         }
         if (UEmpty.isNotEmpty(accountCostDtoList)) {
             // 保存
-            accountCostService.saveUpdateBatch(accountCostDtoList);
+            for (AccountCostDto accountCostDto : accountCostDtoList) {
+                accountCostService.saveUpdate(accountCostDto);
+            }
         }
         cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
     }

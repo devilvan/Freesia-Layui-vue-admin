@@ -1,3 +1,11 @@
+/* layui-vue 2.23.3 全局新增 *, :before, :after { box-sizing: border-box }，导致
+ * .layui-form-label 默认 95px 宽度减去 padding-right:15px 后文字区仅 80px，
+ * 超过 5 个汉字会换行被固定高度裁掉。恢复 2.22.0 的 content-box 渲染行为。
+ * 注：.layui-form-pane .layui-form-label 特异性更高，pane 模式不受影响。 */
+.layui-form-label {
+    box-sizing: content-box;
+}
+
 .layui-logo {
     width: 100%;
     font-size: 20px;

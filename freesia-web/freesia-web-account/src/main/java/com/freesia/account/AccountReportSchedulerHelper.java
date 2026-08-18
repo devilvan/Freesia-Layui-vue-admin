@@ -43,10 +43,10 @@ public class AccountReportSchedulerHelper {
      * @param reportPo                  待修改的报表实体
      */
     public static void buildReportOutlayIncome(Long userId, List<FindPageAccountCostEntity> findAccountCostEntityList, AccountReportDto reportPo) {
-        // 赋值收支金额
-        BigDecimal outlay = BigDecimal.ZERO;
-        BigDecimal income = BigDecimal.ZERO;
         if (UEmpty.isNotEmpty(findAccountCostEntityList)) {
+            // 赋值收支金额
+            BigDecimal outlay = BigDecimal.ZERO;
+            BigDecimal income = BigDecimal.ZERO;
             for (FindPageAccountCostEntity entity : findAccountCostEntityList) {
                 String paymentSign = entity.getPaymentSign();
                 CostType costType = CostType.getInstanceByCode(paymentSign);
@@ -69,9 +69,9 @@ public class AccountReportSchedulerHelper {
                         outlay = outlay.add(entity.getOutlay());
                     }
                 }
+                reportPo.setOutlay(outlay);
+                reportPo.setIncomeAmount(income);
             }
-            reportPo.setOutlay(outlay);
-            reportPo.setIncomeAmount(income);
         }
     }
 }

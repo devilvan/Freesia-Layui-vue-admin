@@ -10,7 +10,7 @@
             </lay-form-item>
           </lay-col>
           <lay-col :md="2">
-            <lay-form-item label="刷新缓存" props="44">
+            <lay-form-item label="刷新缓存">
               <lay-button type="normal" @click="doRefreshCache" v-esc-close="closeRefreshConfirm">刷新缓存</lay-button>
             </lay-form-item>
           </lay-col>

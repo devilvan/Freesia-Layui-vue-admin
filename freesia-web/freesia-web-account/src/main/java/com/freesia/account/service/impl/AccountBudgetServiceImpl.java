@@ -154,21 +154,25 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
         for (AccountBudgetDto accountBudgetDto : accountBudgetDtoList) {
             String budgetType = accountBudgetDto.getBudgetType();
             if (BudgetType.DAY.getCode().equals(budgetType)) {
+                setCurrentPeriod(findBudgetCapacityDto, BudgetType.DAY);
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findDayBudgetCapacity(findBudgetCapacityDto);
                 EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                 echartCapacityOptionEntity.buildDuration(budgetType);
                 echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
             } else if (BudgetType.WEEK.getCode().equals(budgetType)) {
+                setCurrentPeriod(findBudgetCapacityDto, BudgetType.WEEK);
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findWeekBudgetCapacity(findBudgetCapacityDto);
                 EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                 echartCapacityOptionEntity.buildDuration(budgetType);
                 echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
             } else if (BudgetType.MONTH.getCode().equals(budgetType)) {
+                setCurrentPeriod(findBudgetCapacityDto, BudgetType.MONTH);
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findMonthBudgetCapacity(findBudgetCapacityDto);
                 EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                 echartCapacityOptionEntity.buildDuration(budgetType);
                 echartCapacityOptionEntityList.add(echartCapacityOptionEntity);
             } else if (BudgetType.YEAR.getCode().equals(budgetType)) {
+                setCurrentPeriod(findBudgetCapacityDto, BudgetType.YEAR);
                 List<FindBudgetCapacityEntity> findBudgetCapacityEntityList = accountBudgetMapper.findYearBudgetCapacity(findBudgetCapacityDto);
                 EchartCapacityOptionEntity echartCapacityOptionEntity = buildEchartCapacityOptionEntity(findBudgetCapacityEntityList, accountBudgetDto);
                 echartCapacityOptionEntity.buildDuration(budgetType);
@@ -192,6 +196,36 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
         }
         sortEchartCapacityOptionEntityList(echartCapacityOptionEntityList);
         return echartCapacityOptionEntityList;
+    }
+
+    /**
+     * 设置当前时间周期
+     *
+     * @param findBudgetCapacityDto 预算容量查询参数
+     * @param budgetType            预算类型
+     */
+    private void setCurrentPeriod(FindBudgetCapacityDto findBudgetCapacityDto, BudgetType budgetType) {
+        Date now = new Date();
+        switch (budgetType) {
+            case DAY -> {
+                findBudgetCapacityDto.setDurationFrom(DateUtil.beginOfDay(now));
+                findBudgetCapacityDto.setDurationTo(DateUtil.endOfDay(now));
+            }
+            case WEEK -> {
+                findBudgetCapacityDto.setDurationFrom(DateUtil.beginOfWeek(now));
+                findBudgetCapacityDto.setDurationTo(DateUtil.endOfWeek(now));
+            }
+            case MONTH -> {
+                findBudgetCapacityDto.setDurationFrom(DateUtil.beginOfMonth(now));
+                findBudgetCapacityDto.setDurationTo(DateUtil.endOfMonth(now));
+            }
+            case YEAR -> {
+                findBudgetCapacityDto.setDurationFrom(DateUtil.beginOfYear(now));
+                findBudgetCapacityDto.setDurationTo(DateUtil.endOfYear(now));
+            }
+            default -> {
+            }
+        }
     }
 
     /**
@@ -230,21 +264,31 @@ public class AccountBudgetServiceImpl extends BaseServiceImpl<AccountBudgetMappe
         echartCapacityOptionEntity.setBudgetType(accountBudgetDto.getBudgetType());
         echartCapacityOptionEntity.setValue(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
         echartCapacityOptionEntity.setTenantName(accountBudgetDto.getTenantName());
-        if (UEmpty.isEmpty(findBudgetCapacityEntityList)) {
-            return echartCapacityOptionEntity;
-        }
-        FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
-        sumOutlay = findBudgetCapacityEntityList.stream().map(AccountBudgetDto::getOutlay).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal rate = sumOutlay.divide(accountBudgetDto.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
-        echartCapacityOptionEntity.setValue(rate);
-        // 如果是自定义类型，则赋值自定义的时间范围
-        if (BudgetType.CUSTOM.getCode().equals(accountBudgetDto.getBudgetType())) {
-            echartCapacityOptionEntity.setDurationFrom(accountBudgetDto.getDurationFrom());
-            echartCapacityOptionEntity.setDurationTo(accountBudgetDto.getDurationTo());
+        if (UEmpty.isNotEmpty(findBudgetCapacityEntityList)) {
+            FindBudgetCapacityEntity findBudgetCapacityEntity = findBudgetCapacityEntityList.get(0);
+            sumOutlay = findBudgetCapacityEntityList.stream().map(AccountBudgetDto::getOutlay).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal rate = sumOutlay.divide(accountBudgetDto.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+            echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
+            echartCapacityOptionEntity.setSaveUp(accountBudgetDto.getOutlay().subtract(sumOutlay));
+            echartCapacityOptionEntity.setValue(rate);
+            // 如果是自定义类型，则赋值自定义的时间范围
+            if (BudgetType.CUSTOM.getCode().equals(accountBudgetDto.getBudgetType())) {
+                echartCapacityOptionEntity.setDurationFrom(accountBudgetDto.getDurationFrom());
+                echartCapacityOptionEntity.setDurationTo(accountBudgetDto.getDurationTo());
+            } else {
+                echartCapacityOptionEntity.setDurationFrom(findBudgetCapacityEntity.getDurationFrom());
+                echartCapacityOptionEntity.setDurationTo(findBudgetCapacityEntity.getDurationTo());
+            }
         } else {
-            echartCapacityOptionEntity.setDurationFrom(findBudgetCapacityEntity.getDurationFrom());
-            echartCapacityOptionEntity.setDurationTo(findBudgetCapacityEntity.getDurationTo());
+            BigDecimal rate = sumOutlay.divide(accountBudgetDto.getOutlay(), 2, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+            echartCapacityOptionEntity.setOutlay(sumOutlay.setScale(2, RoundingMode.HALF_UP));
+            echartCapacityOptionEntity.setSaveUp(accountBudgetDto.getOutlay().subtract(sumOutlay));
+            echartCapacityOptionEntity.setValue(rate);
+            // 如果是自定义类型，则赋值自定义的时间范围
+            if (BudgetType.CUSTOM.getCode().equals(accountBudgetDto.getBudgetType())) {
+                echartCapacityOptionEntity.setDurationFrom(accountBudgetDto.getDurationFrom());
+                echartCapacityOptionEntity.setDurationTo(accountBudgetDto.getDurationTo());
+            }
         }
         return echartCapacityOptionEntity;
     }
