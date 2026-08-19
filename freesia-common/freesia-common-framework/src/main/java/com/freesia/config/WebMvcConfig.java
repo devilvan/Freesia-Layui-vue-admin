@@ -1,8 +1,8 @@
 package com.freesia.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -25,7 +25,7 @@ import java.util.List;
  * @Description Web MVC 配置类
  * @date 2023-08-24
  */
-@Configuration
+@AutoConfiguration
 public class WebMvcConfig implements WebMvcConfigurer {
     //    @Resource
 //    private FastJsonHttpMessageConverter fastJsonHttpMessageConverter;

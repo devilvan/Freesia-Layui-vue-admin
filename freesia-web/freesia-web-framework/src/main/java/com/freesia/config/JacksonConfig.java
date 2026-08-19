@@ -21,8 +21,10 @@ import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
 import de.codecentric.boot.admin.server.utils.jackson.RegistrationDeserializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import java.math.BigInteger;
@@ -38,8 +40,9 @@ import java.util.TimeZone;
  * @date 2025-05-31
  */
 @Slf4j
-@Configuration
+@AutoConfiguration
 @RequiredArgsConstructor
+@AutoConfigureBefore(JacksonAutoConfiguration.class)
 public class JacksonConfig {
     private final AdminServerModule adminServerModule;
 

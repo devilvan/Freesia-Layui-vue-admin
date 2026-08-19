@@ -3,9 +3,9 @@ package com.freesia.xxljob.config;
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Bliss.Wu
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2026-02-27
  */
 @Slf4j
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(prefix = "xxl.job.admin", value = "enabled", havingValue = "true")
 public class XxlJobConfig {
     @Value("${xxl.job.admin.addresses}")

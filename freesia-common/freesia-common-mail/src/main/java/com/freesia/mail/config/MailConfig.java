@@ -2,9 +2,10 @@ package com.freesia.mail.config;
 
 import cn.hutool.extra.mail.MailAccount;
 import com.freesia.mail.properties.MailProperties;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import jakarta.annotation.Resource;
 
@@ -13,7 +14,8 @@ import jakarta.annotation.Resource;
  * @Description 邮件模块 配置类
  * @date 2024-10-24
  */
-@Configuration
+@AutoConfiguration
+@EnableConfigurationProperties(MailProperties.class)
 @ConditionalOnProperty(value = "mail.enabled", havingValue = "true")
 public class MailConfig {
     @Resource

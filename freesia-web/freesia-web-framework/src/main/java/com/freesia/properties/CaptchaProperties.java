@@ -5,7 +5,6 @@ import com.freesia.constant.CaptchaType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Evad.Wu
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
  * @date 2023-11-04
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "captcha")
 public class CaptchaProperties {
     @Schema(description = "验证码图片类型")

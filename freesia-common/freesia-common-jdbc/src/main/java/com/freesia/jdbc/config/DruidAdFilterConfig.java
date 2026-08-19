@@ -3,12 +3,12 @@ package com.freesia.jdbc.config;
 import com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure;
 import com.alibaba.druid.spring.boot3.autoconfigure.properties.DruidStatProperties;
 import com.alibaba.druid.util.Utils;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import jakarta.servlet.*;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.io.IOException;
  * https://blog.csdn.net/weixin_44730681/article/details/107944048
  * @date 2026-02-26
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnWebApplication
 @AutoConfigureAfter(DruidDataSourceAutoConfigure.class)
 @ConditionalOnProperty(name = "spring.datasource.druid.stat-view-servlet.enabled",

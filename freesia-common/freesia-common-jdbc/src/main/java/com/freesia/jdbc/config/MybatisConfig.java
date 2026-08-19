@@ -8,13 +8,16 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 
 import javax.sql.DataSource;
 
@@ -40,7 +43,8 @@ import javax.sql.DataSource;
  * https://baomidou.com/pages/2a45ff/
  * @date 2022-07-13
  */
-@Configuration
+@AutoConfiguration
+@AutoConfigureBefore({DataSourceAutoConfiguration.class, MybatisPlusAutoConfiguration.class})
 public class MybatisConfig {
     /**
      * 创建 MySQL 数据源
@@ -58,7 +62,8 @@ public class MybatisConfig {
     @Primary
     @Bean(name = "mysqlSqlSessionFactory")
     public SqlSessionFactory mysqlSqlSessionFactory(
-            @Qualifier("mysqlDataSource") DataSource dataSource) throws Exception {
+            @Qualifier("mysqlDataSource") DataSource dataSource,
+            MybatisPlusInterceptor mybatisPlusInterceptor) throws Exception {
         MybatisSqlSessionFactoryBean sessionFactory = new MybatisSqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
         sessionFactory.setTypeAliasesPackage("com.freesia.*.po");
@@ -68,7 +73,7 @@ public class MybatisConfig {
                         .getResources("classpath*:/mapper/*.xml")
         );
         // 添加 MyBatis-Plus 插件（如分页插件）
-        sessionFactory.setPlugins(mybatisPlusInterceptor());
+        sessionFactory.setPlugins(mybatisPlusInterceptor);
         return sessionFactory.getObject();
     }
 

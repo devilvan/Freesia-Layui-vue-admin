@@ -1,0 +1,4 @@
+com.freesia.config.CaptchaConfig
+com.freesia.config.JacksonConfig
+com.freesia.config.WebCommonAutoConfiguration
+com.freesia.config.WebMybatisConfig

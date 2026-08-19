@@ -1,0 +1,4 @@
+com.freesia.jdbc.config.MybatisConfig
+com.freesia.jdbc.config.MysqlJpaConfig
+com.freesia.jdbc.config.PgJpaConfig
+com.freesia.jdbc.config.DruidAdFilterConfig

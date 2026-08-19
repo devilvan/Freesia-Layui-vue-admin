@@ -1,9 +1,11 @@
 package com.freesia.jdbc.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -20,7 +22,8 @@ import java.util.Objects;
  * @Description MySQL JPA 配置类（主数据源）
  * @date 2026-08-02
  */
-@Configuration
+@AutoConfiguration
+@AutoConfigureBefore(JpaBaseConfiguration.class)
 public class MysqlJpaConfig {
 
     /**

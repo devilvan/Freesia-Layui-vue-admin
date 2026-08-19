@@ -1,0 +1,2 @@
+com.freesia.spring.admin.config.AdminServerConfig
+com.freesia.spring.admin.config.SecurityConfig

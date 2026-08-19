@@ -3,8 +3,10 @@ package com.freesia.redis.config;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -22,7 +24,8 @@ import java.util.Objects;
  * @Description redis 配置类
  * @date 2024-10-11
  */
-@Configuration
+@AutoConfiguration
+@AutoConfigureBefore(CacheAutoConfiguration.class)
 public class RedisConfig implements WebMvcConfigurer {
 
     /**

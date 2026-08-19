@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.utils.Constants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.stereotype.Component;
 
 import java.nio.file.Paths;
 import java.util.List;
@@ -22,7 +21,6 @@ import java.util.List;
  */
 @Data
 @Slf4j
-@Component
 @ConfigurationProperties(prefix = Constants.SPRINGDOC_PREFIX)
 public class SpringDocProperties {
 
