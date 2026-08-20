@@ -9,7 +9,6 @@ import com.freesia.tenant.properties.TenantProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.context.annotation.DependsOn;
 
 import jakarta.annotation.PostConstruct;
 
@@ -21,7 +20,6 @@ import jakarta.annotation.PostConstruct;
 @AutoConfiguration
 @RequiredArgsConstructor
 @AutoConfigureBefore(MybatisConfig.class)
-@DependsOn(value = "mybatisConfig")
 public class WebMybatisConfig {
     private final TenantProperties tenantProperties;
     private final MybatisPlusInterceptor mybatisPlusInterceptor;

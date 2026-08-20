@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -44,7 +45,11 @@ import javax.sql.DataSource;
  * @date 2022-07-13
  */
 @AutoConfiguration
-@AutoConfigureBefore({DataSourceAutoConfiguration.class, MybatisPlusAutoConfiguration.class})
+@AutoConfigureBefore({
+        DruidDataSourceAutoConfigure.class,
+        DataSourceAutoConfiguration.class,
+        MybatisPlusAutoConfiguration.class
+})
 public class MybatisConfig {
     /**
      * 创建 MySQL 数据源
