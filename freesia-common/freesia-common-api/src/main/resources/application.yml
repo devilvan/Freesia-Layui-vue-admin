@@ -3,7 +3,7 @@ project:
 ---
 spring:
   profiles:
-    # 根据当前活跃环境指定对应的 application文件
+    # 闁哄秷顫夊畵浣姐亹閹惧啿顤呮繛鍙夋缁岊剟鎮抽姘兼殧闁圭娲ら悾鍓р偓鐢垫嚀缁ㄦ煡鎯?application闁哄倸娲ｅ▎?
     active: @profiles.active@
 ---
 spring:
@@ -21,93 +21,31 @@ server:
 ---
 spring:
   datasource:
-    # ========== MySQL 数据源（主数据源，供 MyBatis-Plus 使用）==========
     mysql:
-      # ⚠️ 注意：P6Spy 的配置方式需要调整为下面这种写法
       driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-      # P6Spy 的 URL 格式：jdbc:p6spy:真实驱动://...
       jdbc-url: jdbc:p6spy:mysql://localhost:3306/freesia?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&generateSimpleParameterMetadata=true&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
       username: root
       password: lklpos
-      type: com.alibaba.druid.pool.DruidDataSource
-      druid:
-        # 初始连接数
-        initial-size: 5
-        # 最小连接池数量
-        min-idle: 5
-        # 最大连接池数量
-        max-active: 20
-        # 配置检测连接是否有效
-        validation-query: SELECT 1
-        test-while-idle: true
-        test-on-borrow: true
-        test-on-return: false
-        # 开启keepAlive，定期检测空闲连接
-        keep-alive: true
-        # 空闲连接被驱逐前的最小空闲时间
-        min-evictable-idle-time-millis: 300000
-        # 打开PSCache
-        pool-prepared-statements: true
-        max-pool-prepared-statement-per-connection-size: 20
-        # 连接池过滤器配置
-        filter:
-          stat:
-            enabled: true
-            log-slow-sql: true
-            slow-sql-millis: 2000
-            merge-sql: true
-          wall:
-            config:
-              multi-statement-allow: true
-        use-global-data-source-stat: true
-        connect-properties:
-          druid.stat.mergeSql: true
-          druid.stat.slowSqlMillis: 5000
-          useCursorFetch: true
-          defaultFetchSize: 1000
-        # Druid 监控页面（只有 MySQL 配置，因为通常只需一个监控入口）
-        stat-view-servlet:
-          enabled: true
-          login-username: Devilvan
-          login-password: 741258963hjkl
-          reset-enable: false
-          url-pattern: /druid/*
-          allow: 127.0.0.1
-        web-stat-filter:
-          url-pattern: /*
-          exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
-
-    # ========== PostgreSQL 数据源（供 JPA 使用）==========
     pgsql:
-      # ⚠️ 如果想对 PostgreSQL 也用 P6Spy，需要单独配置，但通常不推荐（日志量会翻倍）
-      # 方案A：不用 P6Spy，直接使用原生驱动
       driver-class-name: org.postgresql.Driver
       jdbc-url: jdbc:postgresql://localhost:5432/postgres?currentSchema=public
       username: postgres
       password: lklpos
-      type: com.alibaba.druid.pool.DruidDataSource
-      druid:
-        initial-size: 5
-        min-idle: 5
-        max-active: 20
-        validation-query: SELECT 1
-        test-while-idle: true
-        test-on-borrow: true
-        test-on-return: false
-        keep-alive: true
-        min-evictable-idle-time-millis: 300000
-        pool-prepared-statements: true
-        max-pool-prepared-statement-per-connection-size: 20
-        filter:
-          stat:
-            enabled: true
-            log-slow-sql: true
-            slow-sql-millis: 2000
-            merge-sql: true
-        use-global-data-source-stat: true
-        connect-properties:
-          druid.stat.mergeSql: true
-          druid.stat.slowSqlMillis: 5000
+---
+spring:
+  datasource:
+    druid:
+      stat-view-servlet:
+        enabled: true
+        login-username: Devilvan
+        login-password: 741258963hjkl
+        reset-enable: false
+        url-pattern: /druid/*
+        allow: 127.0.0.1
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
 ---
 spring:
   data:

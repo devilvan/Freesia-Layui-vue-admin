@@ -6,3 +6,4 @@
 /freesia-spring-admin/src/test/
 /target/
 **/target/
+/logs/
