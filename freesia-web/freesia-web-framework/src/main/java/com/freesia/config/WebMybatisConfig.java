@@ -3,11 +3,12 @@ package com.freesia.config;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import com.freesia.interceptor.PlusDataPermissionInterceptor;
+import com.freesia.jdbc.config.MybatisConfig;
 import com.freesia.tenant.handler.TenantHandler;
 import com.freesia.tenant.properties.TenantProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 
 import jakarta.annotation.PostConstruct;
 
@@ -16,9 +17,9 @@ import jakarta.annotation.PostConstruct;
  * @Description Web模块Mybatis 配置类
  * @date 2024-01-29
  */
-@Configuration
+@AutoConfiguration
 @RequiredArgsConstructor
-@DependsOn(value = "mybatisConfig")
+@AutoConfigureBefore(MybatisConfig.class)
 public class WebMybatisConfig {
     private final TenantProperties tenantProperties;
     private final MybatisPlusInterceptor mybatisPlusInterceptor;

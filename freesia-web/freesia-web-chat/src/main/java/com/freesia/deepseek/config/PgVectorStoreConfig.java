@@ -2,11 +2,13 @@ package com.freesia.deepseek.config;
 
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
+import org.springframework.ai.vectorstore.pgvector.autoconfigure.PgVectorStoreAutoConfiguration;
 import org.springframework.ai.vectorstore.pgvector.autoconfigure.PgVectorStoreProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -19,7 +21,8 @@ import javax.sql.DataSource;
  * @author Evad.Wu
  * @date 2026-08-05
  */
-@Configuration
+@AutoConfiguration
+@AutoConfigureBefore(PgVectorStoreAutoConfiguration.class)
 public class PgVectorStoreConfig {
 
     @Bean

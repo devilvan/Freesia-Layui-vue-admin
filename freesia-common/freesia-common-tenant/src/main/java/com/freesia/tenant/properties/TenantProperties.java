@@ -3,7 +3,6 @@ package com.freesia.tenant.properties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -13,7 +12,6 @@ import java.util.List;
  * @date 2024-01-26
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "freesia.web.tenant")
 public class TenantProperties {
     @Schema(description = "是否开启（默认false）")

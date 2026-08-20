@@ -1,1 +1,3 @@
 com.freesia.config.XssAutoConfiguration
+com.freesia.config.WebMvcConfig
+

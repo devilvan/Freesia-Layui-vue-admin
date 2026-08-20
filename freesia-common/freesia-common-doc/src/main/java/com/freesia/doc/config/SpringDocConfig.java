@@ -21,12 +21,13 @@ import org.springdoc.core.providers.JavadocProvider;
 import org.springdoc.core.service.OpenAPIService;
 import org.springdoc.core.service.SecurityService;
 import org.springdoc.core.utils.PropertyResolverUtils;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.io.Serial;
 import java.util.ArrayList;
@@ -40,8 +41,9 @@ import java.util.Set;
  * @date 2023-04-10
  */
 @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
-@Configuration
+@AutoConfiguration
 @RequiredArgsConstructor
+@EnableConfigurationProperties(SpringDocProperties.class)
 @AutoConfigureBefore(SpringDocConfiguration.class)
 @ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "true", matchIfMissing = true)
 public class SpringDocConfig {

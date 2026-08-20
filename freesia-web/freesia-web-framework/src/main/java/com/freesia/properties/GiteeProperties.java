@@ -3,7 +3,6 @@ package com.freesia.properties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Evad.Wu
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
  * @date 2024-01-23
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "gitee")
 public class GiteeProperties {
     @Schema(description = "请求所有提交记录功能配置")

@@ -14,8 +14,9 @@ import com.freesia.satoken.service.impl.SaPermissionImpl;
 import com.freesia.util.USpring;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -28,8 +29,9 @@ import java.util.List;
  * @date 2023-08-25
  */
 @Slf4j
-@Configuration
+@AutoConfiguration
 @RequiredArgsConstructor
+@EnableConfigurationProperties(SecurityProperties.class)
 public class SaTokenConfig implements WebMvcConfigurer {
     private final SecurityProperties securityProperties;
 

@@ -2,8 +2,8 @@ package com.freesia.spring.admin.config;
 
 import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Evad.Wu
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2025-06-01
  */
 @Slf4j
-@Configuration
+@AutoConfiguration
 public class AdminServerConfig {
     @Bean
     public AdminServerModule buildAdminServerModule() {

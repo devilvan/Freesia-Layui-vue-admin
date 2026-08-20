@@ -4,8 +4,8 @@ import com.freesia.net.handler.HttpClientRetryHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Evad.Wu
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2022-07-07
  */
 @Slf4j
-@Configuration
+@AutoConfiguration
 public class HttpClientPoolConfig {
     @Bean
     public PoolingHttpClientConnectionManager getHttpClientPool() {

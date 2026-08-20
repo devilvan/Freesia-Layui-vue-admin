@@ -3,7 +3,6 @@ package com.freesia.properties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Map;
  * @date 2026-05-30
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "oauth")
 public class OAuthProperties {
     @Schema(description = "各平台 OAuth 配置，key 为平台编码(gitee/github/wechat_open)")

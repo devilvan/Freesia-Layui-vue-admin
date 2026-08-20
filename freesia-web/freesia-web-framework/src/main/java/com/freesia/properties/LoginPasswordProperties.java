@@ -2,7 +2,6 @@ package com.freesia.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
@@ -12,7 +11,6 @@ import java.time.Duration;
  * @date 2023-08-16
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "login.password")
 public class LoginPasswordProperties {
     /**

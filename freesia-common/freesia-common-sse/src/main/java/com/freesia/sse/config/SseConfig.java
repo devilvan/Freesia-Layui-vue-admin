@@ -4,10 +4,10 @@ import com.freesia.sse.component.SseEmitterManager;
 import com.freesia.sse.constant.SseTopic;
 import com.freesia.sse.handler.MessageReceiveHandler;
 import com.freesia.sse.properties.SseProperties;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -18,7 +18,7 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
  * @Description SSE (Server-Sent Events) 配置类
  * @date 2024-10-21
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(value = "sse.enabled", havingValue = "true")
 @EnableConfigurationProperties(SseProperties.class)
 public class SseConfig {

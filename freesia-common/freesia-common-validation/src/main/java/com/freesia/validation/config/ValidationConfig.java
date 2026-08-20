@@ -2,10 +2,11 @@ package com.freesia.validation.config;
 
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.HibernateValidator;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import jakarta.annotation.Resource;
@@ -17,8 +18,9 @@ import java.util.Properties;
  * @Description javax.validation + i18n校验字段并提示 配置类
  * @date 2023-10-08
  */
-@Configuration
+@AutoConfiguration
 @RequiredArgsConstructor
+@AutoConfigureBefore(ValidationAutoConfiguration.class)
 public class ValidationConfig {
     private final MessageSource messageSource;
 
