@@ -343,8 +343,7 @@ function toUpload() {
           avatarUpdate(url).then((avatarUpdateRes: any) => {
             if (avatarUpdateRes.code === 200) {
               layer.msg(avatarUpdateRes.msg, {icon: 1})
-              userStore.userInfo.avatar = url
-              currentUserProfileTemplate.value.avatar = url
+              syncCurrentUserAvatar(url)
             }
           })
           visibleImport.value = false
@@ -366,6 +365,21 @@ function uploadOnChange(file: any) {
       }
     }
   })
+}
+
+function syncCurrentUserAvatar(url: string) {
+  const nextUserInfo = {
+    ...userStore.userInfo,
+    avatar: url
+  }
+  userStore.$patch({
+    userInfo: nextUserInfo
+  })
+  localStorage.setItem('user', JSON.stringify({
+    ...userStore.$state,
+    userInfo: nextUserInfo
+  }))
+  currentUserProfileTemplate.value.avatar = url
 }
 
 /* FUNCTION*/

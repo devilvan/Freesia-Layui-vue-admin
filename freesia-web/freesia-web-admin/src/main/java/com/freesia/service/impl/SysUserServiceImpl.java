@@ -162,7 +162,6 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
                 .eq("U.ACCOUNT_STATUS", FlagConstant.ENABLED)
                 .eq("D.LOGIC_DEL", FlagConstant.DISABLED)
                 .eq("D.DEPT_STATUS", FlagConstant.ENABLED)
-                .eq(UEmpty.isNotEmpty(sysUserDto.getTenantId()), "STU.TENANT_ID", sysUserDto.getTenantId())
                 .and(ObjectUtil.isNotNull(sysUserDto.getDeptId()), m -> {
                     List<SysDeptPo> sysDeptPoList = sysDeptMapper.selectList(new LambdaQueryWrapper<SysDeptPo>()
                             .select(SysDeptPo::getId)

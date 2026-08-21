@@ -50,7 +50,7 @@
         <include refid="findPageSysUserListRef"/>
     </select>
     <select id="findPageSysUserByDept" resultType="com.freesia.entity.FindPageSysUserByDeptEntity">
-        SELECT U.ID,
+        SELECT DISTINCT U.ID,
                U.DEPT_ID,
                U.NICK_NAME,
                U.USER_NAME,
@@ -67,7 +67,6 @@
                D.LEADER
         FROM sys_user U
                  LEFT JOIN sys_dept D ON U.DEPT_ID = D.ID
-                 LEFT JOIN sys_tenant_user stu on U.ID = stu.USER_ID
             ${ew.getCustomSqlSegment}
     </select>
     <select id="findCurrentUserProfile" resultType="com.freesia.po.SysUserPo">

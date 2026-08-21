@@ -134,34 +134,8 @@
           <template v-slot:toolbar>
             <lay-button type="normal" size="sm" @click="toSearch">查询</lay-button>
             <lay-button size="sm" @click="toReset">重置</lay-button>
-            <lay-button
-                size="sm"
-                type="primary"
-                @click="changeVisible11('新增', null)"
-            >新增
-            </lay-button
-            >
-            <lay-button size="sm" @click="toRemove">删除</lay-button>
           </template>
           <template v-slot:operator="{ row }">
-            <lay-button
-                size="xs"
-                border="green"
-                border-style="dashed"
-                @click="changeVisible11('编辑', row)"
-            >编辑
-            </lay-button
-            >
-            <lay-popconfirm
-                content="确定要删除此用户吗?"
-                @confirm="confirm"
-                @cancel="cancel"
-            >
-              <lay-button size="xs" border="red" border-style="dashed"
-              >删除
-              </lay-button
-              >
-            </lay-popconfirm>
           </template>
         </lay-table>
       </div>

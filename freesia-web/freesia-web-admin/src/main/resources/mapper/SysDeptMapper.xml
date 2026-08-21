@@ -20,7 +20,7 @@
     </select>
 
     <sql id="sysDept">
-        select D.ID,
+        select DISTINCT D.ID,
                D.CREATOR,
                D.MODIFIER,
                D.LOGIC_DEL,

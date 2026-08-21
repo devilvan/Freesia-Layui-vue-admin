@@ -118,7 +118,7 @@
                   @change="changeTenantSelect"
               >
                 <template v-for="(sysTenant, index) in userInfoStore.sysTenantDtoList" :key="index">
-                  <lay-select-option :value="sysTenant.id" :label="sysTenant.name"></lay-select-option>
+                  <lay-select-option :value="String(sysTenant.id)" :label="sysTenant.name"></lay-select-option>
                 </template>
               </lay-select>
             </lay-menu-item>
@@ -294,6 +294,18 @@ export default {
       changeOpenKeys
     } = useMenu()
 
+    const initDefaultTenant = () => {
+      const tenantList = (userInfoStore.sysTenantDtoList || []).filter((item: any) => item && item.id != null)
+      if (tenantList.length === 0) {
+        return
+      }
+      const currentTenant = appStore.currentTenant ? String(appStore.currentTenant) : ''
+      const matchedTenant = tenantList.some((item: any) => String(item.id) === currentTenant)
+      if (!matchedTenant) {
+        appStore.currentTenant = String(tenantList[0].id)
+      }
+    }
+
     onMounted(() => {
       if (document.body.clientWidth < 768) {
         appStore.collapse = true
@@ -317,7 +329,16 @@ export default {
         })
       })
       doFindUnreadCount();
+      initDefaultTenant()
     })
+
+    watch(
+        () => userInfoStore.sysTenantDtoList,
+        () => {
+          initDefaultTenant()
+        },
+        {deep: true, immediate: true}
+    )
 
     const changeVisible = () => {
       visible.value = !visible.value
@@ -363,7 +384,7 @@ export default {
     }
 
     function changeTenantSelect(value: any) {
-      appStore.currentTenant = value;
+      appStore.currentTenant = String(value);
       window.location.reload()
       router.push($tab.currentPath)
     }
