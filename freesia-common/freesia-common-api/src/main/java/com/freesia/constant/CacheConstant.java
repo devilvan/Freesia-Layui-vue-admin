@@ -72,6 +72,10 @@ public final class CacheConstant {
      */
     public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";
     /**
+     * 邮箱验证码缓存键
+     */
+    public static final String EMAIL_CODE_KEY = "email_code:";
+    /**
      * 请求限流 缓存建
      */
     public static final String RATE_LIMIT_KEY = "rate_limit:";

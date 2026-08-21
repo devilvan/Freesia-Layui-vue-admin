@@ -125,6 +125,19 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserMapper, SysUserVo
     }
 
     @Override
+    public SysUserPo findOneByEmail(String email) {
+        LambdaQueryWrapper<SysUserPo> queryWrapper = new LambdaQueryWrapper<SysUserPo>()
+                .select(SysUserPo::getEmail, SysUserPo::getAccountStatus, SysUserPo::getLogicDel)
+                .eq(SysUserPo::getEmail, email);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public SysUserPo findByEmail(String email) {
+        return sysUserRepository.findByEmailAndLogicDel(email, false);
+    }
+
+    @Override
     public SysUserPo findByUsername(String username) {
         return sysUserRepository.findByUserNameAndLogicDel(username, false);
     }

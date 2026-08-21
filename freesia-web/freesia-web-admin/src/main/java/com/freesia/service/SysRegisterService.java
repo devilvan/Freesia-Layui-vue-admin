@@ -16,4 +16,11 @@ public interface SysRegisterService {
      * @param sysUserDto 用户注册信息
      */
     SysUserPo register(SysUserDto sysUserDto);
+
+    /**
+     * 重置密码
+     *
+     * @param sysUserDto 用户信息
+     */
+    void resetPassword(SysUserDto sysUserDto);
 }

@@ -20,4 +20,13 @@ public interface SysUserRepository extends JpaRepository<SysUserPo, Long> {
      * @return 用户信息
      */
     SysUserPo findByUserNameAndLogicDel(String userName, boolean logicDel);
+
+    /**
+     * 根据邮箱查询用户信息
+     *
+     * @param email    邮箱
+     * @param logicDel 是否被删除
+     * @return 用户信息
+     */
+    SysUserPo findByEmailAndLogicDel(String email, boolean logicDel);
 }

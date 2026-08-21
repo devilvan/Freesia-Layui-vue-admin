@@ -17,7 +17,7 @@ export const constantRoutes = [
         path: '/workSpace',
         redirect: '/workSpace/worldclock/index',
         component: BaseLayout,
-        meta: {title: '工作空间'},
+        meta: {title: '世界时钟'},
     },
     {
         path: '/oauth/callback/:provider',

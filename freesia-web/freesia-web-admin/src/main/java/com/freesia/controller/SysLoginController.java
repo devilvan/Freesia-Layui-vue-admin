@@ -135,12 +135,14 @@ public class SysLoginController extends BaseController {
     @Operation(summary = "客户端登录")
     @PostMapping("sysLogin")
     public R<Map<String, Object>> sysLogin(@Valid @RequestBody String request) {
-        LoginVo loginVo = UCrypt.aesDecryptJSON(request, LoginVo.class);
-        Map<String, Object> ajax = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
-        // 生成令牌
-        String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getCaptchaKey());
-        ajax.put(Constants.TOKEN, token);
-        return R.ok(ajax);
+        return buildLoginResult(request);
+    }
+
+    @SaIgnore
+    @Operation(summary = "邮箱登录")
+    @PostMapping("emailLogin")
+    public R<Map<String, Object>> emailLogin(@Valid @RequestBody String request) {
+        return buildLoginResult(request);
     }
 
     @SaIgnore
@@ -272,5 +274,13 @@ public class SysLoginController extends BaseController {
                 userEntity.setNickName(auth.getNickName());
             }
         }
+    }
+
+    private R<Map<String, Object>> buildLoginResult(String request) {
+        LoginVo loginVo = UCrypt.aesDecryptJSON(request, LoginVo.class);
+        Map<String, Object> ajax = UCollection.optimizeInitialCapacityMap(1, UCollection.LOAD_FACTOR);
+        String token = sysLoginService.login(loginVo.getUsername(), loginVo.getPassword(), loginVo.getCode(), loginVo.getCaptchaKey());
+        ajax.put(Constants.TOKEN, token);
+        return R.ok(ajax);
     }
 }

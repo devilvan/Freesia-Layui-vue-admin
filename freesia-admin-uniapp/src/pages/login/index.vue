@@ -12,84 +12,203 @@
           <view class="login-side">
             <view class="login-bg-title">
               <text class="title">Freesia-Admin</text>
-<!--              <text class="subtitle">开箱即用的 uniapp 企业级前端模板</text>-->
             </view>
           </view>
           <view class="login-ID">
-            <text class="sign-title">🎯 Sign in</text>
-            <view class="tabs">
-              <view :class="['tab-item', { active: method === '1' }]" @click="method = '1'">用户名</view>
-              <view :class="['tab-item', { active: method === '2' }]" @click="method = '2'">二维码</view>
+            <view class="auth-header">
+              <text class="sign-title">{{ pageTitle }}</text>
+              <text class="sign-subtitle">{{ pageSubtitle }}</text>
             </view>
-            <view v-if="method === '1'" class="login-form">
-              <view class="form-item">
-                <text class="form-label">用户名</text>
-                <view class="input-wrap">
-                  <text class="input-icon">👤</text>
-                  <input class="form-input" placeholder="用户名" v-model="loginForm.username"/>
-                  <text v-if="loginForm.username" class="clear-icon" @click="loginForm.username = ''">✕</text>
-                </view>
+
+            <template v-if="pageMode === 'login'">
+              <view class="tabs">
+                <view :class="['tab-item', { active: method === '1' }]" @click="method = '1'">用户名</view>
+                <view :class="['tab-item', { active: method === '2' }]" @click="method = '2'">二维码</view>
               </view>
-              <view class="form-item">
-                <text class="form-label">密码</text>
-                <view class="input-wrap">
-                  <text class="input-icon">🔒</text>
-                  <input class="form-input" type="password" placeholder="密码" v-model="loginForm.password"/>
-                </view>
-              </view>
-              <view class="form-item" v-if="captchaEnabled">
-                <text class="form-label">验证码</text>
-                <view class="captcha-wrap">
-                  <view class="input-wrap captcha-input">
-                    <text class="input-icon">🔢</text>
-                    <input class="form-input" placeholder="验证码" v-model="loginForm.code"/>
-                  </view>
-                  <view class="login-captcha" @click="toRefreshImg">
-                    <image v-if="captchaImg" :src="captchaImg" mode="aspectFit"/>
-                    <text v-else>获取验证码</text>
+              <view v-if="method === '1'" class="login-form">
+                <view class="form-item">
+                  <text class="form-label">用户名 / 邮箱</text>
+                  <view class="input-wrap">
+                    <text class="input-icon">👤</text>
+                    <input class="form-input" placeholder="用户名 / 邮箱" v-model="loginForm.username"/>
+                    <text v-if="loginForm.username" class="clear-icon" @click="loginForm.username = ''">✕</text>
                   </view>
                 </view>
-              </view>
-              <view class="form-item">
-                <button class="login-btn" :class="{ loading: loging }" @click="loginSubmit">
-                  <text v-if="loging" class="loading-icon">⏳</text>
-                  <text>{{ loging ? '登录中...' : '登录' }}</text>
-                </button>
-              </view>
-            </view>
-            <view v-else class="qrcode-wrap">
-              <view class="qrcode-content">
-                <canvas canvas-id="qrcodeCanvas" class="qrcode-canvas"></canvas>
-                <view class="qrcode-refresh" @click="toRefreshQrcode">
-                  <text class="refresh-icon">🔄</text>
-                  <text>刷新二维码</text>
+                <view class="form-item">
+                  <text class="form-label">密码</text>
+                  <view class="input-wrap">
+                    <text class="input-icon">🔒</text>
+                    <input class="form-input" type="password" placeholder="密码" v-model="loginForm.password"/>
+                  </view>
+                </view>
+                <view class="form-item" v-if="captchaEnabled">
+                  <text class="form-label">验证码</text>
+                  <view class="captcha-wrap">
+                    <view class="input-wrap captcha-input">
+                      <text class="input-icon">🔢</text>
+                      <input class="form-input" placeholder="验证码" v-model="loginForm.code"/>
+                    </view>
+                    <view class="login-captcha" @click="toRefreshImg">
+                      <image v-if="captchaImg" :src="captchaImg" mode="aspectFit"/>
+                      <text v-else>获取验证码</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <button class="login-btn" :class="{ loading: loging }" @click="loginSubmit">
+                    <text v-if="loging" class="loading-icon">⏳</text>
+                    <text>{{ loging ? '登录中...' : '登录' }}</text>
+                  </button>
+                </view>
+                <view class="auth-links">
+                  <text class="auth-link" @click="switchMode('register')">没有账号？去注册</text>
+                  <text class="auth-sep">|</text>
+                  <text class="auth-link" @click="switchMode('reset')">忘记密码？</text>
                 </view>
               </view>
-            </view>
-            <view class="line-wrap">
-              <view class="line"></view>
-<!--              <text class="line-text">Other login methods</text>-->
-              <text class="line-text">其他登录方式</text>
-              <view class="line"></view>
-            </view>
-            <view class="other-ways">
-              <view class="way-item" @click="loginWith('wechat')">
-                <image class="way-icon" src="/static/login/WX.svg" mode="aspectFit"/>
-                <text class="way-text">微信</text>
+              <view v-else class="qrcode-wrap">
+                <view class="qrcode-content">
+                  <canvas canvas-id="qrcodeCanvas" class="qrcode-canvas"></canvas>
+                  <view class="qrcode-box">
+                    <text class="qrcode-text">{{ loginQrcodeText || '二维码加载中...' }}</text>
+                  </view>
+                  <view class="qrcode-refresh" @click="toRefreshQrcode">
+                    <text class="refresh-icon">🔄</text>
+                    <text>刷新二维码</text>
+                  </view>
+                </view>
+                <view class="auth-links">
+                  <text class="auth-link" @click="switchMode('register')">没有账号？去注册</text>
+                  <text class="auth-sep">|</text>
+                  <text class="auth-link" @click="switchMode('reset')">忘记密码？</text>
+                </view>
               </view>
-              <view class="way-item" @click="loginWith('qq')">
-                <image class="way-icon" src="/static/login/QQ.svg" mode="aspectFit"/>
-                <text class="way-text">QQ</text>
+              <view class="line-wrap">
+                <view class="line"></view>
+                <text class="line-text">其他登录方式</text>
+                <view class="line"></view>
               </view>
-              <view class="way-item" @click="loginWith('gitee')">
-                <image class="way-icon" src="/static/login/Gitee.svg" mode="aspectFit"/>
-                <text class="way-text">Gitee</text>
+              <view class="other-ways">
+                <view class="way-item" @click="loginWith('wechat')">
+                  <image class="way-icon" src="/static/login/WX.svg" mode="aspectFit"/>
+                  <text class="way-text">微信</text>
+                </view>
+                <view class="way-item" @click="loginWith('qq')">
+                  <image class="way-icon" src="/static/login/QQ.svg" mode="aspectFit"/>
+                  <text class="way-text">QQ</text>
+                </view>
+                <view class="way-item" @click="loginWith('gitee')">
+                  <image class="way-icon" src="/static/login/Gitee.svg" mode="aspectFit"/>
+                  <text class="way-text">Gitee</text>
+                </view>
+                <view class="way-item" @click="loginWith('github')">
+                  <image class="way-icon" src="/static/login/Github.svg" mode="aspectFit"/>
+                  <text class="way-text">Github</text>
+                </view>
               </view>
-              <view class="way-item" @click="loginWith('github')">
-                <image class="way-icon" src="/static/login/Github.svg" mode="aspectFit"/>
-                <text class="way-text">Github</text>
+            </template>
+
+            <template v-else-if="pageMode === 'register'">
+              <view class="login-form">
+                <view class="form-item">
+                  <text class="form-label">邮箱</text>
+                  <view class="input-wrap">
+                    <text class="input-icon">✉️</text>
+                    <input class="form-input" placeholder="请输入邮箱" v-model="registerForm.email"/>
+                    <text v-if="registerForm.email" class="clear-icon" @click="registerForm.email = ''">✕</text>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <text class="form-label">密码</text>
+                  <view class="input-wrap">
+                    <text class="input-icon">🔒</text>
+                    <input class="form-input" type="password" placeholder="6-20位，包含字母、数字、特殊字符" v-model="registerForm.password"/>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <text class="form-label">确认密码</text>
+                  <view class="input-wrap">
+                    <text class="input-icon">🔒</text>
+                    <input class="form-input" type="password" placeholder="再次输入密码" v-model="registerConfirmPassword"/>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <text class="form-label">邮箱验证码</text>
+                  <view class="captcha-wrap">
+                    <view class="input-wrap captcha-input">
+                      <text class="input-icon">🔢</text>
+                      <input class="form-input" placeholder="邮箱验证码" v-model="registerForm.code"/>
+                    </view>
+                    <view class="login-captcha code-btn" @click="sendRegisterCode">
+                      <text v-if="registerCountdown > 0">{{ registerCountdown }}s后重发</text>
+                      <text v-else>发送验证码</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <button class="login-btn" :class="{ loading: registering }" @click="registerSubmit">
+                    <text v-if="registering" class="loading-icon">⏳</text>
+                    <text>{{ registering ? '提交中...' : '注册' }}</text>
+                  </button>
+                </view>
+                <view class="auth-links">
+                  <text class="auth-link" @click="switchMode('login')">返回登录</text>
+                  <text class="auth-sep">|</text>
+                  <text class="auth-link" @click="switchMode('reset')">忘记密码？</text>
+                </view>
               </view>
-            </view>
+            </template>
+
+            <template v-else>
+              <view class="login-form">
+                <view class="form-item">
+                  <text class="form-label">邮箱</text>
+                  <view class="input-wrap">
+                    <text class="input-icon">✉️</text>
+                    <input class="form-input" placeholder="请输入邮箱" v-model="resetForm.email"/>
+                    <text v-if="resetForm.email" class="clear-icon" @click="resetForm.email = ''">✕</text>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <text class="form-label">新密码</text>
+                  <view class="input-wrap">
+                    <text class="input-icon">🔒</text>
+                    <input class="form-input" type="password" placeholder="6-20位，包含字母、数字、特殊字符" v-model="resetForm.password"/>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <text class="form-label">确认新密码</text>
+                  <view class="input-wrap">
+                    <text class="input-icon">🔒</text>
+                    <input class="form-input" type="password" placeholder="再次输入新密码" v-model="resetConfirmPassword"/>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <text class="form-label">邮箱验证码</text>
+                  <view class="captcha-wrap">
+                    <view class="input-wrap captcha-input">
+                      <text class="input-icon">🔢</text>
+                      <input class="form-input" placeholder="邮箱验证码" v-model="resetForm.code"/>
+                    </view>
+                    <view class="login-captcha code-btn" @click="sendResetCode">
+                      <text v-if="resetCountdown > 0">{{ resetCountdown }}s后重发</text>
+                      <text v-else>发送验证码</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="form-item">
+                  <button class="login-btn" :class="{ loading: resetting }" @click="resetSubmit">
+                    <text v-if="resetting" class="loading-icon">⏳</text>
+                    <text>{{ resetting ? '提交中...' : '重置密码' }}</text>
+                  </button>
+                </view>
+                <view class="auth-links">
+                  <text class="auth-link" @click="switchMode('login')">返回登录</text>
+                  <text class="auth-sep">|</text>
+                  <text class="auth-link" @click="switchMode('register')">去注册</text>
+                </view>
+              </view>
+            </template>
           </view>
         </view>
       </view>
@@ -98,35 +217,72 @@
 </template>
 
 <script>
-import {login, findCaptchaEnabled} from '@/api/Login'
+import {emailLogin, findCaptchaEnabled, login, register, resetPassword, sendEmailCode} from '@/api/Login'
 import {getCaptchaCode} from '@/api/captcha/Captcha'
 import {loginQrcode} from '@/api/module/commone'
 import {useCryptStore} from '@/store/crypt'
 import {useUserStore} from '@/store/user'
 import {setToken} from '@/utils/storage'
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{6,20}$/
+
 export default {
   data() {
     return {
+      pageMode: 'login',
       method: '1',
       captchaImg: '',
       loging: false,
+      registering: false,
+      resetting: false,
       loginQrcodeText: '',
+      registerCountdown: 0,
+      resetCountdown: 0,
+      registerConfirmPassword: '',
+      resetConfirmPassword: '',
       loginForm: {
         username: '',
         password: '',
         code: '',
         captchaKey: ''
       },
-      captchaEnabled: false
+      registerForm: {
+        email: '',
+        password: '',
+        code: ''
+      },
+      resetForm: {
+        email: '',
+        password: '',
+        code: ''
+      },
+      captchaEnabled: false,
+      registerTimer: null,
+      resetTimer: null
+    }
+  },
+  computed: {
+    pageTitle() {
+      if (this.pageMode === 'register') return '创建账号'
+      if (this.pageMode === 'reset') return '找回密码'
+      return '🎯 Sign in'
+    },
+    pageSubtitle() {
+      if (this.pageMode === 'register') return '使用邮箱完成注册'
+      if (this.pageMode === 'reset') return '通过邮箱验证码重置密码'
+      return '邮箱登录、账号登录、二维码登录'
     }
   },
   onLoad() {
     this.init()
   },
+  onUnload() {
+    this.stopRegisterCountdown()
+    this.stopResetCountdown()
+  },
   methods: {
     async init() {
-      // 已有 token 则直接跳转主页
       const token = uni.getStorageSync('token')
       if (token) {
         try {
@@ -145,6 +301,12 @@ export default {
       if (code === 200 && data === true) {
         this.captchaEnabled = true
         this.toRefreshImg()
+      }
+    },
+    switchMode(mode) {
+      this.pageMode = mode
+      if (mode === 'login' && this.method === '2' && !this.loginQrcodeText) {
+        this.toRefreshQrcode()
       }
     },
     async loginSubmit() {
@@ -170,12 +332,10 @@ export default {
           captchaKey: this.loginForm.captchaKey
         }
         const encryptedData = await cryptStore.encryptAes(loginData)
-        const res = await login(encryptedData)
-        this.loging = false
+        const api = this.loginForm.username.indexOf('@') > -1 ? emailLogin : login
+        const res = await api(encryptedData)
         if (res.code === 200) {
-          // 立即持久化 token（同时写入 storage 和 cookie），防止页面切换导致 token 丢失
           setToken(res.data.token)
-          // 加载用户信息以获取租户列表
           const userStore = useUserStore()
           userStore.setToken(res.data.token)
           await userStore.getInfo()
@@ -190,8 +350,95 @@ export default {
           }
         }
       } catch (e) {
-        this.loging = false
         uni.showToast({title: '登录失败', icon: 'none'})
+      } finally {
+        this.loging = false
+      }
+    },
+    async registerSubmit() {
+      if (!this.validateEmail(this.registerForm.email)) {
+        uni.showToast({title: '请输入正确的邮箱', icon: 'none'})
+        return
+      }
+      if (!this.validatePassword(this.registerForm.password)) {
+        uni.showToast({title: '密码需为6-20位且包含字母、数字、特殊字符', icon: 'none'})
+        return
+      }
+      if (this.registerForm.password !== this.registerConfirmPassword) {
+        uni.showToast({title: '两次输入的密码不一致', icon: 'none'})
+        return
+      }
+      if (!this.registerForm.code) {
+        uni.showToast({title: '请输入邮箱验证码', icon: 'none'})
+        return
+      }
+      this.registering = true
+      try {
+        const cryptStore = useCryptStore()
+        const encryptedData = await cryptStore.encryptAes({
+          email: this.registerForm.email,
+          password: this.registerForm.password,
+          code: this.registerForm.code
+        })
+        const res = await register(encryptedData)
+        if (res.code === 200) {
+          uni.showToast({title: res.msg || '注册成功', icon: 'success'})
+          const email = this.registerForm.email
+          this.loginForm.username = this.registerForm.email
+          this.resetRegisterForm()
+          this.method = '1'
+          this.loginForm.username = email
+          this.switchMode('login')
+        } else {
+          uni.showToast({title: res.msg || '注册失败', icon: 'none'})
+        }
+      } catch (e) {
+        uni.showToast({title: '注册失败', icon: 'none'})
+      } finally {
+        this.registering = false
+      }
+    },
+    async resetSubmit() {
+      if (!this.validateEmail(this.resetForm.email)) {
+        uni.showToast({title: '请输入正确的邮箱', icon: 'none'})
+        return
+      }
+      if (!this.validatePassword(this.resetForm.password)) {
+        uni.showToast({title: '密码需为6-20位且包含字母、数字、特殊字符', icon: 'none'})
+        return
+      }
+      if (this.resetForm.password !== this.resetConfirmPassword) {
+        uni.showToast({title: '两次输入的新密码不一致', icon: 'none'})
+        return
+      }
+      if (!this.resetForm.code) {
+        uni.showToast({title: '请输入邮箱验证码', icon: 'none'})
+        return
+      }
+      this.resetting = true
+      try {
+        const cryptStore = useCryptStore()
+        const encryptedData = await cryptStore.encryptAes({
+          email: this.resetForm.email,
+          password: this.resetForm.password,
+          code: this.resetForm.code
+        })
+        const res = await resetPassword(encryptedData)
+        if (res.code === 200) {
+          uni.showToast({title: res.msg || '重置成功', icon: 'success'})
+          const email = this.resetForm.email
+          this.loginForm.username = this.resetForm.email
+          this.resetResetForm()
+          this.method = '1'
+          this.loginForm.username = email
+          this.switchMode('login')
+        } else {
+          uni.showToast({title: res.msg || '重置失败', icon: 'none'})
+        }
+      } catch (e) {
+        uni.showToast({title: '重置失败', icon: 'none'})
+      } finally {
+        this.resetting = false
       }
     },
     async toRefreshImg() {
@@ -208,20 +455,58 @@ export default {
       }
     },
     async toRefreshQrcode() {
-      const {data, code, msg} = await loginQrcode()
-      if (code === 200) {
-        this.loginQrcodeText = data.data
+      try {
+        const {data, code, msg} = await loginQrcode()
+        if (code === 200) {
+          this.loginQrcodeText = data.data || data || ''
+        } else {
+          uni.showToast({title: msg, icon: 'none'})
+        }
+      } catch (e) {
+        uni.showToast({title: '获取二维码失败', icon: 'none'})
+      }
+    },
+    async sendRegisterCode() {
+      if (!this.validateEmail(this.registerForm.email)) {
+        uni.showToast({title: '请输入正确的邮箱', icon: 'none'})
+        return
+      }
+      if (this.registerCountdown > 0) {
+        return
+      }
+      const cryptStore = useCryptStore()
+      const encrypted = await cryptStore.encryptAes({email: this.registerForm.email, scene: 'register'})
+      const res = await sendEmailCode(encrypted)
+      if (res.code === 200) {
+        uni.showToast({title: res.msg || '验证码已发送', icon: 'success'})
+        this.startRegisterCountdown()
       } else {
-        uni.showToast({title: msg, icon: 'none'})
+        uni.showToast({title: res.msg || '验证码发送失败', icon: 'none'})
+      }
+    },
+    async sendResetCode() {
+      if (!this.validateEmail(this.resetForm.email)) {
+        uni.showToast({title: '请输入正确的邮箱', icon: 'none'})
+        return
+      }
+      if (this.resetCountdown > 0) {
+        return
+      }
+      const cryptStore = useCryptStore()
+      const encrypted = await cryptStore.encryptAes({email: this.resetForm.email, scene: 'reset_password'})
+      const res = await sendEmailCode(encrypted)
+      if (res.code === 200) {
+        uni.showToast({title: res.msg || '验证码已发送', icon: 'success'})
+        this.startResetCountdown()
+      } else {
+        uni.showToast({title: res.msg || '验证码发送失败', icon: 'none'})
       }
     },
     loginWith(type) {
-      // 钉钉暂不支持
       if (type === 'dingding') {
         uni.showToast({title: '钉钉登录暂未支持', icon: 'none'})
         return
       }
-
       // #ifdef MP-WEIXIN
       if (type === 'wechat') {
         uni.login({
@@ -243,7 +528,6 @@ export default {
         return
       }
       // #endif
-
       // #ifdef H5
       const providerMap = {wechat: 'wechat_open', gitee: 'gitee', github: 'github'}
       const provider = providerMap[type]
@@ -254,6 +538,60 @@ export default {
           + '?redirectUrl=' + encodeURIComponent(frontendCallbackUrl)
       window.location.href = authorizeUrl
       // #endif
+    },
+    validateEmail(email) {
+      return EMAIL_PATTERN.test(email || '')
+    },
+    validatePassword(password) {
+      return PASSWORD_PATTERN.test(password || '')
+    },
+    startRegisterCountdown() {
+      this.stopRegisterCountdown()
+      this.registerCountdown = 60
+      this.registerTimer = setInterval(() => {
+        this.registerCountdown--
+        if (this.registerCountdown <= 0) {
+          this.stopRegisterCountdown()
+        }
+      }, 1000)
+    },
+    startResetCountdown() {
+      this.stopResetCountdown()
+      this.resetCountdown = 60
+      this.resetTimer = setInterval(() => {
+        this.resetCountdown--
+        if (this.resetCountdown <= 0) {
+          this.stopResetCountdown()
+        }
+      }, 1000)
+    },
+    stopRegisterCountdown() {
+      if (this.registerTimer) {
+        clearInterval(this.registerTimer)
+        this.registerTimer = null
+      }
+      this.registerCountdown = 0
+    },
+    stopResetCountdown() {
+      if (this.resetTimer) {
+        clearInterval(this.resetTimer)
+        this.resetTimer = null
+      }
+      this.resetCountdown = 0
+    },
+    resetRegisterForm() {
+      this.registerForm.email = ''
+      this.registerForm.password = ''
+      this.registerForm.code = ''
+      this.registerConfirmPassword = ''
+      this.stopRegisterCountdown()
+    },
+    resetResetForm() {
+      this.resetForm.email = ''
+      this.resetForm.password = ''
+      this.resetForm.code = ''
+      this.resetConfirmPassword = ''
+      this.stopResetCountdown()
     }
   }
 }
@@ -333,30 +671,31 @@ export default {
 }
 
 .login-bg-title .title {
-  color: #009688;
+  color: #fff;
   display: block;
   font-size: 48rpx;
   font-weight: bold;
   margin-bottom: 20rpx;
 }
 
-.login-bg-title .subtitle {
-  color: #009688;
-  display: block;
-  font-size: 26rpx;
-  opacity: 0.9;
-  letter-spacing: 4rpx;
-}
-
 .login-ID {
   padding: 30rpx;
+}
+
+.auth-header {
+  margin-bottom: 20rpx;
 }
 
 .sign-title {
   font-size: 44rpx;
   font-weight: bold;
-  margin-bottom: 30rpx;
+  margin-bottom: 10rpx;
   display: block;
+}
+
+.sign-subtitle {
+  font-size: 24rpx;
+  color: #999;
 }
 
 .tabs {
@@ -503,8 +842,26 @@ export default {
   }
 }
 
+.auth-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.auth-link {
+  font-size: 26rpx;
+  color: #009688;
+}
+
+.auth-sep {
+  font-size: 24rpx;
+  color: #ccc;
+}
+
 .qrcode-wrap {
-  padding: 40rpx 0;
+  padding: 20rpx 0 0;
 }
 
 .qrcode-content {
@@ -518,6 +875,23 @@ export default {
   background: #fff;
   border-radius: 12rpx;
   padding: 10rpx;
+}
+
+.qrcode-box {
+  min-height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  word-break: break-all;
+}
+
+.qrcode-text {
+  font-size: 24rpx;
+  color: #333;
 }
 
 .qrcode-refresh {

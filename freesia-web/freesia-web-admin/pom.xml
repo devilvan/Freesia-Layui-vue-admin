@@ -95,5 +95,9 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-common-sse</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-common-mail</artifactId>
+        </dependency>
     </dependencies>
 </project>

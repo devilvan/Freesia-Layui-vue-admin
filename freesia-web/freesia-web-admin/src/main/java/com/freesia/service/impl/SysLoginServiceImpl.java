@@ -5,6 +5,7 @@ import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.freesia.constant.*;
 import com.freesia.dto.*;
 import com.freesia.repository.SysDeptRepository;
@@ -354,7 +355,11 @@ public class SysLoginServiceImpl implements SysLoginService {
      */
     @Override
     public SysUserPo findByUsername(String username) {
+        boolean emailLogin = StrUtil.contains(username, "@");
         SysUserPo sysUserPo = sysUserService.findOneByUsername(username);
+        if (ObjectUtil.isNull(sysUserPo) && emailLogin) {
+            sysUserPo = sysUserService.findOneByEmail(username);
+        }
         if (ObjectUtil.isNull(sysUserPo)) {
             log.info("登录用户：{} 不存在.", username);
             throw new UserException("user.not.exists", new Object[]{username});
@@ -362,7 +367,9 @@ public class SysLoginServiceImpl implements SysLoginService {
             log.info("登录用户：{} 已被停用.", username);
             throw new UserException("user.blocked", new Object[]{username});
         }
-        return sysUserService.findByUsername(username);
+        return emailLogin && ObjectUtil.isNull(sysUserService.findByUsername(username))
+                ? sysUserService.findByEmail(username)
+                : sysUserService.findByUsername(username);
     }
 
     @Override

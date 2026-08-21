@@ -45,6 +45,22 @@ public interface SysUserService {
     SysUserPo findOneByUsername(String username);
 
     /**
+     * 根据邮箱查询用户信息，判断用户是否存在、是否停用
+     *
+     * @param email 邮箱
+     * @return 用户信息
+     */
+    SysUserPo findOneByEmail(String email);
+
+    /**
+     * 根据邮箱查询用户信息
+     *
+     * @param email 邮箱
+     * @return 用户信息
+     */
+    SysUserPo findByEmail(String email);
+
+    /**
      * 根据用户名查询用户信息
      *
      * @param username 用户名

@@ -1,12 +1,15 @@
 package com.freesia.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.SysTenantType;
 import com.freesia.constant.UserModule;
 import com.freesia.converter.SysUserConverter;
 import com.freesia.dto.SysRoleDto;
 import com.freesia.dto.SysUserDto;
+import com.freesia.dto.SysDeptDto;
+import com.freesia.exception.ServiceException;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.po.*;
 import com.freesia.properties.LoginPasswordProperties;
@@ -16,6 +19,7 @@ import com.freesia.repository.SysUserRepository;
 import com.freesia.repository.SysUserRoleRepository;
 import com.freesia.satoken.constant.UserType;
 import com.freesia.service.CommonIconTemplateHeaderProviderService;
+import com.freesia.service.SysDeptService;
 import com.freesia.service.SysRegisterService;
 import com.freesia.service.SysRoleService;
 import com.freesia.util.UEmpty;
@@ -43,6 +47,7 @@ public class SysRegisterServiceImpl implements SysRegisterService {
     private final SysUserRepository sysUserRepository;
     private final SysUserRoleRepository sysUserRoleRepository;
     private final SysRoleService sysRoleService;
+    private final SysDeptService sysDeptService;
     private final SysTenantRepository sysTenantRepository;
     private final SysTenantUserRepository sysTenantUserRepository;
 
@@ -50,8 +55,12 @@ public class SysRegisterServiceImpl implements SysRegisterService {
     @LogRecord(module = UserModule.USER_MANAGEMENT, subModule = UserModule.SubModule.REGISTER, message = "user.register")
     public SysUserPo register(SysUserDto sysUserDto) {
         return transactionTemplate.execute(status -> {
+            ensureDefaultDept(sysUserDto);
+            ensureUserNameAndNickName(sysUserDto);
+            validateUnique(sysUserDto);
             SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
-            sysUserPo.setPassword(BCrypt.hashpw(loginPasswordProperties.getInitPassword(), BCrypt.gensalt()));
+            String rawPassword = UEmpty.isNotEmpty(sysUserDto.getPassword()) ? sysUserDto.getPassword() : loginPasswordProperties.getInitPassword();
+            sysUserPo.setPassword(BCrypt.hashpw(rawPassword, BCrypt.gensalt()));
             sysUserPo.setAccountStatus(FlagConstant.ENABLED);
             sysUserPo.setLogicDel(false);
             if (UEmpty.isEmpty(sysUserPo.getUserType())) {
@@ -91,5 +100,58 @@ public class SysRegisterServiceImpl implements SysRegisterService {
             commonIconTemplateHeaderProviderService.initUserIconTemplate(sysUserPo.getId());
             return sysUserPo;
         });
+    }
+
+    @Override
+    public void resetPassword(SysUserDto sysUserDto) {
+        transactionTemplate.executeWithoutResult(status -> {
+            if (UEmpty.isEmpty(sysUserDto.getEmail())) {
+                throw new ServiceException(UserModule.SubModule.REGISTER, "email.invalid");
+            }
+            SysUserPo sysUserPo = sysUserRepository.findByEmailAndLogicDel(sysUserDto.getEmail(), false);
+            if (ObjectUtil.isNull(sysUserPo)) {
+                throw new ServiceException(UserModule.SubModule.REGISTER, "user.email.not.exists", new Object[]{sysUserDto.getEmail()});
+            }
+            String rawPassword = UEmpty.isNotEmpty(sysUserDto.getPassword()) ? sysUserDto.getPassword() : loginPasswordProperties.getInitPassword();
+            sysUserPo.setPassword(BCrypt.hashpw(rawPassword, BCrypt.gensalt()));
+            sysUserRepository.save(sysUserPo);
+        });
+    }
+
+    private void ensureDefaultDept(SysUserDto sysUserDto) {
+        if (UEmpty.isNotNull(sysUserDto.getDeptId())) {
+            return;
+        }
+        SysDeptDto defaultDept = sysDeptService.findCacheDefaultDept();
+        if (ObjectUtil.isNull(defaultDept)) {
+            throw new ServiceException(UserModule.SubModule.REGISTER, "default.dept.not.found");
+        }
+        sysUserDto.setDeptId(defaultDept.getId());
+    }
+
+    private void ensureUserNameAndNickName(SysUserDto sysUserDto) {
+        if (UEmpty.isEmpty(sysUserDto.getUserName())) {
+            if (UEmpty.isNotEmpty(sysUserDto.getEmail())) {
+                sysUserDto.setUserName(sysUserDto.getEmail());
+            } else {
+                throw new ServiceException(UserModule.SubModule.REGISTER, "user.username.not.null");
+            }
+        }
+        if (UEmpty.isEmpty(sysUserDto.getNickName())) {
+            String candidate = UEmpty.isNotEmpty(sysUserDto.getEmail())
+                    ? StrUtil.subBefore(sysUserDto.getEmail(), "@", true)
+                    : sysUserDto.getUserName();
+            sysUserDto.setNickName(StrUtil.isBlank(candidate) ? sysUserDto.getUserName() : candidate);
+        }
+    }
+
+    private void validateUnique(SysUserDto sysUserDto) {
+        if (ObjectUtil.isNotNull(sysUserRepository.findByUserNameAndLogicDel(sysUserDto.getUserName(), false))) {
+            throw new ServiceException(UserModule.SubModule.REGISTER, "user.register.not.unique", new Object[]{sysUserDto.getUserName()});
+        }
+        if (UEmpty.isNotEmpty(sysUserDto.getEmail())
+                && ObjectUtil.isNotNull(sysUserRepository.findByEmailAndLogicDel(sysUserDto.getEmail(), false))) {
+            throw new ServiceException(UserModule.SubModule.REGISTER, "user.email.registered", new Object[]{sysUserDto.getEmail()});
+        }
     }
 }

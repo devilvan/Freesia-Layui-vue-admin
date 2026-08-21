@@ -1,8 +1,25 @@
 import Http from "./Http";
 
+const encryptPost = (url, encrypt) => Http.post(url, { encrypt })
+
 export const login = function (encrypt: string) {
-  let param = { encrypt: encrypt }
-  return Http.post('/api/sysLoginController/sysLogin', param)
+  return encryptPost('/api/sysLoginController/sysLogin', encrypt)
+}
+
+export const emailLogin = function (encrypt: string) {
+  return encryptPost('/api/sysLoginController/emailLogin', encrypt)
+}
+
+export const sendEmailCode = function (encrypt: string) {
+  return encryptPost('/api/sysRegistryController/sendEmailCode', encrypt)
+}
+
+export const register = function (encrypt: string) {
+  return encryptPost('/api/sysRegistryController/register', encrypt)
+}
+
+export const resetPassword = function (encrypt: string) {
+  return encryptPost('/api/sysRegistryController/resetPassword', encrypt)
 }
 
 export const menu = function () {
