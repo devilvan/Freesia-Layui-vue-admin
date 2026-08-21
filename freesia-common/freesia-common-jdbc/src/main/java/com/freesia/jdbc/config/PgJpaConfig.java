@@ -49,7 +49,7 @@ public class PgJpaConfig {
         dataSource.setUseGlobalDataSourceStat(true);
 
         Properties connectProperties = new Properties();
-        connectProperties.setProperty("druid.stat.mergeSql", "true");
+        connectProperties.setProperty("druid.stat.mergeSql", "false");
         connectProperties.setProperty("druid.stat.slowSqlMillis", "5000");
         dataSource.setConnectProperties(connectProperties);
 
@@ -57,7 +57,7 @@ public class PgJpaConfig {
         statFilter.setDbType(DbType.postgresql);
         statFilter.setLogSlowSql(true);
         statFilter.setSlowSqlMillis(2000);
-        statFilter.setMergeSql(true);
+        statFilter.setMergeSql(false);
         dataSource.setProxyFilters(List.of(statFilter));
 
         return dataSource;
