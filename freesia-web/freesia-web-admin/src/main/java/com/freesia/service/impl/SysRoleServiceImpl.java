@@ -308,7 +308,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleMapper, SysRoleVo
 
     @Override
     public void buildInitDefaultSysRole() {
-        SysRolePo sysRolePo = sysRoleRepository.findCacheDefaultRole(AdminConstant.RoleKey.OWN.getCode());
+        SysRolePo sysRolePo = sysRoleRepository.findCacheDefaultRole(AdminConstant.RoleKey.COMMON.getCode());
         if (sysRolePo == null) {
             transactionTemplate.execute(status -> {
                 SysRolePo newSysRolePo = buildDefaultSysRolePo();

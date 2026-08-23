@@ -1,192 +1,274 @@
 <template>
-  <div class="login-wrap">
-    <div class="login-root">
-      <div class="login-main">
-        <img class="login-one-ball"
-             src="https://assets.codehub.cn/micro-frontend/login/fca1d5960ccf0dfc8e32719d8a1d80d2.png"/>
-        <img class="login-two-ball"
-             src="https://assets.codehub.cn/micro-frontend/login/4bcf705dad662b33a4fc24aaa67f6234.png"/>
-        <div class="login-container">
-          <div class="login-side">
-            <div class="login-bg-title">
-              <h1>Freesia-Admin</h1>
-              <h3 style="margin: 20px auto">
-                开 箱 即 用 的 layui vue 企 业 级 前 端 模 板
-              </h3>
-            </div>
+  <div class="login-page">
+    <div class="login-shell">
+      <section class="login-hero">
+        <div class="hero-badge">Freesia Admin</div>
+        <h1 class="hero-title">统一认证入口</h1>
+        <p class="hero-desc">
+          支持账号登录、邮箱登录、二维码登录，以及邮箱注册和找回密码。
+        </p>
+
+        <div class="hero-points">
+          <div class="hero-point">
+            <span class="point-title">邮箱注册</span>
+            <span class="point-desc">通过验证码完成注册。</span>
           </div>
-          <div class="login-ID">
-            <div class="auth-header">
-              <div class="auth-title">{{ pageTitle }}</div>
-              <div class="auth-subtitle">{{ pageSubtitle }}</div>
-            </div>
-
-            <template v-if="pageMode === 'login'">
-              <lay-tab type="brief" v-model="method">
-                <lay-tab-item title="账号登录" id="1">
-                  <lay-form :model="loginForm" label-position="top" ref="loginFormRef" :rules="loginFormRules"
-                            @keydown.enter.prevent="loginSubmit">
-                    <lay-form-item label="用户名 / 邮箱" prop="username" required>
-                      <lay-input :allow-clear="true" prefix-icon="layui-icon-username" placeholder="用户名 / 邮箱"
-                                 v-model="loginForm.username"></lay-input>
-                    </lay-form-item>
-                    <lay-form-item label="密码" prop="password" required>
-                      <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="密码" password
-                                 type="password" v-model="loginForm.password"></lay-input>
-                    </lay-form-item>
-                    <lay-form-item label="验证码" prop="code" :style="captchaEnabled ? '' : 'display: none'"
-                                   :required="captchaEnabled">
-                      <div style="width: 60%; display: inline-block">
-                        <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="验证码"
-                                   v-model="loginForm.code"></lay-input>
-                      </div>
-                      <div class="login-captcha" @click="toRefreshImg">
-                        <img style="width: 100%" :src="captchaImg" alt="获取验证码"/>
-                      </div>
-                    </lay-form-item>
-                    <lay-form-item>
-                      <lay-button style="margin-top: 20px" type="primary" :loading="loging" :fluid="true"
-                                  loadingIcon="layui-icon-loading" @click="loginSubmit">登录
-                      </lay-button>
-                    </lay-form-item>
-                  </lay-form>
-                </lay-tab-item>
-                <lay-tab-item title="二维码" id="2">
-                  <div class="qrcode-panel">
-                    <div v-if="qrcodeLoading" class="qrcode-loading">加载中...</div>
-                    <div v-else>
-                      <lay-qrcode :text="qrcodeTicket" :width="200" color="#000" style="margin: 10px 0 20px"></lay-qrcode>
-                      <p class="qrcode-tip">请使用小程序扫描二维码</p>
-                      <div class="qrcode-refresh" @click="refreshQrcode">
-                        <lay-icon type="layui-icon-refresh-three"></lay-icon>
-                        刷新二维码
-                      </div>
-                    </div>
-                  </div>
-                </lay-tab-item>
-              </lay-tab>
-
-              <div class="auth-links">
-                <span class="auth-link" @click="switchMode('register')">没有账号？去注册</span>
-                <span class="auth-sep">|</span>
-                <span class="auth-link" @click="switchMode('reset')">忘记密码？</span>
-              </div>
-
-              <lay-line>其他登录方式</lay-line>
-              <ul class="other-ways">
-                <li @click="oauthLogin('wechat_open')" style="cursor:pointer">
-                  <div class="line-container">
-                    <img class="icon" src="@/assets/login/WX.svg"/>
-                    <p class="text">微信</p>
-                  </div>
-                </li>
-                <li style="cursor:pointer">
-                  <div class="line-container">
-                    <img class="icon" src="@/assets/login/QQ.svg"/>
-                    <p class="text">QQ</p>
-                  </div>
-                </li>
-                <li @click="oauthLogin('gitee')" style="cursor:pointer">
-                  <div class="line-container">
-                    <img class="icon" src="@/assets/login/Gitee.svg"/>
-                    <p class="text">Gitee</p>
-                  </div>
-                </li>
-                <li @click="oauthLogin('github')" style="cursor:pointer">
-                  <div class="line-container">
-                    <img class="icon" src="@/assets/login/Github.svg"/>
-                    <p class="text">Github</p>
-                  </div>
-                </li>
-              </ul>
-            </template>
-
-            <template v-else-if="pageMode === 'register'">
-              <lay-form :model="registerForm" label-position="top" ref="registerFormRef"
-                        @keydown.enter.prevent="registerSubmit">
-                <lay-form-item label="邮箱" prop="email" required>
-                  <lay-input :allow-clear="true" prefix-icon="layui-icon-email" placeholder="请输入邮箱"
-                             v-model="registerForm.email"></lay-input>
-                </lay-form-item>
-                <lay-form-item label="密码" prop="password" required>
-                  <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="6-20位，包含字母、数字、特殊字符"
-                             password type="password" v-model="registerForm.password"></lay-input>
-                </lay-form-item>
-                <lay-form-item label="确认密码" prop="confirmPassword" required>
-                  <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="再次输入密码"
-                             password type="password" v-model="registerConfirmPassword"></lay-input>
-                </lay-form-item>
-                <lay-form-item label="邮箱验证码" prop="code" required>
-                  <div class="code-row">
-                    <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="请输入邮箱验证码"
-                               v-model="registerForm.code"></lay-input>
-                    <lay-button class="code-btn" type="primary" :disabled="registerCountdown > 0" @click="sendRegisterCode">
-                      {{ registerCountdown > 0 ? `${registerCountdown}s后重发` : '发送验证码' }}
-                    </lay-button>
-                  </div>
-                </lay-form-item>
-                <lay-form-item>
-                  <lay-button style="margin-top: 20px" type="primary" :loading="registering" :fluid="true"
-                              loadingIcon="layui-icon-loading" @click="registerSubmit">注册
-                  </lay-button>
-                </lay-form-item>
-                <lay-form-item>
-                  <lay-button type="default" :fluid="true" @click="switchMode('login')">返回登录</lay-button>
-                </lay-form-item>
-              </lay-form>
-            </template>
-
-            <template v-else>
-              <lay-form :model="resetForm" label-position="top" ref="resetFormRef"
-                        @keydown.enter.prevent="resetSubmit">
-                <lay-form-item label="邮箱" prop="email" required>
-                  <lay-input :allow-clear="true" prefix-icon="layui-icon-email" placeholder="请输入邮箱"
-                             v-model="resetForm.email"></lay-input>
-                </lay-form-item>
-                <lay-form-item label="新密码" prop="password" required>
-                  <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="6-20位，包含字母、数字、特殊字符"
-                             password type="password" v-model="resetForm.password"></lay-input>
-                </lay-form-item>
-                <lay-form-item label="确认密码" prop="confirmPassword" required>
-                  <lay-input :allow-clear="false" prefix-icon="layui-icon-password" placeholder="再次输入新密码"
-                             password type="password" v-model="resetConfirmPassword"></lay-input>
-                </lay-form-item>
-                <lay-form-item label="邮箱验证码" prop="code" required>
-                  <div class="code-row">
-                    <lay-input :allow-clear="true" prefix-icon="layui-icon-vercode" placeholder="请输入邮箱验证码"
-                               v-model="resetForm.code"></lay-input>
-                    <lay-button class="code-btn" type="primary" :disabled="resetCountdown > 0" @click="sendResetCode">
-                      {{ resetCountdown > 0 ? `${resetCountdown}s后重发` : '发送验证码' }}
-                    </lay-button>
-                  </div>
-                </lay-form-item>
-                <lay-form-item>
-                  <lay-button style="margin-top: 20px" type="primary" :loading="resetting" :fluid="true"
-                              loadingIcon="layui-icon-loading" @click="resetSubmit">重置密码
-                  </lay-button>
-                </lay-form-item>
-                <lay-form-item>
-                  <lay-button type="default" :fluid="true" @click="switchMode('login')">返回登录</lay-button>
-                </lay-form-item>
-              </lay-form>
-            </template>
+          <div class="hero-point">
+            <span class="point-title">找回密码</span>
+            <span class="point-desc">通过邮箱验证码重置密码。</span>
+          </div>
+          <div class="hero-point">
+            <span class="point-title">二维码登录</span>
+            <span class="point-desc">小程序扫码直接登录。</span>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section class="login-panel">
+        <header class="panel-header">
+          <div class="panel-title">{{ pageTitle }}</div>
+          <div class="panel-subtitle">{{ pageSubtitle }}</div>
+        </header>
+
+        <template v-if="pageMode === 'login'">
+          <lay-tab v-model="method" type="brief">
+            <lay-tab-item title="账号登录" id="1">
+              <lay-form
+                ref="loginFormRef"
+                :model="loginForm"
+                :rules="loginFormRules"
+                label-position="top"
+                @keydown.enter.prevent="loginSubmit"
+              >
+                <lay-form-item label="用户名 / 邮箱" prop="username" required>
+                  <lay-input
+                    v-model="loginForm.username"
+                    :allow-clear="true"
+                    prefix-icon="layui-icon-username"
+                    placeholder="用户名 / 邮箱"
+                  />
+                </lay-form-item>
+
+                <lay-form-item label="密码" prop="password" required>
+                  <lay-input
+                    v-model="loginForm.password"
+                    :allow-clear="false"
+                    password
+                    prefix-icon="layui-icon-password"
+                    placeholder="密码"
+                    type="password"
+                  />
+                </lay-form-item>
+
+                <lay-form-item v-if="captchaEnabled" label="验证码" prop="code" required>
+                  <div class="code-row">
+                    <lay-input
+                      v-model="loginForm.code"
+                      :allow-clear="true"
+                      prefix-icon="layui-icon-vercode"
+                      placeholder="验证码"
+                    />
+                    <div class="login-captcha" @click="refreshCaptcha">
+                      <img :src="captchaImg" alt="验证码" />
+                    </div>
+                  </div>
+                </lay-form-item>
+
+                <lay-form-item>
+                  <lay-button
+                    type="primary"
+                    :loading="loging"
+                    :fluid="true"
+                    loadingIcon="layui-icon-loading"
+                    @click="loginSubmit"
+                  >
+                    登录
+                  </lay-button>
+                </lay-form-item>
+              </lay-form>
+            </lay-tab-item>
+
+            <lay-tab-item title="二维码登录" id="2">
+              <div class="qrcode-panel">
+                <div v-if="qrcodeLoading" class="qrcode-loading">加载中...</div>
+                <template v-else>
+                  <lay-qrcode :text="qrcodeTicket" :width="200" color="#000" />
+                  <p class="qrcode-tip">请使用小程序扫描二维码</p>
+                  <button class="qrcode-refresh" type="button" @click="refreshQrcode">刷新二维码</button>
+                </template>
+              </div>
+            </lay-tab-item>
+          </lay-tab>
+
+          <div class="auth-links">
+            <span class="auth-link" @click="switchMode('register')">没有账号？去注册</span>
+            <span class="auth-sep">|</span>
+            <span class="auth-link" @click="switchMode('reset')">忘记密码？</span>
+          </div>
+
+          <div class="oauth-title">其他登录方式</div>
+          <div class="oauth-grid">
+            <button class="oauth-btn" type="button" @click="oauthLogin('wechat_open')">微信</button>
+            <button class="oauth-btn" type="button">QQ</button>
+            <button class="oauth-btn" type="button" @click="oauthLogin('gitee')">Gitee</button>
+            <button class="oauth-btn" type="button" @click="oauthLogin('github')">Github</button>
+          </div>
+        </template>
+
+        <template v-else-if="pageMode === 'register'">
+          <lay-form
+            ref="registerFormRef"
+            :model="registerForm"
+            label-position="top"
+            @keydown.enter.prevent="registerSubmit"
+          >
+            <lay-form-item label="邮箱" prop="email" required>
+              <lay-input
+                v-model="registerForm.email"
+                :allow-clear="true"
+                prefix-icon="layui-icon-email"
+                placeholder="请输入邮箱"
+              />
+            </lay-form-item>
+
+            <lay-form-item label="密码" prop="password" required>
+              <lay-input
+                v-model="registerForm.password"
+                :allow-clear="false"
+                password
+                prefix-icon="layui-icon-password"
+                placeholder="6-20位，包含字母、数字、特殊字符"
+                type="password"
+              />
+            </lay-form-item>
+
+            <lay-form-item label="确认密码" prop="confirmPassword" required>
+              <lay-input
+                v-model="registerConfirmPassword"
+                :allow-clear="false"
+                password
+                prefix-icon="layui-icon-password"
+                placeholder="再次输入密码"
+                type="password"
+              />
+            </lay-form-item>
+
+            <lay-form-item label="邮箱验证码" prop="code" required>
+              <div class="code-row">
+                <lay-input
+                  v-model="registerForm.code"
+                  :allow-clear="true"
+                  prefix-icon="layui-icon-vercode"
+                  placeholder="请输入邮箱验证码"
+                />
+                <lay-button class="code-btn" type="primary" :disabled="registerCountdown > 0" @click="sendRegisterCode">
+                  {{ registerCountdown > 0 ? `${registerCountdown}s后重发` : '发送验证码' }}
+                </lay-button>
+              </div>
+            </lay-form-item>
+
+            <lay-form-item>
+              <lay-button
+                type="primary"
+                :loading="registering"
+                :fluid="true"
+                loadingIcon="layui-icon-loading"
+                @click="registerSubmit"
+              >
+                注册
+              </lay-button>
+            </lay-form-item>
+
+            <lay-form-item>
+              <lay-button type="default" :fluid="true" @click="switchMode('login')">返回登录</lay-button>
+            </lay-form-item>
+          </lay-form>
+        </template>
+
+        <template v-else>
+          <lay-form
+            ref="resetFormRef"
+            :model="resetForm"
+            label-position="top"
+            @keydown.enter.prevent="resetSubmit"
+          >
+            <lay-form-item label="邮箱" prop="email" required>
+              <lay-input
+                v-model="resetForm.email"
+                :allow-clear="true"
+                prefix-icon="layui-icon-email"
+                placeholder="请输入邮箱"
+              />
+            </lay-form-item>
+
+            <lay-form-item label="新密码" prop="password" required>
+              <lay-input
+                v-model="resetForm.password"
+                :allow-clear="false"
+                password
+                prefix-icon="layui-icon-password"
+                placeholder="6-20位，包含字母、数字、特殊字符"
+                type="password"
+              />
+            </lay-form-item>
+
+            <lay-form-item label="确认密码" prop="confirmPassword" required>
+              <lay-input
+                v-model="resetConfirmPassword"
+                :allow-clear="false"
+                password
+                prefix-icon="layui-icon-password"
+                placeholder="再次输入新密码"
+                type="password"
+              />
+            </lay-form-item>
+
+            <lay-form-item label="邮箱验证码" prop="code" required>
+              <div class="code-row">
+                <lay-input
+                  v-model="resetForm.code"
+                  :allow-clear="true"
+                  prefix-icon="layui-icon-vercode"
+                  placeholder="请输入邮箱验证码"
+                />
+                <lay-button class="code-btn" type="primary" :disabled="resetCountdown > 0" @click="sendResetCode">
+                  {{ resetCountdown > 0 ? `${resetCountdown}s后重发` : '发送验证码' }}
+                </lay-button>
+              </div>
+            </lay-form-item>
+
+            <lay-form-item>
+              <lay-button
+                type="primary"
+                :loading="resetting"
+                :fluid="true"
+                loadingIcon="layui-icon-loading"
+                @click="resetSubmit"
+              >
+                重置密码
+              </lay-button>
+            </lay-form-item>
+
+            <lay-form-item>
+              <lay-button type="default" :fluid="true" @click="switchMode('login')">返回登录</lay-button>
+            </lay-form-item>
+          </lay-form>
+        </template>
+      </section>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import {computed, onBeforeUnmount, onMounted, reactive, ref, watch} from 'vue'
-import {useUserStore} from '@/store/user'
 import {layer} from '@layui/layer-vue'
-import {EmailRegisterVo, LoginVo, ResetPasswordVo} from "@/types/login/LoginForm";
-import {emailLogin, findCaptchaEnabled, login, register, resetPassword, sendEmailCode} from "@/api/Login";
-import {getCaptchaCode} from "@/api/captcha/Captcha";
-import {loginQrcode} from "@/api/module/commone";
-import router from "@/router";
-import {useCryptStore} from "@/store/crypt";
+import router from '@/router'
+import {useUserStore} from '@/store/user'
+import {useCryptStore} from '@/store/crypt'
+import {getCaptchaCode} from '@/api/captcha/Captcha'
+import {emailLogin, findCaptchaEnabled, login, register, resetPassword, sendEmailCode} from '@/api/Login'
+import {loginQrcode} from '@/api/module/commone'
+import {EmailRegisterVo, LoginVo, ResetPasswordVo} from '@/types/login/LoginForm'
 
 type PageMode = 'login' | 'register' | 'reset'
 
@@ -206,6 +288,7 @@ const registerCountdown = ref(0)
 const resetCountdown = ref(0)
 const registerConfirmPassword = ref('')
 const resetConfirmPassword = ref('')
+
 const loginForm = reactive<LoginVo>({
   username: '',
   password: '',
@@ -223,11 +306,17 @@ const resetForm = reactive<ResetPasswordVo>({
   password: '',
   code: ''
 })
-const loginFormRef = ref()
-const registerFormRef = ref()
-const resetFormRef = ref()
+
+const loginFormRef = ref<any>(null)
+const registerFormRef = ref<any>(null)
+const resetFormRef = ref<any>(null)
 const userStore = useUserStore()
 const cryptStore = useCryptStore()
+
+const loginFormRules = ref({
+  username: [{required: true, message: '请输入用户名/邮箱', trigger: 'blur'}],
+  password: [{required: true, message: '请输入密码', trigger: 'blur'}]
+})
 
 let registerTimer: ReturnType<typeof setInterval> | null = null
 let resetTimer: ReturnType<typeof setInterval> | null = null
@@ -235,7 +324,7 @@ let resetTimer: ReturnType<typeof setInterval> | null = null
 const pageTitle = computed(() => {
   if (pageMode.value === 'register') return '创建账号'
   if (pageMode.value === 'reset') return '找回密码'
-  return '🎯 Sign in'
+  return '欢迎回来'
 })
 
 const pageSubtitle = computed(() => {
@@ -248,7 +337,7 @@ onMounted(async () => {
   const {data, code} = await findCaptchaEnabled()
   if (code === 200 && data === true) {
     captchaEnabled.value = true
-    await toRefreshImg()
+    await refreshCaptcha()
   }
 })
 
@@ -271,7 +360,12 @@ const switchMode = (mode: PageMode) => {
 }
 
 const loginSubmit = async () => {
-  loginFormRef.value.validate(async (isValidate: boolean) => {
+  const form = loginFormRef.value
+  if (!form) {
+    return
+  }
+
+  form.validate(async (isValidate: boolean) => {
     if (!isValidate) {
       return
     }
@@ -294,10 +388,10 @@ const loginSubmit = async () => {
         })
         return
       }
-      await toRefreshImg()
+      await refreshCaptcha()
       layer.msg(res.msg || '登录失败', {icon: 2})
     } catch (e: any) {
-      layer.confirm(e?.message || e || '登录失败', {icon: 2})
+      layer.msg(e?.message || e || '登录失败', {icon: 2})
     } finally {
       loging.value = false
     }
@@ -321,6 +415,7 @@ const registerSubmit = async () => {
     layer.msg('请输入邮箱验证码', {icon: 2})
     return
   }
+
   registering.value = true
   try {
     const encrypted = await cryptStore.encryptAes({
@@ -341,7 +436,7 @@ const registerSubmit = async () => {
     }
     layer.msg(res.msg || '注册失败', {icon: 2})
   } catch (e: any) {
-    layer.confirm(e?.message || e || '注册失败', {icon: 2})
+    layer.msg(e?.message || e || '注册失败', {icon: 2})
   } finally {
     registering.value = false
   }
@@ -364,6 +459,7 @@ const resetSubmit = async () => {
     layer.msg('请输入邮箱验证码', {icon: 2})
     return
   }
+
   resetting.value = true
   try {
     const encrypted = await cryptStore.encryptAes({
@@ -383,7 +479,7 @@ const resetSubmit = async () => {
     }
     layer.msg(res.msg || '重置失败', {icon: 2})
   } catch (e: any) {
-    layer.confirm(e?.message || e || '重置失败', {icon: 2})
+    layer.msg(e?.message || e || '重置失败', {icon: 2})
   } finally {
     resetting.value = false
   }
@@ -397,13 +493,18 @@ const sendRegisterCode = async () => {
   if (registerCountdown.value > 0) {
     return
   }
-  const encrypted = await cryptStore.encryptAes({email: registerForm.email, scene: 'register'})
-  const res: any = await sendEmailCode(encrypted)
-  if (res.code === 200) {
-    layer.msg(res.msg || '验证码已发送', {icon: 1})
-    startRegisterCountdown()
-  } else {
+
+  try {
+    const encrypted = await cryptStore.encryptAes({email: registerForm.email, scene: 'register'})
+    const res: any = await sendEmailCode(encrypted)
+    if (res.code === 200) {
+      layer.msg(res.msg || '验证码已发送', {icon: 1})
+      startRegisterCountdown()
+      return
+    }
     layer.msg(res.msg || '验证码发送失败', {icon: 2})
+  } catch (e: any) {
+    layer.msg(e?.message || e || '验证码发送失败', {icon: 2})
   }
 }
 
@@ -415,13 +516,18 @@ const sendResetCode = async () => {
   if (resetCountdown.value > 0) {
     return
   }
-  const encrypted = await cryptStore.encryptAes({email: resetForm.email, scene: 'reset_password'})
-  const res: any = await sendEmailCode(encrypted)
-  if (res.code === 200) {
-    layer.msg(res.msg || '验证码已发送', {icon: 1})
-    startResetCountdown()
-  } else {
+
+  try {
+    const encrypted = await cryptStore.encryptAes({email: resetForm.email, scene: 'reset_password'})
+    const res: any = await sendEmailCode(encrypted)
+    if (res.code === 200) {
+      layer.msg(res.msg || '验证码已发送', {icon: 1})
+      startResetCountdown()
+      return
+    }
     layer.msg(res.msg || '验证码发送失败', {icon: 2})
+  } catch (e: any) {
+    layer.msg(e?.message || e || '验证码发送失败', {icon: 2})
   }
 }
 
@@ -430,32 +536,33 @@ const refreshQrcode = async () => {
   try {
     const {data, code, msg}: any = await loginQrcode()
     if (code === 200) {
-      qrcodeTicket.value = data?.data || data || ''
-    } else {
-      layer.msg(msg || '二维码获取失败', {icon: 2})
+      const ticket = data?.data?.ticket || data?.ticket || ''
+      qrcodeTicket.value = ticket
+      return
     }
-  } catch (e) {
-    layer.msg('二维码获取失败', {icon: 2})
+    layer.msg(msg || '二维码获取失败', {icon: 2})
+  } catch (e: any) {
+    layer.msg(e?.message || '二维码获取失败', {icon: 2})
   } finally {
     qrcodeLoading.value = false
   }
 }
 
-const toRefreshImg = async () => {
+const refreshCaptcha = async () => {
   const res: any = await getCaptchaCode()
   if (res.code === 200) {
-    captchaImg.value = "data:image/gif;base64," + res.data?.captchaImg
+    captchaImg.value = `data:image/gif;base64,${res.data?.captchaImg || ''}`
     loginForm.captchaKey = res.data?.captchaKey
     return
   }
-  layer.msg(res.msg, {icon: 2})
+  layer.msg(res.msg || '验证码获取失败', {icon: 2})
 }
 
 const oauthLogin = (provider: string) => {
   const baseURL = import.meta.env.VITE_APP_BASE_URL as string
   const frontendCallbackUrl = window.location.origin + '/oauth/callback/' + provider
   const authorizeUrl = baseURL + '/api/sysLoginController/oauth/authorize/' + provider
-      + '?redirectUrl=' + encodeURIComponent(frontendCallbackUrl)
+    + '?redirectUrl=' + encodeURIComponent(frontendCallbackUrl)
   window.location.href = authorizeUrl
 }
 
@@ -520,216 +627,185 @@ const resetResetForm = () => {
 </script>
 
 <style scoped>
-.login-captcha {
-  display: inline-block;
-  vertical-align: bottom;
-  width: 108px;
-  height: 40px;
-  color: var(--global-primary-color);
-  margin-left: 8px;
-  border-radius: 4px;
-  border: 1px solid hsla(0, 0%, 60%, 0.46);
-  transition: border 0.2s;
-  box-sizing: border-box;
-  background: #fff;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.login-one-ball {
-  opacity: 0.4;
-  position: absolute;
-  max-width: 568px;
-  left: -400px;
-  bottom: 0px;
-}
-
-.login-two-ball {
-  opacity: 0.4;
-  position: absolute;
-  max-width: 320px;
-  right: -200px;
-  top: -60px;
-}
-
-.login-wrap {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  overflow: auto;
-  min-width: 600px;
-  z-index: 9;
-  background-image: url(https://assets.codehub.cn/micro-frontend/login/f7eeecbeccefe963298c23b54741d473.png);
-  background-repeat: no-repeat;
-  background-size: cover;
+.login-page {
   min-height: 100vh;
-}
-
-.login-wrap :deep(.layui-input-block) {
-  margin-left: 0 !important;
-}
-
-.login-root {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
+  align-items: center;
   justify-content: center;
-  width: 100%;
-  min-width: 320px;
-  background-color: initial;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(26, 188, 156, 0.18), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.14), transparent 28%),
+    linear-gradient(135deg, #f5f7fb 0%, #eef3f8 100%);
 }
 
-.login-main {
-  position: relative;
-  display: block;
-}
-
-.login-container {
-  position: relative;
-  overflow: hidden;
-  width: 940px;
+.login-shell {
+  width: min(1120px, 100%);
   min-height: 720px;
-  max-width: calc(100vw - 28px);
-  border-radius: 4px;
-  background: hsla(0, 0%, 100%, 0.5);
-  backdrop-filter: blur(30px);
-  display: flex;
-  box-shadow: 6px 6px 12px 4px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.16);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(24px);
 }
 
-.login-side {
-  padding: 40px 20px 20px;
-  background-color: var(--global-primary-color);
-  flex: 1;
-  height: 100%;
-}
-
-.login-bg-title {
-  flex: 1;
-  height: 84%;
+.login-hero {
+  position: relative;
+  padding: 56px;
   color: #fff;
-  text-align: center;
-  background-image: url('@/assets/login/login-bg.svg');
-  background-repeat: no-repeat;
-  background-position: bottom;
-  background-size: contain;
-  min-width: 200px;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.95), rgba(15, 23, 42, 0.96)),
+    linear-gradient(135deg, #0f766e, #111827);
+  isolation: isolate;
 }
 
-.login-ID {
-  padding: 20px;
-  width: 380px;
-  min-width: 380px;
+.login-hero::before,
+.login-hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  filter: blur(2px);
 }
 
-.auth-header {
-  margin-bottom: 12px;
+.login-hero::before {
+  width: 240px;
+  height: 240px;
+  right: -80px;
+  top: -40px;
 }
 
-.auth-title {
-  font-size: 22px;
-  margin-bottom: 8px;
-  margin-top: 5px;
+.login-hero::after {
+  width: 320px;
+  height: 320px;
+  left: -140px;
+  bottom: -120px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  margin: 28px 0 16px;
+  font-size: 44px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.hero-desc {
+  margin: 0;
+  max-width: 420px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.hero-points {
+  display: grid;
+  gap: 14px;
+  margin-top: 42px;
+}
+
+.hero-point {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.point-title {
+  display: block;
+  margin-bottom: 4px;
   font-weight: 700;
 }
 
-.auth-subtitle {
+.point-desc {
   font-size: 13px;
-  color: #8592a6;
+  color: rgba(255, 255, 255, 0.76);
 }
 
-.login-container .layui-tab-head {
-  background: transparent;
+.login-panel {
+  padding: 36px 36px 30px;
+  background: rgba(255, 255, 255, 0.85);
 }
 
-.login-container .layui-input-wrapper {
-  margin-top: 12px;
-  margin-bottom: 12px;
+.panel-header {
+  margin-bottom: 18px;
 }
 
-.login-container .assist {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  letter-spacing: 2px;
+.panel-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
-.login-container .layui-btn {
-  margin: 10px 0px 10px 0px;
-  letter-spacing: 2px;
-  height: 40px;
-}
-
-.login-container .layui-line-horizontal {
-  letter-spacing: 2px;
-  margin-bottom: 34px;
-  margin-top: 24px;
+.panel-subtitle {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 13px;
 }
 
 .auth-links {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin: 8px 0 4px;
-  color: #8592a6;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+  color: #64748b;
   font-size: 13px;
 }
 
 .auth-link {
+  color: #0f766e;
   cursor: pointer;
-  color: var(--global-primary-color);
 }
 
 .auth-sep {
-  color: #c7cdd8;
+  color: #cbd5e1;
 }
 
-.other-ways {
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  padding: 20px;
-  list-style: none;
-  font-size: 14px;
-  font-weight: 400;
+.oauth-title {
+  margin: 28px 0 14px;
+  color: #334155;
+  font-weight: 700;
 }
 
-.other-ways li {
-  width: 100%;
+.oauth-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.line-container {
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  cursor: pointer;
-}
-
-.line-container .icon {
-  height: 28px;
-  width: 28px;
-  margin-right: 0;
-  vertical-align: middle;
-  border-radius: 50%;
+.oauth-btn {
+  border: 1px solid #dbe3ee;
+  border-radius: 14px;
   background: #fff;
-  box-shadow: 0 1px 2px 0 rgb(9 30 66 / 4%), 0 1px 4px 0 rgb(9 30 66 / 10%),
-  0 0 1px 0 rgb(9 30 66 / 10%);
+  color: #334155;
+  height: 44px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.line-container .text {
-  display: block;
-  margin: 12px 0 0;
-  font-size: 12px;
-  color: #8592a6;
+.oauth-btn:hover {
+  border-color: #0f766e;
+  color: #0f766e;
+  transform: translateY(-1px);
 }
 
 .code-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -741,29 +817,82 @@ const resetResetForm = () => {
   flex-shrink: 0;
 }
 
+.login-captcha {
+  width: 112px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dbe3ee;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.login-captcha img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .qrcode-panel {
-  width: 220px;
-  margin: 0 auto;
+  padding: 28px 0 10px;
   text-align: center;
-  padding: 20px 0 10px;
 }
 
 .qrcode-loading {
-  padding: 40px 0;
+  padding: 52px 0;
+  color: #64748b;
 }
 
 .qrcode-tip {
+  margin: 14px 0 12px;
   font-size: 12px;
-  color: #999;
-  margin-bottom: 10px;
+  color: #64748b;
 }
 
 .qrcode-refresh {
+  border: 0;
+  background: transparent;
+  color: #0f766e;
   cursor: pointer;
-  color: var(--global-primary-color);
 }
 
 :deep(.layui-tab-title .layui-this) {
   background-color: transparent;
+}
+
+:deep(.layui-form-item) {
+  margin-bottom: 14px;
+}
+
+:deep(.layui-form-item .layui-input-wrapper) {
+  margin-top: 8px;
+}
+
+:deep(.layui-btn) {
+  height: 42px;
+}
+
+@media (max-width: 960px) {
+  .login-shell {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .login-hero {
+    padding: 36px 28px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .login-panel {
+    padding: 28px 20px 24px;
+  }
+
+  .oauth-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>
