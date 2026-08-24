@@ -27,8 +27,6 @@ import java.util.List;
  */
 @AutoConfiguration
 public class WebMvcConfig implements WebMvcConfigurer {
-    //    @Resource
-//    private FastJsonHttpMessageConverter fastJsonHttpMessageConverter;
     @Resource
     private ObjectMapper objectMapper;
     @Resource(name = "applicationTaskExecutor")

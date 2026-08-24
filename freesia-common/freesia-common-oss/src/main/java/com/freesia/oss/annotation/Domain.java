@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * @author Evad.Wu
- * @Description FastJSON序列化时将URL转化为IP模式 注解
+ * @Description Jackson序列化时将URL转化为IP模式 注解
  * @date 2025-05-14
  */
 @Documented

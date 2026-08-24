@@ -29,7 +29,7 @@ import java.util.Objects;
 public class RedisConfig implements WebMvcConfigurer {
 
     /**
-     * 自定义redisTemplate，使用Jackson代替FastJSON
+     * 自定义redisTemplate，使用Jackson
      */
     @Bean(name = "freesiaRedisTemplate")
     public RedisTemplate<String, Object> freesiaRedisTemplate(
@@ -44,9 +44,6 @@ public class RedisConfig implements WebMvcConfigurer {
         redisTemplate.setKeySerializer(stringRedisSerializer);
         redisTemplate.setHashKeySerializer(stringRedisSerializer);
 
-        // 创建Jackson序列化器
-        Jackson2JsonRedisSerializer<Object> jacksonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-
         // 配置ObjectMapper
         ObjectMapper redisObjectMapper = objectMapper.copy();
         // 启用类型信息以便反序列化
@@ -55,9 +52,8 @@ public class RedisConfig implements WebMvcConfigurer {
                 ObjectMapper.DefaultTyping.NON_FINAL,
                 JsonTypeInfo.As.PROPERTY
         );
-
-        jacksonSerializer.setObjectMapper(redisObjectMapper);
-
+        // 创建Jackson序列化器
+        Jackson2JsonRedisSerializer<Object> jacksonSerializer = new Jackson2JsonRedisSerializer<>(redisObjectMapper, Object.class);
         // 设置value的序列化方式
         redisTemplate.setValueSerializer(jacksonSerializer);
         redisTemplate.setHashValueSerializer(jacksonSerializer);

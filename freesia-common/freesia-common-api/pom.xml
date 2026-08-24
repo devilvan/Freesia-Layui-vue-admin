@@ -90,11 +90,6 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
-        <!--Fastjson-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
         <!--
           lombok / mapstruct API: 保持 compile scope (下游源码会直接 import 它们的注解/API 类)。
           处理器 JAR (mapstruct-processor / lombok-mapstruct-binding) 由根 pom <dependencies> 统一声明

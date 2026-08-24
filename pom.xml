@@ -32,7 +32,6 @@
         <mysql.version>8.3.0</mysql.version>
         <druid.version>1.2.23</druid.version>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
-        <fastjson.version>2.0.50</fastjson.version>
         <hutool.version>5.8.27</hutool.version>
         <jsoup.verison>1.23.1</jsoup.verison>
         <redisson.version>3.36.0</redisson.version>
@@ -163,12 +162,6 @@
                 <version>${log4j.version}</version>
             </dependency>
             <!-- logback-classic + logback-core 由 Spring Boot 3.5 BOM 统一管理版本, 禁止单独声明以避免版本不匹配导致 NoSuchFieldError: configurationLock -->
-            <!--FastJSON-->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson.version}</version>
-            </dependency>
             <!--Hutool 快速开发工具包-->
             <dependency>
                 <groupId>cn.hutool</groupId>

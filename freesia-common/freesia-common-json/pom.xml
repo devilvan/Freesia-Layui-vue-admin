@@ -17,11 +17,6 @@
     </properties>
 
     <dependencies>
-        <!--Fastjson-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
         <!-- Jackson 时间支持 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
