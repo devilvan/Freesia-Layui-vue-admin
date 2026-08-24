@@ -275,8 +275,12 @@
             <lay-row space="20">
               <lay-col :md="6">
                 <lay-form-item label="金额" prop="outlay" required>
-                  <lay-input v-model="accountCostVo.outlay" ref="addExpenseModalQuickSaveRef"
-                             type="number" precision="2"></lay-input>
+                  <lay-input
+                      style="width: 100%"
+                      v-model="accountCostVo.outlay"
+                      ref="addExpenseModalQuickSaveRef"
+                      type="number"
+                  ></lay-input>
                 </lay-form-item>
               </lay-col>
               <lay-col :md="6">
@@ -399,15 +403,22 @@
                 提示：若所有费用金额为0或不填写，则默认平分金额
               </h1>
             </div>
-          </lay-card>
-          <lay-table
-              ref="expenseAllocationTableRef"
-              :columns="expenseAllocationColumns"
-              :loading="expenseAllocationModalLoading"
-              :data-source="accountCostVo.accountCostUserAllocVoList"
-          >
+            </lay-card>
+            <lay-table
+                ref="expenseAllocationTableRef"
+                :columns="expenseAllocationColumns"
+                :loading="expenseAllocationModalLoading"
+                :data-source="accountCostVo.accountCostUserAllocVoList"
+            >
             <template #amount="{ row }">
-              <lay-input-number v-model="row.amount" precision="2" min="0"/>
+              <lay-input-number
+                  v-model="row.amount"
+                  precision="2"
+                  min="0"
+                  @change="normalizeAllocAmount(row)"
+                  @blur="normalizeAllocAmount(row)"
+                  @keydown.enter.stop
+              />
             </template>
             <template #allocFlag="{ row }">
               <lay-switch v-model="row.allocFlag"></lay-switch>
@@ -655,7 +666,8 @@ const now = new Date()
 const expenseFromRules = ref({
   outlay: {
     validator(rule: { field: any; }, value: any, callback: (arg0: Error) => void) {
-      if (value <= 0) {
+      const normalized = normalizeMoney(value)
+      if (normalized === null || normalized <= 0) {
         callback(new Error("金额必须大于0"));
       } else {
         return true;
@@ -913,7 +925,7 @@ function doSaveUpdate(clickFlag: boolean) {
         if (id) {
           addExpenseModalShowFlag.value = false
         } else {
-          addExpenseModalQuickSaveRef.value.focus();
+          addExpenseModalQuickSaveRef.value?.focus?.();
         }
       }
       addExpenseActive.value = 0
@@ -928,13 +940,25 @@ function toSubmit(clickFlag: boolean) {
         toNext()
         return;
       }
+      const normalizedOutlay = normalizeMoney(accountCostVo.value.outlay)
+      if (normalizedOutlay === null || normalizedOutlay <= 0) {
+        layer.msg('请输入正确的总金额', {icon: 2, time: 3000})
+        return;
+      }
+      accountCostVo.value.outlay = normalizedOutlay
+      if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
+        accountCostVo.value.accountCostUserAllocVoList.forEach(item => {
+          const normalizedAmount = normalizeMoney(item.amount)
+          item.amount = normalizedAmount === null ? 0 : normalizedAmount
+        })
+      }
       if (accountCostVo.value.accountCostUserAllocVoList && accountCostVo.value.accountCostUserAllocVoList.length > 0) {
         // 计算费用分摊合计金额是否超过总金额
-        let totalAmount: number = accountCostVo.value.accountCostUserAllocVoList
-            .reduce((sum: number, item: AccountCostUserAllocDto) => sum + parseFloat(item.amount || 0), 0)
-            .toFixed(2);
-        let outlay = parseFloat(accountCostVo.value.outlay).toFixed(2);
-        let subtract = ((outlay || 0) - totalAmount).toFixed(2);
+        let totalAmount = Number(accountCostVo.value.accountCostUserAllocVoList
+            .reduce((sum: number, item: AccountCostUserAllocDto) => sum + (normalizeMoney(item.amount) || 0), 0)
+            .toFixed(2));
+        let outlay = normalizedOutlay;
+        let subtract = Number((outlay - totalAmount).toFixed(2));
         if (!outlay || totalAmount > outlay) {
           layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
           return;
@@ -1280,14 +1304,32 @@ function splitNumber(total: number, parts: number): number[] {
   return result;
 }
 
+function normalizeMoney(value: unknown): number | null {
+  if (value === null || value === undefined || value === '') {
+    return null
+  }
+
+  const numeric = typeof value === 'number' ? value : Number(String(value).trim())
+  if (!Number.isFinite(numeric)) {
+    return null
+  }
+
+  return Number(numeric.toFixed(2))
+}
+
+function normalizeAllocAmount(row: AccountCostUserAllocDto) {
+  const normalizedAmount = normalizeMoney(row.amount)
+  row.amount = normalizedAmount === null ? 0 : normalizedAmount
+}
+
 function allocRetainAmount() {
-  const outlay = parseFloat(accountCostVo.value.outlay as string) || 0
+  const outlay = normalizeMoney(accountCostVo.value.outlay) || 0
   const list = accountCostVo.value.accountCostUserAllocVoList
   if (!list || list.length === 0) {
     layer.msg('分摊数据不合法，请联系管理员', {icon: 3})
     return
   }
-  const existAllocList = list.filter(item => item.amount && parseFloat(item.amount as string) > 0)
+  const existAllocList = list.filter(item => normalizeMoney(item.amount) !== null && (normalizeMoney(item.amount) as number) > 0)
   if (existAllocList.length === 0) {
     // 都没填写，则直接平分
     const numbers = splitNumber(outlay, list.length)
@@ -1296,19 +1338,19 @@ function allocRetainAmount() {
     }
   } else if (existAllocList.length !== list.length) {
     // 检查已填金额是否超过总金额
-    const filledTotal = parseFloat(existAllocList
-        .reduce((sum: number, item: AccountCostUserAllocDto) => sum + (parseFloat(item.amount as string) || 0), 0).toFixed(2))
+    const filledTotal = Number(existAllocList
+        .reduce((sum: number, item: AccountCostUserAllocDto) => sum + (normalizeMoney(item.amount) || 0), 0).toFixed(2))
     if (filledTotal > outlay) {
       layer.msg('费用分摊的合计金额不能超过总金额！', {icon: 2, time: 5000})
       return
     }
     // 部分填写，剩余金额平分给未填的
-    const remain = parseFloat((outlay - filledTotal).toFixed(2))
-    const notExistList = list.filter(item => !item.amount || parseFloat(item.amount as string) === 0)
+    const remain = Number((outlay - filledTotal).toFixed(2))
+    const notExistList = list.filter(item => normalizeMoney(item.amount) === null || normalizeMoney(item.amount) === 0)
     const numbers = splitNumber(remain, notExistList.length)
     for (let i = 0; i < numbers.length; i++) {
       notExistList.forEach(item => {
-        if (!item.amount || parseFloat(item.amount as string) === 0) {
+        if (normalizeMoney(item.amount) === null || normalizeMoney(item.amount) === 0) {
           item.amount = numbers[i]
         }
       })

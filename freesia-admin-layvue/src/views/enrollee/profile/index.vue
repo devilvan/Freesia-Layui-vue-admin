@@ -43,9 +43,6 @@
                   size="sm"
                   label-position="left"
               >
-                <lay-form-item label="用户名" prop="userName">
-                  <lay-input v-model="sysUserVo.userName" :disabled="true"></lay-input>
-                </lay-form-item>
                 <lay-form-item label="昵称" prop="nickName" required>
                   <lay-input v-model="sysUserVo.nickName" allow-clear></lay-input>
                 </lay-form-item>
@@ -59,17 +56,17 @@
                   >
                   </lay-select>
                 </lay-form-item>
-                <lay-form-item label="联系电话" prop="telNo" required>
-                  <lay-input
-                      v-model="sysUserVo.telNo"
-                      type="phone"
-                      allow-clear
-                  ></lay-input>
-                </lay-form-item>
                 <lay-form-item label="邮箱" prop="email">
                   <lay-input
                       v-model="sysUserVo.email"
                       type="email"
+                      allow-clear
+                  ></lay-input>
+                </lay-form-item>
+                <lay-form-item label="联系电话" prop="telNo">
+                  <lay-input
+                      v-model="sysUserVo.telNo"
+                      type="phone"
                       allow-clear
                   ></lay-input>
                 </lay-form-item>

@@ -67,7 +67,7 @@ const appStore = useAppStore()
 const $tab = useTabStore()
 const route = useRoute();
 const routes = router.getRoutes()
-const defaultTabsName = ['Workbench' ,'WorldClock']
+const defaultTabsName = ['WorldClock']
 const currentPath = computed(() => route.path);
 const stat = ref('关闭')
 const triggerType = ['contextMenu']
