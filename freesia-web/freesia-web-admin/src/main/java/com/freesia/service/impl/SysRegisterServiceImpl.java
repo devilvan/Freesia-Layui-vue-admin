@@ -1,18 +1,20 @@
 package com.freesia.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.freesia.constant.FlagConstant;
 import com.freesia.constant.SysTenantType;
 import com.freesia.constant.UserModule;
 import com.freesia.converter.SysUserConverter;
 import com.freesia.dto.SysRoleDto;
-import com.freesia.dto.SysUserDto;
 import com.freesia.dto.SysDeptDto;
+import com.freesia.dto.SysUserDto;
 import com.freesia.exception.ServiceException;
 import com.freesia.log.annotation.LogRecord;
 import com.freesia.po.*;
 import com.freesia.properties.LoginPasswordProperties;
+import com.freesia.oss.pojo.OssFactory;
+import com.freesia.oss.pojo.OssHandler;
 import com.freesia.repository.SysTenantRepository;
 import com.freesia.repository.SysTenantUserRepository;
 import com.freesia.repository.SysUserRepository;
@@ -40,6 +42,9 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @RequiredArgsConstructor
 public class SysRegisterServiceImpl implements SysRegisterService {
+    private static final String DEFAULT_NICK_NAME_PREFIX = "Freesia用户";
+    private static final int DEFAULT_AVATAR_COUNT = 6;
+
     private final TransactionTemplate transactionTemplate;
     private final CommonIconTemplateHeaderProviderService commonIconTemplateHeaderProviderService;
     private final SysUserConverter sysUserConverter;
@@ -57,6 +62,7 @@ public class SysRegisterServiceImpl implements SysRegisterService {
         return transactionTemplate.execute(status -> {
             ensureDefaultDept(sysUserDto);
             ensureUserNameAndNickName(sysUserDto);
+            ensureDefaultAvatar(sysUserDto);
             validateUnique(sysUserDto);
             SysUserPo sysUserPo = sysUserConverter.convertDto2Po(sysUserDto);
             String rawPassword = UEmpty.isNotEmpty(sysUserDto.getPassword()) ? sysUserDto.getPassword() : loginPasswordProperties.getInitPassword();
@@ -138,10 +144,20 @@ public class SysRegisterServiceImpl implements SysRegisterService {
             }
         }
         if (UEmpty.isEmpty(sysUserDto.getNickName())) {
-            String candidate = UEmpty.isNotEmpty(sysUserDto.getEmail())
-                    ? StrUtil.subBefore(sysUserDto.getEmail(), "@", true)
-                    : sysUserDto.getUserName();
-            sysUserDto.setNickName(StrUtil.isBlank(candidate) ? sysUserDto.getUserName() : candidate);
+            sysUserDto.setNickName(DEFAULT_NICK_NAME_PREFIX + RandomUtil.randomString(8));
+        }
+    }
+
+    private void ensureDefaultAvatar(SysUserDto sysUserDto) {
+        if (UEmpty.isNotEmpty(sysUserDto.getAvatar())) {
+            return;
+        }
+        try {
+            OssHandler ossHandler = OssFactory.getInstance();
+            int avatarIndex = RandomUtil.randomInt(1, DEFAULT_AVATAR_COUNT + 1);
+            sysUserDto.setAvatar(ossHandler.getUrl() + "/avatar/avatar" + avatarIndex + ".png");
+        } catch (Exception e) {
+            log.warn("注册用户[{}]初始化默认头像失败: {}", sysUserDto.getUserName(), e.getMessage());
         }
     }
 

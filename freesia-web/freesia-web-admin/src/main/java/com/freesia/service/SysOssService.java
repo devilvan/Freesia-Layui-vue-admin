@@ -6,6 +6,7 @@ import com.freesia.pojo.TableResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public interface SysOssService {
     SysOssDto findCacheById(Long id);
 
     /**
-     * 初始化删除临时目录下的文件
+     * 删除临时目录下的文件
      */
-    void initDeleteTempFile();
+    void deleteTempFileTask();
 }

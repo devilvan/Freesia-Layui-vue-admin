@@ -285,7 +285,7 @@ public class SysOssServiceImpl extends BaseServiceImpl<SysOssMapper, SysOssVo, S
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void initDeleteTempFile() {
+    public void deleteTempFileTask() {
         LambdaQueryWrapper<SysOssPo> wrapper = new LambdaQueryWrapper<SysOssPo>()
                 .select(SysOssPo::getId)
                 .eq(SysOssPo::getLogicDel, FlagConstant.DISABLED)

@@ -27,7 +27,6 @@ public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
     private final SysConfigService sysConfigService;
     private final SysDictValueService sysDictValueService;
     private final SysOssConfigService sysOssConfigService;
-    private final SysOssService sysOssService;
     private final CryptService cryptService;
     private final SysRoleService sysRoleService;
     private final SysDeptService sysDeptService;
@@ -37,7 +36,6 @@ public class FreesiaApplicationRunner implements ApplicationRunner, Ordered {
     @Override
     public void run(ApplicationArguments args) {
         sysOssConfigService.loadSysOssConfig();
-        sysOssService.initDeleteTempFile();
         log.info(UMessage.message("oss.load.success", CacheConstant.SYS_OSS_DEFAULT_CONFIG));
         log.info(UMessage.message("oss.load.success", CacheConstant.SYS_OSS_CONFIG));
         if (webCommonProperties.getInitSysConfig()) {
