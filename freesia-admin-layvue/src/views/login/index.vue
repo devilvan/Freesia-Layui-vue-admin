@@ -2,25 +2,13 @@
   <div class="login-page">
     <div class="login-shell">
       <section class="login-hero">
-        <div class="hero-badge">Freesia Admin</div>
+        <div class="hero-badge">Freesia Admin 后台管理系统</div>
         <h1 class="hero-title">统一认证入口</h1>
         <p class="hero-desc">
           支持账号登录、邮箱登录、二维码登录，以及邮箱注册和找回密码。
         </p>
 
         <div class="hero-points">
-          <div class="hero-point">
-            <span class="point-title">邮箱注册</span>
-            <span class="point-desc">通过验证码完成注册。</span>
-          </div>
-          <div class="hero-point">
-            <span class="point-title">找回密码</span>
-            <span class="point-desc">通过邮箱验证码重置密码。</span>
-          </div>
-          <div class="hero-point">
-            <span class="point-title">二维码登录</span>
-            <span class="point-desc">小程序扫码直接登录。</span>
-          </div>
         </div>
       </section>
 
@@ -108,10 +96,34 @@
 
           <div class="oauth-title">其他登录方式</div>
           <div class="oauth-grid">
-            <button class="oauth-btn" type="button" @click="oauthLogin('wechat_open')">微信</button>
-            <button class="oauth-btn" type="button">QQ</button>
-            <button class="oauth-btn" type="button" @click="oauthLogin('gitee')">Gitee</button>
-            <button class="oauth-btn" type="button" @click="oauthLogin('github')">Github</button>
+            <lay-tooltip :visible="false" trigger="hover" content="微信登录">
+              <button class="oauth-btn" type="button" @click="oauthLogin('wechat_open')">
+                <div class="line-container">
+                  <img class="icon" src="@/assets/login/WX.svg"/>
+                </div>
+              </button>
+            </lay-tooltip>
+            <lay-tooltip :visible="false" trigger="hover" content="QQ登录">
+              <button class="oauth-btn" type="button" @click="oauthLogin('qq_open')">
+                <div class="line-container">
+                  <img class="icon" src="@/assets/login/QQ.svg"/>
+                </div>
+              </button>
+            </lay-tooltip>
+            <lay-tooltip :visible="false" trigger="hover" content="Gitee登录">
+              <button class="oauth-btn" type="button" @click="oauthLogin('gitee')">
+                <div class="line-container">
+                  <img class="icon" src="@/assets/login/Gitee.svg"/>
+                </div>
+              </button>
+            </lay-tooltip>
+            <lay-tooltip :visible="false" trigger="hover" content="Github登录">
+              <button class="oauth-btn" type="button" @click="oauthLogin('github')">
+                <div class="line-container">
+                  <img class="icon" src="@/assets/login/Github.svg"/>
+                </div>
+              </button>
+            </lay-tooltip>
           </div>
         </template>
 
@@ -692,8 +704,7 @@ const resetResetForm = () => {
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.18);
   letter-spacing: 0.08em;
-  font-size: 12px;
-  text-transform: uppercase;
+  font-size: 16px;
 }
 
 .hero-title {
@@ -715,6 +726,15 @@ const resetResetForm = () => {
   display: grid;
   gap: 14px;
   margin-top: 42px;
+
+  flex: 1;
+  height: 84%;
+  color: #fff;
+  text-align: center;
+  background-image: url('@/assets/login/login-bg.svg');
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 135% 135%;
 }
 
 .hero-point {
@@ -894,5 +914,15 @@ const resetResetForm = () => {
   .oauth-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.line-container .icon {
+  height: 28px;
+  width: 28px;
+  margin-right: 0px;
+  vertical-align: middle;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px 0 rgb(9 30 66 / 4%), 0 1px 4px 0 rgb(9 30 66 / 10%), 0 0 1px 0 rgb(9 30 66 / 10%);
 }
 </style>
