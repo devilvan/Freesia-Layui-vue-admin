@@ -44,13 +44,6 @@ function isTokenExpiringSoon(token: string): boolean {
     return (jwt.exp - Math.floor(Date.now() / 1000)) < RENEW_BEFORE_SECONDS
 }
 
-/** token 是否已经过期（JWT exp 已到当前时间）；无法解析则视为未过期，交由服务端 401 兜底 */
-export function isTokenExpired(token: string): boolean {
-    const jwt = parseJwt(token)
-    if (!jwt || !jwt.exp) return false
-    return (jwt.exp - Math.floor(Date.now() / 1000)) <= 0
-}
-
 /**
  * 尝试续期，返回新token、null（服务端明确拒绝，需登出）或 'error'（网络/服务异常，不登出）。
  * 用 renewPromise 锁防止并发续期请求。
@@ -87,9 +80,7 @@ let handling401 = false
 /**
  * 401 统一登出处理：
  * 1. 防并发 401 风暴——token 过期瞬间多个在飞请求同时 401，只处理一次
- * 2. 只在第一次 401 时弹出提示，避免重复弹多个错误信息
- * 3. 处理完成后不立即复位标记：跳转登录页后仍可能有在飞请求返回 401，
- *    这些不再重复弹窗；直到下一次登录成功（响应携带新 token）才解除抑制
+ * 2. 已在登录页时不重复跳转
  */
 function handle401(data: any = null): void {
     if (handling401) return
@@ -99,7 +90,9 @@ function handle401(data: any = null): void {
     userInfoStore.$reset()
     layer.msg(data?.msg || '登录已过期，请重新登录', { icon: 2 })
     if (router.currentRoute.value.path !== loginPath) {
-        router.replace(loginPath)
+        router.replace(loginPath).finally(() => (handling401 = false))
+    } else {
+        handling401 = false
     }
 }
 // ==================== 401 统一处理 END ====================
@@ -114,12 +107,6 @@ class Http {
         this.service.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
             const userInfoStore = useUserStore();
             let currentToken = userInfoStore.token;
-
-            // 携带有效 token 发起请求，视为已建立/恢复会话：解除 401 提示抑制
-            // （覆盖 OAuth 等非 response.data.token 方式设置的 token）
-            if (currentToken && !isTokenExpired(currentToken)) {
-                handling401 = false
-            }
 
             // 非续期请求本身，检查token是否需要续期
             if (currentToken && !config.url?.includes(RENEW_URL)) {
@@ -158,10 +145,6 @@ class Http {
             let responseData = response.data;
             switch (responseData.code) {
                 case 200:
-                    // 登录/续期成功返回新 token：解除 401 提示抑制，后续 token 再次过期可正常提示
-                    if (responseData.data?.token) {
-                        handling401 = false
-                    }
                     return responseData;
                 case 401:
                     handle401(responseData)
