@@ -31,8 +31,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 消息公告业务实现
+ *
  * @author Evad.Wu
- * @Description 消息公告表 业务逻辑类
  * @date 2025-06-06
  */
 @Service
@@ -81,7 +82,7 @@ public class SysNoticeServiceImpl extends BaseServiceImpl<SysNoticeMapper, SysNo
         for (FindPublishedAnnouncementEntity entity : findPublishedAnnouncementEntityList) {
             String content = entity.getContent();
             if (UEmpty.isNotEmpty(content)) {
-                entity.setContent("【" + entity.getTypeName() + "】" + content);
+                entity.setContent("《" + entity.getTypeName() + "》" + content);
             }
         }
         return findPublishedAnnouncementEntityList;
@@ -101,7 +102,15 @@ public class SysNoticeServiceImpl extends BaseServiceImpl<SysNoticeMapper, SysNo
         sysNoticeVo.setUserId(markReadDto.getUserId());
         sysNoticeVo.setCreateTimeFrom(markReadDto.getCreateTimeFrom());
         sysNoticeVo.setCreateTimeTo(markReadDto.getCreateTimeTo());
-        // 查询未读消息和近7天的数据，过滤超过7天的已读消息
+        return this.findUnreadCount(sysNoticeVo);
+    }
+
+    @Override
+    public Integer markAllRead(String type, Long userId) {
+        sysNoticeRepository.markAllRead(type, userId);
+        SysNoticeVo sysNoticeVo = new SysNoticeVo();
+        sysNoticeVo.setType(type);
+        sysNoticeVo.setUserId(userId);
         return this.findUnreadCount(sysNoticeVo);
     }
 
@@ -120,12 +129,9 @@ public class SysNoticeServiceImpl extends BaseServiceImpl<SysNoticeMapper, SysNo
             sysNoticeDto.setUserId(userId);
             sysNoticeDto.setAnnouncementIdList(announcementIdList);
             List<Long> existsIdList = sysNoticeMapper.findExistsAnnouncement(sysNoticeDto);
-            // 判断是否有新的公告
             if (existsIdList.size() < announcementIdList.size()) {
-                // 取差集
                 List<Long> disjunctionIdList = new ArrayList<>(CollUtil.disjunction(existsIdList, announcementIdList));
                 if (UEmpty.isNotEmpty(disjunctionIdList)) {
-                    // 如果不存在则生成
                     List<SysNoticePo> sysNoticePoList = sysNoticeRepository.findAllById(disjunctionIdList);
                     sysNoticePoList = sysNoticePoList.stream().peek(item -> {
                         item.setAnnouncementId(item.getId());

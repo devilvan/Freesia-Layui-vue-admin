@@ -35,4 +35,21 @@ public interface SysNoticeRepository extends JpaRepository<SysNoticePo, Long> {
             """, nativeQuery = true)
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     void markRead(@Param("markReadDto") MarkReadDto markReadDto);
+
+    /**
+     * 按类型批量标记已读
+     *
+     * @param type   消息类型
+     * @param userId 用户ID
+     */
+    @Modifying
+    @Query(value = """
+            UPDATE SYS_NOTICE
+               SET READ_FLAG = 1
+             WHERE READ_FLAG = 0
+               AND TYPE = :type
+               AND USER_ID = :userId
+            """, nativeQuery = true)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
+    int markAllRead(@Param("type") String type, @Param("userId") Long userId);
 }

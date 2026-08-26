@@ -2,6 +2,7 @@ package com.freesia.controller;
 
 import com.freesia.constant.SysNoticeType;
 import com.freesia.converter.SysNoticeConverter;
+import com.freesia.dto.MarkAllReadDto;
 import com.freesia.dto.MarkReadDto;
 import com.freesia.dto.SysNoticeDto;
 import com.freesia.entity.FindPageSysNoticeEntity;
@@ -239,6 +240,25 @@ public class SysNoticeController extends BaseController {
         markReadDto.setCreateTimeFrom(defaultCreateTime[0]);
         markReadDto.setCreateTimeTo(defaultCreateTime[1]);
         Integer count = sysNoticeService.markRead(markReadDto);
+        return R.ok(count);
+    }
+
+    /**
+     * 按类型全部已读
+     *
+     * @param markAllReadDto 请求参数
+     * @return 剩余未读数量
+     */
+    @Operation(summary = "按类型全部已读")
+    @PostMapping(value = "markAllRead")
+    public R<Integer> markAllRead(@RequestBody MarkAllReadDto markAllReadDto) {
+        Long userId = USecurity.getUserId();
+        String type = markAllReadDto.getType();
+        SysNoticeType sysNoticeType = SysNoticeType.getInstanceByCode(type);
+        if (UEmpty.isNull(sysNoticeType)) {
+            throw new NoticeException("notice.type.invalid", new Object[]{type});
+        }
+        Integer count = sysNoticeService.markAllRead(type, userId);
         return R.ok(count);
     }
 }

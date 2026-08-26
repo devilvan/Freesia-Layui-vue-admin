@@ -2,7 +2,7 @@ import Http from "../Http";
 import {buildPageUrlParam, buildUrlParam} from "../../util/URequest";
 import {PageQuery} from "../../types/Common";
 import {R, TableResult} from "../../types/Result";
-import {MarkReadVo, SysNoticeEntity, SysNoticeVo} from "../../types/system/Notice";
+import {MarkAllReadVo, MarkReadVo, SysNoticeEntity, SysNoticeVo} from "../../types/system/Notice";
 
 export function findPageSysNotice(searchQuery: SysNoticeVo, pageQuery: PageQuery): Promise<TableResult<SysNoticeEntity>> {
     let params = buildPageUrlParam(searchQuery, pageQuery);
@@ -38,4 +38,8 @@ export function findUnreadCount(searchQuery: SysNoticeVo): Promise<R<number>> {
 
 export function markRead(markReadVo: MarkReadVo): Promise<R<number>> {
     return Http.post("/api/sysNoticeController/markRead", markReadVo);
+}
+
+export function markAllRead(markAllReadVo: MarkAllReadVo): Promise<R<number>> {
+    return Http.post("/api/sysNoticeController/markAllRead", markAllReadVo);
 }

@@ -40,3 +40,7 @@ export interface MarkReadVo {
     idList: string[],
     type?: SysNoticeType
 }
+
+export interface MarkAllReadVo {
+    type: SysNoticeType
+}

@@ -14,6 +14,16 @@
         <lay-scroll height="500px">
           <lay-tab type="brief" style="margin: 5px" v-model="currentIndex">
             <lay-tab-item :title="`通知(${userStore.noticeCount})`" id="1">
+              <div class="tab-action-bar">
+                <lay-button
+                    size="sm"
+                    type="warm"
+                    :disabled="!noticeList.length"
+                    @click="doMarkAllRead(SysNoticeType.NOTICE)"
+                >
+                  全部已读
+                </lay-button>
+              </div>
               <div
                   class="inform-item"
                   v-for="(item, index) in noticeList"
@@ -23,7 +33,7 @@
                 <div class="inform-item-icon">
                   <img src="@/assets/messageSlot/info1.png" alt=""/>
                 </div>
-                <div class="inform-item-text" :style="getRowStyle(item, index)">
+                <div class="inform-item-text" :style="getRowStyle(item)">
                   <div>{{ item.title }}</div>
                   <div class="oneRow" :title="item.content">{{ item.content }}</div>
                   <div class="inform-item-time">
@@ -31,16 +41,26 @@
                   </div>
                 </div>
                 <div class="inform-item-readFlag">
-                  <div v-show="noticeList[index].readFlag">
+                  <div v-show="item.readFlag">
                     <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
                   </div>
-                  <div v-show="!noticeList[index].readFlag">
+                  <div v-show="!item.readFlag">
                     <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
                   </div>
                 </div>
               </div>
             </lay-tab-item>
             <lay-tab-item :title="`公告(${userStore.announcementCount})`" id="2">
+              <div class="tab-action-bar">
+                <lay-button
+                    size="sm"
+                    type="warm"
+                    :disabled="!announcementList.length"
+                    @click="doMarkAllRead(SysNoticeType.ANNOUNCEMENT)"
+                >
+                  全部已读
+                </lay-button>
+              </div>
               <div style="width: 100%; height: 100%; overflow: hidden">
                 <div
                     class="inform-item privateLette-item"
@@ -51,7 +71,7 @@
                   <div class="inform-item-icon">
                     <img src="@/assets/messageSlot/info2.png" alt=""/>
                   </div>
-                  <div class="inform-item-text" :style="getRowStyle(item, index)">
+                  <div class="inform-item-text" :style="getRowStyle(item)">
                     <div>{{ item.title }}</div>
                     <div class="oneRow" :title="item.content">{{ item.content }}</div>
                     <div class="inform-item-time">
@@ -59,10 +79,10 @@
                     </div>
                   </div>
                   <div class="inform-item-readFlag">
-                    <div v-show="announcementList[index].readFlag">
+                    <div v-show="item.readFlag">
                       <lay-tag :color="'#c2c2c2'" variant="light">已读</lay-tag>
                     </div>
-                    <div v-show="!announcementList[index].readFlag">
+                    <div v-show="!item.readFlag">
                       <lay-tag :color="'#31BDEC'" variant="light">未读</lay-tag>
                     </div>
                   </div>
@@ -82,12 +102,10 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {onMounted, reactive, ref, watch} from 'vue'
+import {onMounted, ref, watch} from 'vue'
 import {MarkReadVo, SysNoticeEntity, SysNoticeType, SysNoticeVo} from "@/types/system/Notice";
-import {findListSysNotice, findPageSysNotice, findUnreadCount, markRead} from "@/api/system/Notice";
-import {R, TableResult} from "@/types/Result";
-import {PageQuery} from "@/types/Common";
-import {useAppStore} from "@/store/app";
+import {findListSysNotice, findUnreadCount, markAllRead, markRead} from "@/api/system/Notice";
+import {R} from "@/types/Result";
 import {layer} from "@layui/layui-vue";
 import {buildRange} from "@/util/UDate";
 import {useUserStore} from "@/store/user";
@@ -96,16 +114,24 @@ interface MessageTabProps {
   flag: boolean
 }
 
-/*INIT*/
+const props = withDefaults(defineProps<MessageTabProps>(), {
+  flag: false
+})
+
+const emit = defineEmits(['callback']);
+
+const userStore = useUserStore()
+const manualRef = ref()
+const noticeList = ref<SysNoticeEntity[]>([])
+const announcementList = ref<SysNoticeEntity[]>([])
+const currentIndex = ref('1')
+
 onMounted(async () => {
-  doFindAnnouncementUnreadCount();
+  doFindAnnouncementUnreadCount()
   doFindNoticeUnreadCount()
   loadDataSource()
 })
 
-const props = withDefaults(defineProps<MessageTabProps>(), {
-  flag: false
-})
 watch(
     () => props.flag,
     (newVal) => {
@@ -117,61 +143,33 @@ watch(
     }
 )
 
-const emit = defineEmits(['callback']);
-/*INIT*/
-
-/*VAR*/
-const appStore = useAppStore()
-const userStore = useUserStore()
-const manualRef = ref()
-const noticeList = ref<SysNoticeEntity[]>()
-const announcementList = ref<SysNoticeEntity[]>()
-const todoList = ref([
-  {
-    title: '张三的请假审批',
-    type: '未开始',
-    time: '张三在 08-09 12:00:00 提交的请假...'
-  },
-  {
-    title: '考试监管',
-    type: '进行中',
-    time: '考试监管在 08-09 12:00:00 之前打卡'
-  },
-  {
-    title: '注册新仓库',
-    type: '即将到期',
-    time: '需要在 08-09 12:00:00 之前完成'
-  }
-])
-
-const currentIndex = ref('1')
-const searchQuery = ref<SysNoticeVo>({});
-/*VAR*/
-
-/*FUNCTION*/
 function loadDataSource() {
-  let createTime: string[] = buildRange(6)
-  // 查询公告
-  searchQuery.value.type = SysNoticeType.ANNOUNCEMENT
-  searchQuery.value.createTimeFrom = new Date(createTime[0])
-  searchQuery.value.createTimeTo = new Date(createTime[1])
-  findListSysNotice(searchQuery.value).then((res: R<SysNoticeEntity[]>) => {
+  const createTime: string[] = buildRange(6)
+  const announcementQuery: SysNoticeVo = {
+    type: SysNoticeType.ANNOUNCEMENT,
+    createTimeFrom: new Date(createTime[0]),
+    createTimeTo: new Date(createTime[1])
+  }
+  findListSysNotice(announcementQuery).then((res: R<SysNoticeEntity[]>) => {
     if (res.code === 200) {
-      announcementList.value = res.data;
+      announcementList.value = res.data || []
     }
-    // 查询消息
-    searchQuery.value.type = SysNoticeType.NOTICE
-    findListSysNotice(searchQuery.value).then((res1: R<SysNoticeEntity[]>) => {
+    const noticeQuery: SysNoticeVo = {
+      type: SysNoticeType.NOTICE,
+      createTimeFrom: new Date(createTime[0]),
+      createTimeTo: new Date(createTime[1])
+    }
+    findListSysNotice(noticeQuery).then((res1: R<SysNoticeEntity[]>) => {
       if (res1.code === 200) {
-        noticeList.value = res1.data;
+        noticeList.value = res1.data || []
       }
       userStore.calculateSumCount()
-    });
-  });
+    })
+  })
 }
 
 function doFindAnnouncementUnreadCount() {
-  let params: SysNoticeVo = {
+  const params: SysNoticeVo = {
     type: SysNoticeType.ANNOUNCEMENT
   }
   findUnreadCount(params).then((res: any) => {
@@ -182,7 +180,7 @@ function doFindAnnouncementUnreadCount() {
 }
 
 function doFindNoticeUnreadCount() {
-  let params: SysNoticeVo = {
+  const params: SysNoticeVo = {
     type: SysNoticeType.NOTICE
   }
   findUnreadCount(params).then((res: any) => {
@@ -192,7 +190,7 @@ function doFindNoticeUnreadCount() {
   })
 }
 
-function doMarkRead(item: any, idx: number) {
+function doMarkRead(item: SysNoticeEntity, idx: number) {
   if (item.readFlag) {
     layer.notify({
       title: "成功",
@@ -200,20 +198,27 @@ function doMarkRead(item: any, idx: number) {
       time: 5000,
       icon: 1,
     })
-    return;
+    return
   }
-  let type = item.type;
-  let param: MarkReadVo = {
-    idList: new Array(item.id),
-    type: type
+  const type = item.type as SysNoticeType
+  const param: MarkReadVo = {
+    idList: [String(item.id)],
+    type
   }
   markRead(param).then((res: any) => {
+    if (res.code !== 200) {
+      return
+    }
     if (SysNoticeType.NOTICE === type) {
-      userStore.noticeCount = res.data;
-      noticeList.value[idx].readFlag = true
+      userStore.noticeCount = res.data
+      if (noticeList.value[idx]) {
+        noticeList.value[idx].readFlag = true
+      }
     } else if (SysNoticeType.ANNOUNCEMENT === type) {
       userStore.announcementCount = res.data
-      announcementList.value[idx].readFlag = true
+      if (announcementList.value[idx]) {
+        announcementList.value[idx].readFlag = true
+      }
     }
     userStore.calculateSumCount()
     emit('callback', userStore.unreadCount)
@@ -226,13 +231,39 @@ function doMarkRead(item: any, idx: number) {
   })
 }
 
-
-function getRowStyle(row: any, rowIndex: number) {
-  if (row.readFlag) return 'color:' + '#c2c2c2';
-  return ''
+function doMarkAllRead(type: SysNoticeType) {
+  const isNotice = type === SysNoticeType.NOTICE
+  const unreadCount = isNotice ? userStore.noticeCount : userStore.announcementCount
+  if (!unreadCount || unreadCount <= 0) {
+    layer.msg("当前没有未读消息", {icon: 3})
+    return
+  }
+  markAllRead({type}).then((res: any) => {
+    if (res.code !== 200) {
+      return
+    }
+    if (isNotice) {
+      userStore.noticeCount = res.data
+      noticeList.value = noticeList.value.map((item) => ({...item, readFlag: true}))
+    } else {
+      userStore.announcementCount = res.data
+      announcementList.value = announcementList.value.map((item) => ({...item, readFlag: true}))
+    }
+    userStore.calculateSumCount()
+    emit('callback', userStore.unreadCount)
+    layer.notify({
+      title: "成功",
+      content: "全部已读成功",
+      time: 5000,
+      icon: 1,
+    })
+  })
 }
 
-/*FUNCTION*/
+function getRowStyle(row: SysNoticeEntity) {
+  if (row.readFlag) return 'color:#c2c2c2'
+  return ''
+}
 </script>
 
 
@@ -292,30 +323,6 @@ function getRowStyle(row: any, rowIndex: number) {
   height: 80px;
 }
 
-.todo-item {
-  box-sizing: border-box;
-  padding: 0 10px;
-}
-
-.todo-title {
-  width: 80%;
-  display: flex;
-  line-height: 30px;
-  text-overflow: ellipsis;
-}
-
-.todo-tags {
-  width: 100px;
-  text-align: right;
-  line-height: 60px;
-}
-
-.todo-item-time {
-  line-height: 20px;
-  color: #ada4a4;
-  font-size: 12px;
-}
-
 .oneRow {
   width: 350px;
   white-space: nowrap;
@@ -327,5 +334,11 @@ function getRowStyle(row: any, rowIndex: number) {
 .dropdownContainer {
   width: 500px;
   height: 500px
+}
+
+.tab-action-bar {
+  display: flex;
+  justify-content: flex-start;
+  padding: 4px 10px 10px;
 }
 </style>

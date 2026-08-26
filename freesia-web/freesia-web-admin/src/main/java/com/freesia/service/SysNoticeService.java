@@ -79,6 +79,15 @@ public interface SysNoticeService {
     Integer markRead(MarkReadDto markReadDto);
 
     /**
+     * 按类型全部已读
+     *
+     * @param type   消息类型
+     * @param userId 用户ID
+     * @return 剩余未读数量
+     */
+    Integer markAllRead(String type, Long userId);
+
+    /**
      * 查询消息公告表集合
      *
      * @param sysNoticeDto 查询条件

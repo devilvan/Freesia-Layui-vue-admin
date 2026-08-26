@@ -1,38 +1,44 @@
 <template>
-  <!-- 使用 Teleport 将铃铛和弹窗渲染到 body 层，确保在导航栏之上 -->
   <Teleport to="body">
-    <!-- 铃铛图标 - 固定在导航栏右上角，未登录时隐藏 -->
     <view class="message-bell" v-if="isLoggedIn" @click="openPopup">
-      <image class="bell-icon" src="@/static/tabbar/notice.svg" mode="aspectFit"/>
+      <image class="bell-icon" src="@/static/tabbar/notice.svg" mode="aspectFit" />
       <view v-if="totalUnread > 0" class="unread-badge">{{ totalUnread > 99 ? '99+' : totalUnread }}</view>
     </view>
-    <!-- 消息弹窗 -->
+
     <view class="message-overlay" v-if="popupVisible" @click="closePopup">
       <view class="message-popup" @click.stop>
-        <!-- 弹窗头部 -->
         <view class="popup-header">
           <text class="popup-title">消息中心</text>
-          <text class="popup-close" @click="closePopup">✕</text>
+          <text class="popup-close" @click="closePopup">×</text>
         </view>
 
-        <!-- Tab 切换 -->
         <view class="popup-tabs">
           <view class="popup-tab-item" :class="{ active: currentTab === 'notice' }" @click="switchTab('notice')">
             消息通知
             <text v-if="userStore.state.noticeCount > 0" class="tab-badge">{{ userStore.state.noticeCount }}</text>
           </view>
-          <view class="popup-tab-item" :class="{ active: currentTab === 'announcement' }"
-                @click="switchTab('announcement')">
+          <view
+              class="popup-tab-item"
+              :class="{ active: currentTab === 'announcement' }"
+              @click="switchTab('announcement')"
+          >
             系统公告
-            <text v-if="userStore.state.announcementCount > 0" class="tab-badge">{{
-                userStore.state.announcementCount
-              }}
+            <text v-if="userStore.state.announcementCount > 0" class="tab-badge">
+              {{ userStore.state.announcementCount }}
             </text>
           </view>
         </view>
 
-        <!-- 消息通知列表 -->
         <scroll-view scroll-y class="popup-body" v-if="currentTab === 'notice'">
+          <view class="batch-bar">
+            <button
+                class="lay-btn lay-btn-sm lay-btn-warm"
+                :disabled="userStore.state.noticeCount <= 0"
+                @click.stop="doMarkAllRead(SysNoticeType.NOTICE)"
+            >
+              全部已读
+            </button>
+          </view>
           <view v-if="noticeLoading" class="lay-empty">
             <text class="empty-text">加载中...</text>
           </view>
@@ -40,8 +46,14 @@
             <text class="empty-icon">🔔</text>
             <text class="empty-text">暂无消息通知</text>
           </view>
-          <view v-else v-for="item in noticeList" :key="item.id" class="msg-card"
-                :class="{ unread: !item.readFlag }" @click="viewNotice(item)">
+          <view
+              v-else
+              v-for="item in noticeList"
+              :key="item.id"
+              class="msg-card"
+              :class="{ unread: !item.readFlag }"
+              @click="viewNotice(item)"
+          >
             <view class="flex-row justify-between mb-sm">
               <text class="msg-title ellipsis" style="flex: 1">{{ item.title || '无标题' }}</text>
               <view v-if="!item.readFlag" class="dot-badge"></view>
@@ -55,17 +67,30 @@
           <view v-if="noticeTotal > noticePage.limit" class="pagination-row">
             <text class="pagination-info">共 {{ noticeTotal }} 条</text>
             <view class="lay-btn-group gap-xs">
-              <button class="lay-btn lay-btn-sm" :disabled="noticePage.current <= 1" @click="prevNoticePage">上一页
+              <button class="lay-btn lay-btn-sm" :disabled="noticePage.current <= 1" @click="prevNoticePage">
+                上一页
               </button>
-              <button class="lay-btn lay-btn-sm" :disabled="noticePage.current * noticePage.limit >= noticeTotal"
-                      @click="nextNoticePage">下一页
+              <button
+                  class="lay-btn lay-btn-sm"
+                  :disabled="noticePage.current * noticePage.limit >= noticeTotal"
+                  @click="nextNoticePage"
+              >
+                下一页
               </button>
             </view>
           </view>
         </scroll-view>
 
-        <!-- 系统公告列表 -->
         <scroll-view scroll-y class="popup-body" v-if="currentTab === 'announcement'">
+          <view class="batch-bar">
+            <button
+                class="lay-btn lay-btn-sm lay-btn-warm"
+                :disabled="userStore.state.announcementCount <= 0"
+                @click.stop="doMarkAllRead(SysNoticeType.ANNOUNCEMENT)"
+            >
+              全部已读
+            </button>
+          </view>
           <view v-if="announceLoading" class="lay-empty">
             <text class="empty-text">加载中...</text>
           </view>
@@ -73,8 +98,14 @@
             <text class="empty-icon">📢</text>
             <text class="empty-text">暂无系统公告</text>
           </view>
-          <view v-else v-for="item in announceList" :key="item.id" class="msg-card"
-                :class="{ unread: !item.readFlag }" @click="viewAnnouncement(item)">
+          <view
+              v-else
+              v-for="item in announceList"
+              :key="item.id"
+              class="msg-card"
+              :class="{ unread: !item.readFlag }"
+              @click="viewAnnouncement(item)"
+          >
             <view class="flex-row justify-between mb-sm">
               <text class="msg-title ellipsis" style="flex: 1">{{ item.title || '无标题' }}</text>
               <view v-if="!item.readFlag" class="dot-badge"></view>
@@ -93,8 +124,12 @@
               <button class="lay-btn lay-btn-sm" :disabled="announcePage.current <= 1" @click="prevAnnouncePage">
                 上一页
               </button>
-              <button class="lay-btn lay-btn-sm" :disabled="announcePage.current * announcePage.limit >= announceTotal"
-                      @click="nextAnnouncePage">下一页
+              <button
+                  class="lay-btn lay-btn-sm"
+                  :disabled="announcePage.current * announcePage.limit >= announceTotal"
+                  @click="nextAnnouncePage"
+              >
+                下一页
               </button>
             </view>
           </view>
@@ -102,12 +137,11 @@
       </view>
     </view>
 
-    <!-- 详情弹窗 -->
     <view class="detail-overlay" v-if="detailVisible" @click="detailVisible = false">
       <view class="detail-modal" @click.stop>
         <view class="detail-header">
           <text class="detail-title ellipsis">{{ currentDetail.title || '详情' }}</text>
-          <text class="detail-close" @click="detailVisible = false">✕</text>
+          <text class="detail-close" @click="detailVisible = false">×</text>
         </view>
         <scroll-view scroll-y class="detail-body">
           <view class="detail-meta">
@@ -129,8 +163,8 @@
 </template>
 
 <script setup>
-import {ref, reactive, computed, onMounted} from 'vue'
-import {findPageSysNotice, findUnreadCount, markRead} from '@/api/system/Notice'
+import {computed, onMounted, reactive, ref, watch} from 'vue'
+import {findPageSysNotice, findUnreadCount, markAllRead, markRead} from '@/api/system/Notice'
 import {SysNoticeType} from '@/types/system/Notice'
 import {useUserStore} from '@/store/user'
 
@@ -151,7 +185,7 @@ const noticePage = reactive({current: 1, limit: 10})
 const announcePage = reactive({current: 1, limit: 10})
 
 const totalUnread = computed(() => {
-  return userStore.state.noticeCount + userStore.state.announcementCount
+  return (userStore.state.noticeCount || 0) + (userStore.state.announcementCount || 0)
 })
 
 const formatTime = (time) => {
@@ -179,8 +213,11 @@ const loadUnreadCount = async () => {
 
 const switchTab = (tab) => {
   currentTab.value = tab
-  if (tab === 'notice') loadNoticeList()
-  else loadAnnounceList()
+  if (tab === 'notice') {
+    loadNoticeList()
+  } else {
+    loadAnnounceList()
+  }
 }
 
 const loadNoticeList = async () => {
@@ -218,10 +255,11 @@ const viewNotice = async (item) => {
   detailVisible.value = true
   if (!item.readFlag) {
     try {
-      await markRead({idList: [item.id], type: SysNoticeType.NOTICE})
+      const res = await markRead({idList: [item.id], type: SysNoticeType.NOTICE})
       item.readFlag = true
-      userStore.state.noticeCount = Math.max(0, userStore.state.noticeCount - 1)
-    } catch (e) { /* ignore */
+      userStore.state.noticeCount = res.data || 0
+    } catch (e) {
+      console.error('标记通知已读失败', e)
     }
   }
 }
@@ -231,41 +269,88 @@ const viewAnnouncement = async (item) => {
   detailVisible.value = true
   if (!item.readFlag) {
     try {
-      await markRead({idList: [item.id], type: SysNoticeType.ANNOUNCEMENT})
+      const res = await markRead({idList: [item.id], type: SysNoticeType.ANNOUNCEMENT})
       item.readFlag = true
-      userStore.state.announcementCount = Math.max(0, userStore.state.announcementCount - 1)
-    } catch (e) { /* ignore */
+      userStore.state.announcementCount = res.data || 0
+    } catch (e) {
+      console.error('标记公告已读失败', e)
     }
   }
 }
 
+const doMarkAllRead = async (type) => {
+  const isNotice = type === SysNoticeType.NOTICE
+  const unreadCount = isNotice ? userStore.state.noticeCount : userStore.state.announcementCount
+  if (!unreadCount || unreadCount <= 0) {
+    uni.showToast({
+      title: '当前没有未读消息',
+      icon: 'none'
+    })
+    return
+  }
+  try {
+    const res = await markAllRead({type})
+    if (res.code !== 200) {
+      return
+    }
+    if (isNotice) {
+      userStore.state.noticeCount = res.data || 0
+      noticeList.value = noticeList.value.map(item => ({...item, readFlag: true}))
+    } else {
+      userStore.state.announcementCount = res.data || 0
+      announceList.value = announceList.value.map(item => ({...item, readFlag: true}))
+    }
+    uni.showToast({
+      title: '全部已读成功',
+      icon: 'none'
+    })
+  } catch (e) {
+    console.error('全部已读失败', e)
+  }
+}
+
 const prevNoticePage = () => {
-  noticePage.current--;
+  noticePage.current--
   loadNoticeList()
 }
+
 const nextNoticePage = () => {
-  noticePage.current++;
+  noticePage.current++
   loadNoticeList()
 }
+
 const prevAnnouncePage = () => {
-  announcePage.current--;
+  announcePage.current--
   loadAnnounceList()
 }
+
 const nextAnnouncePage = () => {
-  announcePage.current++;
+  announcePage.current++
   loadAnnounceList()
 }
 
 const openPopup = () => {
   popupVisible.value = true
   loadUnreadCount()
-  if (currentTab.value === 'notice') loadNoticeList()
-  else loadAnnounceList()
+  if (currentTab.value === 'notice') {
+    loadNoticeList()
+  } else {
+    loadAnnounceList()
+  }
 }
 
 const closePopup = () => {
   popupVisible.value = false
 }
+
+watch(
+    () => userStore.state.token,
+    (token) => {
+      if (!token) {
+        popupVisible.value = false
+      }
+    }
+)
 
 onMounted(() => {
   loadUnreadCount()
@@ -273,7 +358,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 铃铛图标 */
 .message-bell {
   position: fixed;
   top: calc(var(--status-bar-height, 0px) + 5px);
@@ -309,7 +393,6 @@ onMounted(() => {
   line-height: 1;
 }
 
-/* 消息弹窗遮罩 */
 .message-overlay {
   position: fixed;
   top: 0;
@@ -323,7 +406,6 @@ onMounted(() => {
   justify-content: center;
 }
 
-/* 消息弹窗主体 */
 .message-popup {
   margin-top: calc(var(--status-bar-height, 0px) + 44px);
   width: 95vw;
@@ -336,7 +418,6 @@ onMounted(() => {
   box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.15);
 }
 
-/* 弹窗头部 */
 .popup-header {
   display: flex;
   justify-content: space-between;
@@ -344,26 +425,24 @@ onMounted(() => {
   padding: 24rpx 30rpx;
   border-bottom: 1px solid #f0f0f0;
   flex-shrink: 0;
-
-  .popup-title {
-    font-size: 32rpx;
-    font-weight: 600;
-    color: #333;
-  }
-
-  .popup-close {
-    font-size: 36rpx;
-    color: #999;
-    width: 50rpx;
-    height: 50rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
 }
 
-/* Tab 切换 */
+.popup-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.popup-close {
+  font-size: 36rpx;
+  color: #999;
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .popup-tabs {
   display: flex;
   border-bottom: 1px solid #f0f0f0;
@@ -377,7 +456,6 @@ onMounted(() => {
   font-size: 28rpx;
   color: #666;
   position: relative;
-  cursor: pointer;
 
   &.active {
     color: var(--global-primary-color, #009688);
@@ -411,14 +489,18 @@ onMounted(() => {
   margin-left: 6rpx;
 }
 
-/* 弹窗内容区 */
 .popup-body {
   flex: 1;
   overflow-y: auto;
   padding: 8rpx 12rpx;
 }
 
-/* 消息卡片 */
+.batch-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12rpx 0 16rpx;
+}
+
 .msg-card {
   width: 90%;
   background: #fff;
@@ -426,7 +508,6 @@ onMounted(() => {
   margin-bottom: 12rpx;
   border-radius: 12rpx;
   border: 1px solid #f0f0f0;
-  cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -467,7 +548,6 @@ onMounted(() => {
   font-size: 22rpx;
 }
 
-/* 分页 */
 .pagination-row {
   display: flex;
   align-items: center;
@@ -480,7 +560,6 @@ onMounted(() => {
   color: #999;
 }
 
-/* 详情弹窗 */
 .detail-overlay {
   position: fixed;
   top: 0;
@@ -529,7 +608,6 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
 .detail-body {
@@ -539,7 +617,6 @@ onMounted(() => {
 }
 
 .detail-meta {
-  max-width: 90%;
   display: flex;
   justify-content: space-between;
   margin-bottom: 30rpx;
@@ -548,7 +625,6 @@ onMounted(() => {
 }
 
 .detail-text {
-  max-width: 90%;
   font-size: 28rpx;
   line-height: 1.8;
   color: #333;
