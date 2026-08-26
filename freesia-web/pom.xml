@@ -20,6 +20,7 @@
         <module>freesia-web-icon</module>
         <module>freesia-web-worldclock</module>
         <module>freesia-web-chat</module>
+        <module>freesia-web-fusebean</module>
     </modules>
 
     <dependencyManagement>
@@ -169,6 +170,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-web-chat</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-web-fusebean</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>

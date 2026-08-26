@@ -585,7 +585,7 @@ const defaultColumns: TableColumn[] = [
   {title: '组件路径', key: 'component', width: '200px', customSlot: 'component'},
   {title: '权限标识', key: 'perms', width: '200px', customSlot: 'perms'},
   {title: '备注', key: 'remark', width: '200px', customSlot: 'remark'},
-  {title: '操作', key: 'option', width: '150px', fixed: 'right', customSlot: 'option'}
+  // {title: '操作', key: 'option', width: '150px', fixed: 'right', customSlot: 'option'}
 ]
 const defaultToolbar = ref<TableDefaultToolbar[]>([])
 

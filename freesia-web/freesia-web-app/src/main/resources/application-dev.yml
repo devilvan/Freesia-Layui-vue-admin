@@ -8,6 +8,13 @@ spring:
       enabled: true
 ---
 spring:
+  servlet:
+    multipart:
+      # 支持上传大图进行拼豆像素化处理
+      max-file-size: 20MB
+      max-request-size: 20MB
+---
+spring:
   boot:
     admin:
       server:
@@ -139,6 +146,23 @@ freesia:
     exclude-headers: # 排除过滤的请求头
       - Authorization
       - Cookie
+  fusebean:
+    # 是否优先调用外部拼豆生成接口；false 时使用本地像素化算法兜底
+    external-enabled: false
+    # 外部拼豆生成接口地址（image-to-pindou 技能，契约未标准化，尽量自动解析响应中的图片）
+    generate-url: ""
+    # 调用外部接口的鉴权 Key（可选）
+    api-key: ""
+    # 外部接口超时时间（秒）
+    request-timeout-seconds: 120
+    # 图纸网格最大边长（格子数）
+    grid-size: 50
+    # 最大颜色数
+    max-colors: 18
+    # 图纸每格渲染像素大小
+    cell-size: 14
+    # 像素预览图每格渲染像素大小
+    preview-cell-size: 10
 ---
 login.password:
   # 密码最大错误次数

@@ -136,6 +136,10 @@
             <groupId>com.freesia</groupId>
             <artifactId>freesia-web-chat</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-web-fusebean</artifactId>
+        </dependency>
         <!--spring-test测试=-->
         <dependency>
             <groupId>org.springframework</groupId>

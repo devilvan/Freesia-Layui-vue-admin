@@ -38,6 +38,19 @@ export const constantRoutes = [
         ]
     },
     {
+        path: '/fusebean/home',
+        component: BaseLayout,
+        meta: {title: '拼豆图纸'},
+        children: [
+            {
+                path: 'index',
+                component: () => import('@/views/fusebean/home/index.vue'),
+                name: 'FuseBeanHome',
+                meta: {title: '拼豆图纸生成', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
+    {
         path: '/error/:code',
         component: ErrorCode,
         meta: {title: '错误页面'},
