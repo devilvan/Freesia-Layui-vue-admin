@@ -44,11 +44,14 @@
         SELECT ALLOCATED.ID,
                ALLOCATED.USER_ID,
                ALLOCATED.AMOUNT,
+               AC.USER_ID AS PAYEE_USER_ID,
+               U.NICK_NAME AS PAYEE_NICK_NAME,
                AC.PAYMENT_TIME,
                AC.COST_DESC,
                AC.REMARK
         FROM account_cost_user_alloc ALLOCATED
                  LEFT JOIN ACCOUNT_COST AC ON AC.ID = ALLOCATED.COST_ID
+                 LEFT JOIN SYS_USER U ON U.ID = AC.USER_ID
         where ALLOCATED.LOGIC_DEL = 0
           AND ALLOCATED.ALLOC_FLAG = 0
           AND ALLOCATED.USER_ID = #{userId}

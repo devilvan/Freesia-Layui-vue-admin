@@ -22,6 +22,28 @@
     </view>
 
     <!-- 预算统计 -->
+    <view class="lay-card" v-if="allocSummary">
+      <view class="lay-card-header">应收应付</view>
+      <view class="alloc-summary-grid">
+        <view class="alloc-summary-item">
+          <text class="alloc-summary-label">应收金额</text>
+          <text class="alloc-summary-value income">{{ formatMoney(allocSummary.totalCollected) }}</text>
+          <text class="alloc-summary-count">{{ allocSummary.collected.length }} 条</text>
+          <button class="lay-btn lay-btn-sm lay-btn-primary alloc-summary-btn" @click="openAllocModal('collected')">
+            查看应收明细
+          </button>
+        </view>
+        <view class="alloc-summary-item">
+          <text class="alloc-summary-label">应付金额</text>
+          <text class="alloc-summary-value expense">{{ formatMoney(allocSummary.totalAllocated) }}</text>
+          <text class="alloc-summary-count">{{ allocSummary.allocated.length }} 条</text>
+          <button class="lay-btn lay-btn-sm lay-btn-primary alloc-summary-btn" @click="openAllocModal('allocated')">
+            查看应付明细
+          </button>
+        </view>
+      </view>
+    </view>
+
     <view class="lay-card" v-if="capacityList.length > 0">
       <view class="lay-card-header">预算概览</view>
       <view v-for="item in capacityList" :key="item.id" class="budget-item">
@@ -119,6 +141,45 @@
     </view>
 
     <!-- 历史数据弹窗 -->
+    <view class="lay-modal-mask" v-if="showAllocModal" @click="closeAllocModal">
+      <view class="lay-modal-expense" @click.stop>
+        <view class="lay-modal-header">
+          <text class="lay-modal-title">{{ allocModalTitle }}</text>
+          <text class="lay-modal-close" @click="closeAllocModal">✕</text>
+        </view>
+        <view class="lay-modal-body alloc-modal-body">
+          <view class="alloc-table-head">
+            <text class="alloc-cell alloc-cell-user">{{ allocModalType === 'collected' ? '昵称' : '付给用户' }}</text>
+            <text class="alloc-cell alloc-cell-desc">描述</text>
+            <text class="alloc-cell alloc-cell-amount">金额</text>
+          </view>
+          <scroll-view scroll-y class="alloc-scroll">
+            <view v-if="allocModalList.length === 0" class="lay-empty">
+              <text class="empty-text">暂无数据</text>
+            </view>
+            <view v-else>
+              <view v-for="(item, index) in allocModalList" :key="index" class="alloc-row">
+                <view class="alloc-row-main">
+                  <text class="alloc-cell alloc-cell-user ellipsis">
+                    {{ allocModalType === 'collected' ? (item.nickName || '--') : (item.payeeNickName || '--') }}
+                  </text>
+                  <text class="alloc-cell alloc-cell-desc ellipsis">{{ item.costDesc || '--' }}</text>
+                  <text class="alloc-cell alloc-cell-amount">{{ formatMoney(item.amount) }}</text>
+                </view>
+                <view class="alloc-row-sub">
+                  <text class="alloc-subtext">时间：{{ item.paymentTime || '--' }}</text>
+                  <text class="alloc-subtext">备注：{{ item.remark || '--' }}</text>
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+        <view class="lay-modal-footer">
+          <button class="lay-btn lay-btn-sm" @click="closeAllocModal">关闭</button>
+        </view>
+      </view>
+    </view>
+
     <view class="lay-modal-mask" v-if="showReportModal" @click="closeReportModal">
       <view class="lay-modal-expense" @click.stop>
         <view class="lay-modal-header">
@@ -351,6 +412,7 @@ import {ref, reactive, onMounted, computed} from 'vue'
 import {findBudgetCapacity, findAccountBudget, saveUpdate as saveUpdateBudget} from '@/api/account/AccountBudget'
 import {findRankByCostType, findCostTypeRatePie} from '@/api/account/Account'
 import {findPageAccountReport, updateBudgetAmount} from '@/api/account/AccountReport'
+import {findAllocAmount} from '@/api/account/AccountCostUserAlloc'
 import {findCacheSysDictValueList} from '@/api/system/Dict'
 import {useUserStore} from '@/store/user'
 
@@ -405,6 +467,12 @@ export default {
     const rankDetailIncomeTotal = computed(() => incomeDetails.value.reduce((sum, d) => sum + d.value, 0))
 
     // 设置预算弹窗
+    const allocSummary = ref({collected: [], allocated: [], totalCollected: 0, totalAllocated: 0})
+    const showAllocModal = ref(false)
+    const allocModalType = ref('collected')
+    const allocModalTitle = ref('应收明细')
+    const allocModalList = ref([])
+
     const showBudgetModal = ref(false)
     const budgetForm = reactive({
       id: '', budgetDesc: '', outlay: '', budgetType: '', budgetTypeName: '',
@@ -482,6 +550,25 @@ export default {
       return ((d.value / total) * 100).toFixed(2)
     }
 
+    const loadAllocAmount = async () => {
+      try {
+        const res = await findAllocAmount()
+        if (res.code === 200 && res.data) {
+          allocSummary.value = {
+            collected: res.data.collected || [],
+            allocated: res.data.allocated || [],
+            totalCollected: res.data.totalCollected || 0,
+            totalAllocated: res.data.totalAllocated || 0
+          }
+        } else {
+          allocSummary.value = {collected: [], allocated: [], totalCollected: 0, totalAllocated: 0}
+        }
+      } catch (e) {
+        allocSummary.value = {collected: [], allocated: [], totalCollected: 0, totalAllocated: 0}
+        console.error('加载应收应付数据失败', e)
+      }
+    }
+
     const loadBudget = async () => {
       try {
         const res = await findBudgetCapacity({allTenantFlag: allTenantFlag.value})
@@ -491,6 +578,19 @@ export default {
       } catch (e) {
         console.error('加载预算失败', e)
       }
+    }
+
+    const openAllocModal = (type) => {
+      allocModalType.value = type
+      allocModalTitle.value = type === 'collected' ? '应收明细' : '应付明细'
+      allocModalList.value = type === 'collected'
+          ? (allocSummary.value.collected || [])
+          : (allocSummary.value.allocated || [])
+      showAllocModal.value = true
+    }
+
+    const closeAllocModal = () => {
+      showAllocModal.value = false
     }
 
     const getBudgetColor = (val) => {
@@ -744,6 +844,7 @@ export default {
         loadBudget();
         loadRank(rankType.value);
         loadPie()
+        loadAllocAmount()
       }
     }
 
@@ -752,6 +853,7 @@ export default {
       loadBudget();
       loadRank(rankType.value);
       loadPie()
+      loadAllocAmount()
     }
 
     const initPieDateRange = () => {
@@ -768,6 +870,7 @@ export default {
       loadRank('WEEK');
       initPieDateRange();
       loadPie()
+      loadAllocAmount()
     })
 
     return {
@@ -785,6 +888,8 @@ export default {
       showRankDetail, getDetailColor, getDetailPercent,
       pieDateStart, pieDateEnd,
       onPieStartChange, onPieEndChange,
+      allocSummary, showAllocModal, allocModalType, allocModalTitle, allocModalList,
+      openAllocModal, closeAllocModal,
       showBudgetModal, budgetForm, budgetTypeRange,
       openBudgetModal, closeBudgetModal, onBudgetTypeChange,
       onBudgetFromChange, onBudgetToChange, submitBudget, getBudgetColor, getBudgetTypeName,
@@ -924,6 +1029,116 @@ export default {
 }
 
 /* 弹窗容器 - 补齐缺失样式 */
+.alloc-summary-grid {
+  display: flex;
+  gap: 16rpx;
+}
+
+.alloc-summary-item {
+  flex: 1;
+  padding: 18rpx 16rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(180deg, rgba(30, 159, 255, 0.08), rgba(95, 184, 120, 0.06));
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.alloc-summary-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.alloc-summary-value {
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.alloc-summary-value.income {
+  color: #5fb878;
+}
+
+.alloc-summary-value.expense {
+  color: #ff5722;
+}
+
+.alloc-summary-count {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.alloc-summary-btn {
+  width: 100%;
+  margin-top: 6rpx;
+}
+
+.alloc-modal-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.alloc-table-head {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: #666;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.alloc-scroll {
+  height: 58vh;
+  min-height: 420rpx;
+}
+
+.alloc-row {
+  padding: 14rpx 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.alloc-row:last-child {
+  border-bottom: none;
+}
+
+.alloc-row-main {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.alloc-row-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  margin-top: 8rpx;
+}
+
+.alloc-cell {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.alloc-cell-user {
+  width: 28%;
+}
+
+.alloc-cell-desc {
+  width: 42%;
+}
+
+.alloc-cell-amount {
+  width: 30%;
+  text-align: right;
+  font-weight: 600;
+}
+
+.alloc-subtext {
+  font-size: 22rpx;
+  color: #999;
+}
+
 .lay-modal-expense {
   width: 88%;
   max-height: 85vh;

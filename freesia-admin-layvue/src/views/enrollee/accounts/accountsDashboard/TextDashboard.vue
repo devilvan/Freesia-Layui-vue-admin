@@ -1,7 +1,10 @@
 <template>
   <lay-row>
     <lay-col :md="12">
-      <lay-tooltip trigger="hover">
+      <lay-tooltip
+          trigger="hover"
+          :middlewares="tooltipMiddlewares"
+          :popper-style="tooltipPopperStyle">
         <scan class="allocContent">
           <lay-icon type="layui-icon-add-circle"/>
           应收金额：￥{{ dataSource.totalCollected }}
@@ -20,7 +23,10 @@
       </lay-tooltip>
     </lay-col>
     <lay-col :md="12">
-      <lay-tooltip trigger="hover">
+      <lay-tooltip
+          trigger="hover"
+          :middlewares="tooltipMiddlewares"
+          :popper-style="tooltipPopperStyle">
         <scan class="allocContent">
           <lay-icon type="layui-icon-reduce-circle"/>
           应付金额：￥{{ dataSource.totalAllocated }}
@@ -70,6 +76,7 @@ import {RpFindAllocAmountDto} from "@/types/account/AccountCostUserAlloc";
 import {R} from "@/types/Result";
 import {TableColumn} from "@layui/layui-vue/types/component/table/typing";
 import {PageQuery} from "@/types/Common";
+import {flip, offset, shift, size} from "@floating-ui/dom";
 
 const props = defineProps({
   title: {
@@ -88,6 +95,26 @@ onMounted(() => {
 const dataSource = ref<RpFindAllocAmountDto>({});
 const collectedTableRef = ref()
 const allocatedTableRef = ref()
+const tooltipMiddlewares = [
+  offset(8),
+  flip({padding: 8}),
+  shift({padding: 8}),
+  size({
+    padding: 8,
+    apply({availableWidth, availableHeight, elements}) {
+      Object.assign(elements.floating.style, {
+        maxWidth: `${Math.max(240, availableWidth)}px`,
+        maxHeight: `${Math.max(180, availableHeight)}px`,
+        overflow: 'hidden',
+      });
+    },
+  }),
+]
+const tooltipPopperStyle = {
+  maxWidth: 'calc(100vw - 24px)',
+  maxHeight: 'calc(100vh - 300px)',
+  overflow: 'hidden',
+}
 const collectedColumns = ref<TableColumn[]>([
   {title: '昵称', width: '130px', key: 'nickName'},
   {title: '描述', width: '130px', key: 'costDesc'},
@@ -96,6 +123,7 @@ const collectedColumns = ref<TableColumn[]>([
   {title: '备注', width: '200px', key: 'remark'},
 ])
 const allocatedColumns = ref<TableColumn[]>([
+  {title: '昵称', width: '130px', key: 'payeeNickName'},
   {title: '描述', width: '130px', key: 'costDesc'},
   {title: '金额', width: '130px', key: 'amount'},
   {title: '时间', width: '200px', key: 'paymentTime'},
@@ -124,6 +152,8 @@ function loadDataSource() {
 }
 
 .hoverTable {
-  width: 800px;
+  width: min(800px, calc(100vw - 32px));
+  max-height: calc(100vh - 360px);
+  overflow: auto;
 }
 </style>

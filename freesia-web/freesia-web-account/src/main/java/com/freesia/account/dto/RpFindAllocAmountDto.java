@@ -48,6 +48,8 @@ public class RpFindAllocAmountDto {
         private Long id;
         private String userId;
         private String nickName;
+        private Long payeeUserId;
+        private String payeeNickName;
         private BigDecimal amount;
         @JsonFormat(pattern = DatePattern.NORM_DATETIME_PATTERN)
         private Date paymentTime;

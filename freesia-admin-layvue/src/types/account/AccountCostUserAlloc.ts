@@ -27,6 +27,8 @@ export interface Alloc {
     id?: number;
     userId?: string;
     nickName?: string;
+    payeeUserId?: string;
+    payeeNickName?: string;
     amount?: number;
     operateTime?: Date;
     costDesc?: string;

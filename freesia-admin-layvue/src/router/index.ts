@@ -4,7 +4,8 @@ import 'nprogress/nprogress.css'
 import {constantRoutes} from "./module/base-routes";
 import {useUserStore} from "../store/user";
 import {RouterComponent} from "../types/Menu";
-import {loginPath} from "../api/Http";
+import {loginPath, isTokenExpired} from "../api/Http";
+import {layer} from '@layui/layui-vue';
 import {useTabStore} from "../layouts/composable/useTabStore";
 
 NProgress.configure({showSpinner: false})
@@ -66,7 +67,8 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
 
     if (to.path === loginPath) {
         if (!token || token === '') {
-            // 如果token不存在，直接跳转到登录页
+            // 如果token不存在，直接跳转到登录页；会话已失效，重新登录后需重新加载路由
+            isGetRouter = false
             userStore.token = ''
             next()
         } else if ((token || token !== '') && to.path === loginPath) {
@@ -78,6 +80,14 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         return
     }
     if (token) {
+        // 检测到上一次登录的 token 已过期：不初始化任何请求，清空状态并跳登录页，只提示一次
+        if (isTokenExpired(token)) {
+            isGetRouter = false
+            userStore.$reset()
+            layer.msg('登录已过期，请重新登录', { icon: 2 })
+            next({path: loginPath, replace: true})
+            return
+        }
         if (!isGetRouter) {
             isGetRouter = true;
             await userStore.getRouters()
