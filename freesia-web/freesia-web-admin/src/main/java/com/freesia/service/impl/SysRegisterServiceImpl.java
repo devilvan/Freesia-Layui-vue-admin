@@ -155,7 +155,7 @@ public class SysRegisterServiceImpl implements SysRegisterService {
         try {
             OssHandler ossHandler = OssFactory.getInstance();
             int avatarIndex = RandomUtil.randomInt(1, DEFAULT_AVATAR_COUNT + 1);
-            sysUserDto.setAvatar(ossHandler.getUrl() + "/avatar/avatar" + avatarIndex + ".png");
+            sysUserDto.setAvatar(ossHandler.convertDomain2Endpoint(ossHandler.getUrl()) + "/avatar/avatar" + avatarIndex + ".png");
         } catch (Exception e) {
             log.warn("注册用户[{}]初始化默认头像失败: {}", sysUserDto.getUserName(), e.getMessage());
         }

@@ -62,7 +62,7 @@
           </picker>
         </view>
         <view class="lay-form-item">
-          <text class="lay-form-label required">联系电话</text>
+          <text class="lay-form-label">联系电话</text>
           <input class="lay-input" type="number" placeholder="请输入电话" v-model="editForm.telNo"/>
         </view>
         <view class="lay-form-item">
@@ -209,10 +209,6 @@ export default {
     const submitProfile = async () => {
       if (!editForm.nickName) {
         uni.showToast({title: '请输入昵称', icon: 'none'})
-        return
-      }
-      if (!editForm.telNo) {
-        uni.showToast({title: '请输入联系电话', icon: 'none'})
         return
       }
 

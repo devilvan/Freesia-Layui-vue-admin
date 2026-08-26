@@ -32,7 +32,7 @@
         <scroll-view scroll-y class="popup-body" v-if="currentTab === 'notice'">
           <view class="batch-bar">
             <button
-                class="lay-btn lay-btn-sm lay-btn-warm"
+                class="lay-btn lay-btn-sm lay-btn-warm mark-all-read-btn"
                 :disabled="userStore.state.noticeCount <= 0"
                 @click.stop="doMarkAllRead(SysNoticeType.NOTICE)"
             >
@@ -84,7 +84,7 @@
         <scroll-view scroll-y class="popup-body" v-if="currentTab === 'announcement'">
           <view class="batch-bar">
             <button
-                class="lay-btn lay-btn-sm lay-btn-warm"
+                class="lay-btn lay-btn-sm lay-btn-warm mark-all-read-btn"
                 :disabled="userStore.state.announcementCount <= 0"
                 @click.stop="doMarkAllRead(SysNoticeType.ANNOUNCEMENT)"
             >
@@ -499,6 +499,23 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   padding: 12rpx 0 16rpx;
+}
+
+.mark-all-read-btn {
+  background: linear-gradient(135deg, #ffd666 0%, #ffb800 100%);
+  border-color: #f0a800;
+  color: #4a2c00 !important;
+  font-weight: 600;
+  box-shadow: 0 6rpx 16rpx rgba(255, 184, 0, 0.24);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.mark-all-read-btn[disabled] {
+  background: #ffe7a3;
+  border-color: #ffd666;
+  color: #8c6a12 !important;
+  box-shadow: none;
+  text-shadow: none;
 }
 
 .msg-card {
