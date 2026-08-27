@@ -103,6 +103,7 @@
               :key="stat.index"
               class="color-stat-item"
           >
+            <span class="color-index">{{ stat.code || `#${stat.index}` }}</span>
             <span class="color-swatch" :style="{background: stat.hex}"></span>
             <span class="color-hex">{{ stat.hex }}</span>
             <span class="color-count">{{ stat.count }} 颗</span>
@@ -404,6 +405,13 @@ function downloadSvg() {
   border-radius: 6px;
   padding: 6px 10px;
   background: #fff;
+}
+
+.color-index {
+  min-width: 28px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
 }
 
 .color-swatch {

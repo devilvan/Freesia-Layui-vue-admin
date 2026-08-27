@@ -163,6 +163,19 @@ freesia:
     cell-size: 14
     # 像素预览图每格渲染像素大小
     preview-cell-size: 10
+    # 是否启用本地 image-to-pindou skill 调用链
+    skill:
+      enabled: true
+      # skill 安装目录，默认指向当前用户的 Codex skills 目录
+      root: ${CODEX_HOME:${user.home}/.codex}/skills/image-to-pindou
+      # 本地执行命令
+      node-command: node
+      # skill 输出风格
+      style: bead
+      # 是否移除背景
+      background: remove
+      # skill 渲染输出像素大小
+      cell-px: 10
 ---
 login.password:
   # 密码最大错误次数

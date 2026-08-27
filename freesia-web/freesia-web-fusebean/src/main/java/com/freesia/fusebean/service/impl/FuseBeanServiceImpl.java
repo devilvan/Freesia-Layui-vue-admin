@@ -1,6 +1,8 @@
 package com.freesia.fusebean.service.impl;
 
 import com.freesia.fusebean.component.FuseBeanExternalClient;
+import com.freesia.fusebean.component.FuseBeanSkillClient;
+import com.freesia.fusebean.component.FuseBeanSkillClient.SkillResult;
 import com.freesia.fusebean.dto.FuseBeanConfirmReqDto;
 import com.freesia.fusebean.service.FuseBeanService;
 import com.freesia.fusebean.util.FuseBeanPixelArtUtil;
@@ -23,9 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Evad.Wu
- * @Description 拼豆 业务逻辑实现
- * @date 2026-08-26
+ * 拼豆业务逻辑实现。
  */
 @Slf4j
 @Service
@@ -33,6 +33,7 @@ import java.util.List;
 public class FuseBeanServiceImpl implements FuseBeanService {
 
     private final FuseBeanExternalClient externalClient;
+    private final FuseBeanSkillClient skillClient;
 
     @Value("${freesia.fusebean.grid-size:50}")
     private int defaultGridSize;
@@ -65,20 +66,37 @@ public class FuseBeanServiceImpl implements FuseBeanService {
             }
         }
 
-        // 优先调用外部生成接口；失败或未配置时本地像素化兜底
-        BufferedImage pixelSource = null;
-        String message;
+        BufferedImage pixelSource = source;
+        String message = null;
         if (source != null || UEmpty.isNotEmpty(prompt)) {
-            pixelSource = externalClient.generate(imageBytes == null ? new byte[0] : imageBytes, prompt);
+            BufferedImage externalSource = externalClient.generate(imageBytes == null ? new byte[0] : imageBytes, prompt);
+            if (externalSource != null) {
+                pixelSource = externalSource;
+                message = "由外部拼豆生成接口生成";
+            }
         }
-        if (pixelSource != null) {
-            message = "由外部拼豆生成接口生成";
-        } else {
+        if (pixelSource == null) {
             if (source == null) {
                 throw new IllegalArgumentException("本地像素化需要上传图片，或请在配置中启用外部生成接口");
             }
             pixelSource = source;
             message = "由本地像素化算法生成";
+        }
+
+        boolean skillReady = skillClient.isReady();
+        if (skillReady) {
+            try {
+                log.info("FuseBean generate: using local image-to-pindou skill, gridSize={}, maxColors={}, sourceType={}",
+                        targetGrid, targetColors, describeSourceType(source, prompt));
+                SkillResult skillResult = skillClient.generate(pixelSource, targetGrid, targetColors);
+                log.info("FuseBean generate: local skill completed, grid={}x{}, colors={}",
+                        skillResult.gridWidth(), skillResult.gridHeight(), skillResult.palette().size());
+                return buildSkillGenerateResp(skillResult, message);
+            } catch (Exception e) {
+                log.warn("FuseBean generate: local skill failed, fallback to Java pixelization", e);
+            }
+        } else {
+            log.debug("FuseBean generate: local skill not ready, fallback to Java pixelization");
         }
 
         GridResult result = FuseBeanPixelArtUtil.toGrid(pixelSource, targetGrid, targetColors);
@@ -112,7 +130,10 @@ public class FuseBeanServiceImpl implements FuseBeanService {
 
         BufferedImage patternImage = FuseBeanPixelArtUtil.renderPattern(grid, palette, cellSize);
         String svg = FuseBeanPixelArtUtil.buildSvg(grid, palette, cellSize, reqDto.getName());
-        int[] stats = FuseBeanPixelArtUtil.colorStats(grid, palette.size());
+        int[] stats = FuseBeanPixelArtUtil.colorStats(grid, paletteVo.size());
+
+        log.info("FuseBean confirmGenerate: name={}, grid={}x{}, cellSize={}, colors={}",
+                reqDto.getName(), width, height, cellSize, paletteVo.size());
 
         FuseBeanConfirmRespVo vo = new FuseBeanConfirmRespVo();
         vo.setName(reqDto.getName());
@@ -125,11 +146,32 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         return vo;
     }
 
+    private FuseBeanGenerateRespVo buildSkillGenerateResp(SkillResult skillResult, String fallbackMessage) {
+        FuseBeanGenerateRespVo vo = new FuseBeanGenerateRespVo();
+        vo.setPreviewBase64(skillResult.previewBase64());
+        vo.setGridWidth(skillResult.gridWidth());
+        vo.setGridHeight(skillResult.gridHeight());
+        vo.setPalette(skillResult.palette());
+        vo.setGrid(skillResult.grid());
+        vo.setMessage(UEmpty.isNotEmpty(fallbackMessage) ? fallbackMessage + "，并经本地 image-to-pindou skill 标准化" : skillResult.message());
+        return vo;
+    }
+
+    private String describeSourceType(BufferedImage source, String prompt) {
+        if (source != null && UEmpty.isNotEmpty(prompt)) {
+            return "upload+prompt";
+        }
+        if (source != null) {
+            return "upload";
+        }
+        return "prompt-only";
+    }
+
     private List<FuseBeanColorVo> buildPalette(int[] palette) {
         List<FuseBeanColorVo> list = new ArrayList<>(palette.length);
         for (int i = 0; i < palette.length; i++) {
             FuseBeanColorVo color = new FuseBeanColorVo();
-            color.setIndex(i);
+            color.setIndex(i + 1);
             color.setHex(FuseBeanPixelArtUtil.toHex(palette[i]));
             list.add(color);
         }
@@ -155,7 +197,8 @@ public class FuseBeanServiceImpl implements FuseBeanService {
                 continue;
             }
             FuseBeanColorStatVo stat = new FuseBeanColorStatVo();
-            stat.setIndex(i);
+            stat.setIndex(i + 1);
+            stat.setCode(palette.get(i).getCode());
             stat.setHex(palette.get(i).getHex());
             stat.setCount(stats[i]);
             list.add(stat);
@@ -171,7 +214,7 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         try {
             return Integer.parseInt(value, 16) | 0xFF000000;
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("色板颜色值非法: " + hex);
+            throw new IllegalArgumentException("色板颜色值非法: " + hex, e);
         }
     }
 }

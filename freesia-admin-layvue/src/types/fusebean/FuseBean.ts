@@ -5,6 +5,7 @@
 /** 色板颜色 */
 export interface FuseBeanColor {
     index?: number;
+    code?: string;
     hex?: string;
 }
 
@@ -19,7 +20,7 @@ export interface FuseBeanGenerateResp {
     /** 色板 */
     palette?: FuseBeanColor[];
     /** 网格数据，每个格子存储色板索引 */
-    grid?: number[][];
+    grid?: Array<Array<number | null>>;
     /** 生成说明 */
     message?: string;
 }
@@ -37,12 +38,13 @@ export interface FuseBeanConfirmReq {
     /** 色板 */
     palette?: FuseBeanColor[];
     /** 网格数据，每个格子存储色板索引 */
-    grid?: number[][];
+    grid?: Array<Array<number | null>>;
 }
 
 /** 色号统计 */
 export interface FuseBeanColorStat {
     index?: number;
+    code?: string;
     hex?: string;
     /** 使用数量（颗） */
     count?: number;

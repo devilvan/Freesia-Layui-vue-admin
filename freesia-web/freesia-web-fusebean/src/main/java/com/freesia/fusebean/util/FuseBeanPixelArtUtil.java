@@ -2,6 +2,8 @@ package com.freesia.fusebean.util;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -111,7 +113,7 @@ public class FuseBeanPixelArtUtil {
      * @return 图纸网格图
      */
     public static BufferedImage renderPattern(GridResult result, int cellSize) {
-        return render(result, cellSize, true);
+        return renderPatternInternal(result, cellSize, true);
     }
 
     /**
@@ -125,7 +127,7 @@ public class FuseBeanPixelArtUtil {
     public static BufferedImage renderPattern(List<List<Integer>> grid, List<Integer> palette, int cellSize) {
         int h = grid.size();
         int w = h > 0 ? grid.get(0).size() : 0;
-        return render(new GridResult(toArray(grid), toIntArray(palette), w, h), cellSize, true);
+        return renderPatternInternal(new GridResult(toArray(grid), toIntArray(palette), w, h), cellSize, true);
     }
 
     /**
@@ -140,59 +142,107 @@ public class FuseBeanPixelArtUtil {
     public static String buildSvg(List<List<Integer>> grid, List<Integer> palette, int cellSize, String name) {
         int h = grid.size();
         int w = h > 0 ? grid.get(0).size() : 0;
-        int legendSize = 18;
-        int legendGap = 12;
-        int svgWidth = w * cellSize;
-        int svgHeight = h * cellSize + legendGap + legendSize;
+        PatternLayout layout = createLayout(w, h, palette.size(), cellSize);
 
-        StringBuilder sb = new StringBuilder(4096);
+        StringBuilder sb = new StringBuilder(8192);
         sb.append("<svg xmlns=\"http://www.w3.org/2000/svg\"")
-                .append(" width=\"").append(svgWidth).append("\" height=\"").append(svgHeight).append("\"")
-                .append(" viewBox=\"0 0 ").append(svgWidth).append(" ").append(svgHeight).append("\"")
+                .append(" width=\"").append(layout.canvasWidth).append("\" height=\"").append(layout.canvasHeight).append("\"")
+                .append(" viewBox=\"0 0 ").append(layout.canvasWidth).append(" ").append(layout.canvasHeight).append("\"")
                 .append(" font-family=\"Arial, sans-serif\">\n");
         sb.append("  <rect width=\"100%\" height=\"100%\" fill=\"#ffffff\"/>\n");
-        // 网格主体：每行连续同色格子合并为一个矩形，减少节点数
+        sb.append("  <text x=\"").append(layout.leftMargin).append("\" y=\"16\" font-size=\"12\" font-weight=\"700\" fill=\"#222\">")
+                .append(escapeXml(name == null || name.isEmpty() ? "拼豆图纸" : name))
+                .append(" · ").append(palette.size()).append(" 色 · ").append(w).append("×").append(h)
+                .append("</text>\n");
+
+        for (int x = 0; x < w; x++) {
+            int centerX = layout.gridX + x * cellSize + cellSize / 2;
+            sb.append(textElement(String.valueOf(x + 1), centerX, layout.gridY - 6, layout.axisFontSize, "#666", "middle", "middle"));
+        }
+        for (int y = 0; y < h; y++) {
+            int centerY = layout.gridY + y * cellSize + cellSize / 2;
+            sb.append(textElement(String.valueOf(y + 1), layout.gridX - 6, centerY, layout.axisFontSize, "#666", "end", "middle"));
+        }
+
         for (int y = 0; y < h; y++) {
             int x = 0;
             while (x < w) {
-                int colorIndex = grid.get(y).get(x);
+                Integer startCell = grid.get(y).get(x);
+                if (startCell == null || startCell < 0 || startCell >= palette.size()) {
+                    x++;
+                    continue;
+                }
+                int colorIndex = startCell;
                 int runEnd = x + 1;
-                while (runEnd < w && grid.get(y).get(runEnd) == colorIndex) {
+                while (runEnd < w) {
+                    Integer nextCell = grid.get(y).get(runEnd);
+                    if (nextCell == null || nextCell < 0 || nextCell != colorIndex) {
+                        break;
+                    }
                     runEnd++;
                 }
                 int runLength = runEnd - x;
+                int cellX = layout.gridX + x * cellSize;
+                int cellY = layout.gridY + y * cellSize;
+                String fill = toHex(palette.get(colorIndex));
                 if (runLength >= 4) {
-                    // 整段合并为一个矩形（留 0.5 间隙保证网格线可见）
-                    sb.append("  <rect x=\"").append(x * cellSize + 0.5)
-                            .append("\" y=\"").append(y * cellSize + 0.5)
+                    sb.append("  <rect x=\"").append(cellX + 0.5)
+                            .append("\" y=\"").append(cellY + 0.5)
                             .append("\" width=\"").append(runLength * cellSize - 1)
                             .append("\" height=\"").append(cellSize - 1)
-                            .append("\" fill=\"").append(toHex(palette.get(colorIndex))).append("\"/>\n");
+                            .append("\" fill=\"").append(fill).append("\"/>\n");
+                    for (int k = x; k < runEnd; k++) {
+                        int centerX = layout.gridX + k * cellSize + cellSize / 2;
+                        int centerY = cellY + cellSize / 2;
+                        sb.append(textElement(String.valueOf(colorIndex + 1), centerX, centerY,
+                                layout.cellFontSize, textColorHex(palette.get(colorIndex)), "middle", "middle"));
+                    }
                     x = runEnd;
                 } else {
                     for (int k = x; k < runEnd; k++) {
-                        sb.append("  <rect x=\"").append(k * cellSize + 0.5)
-                                .append("\" y=\"").append(y * cellSize + 0.5)
+                        int drawX = layout.gridX + k * cellSize;
+                        sb.append("  <rect x=\"").append(drawX + 0.5)
+                                .append("\" y=\"").append(cellY + 0.5)
                                 .append("\" width=\"").append(cellSize - 1)
                                 .append("\" height=\"").append(cellSize - 1)
-                                .append("\" fill=\"").append(toHex(palette.get(colorIndex))).append("\"/>\n");
+                                .append("\" fill=\"").append(fill).append("\"/>\n");
+                        int centerX = drawX + cellSize / 2;
+                        int centerY = cellY + cellSize / 2;
+                        sb.append(textElement(String.valueOf(colorIndex + 1), centerX, centerY,
+                                layout.cellFontSize, textColorHex(palette.get(colorIndex)), "middle", "middle"));
                     }
                     x = runEnd;
                 }
             }
         }
-        // 图例
-        int legendY = h * cellSize + legendGap;
-        sb.append("  <text x=\"0\" y=\"").append(legendY - 2).append("\" font-size=\"12\" fill=\"#333\">")
-                .append(escapeXml(name == null || name.isEmpty() ? "拼豆图纸" : name))
-                .append(" · ").append(palette.size()).append(" 色 · ").append(w).append("×").append(h)
-                .append("</text>\n");
-        for (int i = 0; i < palette.size(); i++) {
-            int px = i * (legendSize + 8);
-            sb.append("  <rect x=\"").append(px).append("\" y=\"").append(legendY)
-                    .append("\" width=\"").append(legendSize).append("\" height=\"").append(legendSize)
-                    .append("\" fill=\"").append(toHex(palette.get(i))).append("\" stroke=\"#ccc\"/>\n");
+
+        sb.append("  <g stroke=\"#d9d9d9\" stroke-width=\"1\">\n");
+        for (int x = 0; x <= w; x++) {
+            double px = layout.gridX + x * cellSize + 0.5;
+            sb.append("    <line x1=\"").append(px).append("\" y1=\"").append(layout.gridY + 0.5)
+                    .append("\" x2=\"").append(px).append("\" y2=\"").append(layout.gridY + h * cellSize + 0.5)
+                    .append("\"/>\n");
         }
+        for (int y = 0; y <= h; y++) {
+            double py = layout.gridY + y * cellSize + 0.5;
+            sb.append("    <line x1=\"").append(layout.gridX + 0.5).append("\" y1=\"").append(py)
+                    .append("\" x2=\"").append(layout.gridX + w * cellSize + 0.5).append("\" y2=\"").append(py)
+                    .append("\"/>\n");
+        }
+        sb.append("  </g>\n");
+
+        for (int i = 0; i < palette.size(); i++) {
+            int column = i % layout.legendColumns;
+            int row = i / layout.legendColumns;
+            int itemX = layout.leftMargin + column * layout.legendItemWidth;
+            int itemY = layout.legendTop + row * layout.legendItemHeight;
+            sb.append("  <rect x=\"").append(itemX).append("\" y=\"").append(itemY)
+                    .append("\" width=\"12\" height=\"12\" fill=\"").append(toHex(palette.get(i)))
+                    .append("\" stroke=\"#999\"/>\n");
+            sb.append(textElement((i + 1) + ". " + toHex(palette.get(i)), itemX + 18, itemY + 10,
+                    layout.legendFontSize, "#333", "start", "middle"));
+        }
+
         sb.append("</svg>");
         return sb.toString();
     }
@@ -264,7 +314,11 @@ public class FuseBeanPixelArtUtil {
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
-                g.setColor(new Color(result.getPalette()[result.getGrid()[y][x]]));
+                int colorIndex = result.getGrid()[y][x];
+                if (colorIndex < 0 || colorIndex >= result.getPalette().length) {
+                    continue;
+                }
+                g.setColor(new Color(result.getPalette()[colorIndex]));
                 if (drawGridLine) {
                     g.fillRect(x * cellSize + 1, y * cellSize + 1, cellSize - 2, cellSize - 2);
                 } else {
@@ -283,6 +337,159 @@ public class FuseBeanPixelArtUtil {
         }
         g.dispose();
         return image;
+    }
+
+    private static BufferedImage renderPatternInternal(GridResult result, int cellSize, boolean drawAnnotations) {
+        if (!drawAnnotations) {
+            return render(result, cellSize, true);
+        }
+
+        int w = result.getWidth();
+        int h = result.getHeight();
+        PatternLayout layout = createLayout(w, h, result.getPalette().length, cellSize);
+        BufferedImage image = new BufferedImage(layout.canvasWidth, layout.canvasHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g.setColor(new Color(0x222222));
+        g.setFont(g.getFont().deriveFont(Font.BOLD, 12f));
+        g.drawString("拼豆图纸 · " + result.getPalette().length + " 色 · " + w + "×" + h, layout.leftMargin, 16);
+
+        Font axisFont = g.getFont().deriveFont(Font.PLAIN, (float) layout.axisFontSize);
+        g.setFont(axisFont);
+        FontMetrics axisMetrics = g.getFontMetrics();
+        for (int x = 0; x < w; x++) {
+            String label = String.valueOf(x + 1);
+            int centerX = layout.gridX + x * cellSize + cellSize / 2;
+            int textX = centerX - axisMetrics.stringWidth(label) / 2;
+            int textY = layout.gridY - 6;
+            g.setColor(new Color(0x666666));
+            g.drawString(label, textX, textY);
+        }
+        for (int y = 0; y < h; y++) {
+            String label = String.valueOf(y + 1);
+            int centerY = layout.gridY + y * cellSize + cellSize / 2;
+            int textX = layout.gridX - 6 - axisMetrics.stringWidth(label);
+            int textY = centerY + axisMetrics.getAscent() / 2 - 1;
+            g.setColor(new Color(0x666666));
+            g.drawString(label, textX, textY);
+        }
+
+        Font cellFont = g.getFont().deriveFont(Font.BOLD, (float) layout.cellFontSize);
+        g.setFont(cellFont);
+        FontMetrics cellMetrics = g.getFontMetrics();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int colorIndex = result.getGrid()[y][x];
+                if (colorIndex < 0 || colorIndex >= result.getPalette().length) {
+                    continue;
+                }
+                Color fill = new Color(result.getPalette()[colorIndex]);
+                int drawX = layout.gridX + x * cellSize;
+                int drawY = layout.gridY + y * cellSize;
+                g.setColor(fill);
+                g.fillRect(drawX, drawY, cellSize, cellSize);
+                g.setColor(contrastColor(fill));
+                String text = String.valueOf(colorIndex + 1);
+                int textX = drawX + (cellSize - cellMetrics.stringWidth(text)) / 2;
+                int textY = drawY + (cellSize - cellMetrics.getHeight()) / 2 + cellMetrics.getAscent();
+                g.drawString(text, textX, textY);
+            }
+        }
+
+        g.setColor(new Color(0xD9D9D9));
+        for (int x = 0; x <= w; x++) {
+            g.drawLine(layout.gridX + x * cellSize, layout.gridY, layout.gridX + x * cellSize, layout.gridY + h * cellSize);
+        }
+        for (int y = 0; y <= h; y++) {
+            g.drawLine(layout.gridX, layout.gridY + y * cellSize, layout.gridX + w * cellSize, layout.gridY + y * cellSize);
+        }
+
+        g.setFont(g.getFont().deriveFont(Font.PLAIN, (float) layout.legendFontSize));
+        for (int i = 0; i < result.getPalette().length; i++) {
+            int column = i % layout.legendColumns;
+            int row = i / layout.legendColumns;
+            int itemX = layout.leftMargin + column * layout.legendItemWidth;
+            int itemY = layout.legendTop + row * layout.legendItemHeight;
+            Color fill = new Color(result.getPalette()[i]);
+            g.setColor(fill);
+            g.fillRect(itemX, itemY, 12, 12);
+            g.setColor(new Color(0x999999));
+            g.drawRect(itemX, itemY, 12, 12);
+            g.setColor(new Color(0x333333));
+            String text = (i + 1) + ". " + toHex(result.getPalette()[i]);
+            g.drawString(text, itemX + 18, itemY + 10);
+        }
+
+        g.dispose();
+        return image;
+    }
+
+    private static PatternLayout createLayout(int gridWidth, int gridHeight, int paletteSize, int cellSize) {
+        int axisFontSize = Math.max(9, Math.min(12, cellSize - 3));
+        int cellFontSize = Math.max(8, Math.min(12, cellSize - 3));
+        int legendFontSize = 10;
+        int leftMargin = Math.max(28, String.valueOf(Math.max(1, gridHeight)).length() * 8 + 10);
+        int topMargin = Math.max(28, axisFontSize + 16);
+        int legendColumns = Math.min(3, Math.max(1, paletteSize));
+        int legendRows = (paletteSize + legendColumns - 1) / legendColumns;
+        int legendItemWidth = 150;
+        int legendItemHeight = 22;
+        int gridPixelWidth = gridWidth * cellSize;
+        int gridPixelHeight = gridHeight * cellSize;
+        int legendWidth = legendColumns * legendItemWidth;
+        int canvasWidth = Math.max(leftMargin + gridPixelWidth + 12, leftMargin + legendWidth + 12);
+        int legendTop = topMargin + gridPixelHeight + 18;
+        int canvasHeight = legendTop + legendRows * legendItemHeight + 16;
+        return new PatternLayout(leftMargin, topMargin, leftMargin, topMargin, legendTop,
+                legendColumns, legendItemWidth, legendItemHeight, cellFontSize, axisFontSize, legendFontSize,
+                canvasWidth, canvasHeight);
+    }
+
+    private static Color contrastColor(Color fill) {
+        int brightness = (fill.getRed() * 299 + fill.getGreen() * 587 + fill.getBlue() * 114) / 1000;
+        return brightness >= 160 ? new Color(0x222222) : Color.WHITE;
+    }
+
+    private static String textColorHex(int argb) {
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        int brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness >= 160 ? "#222222" : "#FFFFFF";
+    }
+
+    private static String textElement(String text, int x, int y, int fontSize, String fill, String anchor, String baseline) {
+        return new StringBuilder(128)
+                .append("  <text x=\"").append(x)
+                .append("\" y=\"").append(y)
+                .append("\" font-size=\"").append(fontSize)
+                .append("\" fill=\"").append(fill)
+                .append("\" text-anchor=\"").append(anchor)
+                .append("\" dominant-baseline=\"").append(baseline)
+                .append("\">")
+                .append(escapeXml(text))
+                .append("</text>\n")
+                .toString();
+    }
+
+    private record PatternLayout(
+            int leftMargin,
+            int topMargin,
+            int gridX,
+            int gridY,
+            int legendTop,
+            int legendColumns,
+            int legendItemWidth,
+            int legendItemHeight,
+            int cellFontSize,
+            int axisFontSize,
+            int legendFontSize,
+            int canvasWidth,
+            int canvasHeight
+    ) {
     }
 
     /**
@@ -357,7 +564,8 @@ public class FuseBeanPixelArtUtil {
         int[][] arr = new int[h][w];
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w && x < grid.get(y).size(); x++) {
-                arr[y][x] = grid.get(y).get(x) == null ? 0 : grid.get(y).get(x);
+                Integer value = grid.get(y).get(x);
+                arr[y][x] = value == null ? -1 : value;
             }
         }
         return arr;
