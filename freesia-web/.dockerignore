@@ -1,0 +1,11 @@
+# Build context = freesia-web/. Keep only the app jar and the skill dir.
+**/target/**
+!freesia-web-app/target
+!freesia-web-app/target/freesia-web-app.jar
+# Local node_modules (e.g. win-x64 deps from local npm install) must never enter the context.
+**/node_modules/
+**/*.iml
+.git/
+.idea/
+logs/
+**/*.log

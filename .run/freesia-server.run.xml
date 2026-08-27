@@ -12,8 +12,13 @@
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="SPRING_CONFIG_LOCATION" />
+<!--              <option name="name" value="SPRING_CONFIG_ADDITIONAL_LOCATION" />-->
               <option name="value" value="file:/home/freesia/conf/freesia-server/" />
             </DockerEnvVarImpl>
+<!--            <DockerEnvVarImpl>-->
+<!--              <option name="name" value="DEEPSEEK_API_KEY" />-->
+<!--              <option name="value" value="REPLACE_WITH_YOUR_DEEPSEEK_API_KEY" />-->
+<!--            </DockerEnvVarImpl>-->
             <DockerEnvVarImpl>
               <option name="name" value="TZ" />
               <option name="value" value="Asia/Shanghai" />
@@ -37,7 +42,8 @@
           </list>
         </option>
         <option name="commandLineOptions" value="--network freesia-net --restart=always" />
-        <option name="sourceFilePath" value="freesia-web/freesia-web-app/Dockerfile" />
+        <option name="contextFolder" value="$PROJECT_DIR$/freesia-web" />
+        <option name="sourceFilePath" value="freesia-web/Dockerfile" />
         <option name="volumeBindings">
           <list>
             <DockerVolumeBindingImpl>

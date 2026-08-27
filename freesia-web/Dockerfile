@@ -1,6 +1,6 @@
 # 多阶段构建：JDK21 + Node24 + image-to-pindou skill
-# 注意：构建上下文必须是 freesia-web/ 目录（要同时取到 fusebean 的 skill 和 app 的 jar）
-#   docker build -f freesia-web/freesia-web-app/Dockerfile -t freesia-admin:1.5.0 freesia-web/
+# 本文件位于 freesia-web/ 目录下，其所在目录即构建上下文（同时覆盖 skill 与 app jar）
+#   docker build -t freesia-admin:1.5.0 freesia-web/
 
 # ---- Stage 1: 构建 skill 依赖（Node 24，Debian bookworm，glibc）----
 FROM node:24-bookworm-slim AS skill-builder
@@ -27,7 +27,7 @@ ENV FREESIA_FUSEBEAN_SKILL_ENABLED=true \
     FREESIA_FUSEBEAN_SKILL_ROOT=/opt/skills/image-to-pindou \
     FREESIA_FUSEBEAN_SKILL_NODE_COMMAND=node \
     FREESIA_FUSEBEAN_SKILL_NPM_COMMAND=npm \
-    FREESIA_FUSEBEAN_SKILL_AUTO_INSTALL=false \
-    SPRING_PROFILES_ACTIVE=dev
+    FREESIA_FUSEBEAN_SKILL_AUTO_INSTALL=false
 EXPOSE 8570
-CMD ["java", "-jar", "/app/freesia-web-app.jar"]
+# 使用 sh -c 展开 $JAVA_OPTS（由 run.xml / 运行时环境传入），exec 让 java 成为 PID1 以正确接收信号
+CMD ["sh", "-c", "exec java $JAVA_OPTS -jar /app/freesia-web-app.jar"]

@@ -3,6 +3,7 @@ package com.freesia.satoken.properties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,6 @@ public class SecurityProperties {
     /**
      * 白名单
      */
-    private List<String> excludes;
+    private List<String> excludes = new ArrayList<>();
 
 }
