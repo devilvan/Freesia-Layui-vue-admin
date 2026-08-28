@@ -1,5 +1,7 @@
 package com.freesia.fusebean.util;
 
+import com.freesia.fusebean.vo.FuseBeanColorVo;
+
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Font;
@@ -124,10 +126,91 @@ public class FuseBeanPixelArtUtil {
      * @param cellSize 每格渲染像素大小
      * @return 图纸网格图
      */
-    public static BufferedImage renderPattern(List<List<Integer>> grid, List<Integer> palette, int cellSize) {
+    public static BufferedImage renderPattern(List<List<Integer>> grid, List<FuseBeanColorVo> palette, int cellSize) {
         int h = grid.size();
         int w = h > 0 ? grid.get(0).size() : 0;
-        return renderPatternInternal(new GridResult(toArray(grid), toIntArray(palette), w, h), cellSize, true);
+        PatternLayout layout = createLayout(w, h, palette.size(), cellSize);
+        BufferedImage image = new BufferedImage(layout.canvasWidth, layout.canvasHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g.setColor(new Color(0x222222));
+        g.setFont(g.getFont().deriveFont(Font.BOLD, 12f));
+        g.drawString("拼豆图纸 · " + palette.size() + " 色 · " + w + "×" + h, layout.leftMargin, 16);
+
+        Font axisFont = g.getFont().deriveFont(Font.PLAIN, (float) layout.axisFontSize);
+        g.setFont(axisFont);
+        FontMetrics axisMetrics = g.getFontMetrics();
+        for (int x = 0; x < w; x++) {
+            String label = String.valueOf(x + 1);
+            int centerX = layout.gridX + x * cellSize + cellSize / 2;
+            int textX = centerX - axisMetrics.stringWidth(label) / 2;
+            int textY = layout.gridY - 6;
+            g.setColor(new Color(0x666666));
+            g.drawString(label, textX, textY);
+        }
+        for (int y = 0; y < h; y++) {
+            String label = String.valueOf(y + 1);
+            int centerY = layout.gridY + y * cellSize + cellSize / 2;
+            int textX = layout.gridX - 6 - axisMetrics.stringWidth(label);
+            int textY = centerY + axisMetrics.getAscent() / 2 - 1;
+            g.setColor(new Color(0x666666));
+            g.drawString(label, textX, textY);
+        }
+
+        Font cellFont = g.getFont().deriveFont(Font.BOLD, (float) layout.cellFontSize);
+        g.setFont(cellFont);
+        FontMetrics cellMetrics = g.getFontMetrics();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                Integer colorIndex = grid.get(y).get(x);
+                if (colorIndex == null || colorIndex < 0 || colorIndex >= palette.size()) {
+                    continue;
+                }
+                FuseBeanColorVo color = palette.get(colorIndex);
+                String fill = safeHex(color.getHex());
+                Color fillColor = new Color(hexToArgb(fill));
+                int drawX = layout.gridX + x * cellSize;
+                int drawY = layout.gridY + y * cellSize;
+                g.setColor(fillColor);
+                g.fillRect(drawX, drawY, cellSize, cellSize);
+                g.setColor(contrastColor(fillColor));
+                String text = paletteLabel(color, colorIndex + 1);
+                int textX = drawX + (cellSize - cellMetrics.stringWidth(text)) / 2;
+                int textY = drawY + (cellSize - cellMetrics.getHeight()) / 2 + cellMetrics.getAscent();
+                g.drawString(text, textX, textY);
+            }
+        }
+
+        g.setColor(new Color(0xD9D9D9));
+        for (int x = 0; x <= w; x++) {
+            g.drawLine(layout.gridX + x * cellSize, layout.gridY, layout.gridX + x * cellSize, layout.gridY + h * cellSize);
+        }
+        for (int y = 0; y <= h; y++) {
+            g.drawLine(layout.gridX, layout.gridY + y * cellSize, layout.gridX + w * cellSize, layout.gridY + y * cellSize);
+        }
+
+        g.setFont(g.getFont().deriveFont(Font.PLAIN, (float) layout.legendFontSize));
+        for (int i = 0; i < palette.size(); i++) {
+            int column = i % layout.legendColumns;
+            int row = i / layout.legendColumns;
+            int itemX = layout.leftMargin + column * layout.legendItemWidth;
+            int itemY = layout.legendTop + row * layout.legendItemHeight;
+            FuseBeanColorVo color = palette.get(i);
+            Color fillColor = new Color(hexToArgb(safeHex(color.getHex())));
+            g.setColor(fillColor);
+            g.fillRect(itemX, itemY, 12, 12);
+            g.setColor(new Color(0x999999));
+            g.drawRect(itemX, itemY, 12, 12);
+            g.setColor(new Color(0x333333));
+            String text = legendLabel(color, i + 1);
+            g.drawString(text, itemX + 18, itemY + 10);
+        }
+
+        g.dispose();
+        return image;
     }
 
     /**
@@ -139,7 +222,7 @@ public class FuseBeanPixelArtUtil {
      * @param name     作品名称
      * @return SVG 文本
      */
-    public static String buildSvg(List<List<Integer>> grid, List<Integer> palette, int cellSize, String name) {
+    public static String buildSvg(List<List<Integer>> grid, List<FuseBeanColorVo> palette, int cellSize, String name) {
         int h = grid.size();
         int w = h > 0 ? grid.get(0).size() : 0;
         PatternLayout layout = createLayout(w, h, palette.size(), cellSize);
@@ -184,7 +267,8 @@ public class FuseBeanPixelArtUtil {
                 int runLength = runEnd - x;
                 int cellX = layout.gridX + x * cellSize;
                 int cellY = layout.gridY + y * cellSize;
-                String fill = toHex(palette.get(colorIndex));
+                FuseBeanColorVo color = palette.get(colorIndex);
+                String fill = safeHex(color.getHex());
                 if (runLength >= 4) {
                     sb.append("  <rect x=\"").append(cellX + 0.5)
                             .append("\" y=\"").append(cellY + 0.5)
@@ -194,8 +278,8 @@ public class FuseBeanPixelArtUtil {
                     for (int k = x; k < runEnd; k++) {
                         int centerX = layout.gridX + k * cellSize + cellSize / 2;
                         int centerY = cellY + cellSize / 2;
-                        sb.append(textElement(String.valueOf(colorIndex + 1), centerX, centerY,
-                                layout.cellFontSize, textColorHex(palette.get(colorIndex)), "middle", "middle"));
+                        sb.append(textElement(paletteLabel(color, colorIndex + 1), centerX, centerY,
+                                layout.cellFontSize, textColorHex(fill), "middle", "middle"));
                     }
                     x = runEnd;
                 } else {
@@ -208,8 +292,8 @@ public class FuseBeanPixelArtUtil {
                                 .append("\" fill=\"").append(fill).append("\"/>\n");
                         int centerX = drawX + cellSize / 2;
                         int centerY = cellY + cellSize / 2;
-                        sb.append(textElement(String.valueOf(colorIndex + 1), centerX, centerY,
-                                layout.cellFontSize, textColorHex(palette.get(colorIndex)), "middle", "middle"));
+                        sb.append(textElement(paletteLabel(color, colorIndex + 1), centerX, centerY,
+                                layout.cellFontSize, textColorHex(fill), "middle", "middle"));
                     }
                     x = runEnd;
                 }
@@ -236,10 +320,11 @@ public class FuseBeanPixelArtUtil {
             int row = i / layout.legendColumns;
             int itemX = layout.leftMargin + column * layout.legendItemWidth;
             int itemY = layout.legendTop + row * layout.legendItemHeight;
+            FuseBeanColorVo color = palette.get(i);
             sb.append("  <rect x=\"").append(itemX).append("\" y=\"").append(itemY)
-                    .append("\" width=\"12\" height=\"12\" fill=\"").append(toHex(palette.get(i)))
+                    .append("\" width=\"12\" height=\"12\" fill=\"").append(safeHex(color.getHex()))
                     .append("\" stroke=\"#999\"/>\n");
-            sb.append(textElement((i + 1) + ". " + toHex(palette.get(i)), itemX + 18, itemY + 10,
+            sb.append(textElement(legendLabel(color, i + 1), itemX + 18, itemY + 10,
                     layout.legendFontSize, "#333", "start", "middle"));
         }
 
@@ -284,6 +369,32 @@ public class FuseBeanPixelArtUtil {
      */
     public static String toHex(int argb) {
         return String.format("#%02X%02X%02X", (argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
+    }
+
+    private static String safeHex(String hex) {
+        return hex == null || hex.isBlank() ? "#FFFFFF" : (hex.startsWith("#") ? hex : "#" + hex).toUpperCase();
+    }
+
+    private static int hexToArgb(String hex) {
+        String value = safeHex(hex).substring(1);
+        return Integer.parseInt(value, 16) | 0xFF000000;
+    }
+
+    private static String paletteLabel(FuseBeanColorVo color, int fallbackIndex) {
+        if (color != null && color.getCode() != null && !color.getCode().isBlank()) {
+            return color.getCode();
+        }
+        return "#" + fallbackIndex;
+    }
+
+    private static String legendLabel(FuseBeanColorVo color, int fallbackIndex) {
+        String code = paletteLabel(color, fallbackIndex);
+        String hex = color != null && color.getHex() != null && !color.getHex().isBlank() ? safeHex(color.getHex()) : "#FFFFFF";
+        return code + " · " + hex;
+    }
+
+    private static String textColorHex(String hex) {
+        return textColorHex(hexToArgb(hex));
     }
 
     private static BufferedImage flattenAlpha(BufferedImage source) {

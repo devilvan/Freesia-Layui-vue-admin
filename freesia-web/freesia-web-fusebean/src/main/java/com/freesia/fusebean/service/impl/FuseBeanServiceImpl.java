@@ -19,13 +19,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 拼豆业务逻辑实现。
+ * 拼豆业务逻辑实现
  */
 @Slf4j
 @Service
@@ -36,10 +47,23 @@ public class FuseBeanServiceImpl implements FuseBeanService {
     private final FuseBeanSkillClient skillClient;
     private final FuseBeanProperties properties;
 
+    private volatile List<MardColor> mardColors;
+
     @Override
-    public FuseBeanGenerateRespVo generateImage(MultipartFile file, String prompt, Integer gridSize, Integer maxColors) {
-        int targetGrid = gridSize != null && gridSize > 0 ? gridSize : properties.getGridSize();
-        int targetColors = maxColors != null && maxColors > 0 ? maxColors : properties.getMaxColors();
+    public FuseBeanGenerateRespVo generateImage(MultipartFile file,
+                                                String prompt,
+                                                Integer gridSize,
+                                                Integer maxColors,
+                                                String processingMode,
+                                                Boolean removeBackground,
+                                                Boolean flipHorizontal) {
+        int targetGrid = clamp(gridSize, 16, 192, properties.getGridSize());
+        int targetColors = clamp(maxColors, 1, 291, properties.getMaxColors());
+        boolean removeBg = Boolean.TRUE.equals(removeBackground);
+        boolean flip = Boolean.TRUE.equals(flipHorizontal);
+        String normalizedMode = normalizeProcessingMode(processingMode);
+        String skillStyle = mapProcessingModeToStyle(normalizedMode);
+        String skillBackground = removeBg ? "remove" : "keep";
 
         BufferedImage source = null;
         byte[] imageBytes = null;
@@ -58,12 +82,18 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         BufferedImage pixelSource = source;
         String message = null;
         if (source != null || UEmpty.isNotEmpty(prompt)) {
-            BufferedImage externalSource = externalClient.generate(imageBytes == null ? new byte[0] : imageBytes, prompt);
+            byte[] externalInput = imageBytes == null ? new byte[0] : imageBytes;
+            if (source != null && (flip || removeBg)) {
+                BufferedImage transformed = preprocessSource(source, removeBg, flip);
+                externalInput = toPngBytes(transformed);
+            }
+            BufferedImage externalSource = externalClient.generate(externalInput, prompt);
             if (externalSource != null) {
                 pixelSource = externalSource;
                 message = "由外部拼豆生成接口生成";
             }
         }
+
         if (pixelSource == null) {
             if (source == null) {
                 throw new IllegalArgumentException("本地像素化需要上传图片，或请在配置中启用外部生成接口");
@@ -72,12 +102,13 @@ public class FuseBeanServiceImpl implements FuseBeanService {
             message = "由本地像素化算法生成";
         }
 
-        boolean skillReady = skillClient.isReady();
-        if (skillReady) {
+        pixelSource = preprocessSource(pixelSource, removeBg, flip);
+
+        if (skillClient.isReady()) {
             try {
-                log.info("FuseBean generate: using local image-to-pindou skill, gridSize={}, maxColors={}, sourceType={}",
-                        targetGrid, targetColors, describeSourceType(source, prompt));
-                SkillResult skillResult = skillClient.generate(pixelSource, targetGrid, targetColors);
+                log.info("FuseBean generate: using local image-to-pindou skill, gridSize={}, maxColors={}, mode={}, background={}, sourceType={}",
+                        targetGrid, targetColors, normalizedMode, skillBackground, describeSourceType(source, prompt));
+                SkillResult skillResult = skillClient.generate(pixelSource, targetGrid, targetColors, skillStyle, skillBackground);
                 log.info("FuseBean generate: local skill completed, grid={}x{}, colors={}",
                         skillResult.gridWidth(), skillResult.gridHeight(), skillResult.palette().size());
                 return buildSkillGenerateResp(skillResult, message);
@@ -89,14 +120,16 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         }
 
         GridResult result = FuseBeanPixelArtUtil.toGrid(pixelSource, targetGrid, targetColors);
-        BufferedImage preview = FuseBeanPixelArtUtil.renderPreview(result, properties.getPreviewCellSize());
+        List<List<Integer>> grid = toGridList(result.getGrid());
+        List<FuseBeanColorVo> palette = buildPalette(result.getPalette());
+        BufferedImage preview = FuseBeanPixelArtUtil.renderPattern(grid, palette, properties.getPreviewCellSize());
 
         FuseBeanGenerateRespVo vo = new FuseBeanGenerateRespVo();
         vo.setPreviewBase64(FuseBeanPixelArtUtil.toBase64Png(preview));
         vo.setGridWidth(result.getWidth());
         vo.setGridHeight(result.getHeight());
-        vo.setPalette(buildPalette(result.getPalette()));
-        vo.setGrid(toGridList(result.getGrid()));
+        vo.setPalette(palette);
+        vo.setGrid(grid);
         vo.setMessage(message);
         return vo;
     }
@@ -104,21 +137,16 @@ public class FuseBeanServiceImpl implements FuseBeanService {
     @Override
     public FuseBeanConfirmRespVo confirmGenerate(FuseBeanConfirmReqDto reqDto) {
         List<List<Integer>> grid = reqDto.getGrid();
-        List<FuseBeanColorVo> paletteVo = reqDto.getPalette();
-        if (grid == null || grid.isEmpty() || paletteVo == null || paletteVo.isEmpty()) {
+        List<FuseBeanColorVo> paletteVo = normalizePalette(reqDto.getPalette());
+        if (grid == null || grid.isEmpty() || paletteVo.isEmpty()) {
             throw new IllegalArgumentException("图纸数据缺失，请先生成拼豆像素风图片");
         }
         int height = grid.size();
         int width = grid.get(0).size();
         int cellSize = reqDto.getCellSize() != null && reqDto.getCellSize() > 0 ? reqDto.getCellSize() : properties.getCellSize();
 
-        List<Integer> palette = new ArrayList<>(paletteVo.size());
-        for (FuseBeanColorVo color : paletteVo) {
-            palette.add(parseHex(color.getHex()));
-        }
-
-        BufferedImage patternImage = FuseBeanPixelArtUtil.renderPattern(grid, palette, cellSize);
-        String svg = FuseBeanPixelArtUtil.buildSvg(grid, palette, cellSize, reqDto.getName());
+        BufferedImage patternImage = FuseBeanPixelArtUtil.renderPattern(grid, paletteVo, cellSize);
+        String svg = FuseBeanPixelArtUtil.buildSvg(grid, paletteVo, cellSize, reqDto.getName());
         int[] stats = FuseBeanPixelArtUtil.colorStats(grid, paletteVo.size());
 
         log.info("FuseBean confirmGenerate: name={}, grid={}x{}, cellSize={}, colors={}",
@@ -136,13 +164,21 @@ public class FuseBeanServiceImpl implements FuseBeanService {
     }
 
     private FuseBeanGenerateRespVo buildSkillGenerateResp(SkillResult skillResult, String fallbackMessage) {
+        List<List<Integer>> grid = skillResult.grid();
+        List<FuseBeanColorVo> palette = skillResult.palette();
+        BufferedImage preview = FuseBeanPixelArtUtil.renderPattern(grid, palette, properties.getPreviewCellSize());
+
         FuseBeanGenerateRespVo vo = new FuseBeanGenerateRespVo();
-        vo.setPreviewBase64(skillResult.previewBase64());
+        vo.setPreviewBase64(FuseBeanPixelArtUtil.toBase64Png(preview));
         vo.setGridWidth(skillResult.gridWidth());
         vo.setGridHeight(skillResult.gridHeight());
-        vo.setPalette(skillResult.palette());
-        vo.setGrid(skillResult.grid());
-        vo.setMessage(UEmpty.isNotEmpty(fallbackMessage) ? fallbackMessage + "，并经本地 image-to-pindou skill 标准化" : skillResult.message());
+        vo.setPalette(palette);
+        vo.setGrid(grid);
+        if (UEmpty.isNotEmpty(fallbackMessage)) {
+            vo.setMessage(fallbackMessage + "，并经本地 image-to-pindou skill 标准化");
+        } else {
+            vo.setMessage(skillResult.message());
+        }
         return vo;
     }
 
@@ -159,22 +195,39 @@ public class FuseBeanServiceImpl implements FuseBeanService {
     private List<FuseBeanColorVo> buildPalette(int[] palette) {
         List<FuseBeanColorVo> list = new ArrayList<>(palette.length);
         for (int i = 0; i < palette.length; i++) {
-            FuseBeanColorVo color = new FuseBeanColorVo();
-            color.setIndex(i + 1);
-            color.setHex(FuseBeanPixelArtUtil.toHex(palette[i]));
-            list.add(color);
+            MardColor color = nearestMardColor(palette[i]);
+            FuseBeanColorVo vo = new FuseBeanColorVo();
+            vo.setIndex(i + 1);
+            vo.setCode(color.code());
+            vo.setHex(color.hex());
+            list.add(vo);
         }
         return list;
     }
 
-    private List<List<Integer>> toGridList(int[][] grid) {
-        List<List<Integer>> list = new ArrayList<>(grid.length);
-        for (int[] row : grid) {
-            List<Integer> rowList = new ArrayList<>(row.length);
-            for (int cell : row) {
-                rowList.add(cell);
+    private List<FuseBeanColorVo> normalizePalette(List<FuseBeanColorVo> paletteVo) {
+        List<FuseBeanColorVo> list = new ArrayList<>(paletteVo.size());
+        for (int i = 0; i < paletteVo.size(); i++) {
+            FuseBeanColorVo input = paletteVo.get(i);
+            if (input == null) {
+                continue;
             }
-            list.add(rowList);
+            FuseBeanColorVo color = new FuseBeanColorVo();
+            color.setIndex(input.getIndex() != null ? input.getIndex() : i + 1);
+            MardColor nearest = null;
+            if (UEmpty.isNotEmpty(input.getHex())) {
+                nearest = nearestMardColor(parseHex(input.getHex()));
+            } else if (UEmpty.isNotEmpty(input.getCode())) {
+                nearest = findMardColorByCode(input.getCode());
+            }
+            if (nearest != null) {
+                color.setCode(UEmpty.isNotEmpty(input.getCode()) ? input.getCode() : nearest.code());
+                color.setHex(UEmpty.isNotEmpty(input.getHex()) ? normalizeHex(input.getHex()) : nearest.hex());
+            } else {
+                color.setCode(input.getCode());
+                color.setHex(input.getHex());
+            }
+            list.add(color);
         }
         return list;
     }
@@ -195,15 +248,351 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         return list;
     }
 
+    private List<List<Integer>> toGridList(int[][] grid) {
+        List<List<Integer>> list = new ArrayList<>(grid.length);
+        for (int[] row : grid) {
+            List<Integer> rowList = new ArrayList<>(row.length);
+            for (int cell : row) {
+                rowList.add(cell);
+            }
+            list.add(rowList);
+        }
+        return list;
+    }
+
+    private BufferedImage preprocessSource(BufferedImage source, boolean removeBackground, boolean flipHorizontal) {
+        BufferedImage image = toArgbImage(source);
+        if (removeBackground) {
+            image = removeOuterBackground(image);
+        }
+        if (flipHorizontal) {
+            image = flipHorizontal(image);
+        }
+        return image;
+    }
+
+    private BufferedImage toArgbImage(BufferedImage source) {
+        if (source.getType() == BufferedImage.TYPE_INT_ARGB) {
+            return source;
+        }
+        BufferedImage image = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        g.setComposite(AlphaComposite.Src);
+        g.drawImage(source, 0, 0, null);
+        g.dispose();
+        return image;
+    }
+
+    private BufferedImage flipHorizontal(BufferedImage source) {
+        BufferedImage flipped = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = flipped.createGraphics();
+        AffineTransform transform = new AffineTransform();
+        transform.translate(source.getWidth(), 0);
+        transform.scale(-1, 1);
+        g.drawImage(source, transform, null);
+        g.dispose();
+        return flipped;
+    }
+
+    private BufferedImage removeOuterBackground(BufferedImage source) {
+        int width = source.getWidth();
+        int height = source.getHeight();
+        int[] pixels = source.getRGB(0, 0, width, height, null, 0, width);
+
+        Map<String, EdgeBucket> buckets = new LinkedHashMap<>();
+        int edgeCount = 0;
+        for (int x = 0; x < width; x++) {
+            edgeCount += addBackgroundSample(pixels, width, x, 0, buckets, true, cornerMask(x, 0, width, height));
+            edgeCount += addBackgroundSample(pixels, width, x, height - 1, buckets, true, cornerMask(x, height - 1, width, height));
+        }
+        for (int y = 1; y < height - 1; y++) {
+            edgeCount += addBackgroundSample(pixels, width, 0, y, buckets, true, cornerMask(0, y, width, height));
+            edgeCount += addBackgroundSample(pixels, width, width - 1, y, buckets, true, cornerMask(width - 1, y, width, height));
+        }
+
+        final int totalEdgeCount = edgeCount;
+        EdgeBucket background = buckets.values().stream()
+                .filter(bucket -> Integer.bitCount(bucket.cornersMask) >= 3 || (totalEdgeCount > 0 && bucket.edgeCount * 1.0 / totalEdgeCount >= 0.55))
+                .max((a, b) -> {
+                    int cornerCompare = Integer.compare(Integer.bitCount(a.cornersMask), Integer.bitCount(b.cornersMask));
+                    if (cornerCompare != 0) {
+                        return cornerCompare;
+                    }
+                    return Integer.compare(a.edgeCount, b.edgeCount);
+                })
+                .orElse(null);
+        if (background == null) {
+            return source;
+        }
+
+        int[] bgRgb = background.averageRgb();
+        boolean neutralLight = Math.max(bgRgb[0], Math.max(bgRgb[1], bgRgb[2])) - Math.min(bgRgb[0], Math.min(bgRgb[1], bgRgb[2])) < 12
+                && luminance(bgRgb) > 225;
+        int tolerance = neutralLight ? 96 : 44;
+        boolean[] seen = new boolean[width * height];
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+
+        for (int x = 0; x < width; x++) {
+            enqueueBackgroundPixel(pixels, width, height, x, 0, seen, queue, bgRgb, tolerance);
+            enqueueBackgroundPixel(pixels, width, height, x, height - 1, seen, queue, bgRgb, tolerance);
+        }
+        for (int y = 1; y < height - 1; y++) {
+            enqueueBackgroundPixel(pixels, width, height, 0, y, seen, queue, bgRgb, tolerance);
+            enqueueBackgroundPixel(pixels, width, height, width - 1, y, seen, queue, bgRgb, tolerance);
+        }
+
+        int cleared = 0;
+        while (!queue.isEmpty()) {
+            int index = queue.removeFirst();
+            int x = index % width;
+            int y = index / width;
+            pixels[index] = 0x00000000;
+            cleared++;
+            if (x > 0) enqueueBackgroundPixel(pixels, width, height, x - 1, y, seen, queue, bgRgb, tolerance);
+            if (x + 1 < width) enqueueBackgroundPixel(pixels, width, height, x + 1, y, seen, queue, bgRgb, tolerance);
+            if (y > 0) enqueueBackgroundPixel(pixels, width, height, x, y - 1, seen, queue, bgRgb, tolerance);
+            if (y + 1 < height) enqueueBackgroundPixel(pixels, width, height, x, y + 1, seen, queue, bgRgb, tolerance);
+        }
+
+        if (cleared < width * height * 0.01) {
+            return source;
+        }
+
+        BufferedImage target = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        target.setRGB(0, 0, width, height, pixels, 0, width);
+        return target;
+    }
+
+    private int addBackgroundSample(int[] pixels,
+                                    int width,
+                                    int x,
+                                    int y,
+                                    Map<String, EdgeBucket> buckets,
+                                    boolean isEdge,
+                                    int cornerMask) {
+        int index = y * width + x;
+        int argb = pixels[index];
+        int alpha = (argb >>> 24) & 0xFF;
+        if (alpha < 24) {
+            return 0;
+        }
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        String key = (r >> 5) + "," + (g >> 5) + "," + (b >> 5);
+        EdgeBucket bucket = buckets.computeIfAbsent(key, k -> new EdgeBucket());
+        bucket.count++;
+        bucket.sum[0] += r;
+        bucket.sum[1] += g;
+        bucket.sum[2] += b;
+        if (isEdge) {
+            bucket.edgeCount++;
+        }
+        if (cornerMask >= 0) {
+            bucket.cornersMask |= (1 << cornerMask);
+        }
+        return 1;
+    }
+
+    private int cornerMask(int x, int y, int width, int height) {
+        if (x == 0 && y == 0) {
+            return 0;
+        }
+        if (x == width - 1 && y == 0) {
+            return 1;
+        }
+        if (x == 0 && y == height - 1) {
+            return 2;
+        }
+        if (x == width - 1 && y == height - 1) {
+            return 3;
+        }
+        return -1;
+    }
+
+    private void enqueueBackgroundPixel(int[] pixels,
+                                        int width,
+                                        int height,
+                                        int x,
+                                        int y,
+                                        boolean[] seen,
+                                        ArrayDeque<Integer> queue,
+                                        int[] bgRgb,
+                                        int tolerance) {
+        int index = y * width + x;
+        if (seen[index]) {
+            return;
+        }
+        int argb = pixels[index];
+        int alpha = (argb >>> 24) & 0xFF;
+        if (alpha < 24 || colorDistanceSq(argb, bgRgb) <= tolerance * tolerance) {
+            seen[index] = true;
+            queue.add(index);
+        }
+    }
+
+    private int colorDistanceSq(int argb, int[] rgb) {
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        int dr = r - rgb[0];
+        int dg = g - rgb[1];
+        int db = b - rgb[2];
+        return dr * dr + dg * dg + db * db;
+    }
+
+    private int luminance(int[] rgb) {
+        return (int) Math.round(rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114);
+    }
+
+    private byte[] toPngBytes(BufferedImage image) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            if (!ImageIO.write(image, "png", baos)) {
+                throw new IllegalStateException("无法编码图片为 PNG");
+            }
+            return baos.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("编码 PNG 失败", e);
+        }
+    }
+
+    private String normalizeProcessingMode(String processingMode) {
+        if (UEmpty.isEmpty(processingMode)) {
+            return "edge";
+        }
+        String value = processingMode.trim().toLowerCase();
+        return switch (value) {
+            case "average", "dominant", "edge" -> value;
+            case "faithful" -> "average";
+            case "cartoon" -> "dominant";
+            case "bead" -> "edge";
+            default -> "edge";
+        };
+    }
+
+    private String mapProcessingModeToStyle(String processingMode) {
+        return switch (normalizeProcessingMode(processingMode)) {
+            case "average" -> "faithful";
+            case "dominant" -> "cartoon";
+            default -> "bead";
+        };
+    }
+
+    private List<MardColor> getMardColors() {
+        if (mardColors == null) {
+            synchronized (this) {
+                if (mardColors == null) {
+                    mardColors = loadMardColors();
+                }
+            }
+        }
+        return mardColors;
+    }
+
+    private List<MardColor> loadMardColors() {
+        List<Path> candidates = List.of(
+                Path.of(properties.getSkill().getRoot()).toAbsolutePath().normalize().resolve("palettes/mard-291.csv"),
+                Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize()
+                        .resolve("freesia-web/freesia-web-fusebean/skills/image-to-pindou/palettes/mard-291.csv")
+        );
+        Path file = candidates.stream().filter(Files::isRegularFile).findFirst()
+                .orElseThrow(() -> new IllegalStateException("未找到 MARD 291 调色板文件"));
+        try {
+            List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+            List<MardColor> list = new ArrayList<>();
+            for (int i = 1; i < lines.size(); i++) {
+                String line = lines.get(i).trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+                String[] parts = line.split(",");
+                if (parts.length < 4) {
+                    continue;
+                }
+                String code = parts[0].trim();
+                int r = Integer.parseInt(parts[1].trim());
+                int g = Integer.parseInt(parts[2].trim());
+                int b = Integer.parseInt(parts[3].trim());
+                list.add(new MardColor(code, (r << 16) | (g << 8) | b, String.format("#%02X%02X%02X", r, g, b)));
+            }
+            if (list.isEmpty()) {
+                throw new IllegalStateException("MARD 291 调色板为空");
+            }
+            return list;
+        } catch (IOException e) {
+            throw new IllegalStateException("读取 MARD 291 调色板失败", e);
+        }
+    }
+
+    private MardColor nearestMardColor(int argb) {
+        int rgb = argb & 0x00FFFFFF;
+        int bestDistance = Integer.MAX_VALUE;
+        MardColor best = null;
+        for (MardColor color : getMardColors()) {
+            int dr = ((rgb >> 16) & 0xFF) - ((color.rgb() >> 16) & 0xFF);
+            int dg = ((rgb >> 8) & 0xFF) - ((color.rgb() >> 8) & 0xFF);
+            int db = (rgb & 0xFF) - (color.rgb() & 0xFF);
+            int distance = dr * dr + dg * dg + db * db;
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                best = color;
+            }
+        }
+        return best;
+    }
+
+    private MardColor findMardColorByCode(String code) {
+        if (UEmpty.isEmpty(code)) {
+            return null;
+        }
+        return getMardColors().stream()
+                .filter(color -> code.equalsIgnoreCase(color.code()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private String normalizeHex(String hex) {
+        if (UEmpty.isEmpty(hex)) {
+            return hex;
+        }
+        String value = hex.trim();
+        return value.startsWith("#") ? value.toUpperCase() : ("#" + value).toUpperCase();
+    }
+
     private int parseHex(String hex) {
         if (UEmpty.isEmpty(hex)) {
-            throw new IllegalArgumentException("色板颜色值缺失");
+            throw new IllegalArgumentException("颜色值不能为空");
         }
         String value = hex.trim().startsWith("#") ? hex.trim().substring(1) : hex.trim();
         try {
             return Integer.parseInt(value, 16) | 0xFF000000;
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("色板颜色值非法: " + hex, e);
+            throw new IllegalArgumentException("颜色值非法: " + hex, e);
+        }
+    }
+
+    private int clamp(Integer value, int min, int max, int fallback) {
+        if (value == null) {
+            return fallback;
+        }
+        return Math.min(max, Math.max(min, value));
+    }
+
+    private record MardColor(String code, int rgb, String hex) {
+    }
+
+    private static final class EdgeBucket {
+        private int count;
+        private int edgeCount;
+        private final long[] sum = new long[3];
+        private int cornersMask;
+
+        private int[] averageRgb() {
+            return new int[]{
+                    (int) Math.round(sum[0] * 1.0 / Math.max(1, count)),
+                    (int) Math.round(sum[1] * 1.0 / Math.max(1, count)),
+                    (int) Math.round(sum[2] * 1.0 / Math.max(1, count))
+            };
         }
     }
 }

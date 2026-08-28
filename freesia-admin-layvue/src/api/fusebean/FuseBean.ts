@@ -2,14 +2,22 @@ import Http from "../Http";
 import {R} from "@/types/Result";
 import {FuseBeanConfirmReq, FuseBeanConfirmResp, FuseBeanGenerateResp} from "@/types/fusebean/FuseBean";
 
+export interface FuseBeanGenerateOptions {
+    processingMode?: 'edge' | 'average' | 'dominant';
+    removeBackground?: boolean;
+    flipHorizontal?: boolean;
+}
+
 /**
  * 生成拼豆像素风图片
- * @param file      上传的原图（可选，纯提示词生成时需后端配置外部接口）
- * @param prompt    用户输入的提示词
- * @param gridSize  网格最大边长
- * @param maxColors 最大颜色数
  */
-export function generateImage(file: File | null, prompt: string, gridSize?: number, maxColors?: number): Promise<R<FuseBeanGenerateResp>> {
+export function generateImage(
+    file: File | null,
+    prompt: string,
+    gridSize?: number,
+    maxColors?: number,
+    options?: FuseBeanGenerateOptions
+): Promise<R<FuseBeanGenerateResp>> {
     const params = new FormData();
     if (file) {
         params.append('file', file);
@@ -22,6 +30,15 @@ export function generateImage(file: File | null, prompt: string, gridSize?: numb
     }
     if (maxColors && maxColors > 0) {
         params.append('maxColors', String(maxColors));
+    }
+    if (options?.processingMode) {
+        params.append('processingMode', options.processingMode);
+    }
+    if (options?.removeBackground !== undefined) {
+        params.append('removeBackground', String(options.removeBackground));
+    }
+    if (options?.flipHorizontal !== undefined) {
+        params.append('flipHorizontal', String(options.flipHorizontal));
     }
     return Http.post('/api/fusebean/generateImage', params, {
         headers: {

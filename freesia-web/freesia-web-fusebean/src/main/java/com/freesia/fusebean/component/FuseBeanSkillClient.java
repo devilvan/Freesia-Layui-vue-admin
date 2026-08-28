@@ -36,7 +36,7 @@ public class FuseBeanSkillClient {
     private final ObjectMapper objectMapper;
     private final FuseBeanProperties properties;
 
-    public SkillResult generate(BufferedImage source, int gridSize, int maxColors) {
+    public SkillResult generate(BufferedImage source, int gridSize, int maxColors, String style, String background) {
         if (!properties.getSkill().isEnabled()) {
             throw new IllegalStateException("本地 image-to-pindou skill 未启用");
         }
@@ -44,14 +44,16 @@ public class FuseBeanSkillClient {
         Path workDir = null;
         long startedAt = System.nanoTime();
         try {
+            String targetStyle = normalizeStyle(style);
+            String targetBackground = normalizeBackground(background);
             log.info("image-to-pindou skill start: root={}, gridSize={}, maxColors={}, style={}, background={}, autoInstall={}",
-                    root, gridSize, maxColors, properties.getSkill().getStyle(), properties.getSkill().getBackground(), properties.getSkill().isAutoInstall());
+                    root, gridSize, maxColors, targetStyle, targetBackground, properties.getSkill().isAutoInstall());
             ensureDependencies(root);
             workDir = Files.createTempDirectory("fusebean-skill-");
             Path input = workDir.resolve("source.png");
             Path outputBase = workDir.resolve("result");
             writePng(source, input);
-            runSkill(root, input, outputBase, gridSize, maxColors);
+            runSkill(root, input, outputBase, gridSize, maxColors, targetStyle, targetBackground);
             SkillResult result = parseResult(outputBase);
             long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000L;
             log.info("image-to-pindou skill success: grid={}x{}, colors={}, elapsedMs={}, outputBase={}",
@@ -137,19 +139,25 @@ public class FuseBeanSkillClient {
         }
     }
 
-    private void runSkill(Path root, Path inputFile, Path outputBase, int gridSize, int maxColors) throws IOException, InterruptedException {
+    private void runSkill(Path root,
+                          Path inputFile,
+                          Path outputBase,
+                          int gridSize,
+                          int maxColors,
+                          String style,
+                          String background) throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
         command.add(properties.getSkill().getNodeCommand());
         command.add(root.resolve("scripts/generate.mjs").toString());
         command.add(inputFile.toString());
         command.add("--style");
-        command.add(properties.getSkill().getStyle());
+        command.add(style);
         command.add("--size");
         command.add(String.valueOf(gridSize));
         command.add("--max-colors");
         command.add(String.valueOf(maxColors));
         command.add("--background");
-        command.add(properties.getSkill().getBackground());
+        command.add(background);
         command.add("--cell-px");
         command.add(String.valueOf(properties.getSkill().getCellPx()));
         command.add("--out");
@@ -167,7 +175,7 @@ public class FuseBeanSkillClient {
         }
         int exitCode = process.waitFor();
         if (exitCode != 0) {
-            if (shouldAutoInstallAndRetry(output) && ensureDependenciesAndRetry(root, inputFile, outputBase, gridSize, maxColors)) {
+            if (shouldAutoInstallAndRetry(output) && ensureDependenciesAndRetry(root, inputFile, outputBase, gridSize, maxColors, style, background)) {
                 return;
             }
             throw new IllegalStateException("image-to-pindou skill 执行失败，exitCode=" + exitCode + ", output=" + output);
@@ -181,26 +189,38 @@ public class FuseBeanSkillClient {
         return properties.getSkill().isAutoInstall() && output != null && output.contains("ERR_MODULE_NOT_FOUND");
     }
 
-    private boolean ensureDependenciesAndRetry(Path root, Path inputFile, Path outputBase, int gridSize, int maxColors) throws IOException, InterruptedException {
+    private boolean ensureDependenciesAndRetry(Path root,
+                                               Path inputFile,
+                                               Path outputBase,
+                                               int gridSize,
+                                               int maxColors,
+                                               String style,
+                                               String background) throws IOException, InterruptedException {
         ensureDependencies(root);
         log.info("image-to-pindou skill retry after dependency installation");
-        runSkillOnce(root, inputFile, outputBase, gridSize, maxColors);
+        runSkillOnce(root, inputFile, outputBase, gridSize, maxColors, style, background);
         return true;
     }
 
-    private void runSkillOnce(Path root, Path inputFile, Path outputBase, int gridSize, int maxColors) throws IOException, InterruptedException {
+    private void runSkillOnce(Path root,
+                              Path inputFile,
+                              Path outputBase,
+                              int gridSize,
+                              int maxColors,
+                              String style,
+                              String background) throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
         command.add(properties.getSkill().getNodeCommand());
         command.add(root.resolve("scripts/generate.mjs").toString());
         command.add(inputFile.toString());
         command.add("--style");
-        command.add(properties.getSkill().getStyle());
+        command.add(style);
         command.add("--size");
         command.add(String.valueOf(gridSize));
         command.add("--max-colors");
         command.add(String.valueOf(maxColors));
         command.add("--background");
-        command.add(properties.getSkill().getBackground());
+        command.add(background);
         command.add("--cell-px");
         command.add(String.valueOf(properties.getSkill().getCellPx()));
         command.add("--out");
@@ -343,6 +363,26 @@ public class FuseBeanSkillClient {
         if (!ImageIO.write(source, "png", input.toFile())) {
             throw new IllegalStateException("无法写入 skill 输入图片: " + input);
         }
+    }
+
+    private String normalizeStyle(String style) {
+        if (style == null || style.isBlank()) {
+            return properties.getSkill().getStyle();
+        }
+        return switch (style.trim().toLowerCase()) {
+            case "average" -> "faithful";
+            case "dominant" -> "cartoon";
+            case "edge", "bead" -> "bead";
+            case "faithful", "cartoon" -> style.trim().toLowerCase();
+            default -> properties.getSkill().getStyle();
+        };
+    }
+
+    private String normalizeBackground(String background) {
+        if (background == null || background.isBlank()) {
+            return properties.getSkill().getBackground();
+        }
+        return "remove".equalsIgnoreCase(background.trim()) ? "remove" : "keep";
     }
 
     private void deleteQuietly(Path root) {
