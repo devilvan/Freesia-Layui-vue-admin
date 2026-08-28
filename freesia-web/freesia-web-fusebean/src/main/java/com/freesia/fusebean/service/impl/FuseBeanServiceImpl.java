@@ -3,6 +3,7 @@ package com.freesia.fusebean.service.impl;
 import com.freesia.fusebean.component.FuseBeanExternalClient;
 import com.freesia.fusebean.component.FuseBeanSkillClient;
 import com.freesia.fusebean.component.FuseBeanSkillClient.SkillResult;
+import com.freesia.fusebean.config.FuseBeanProperties;
 import com.freesia.fusebean.dto.FuseBeanConfirmReqDto;
 import com.freesia.fusebean.service.FuseBeanService;
 import com.freesia.fusebean.util.FuseBeanPixelArtUtil;
@@ -14,7 +15,6 @@ import com.freesia.fusebean.vo.FuseBeanGenerateRespVo;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,23 +34,12 @@ public class FuseBeanServiceImpl implements FuseBeanService {
 
     private final FuseBeanExternalClient externalClient;
     private final FuseBeanSkillClient skillClient;
-
-    @Value("${freesia.fusebean.grid-size:50}")
-    private int defaultGridSize;
-
-    @Value("${freesia.fusebean.max-colors:18}")
-    private int defaultMaxColors;
-
-    @Value("${freesia.fusebean.cell-size:14}")
-    private int defaultCellSize;
-
-    @Value("${freesia.fusebean.preview-cell-size:10}")
-    private int previewCellSize;
+    private final FuseBeanProperties properties;
 
     @Override
     public FuseBeanGenerateRespVo generateImage(MultipartFile file, String prompt, Integer gridSize, Integer maxColors) {
-        int targetGrid = gridSize != null && gridSize > 0 ? gridSize : defaultGridSize;
-        int targetColors = maxColors != null && maxColors > 0 ? maxColors : defaultMaxColors;
+        int targetGrid = gridSize != null && gridSize > 0 ? gridSize : properties.getGridSize();
+        int targetColors = maxColors != null && maxColors > 0 ? maxColors : properties.getMaxColors();
 
         BufferedImage source = null;
         byte[] imageBytes = null;
@@ -100,7 +89,7 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         }
 
         GridResult result = FuseBeanPixelArtUtil.toGrid(pixelSource, targetGrid, targetColors);
-        BufferedImage preview = FuseBeanPixelArtUtil.renderPreview(result, previewCellSize);
+        BufferedImage preview = FuseBeanPixelArtUtil.renderPreview(result, properties.getPreviewCellSize());
 
         FuseBeanGenerateRespVo vo = new FuseBeanGenerateRespVo();
         vo.setPreviewBase64(FuseBeanPixelArtUtil.toBase64Png(preview));
@@ -121,7 +110,7 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         }
         int height = grid.size();
         int width = grid.get(0).size();
-        int cellSize = reqDto.getCellSize() != null && reqDto.getCellSize() > 0 ? reqDto.getCellSize() : defaultCellSize;
+        int cellSize = reqDto.getCellSize() != null && reqDto.getCellSize() > 0 ? reqDto.getCellSize() : properties.getCellSize();
 
         List<Integer> palette = new ArrayList<>(paletteVo.size());
         for (FuseBeanColorVo color : paletteVo) {

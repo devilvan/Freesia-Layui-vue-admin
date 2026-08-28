@@ -2,10 +2,10 @@ package com.freesia.fusebean.component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.freesia.fusebean.config.FuseBeanProperties;
 import com.freesia.fusebean.vo.FuseBeanColorVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -33,36 +33,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FuseBeanSkillClient {
 
-    private static final String DEFAULT_SKILL_ROOT = "${user.home}/.codex/skills/image-to-pindou";
-
     private final ObjectMapper objectMapper;
-
-    @Value("${freesia.fusebean.skill.enabled:true}")
-    private boolean enabled;
-
-    @Value("${freesia.fusebean.skill.root:" + DEFAULT_SKILL_ROOT + "}")
-    private String skillRoot;
-
-    @Value("${freesia.fusebean.skill.node-command:node}")
-    private String nodeCommand;
-
-    @Value("${freesia.fusebean.skill.npm-command:npm}")
-    private String npmCommand;
-
-    @Value("${freesia.fusebean.skill.style:bead}")
-    private String style;
-
-    @Value("${freesia.fusebean.skill.background:remove}")
-    private String background;
-
-    @Value("${freesia.fusebean.skill.cell-px:10}")
-    private int cellPx;
-
-    @Value("${freesia.fusebean.skill.auto-install:true}")
-    private boolean autoInstall;
+    private final FuseBeanProperties properties;
 
     public SkillResult generate(BufferedImage source, int gridSize, int maxColors) {
-        if (!enabled) {
+        if (!properties.getSkill().isEnabled()) {
             throw new IllegalStateException("本地 image-to-pindou skill 未启用");
         }
         Path root = resolveSkillRoot();
@@ -70,7 +45,7 @@ public class FuseBeanSkillClient {
         long startedAt = System.nanoTime();
         try {
             log.info("image-to-pindou skill start: root={}, gridSize={}, maxColors={}, style={}, background={}, autoInstall={}",
-                    root, gridSize, maxColors, style, background, autoInstall);
+                    root, gridSize, maxColors, properties.getSkill().getStyle(), properties.getSkill().getBackground(), properties.getSkill().isAutoInstall());
             ensureDependencies(root);
             workDir = Files.createTempDirectory("fusebean-skill-");
             Path input = workDir.resolve("source.png");
@@ -95,12 +70,12 @@ public class FuseBeanSkillClient {
     }
 
     public boolean isReady() {
-        if (!enabled) {
+        if (!properties.getSkill().isEnabled()) {
             return false;
         }
         try {
             Path root = resolveSkillRoot();
-            return hasSkillEntrypoints(root) && (autoInstall || hasSharpDependency(root));
+            return hasSkillEntrypoints(root) && (properties.getSkill().isAutoInstall() || hasSharpDependency(root));
         } catch (Exception e) {
             log.debug("image-to-pindou skill 不可用: {}", e.getMessage());
             return false;
@@ -108,7 +83,7 @@ public class FuseBeanSkillClient {
     }
 
     private Path resolveSkillRoot() {
-        Path root = Path.of(skillRoot).toAbsolutePath().normalize();
+        Path root = Path.of(properties.getSkill().getRoot()).toAbsolutePath().normalize();
         if (!Files.isDirectory(root)) {
             throw new IllegalStateException("未找到 image-to-pindou skill 目录: " + root);
         }
@@ -127,7 +102,7 @@ public class FuseBeanSkillClient {
         if (hasSharpDependency(root)) {
             return;
         }
-        if (!autoInstall) {
+        if (!properties.getSkill().isAutoInstall()) {
             throw new IllegalStateException("image-to-pindou skill 缺少依赖 sharp，请先在 skill 目录执行 npm install: " + root);
         }
         log.info("image-to-pindou skill dependency sharp missing, running npm install in {}", root);
@@ -140,7 +115,7 @@ public class FuseBeanSkillClient {
 
     private void runNpmInstall(Path root) throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
-        command.add(npmCommand);
+        command.add(properties.getSkill().getNpmCommand());
         command.add("install");
 
         log.info("image-to-pindou npm install command: {}", String.join(" ", command));
@@ -164,19 +139,19 @@ public class FuseBeanSkillClient {
 
     private void runSkill(Path root, Path inputFile, Path outputBase, int gridSize, int maxColors) throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
-        command.add(nodeCommand);
+        command.add(properties.getSkill().getNodeCommand());
         command.add(root.resolve("scripts/generate.mjs").toString());
         command.add(inputFile.toString());
         command.add("--style");
-        command.add(style);
+        command.add(properties.getSkill().getStyle());
         command.add("--size");
         command.add(String.valueOf(gridSize));
         command.add("--max-colors");
         command.add(String.valueOf(maxColors));
         command.add("--background");
-        command.add(background);
+        command.add(properties.getSkill().getBackground());
         command.add("--cell-px");
-        command.add(String.valueOf(cellPx));
+        command.add(String.valueOf(properties.getSkill().getCellPx()));
         command.add("--out");
         command.add(outputBase.toString());
 
@@ -203,7 +178,7 @@ public class FuseBeanSkillClient {
     }
 
     private boolean shouldAutoInstallAndRetry(String output) {
-        return autoInstall && output != null && output.contains("ERR_MODULE_NOT_FOUND");
+        return properties.getSkill().isAutoInstall() && output != null && output.contains("ERR_MODULE_NOT_FOUND");
     }
 
     private boolean ensureDependenciesAndRetry(Path root, Path inputFile, Path outputBase, int gridSize, int maxColors) throws IOException, InterruptedException {
@@ -215,19 +190,19 @@ public class FuseBeanSkillClient {
 
     private void runSkillOnce(Path root, Path inputFile, Path outputBase, int gridSize, int maxColors) throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
-        command.add(nodeCommand);
+        command.add(properties.getSkill().getNodeCommand());
         command.add(root.resolve("scripts/generate.mjs").toString());
         command.add(inputFile.toString());
         command.add("--style");
-        command.add(style);
+        command.add(properties.getSkill().getStyle());
         command.add("--size");
         command.add(String.valueOf(gridSize));
         command.add("--max-colors");
         command.add(String.valueOf(maxColors));
         command.add("--background");
-        command.add(background);
+        command.add(properties.getSkill().getBackground());
         command.add("--cell-px");
-        command.add(String.valueOf(cellPx));
+        command.add(String.valueOf(properties.getSkill().getCellPx()));
         command.add("--out");
         command.add(outputBase.toString());
 

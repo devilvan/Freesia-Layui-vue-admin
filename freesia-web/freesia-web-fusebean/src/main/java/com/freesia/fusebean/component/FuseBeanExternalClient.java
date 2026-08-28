@@ -2,11 +2,12 @@ package com.freesia.fusebean.component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.freesia.fusebean.config.FuseBeanProperties;
 import com.freesia.util.UEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -37,18 +38,7 @@ public class FuseBeanExternalClient {
 
     private final RestClient.Builder restClientBuilder;
     private final ObjectMapper objectMapper;
-
-    @Value("${freesia.fusebean.external-enabled:false}")
-    private boolean externalEnabled;
-
-    @Value("${freesia.fusebean.generate-url:}")
-    private String generateUrl;
-
-    @Value("${freesia.fusebean.api-key:}")
-    private String apiKey;
-
-    @Value("${freesia.fusebean.request-timeout-seconds:120}")
-    private int timeoutSeconds;
+    private final FuseBeanProperties properties;
 
     /**
      * 尝试调用外部生成接口
@@ -58,7 +48,7 @@ public class FuseBeanExternalClient {
      * @return 生成的图片，调用失败或无法解析时返回 null
      */
     public BufferedImage generate(byte[] imageBytes, String prompt) {
-        if (!externalEnabled || UEmpty.isEmpty(generateUrl)) {
+        if (!properties.isExternalEnabled() || UEmpty.isEmpty(properties.getGenerateUrl())) {
             return null;
         }
         try {
@@ -68,13 +58,15 @@ public class FuseBeanExternalClient {
             }
             body.put("image", DATA_URL_PREFIX + Base64.getEncoder().encodeToString(imageBytes));
 
-            RestClient restClient = restClientBuilder.build();
+            RestClient restClient = restClientBuilder
+                    .requestFactory(createRequestFactory())
+                    .build();
             String response = restClient.post()
-                    .uri(generateUrl)
+                    .uri(properties.getGenerateUrl())
                     .contentType(MediaType.APPLICATION_JSON)
                     .headers(headers -> {
-                        if (UEmpty.isNotEmpty(apiKey)) {
-                            headers.setBearerAuth(apiKey);
+                        if (UEmpty.isNotEmpty(properties.getApiKey())) {
+                            headers.setBearerAuth(properties.getApiKey());
                         }
                     })
                     .body(body)
@@ -172,7 +164,10 @@ public class FuseBeanExternalClient {
 
     private BufferedImage downloadImage(String url) {
         try {
-            byte[] bytes = restClientBuilder.build().get()
+            byte[] bytes = restClientBuilder
+                    .requestFactory(createRequestFactory())
+                    .build()
+                    .get()
                     .uri(url)
                     .retrieve()
                     .body(byte[].class);
@@ -184,5 +179,13 @@ public class FuseBeanExternalClient {
             log.warn("外部生成结果图片下载失败: {}", e.getMessage());
             return null;
         }
+    }
+
+    private SimpleClientHttpRequestFactory createRequestFactory() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        int timeoutMillis = Math.max(1, properties.getRequestTimeoutSeconds()) * 1000;
+        factory.setConnectTimeout(timeoutMillis);
+        factory.setReadTimeout(timeoutMillis);
+        return factory;
     }
 }

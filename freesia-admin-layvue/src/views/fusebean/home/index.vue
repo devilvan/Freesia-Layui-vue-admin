@@ -2,7 +2,7 @@
   <lay-container :fluid="true">
     <!-- 生成拼豆像素风图片 -->
     <lay-card title="拼豆项目 - 生成拼豆像素风图片">
-      <lay-form label-position="top" style="max-width: 720px">
+      <lay-form class="fusebean-form" label-position="top" label-width="auto" style="max-width: 720px">
         <lay-form-item label="输入提示词">
           <lay-textarea
               v-model="prompt"
@@ -69,7 +69,7 @@
 
     <!-- 确认生成拼豆图纸 -->
     <lay-card v-if="generateResp" title="拼豆项目 - 生成拼豆图纸">
-      <lay-form label-position="top" style="max-width: 720px">
+      <lay-form class="fusebean-form" label-position="top" label-width="auto" style="max-width: 720px">
         <lay-form-item label="作品名称（可选）">
           <lay-input v-model="patternName" placeholder="请输入作品名称，将显示在图纸图例与文件名中"></lay-input>
         </lay-form-item>
@@ -436,5 +436,17 @@ function downloadSvg() {
   margin-top: 16px;
   display: flex;
   gap: 12px;
+}
+
+.fusebean-form :deep(.layui-form-item-top > .layui-form-label) {
+  width: 100% !important;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0 0 6px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.4;
+  height: auto;
 }
 </style>
