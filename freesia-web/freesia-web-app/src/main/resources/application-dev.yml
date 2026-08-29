@@ -166,7 +166,7 @@ freesia:
     # 是否启用本地 image-to-pindou skill 调用链
     skill:
       enabled: true
-      # skill 安装目录，默认指向当前用户的 Codex skills 目录
+      # skill 安装目录：优先仓库内置目录；user.dir 定位失败时自动向上查找，最后回退到 Codex 目录
       root: ${user.dir}/freesia-web/freesia-web-fusebean/skills/image-to-pindou
       # 本地执行命令
       node-command: node

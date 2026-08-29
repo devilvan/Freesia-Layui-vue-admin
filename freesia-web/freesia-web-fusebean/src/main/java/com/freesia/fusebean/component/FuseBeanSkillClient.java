@@ -85,9 +85,9 @@ public class FuseBeanSkillClient {
     }
 
     private Path resolveSkillRoot() {
-        Path root = Path.of(properties.getSkill().getRoot()).toAbsolutePath().normalize();
+        Path root = properties.resolveSkillRoot();
         if (!Files.isDirectory(root)) {
-            throw new IllegalStateException("未找到 image-to-pindou skill 目录: " + root);
+            throw new IllegalStateException("未找到 image-to-pindou skill 目录，请检查 freesia.fusebean.skill.root 配置: " + root);
         }
         return root;
     }

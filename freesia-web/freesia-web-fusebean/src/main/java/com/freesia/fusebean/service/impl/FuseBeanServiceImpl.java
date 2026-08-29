@@ -491,9 +491,8 @@ public class FuseBeanServiceImpl implements FuseBeanService {
 
     private List<MardColor> loadMardColors() {
         List<Path> candidates = List.of(
-                Path.of(properties.getSkill().getRoot()).toAbsolutePath().normalize().resolve("palettes/mard-291.csv"),
-                Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize()
-                        .resolve("freesia-web/freesia-web-fusebean/skills/image-to-pindou/palettes/mard-291.csv")
+                properties.resolveSkillRoot().resolve("palettes/mard-291.csv"),
+                Path.of(System.getProperty("user.home"), ".codex", "skills", "image-to-pindou", "palettes", "mard-291.csv")
         );
         Path file = candidates.stream().filter(Files::isRegularFile).findFirst()
                 .orElseThrow(() -> new IllegalStateException("未找到 MARD 291 调色板文件"));
