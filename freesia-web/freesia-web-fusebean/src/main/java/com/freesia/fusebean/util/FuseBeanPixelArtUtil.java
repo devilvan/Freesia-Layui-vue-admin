@@ -108,6 +108,37 @@ public class FuseBeanPixelArtUtil {
     }
 
     /**
+     * 基于前端回传的网格与色板渲染纯色块预览图（无坐标、无色码、无图例）
+     *
+     * @param grid     网格数据（行优先，每格为色板索引）
+     * @param palette  色板
+     * @param cellSize 每格渲染像素大小
+     * @return 预览图
+     */
+    public static BufferedImage renderPreview(List<List<Integer>> grid, List<FuseBeanColorVo> palette, int cellSize) {
+        int h = grid.size();
+        int w = h > 0 ? grid.get(0).size() : 0;
+        BufferedImage image = new BufferedImage(w * cellSize, h * cellSize, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                Integer colorIndex = grid.get(y).get(x);
+                if (colorIndex == null || colorIndex < 0 || colorIndex >= palette.size()) {
+                    continue;
+                }
+                FuseBeanColorVo color = palette.get(colorIndex);
+                String fill = safeHex(color.getHex());
+                g.setColor(new Color(hexToArgb(fill)));
+                g.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            }
+        }
+        g.dispose();
+        return image;
+    }
+
+    /**
      * 渲染拼豆图纸网格图（带网格线）
      *
      * @param result   网格结果
@@ -129,7 +160,7 @@ public class FuseBeanPixelArtUtil {
     public static BufferedImage renderPattern(List<List<Integer>> grid, List<FuseBeanColorVo> palette, int cellSize) {
         int h = grid.size();
         int w = h > 0 ? grid.get(0).size() : 0;
-        PatternLayout layout = createLayout(w, h, palette.size(), cellSize);
+        PatternLayout layout = createLayout(w, h, palette.size(), cellSize, maxLabelLength(palette));
         BufferedImage image = new BufferedImage(layout.canvasWidth, layout.canvasHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
         g.setColor(Color.WHITE);
@@ -225,7 +256,7 @@ public class FuseBeanPixelArtUtil {
     public static String buildSvg(List<List<Integer>> grid, List<FuseBeanColorVo> palette, int cellSize, String name) {
         int h = grid.size();
         int w = h > 0 ? grid.get(0).size() : 0;
-        PatternLayout layout = createLayout(w, h, palette.size(), cellSize);
+        PatternLayout layout = createLayout(w, h, palette.size(), cellSize, maxLabelLength(palette));
 
         StringBuilder sb = new StringBuilder(8192);
         sb.append("<svg xmlns=\"http://www.w3.org/2000/svg\"")
@@ -387,6 +418,26 @@ public class FuseBeanPixelArtUtil {
         return "#" + fallbackIndex;
     }
 
+    private static int maxLabelLength(List<FuseBeanColorVo> palette) {
+        int max = 1;
+        for (int i = 0; i < palette.size(); i++) {
+            int len = paletteLabel(palette.get(i), i + 1).length();
+            if (len > max) {
+                max = len;
+            }
+        }
+        return max;
+    }
+
+    private static int fitCellFont(int cellSize, int maxCodeLen) {
+        int maxBySize = Math.max(6, Math.min(24, cellSize - 3));
+        if (maxCodeLen <= 0) {
+            return maxBySize;
+        }
+        int fit = (int) Math.floor((cellSize - 2) / (0.62 * maxCodeLen));
+        return Math.max(5, Math.min(maxBySize, fit));
+    }
+
     private static String legendLabel(FuseBeanColorVo color, int fallbackIndex) {
         String code = paletteLabel(color, fallbackIndex);
         String hex = color != null && color.getHex() != null && !color.getHex().isBlank() ? safeHex(color.getHex()) : "#FFFFFF";
@@ -457,7 +508,7 @@ public class FuseBeanPixelArtUtil {
 
         int w = result.getWidth();
         int h = result.getHeight();
-        PatternLayout layout = createLayout(w, h, result.getPalette().length, cellSize);
+        PatternLayout layout = createLayout(w, h, result.getPalette().length, cellSize, String.valueOf(result.getPalette().length).length());
         BufferedImage image = new BufferedImage(layout.canvasWidth, layout.canvasHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
         g.setColor(Color.WHITE);
@@ -538,9 +589,9 @@ public class FuseBeanPixelArtUtil {
         return image;
     }
 
-    private static PatternLayout createLayout(int gridWidth, int gridHeight, int paletteSize, int cellSize) {
+    private static PatternLayout createLayout(int gridWidth, int gridHeight, int paletteSize, int cellSize, int maxCodeLen) {
         int axisFontSize = Math.max(9, Math.min(12, cellSize - 3));
-        int cellFontSize = Math.max(8, Math.min(12, cellSize - 3));
+        int cellFontSize = fitCellFont(cellSize, maxCodeLen);
         int legendFontSize = 10;
         int leftMargin = Math.max(28, String.valueOf(Math.max(1, gridHeight)).length() * 8 + 10);
         int topMargin = Math.max(28, axisFontSize + 16);

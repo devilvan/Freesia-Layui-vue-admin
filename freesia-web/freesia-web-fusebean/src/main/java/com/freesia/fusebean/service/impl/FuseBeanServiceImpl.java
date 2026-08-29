@@ -122,7 +122,7 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         GridResult result = FuseBeanPixelArtUtil.toGrid(pixelSource, targetGrid, targetColors);
         List<List<Integer>> grid = toGridList(result.getGrid());
         List<FuseBeanColorVo> palette = buildPalette(result.getPalette());
-        BufferedImage preview = FuseBeanPixelArtUtil.renderPattern(grid, palette, properties.getPreviewCellSize());
+        BufferedImage preview = FuseBeanPixelArtUtil.renderPreview(grid, palette, properties.getPreviewCellSize());
 
         FuseBeanGenerateRespVo vo = new FuseBeanGenerateRespVo();
         vo.setPreviewBase64(FuseBeanPixelArtUtil.toBase64Png(preview));
@@ -143,9 +143,10 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         }
         int height = grid.size();
         int width = grid.get(0).size();
-        int cellSize = reqDto.getCellSize() != null && reqDto.getCellSize() > 0 ? reqDto.getCellSize() : properties.getCellSize();
+        int cellSize = resolvePatternCellSize(width, height, reqDto.getCellSize());
 
         BufferedImage patternImage = FuseBeanPixelArtUtil.renderPattern(grid, paletteVo, cellSize);
+        BufferedImage cleanImage = FuseBeanPixelArtUtil.renderPreview(grid, paletteVo, cellSize);
         String svg = FuseBeanPixelArtUtil.buildSvg(grid, paletteVo, cellSize, reqDto.getName());
         int[] stats = FuseBeanPixelArtUtil.colorStats(grid, paletteVo.size());
 
@@ -158,15 +159,28 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         vo.setGridHeight(height);
         vo.setCellSize(cellSize);
         vo.setPatternPngBase64(FuseBeanPixelArtUtil.toBase64Png(patternImage));
+        vo.setPatternPngCleanBase64(FuseBeanPixelArtUtil.toBase64Png(cleanImage));
         vo.setPatternSvg(svg);
         vo.setColorStats(buildColorStats(stats, paletteVo));
         return vo;
     }
 
+    /**
+     * 按图纸尺寸自适应放大豆格像素，保证色码清晰可读，同时避免超大画布。
+     * 目标长边约 3600px，豆格像素限制在 [16, 40]；前端传入的格像素作为下限保留。
+     */
+    private int resolvePatternCellSize(int width, int height, Integer requestedCellSize) {
+        int requested = requestedCellSize != null && requestedCellSize > 0 ? requestedCellSize : properties.getCellSize();
+        int maxSide = Math.max(width, height);
+        int fit = (int) Math.floor(3600.0 / Math.max(1, maxSide));
+        int adaptive = Math.max(16, Math.min(40, fit));
+        return Math.max(requested, adaptive);
+    }
+
     private FuseBeanGenerateRespVo buildSkillGenerateResp(SkillResult skillResult, String fallbackMessage) {
         List<List<Integer>> grid = skillResult.grid();
         List<FuseBeanColorVo> palette = skillResult.palette();
-        BufferedImage preview = FuseBeanPixelArtUtil.renderPattern(grid, palette, properties.getPreviewCellSize());
+        BufferedImage preview = FuseBeanPixelArtUtil.renderPreview(grid, palette, properties.getPreviewCellSize());
 
         FuseBeanGenerateRespVo vo = new FuseBeanGenerateRespVo();
         vo.setPreviewBase64(FuseBeanPixelArtUtil.toBase64Png(preview));

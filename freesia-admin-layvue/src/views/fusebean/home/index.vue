@@ -71,6 +71,19 @@
             </lay-col>
           </lay-row>
 
+          <lay-row :space="20">
+            <lay-col :md="12">
+              <lay-form-item label="豆板格数（最长边）">
+                <lay-input v-model="gridSize" type="number" :min="16" :max="192"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="12">
+              <lay-form-item label="颜色上限">
+                <lay-input v-model="maxColors" type="number" :min="1" :max="291"></lay-input>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+
           <div class="step-actions">
             <lay-button size="sm" type="primary" :disabled="generating" @click="handleGenerate">
               <lay-icon class="layui-icon-createtemplate"></lay-icon>
@@ -89,7 +102,7 @@
             <div>
               <div class="panel-title">拼豆像素风预览</div>
               <div class="panel-desc">
-                预览图上方和左侧会显示坐标，图中会输出 MARD 291 色码。你可以先对比原图，再调整右侧参数重新生成。
+                预览图仅展示拼豆像素化后的颜色与色块，坐标和 MARD 色码将在第三步确认生成图纸时输出。你可以先对比原图，再调整右侧参数重新生成。
               </div>
             </div>
             <div class="panel-actions">
@@ -137,7 +150,7 @@
             </div>
 
             <div class="coord-hint">
-              横坐标显示在上方，纵坐标显示在左侧。坐标字号会随图纸尺寸自动缩放。
+              坐标与 MARD 色码会在确认生成图纸（第三步）中标注。
             </div>
 
             <div class="summary-box">
@@ -242,12 +255,24 @@
           <div>
             <div class="panel-title">拼豆图纸结果</div>
             <div class="panel-desc">
-              PNG 和 SVG 都包含坐标与编码。SVG 适合进一步编辑，PNG 适合快速打印或查看。
+              普通 PNG 和 SVG 包含坐标与编码，纯净 PNG 仅含色块。SVG 适合进一步编辑，PNG 适合快速打印或查看。
             </div>
           </div>
           <div class="panel-actions">
             <lay-button size="sm" @click="backToPreview">返回预览</lay-button>
             <lay-button size="sm" type="primary" @click="backToUpload">重新生成</lay-button>
+            <lay-button size="sm" border="green" @click="downloadPngClean">
+              <lay-icon class="layui-icon-download-circle"></lay-icon>
+              下载 PNG（纯净）
+            </lay-button>
+            <lay-button size="sm" border="green" @click="downloadPng">
+              <lay-icon class="layui-icon-download-circle"></lay-icon>
+              下载 PNG
+            </lay-button>
+            <lay-button size="sm" border="green" @click="downloadSvg">
+              <lay-icon class="layui-icon-download-circle"></lay-icon>
+              下载 SVG
+            </lay-button>
           </div>
         </div>
 
@@ -271,7 +296,7 @@
             </div>
           </div>
 
-          <div class="sub-title color-title">颜色清单</div>
+          <div class="sub-title color-title">颜色清单（共 {{ confirmResp.colorStats?.length || 0 }} 种颜色， 共 {{ confirmResp.colorStats?.reduce((acc, cur) => acc + cur.count, 0) || 0 }} 颗）</div>
           <div class="color-stat-list">
             <div v-for="stat in confirmResp.colorStats" :key="stat.index" class="color-stat-item">
               <span class="color-index">{{ stat.code || `#${stat.index}` }}</span>
@@ -281,16 +306,6 @@
             </div>
           </div>
 
-          <div class="download-row">
-            <lay-button size="sm" border="green" @click="downloadPng">
-              <lay-icon class="layui-icon-download-circle"></lay-icon>
-              下载 PNG
-            </lay-button>
-            <lay-button size="sm" border="green" @click="downloadSvg">
-              <lay-icon class="layui-icon-download-circle"></lay-icon>
-              下载 SVG
-            </lay-button>
-          </div>
         </template>
 
         <div v-else class="empty-state">
@@ -509,6 +524,20 @@ async function doConfirmGenerate() {
   } catch (e: any) {
     layer.msg(e?.msg || '生成失败，请稍后重试', { icon: 2 });
   }
+}
+
+function downloadPngClean() {
+  const dataUrl = confirmResp.value?.patternPngCleanBase64;
+  if (!dataUrl) {
+    layer.msg('暂无可下载的纯净 PNG 文件', { icon: 2 });
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = `${sanitizeDownloadName(patternName.value)}-pattern-clean.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function downloadPng() {

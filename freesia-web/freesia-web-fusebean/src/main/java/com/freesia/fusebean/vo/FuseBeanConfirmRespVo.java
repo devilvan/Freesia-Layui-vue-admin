@@ -29,6 +29,9 @@ public class FuseBeanConfirmRespVo {
     @Schema(description = "图纸网格图片（base64 PNG，data:image/png;base64,...）")
     private String patternPngBase64;
 
+    @Schema(description = "纯净图纸图片（base64 PNG，仅色块，无坐标/色码/图例）")
+    private String patternPngCleanBase64;
+
     @Schema(description = "图纸矢量图（SVG 文本）")
     private String patternSvg;
 

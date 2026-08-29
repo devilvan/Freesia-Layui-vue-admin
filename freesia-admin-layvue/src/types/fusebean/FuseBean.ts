@@ -58,6 +58,8 @@ export interface FuseBeanConfirmResp {
     cellSize?: number;
     /** 图纸网格图片（base64 PNG） */
     patternPngBase64?: string;
+    /** 纯净图纸图片（base64 PNG，仅色块，无坐标/色码/图例） */
+    patternPngCleanBase64?: string;
     /** 图纸矢量图（SVG 文本） */
     patternSvg?: string;
     /** 色号清单（购豆清单） */
