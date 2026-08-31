@@ -343,6 +343,22 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         boolean neutralLight = Math.max(bgRgb[0], Math.max(bgRgb[1], bgRgb[2])) - Math.min(bgRgb[0], Math.min(bgRgb[1], bgRgb[2])) < 12
                 && luminance(bgRgb) > 225;
         int tolerance = neutralLight ? 96 : 44;
+        // 背景与主体颜色相近时降低容差，避免过拟合把主体相近色块也一并清除
+        int similarCount = 0;
+        for (int i = 0; i < pixels.length; i++) {
+            if (((pixels[i] >>> 24) & 0xFF) < 24) {
+                continue;
+            }
+            if (colorDistanceSq(pixels[i], bgRgb) <= tolerance * tolerance) {
+                similarCount++;
+            }
+        }
+        double similarRatio = similarCount * 1.0 / Math.max(1, pixels.length);
+        if (similarRatio > 0.6) {
+            tolerance = Math.min(tolerance, 18);
+        } else if (similarRatio > 0.4) {
+            tolerance = Math.min(tolerance, 26);
+        }
         boolean[] seen = new boolean[width * height];
         ArrayDeque<Integer> queue = new ArrayDeque<>();
 

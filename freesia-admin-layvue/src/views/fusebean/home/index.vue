@@ -102,11 +102,15 @@
             <div>
               <div class="panel-title">拼豆像素风预览</div>
               <div class="panel-desc">
-                预览图仅展示拼豆像素化后的颜色与色块，坐标和 MARD 色码将在第三步确认生成图纸时输出。你可以先对比原图，再调整右侧参数重新生成。
+                预览图按图片尺寸叠加上坐标系，可直接点击或拖拽框选豆格，再在下方色板中替换颜色。坐标与 MARD 色码会在第三步确认生成图纸时标注。
               </div>
             </div>
             <div class="panel-actions">
               <lay-button size="sm" @click="backToUpload">返回上一步</lay-button>
+              <lay-button size="sm" :disabled="!sourceImageUrl" title="请先上传原图" @click="openCompare">
+                <lay-icon class="layui-icon-picture"></lay-icon>
+                对比原图
+              </lay-button>
               <lay-button size="sm" type="primary" :disabled="!generateResp" @click="openConfirm">
                 确认生成图纸
               </lay-button>
@@ -122,35 +126,83 @@
               <lay-tag v-if="flipHorizontal">水平翻转</lay-tag>
             </div>
 
-            <div class="compare-toolbar">
-              <div class="compare-title">原图对比</div>
-              <lay-switch v-model="compareMode" onswitch-text="对比模式" unswitch-text="单图模式"></lay-switch>
+            <div class="cell-editor">
+              <div class="cell-editor-header">
+                <div class="sub-title">豆格颜色调整</div>
+                <div class="cell-editor-desc">
+                  在预览图中点击或拖拽框选一个或多个豆格，再从下方色板选择颜色替换。色板颜色数由当前颜色上限（{{ maxColors }}）决定；白色（T1）可随时作为底色追加。空豆格（已去除的背景区域）不会被标色。
+                </div>
+              </div>
+              <div class="cell-selection-info">
+                <span class="sel-count">
+                  {{ selectedCells.length ? `已选 ${selectedCells.length} 个豆格` : '尚未选择豆格' }}
+                </span>
+                <lay-button v-if="selectedCells.length" size="xs" border="red" @click="clearSelection">清除选择</lay-button>
+              </div>
+              <div v-if="generateResp.palette?.length" class="cell-color-picker">
+                <div class="picker-swatches">
+                  <div
+                      v-for="(color, i) in generateResp.palette"
+                      :key="color.index ?? i"
+                      class="picker-swatch"
+                      :class="{ active: lastAppliedColor === i }"
+                      :title="`${color.code} · ${color.hex}`"
+                      @click="applyColorToSelected(i)"
+                  >
+                    <span class="swatch-block" :style="{ background: color.hex }"></span>
+                    <span class="swatch-code">{{ color.code }}</span>
+                  </div>
+                  <div
+                      v-if="!hasWhitePaletteColor"
+                      class="picker-swatch"
+                      :class="{ active: lastAppliedColor === whiteSwatchIndex }"
+                      title="T1 · #FFFFFF（白色底色）"
+                      @click="applyWhiteToSelected"
+                  >
+                    <span class="swatch-block white-swatch"></span>
+                    <span class="swatch-code">T1</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div v-if="compareMode" class="compare-grid">
-              <div class="compare-item">
-                <div class="sub-title">原图</div>
-                <div class="compare-box">
-                  <img v-if="sourceImageUrl" :src="sourceImageUrl" alt="原图" class="compare-img"/>
-                  <div v-else class="empty-compare">未上传图片</div>
-                </div>
-              </div>
-              <div class="compare-item">
-                <div class="sub-title">拼豆像素风预览</div>
-                <div class="compare-box preview-box">
-                  <img :src="generateResp.previewBase64" alt="拼豆像素风预览" class="preview-img"/>
-                </div>
+            <div class="single-preview">
+              <div class="sub-title">拼豆像素风预览（点击/拖拽框选豆格，Ctrl+滚轮缩放，空格+拖拽上下左右平移）</div>
+              <div ref="interactiveWrapRef" class="compare-box preview-box interactive-wrap" @wheel="onWrapWheel">
+                <canvas
+                    ref="interactiveCanvasRef"
+                    class="interactive-canvas"
+                    :class="{ 'space-pan': spaceDown, panning: isPanning }"
+                    @pointerdown="onCanvasPointerDown"
+                    @pointermove="onCanvasPointerMove"
+                    @pointerup="onCanvasPointerUp"
+                    @pointerleave="onCanvasPointerLeave"
+                ></canvas>
               </div>
             </div>
-            <div v-else class="single-preview">
-              <div class="sub-title">拼豆像素风预览</div>
-              <div class="compare-box preview-box">
-                <img :src="generateResp.previewBase64" alt="拼豆像素风预览" class="preview-img"/>
+
+            <div v-if="hoverInfo" class="cell-tooltip" :style="{ left: hoverInfo.tipLeft + 'px', top: hoverInfo.tipTop + 'px' }">
+              <div class="cell-tooltip-coord">第 {{ hoverInfo.gridX + 1 }} 列 · 第 {{ hoverInfo.gridY + 1 }} 行</div>
+              <div v-if="hoverInfo.code || hoverInfo.hex" class="cell-tooltip-row">
+                <span class="cell-tooltip-swatch" :style="{ background: hoverInfo.hex || '#ffffff' }"></span>
+                <span class="cell-tooltip-code">{{ hoverInfo.code || '--' }}</span>
+                <span class="cell-tooltip-hex">{{ hoverInfo.hex || '--' }}</span>
               </div>
+              <div v-else class="cell-tooltip-empty">该豆格无颜色</div>
             </div>
 
             <div class="coord-hint">
-              坐标与 MARD 色码会在确认生成图纸（第三步）中标注。
+              预览图中可用 Ctrl+滚轮缩放，按住空格键拖拽可上下左右平移画布；坐标系用于定位豆格，第三步图纸会标注坐标与 MARD 色码。
+            </div>
+
+            <div class="sub-title color-title">颜色清单（共 {{ step2ColorStats.length }} 种颜色，共 {{ step2ColorStats.reduce((acc, cur) => acc + cur.count, 0) }} 颗）</div>
+            <div class="color-stat-list">
+              <div v-for="stat in step2ColorStats" :key="stat.index" class="color-stat-item">
+                <span class="color-index">{{ stat.code || `#${stat.index}` }}</span>
+                <span class="color-swatch" :style="{ background: stat.hex }"></span>
+                <span class="color-hex">{{ stat.hex }}</span>
+                <span class="color-count">{{ stat.count }} 颗</span>
+              </div>
             </div>
 
             <div class="summary-box">
@@ -291,7 +343,7 @@
               </div>
             </div>
             <div>
-              <div class="sub-title">图纸 SVG（可缩放编辑）</div>
+              <div class="sub-title">图纸 SVG</div>
               <div class="svg-box" v-html="confirmResp.patternSvg"></div>
             </div>
           </div>
@@ -323,19 +375,18 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { layer } from '@layui/layui-vue';
 import { confirmGenerate, generateImage, FuseBeanGenerateOptions } from '@/api/fusebean/FuseBean';
-import { FuseBeanConfirmResp, FuseBeanGenerateResp } from '@/types/fusebean/FuseBean';
+import { FuseBeanColor, FuseBeanConfirmResp, FuseBeanGenerateResp } from '@/types/fusebean/FuseBean';
 
 const prompt = ref('');
 const patternName = ref('');
 const gridSize = ref<number>(50);
 const maxColors = ref<number>(18);
 const processingMode = ref<'edge' | 'average' | 'dominant'>('edge');
-const removeBackground = ref(true);
+const removeBackground = ref(false);
 const flipHorizontal = ref(false);
-const compareMode = ref(true);
 
 const fileInputRef = ref<HTMLInputElement>();
 const sourceFile = ref<File | null>(null);
@@ -430,6 +481,489 @@ function buildGenerateOptions(): FuseBeanGenerateOptions {
   };
 }
 
+/**
+ * 依据网格与色板在本地 canvas 重绘纯色块预览图。
+ * 网格中每格存储的是色板下标（0 基），与后端 renderPreview 约定一致。
+ */
+function renderPreviewFromGrid(grid: Array<Array<number | null>>, palette: FuseBeanColor[]): string {
+  const height = grid.length;
+  const width = grid[0]?.length || 0;
+  if (!width || !height) {
+    return '';
+  }
+  const maxSide = Math.max(width, height);
+  const cellSize = Math.max(3, Math.min(10, Math.floor(600 / maxSide)));
+  const canvas = document.createElement('canvas');
+  canvas.width = width * cellSize;
+  canvas.height = height * cellSize;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    return '';
+  }
+  ctx.fillStyle = '#f2f4f7';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let y = 0; y < height; y++) {
+    const row = grid[y];
+    if (!row) {
+      continue;
+    }
+    for (let x = 0; x < width; x++) {
+      const paletteIndex = row[x];
+      if (paletteIndex == null || paletteIndex < 0 || paletteIndex >= palette.length) {
+        continue;
+      }
+      ctx.fillStyle = palette[paletteIndex].hex || '#ffffff';
+      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+    }
+  }
+  return canvas.toDataURL('image/png');
+}
+
+const interactiveCanvasRef = ref<HTMLCanvasElement | null>(null);
+const interactiveWrapRef = ref<HTMLElement | null>(null);
+const containerWidth = ref(0);
+const selectedCells = ref<Array<{ x: number; y: number }>>([]);
+const hoverCell = ref<{ x: number; y: number } | null>(null);
+const hoverInfo = ref<{
+  tipLeft: number;
+  tipTop: number;
+  gridX: number;
+  gridY: number;
+  code?: string;
+  hex?: string;
+} | null>(null);
+const dragStartCell = ref<{ x: number; y: number } | null>(null);
+const isDragging = ref(false);
+const lastAppliedColor = ref<number | null>(null);
+const previewZoom = ref(1);
+const spaceDown = ref(false);
+const isPanning = ref(false);
+const panStart = ref<{ x: number; y: number; sl: number; st: number } | null>(null);
+
+const canvasLeftMargin = 34;
+const canvasTopMargin = 24;
+// 预留纵向滚动条宽度，使缩放 1 倍时画布宽度贴合框体内容区、不出现横向滚动条
+const scrollbarReserve = 17;
+const zoomMin = 0.5;
+const zoomMax = 8;
+
+const interactiveCellSize = computed(() => {
+  const resp = generateResp.value;
+  if (!resp) {
+    return 0;
+  }
+  const width = resp.gridWidth || 0;
+  if (!width || !containerWidth.value) {
+    return 0;
+  }
+  // 画布可用宽度 = 容器宽度 - 左右内边距(12px*2) - 坐标轴左边距 - 纵向滚动条预留；
+  // 按格宽均分，使画布宽度填充到参数栏一侧，高度随格距等比缩放
+  const availW = containerWidth.value - canvasLeftMargin - 24 - scrollbarReserve;
+  return Math.max(4, Math.floor(availW / width));
+});
+
+const displayCellSize = computed(() => {
+  const resp = generateResp.value;
+  if (!resp) {
+    return 0;
+  }
+  const maxSide = Math.max(resp.gridWidth || 0, resp.gridHeight || 0);
+  if (!maxSide) {
+    return 0;
+  }
+  const base = interactiveCellSize.value;
+  // 限制画布最长边不超过 4096px，避免缩放过大导致 canvas 内存溢出
+  const cap = Math.max(1, Math.floor(4096 / maxSide));
+  // 量化为整数，避免相邻豆格间出现亚像素缝隙
+  return Math.max(1, Math.min(Math.round(base * previewZoom.value), cap));
+});
+
+const hasWhitePaletteColor = computed(() => {
+  return (generateResp.value?.palette || []).some(color => (color.hex || '').toUpperCase() === '#FFFFFF');
+});
+
+const whiteSwatchIndex = computed(() => {
+  const palette = generateResp.value?.palette || [];
+  const existing = palette.findIndex(color => (color.hex || '').toUpperCase() === '#FFFFFF');
+  return existing >= 0 ? existing : palette.length;
+});
+
+// 第二步的色豆用量清单，与第三步颜色清单同构；随网格/色板实时更新
+const step2ColorStats = computed(() => {
+  const resp = generateResp.value;
+  if (!resp?.grid || !resp.palette?.length) {
+    return [];
+  }
+  const counts = new Array<number>(resp.palette.length).fill(0);
+  for (const row of resp.grid) {
+    if (!row) {
+      continue;
+    }
+    for (const v of row) {
+      if (v != null && v >= 0 && v < counts.length) {
+        counts[v] += 1;
+      }
+    }
+  }
+  return resp.palette.map((color, i) => ({
+    index: color.index ?? i + 1,
+    code: color.code,
+    hex: color.hex,
+    count: counts[i],
+  }));
+});
+
+function renderInteractiveGrid() {
+  const canvas = interactiveCanvasRef.value;
+  const resp = generateResp.value;
+  if (!canvas || !resp?.grid || !resp.palette?.length) {
+    return;
+  }
+  const cellSize = displayCellSize.value;
+  const w = resp.gridWidth || 0;
+  const h = resp.gridHeight || 0;
+  if (!cellSize || !w || !h) {
+    return;
+  }
+  canvas.width = canvasLeftMargin + w * cellSize;
+  canvas.height = canvasTopMargin + h * cellSize;
+  canvas.style.width = `${canvas.width}px`;
+  canvas.style.height = `${canvas.height}px`;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    return;
+  }
+  ctx.fillStyle = '#f2f4f7';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.font = '11px Arial, sans-serif';
+  ctx.fillStyle = '#7d869f';
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+  for (let x = 0; x < w; x++) {
+    ctx.fillText(String(x + 1), canvasLeftMargin + x * cellSize + cellSize / 2, canvasTopMargin - 10);
+  }
+  ctx.textAlign = 'right';
+  for (let y = 0; y < h; y++) {
+    ctx.fillText(String(y + 1), canvasLeftMargin - 6, canvasTopMargin + y * cellSize + cellSize / 2);
+  }
+
+  const palette = resp.palette;
+  for (let y = 0; y < h; y++) {
+    const row = resp.grid[y];
+    if (!row) {
+      continue;
+    }
+    for (let x = 0; x < w; x++) {
+      const index = row[x];
+      if (index == null || index < 0 || index >= palette.length) {
+        continue;
+      }
+      ctx.fillStyle = palette[index].hex || '#ffffff';
+      ctx.fillRect(canvasLeftMargin + x * cellSize, canvasTopMargin + y * cellSize, cellSize, cellSize);
+    }
+  }
+
+  ctx.strokeStyle = '#d7dce6';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = 0; x <= w; x++) {
+    const px = Math.round(canvasLeftMargin + x * cellSize) + 0.5;
+    ctx.moveTo(px, canvasTopMargin);
+    ctx.lineTo(px, canvasTopMargin + h * cellSize);
+  }
+  for (let y = 0; y <= h; y++) {
+    const py = Math.round(canvasTopMargin + y * cellSize) + 0.5;
+    ctx.moveTo(canvasLeftMargin, py);
+    ctx.lineTo(canvasLeftMargin + w * cellSize, py);
+  }
+  ctx.stroke();
+
+  if (hoverCell.value && !isDragging.value) {
+    drawCellHighlight(ctx, hoverCell.value.x, hoverCell.value.y, 'rgba(22, 32, 51, 0.10)');
+  }
+  for (const c of selectedCells.value) {
+    drawCellHighlight(ctx, c.x, c.y, 'rgba(64, 128, 255, 0.28)');
+  }
+}
+
+function drawCellHighlight(ctx: CanvasRenderingContext2D, x: number, y: number, fill: string) {
+  const cellSize = displayCellSize.value;
+  const rx = canvasLeftMargin + x * cellSize;
+  const ry = canvasTopMargin + y * cellSize;
+  ctx.fillStyle = fill;
+  ctx.fillRect(rx, ry, cellSize, cellSize);
+  ctx.strokeStyle = '#2f6bff';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(rx + 1, ry + 1, cellSize - 2, cellSize - 2);
+}
+
+function cellFromPointer(e: PointerEvent): { x: number; y: number } | null {
+  const canvas = interactiveCanvasRef.value;
+  const resp = generateResp.value;
+  if (!canvas || !resp) {
+    return null;
+  }
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const x = Math.floor((mx - canvasLeftMargin) / displayCellSize.value);
+  const y = Math.floor((my - canvasTopMargin) / displayCellSize.value);
+  if (x < 0 || y < 0 || x >= (resp.gridWidth || 0) || y >= (resp.gridHeight || 0)) {
+    return null;
+  }
+  return { x, y };
+}
+
+function cellsInRect(a: { x: number; y: number }, b: { x: number; y: number }): Array<{ x: number; y: number }> {
+  const list: Array<{ x: number; y: number }> = [];
+  const minX = Math.min(a.x, b.x);
+  const maxX = Math.max(a.x, b.x);
+  const minY = Math.min(a.y, b.y);
+  const maxY = Math.max(a.y, b.y);
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      list.push({ x, y });
+    }
+  }
+  return list;
+}
+
+function buildHoverInfo(cell: { x: number; y: number }, e: PointerEvent) {
+  const resp = generateResp.value;
+  let code: string | undefined;
+  let hex: string | undefined;
+  if (resp?.grid && resp.palette) {
+    const row = resp.grid[cell.y];
+    const paletteIndex = row?.[cell.x];
+    if (paletteIndex != null && paletteIndex >= 0 && paletteIndex < resp.palette.length) {
+      code = resp.palette[paletteIndex].code;
+      hex = resp.palette[paletteIndex].hex;
+    }
+  }
+  const tipWidth = 200;
+  const tipHeight = 62;
+  const tipLeft = e.clientX + 14 + tipWidth > window.innerWidth ? e.clientX - tipWidth - 14 : e.clientX + 14;
+  const tipTop = e.clientY + 16 + tipHeight > window.innerHeight ? e.clientY - tipHeight - 16 : e.clientY + 16;
+  return { tipLeft, tipTop, gridX: cell.x, gridY: cell.y, code, hex };
+}
+
+function onWrapWheel(e: WheelEvent) {
+  // 仅 Ctrl+滚轮缩放；普通滚轮保持容器/页面默认滚动
+  if (!e.ctrlKey) {
+    return;
+  }
+  e.preventDefault();
+  const canvas = interactiveCanvasRef.value;
+  const resp = generateResp.value;
+  const cellSize = displayCellSize.value;
+  if (!canvas || !resp || !cellSize) {
+    return;
+  }
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  // 光标落在画布外的空白区域：仅阻止浏览器缩放，不缩放画布
+  if (mx < 0 || my < 0 || mx > rect.width || my > rect.height) {
+    return;
+  }
+  // 用旧缩放比计算光标对应的网格坐标，缩放后让该网格点保持在光标下方
+  const gx = (mx - canvasLeftMargin) / cellSize;
+  const gy = (my - canvasTopMargin) / cellSize;
+  const factor = Math.pow(1.0015, -e.deltaY);
+  previewZoom.value = Math.min(zoomMax, Math.max(zoomMin, previewZoom.value * factor));
+  renderInteractiveGrid();
+  const wrap = canvas.parentElement as HTMLElement | null;
+  if (wrap) {
+    const rect2 = canvas.getBoundingClientRect();
+    const nx = canvasLeftMargin + gx * displayCellSize.value;
+    const ny = canvasTopMargin + gy * displayCellSize.value;
+    wrap.scrollLeft += rect2.left + nx - e.clientX;
+    wrap.scrollTop += rect2.top + ny - e.clientY;
+  }
+}
+
+function isTypingTarget(e: KeyboardEvent) {
+  const target = e.target as HTMLElement | null;
+  if (!target) {
+    return false;
+  }
+  const tag = target.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable;
+}
+
+function onWindowKeyDown(e: KeyboardEvent) {
+  if (e.code !== 'Space' || isTypingTarget(e)) {
+    return;
+  }
+  e.preventDefault();
+  spaceDown.value = true;
+}
+
+function onWindowKeyUp(e: KeyboardEvent) {
+  if (e.code !== 'Space') {
+    return;
+  }
+  spaceDown.value = false;
+  isPanning.value = false;
+  panStart.value = null;
+}
+
+function onCanvasPointerDown(e: PointerEvent) {
+  if (spaceDown.value) {
+    const wrap = interactiveCanvasRef.value?.parentElement as HTMLElement | null;
+    isPanning.value = true;
+    panStart.value = { x: e.clientX, y: e.clientY, sl: wrap?.scrollLeft ?? 0, st: wrap?.scrollTop ?? 0 };
+    (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
+    return;
+  }
+  const cell = cellFromPointer(e);
+  if (!cell) {
+    selectedCells.value = [];
+    dragStartCell.value = null;
+    isDragging.value = false;
+    hoverInfo.value = null;
+    renderInteractiveGrid();
+    return;
+  }
+  isDragging.value = true;
+  dragStartCell.value = cell;
+  selectedCells.value = [cell];
+  hoverInfo.value = null;
+  renderInteractiveGrid();
+}
+
+function onCanvasPointerMove(e: PointerEvent) {
+  if (isPanning.value && panStart.value) {
+    const wrap = interactiveCanvasRef.value?.parentElement as HTMLElement | null;
+    if (wrap) {
+      wrap.scrollLeft = panStart.value.sl - (e.clientX - panStart.value.x);
+      wrap.scrollTop = panStart.value.st - (e.clientY - panStart.value.y);
+    }
+    return;
+  }
+  const cell = cellFromPointer(e);
+  if (isDragging.value && cell && dragStartCell.value) {
+    hoverInfo.value = null;
+    selectedCells.value = cellsInRect(dragStartCell.value, cell);
+    renderInteractiveGrid();
+    return;
+  }
+  hoverInfo.value = cell ? buildHoverInfo(cell, e) : null;
+  const prev = hoverCell.value;
+  hoverCell.value = cell;
+  if (cell?.x !== prev?.x || cell?.y !== prev?.y) {
+    renderInteractiveGrid();
+  }
+}
+
+function onCanvasPointerUp(e: PointerEvent) {
+  if (isPanning.value) {
+    isPanning.value = false;
+    panStart.value = null;
+  }
+  isDragging.value = false;
+}
+
+function onCanvasPointerLeave() {
+  hoverCell.value = null;
+  hoverInfo.value = null;
+  if (!isDragging.value && !isPanning.value) {
+    renderInteractiveGrid();
+  }
+}
+
+window.addEventListener('keydown', onWindowKeyDown);
+window.addEventListener('keyup', onWindowKeyUp);
+
+function clearSelection() {
+  selectedCells.value = [];
+  renderInteractiveGrid();
+}
+
+function applyColorToSelected(paletteIndex: number) {
+  const resp = generateResp.value;
+  if (!resp?.grid || !resp.palette) {
+    return;
+  }
+  if (!selectedCells.value.length) {
+    layer.msg('请先在预览图中点击或拖拽选择豆格', { icon: 2 });
+    return;
+  }
+  if (paletteIndex < 0 || paletteIndex >= resp.palette.length) {
+    return;
+  }
+  for (const c of selectedCells.value) {
+    const row = resp.grid[c.y];
+    if (row && c.x >= 0 && c.x < row.length) {
+      row[c.x] = paletteIndex;
+    }
+  }
+  lastAppliedColor.value = paletteIndex;
+  renderInteractiveGrid();
+  resp.previewBase64 = renderPreviewFromGrid(resp.grid, resp.palette);
+}
+
+function applyWhiteToSelected() {
+  const resp = generateResp.value;
+  if (!resp?.grid || !resp.palette) {
+    return;
+  }
+  if (!selectedCells.value.length) {
+    layer.msg('请先在预览图中点击或拖拽选择豆格', { icon: 2 });
+    return;
+  }
+  const index = whitePaletteIndex();
+  for (const c of selectedCells.value) {
+    const row = resp.grid[c.y];
+    if (row && c.x >= 0 && c.x < row.length) {
+      row[c.x] = index;
+    }
+  }
+  lastAppliedColor.value = index;
+  renderInteractiveGrid();
+  resp.previewBase64 = renderPreviewFromGrid(resp.grid, resp.palette);
+}
+
+/**
+ * 返回白色在色板中的下标；若色板尚无白色，则在末尾追加 T1 白色。
+ * 空豆格（去背景的外围）仍保持 null，不会被标色或计入用量。
+ */
+function whitePaletteIndex(): number {
+  const resp = generateResp.value;
+  if (!resp?.palette) {
+    return -1;
+  }
+  const existing = resp.palette.findIndex(color => (color.hex || '').toUpperCase() === '#FFFFFF');
+  if (existing >= 0) {
+    return existing;
+  }
+  const index = resp.palette.length;
+  resp.palette.push({ index: index + 1, code: 'T1', hex: '#FFFFFF' });
+  return index;
+}
+
+// 一次性测量容器宽度后固定画布大小，不再随窗口变化自动缩放。
+// 测量外层 .single-preview 的宽度，避免画布撑高后 wrap 的纵向滚动条占位导致测宽偏小
+function measureInteractiveWrap() {
+  const wrap = interactiveWrapRef.value;
+  const el = wrap?.parentElement ?? wrap;
+  if (el) {
+    containerWidth.value = el.clientWidth || 0;
+  }
+}
+
+watch([activeStep, generateResp], () => {
+  if (activeStep.value === 1 && generateResp.value) {
+    previewZoom.value = 1;
+    hoverInfo.value = null;
+    nextTick(() => {
+      measureInteractiveWrap();
+      renderInteractiveGrid();
+    });
+  }
+});
+
 async function handleGenerate() {
   if (!sourceFile.value && !prompt.value.trim()) {
     layer.msg('请先上传图片或输入提示词', { icon: 2 });
@@ -453,7 +987,6 @@ async function handleGenerate() {
       generateResp.value = res.data || null;
       confirmResp.value = null;
       activeStep.value = 1;
-      compareMode.value = true;
       layer.msg('预览生成成功', { icon: 1 });
     } else if (res.code !== 500) {
       layer.msg(res.msg || '生成失败', { icon: 2 });
@@ -463,6 +996,46 @@ async function handleGenerate() {
   } finally {
     generating.value = false;
   }
+}
+
+function openCompare() {
+  if (!sourceImageUrl.value) {
+    layer.msg('暂无原图可对比', { icon: 2 });
+    return;
+  }
+  const canvas = interactiveCanvasRef.value;
+  let preview = generateResp.value?.previewBase64 || '';
+  // 优先截取当前画布内容，反映用户已做的颜色调整
+  if (canvas && canvas.width > 1) {
+    preview = canvas.toDataURL('image/png');
+  }
+  layer.open({
+    type: 1,
+    title: '原图与拼豆预览对比',
+    content: `<div style="display: flex; gap: 16px; padding: 16px; align-items: flex-start; flex-wrap: wrap;">
+        <div style="flex: 1 1 260px; min-width: 240px; text-align: center;">
+          <div style="font-weight: 600; margin-bottom: 8px; color: #162033;">原图</div>
+          <img src="${sourceImageUrl.value}" style="max-width: 100%; max-height: 420px; border: 1px solid #edf1f7; border-radius: 8px; background: #fff; object-fit: contain;" />
+        </div>
+        <div style="flex: 1 1 260px; min-width: 240px; text-align: center;">
+          <div style="font-weight: 600; margin-bottom: 8px; color: #162033;">拼豆预览</div>
+          ${preview
+            ? `<img src="${preview}" style="max-width: 100%; max-height: 420px; border: 1px solid #edf1f7; border-radius: 8px; background: #fff; object-fit: contain;" />`
+            : '<div style="color: #7d869f; padding: 48px 0;">暂无预览</div>'}
+        </div>
+      </div>`,
+    shade: true,
+    isHtmlFragment: true,
+    area: '860px',
+    btn: [
+      {
+        text: '关闭',
+        callback(id: string) {
+          layer.close(id);
+        },
+      },
+    ],
+  });
 }
 
 function openConfirm() {
@@ -572,6 +1145,8 @@ function downloadSvg() {
 }
 
 onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onWindowKeyDown);
+  window.removeEventListener('keyup', onWindowKeyUp);
   if (sourceImageUrl.value) {
     URL.revokeObjectURL(sourceImageUrl.value);
   }
@@ -754,25 +1329,9 @@ onBeforeUnmount(() => {
 .compare-toolbar {
   margin-bottom: 12px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 12px;
-}
-
-.compare-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #162033;
-}
-
-.compare-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.compare-item {
-  min-width: 0;
 }
 
 .sub-title {
@@ -802,7 +1361,6 @@ onBeforeUnmount(() => {
   align-items: flex-start;
 }
 
-.compare-img,
 .preview-img,
 .pattern-img {
   width: 100%;
@@ -816,6 +1374,165 @@ onBeforeUnmount(() => {
   color: #7d869f;
   font-size: 12px;
   line-height: 1.6;
+}
+
+.interactive-wrap {
+  overflow: auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-height: 320px;
+  max-height: min(62vh, 600px);
+  scrollbar-width: thin;
+}
+
+.interactive-canvas {
+  display: block;
+  border-radius: 6px;
+  flex-shrink: 0;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.interactive-canvas.space-pan {
+  cursor: grab;
+}
+
+.interactive-canvas.panning {
+  cursor: grabbing;
+}
+
+.cell-tooltip {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  min-width: 150px;
+  padding: 8px 10px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 4px 16px rgba(22, 32, 51, 0.14);
+  font-size: 12px;
+  color: #162033;
+}
+
+.cell-tooltip-coord {
+  font-weight: 600;
+  color: #41506d;
+}
+
+.cell-tooltip-row {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cell-tooltip-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #d9e1ee;
+  flex-shrink: 0;
+}
+
+.cell-tooltip-code {
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.cell-tooltip-hex {
+  font-family: monospace;
+  color: #7d869f;
+}
+
+.cell-tooltip-empty {
+  margin-top: 6px;
+  color: #7d869f;
+}
+
+.cell-editor {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid #edf1f7;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+}
+
+.cell-editor-header {
+  margin-bottom: 10px;
+}
+
+.cell-editor-desc {
+  margin-top: 6px;
+  color: #7d869f;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.cell-selection-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.sel-count {
+  color: #41506d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cell-color-picker {
+  padding-top: 10px;
+  border-top: 1px solid #edf1f7;
+}
+
+.picker-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.picker-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 52px;
+  padding: 6px 4px;
+  border: 1px solid #edf1f7;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.picker-swatch:hover {
+  border-color: #b6c6e0;
+}
+
+.picker-swatch.active {
+  border-color: #2f6bff;
+  box-shadow: 0 0 0 2px rgba(47, 107, 255, 0.18);
+}
+
+.swatch-block {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  border: 1px solid #d9e1ee;
+}
+
+.white-swatch {
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px #e3e8f0;
+}
+
+.swatch-code {
+  color: #162033;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .summary-box {
@@ -988,7 +1705,6 @@ onBeforeUnmount(() => {
 
 @media (max-width: 1100px) {
   .step-two-layout,
-  .compare-grid,
   .result-grid {
     grid-template-columns: 1fr;
   }

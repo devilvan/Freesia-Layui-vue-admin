@@ -245,7 +245,18 @@ function removeBackgroundPixels(data, width, height) {
   const background = candidates.toSorted((a, b) => b.corners.size - a.corners.size || b.count - a.count)[0];
   const rgb = background.sum.map(value => value / background.count);
   const neutralLight = Math.max(...rgb) - Math.min(...rgb) < 12 && luminance(rgb) > 225;
-  const tolerance2 = (neutralLight ? 96 : 44) ** 2;
+  let tolerance = neutralLight ? 96 : 44;
+  // 背景与主体颜色相近时降低容差，避免过拟合把主体相近色块也一并清除
+  let similarCount = 0;
+  for (let index = 0; index < width * height; index += 1) {
+    const offset = index * 4;
+    if (data[offset + 3] < 24) continue;
+    if ((data[offset] - rgb[0]) ** 2 + (data[offset + 1] - rgb[1]) ** 2 + (data[offset + 2] - rgb[2]) ** 2 <= tolerance ** 2) similarCount += 1;
+  }
+  const similarRatio = similarCount / (width * height);
+  if (similarRatio > 0.6) tolerance = Math.min(tolerance, 18);
+  else if (similarRatio > 0.4) tolerance = Math.min(tolerance, 26);
+  const tolerance2 = tolerance ** 2;
   const similar = (index) => {
     const offset = index * 4;
     if (data[offset + 3] < 24) return true;
@@ -309,6 +320,10 @@ function quantize(cells, palette, maxColors) {
   const candidates = used.filter(item => item.count >= minimumUsefulCount);
   const kept = [];
   if (used.length) kept.push(used.toSorted((a, b) => b.count - a.count)[0].color);
+  // 始终保留白色 T1：白色豆格默认映射为 T1，而不是被合并或丢弃。
+  // 去背景产生的空豆格仍为 null，不受影响。
+  const white = used.find(item => item.color.code === "T1");
+  if (white && !kept.some(color => color.code === "T1")) kept.push(white.color);
   while (kept.length < Math.min(maxColors, candidates.length)) {
     let best, bestGain = -1;
     for (const candidate of candidates) {
