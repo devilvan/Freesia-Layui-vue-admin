@@ -6,6 +6,8 @@ export interface FuseBeanGenerateOptions {
     processingMode?: 'edge' | 'average' | 'dominant';
     removeBackground?: boolean;
     flipHorizontal?: boolean;
+    /** AI 风格重绘提示词，填写后先由 gpt-image-2 重绘原图再像素化 */
+    aiStylePrompt?: string;
 }
 
 /**
@@ -39,6 +41,9 @@ export function generateImage(
     }
     if (options?.flipHorizontal !== undefined) {
         params.append('flipHorizontal', String(options.flipHorizontal));
+    }
+    if (options?.aiStylePrompt) {
+        params.append('aiStylePrompt', options.aiStylePrompt);
     }
     return Http.post('/api/fusebean/generateImage', params, {
         headers: {

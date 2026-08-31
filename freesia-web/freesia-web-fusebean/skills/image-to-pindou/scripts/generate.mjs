@@ -19,6 +19,8 @@ Options:
   --palette <csv>                     Custom code,r,g,b or code,hex palette
   --ai off|openai|gemini              Optional visual cleanup (default: off)
   --model <name>                      Provider image model
+  --ai-style-prompt <text>            Redraw the image in the requested style (overrides built-in cleanup prompt)
+  --ai-base-url <url>                 OpenAI-compatible base URL for --ai openai (default: https://api.openai.com)
   --preserve <detail>                 Feature to preserve; may be repeated
   --out <directory>                   Output directory (default: outputs/<name>)
   --help                              Show this help`;
@@ -27,12 +29,13 @@ function parseArgs(argv) {
   if (argv.includes("--help") || argv.includes("-h")) return { help: true };
   const options = {
     style: "bead", size: 50, maxColors: 18, background: "keep", cellPx: 24,
-    ai: "off", preserve: [],
+    ai: "off", preserve: [], aiStylePrompt: "", baseUrl: "",
   };
   const values = new Map([
     ["--style", "style"], ["--size", "size"], ["--max-colors", "maxColors"],
     ["--background", "background"], ["--cell-px", "cellPx"], ["--palette", "palette"],
-    ["--ai", "ai"], ["--model", "model"], ["--preserve", "preserve"], ["--out", "out"],
+    ["--ai", "ai"], ["--model", "model"], ["--ai-style-prompt", "aiStylePrompt"],
+    ["--ai-base-url", "baseUrl"], ["--preserve", "preserve"], ["--out", "out"],
   ]);
   let input;
   for (let index = 0; index < argv.length; index += 1) {
@@ -374,6 +377,9 @@ function cleanTinyRegions(cells, width, limit) {
 }
 
 function prompt(style, options) {
+  if (options.aiStylePrompt) {
+    return `按照以下风格要求重绘这张图片：${options.aiStylePrompt}。请保持主体、姿态、整体构图和关键特征清晰可辨，使用清晰轮廓与分明的色块，方便后续转成拼豆图纸。不要添加文字、水印、签名、边框或网格。直接输出重绘后的图片。`;
+  }
   const intent = {
     faithful: "Keep the subject recognizable and preserve its essential lighting, materials, and facial details while simplifying them into deliberate pixel clusters.",
     bead: "Use strong one-cell outlines, coherent shapes, simplified shadows, and clearly separated color regions.",
@@ -401,23 +407,59 @@ async function geminiDraft(input, output, instruction, options) {
 }
 
 async function openaiDraft(input, output, instruction, options) {
-  const key = process.env.OPENAI_API_KEY;
+  const key = options.apiKey || process.env.OPENAI_API_KEY;
   if (!key) throw new Error("OPENAI_API_KEY is required for --ai openai.");
+  const baseUrl = (options.baseUrl || "https://api.openai.com").replace(/\/+$/, "");
   const extension = path.extname(input).toLowerCase();
   const mimeType = extension === ".png" ? "image/png" : extension === ".webp" ? "image/webp" : "image/jpeg";
-  const form = new FormData();
-  form.set("model", options.model);
-  form.set("prompt", instruction);
-  form.set("quality", "medium");
-  form.set("output_format", "png");
-  form.append("image[]", new Blob([await readFile(input)], { type: mimeType }), path.basename(input));
-  const response = await fetch("https://api.openai.com/v1/images/edits", { method: "POST", headers: { authorization: `Bearer ${key}` }, body: form });
+  const body = {
+    model: options.model,
+    input: [
+      {
+        role: "user",
+        content: [
+          { type: "input_text", text: instruction },
+          { type: "input_image", image_url: `data:${mimeType};base64,${(await readFile(input)).toString("base64")}` },
+        ],
+      },
+    ],
+    store: false,
+  };
+  const response = await fetch(`${baseUrl}/v1/responses`, {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+    body: JSON.stringify(body),
+  });
   if (!response.ok) throw new Error(`OpenAI request failed (${response.status}): ${(await response.text()).slice(0, 500)}`);
   const json = await response.json();
-  const image = json.data?.[0]?.b64_json;
-  if (!image) throw new Error("OpenAI returned no image.");
-  await writeFile(output, Buffer.from(image, "base64"));
-  return output;
+  const images = (json.output || []).filter(item => item.type === "output_image" || item.type === "image");
+  if (!images.length) throw new Error("OpenAI returned no image output.");
+  for (const item of images) {
+    const contentUrl = item.content?.find(part => part.type === "image")?.image_url;
+    const url = typeof contentUrl === "string" ? contentUrl : typeof item.image_url === "string" ? item.image_url : typeof item.url === "string" ? item.url : contentUrl?.url;
+    const candidates = [item.b64_json, url].filter(Boolean);
+    for (const candidate of candidates) {
+      try {
+        if (typeof candidate === "string" && candidate.startsWith("data:")) {
+          await writeFile(output, Buffer.from(candidate.slice(candidate.indexOf(",") + 1), "base64"));
+          return output;
+        }
+        if (typeof candidate === "string" && /^https?:\/\//.test(candidate)) {
+          const imageResponse = await fetch(candidate);
+          if (!imageResponse.ok) throw new Error(`image download failed (${imageResponse.status})`);
+          await writeFile(output, Buffer.from(await imageResponse.arrayBuffer()));
+          return output;
+        }
+        if (typeof candidate === "string") {
+          await writeFile(output, Buffer.from(candidate, "base64"));
+          return output;
+        }
+      } catch {
+        // try the next candidate representation
+      }
+    }
+  }
+  throw new Error("OpenAI returned an image but none of its representations could be decoded.");
 }
 
 function stats(cells) {

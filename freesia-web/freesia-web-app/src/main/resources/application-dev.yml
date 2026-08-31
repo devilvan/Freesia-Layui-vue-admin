@@ -176,6 +176,16 @@ freesia:
       background: keep
       # skill 渲染输出像素大小
       cell-px: 24
+    # AI 风格重绘（在第一步/第二步填写 AI 风格提示词后生效，先由 gpt-image-2 重绘原图再像素化）
+    ai:
+      enabled: true
+      # OpenAI 兼容供应商
+      provider: openai
+      model: gpt-image-2
+      # 模型网关地址（取自 skills/image-to-pindou/scripts/元流.txt）
+      base-url: https://api.axis.fan
+      # 鉴权 Key：留空时从后端进程环境变量 OPENAI_API_KEY 读取
+      api-key: ${FUSEBEAN_AI_API_KEY:}
 ---
 login.password:
   # 密码最大错误次数

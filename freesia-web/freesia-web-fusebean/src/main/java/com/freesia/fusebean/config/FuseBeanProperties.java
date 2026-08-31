@@ -33,6 +33,25 @@ public class FuseBeanProperties {
 
     private final Skill skill = new Skill();
 
+    private final Ai ai = new Ai();
+
+    /**
+     * AI 风格重绘配置。由本地 image-to-pindou skill 通过 OpenAI 兼容 Responses API 调用。
+     */
+    @Data
+    public static class Ai {
+
+        private boolean enabled = true;
+
+        private String provider = "openai";
+
+        private String model = "gpt-image-2";
+
+        private String baseUrl = "https://api.axis.fan";
+
+        private String apiKey = "";
+    }
+
     @Data
     public static class Skill {
 

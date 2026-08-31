@@ -72,6 +72,21 @@
           </lay-row>
 
           <lay-row :space="20">
+            <lay-col :md="24">
+              <lay-form-item label="AI 风格提示词（可选）">
+                <lay-textarea
+                    v-model="aiStylePrompt"
+                    placeholder="例如：重绘成卡图风格 / 水彩插画风 / 复古像素海报，保留主体轮廓与构图"
+                    :rows="3"
+                ></lay-textarea>
+                <div class="ai-hint">
+                  填写后，将先用 gpt-image-2 按提示词重绘已上传的原图，再生成拼豆像素风预览；留空则直接处理原图。
+                </div>
+              </lay-form-item>
+            </lay-col>
+          </lay-row>
+
+          <lay-row :space="20">
             <lay-col :md="12">
               <lay-form-item label="豆板格数（最长边）">
                 <lay-input v-model="gridSize" type="number" :min="16" :max="192"></lay-input>
@@ -217,6 +232,10 @@
                   <span class="summary-value">{{ prompt.trim() || '未填写' }}</span>
                 </div>
                 <div class="summary-item">
+                  <span class="summary-label">AI 风格</span>
+                  <span class="summary-value">{{ aiStylePrompt.trim() || '未使用' }}</span>
+                </div>
+                <div class="summary-item">
                   <span class="summary-label">生成说明</span>
                   <span class="summary-value">{{ generateResp.message || '本地生成完成' }}</span>
                 </div>
@@ -256,6 +275,15 @@
                   </lay-form-item>
                 </lay-col>
               </lay-row>
+
+              <lay-form-item label="AI 风格提示词（可选）">
+                <lay-textarea
+                    v-model="aiStylePrompt"
+                    placeholder="例如：重绘成卡图风格 / 水彩插画风，保留主体轮廓与构图"
+                    :rows="2"
+                ></lay-textarea>
+                <div class="ai-hint">填写后重新生成，将先用 gpt-image-2 重绘原图再像素化；留空则直接处理原图。</div>
+              </lay-form-item>
 
               <lay-row :space="16">
                 <lay-col :md="12">
@@ -381,6 +409,7 @@ import { confirmGenerate, generateImage, FuseBeanGenerateOptions } from '@/api/f
 import { FuseBeanColor, FuseBeanConfirmResp, FuseBeanGenerateResp } from '@/types/fusebean/FuseBean';
 
 const prompt = ref('');
+const aiStylePrompt = ref('');
 const patternName = ref('');
 const gridSize = ref<number>(50);
 const maxColors = ref<number>(18);
@@ -478,6 +507,7 @@ function buildGenerateOptions(): FuseBeanGenerateOptions {
     processingMode: processingMode.value,
     removeBackground: removeBackground.value,
     flipHorizontal: flipHorizontal.value,
+    aiStylePrompt: aiStylePrompt.value.trim() || undefined,
   };
 }
 
@@ -965,6 +995,10 @@ watch([activeStep, generateResp], () => {
 });
 
 async function handleGenerate() {
+  if (aiStylePrompt.value.trim() && !sourceFile.value) {
+    layer.msg('AI 风格重绘需要先上传图片', { icon: 2 });
+    return;
+  }
   if (!sourceFile.value && !prompt.value.trim()) {
     layer.msg('请先上传图片或输入提示词', { icon: 2 });
     return;
@@ -1245,6 +1279,13 @@ onBeforeUnmount(() => {
 .upload-tip,
 .step-actions-tip {
   display: block;
+  color: #7d869f;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ai-hint {
+  margin-top: 6px;
   color: #7d869f;
   font-size: 12px;
   line-height: 1.5;

@@ -56,7 +56,8 @@ public class FuseBeanServiceImpl implements FuseBeanService {
                                                 Integer maxColors,
                                                 String processingMode,
                                                 Boolean removeBackground,
-                                                Boolean flipHorizontal) {
+                                                Boolean flipHorizontal,
+                                                String aiStylePrompt) {
         int targetGrid = clamp(gridSize, 16, 192, properties.getGridSize());
         int targetColors = clamp(maxColors, 1, 291, properties.getMaxColors());
         boolean removeBg = Boolean.TRUE.equals(removeBackground);
@@ -64,6 +65,8 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         String normalizedMode = normalizeProcessingMode(processingMode);
         String skillStyle = mapProcessingModeToStyle(normalizedMode);
         String skillBackground = removeBg ? "remove" : "keep";
+        boolean useAiStyle = properties.getAi().isEnabled() && UEmpty.isNotEmpty(aiStylePrompt);
+        String aiPrompt = useAiStyle ? aiStylePrompt.trim() : null;
 
         BufferedImage source = null;
         byte[] imageBytes = null;
@@ -78,10 +81,16 @@ public class FuseBeanServiceImpl implements FuseBeanService {
                 throw new IllegalArgumentException("无法识别的图片格式，请上传 JPG/PNG 等常见图片");
             }
         }
+        if (useAiStyle && source == null) {
+            throw new IllegalArgumentException("AI 风格重绘需要先上传图片");
+        }
 
         BufferedImage pixelSource = source;
         String message = null;
-        if (source != null || UEmpty.isNotEmpty(prompt)) {
+        if (useAiStyle) {
+            pixelSource = preprocessSource(source, removeBg, flip);
+            message = "由 " + properties.getAi().getModel() + " 按提示词重绘后生成";
+        } else if (source != null || UEmpty.isNotEmpty(prompt)) {
             byte[] externalInput = imageBytes == null ? new byte[0] : imageBytes;
             if (source != null && (flip || removeBg)) {
                 BufferedImage transformed = preprocessSource(source, removeBg, flip);
@@ -102,21 +111,29 @@ public class FuseBeanServiceImpl implements FuseBeanService {
             message = "由本地像素化算法生成";
         }
 
-        pixelSource = preprocessSource(pixelSource, removeBg, flip);
+        if (!useAiStyle) {
+            pixelSource = preprocessSource(pixelSource, removeBg, flip);
+        }
 
         if (skillClient.isReady()) {
             try {
-                log.info("FuseBean generate: using local image-to-pindou skill, gridSize={}, maxColors={}, mode={}, background={}, sourceType={}",
-                        targetGrid, targetColors, normalizedMode, skillBackground, describeSourceType(source, prompt));
-                SkillResult skillResult = skillClient.generate(pixelSource, targetGrid, targetColors, skillStyle, skillBackground);
+                log.info("FuseBean generate: using local image-to-pindou skill, gridSize={}, maxColors={}, mode={}, background={}, aiStyle={}, sourceType={}",
+                        targetGrid, targetColors, normalizedMode, skillBackground, useAiStyle, describeSourceType(source, prompt));
+                SkillResult skillResult = skillClient.generate(pixelSource, targetGrid, targetColors, skillStyle, skillBackground, aiPrompt);
                 log.info("FuseBean generate: local skill completed, grid={}x{}, colors={}",
                         skillResult.gridWidth(), skillResult.gridHeight(), skillResult.palette().size());
                 return buildSkillGenerateResp(skillResult, message);
             } catch (Exception e) {
+                if (useAiStyle) {
+                    throw new IllegalStateException("AI 风格重绘失败：" + e.getMessage(), e);
+                }
                 log.warn("FuseBean generate: local skill failed, fallback to Java pixelization", e);
             }
         } else {
             log.debug("FuseBean generate: local skill not ready, fallback to Java pixelization");
+            if (useAiStyle) {
+                throw new IllegalStateException("本地 image-to-pindou skill 不可用，无法执行 AI 风格重绘");
+            }
         }
 
         GridResult result = FuseBeanPixelArtUtil.toGrid(pixelSource, targetGrid, targetColors);

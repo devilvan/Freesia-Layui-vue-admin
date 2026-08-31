@@ -36,7 +36,7 @@ public class FuseBeanSkillClient {
     private final ObjectMapper objectMapper;
     private final FuseBeanProperties properties;
 
-    public SkillResult generate(BufferedImage source, int gridSize, int maxColors, String style, String background) {
+    public SkillResult generate(BufferedImage source, int gridSize, int maxColors, String style, String background, String aiStylePrompt) {
         if (!properties.getSkill().isEnabled()) {
             throw new IllegalStateException("本地 image-to-pindou skill 未启用");
         }
@@ -46,14 +46,17 @@ public class FuseBeanSkillClient {
         try {
             String targetStyle = normalizeStyle(style);
             String targetBackground = normalizeBackground(background);
-            log.info("image-to-pindou skill start: root={}, gridSize={}, maxColors={}, style={}, background={}, autoInstall={}",
-                    root, gridSize, maxColors, targetStyle, targetBackground, properties.getSkill().isAutoInstall());
+            log.info("image-to-pindou skill start: root={}, gridSize={}, maxColors={}, style={}, background={}, aiEnabled={}, aiStylePrompt={}, autoInstall={}",
+                    root, gridSize, maxColors, targetStyle, targetBackground,
+                    properties.getAi().isEnabled() && isNotBlank(aiStylePrompt),
+                    properties.getAi().isEnabled() ? aiStylePrompt : null,
+                    properties.getSkill().isAutoInstall());
             ensureDependencies(root);
             workDir = Files.createTempDirectory("fusebean-skill-");
             Path input = workDir.resolve("source.png");
             Path outputBase = workDir.resolve("result");
             writePng(source, input);
-            runSkill(root, input, outputBase, gridSize, maxColors, targetStyle, targetBackground);
+            runSkill(root, input, outputBase, gridSize, maxColors, targetStyle, targetBackground, aiStylePrompt);
             SkillResult result = parseResult(outputBase);
             long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000L;
             log.info("image-to-pindou skill success: grid={}x{}, colors={}, elapsedMs={}, outputBase={}",
@@ -145,28 +148,14 @@ public class FuseBeanSkillClient {
                           int gridSize,
                           int maxColors,
                           String style,
-                          String background) throws IOException, InterruptedException {
-        List<String> command = new ArrayList<>();
-        command.add(properties.getSkill().getNodeCommand());
-        command.add(root.resolve("scripts/generate.mjs").toString());
-        command.add(inputFile.toString());
-        command.add("--style");
-        command.add(style);
-        command.add("--size");
-        command.add(String.valueOf(gridSize));
-        command.add("--max-colors");
-        command.add(String.valueOf(maxColors));
-        command.add("--background");
-        command.add(background);
-        command.add("--cell-px");
-        command.add(String.valueOf(properties.getSkill().getCellPx()));
-        command.add("--out");
-        command.add(outputBase.toString());
-
+                          String background,
+                          String aiStylePrompt) throws IOException, InterruptedException {
+        List<String> command = buildCommand(root, inputFile, outputBase, gridSize, maxColors, style, background, aiStylePrompt);
         log.info("image-to-pindou skill command: {}", String.join(" ", command));
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.directory(root.toFile());
         pb.redirectErrorStream(true);
+        applySkillEnv(pb);
         Process process = pb.start();
 
         String output;
@@ -175,7 +164,7 @@ public class FuseBeanSkillClient {
         }
         int exitCode = process.waitFor();
         if (exitCode != 0) {
-            if (shouldAutoInstallAndRetry(output) && ensureDependenciesAndRetry(root, inputFile, outputBase, gridSize, maxColors, style, background)) {
+            if (shouldAutoInstallAndRetry(output) && ensureDependenciesAndRetry(root, inputFile, outputBase, gridSize, maxColors, style, background, aiStylePrompt)) {
                 return;
             }
             throw new IllegalStateException("image-to-pindou skill 执行失败，exitCode=" + exitCode + ", output=" + output);
@@ -195,10 +184,11 @@ public class FuseBeanSkillClient {
                                                int gridSize,
                                                int maxColors,
                                                String style,
-                                               String background) throws IOException, InterruptedException {
+                                               String background,
+                                               String aiStylePrompt) throws IOException, InterruptedException {
         ensureDependencies(root);
         log.info("image-to-pindou skill retry after dependency installation");
-        runSkillOnce(root, inputFile, outputBase, gridSize, maxColors, style, background);
+        runSkillOnce(root, inputFile, outputBase, gridSize, maxColors, style, background, aiStylePrompt);
         return true;
     }
 
@@ -208,7 +198,37 @@ public class FuseBeanSkillClient {
                               int gridSize,
                               int maxColors,
                               String style,
-                              String background) throws IOException, InterruptedException {
+                              String background,
+                              String aiStylePrompt) throws IOException, InterruptedException {
+        List<String> command = buildCommand(root, inputFile, outputBase, gridSize, maxColors, style, background, aiStylePrompt);
+        log.info("image-to-pindou skill retry command: {}", String.join(" ", command));
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.directory(root.toFile());
+        pb.redirectErrorStream(true);
+        applySkillEnv(pb);
+        Process process = pb.start();
+
+        String output;
+        try (InputStream in = process.getInputStream()) {
+            output = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            throw new IllegalStateException("image-to-pindou skill 执行失败，exitCode=" + exitCode + ", output=" + output);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("image-to-pindou skill output: {}", output.trim());
+        }
+    }
+
+    private List<String> buildCommand(Path root,
+                                      Path inputFile,
+                                      Path outputBase,
+                                      int gridSize,
+                                      int maxColors,
+                                      String style,
+                                      String background,
+                                      String aiStylePrompt) {
         List<String> command = new ArrayList<>();
         command.add(properties.getSkill().getNodeCommand());
         command.add(root.resolve("scripts/generate.mjs").toString());
@@ -223,26 +243,29 @@ public class FuseBeanSkillClient {
         command.add(background);
         command.add("--cell-px");
         command.add(String.valueOf(properties.getSkill().getCellPx()));
+        if (properties.getAi().isEnabled() && isNotBlank(aiStylePrompt)) {
+            command.add("--ai");
+            command.add(properties.getAi().getProvider());
+            command.add("--model");
+            command.add(properties.getAi().getModel());
+            command.add("--ai-base-url");
+            command.add(properties.getAi().getBaseUrl());
+            command.add("--ai-style-prompt");
+            command.add(aiStylePrompt.trim());
+        }
         command.add("--out");
         command.add(outputBase.toString());
+        return command;
+    }
 
-        log.info("image-to-pindou skill retry command: {}", String.join(" ", command));
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.directory(root.toFile());
-        pb.redirectErrorStream(true);
-        Process process = pb.start();
+    private void applySkillEnv(ProcessBuilder pb) {
+        if (isNotBlank(properties.getAi().getApiKey())) {
+            pb.environment().put("OPENAI_API_KEY", properties.getAi().getApiKey());
+        }
+    }
 
-        String output;
-        try (InputStream in = process.getInputStream()) {
-            output = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
-        int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            throw new IllegalStateException("image-to-pindou skill 执行失败，exitCode=" + exitCode + ", output=" + output);
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("image-to-pindou skill output: {}", output.trim());
-        }
+    private boolean isNotBlank(String value) {
+        return value != null && !value.isBlank();
     }
 
     private SkillResult parseResult(Path outputBase) throws IOException {

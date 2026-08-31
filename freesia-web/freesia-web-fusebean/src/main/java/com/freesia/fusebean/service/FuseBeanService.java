@@ -20,6 +20,7 @@ public interface FuseBeanService {
      * @param processingMode   处理模式：edge / average / dominant
      * @param removeBackground 是否去除背景
      * @param flipHorizontal   是否水平翻转
+     * @param aiStylePrompt    AI 风格重绘提示词（可空，需要已上传图片）
      * @return 像素预览图 + 网格数据
      */
     FuseBeanGenerateRespVo generateImage(MultipartFile file,
@@ -28,7 +29,8 @@ public interface FuseBeanService {
                                          Integer maxColors,
                                          String processingMode,
                                          Boolean removeBackground,
-                                         Boolean flipHorizontal);
+                                         Boolean flipHorizontal,
+                                         String aiStylePrompt);
 
     /**
      * 确认生成拼豆图纸
