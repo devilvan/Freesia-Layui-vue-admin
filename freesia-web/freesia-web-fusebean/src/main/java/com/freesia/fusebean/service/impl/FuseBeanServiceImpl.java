@@ -55,11 +55,13 @@ public class FuseBeanServiceImpl implements FuseBeanService {
                                                 Integer gridSize,
                                                 Integer maxColors,
                                                 String processingMode,
+                                                Boolean mergeSimilarColors,
                                                 Boolean removeBackground,
                                                 Boolean flipHorizontal,
                                                 String aiStylePrompt) {
         int targetGrid = clamp(gridSize, 16, 192, properties.getGridSize());
         int targetColors = clamp(maxColors, 1, 291, properties.getMaxColors());
+        boolean mergeColors = Boolean.TRUE.equals(mergeSimilarColors);
         boolean removeBg = Boolean.TRUE.equals(removeBackground);
         boolean flip = Boolean.TRUE.equals(flipHorizontal);
         String normalizedMode = normalizeProcessingMode(processingMode);
@@ -117,12 +119,12 @@ public class FuseBeanServiceImpl implements FuseBeanService {
 
         if (skillClient.isReady()) {
             try {
-                log.info("FuseBean generate: using local image-to-pindou skill, gridSize={}, maxColors={}, mode={}, background={}, aiStyle={}, sourceType={}",
-                        targetGrid, targetColors, normalizedMode, skillBackground, useAiStyle, describeSourceType(source, prompt));
-                SkillResult skillResult = skillClient.generate(pixelSource, targetGrid, targetColors, skillStyle, skillBackground, aiPrompt);
+                log.info("FuseBean generate: using local image-to-pindou skill, gridSize={}, maxColors={}, mode={}, mergeSimilarColors={}, background={}, aiStyle={}, sourceType={}",
+                        targetGrid, targetColors, normalizedMode, mergeColors, skillBackground, useAiStyle, describeSourceType(source, prompt));
+                SkillResult skillResult = skillClient.generate(pixelSource, targetGrid, targetColors, skillStyle, skillBackground, prompt, aiPrompt);
                 log.info("FuseBean generate: local skill completed, grid={}x{}, colors={}",
                         skillResult.gridWidth(), skillResult.gridHeight(), skillResult.palette().size());
-                return buildSkillGenerateResp(skillResult, message);
+                return buildGenerateResp(skillResult.grid(), skillResult.palette(), message, skillResult.gridWidth(), skillResult.gridHeight(), mergeColors);
             } catch (Exception e) {
                 if (useAiStyle) {
                     throw new IllegalStateException("AI 风格重绘失败：" + e.getMessage(), e);
@@ -211,6 +213,123 @@ public class FuseBeanServiceImpl implements FuseBeanService {
             vo.setMessage(skillResult.message());
         }
         return vo;
+    }
+
+    private FuseBeanGenerateRespVo buildGenerateResp(List<List<Integer>> sourceGrid,
+                                                     List<FuseBeanColorVo> sourcePalette,
+                                                     String message,
+                                                     int gridWidth,
+                                                     int gridHeight,
+                                                     boolean mergeSimilarColors) {
+        List<List<Integer>> grid = copyGrid(sourceGrid);
+        List<FuseBeanColorVo> palette = copyPalette(sourcePalette);
+        if (mergeSimilarColors) {
+            mergeSimilarPalette(grid, palette);
+        }
+        BufferedImage preview = FuseBeanPixelArtUtil.renderPreview(grid, palette, properties.getPreviewCellSize());
+
+        FuseBeanGenerateRespVo vo = new FuseBeanGenerateRespVo();
+        vo.setPreviewBase64(FuseBeanPixelArtUtil.toBase64Png(preview));
+        vo.setGridWidth(gridWidth);
+        vo.setGridHeight(gridHeight);
+        vo.setPalette(palette);
+        vo.setGrid(grid);
+        vo.setMessage(message);
+        return vo;
+    }
+
+    private List<List<Integer>> copyGrid(List<List<Integer>> grid) {
+        List<List<Integer>> copy = new ArrayList<>(grid.size());
+        for (List<Integer> row : grid) {
+            copy.add(row == null ? new ArrayList<>() : new ArrayList<>(row));
+        }
+        return copy;
+    }
+
+    private List<FuseBeanColorVo> copyPalette(List<FuseBeanColorVo> palette) {
+        List<FuseBeanColorVo> copy = new ArrayList<>(palette.size());
+        for (int i = 0; i < palette.size(); i++) {
+            FuseBeanColorVo input = palette.get(i);
+            if (input == null) {
+                continue;
+            }
+            FuseBeanColorVo color = new FuseBeanColorVo();
+            color.setIndex(input.getIndex() != null ? input.getIndex() : i + 1);
+            color.setCode(input.getCode());
+            color.setHex(input.getHex());
+            copy.add(color);
+        }
+        return copy;
+    }
+
+    private void mergeSimilarPalette(List<List<Integer>> grid, List<FuseBeanColorVo> palette) {
+        if (palette.size() < 2) {
+            return;
+        }
+        List<FuseBeanColorVo> merged = new ArrayList<>(palette.size());
+        int[] remap = new int[palette.size()];
+        boolean changed = false;
+        for (int i = 0; i < palette.size(); i++) {
+            FuseBeanColorVo current = palette.get(i);
+            if (current == null) {
+                remap[i] = i;
+                continue;
+            }
+            int mergedIndex = findSimilarPaletteIndex(merged, current);
+            if (mergedIndex >= 0) {
+                remap[i] = mergedIndex;
+                changed = true;
+                continue;
+            }
+            remap[i] = merged.size();
+            merged.add(current);
+        }
+        if (!changed) {
+            return;
+        }
+        for (List<Integer> row : grid) {
+            for (int x = 0; x < row.size(); x++) {
+                Integer value = row.get(x);
+                if (value == null || value < 0 || value >= remap.length) {
+                    continue;
+                }
+                row.set(x, remap[value]);
+            }
+        }
+        palette.clear();
+        for (int i = 0; i < merged.size(); i++) {
+            FuseBeanColorVo color = merged.get(i);
+            color.setIndex(i + 1);
+            palette.add(color);
+        }
+    }
+
+    private int findSimilarPaletteIndex(List<FuseBeanColorVo> palette, FuseBeanColorVo candidate) {
+        if (UEmpty.isEmpty(candidate.getHex())) {
+            return -1;
+        }
+        int candidateRgb = parseHex(candidate.getHex());
+        for (int i = 0; i < palette.size(); i++) {
+            FuseBeanColorVo current = palette.get(i);
+            if (current == null || UEmpty.isEmpty(current.getHex())) {
+                continue;
+            }
+            if (UEmpty.isNotEmpty(candidate.getCode()) && candidate.getCode().equalsIgnoreCase(current.getCode())) {
+                return i;
+            }
+            int currentRgb = parseHex(current.getHex());
+            if (rgbDistance(candidateRgb, currentRgb) <= 28) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int rgbDistance(int rgb1, int rgb2) {
+        int dr = ((rgb1 >> 16) & 0xFF) - ((rgb2 >> 16) & 0xFF);
+        int dg = ((rgb1 >> 8) & 0xFF) - ((rgb2 >> 8) & 0xFF);
+        int db = (rgb1 & 0xFF) - (rgb2 & 0xFF);
+        return (int) Math.round(Math.sqrt(dr * dr + dg * dg + db * db));
     }
 
     private String describeSourceType(BufferedImage source, String prompt) {

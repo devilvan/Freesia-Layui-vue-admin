@@ -19,6 +19,7 @@ Options:
   --palette <csv>                     Custom code,r,g,b or code,hex palette
   --ai off|openai|gemini              Optional visual cleanup (default: off)
   --model <name>                      Provider image model
+  --user-prompt <text>                User prompt passed from the app
   --ai-style-prompt <text>            Redraw the image in the requested style (overrides built-in cleanup prompt)
   --ai-base-url <url>                 OpenAI-compatible base URL for --ai openai (default: https://api.openai.com)
   --preserve <detail>                 Feature to preserve; may be repeated
@@ -29,12 +30,12 @@ function parseArgs(argv) {
   if (argv.includes("--help") || argv.includes("-h")) return { help: true };
   const options = {
     style: "bead", size: 50, maxColors: 18, background: "keep", cellPx: 24,
-    ai: "off", preserve: [], aiStylePrompt: "", baseUrl: "",
+    ai: "off", preserve: [], userPrompt: "", aiStylePrompt: "", baseUrl: "",
   };
   const values = new Map([
     ["--style", "style"], ["--size", "size"], ["--max-colors", "maxColors"],
     ["--background", "background"], ["--cell-px", "cellPx"], ["--palette", "palette"],
-    ["--ai", "ai"], ["--model", "model"], ["--ai-style-prompt", "aiStylePrompt"],
+    ["--ai", "ai"], ["--model", "model"], ["--user-prompt", "userPrompt"], ["--ai-style-prompt", "aiStylePrompt"],
     ["--ai-base-url", "baseUrl"], ["--preserve", "preserve"], ["--out", "out"],
   ]);
   let input;
@@ -390,6 +391,22 @@ function prompt(style, options) {
   return `Redraw the supplied image as deliberate square-pixel art for a fuse-bead pattern, targeting about ${options.size} logical color blocks on the longest edge. Preserve the exact composition, subject count, pose, silhouette, proportions, facial features, expression, markings, accessories, and crop.${features} ${intent} ${background} Use no more than about ${options.maxColors} visually distinct colors and merge near-duplicates. Every logical pixel must be one solid color with hard stair-stepped edges. Add or remove nothing. Return only the pixel art: no gradients, antialiasing, blur, texture, visible grid lines, bead circles, pegboard, labels, text, color codes, margins, or watermark.`;
 }
 
+function buildInstruction(style, options) {
+  const intent = {
+    faithful: "Keep the subject recognizable and preserve its essential lighting, materials, and facial details while simplifying them into deliberate pixel clusters.",
+    bead: "Use strong one-cell outlines, coherent shapes, simplified shadows, and clearly separated color regions.",
+    cartoon: "Use crisp classic pixel-art contours, flat color regions, high edge contrast, and minimal controlled shading.",
+  }[style];
+  const background = options.background === "remove" ? "Replace only the outer background with one perfectly flat pure white field." : "Preserve the background layout.";
+  const features = options.preserve.length ? ` Keep these details clearly recognizable: ${options.preserve.join("; ")}.` : "";
+  const userPrompt = options.userPrompt ? `User prompt: ${options.userPrompt}. ` : "";
+  const stylePrompt = options.aiStylePrompt ? `Style prompt: ${options.aiStylePrompt}. ` : "";
+  if (userPrompt || stylePrompt) {
+    return `Redraw the supplied image according to the following instructions: ${userPrompt}${stylePrompt}Target about ${options.size} logical color blocks on the longest edge. Preserve the exact composition, subject count, pose, silhouette, proportions, facial features, expression, markings, accessories, and crop. ${intent} ${background}${features} Use no more than about ${options.maxColors} visually distinct colors and merge near-duplicates. Every logical pixel must be one solid color with hard stair-stepped edges. Add or remove nothing. Return only the pixel art: no gradients, antialiasing, blur, texture, visible grid lines, bead circles, pegboard, labels, text, color codes, margins, or watermark.`;
+  }
+  return `Redraw the supplied image as deliberate square-pixel art for a fuse-bead pattern, targeting about ${options.size} logical color blocks on the longest edge. Preserve the exact composition, subject count, pose, silhouette, proportions, facial features, expression, markings, accessories, and crop.${features} ${intent} ${background} Use no more than about ${options.maxColors} visually distinct colors and merge near-duplicates. Every logical pixel must be one solid color with hard stair-stepped edges. Add or remove nothing. Return only the pixel art: no gradients, antialiasing, blur, texture, visible grid lines, bead circles, pegboard, labels, text, color codes, margins, or watermark.`;
+}
+
 async function geminiDraft(input, output, instruction, options) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("GEMINI_API_KEY is required for --ai gemini.");
@@ -549,7 +566,7 @@ async function generateOne(input, directory, style, options, palette) {
   await mkdir(directory, { recursive: true });
   let source = input;
   if (options.ai !== "off") {
-    const instruction = prompt(style, options);
+    const instruction = buildInstruction(style, options);
     await writeFile(path.join(directory, "ai-prompt.txt"), `${instruction}\n`);
     if (options.ai === "gemini") source = await geminiDraft(input, path.join(directory, "ai-draft.png"), instruction, options);
     if (options.ai === "openai") source = await openaiDraft(input, path.join(directory, "ai-draft.png"), instruction, options);

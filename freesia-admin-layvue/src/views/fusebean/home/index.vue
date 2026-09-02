@@ -5,7 +5,7 @@
         <div>
           <div class="hero-title">拼豆图纸生成</div>
           <div class="hero-desc">
-            按照「上传图片与提示词 - 生成拼豆像素风预览 - 确认输出图纸」的流程完成生成，并支持坐标标注、MARD 291 色码和原图对比。
+            按照「上传图片 - 生成拼豆像素风预览 - 确认输出图纸」的流程完成生成，并支持坐标标注、MARD 291 色码和原图对比。
           </div>
         </div>
         <div class="hero-note">
@@ -16,7 +16,7 @@
 
     <lay-card class="workflow-card">
       <lay-step :active="activeStep" current-status="primary" center>
-        <lay-step-item title="第一步" content="上传图片与提示词"></lay-step-item>
+        <lay-step-item title="第一步" content="上传图片"></lay-step-item>
         <lay-step-item title="第二步" content="生成拼豆像素风预览"></lay-step-item>
         <lay-step-item title="第三步" content="确认生成拼豆图纸"></lay-step-item>
       </lay-step>
@@ -26,25 +26,17 @@
       <div class="step-panel">
         <div class="panel-header">
           <div>
-            <div class="panel-title">上传图片与提示词</div>
+            <div class="panel-title">上传图片</div>
             <div class="panel-desc">
-              上传原图，或直接输入更详细的提示词。进入下一步后，可在右侧继续调整处理模式、背景和翻转参数。
+              上传原图后，进入下一步再调整处理模式、背景和翻转参数。
             </div>
           </div>
         </div>
 
         <lay-form class="fusebean-form" label-position="top" label-width="auto">
           <lay-row :space="20">
-            <lay-col :md="12">
-              <lay-form-item label="输入提示词">
-                <lay-textarea
-                    v-model="prompt"
-                    placeholder="例如：生成一个拼豆像素风头像，保留蓝色主色调，背景简洁，五官清晰"
-                    :rows="7"
-                ></lay-textarea>
-              </lay-form-item>
-            </lay-col>
-            <lay-col :md="12">
+
+            <lay-col :md="24">
               <lay-form-item label="上传图片">
                 <div class="upload-row">
                   <lay-button size="sm" type="primary" @click="chooseImage">
@@ -71,30 +63,20 @@
             </lay-col>
           </lay-row>
 
-<!--          <lay-row :space="20">-->
-<!--            <lay-col :md="24">-->
-<!--              <lay-form-item label="AI 风格提示词（可选）">-->
-<!--                <lay-textarea-->
-<!--                    v-model="aiStylePrompt"-->
-<!--                    placeholder="例如：重绘成卡图风格 / 水彩插画风 / 复古像素海报，保留主体轮廓与构图"-->
-<!--                    :rows="3"-->
-<!--                ></lay-textarea>-->
-<!--                <div class="ai-hint">-->
-<!--                  填写后，将先用 gpt-image-2 按提示词重绘已上传的原图，再生成拼豆像素风预览；留空则直接处理原图。-->
-<!--                </div>-->
-<!--              </lay-form-item>-->
-<!--            </lay-col>-->
-<!--          </lay-row>-->
-
           <lay-row :space="20">
-            <lay-col :md="12">
+            <lay-col :md="8">
               <lay-form-item label="豆板格数（最长边）">
                 <lay-input v-model="gridSize" type="number" :min="16" :max="192"></lay-input>
               </lay-form-item>
             </lay-col>
-            <lay-col :md="12">
+            <lay-col :md="8">
               <lay-form-item label="颜色上限">
                 <lay-input v-model="maxColors" type="number" :min="1" :max="291"></lay-input>
+              </lay-form-item>
+            </lay-col>
+            <lay-col :md="8">
+              <lay-form-item label="合并相似颜色">
+                <lay-switch v-model="mergeSimilarColors"></lay-switch>
               </lay-form-item>
             </lay-col>
           </lay-row>
@@ -104,7 +86,7 @@
               <lay-icon class="layui-icon-createtemplate"></lay-icon>
               {{ generating ? '正在生成...' : '下一步生成预览' }}
             </lay-button>
-            <span class="step-actions-tip">如果只输入提示词，也可以直接生成预览。</span>
+            <span class="step-actions-tip">上传图片后可以直接生成预览。</span>
           </div>
         </lay-form>
       </div>
@@ -137,6 +119,7 @@
               <lay-tag>{{ generateResp.gridWidth }} × {{ generateResp.gridHeight }}</lay-tag>
               <lay-tag>共 {{ generateResp.palette?.length || 0 }} 色</lay-tag>
               <lay-tag>{{ processingModeLabel }}</lay-tag>
+              <lay-tag v-if="mergeSimilarColors">合并相似颜色</lay-tag>
               <lay-tag v-if="removeBackground">去背景</lay-tag>
               <lay-tag v-if="flipHorizontal">水平翻转</lay-tag>
             </div>
@@ -162,6 +145,9 @@
                     画笔
                   </lay-button>
                   <lay-button size="xs" :type="paintTool === 'bucket' ? 'primary' : 'default'" @click="setPaintTool('bucket')">
+                  <lay-button size="xs" :type="paintTool === 'eraser' ? 'primary' : 'default'" @click="setPaintTool('eraser')">
+                    ???
+                  </lay-button>
                     油漆桶
                   </lay-button>
                 </div>
@@ -169,6 +155,7 @@
                   {{ selectedCells.length ? `已选 ${selectedCells.length} 个豆格` : '尚未选择豆格' }}
                 </span>
                 <lay-button v-if="selectedCells.length && !paintMode" size="xs" border="red" @click="clearSelection">清除选择</lay-button>
+                <lay-button v-if="!paintMode" size="xs" border="red" :disabled="!selectedCells.length" @click="eraseSelectedCells">?????</lay-button>
               </div>
               <div v-if="generateResp.palette?.length" class="cell-color-picker">
                 <div class="picker-swatches">
@@ -244,14 +231,6 @@
                   <span class="summary-value">{{ sourceFile?.name || '未上传文件' }}</span>
                 </div>
                 <div class="summary-item">
-                  <span class="summary-label">提示词</span>
-                  <span class="summary-value">{{ prompt.trim() || '未填写' }}</span>
-                </div>
-                <div class="summary-item">
-                  <span class="summary-label">AI 风格</span>
-                  <span class="summary-value">{{ aiStylePrompt.trim() || '未使用' }}</span>
-                </div>
-                <div class="summary-item">
                   <span class="summary-label">生成说明</span>
                   <span class="summary-value">{{ generateResp.message || '本地生成完成' }}</span>
                 </div>
@@ -292,16 +271,7 @@
                 </lay-col>
               </lay-row>
 
-<!--              <lay-form-item label="AI 风格提示词（可选）">-->
-<!--                <lay-textarea-->
-<!--                    v-model="aiStylePrompt"-->
-<!--                    placeholder="例如：重绘成卡图风格 / 水彩插画风，保留主体轮廓与构图"-->
-<!--                    :rows="2"-->
-<!--                ></lay-textarea>-->
-<!--                <div class="ai-hint">填写后重新生成，将先用 gpt-image-2 重绘原图再像素化；留空则直接处理原图。</div>-->
-<!--              </lay-form-item>-->
-
-              <lay-row :space="16">
+<lay-row :space="16">
                 <lay-col :md="12">
                   <lay-form-item label="颜色上限">
                     <lay-input v-model="maxColors" type="number" :min="1" :max="291"></lay-input>
@@ -320,6 +290,14 @@
                       {{ generating ? '正在重新生成...' : '重新生成预览' }}
                     </lay-button>
                   </div>
+                </lay-col>
+              </lay-row>
+
+              <lay-row :space="16">
+                <lay-col :md="12">
+                  <lay-form-item label="合并相似颜色">
+                    <lay-switch v-model="mergeSimilarColors"></lay-switch>
+                  </lay-form-item>
                 </lay-col>
               </lay-row>
 
@@ -424,18 +402,19 @@ import { layer } from '@layui/layui-vue';
 import { confirmGenerate, generateImage, FuseBeanGenerateOptions } from '@/api/fusebean/FuseBean';
 import { FuseBeanColor, FuseBeanConfirmResp, FuseBeanGenerateResp } from '@/types/fusebean/FuseBean';
 
-const prompt = ref('');
-const aiStylePrompt = ref('');
 const patternName = ref('');
 const gridSize = ref<number>(50);
 const maxColors = ref<number>(18);
 const processingMode = ref<'edge' | 'average' | 'dominant'>('edge');
+const mergeSimilarColors = ref(false);
 const removeBackground = ref(false);
 const flipHorizontal = ref(false);
 
 const fileInputRef = ref<HTMLInputElement>();
 const sourceFile = ref<File | null>(null);
 const sourceImageUrl = ref('');
+const sourceImageWidth = ref(0);
+const sourceImageHeight = ref(0);
 
 const activeStep = ref(0);
 const generating = ref(false);
@@ -456,7 +435,7 @@ function chooseImage() {
   fileInputRef.value?.click();
 }
 
-function onFileChange(e: Event) {
+async function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement;
   const file = input.files?.[0];
   if (!file) {
@@ -469,7 +448,19 @@ function onFileChange(e: Event) {
   }
   clearSourceUrl();
   sourceFile.value = file;
-  sourceImageUrl.value = URL.createObjectURL(file);
+  const objectUrl = URL.createObjectURL(file);
+  sourceImageUrl.value = objectUrl;
+  sourceImageWidth.value = 0;
+  sourceImageHeight.value = 0;
+  try {
+    const dimensions = await loadImageDimensions(objectUrl);
+    if (sourceImageUrl.value === objectUrl) {
+      sourceImageWidth.value = dimensions.width;
+      sourceImageHeight.value = dimensions.height;
+    }
+  } catch {
+    // 尺寸读取失败时仅回退到自适应显示，不影响生成流程
+  }
   input.value = '';
 }
 
@@ -479,6 +470,22 @@ function clearSourceUrl() {
   }
   sourceFile.value = null;
   sourceImageUrl.value = '';
+  sourceImageWidth.value = 0;
+  sourceImageHeight.value = 0;
+}
+
+function loadImageDimensions(url: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => {
+      resolve({
+        width: image.naturalWidth || image.width,
+        height: image.naturalHeight || image.height,
+      });
+    };
+    image.onerror = () => reject(new Error('Failed to load image dimensions'));
+    image.src = url;
+  });
 }
 
 function backToUpload() {
@@ -521,9 +528,9 @@ function sanitizeDownloadName(value: string) {
 function buildGenerateOptions(): FuseBeanGenerateOptions {
   return {
     processingMode: processingMode.value,
+    mergeSimilarColors: mergeSimilarColors.value,
     removeBackground: removeBackground.value,
     flipHorizontal: flipHorizontal.value,
-    aiStylePrompt: aiStylePrompt.value.trim() || undefined,
   };
 }
 
@@ -532,37 +539,60 @@ function buildGenerateOptions(): FuseBeanGenerateOptions {
  * 网格中每格存储的是色板下标（0 基），与后端 renderPreview 约定一致。
  */
 function renderPreviewFromGrid(grid: Array<Array<number | null>>, palette: FuseBeanColor[]): string {
+  return renderPreviewFromGridWithSize(grid, palette);
+}
+
+function renderPreviewFromGridWithSize(
+  grid: Array<Array<number | null>>,
+  palette: FuseBeanColor[],
+  targetWidth?: number,
+  targetHeight?: number
+): string {
   const height = grid.length;
   const width = grid[0]?.length || 0;
   if (!width || !height) {
     return '';
   }
-  const maxSide = Math.max(width, height);
-  const cellSize = Math.max(3, Math.min(10, Math.floor(600 / maxSide)));
   const canvas = document.createElement('canvas');
-  canvas.width = width * cellSize;
-  canvas.height = height * cellSize;
+  const canvasWidth = targetWidth && targetWidth > 0 ? targetWidth : width * Math.max(3, Math.min(10, Math.floor(600 / Math.max(width, height))));
+  const canvasHeight = targetHeight && targetHeight > 0 ? targetHeight : height * Math.max(3, Math.min(10, Math.floor(600 / Math.max(width, height))));
+  canvas.width = canvasWidth;
+  canvas.height = canvasHeight;
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     return '';
   }
-  ctx.fillStyle = '#f2f4f7';
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   for (let y = 0; y < height; y++) {
     const row = grid[y];
     if (!row) {
       continue;
     }
+    const top = Math.floor((y * canvasHeight) / height);
+    const bottom = y === height - 1 ? canvasHeight : Math.floor(((y + 1) * canvasHeight) / height);
     for (let x = 0; x < width; x++) {
       const paletteIndex = row[x];
       if (paletteIndex == null || paletteIndex < 0 || paletteIndex >= palette.length) {
         continue;
       }
       ctx.fillStyle = palette[paletteIndex].hex || '#ffffff';
-      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+      const left = Math.floor((x * canvasWidth) / width);
+      const right = x === width - 1 ? canvasWidth : Math.floor(((x + 1) * canvasWidth) / width);
+      ctx.fillRect(left, top, Math.max(1, right - left), Math.max(1, bottom - top));
     }
   }
   return canvas.toDataURL('image/png');
+}
+
+function renderComparePreviewFromGrid(grid: Array<Array<number | null>>, palette: FuseBeanColor[]): string {
+  const width = sourceImageWidth.value || 0;
+  const height = sourceImageHeight.value || 0;
+  if (width > 0 && height > 0) {
+    return renderPreviewFromGridWithSize(grid, palette, width, height);
+  }
+  return renderPreviewFromGrid(grid, palette);
 }
 
 const interactiveCanvasRef = ref<HTMLCanvasElement | null>(null);
@@ -570,7 +600,7 @@ const interactiveWrapRef = ref<HTMLElement | null>(null);
 const containerWidth = ref(0);
 const selectedCells = ref<Array<{ x: number; y: number }>>([]);
 const paintMode = ref(true);
-const paintTool = ref<'brush' | 'bucket'>('brush');
+const paintTool = ref<'brush' | 'bucket' | 'eraser'>('brush');
 const canvasUndoStack = ref<Array<{
   grid: Array<Array<number | null>>;
   palette: FuseBeanColor[];
@@ -889,8 +919,31 @@ function setGridCellColor(cell: { x: number; y: number }, paletteIndex: number) 
   return true;
 }
 
+function setGridCellEmpty(cell: { x: number; y: number }) {
+  const resp = generateResp.value;
+  if (!resp?.grid) {
+    return false;
+  }
+  const row = resp.grid[cell.y];
+  if (!row || cell.x < 0 || cell.x >= row.length || row[cell.x] == null) {
+    return false;
+  }
+  row[cell.x] = null;
+  syncPreviewBase64(resp);
+  return true;
+}
+
 function paintCell(cell: { x: number; y: number }, paletteIndex: number) {
   if (!setGridCellColor(cell, paletteIndex)) {
+    return;
+  }
+  selectedCells.value = [];
+  hoverInfo.value = null;
+  renderInteractiveGrid();
+}
+
+function eraseCell(cell: { x: number; y: number }) {
+  if (!setGridCellEmpty(cell)) {
     return;
   }
   selectedCells.value = [];
@@ -1073,6 +1126,14 @@ function onCanvasPointerDown(e: PointerEvent) {
       layer.msg('请先选择颜色', { icon: 2 });
       return;
     }
+    if (paintTool.value === 'eraser') {
+      beginPaintStrokeUndo();
+      isPainting.value = true;
+      paintLastCell.value = cell;
+      eraseCell(cell);
+      (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
+      return;
+    }
     if (paintTool.value === 'bucket') {
       captureCanvasUndoState();
       isPainting.value = false;
@@ -1109,6 +1170,11 @@ function onCanvasPointerMove(e: PointerEvent) {
   if (isPainting.value) {
     hoverInfo.value = null;
     if (!cell || !paintLastCell.value || (cell.x === paintLastCell.value.x && cell.y === paintLastCell.value.y)) {
+      return;
+    }
+    if (paintTool.value === 'eraser') {
+      paintLastCell.value = cell;
+      eraseCell(cell);
       return;
     }
     const paletteIndex = lastAppliedColor.value;
@@ -1209,6 +1275,40 @@ function applyWhiteToSelected() {
   syncPreviewBase64(resp);
 }
 
+function eraseSelectedCells() {
+  const resp = generateResp.value;
+  if (!resp?.grid) {
+    return;
+  }
+  if (!selectedCells.value.length) {
+    layer.msg('???????????', { icon: 2 });
+    return;
+  }
+  let hasChange = false;
+  for (const c of selectedCells.value) {
+    const row = resp.grid[c.y];
+    if (row && c.x >= 0 && c.x < row.length && row[c.x] != null) {
+      hasChange = true;
+      break;
+    }
+  }
+  if (!hasChange) {
+    layer.msg('?????????', { icon: 2 });
+    return;
+  }
+  captureCanvasUndoState();
+  for (const c of selectedCells.value) {
+    const row = resp.grid[c.y];
+    if (row && c.x >= 0 && c.x < row.length) {
+      row[c.x] = null;
+    }
+  }
+  selectedCells.value = [];
+  hoverInfo.value = null;
+  renderInteractiveGrid();
+  syncPreviewBase64(resp);
+}
+
 function handlePaletteClick(paletteIndex: number) {
   if (paintMode.value) {
     lastAppliedColor.value = paletteIndex;
@@ -1275,12 +1375,8 @@ watch([activeStep, generateResp], () => {
 });
 
 async function handleGenerate() {
-  if (aiStylePrompt.value.trim() && !sourceFile.value) {
-    layer.msg('AI 风格重绘需要先上传图片', { icon: 2 });
-    return;
-  }
-  if (!sourceFile.value && !prompt.value.trim()) {
-    layer.msg('请先上传图片或输入提示词', { icon: 2 });
+  if (!sourceFile.value) {
+    layer.msg('??????', { icon: 2 });
     return;
   }
   generating.value = true;
@@ -1292,7 +1388,6 @@ async function handleGenerate() {
 
     const res = await generateImage(
         sourceFile.value,
-        prompt.value.trim(),
         normalizedGridSize,
         normalizedMaxColors,
         buildGenerateOptions()
@@ -1318,12 +1413,9 @@ function openCompare() {
     layer.msg('暂无原图可对比', { icon: 2 });
     return;
   }
-  const canvas = interactiveCanvasRef.value;
-  let preview = generateResp.value?.previewBase64 || '';
-  // 优先截取当前画布内容，反映用户已做的颜色调整
-  if (canvas && canvas.width > 1) {
-    preview = canvas.toDataURL('image/png');
-  }
+  const preview = generateResp.value?.grid && generateResp.value?.palette?.length
+    ? renderComparePreviewFromGrid(generateResp.value.grid, generateResp.value.palette)
+    : (generateResp.value?.previewBase64 || '');
   layer.open({
     type: 1,
     title: '原图与拼豆预览对比',

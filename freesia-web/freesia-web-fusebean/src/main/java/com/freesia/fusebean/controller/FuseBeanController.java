@@ -38,10 +38,11 @@ public class FuseBeanController extends BaseController {
                                                    @RequestParam(value = "gridSize", required = false) Integer gridSize,
                                                    @RequestParam(value = "maxColors", required = false) Integer maxColors,
                                                    @RequestParam(value = "processingMode", required = false, defaultValue = "edge") String processingMode,
+                                                   @RequestParam(value = "mergeSimilarColors", required = false, defaultValue = "false") Boolean mergeSimilarColors,
                                                    @RequestParam(value = "removeBackground", required = false, defaultValue = "false") Boolean removeBackground,
                                                    @RequestParam(value = "flipHorizontal", required = false, defaultValue = "false") Boolean flipHorizontal,
                                                    @RequestParam(value = "aiStylePrompt", required = false) String aiStylePrompt) {
-        FuseBeanGenerateRespVo vo = fuseBeanService.generateImage(file, prompt, gridSize, maxColors, processingMode, removeBackground, flipHorizontal, aiStylePrompt);
+        FuseBeanGenerateRespVo vo = fuseBeanService.generateImage(file, prompt, gridSize, maxColors, processingMode, mergeSimilarColors, removeBackground, flipHorizontal, aiStylePrompt);
         return R.ok(vo);
     }
 

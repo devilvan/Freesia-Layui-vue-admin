@@ -4,6 +4,7 @@ import {FuseBeanConfirmReq, FuseBeanConfirmResp, FuseBeanGenerateResp} from "@/t
 
 export interface FuseBeanGenerateOptions {
     processingMode?: 'edge' | 'average' | 'dominant';
+    mergeSimilarColors?: boolean;
     removeBackground?: boolean;
     flipHorizontal?: boolean;
     /** AI 风格重绘提示词，填写后先由 gpt-image-2 重绘原图再像素化 */
@@ -35,6 +36,9 @@ export function generateImage(
     }
     if (options?.processingMode) {
         params.append('processingMode', options.processingMode);
+    }
+    if (options?.mergeSimilarColors !== undefined) {
+        params.append('mergeSimilarColors', String(options.mergeSimilarColors));
     }
     if (options?.removeBackground !== undefined) {
         params.append('removeBackground', String(options.removeBackground));

@@ -36,7 +36,13 @@ public class FuseBeanSkillClient {
     private final ObjectMapper objectMapper;
     private final FuseBeanProperties properties;
 
-    public SkillResult generate(BufferedImage source, int gridSize, int maxColors, String style, String background, String aiStylePrompt) {
+    public SkillResult generate(BufferedImage source,
+                                int gridSize,
+                                int maxColors,
+                                String style,
+                                String background,
+                                String prompt,
+                                String aiStylePrompt) {
         if (!properties.getSkill().isEnabled()) {
             throw new IllegalStateException("本地 image-to-pindou skill 未启用");
         }
@@ -46,17 +52,17 @@ public class FuseBeanSkillClient {
         try {
             String targetStyle = normalizeStyle(style);
             String targetBackground = normalizeBackground(background);
-            log.info("image-to-pindou skill start: root={}, gridSize={}, maxColors={}, style={}, background={}, aiEnabled={}, aiStylePrompt={}, autoInstall={}",
+            log.info("image-to-pindou skill start: root={}, gridSize={}, maxColors={}, style={}, background={}, promptProvided={}, aiStylePromptProvided={}, autoInstall={}",
                     root, gridSize, maxColors, targetStyle, targetBackground,
-                    properties.getAi().isEnabled() && isNotBlank(aiStylePrompt),
-                    properties.getAi().isEnabled() ? aiStylePrompt : null,
+                    isNotBlank(prompt),
+                    isNotBlank(aiStylePrompt),
                     properties.getSkill().isAutoInstall());
             ensureDependencies(root);
             workDir = Files.createTempDirectory("fusebean-skill-");
             Path input = workDir.resolve("source.png");
             Path outputBase = workDir.resolve("result");
             writePng(source, input);
-            runSkill(root, input, outputBase, gridSize, maxColors, targetStyle, targetBackground, aiStylePrompt);
+            runSkill(root, input, outputBase, gridSize, maxColors, targetStyle, targetBackground, prompt, aiStylePrompt);
             SkillResult result = parseResult(outputBase);
             long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000L;
             log.info("image-to-pindou skill success: grid={}x{}, colors={}, elapsedMs={}, outputBase={}",
@@ -149,8 +155,9 @@ public class FuseBeanSkillClient {
                           int maxColors,
                           String style,
                           String background,
+                          String prompt,
                           String aiStylePrompt) throws IOException, InterruptedException {
-        List<String> command = buildCommand(root, inputFile, outputBase, gridSize, maxColors, style, background, aiStylePrompt);
+        List<String> command = buildCommand(root, inputFile, outputBase, gridSize, maxColors, style, background, prompt, aiStylePrompt);
         log.info("image-to-pindou skill command: {}", String.join(" ", command));
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.directory(root.toFile());
@@ -164,7 +171,7 @@ public class FuseBeanSkillClient {
         }
         int exitCode = process.waitFor();
         if (exitCode != 0) {
-            if (shouldAutoInstallAndRetry(output) && ensureDependenciesAndRetry(root, inputFile, outputBase, gridSize, maxColors, style, background, aiStylePrompt)) {
+            if (shouldAutoInstallAndRetry(output) && ensureDependenciesAndRetry(root, inputFile, outputBase, gridSize, maxColors, style, background, prompt, aiStylePrompt)) {
                 return;
             }
             throw new IllegalStateException("image-to-pindou skill 执行失败，exitCode=" + exitCode + ", output=" + output);
@@ -185,10 +192,11 @@ public class FuseBeanSkillClient {
                                                int maxColors,
                                                String style,
                                                String background,
+                                               String prompt,
                                                String aiStylePrompt) throws IOException, InterruptedException {
         ensureDependencies(root);
         log.info("image-to-pindou skill retry after dependency installation");
-        runSkillOnce(root, inputFile, outputBase, gridSize, maxColors, style, background, aiStylePrompt);
+        runSkillOnce(root, inputFile, outputBase, gridSize, maxColors, style, background, prompt, aiStylePrompt);
         return true;
     }
 
@@ -199,8 +207,9 @@ public class FuseBeanSkillClient {
                               int maxColors,
                               String style,
                               String background,
+                              String prompt,
                               String aiStylePrompt) throws IOException, InterruptedException {
-        List<String> command = buildCommand(root, inputFile, outputBase, gridSize, maxColors, style, background, aiStylePrompt);
+        List<String> command = buildCommand(root, inputFile, outputBase, gridSize, maxColors, style, background, prompt, aiStylePrompt);
         log.info("image-to-pindou skill retry command: {}", String.join(" ", command));
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.directory(root.toFile());
@@ -228,6 +237,7 @@ public class FuseBeanSkillClient {
                                       int maxColors,
                                       String style,
                                       String background,
+                                      String prompt,
                                       String aiStylePrompt) {
         List<String> command = new ArrayList<>();
         command.add(properties.getSkill().getNodeCommand());
@@ -243,15 +253,22 @@ public class FuseBeanSkillClient {
         command.add(background);
         command.add("--cell-px");
         command.add(String.valueOf(properties.getSkill().getCellPx()));
-        if (properties.getAi().isEnabled() && isNotBlank(aiStylePrompt)) {
+        boolean useAi = properties.getAi().isEnabled() && (isNotBlank(prompt) || isNotBlank(aiStylePrompt));
+        if (useAi) {
             command.add("--ai");
             command.add(properties.getAi().getProvider());
             command.add("--model");
             command.add(properties.getAi().getModel());
             command.add("--ai-base-url");
             command.add(properties.getAi().getBaseUrl());
-            command.add("--ai-style-prompt");
-            command.add(aiStylePrompt.trim());
+            if (isNotBlank(prompt)) {
+                command.add("--user-prompt");
+                command.add(prompt.trim());
+            }
+            if (isNotBlank(aiStylePrompt)) {
+                command.add("--ai-style-prompt");
+                command.add(aiStylePrompt.trim());
+            }
         }
         command.add("--out");
         command.add(outputBase.toString());

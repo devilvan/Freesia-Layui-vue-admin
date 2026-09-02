@@ -28,6 +28,7 @@ public interface FuseBeanService {
                                          Integer gridSize,
                                          Integer maxColors,
                                          String processingMode,
+                                         Boolean mergeSimilarColors,
                                          Boolean removeBackground,
                                          Boolean flipHorizontal,
                                          String aiStylePrompt);
