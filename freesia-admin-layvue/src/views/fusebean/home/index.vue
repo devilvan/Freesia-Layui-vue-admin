@@ -71,20 +71,20 @@
             </lay-col>
           </lay-row>
 
-          <lay-row :space="20">
-            <lay-col :md="24">
-              <lay-form-item label="AI 风格提示词（可选）">
-                <lay-textarea
-                    v-model="aiStylePrompt"
-                    placeholder="例如：重绘成卡图风格 / 水彩插画风 / 复古像素海报，保留主体轮廓与构图"
-                    :rows="3"
-                ></lay-textarea>
-                <div class="ai-hint">
-                  填写后，将先用 gpt-image-2 按提示词重绘已上传的原图，再生成拼豆像素风预览；留空则直接处理原图。
-                </div>
-              </lay-form-item>
-            </lay-col>
-          </lay-row>
+<!--          <lay-row :space="20">-->
+<!--            <lay-col :md="24">-->
+<!--              <lay-form-item label="AI 风格提示词（可选）">-->
+<!--                <lay-textarea-->
+<!--                    v-model="aiStylePrompt"-->
+<!--                    placeholder="例如：重绘成卡图风格 / 水彩插画风 / 复古像素海报，保留主体轮廓与构图"-->
+<!--                    :rows="3"-->
+<!--                ></lay-textarea>-->
+<!--                <div class="ai-hint">-->
+<!--                  填写后，将先用 gpt-image-2 按提示词重绘已上传的原图，再生成拼豆像素风预览；留空则直接处理原图。-->
+<!--                </div>-->
+<!--              </lay-form-item>-->
+<!--            </lay-col>-->
+<!--          </lay-row>-->
 
           <lay-row :space="20">
             <lay-col :md="12">
@@ -120,16 +120,16 @@
                 预览图按图片尺寸叠加上坐标系，可直接点击或拖拽框选豆格，再在下方色板中替换颜色。坐标与 MARD 色码会在第三步确认生成图纸时标注。
               </div>
             </div>
-            <div class="panel-actions">
-              <lay-button size="sm" @click="backToUpload">返回上一步</lay-button>
-              <lay-button size="sm" :disabled="!sourceImageUrl" title="请先上传原图" @click="openCompare">
-                <lay-icon class="layui-icon-picture"></lay-icon>
-                对比原图
-              </lay-button>
-              <lay-button size="sm" type="primary" :disabled="!generateResp" @click="openConfirm">
-                确认生成图纸
-              </lay-button>
-            </div>
+          </div>
+          <div class="panel-actions">
+            <lay-button size="sm" @click="backToUpload">返回上一步</lay-button>
+            <lay-button size="sm" :disabled="!sourceImageUrl" title="请先上传原图" @click="openCompare">
+              <lay-icon class="layui-icon-picture"></lay-icon>
+              对比原图
+            </lay-button>
+            <lay-button size="sm" type="primary" :disabled="!generateResp" @click="openConfirm">
+              确认生成图纸
+            </lay-button>
           </div>
 
           <template v-if="generateResp">
@@ -149,10 +149,26 @@
                 </div>
               </div>
               <div class="cell-selection-info">
-                <span class="sel-count">
+                <div class="cell-mode-switch">
+                  <lay-button size="xs" :type="paintMode ? 'primary' : 'default'" @click="setPaintMode(true)">
+                    画笔模式
+                  </lay-button>
+                  <lay-button size="xs" :type="!paintMode ? 'primary' : 'default'" @click="setPaintMode(false)">
+                    框选模式
+                  </lay-button>
+                </div>
+                <div v-if="paintMode" class="paint-tool-switch">
+                  <lay-button size="xs" :type="paintTool === 'brush' ? 'primary' : 'default'" @click="setPaintTool('brush')">
+                    画笔
+                  </lay-button>
+                  <lay-button size="xs" :type="paintTool === 'bucket' ? 'primary' : 'default'" @click="setPaintTool('bucket')">
+                    油漆桶
+                  </lay-button>
+                </div>
+                <span class="sel-count" v-if="!paintMode">
                   {{ selectedCells.length ? `已选 ${selectedCells.length} 个豆格` : '尚未选择豆格' }}
                 </span>
-                <lay-button v-if="selectedCells.length" size="xs" border="red" @click="clearSelection">清除选择</lay-button>
+                <lay-button v-if="selectedCells.length && !paintMode" size="xs" border="red" @click="clearSelection">清除选择</lay-button>
               </div>
               <div v-if="generateResp.palette?.length" class="cell-color-picker">
                 <div class="picker-swatches">
@@ -162,7 +178,7 @@
                       class="picker-swatch"
                       :class="{ active: lastAppliedColor === i }"
                       :title="`${color.code} · ${color.hex}`"
-                      @click="applyColorToSelected(i)"
+                      @click="handlePaletteClick(i)"
                   >
                     <span class="swatch-block" :style="{ background: color.hex }"></span>
                     <span class="swatch-code">{{ color.code }}</span>
@@ -172,7 +188,7 @@
                       class="picker-swatch"
                       :class="{ active: lastAppliedColor === whiteSwatchIndex }"
                       title="T1 · #FFFFFF（白色底色）"
-                      @click="applyWhiteToSelected"
+                      @click="handleWhitePaletteClick"
                   >
                     <span class="swatch-block white-swatch"></span>
                     <span class="swatch-code">T1</span>
@@ -252,7 +268,7 @@
           <div class="settings-card">
             <div class="panel-header settings-header">
               <div>
-                <div class="panel-title">调参面板</div>
+                <div class="panel-title">参数面板</div>
                 <div class="panel-desc">修改参数后点击重新生成，预览和图纸都会同步更新。</div>
               </div>
             </div>
@@ -276,14 +292,14 @@
                 </lay-col>
               </lay-row>
 
-              <lay-form-item label="AI 风格提示词（可选）">
-                <lay-textarea
-                    v-model="aiStylePrompt"
-                    placeholder="例如：重绘成卡图风格 / 水彩插画风，保留主体轮廓与构图"
-                    :rows="2"
-                ></lay-textarea>
-                <div class="ai-hint">填写后重新生成，将先用 gpt-image-2 重绘原图再像素化；留空则直接处理原图。</div>
-              </lay-form-item>
+<!--              <lay-form-item label="AI 风格提示词（可选）">-->
+<!--                <lay-textarea-->
+<!--                    v-model="aiStylePrompt"-->
+<!--                    placeholder="例如：重绘成卡图风格 / 水彩插画风，保留主体轮廓与构图"-->
+<!--                    :rows="2"-->
+<!--                ></lay-textarea>-->
+<!--                <div class="ai-hint">填写后重新生成，将先用 gpt-image-2 重绘原图再像素化；留空则直接处理原图。</div>-->
+<!--              </lay-form-item>-->
 
               <lay-row :space="16">
                 <lay-col :md="12">
@@ -553,6 +569,14 @@ const interactiveCanvasRef = ref<HTMLCanvasElement | null>(null);
 const interactiveWrapRef = ref<HTMLElement | null>(null);
 const containerWidth = ref(0);
 const selectedCells = ref<Array<{ x: number; y: number }>>([]);
+const paintMode = ref(true);
+const paintTool = ref<'brush' | 'bucket'>('brush');
+const canvasUndoStack = ref<Array<{
+  grid: Array<Array<number | null>>;
+  palette: FuseBeanColor[];
+  previewBase64: string;
+  lastAppliedColor: number | null;
+}>>([]);
 const hoverCell = ref<{ x: number; y: number } | null>(null);
 const hoverInfo = ref<{
   tipLeft: number;
@@ -564,6 +588,9 @@ const hoverInfo = ref<{
 } | null>(null);
 const dragStartCell = ref<{ x: number; y: number } | null>(null);
 const isDragging = ref(false);
+const isPainting = ref(false);
+const paintLastCell = ref<{ x: number; y: number } | null>(null);
+const paintStrokeUndoCaptured = ref(false);
 const lastAppliedColor = ref<number | null>(null);
 const previewZoom = ref(1);
 const spaceDown = ref(false);
@@ -717,6 +744,72 @@ function renderInteractiveGrid() {
   }
 }
 
+function syncPreviewBase64(resp: FuseBeanGenerateResp) {
+  if (!resp.grid || !resp.palette?.length) {
+    return;
+  }
+  resp.previewBase64 = renderPreviewFromGrid(resp.grid, resp.palette);
+}
+
+function cloneGrid(grid: Array<Array<number | null>>): Array<Array<number | null>> {
+  return grid.map(row => row.slice());
+}
+
+function clonePalette(palette: FuseBeanColor[]): FuseBeanColor[] {
+  return palette.map(color => ({ ...color }));
+}
+
+function captureCanvasUndoState() {
+  const resp = generateResp.value;
+  if (!resp?.grid || !resp.palette?.length) {
+    return;
+  }
+  canvasUndoStack.value.push({
+    grid: cloneGrid(resp.grid),
+    palette: clonePalette(resp.palette),
+    previewBase64: resp.previewBase64 || renderPreviewFromGrid(resp.grid, resp.palette),
+    lastAppliedColor: lastAppliedColor.value,
+  });
+  if (canvasUndoStack.value.length > 10) {
+    canvasUndoStack.value.shift();
+  }
+}
+
+function restoreCanvasUndoState(snapshot: {
+  grid: Array<Array<number | null>>;
+  palette: FuseBeanColor[];
+  previewBase64: string;
+  lastAppliedColor: number | null;
+}) {
+  const resp = generateResp.value;
+  if (!resp) {
+    return;
+  }
+  resp.grid = cloneGrid(snapshot.grid);
+  resp.palette = clonePalette(snapshot.palette);
+  resp.previewBase64 = snapshot.previewBase64 || renderPreviewFromGrid(resp.grid, resp.palette);
+  lastAppliedColor.value = snapshot.lastAppliedColor;
+  selectedCells.value = [];
+  hoverCell.value = null;
+  hoverInfo.value = null;
+  dragStartCell.value = null;
+  isDragging.value = false;
+  isPainting.value = false;
+  paintLastCell.value = null;
+  paintStrokeUndoCaptured.value = false;
+  renderInteractiveGrid();
+}
+
+function undoCanvasEdit() {
+  const snapshot = canvasUndoStack.value.pop();
+  if (!snapshot) {
+    layer.msg('没有可撤销的操作', { icon: 2 });
+    return;
+  }
+  restoreCanvasUndoState(snapshot);
+  layer.msg('已撤销', { icon: 1 });
+}
+
 function drawCellHighlight(ctx: CanvasRenderingContext2D, x: number, y: number, fill: string) {
   const cellSize = displayCellSize.value;
   const rx = canvasLeftMargin + x * cellSize;
@@ -757,6 +850,117 @@ function cellsInRect(a: { x: number; y: number }, b: { x: number; y: number }): 
     }
   }
   return list;
+}
+
+function setPaintMode(enabled: boolean) {
+  paintMode.value = enabled;
+  if (enabled) {
+    selectedCells.value = [];
+  } else {
+    isPainting.value = false;
+    paintLastCell.value = null;
+    paintStrokeUndoCaptured.value = false;
+  }
+  renderInteractiveGrid();
+}
+
+function setPaintTool(tool: 'brush' | 'bucket') {
+  if (!paintMode.value) {
+    return;
+  }
+  paintTool.value = tool;
+}
+
+function setGridCellColor(cell: { x: number; y: number }, paletteIndex: number) {
+  const resp = generateResp.value;
+  if (!resp?.grid || !resp.palette) {
+    return false;
+  }
+  if (paletteIndex < 0 || paletteIndex >= resp.palette.length) {
+    return false;
+  }
+  const row = resp.grid[cell.y];
+  if (!row || cell.x < 0 || cell.x >= row.length) {
+    return false;
+  }
+  row[cell.x] = paletteIndex;
+  lastAppliedColor.value = paletteIndex;
+  syncPreviewBase64(resp);
+  return true;
+}
+
+function paintCell(cell: { x: number; y: number }, paletteIndex: number) {
+  if (!setGridCellColor(cell, paletteIndex)) {
+    return;
+  }
+  selectedCells.value = [];
+  hoverInfo.value = null;
+  renderInteractiveGrid();
+}
+
+function beginPaintStrokeUndo() {
+  if (!paintStrokeUndoCaptured.value) {
+    captureCanvasUndoState();
+    paintStrokeUndoCaptured.value = true;
+  }
+}
+
+function fillCellRegion(seed: { x: number; y: number }, paletteIndex: number) {
+  const resp = generateResp.value;
+  if (!resp?.grid || !resp.palette?.length) {
+    return false;
+  }
+  if (paletteIndex < 0 || paletteIndex >= resp.palette.length) {
+    return false;
+  }
+  const startRow = resp.grid[seed.y];
+  if (!startRow || seed.x < 0 || seed.x >= startRow.length) {
+    return false;
+  }
+  const targetValue = startRow[seed.x];
+  if (targetValue === paletteIndex) {
+    return false;
+  }
+
+  const width = resp.gridWidth || startRow.length;
+  const height = resp.gridHeight || resp.grid.length;
+  const queue: Array<{ x: number; y: number }> = [seed];
+  const visited = new Set<number>();
+  let filled = false;
+
+  while (queue.length) {
+    const current = queue.pop()!;
+    if (current.x < 0 || current.y < 0 || current.x >= width || current.y >= height) {
+      continue;
+    }
+    const key = current.y * width + current.x;
+    if (visited.has(key)) {
+      continue;
+    }
+    const row = resp.grid[current.y];
+    if (!row || row[current.x] !== targetValue) {
+      continue;
+    }
+    visited.add(key);
+    row[current.x] = paletteIndex;
+    filled = true;
+    queue.push(
+      { x: current.x - 1, y: current.y },
+      { x: current.x + 1, y: current.y },
+      { x: current.x, y: current.y - 1 },
+      { x: current.x, y: current.y + 1 },
+    );
+  }
+
+  if (!filled) {
+    return false;
+  }
+  lastAppliedColor.value = paletteIndex;
+  selectedCells.value = [];
+  hoverInfo.value = null;
+  syncPreviewBase64(resp);
+  renderInteractiveGrid();
+  return true;
 }
 
 function buildHoverInfo(cell: { x: number; y: number }, e: PointerEvent) {
@@ -823,6 +1027,11 @@ function isTypingTarget(e: KeyboardEvent) {
 }
 
 function onWindowKeyDown(e: KeyboardEvent) {
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && activeStep.value === 1 && generateResp.value && !isTypingTarget(e)) {
+    e.preventDefault();
+    undoCanvasEdit();
+    return;
+  }
   if (e.code !== 'Space' || isTypingTarget(e)) {
     return;
   }
@@ -852,8 +1061,32 @@ function onCanvasPointerDown(e: PointerEvent) {
     selectedCells.value = [];
     dragStartCell.value = null;
     isDragging.value = false;
+    isPainting.value = false;
+    paintLastCell.value = null;
     hoverInfo.value = null;
     renderInteractiveGrid();
+    return;
+  }
+  if (paintMode.value) {
+    const paletteIndex = lastAppliedColor.value;
+    if (paletteIndex == null) {
+      layer.msg('请先选择颜色', { icon: 2 });
+      return;
+    }
+    if (paintTool.value === 'bucket') {
+      captureCanvasUndoState();
+      isPainting.value = false;
+      paintLastCell.value = null;
+      paintStrokeUndoCaptured.value = false;
+      fillCellRegion(cell, paletteIndex);
+      (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
+      return;
+    }
+    beginPaintStrokeUndo();
+    isPainting.value = true;
+    paintLastCell.value = cell;
+    paintCell(cell, paletteIndex);
+    (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
     return;
   }
   isDragging.value = true;
@@ -873,6 +1106,19 @@ function onCanvasPointerMove(e: PointerEvent) {
     return;
   }
   const cell = cellFromPointer(e);
+  if (isPainting.value) {
+    hoverInfo.value = null;
+    if (!cell || !paintLastCell.value || (cell.x === paintLastCell.value.x && cell.y === paintLastCell.value.y)) {
+      return;
+    }
+    const paletteIndex = lastAppliedColor.value;
+    if (paletteIndex == null) {
+      return;
+    }
+    paintLastCell.value = cell;
+    paintCell(cell, paletteIndex);
+    return;
+  }
   if (isDragging.value && cell && dragStartCell.value) {
     hoverInfo.value = null;
     selectedCells.value = cellsInRect(dragStartCell.value, cell);
@@ -893,12 +1139,18 @@ function onCanvasPointerUp(e: PointerEvent) {
     panStart.value = null;
   }
   isDragging.value = false;
+  isPainting.value = false;
+  paintLastCell.value = null;
+  paintStrokeUndoCaptured.value = false;
 }
 
 function onCanvasPointerLeave() {
   hoverCell.value = null;
   hoverInfo.value = null;
-  if (!isDragging.value && !isPanning.value) {
+  if (!isPainting.value) {
+    paintStrokeUndoCaptured.value = false;
+  }
+  if (!isDragging.value && !isPainting.value && !isPanning.value) {
     renderInteractiveGrid();
   }
 }
@@ -923,6 +1175,7 @@ function applyColorToSelected(paletteIndex: number) {
   if (paletteIndex < 0 || paletteIndex >= resp.palette.length) {
     return;
   }
+  captureCanvasUndoState();
   for (const c of selectedCells.value) {
     const row = resp.grid[c.y];
     if (row && c.x >= 0 && c.x < row.length) {
@@ -931,7 +1184,7 @@ function applyColorToSelected(paletteIndex: number) {
   }
   lastAppliedColor.value = paletteIndex;
   renderInteractiveGrid();
-  resp.previewBase64 = renderPreviewFromGrid(resp.grid, resp.palette);
+  syncPreviewBase64(resp);
 }
 
 function applyWhiteToSelected() {
@@ -943,6 +1196,7 @@ function applyWhiteToSelected() {
     layer.msg('请先在预览图中点击或拖拽选择豆格', { icon: 2 });
     return;
   }
+  captureCanvasUndoState();
   const index = whitePaletteIndex();
   for (const c of selectedCells.value) {
     const row = resp.grid[c.y];
@@ -952,7 +1206,24 @@ function applyWhiteToSelected() {
   }
   lastAppliedColor.value = index;
   renderInteractiveGrid();
-  resp.previewBase64 = renderPreviewFromGrid(resp.grid, resp.palette);
+  syncPreviewBase64(resp);
+}
+
+function handlePaletteClick(paletteIndex: number) {
+  if (paintMode.value) {
+    lastAppliedColor.value = paletteIndex;
+    return;
+  }
+  applyColorToSelected(paletteIndex);
+}
+
+function handleWhitePaletteClick() {
+  const index = whitePaletteIndex();
+  if (paintMode.value) {
+    lastAppliedColor.value = index;
+    return;
+  }
+  applyWhiteToSelected();
 }
 
 /**
@@ -987,6 +1258,15 @@ watch([activeStep, generateResp], () => {
   if (activeStep.value === 1 && generateResp.value) {
     previewZoom.value = 1;
     hoverInfo.value = null;
+    hoverCell.value = null;
+    selectedCells.value = [];
+    canvasUndoStack.value = [];
+    isDragging.value = false;
+    isPainting.value = false;
+    paintLastCell.value = null;
+    paintMode.value = true;
+    paintTool.value = 'brush';
+    lastAppliedColor.value = null;
     nextTick(() => {
       measureInteractiveWrap();
       renderInteractiveGrid();
@@ -1020,6 +1300,7 @@ async function handleGenerate() {
     if (res.code === 200) {
       generateResp.value = res.data || null;
       confirmResp.value = null;
+      canvasUndoStack.value = [];
       activeStep.value = 1;
       layer.msg('预览生成成功', { icon: 1 });
     } else if (res.code !== 500) {
@@ -1264,9 +1545,17 @@ onBeforeUnmount(() => {
 
 .panel-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   justify-content: flex-end;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.panel-actions :deep(.layui-btn) {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .upload-row {
@@ -1513,8 +1802,21 @@ onBeforeUnmount(() => {
 .cell-selection-info {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 10px;
+}
+
+.cell-mode-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.paint-tool-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .sel-count {
