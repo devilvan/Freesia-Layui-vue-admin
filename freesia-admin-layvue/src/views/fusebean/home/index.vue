@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <lay-container :fluid="true" class="fusebean-page">
     <lay-card class="hero-card">
       <div class="hero-content">
@@ -99,7 +99,8 @@
             <div>
               <div class="panel-title">拼豆像素风预览</div>
               <div class="panel-desc">
-                预览图按图片尺寸叠加上坐标系，可直接点击或拖拽框选豆格，再在下方色板中替换颜色。坐标与 MARD 色码会在第三步确认生成图纸时标注。
+                预览图按图片尺寸叠加上坐标系，可直接点击或拖拽框选豆格，再在下方色板中替换颜色。坐标与 MARD
+                色码会在第三步确认生成图纸时标注。
               </div>
             </div>
           </div>
@@ -128,34 +129,45 @@
               <div class="cell-editor-header">
                 <div class="sub-title">豆格颜色调整</div>
                 <div class="cell-editor-desc">
-                  在预览图中点击或拖拽框选一个或多个豆格，再从下方色板选择颜色替换。色板颜色数由当前颜色上限（{{ maxColors }}）决定；白色（T1）可随时作为底色追加。空豆格（已去除的背景区域）不会被标色。
+                  在预览图中点击或拖拽框选一个或多个豆格，再从下方色板选择颜色替换。色板颜色数由当前颜色上限（{{
+                    maxColors
+                  }}）决定；无颜色用于清空豆格。空豆格（已去除的背景区域）不会被标色。
                 </div>
               </div>
               <div class="cell-selection-info">
                 <div class="cell-mode-switch">
-                  <lay-button size="xs" :type="paintMode ? 'primary' : 'default'" @click="setPaintMode(true)">
+                  <lay-button size="xs" :type="editMode === 'paint' ? 'primary' : 'default'"
+                              @click="setEditMode('paint')">
                     画笔模式
                   </lay-button>
-                  <lay-button size="xs" :type="!paintMode ? 'primary' : 'default'" @click="setPaintMode(false)">
+                  <lay-button size="xs" :type="editMode === 'erase' ? 'primary' : 'default'"
+                              @click="setEditMode('erase')">
+                    橡皮擦模式
+                  </lay-button>
+                  <lay-button size="xs" :type="editMode === 'select' ? 'primary' : 'default'"
+                              @click="setEditMode('select')">
                     框选模式
                   </lay-button>
                 </div>
-                <div v-if="paintMode" class="paint-tool-switch">
-                  <lay-button size="xs" :type="paintTool === 'brush' ? 'primary' : 'default'" @click="setPaintTool('brush')">
+                <div v-if="editMode !== 'select'" class="paint-tool-switch">
+                  <lay-button size="xs" :type="paintTool === 'brush' ? 'primary' : 'default'"
+                              @click="setPaintTool('brush')">
                     画笔
                   </lay-button>
-                  <lay-button size="xs" :type="paintTool === 'bucket' ? 'primary' : 'default'" @click="setPaintTool('bucket')">
-                  <lay-button size="xs" :type="paintTool === 'eraser' ? 'primary' : 'default'" @click="setPaintTool('eraser')">
-                    ???
-                  </lay-button>
+                  <lay-button size="xs" :type="paintTool === 'bucket' ? 'primary' : 'default'"
+                              @click="setPaintTool('bucket')">
                     油漆桶
                   </lay-button>
                 </div>
-                <span class="sel-count" v-if="!paintMode">
+                <span class="sel-count" v-if="selectMode">
                   {{ selectedCells.length ? `已选 ${selectedCells.length} 个豆格` : '尚未选择豆格' }}
                 </span>
-                <lay-button v-if="selectedCells.length && !paintMode" size="xs" border="red" @click="clearSelection">清除选择</lay-button>
-                <lay-button v-if="!paintMode" size="xs" border="red" :disabled="!selectedCells.length" @click="eraseSelectedCells">?????</lay-button>
+                <lay-button v-if="selectedCells.length && selectMode" size="xs" border="red" @click="clearSelection">
+                  清除选择
+                </lay-button>
+                <lay-button v-if="selectedCells.length && selectMode" size="xs" border="red"
+                            @click="eraseSelectedCells">橡皮擦选区
+                </lay-button>
               </div>
               <div v-if="generateResp.palette?.length" class="cell-color-picker">
                 <div class="picker-swatches">
@@ -171,14 +183,13 @@
                     <span class="swatch-code">{{ color.code }}</span>
                   </div>
                   <div
-                      v-if="!hasWhitePaletteColor"
                       class="picker-swatch"
-                      :class="{ active: lastAppliedColor === whiteSwatchIndex }"
-                      title="T1 · #FFFFFF（白色底色）"
-                      @click="handleWhitePaletteClick"
+                      :class="{ active: noColorSwatchActive }"
+                      title="无颜色（清空豆格）"
+                      @click="handleNoColorClick"
                   >
-                    <span class="swatch-block white-swatch"></span>
-                    <span class="swatch-code">T1</span>
+                    <span class="swatch-block no-color-swatch"></span>
+                    <span class="swatch-code">无颜色</span>
                   </div>
                 </div>
               </div>
@@ -199,7 +210,8 @@
               </div>
             </div>
 
-            <div v-if="hoverInfo" class="cell-tooltip" :style="{ left: hoverInfo.tipLeft + 'px', top: hoverInfo.tipTop + 'px' }">
+            <div v-if="hoverInfo" class="cell-tooltip"
+                 :style="{ left: hoverInfo.tipLeft + 'px', top: hoverInfo.tipTop + 'px' }">
               <div class="cell-tooltip-coord">第 {{ hoverInfo.gridX + 1 }} 列 · 第 {{ hoverInfo.gridY + 1 }} 行</div>
               <div v-if="hoverInfo.code || hoverInfo.hex" class="cell-tooltip-row">
                 <span class="cell-tooltip-swatch" :style="{ background: hoverInfo.hex || '#ffffff' }"></span>
@@ -210,10 +222,13 @@
             </div>
 
             <div class="coord-hint">
-              预览图中可用 Ctrl+滚轮缩放，按住空格键拖拽可上下左右平移画布；坐标系用于定位豆格，第三步图纸会标注坐标与 MARD 色码。
+              预览图中可用 Ctrl+滚轮缩放，按住空格键拖拽可上下左右平移画布；坐标系用于定位豆格，第三步图纸会标注坐标与 MARD
+              色码。
             </div>
 
-            <div class="sub-title color-title">颜色清单（共 {{ step2ColorStats.length }} 种颜色，共 {{ step2ColorStats.reduce((acc, cur) => acc + cur.count, 0) }} 颗）</div>
+            <div class="sub-title color-title">颜色清单（共 {{ step2ColorStats.length }} 种颜色，共
+              {{ step2ColorStats.reduce((acc, cur) => acc + cur.count, 0) }} 颗）
+            </div>
             <div class="color-stat-list">
               <div v-for="stat in step2ColorStats" :key="stat.index" class="color-stat-item">
                 <span class="color-index">{{ stat.code || `#${stat.index}` }}</span>
@@ -271,7 +286,7 @@
                 </lay-col>
               </lay-row>
 
-<lay-row :space="16">
+              <lay-row :space="16">
                 <lay-col :md="12">
                   <lay-form-item label="颜色上限">
                     <lay-input v-model="maxColors" type="number" :min="1" :max="291"></lay-input>
@@ -284,12 +299,6 @@
                         placeholder="用于确认生成后的文件命名"
                     ></lay-input>
                   </lay-form-item>
-                  <div class="settings-actions">
-                    <lay-button size="sm" type="primary" :disabled="generating" @click="handleGenerate">
-                      <lay-icon class="layui-icon-refresh"></lay-icon>
-                      {{ generating ? '正在重新生成...' : '重新生成预览' }}
-                    </lay-button>
-                  </div>
                 </lay-col>
               </lay-row>
 
@@ -299,9 +308,6 @@
                     <lay-switch v-model="mergeSimilarColors"></lay-switch>
                   </lay-form-item>
                 </lay-col>
-              </lay-row>
-
-              <lay-row :space="16">
                 <lay-col :md="12">
                   <lay-form-item label="去除图片背景">
                     <lay-switch v-model="removeBackground"></lay-switch>
@@ -311,6 +317,14 @@
                   <lay-form-item label="水平翻转">
                     <lay-switch v-model="flipHorizontal"></lay-switch>
                   </lay-form-item>
+                </lay-col>
+              </lay-row>
+              <lay-row :space="16">
+                <lay-col :md="12">
+                  <lay-button size="sm" type="primary" :disabled="generating" @click="handleGenerate">
+                    <lay-icon class="layui-icon-refresh"></lay-icon>
+                    {{ generating ? '正在重新生成...' : '重新生成预览' }}
+                  </lay-button>
                 </lay-col>
               </lay-row>
 
@@ -370,7 +384,9 @@
             </div>
           </div>
 
-          <div class="sub-title color-title">颜色清单（共 {{ confirmResp.colorStats?.length || 0 }} 种颜色， 共 {{ confirmResp.colorStats?.reduce((acc, cur) => acc + cur.count, 0) || 0 }} 颗）</div>
+          <div class="sub-title color-title">颜色清单（共 {{ confirmResp.colorStats?.length || 0 }} 种颜色， 共
+            {{ confirmResp.colorStats?.reduce((acc, cur) => acc + cur.count, 0) || 0 }} 颗）
+          </div>
           <div class="color-stat-list">
             <div v-for="stat in confirmResp.colorStats" :key="stat.index" class="color-stat-item">
               <span class="color-index">{{ stat.code || `#${stat.index}` }}</span>
@@ -397,10 +413,10 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
-import { layer } from '@layui/layui-vue';
-import { confirmGenerate, generateImage, FuseBeanGenerateOptions } from '@/api/fusebean/FuseBean';
-import { FuseBeanColor, FuseBeanConfirmResp, FuseBeanGenerateResp } from '@/types/fusebean/FuseBean';
+import {computed, nextTick, onBeforeUnmount, ref, watch} from 'vue';
+import {layer} from '@layui/layui-vue';
+import {confirmGenerate, generateImage, FuseBeanGenerateOptions} from '@/api/fusebean/FuseBean';
+import {FuseBeanColor, FuseBeanConfirmResp, FuseBeanGenerateResp} from '@/types/fusebean/FuseBean';
 
 const patternName = ref('');
 const gridSize = ref<number>(50);
@@ -422,9 +438,9 @@ const generateResp = ref<FuseBeanGenerateResp | null>(null);
 const confirmResp = ref<FuseBeanConfirmResp | null>(null);
 
 const processingModeOptions = [
-  { value: 'edge', label: 'edge - 轮廓增强' },
-  { value: 'average', label: 'average - 自然平均' },
-  { value: 'dominant', label: 'dominant - 纯色块' },
+  {value: 'edge', label: 'edge - 轮廓增强'},
+  {value: 'average', label: 'average - 自然平均'},
+  {value: 'dominant', label: 'dominant - 纯色块'},
 ];
 
 const processingModeLabel = computed(() => {
@@ -442,7 +458,7 @@ async function onFileChange(e: Event) {
     return;
   }
   if (!file.type.startsWith('image/')) {
-    layer.msg('请选择图片文件', { icon: 2 });
+    layer.msg('请选择图片文件', {icon: 2});
     input.value = '';
     return;
   }
@@ -543,10 +559,10 @@ function renderPreviewFromGrid(grid: Array<Array<number | null>>, palette: FuseB
 }
 
 function renderPreviewFromGridWithSize(
-  grid: Array<Array<number | null>>,
-  palette: FuseBeanColor[],
-  targetWidth?: number,
-  targetHeight?: number
+    grid: Array<Array<number | null>>,
+    palette: FuseBeanColor[],
+    targetWidth?: number,
+    targetHeight?: number
 ): string {
   const height = grid.length;
   const width = grid[0]?.length || 0;
@@ -599,8 +615,11 @@ const interactiveCanvasRef = ref<HTMLCanvasElement | null>(null);
 const interactiveWrapRef = ref<HTMLElement | null>(null);
 const containerWidth = ref(0);
 const selectedCells = ref<Array<{ x: number; y: number }>>([]);
-const paintMode = ref(true);
-const paintTool = ref<'brush' | 'bucket' | 'eraser'>('brush');
+const editMode = ref<'paint' | 'erase' | 'select'>('paint');
+const paintMode = computed(() => editMode.value !== 'select');
+const eraseMode = computed(() => editMode.value === 'erase');
+const selectMode = computed(() => editMode.value === 'select');
+const paintTool = ref<'brush' | 'bucket'>('brush');
 const canvasUndoStack = ref<Array<{
   grid: Array<Array<number | null>>;
   palette: FuseBeanColor[];
@@ -665,15 +684,7 @@ const displayCellSize = computed(() => {
   return Math.max(1, Math.min(Math.round(base * previewZoom.value), cap));
 });
 
-const hasWhitePaletteColor = computed(() => {
-  return (generateResp.value?.palette || []).some(color => (color.hex || '').toUpperCase() === '#FFFFFF');
-});
-
-const whiteSwatchIndex = computed(() => {
-  const palette = generateResp.value?.palette || [];
-  const existing = palette.findIndex(color => (color.hex || '').toUpperCase() === '#FFFFFF');
-  return existing >= 0 ? existing : palette.length;
-});
+const noColorSwatchActive = computed(() => eraseMode.value);
 
 // 第二步的色豆用量清单，与第三步颜色清单同构；随网格/色板实时更新
 const step2ColorStats = computed(() => {
@@ -786,7 +797,7 @@ function cloneGrid(grid: Array<Array<number | null>>): Array<Array<number | null
 }
 
 function clonePalette(palette: FuseBeanColor[]): FuseBeanColor[] {
-  return palette.map(color => ({ ...color }));
+  return palette.map(color => ({...color}));
 }
 
 function captureCanvasUndoState() {
@@ -833,11 +844,11 @@ function restoreCanvasUndoState(snapshot: {
 function undoCanvasEdit() {
   const snapshot = canvasUndoStack.value.pop();
   if (!snapshot) {
-    layer.msg('没有可撤销的操作', { icon: 2 });
+    layer.msg('没有可撤销的操作', {icon: 2});
     return;
   }
   restoreCanvasUndoState(snapshot);
-  layer.msg('已撤销', { icon: 1 });
+  layer.msg('已撤销', {icon: 1});
 }
 
 function drawCellHighlight(ctx: CanvasRenderingContext2D, x: number, y: number, fill: string) {
@@ -865,7 +876,7 @@ function cellFromPointer(e: PointerEvent): { x: number; y: number } | null {
   if (x < 0 || y < 0 || x >= (resp.gridWidth || 0) || y >= (resp.gridHeight || 0)) {
     return null;
   }
-  return { x, y };
+  return {x, y};
 }
 
 function cellsInRect(a: { x: number; y: number }, b: { x: number; y: number }): Array<{ x: number; y: number }> {
@@ -876,26 +887,27 @@ function cellsInRect(a: { x: number; y: number }, b: { x: number; y: number }): 
   const maxY = Math.max(a.y, b.y);
   for (let y = minY; y <= maxY; y++) {
     for (let x = minX; x <= maxX; x++) {
-      list.push({ x, y });
+      list.push({x, y});
     }
   }
   return list;
 }
 
-function setPaintMode(enabled: boolean) {
-  paintMode.value = enabled;
-  if (enabled) {
-    selectedCells.value = [];
-  } else {
-    isPainting.value = false;
-    paintLastCell.value = null;
-    paintStrokeUndoCaptured.value = false;
+function setEditMode(mode: 'paint' | 'erase' | 'select') {
+  editMode.value = mode;
+  selectedCells.value = [];
+  isDragging.value = false;
+  isPainting.value = false;
+  paintLastCell.value = null;
+  paintStrokeUndoCaptured.value = false;
+  if (mode !== 'select') {
+    hoverInfo.value = null;
   }
   renderInteractiveGrid();
 }
 
 function setPaintTool(tool: 'brush' | 'bucket') {
-  if (!paintMode.value) {
+  if (selectMode.value) {
     return;
   }
   paintTool.value = tool;
@@ -958,12 +970,9 @@ function beginPaintStrokeUndo() {
   }
 }
 
-function fillCellRegion(seed: { x: number; y: number }, paletteIndex: number) {
+function replaceCellRegion(seed: { x: number; y: number }, nextValue: number | null) {
   const resp = generateResp.value;
-  if (!resp?.grid || !resp.palette?.length) {
-    return false;
-  }
-  if (paletteIndex < 0 || paletteIndex >= resp.palette.length) {
+  if (!resp?.grid) {
     return false;
   }
   const startRow = resp.grid[seed.y];
@@ -971,7 +980,7 @@ function fillCellRegion(seed: { x: number; y: number }, paletteIndex: number) {
     return false;
   }
   const targetValue = startRow[seed.x];
-  if (targetValue === paletteIndex) {
+  if (targetValue === nextValue) {
     return false;
   }
 
@@ -995,25 +1004,42 @@ function fillCellRegion(seed: { x: number; y: number }, paletteIndex: number) {
       continue;
     }
     visited.add(key);
-    row[current.x] = paletteIndex;
+    row[current.x] = nextValue;
     filled = true;
     queue.push(
-      { x: current.x - 1, y: current.y },
-      { x: current.x + 1, y: current.y },
-      { x: current.x, y: current.y - 1 },
-      { x: current.x, y: current.y + 1 },
+        {x: current.x - 1, y: current.y},
+        {x: current.x + 1, y: current.y},
+        {x: current.x, y: current.y - 1},
+        {x: current.x, y: current.y + 1},
     );
   }
 
   if (!filled) {
     return false;
   }
-  lastAppliedColor.value = paletteIndex;
+  if (nextValue != null) {
+    lastAppliedColor.value = nextValue;
+  }
   selectedCells.value = [];
   hoverInfo.value = null;
   syncPreviewBase64(resp);
   renderInteractiveGrid();
   return true;
+}
+
+function fillCellRegion(seed: { x: number; y: number }, paletteIndex: number) {
+  const resp = generateResp.value;
+  if (!resp?.palette?.length) {
+    return false;
+  }
+  if (paletteIndex < 0 || paletteIndex >= resp.palette.length) {
+    return false;
+  }
+  return replaceCellRegion(seed, paletteIndex);
+}
+
+function eraseCellRegion(seed: { x: number; y: number }) {
+  return replaceCellRegion(seed, null);
 }
 
 function buildHoverInfo(cell: { x: number; y: number }, e: PointerEvent) {
@@ -1032,7 +1058,7 @@ function buildHoverInfo(cell: { x: number; y: number }, e: PointerEvent) {
   const tipHeight = 62;
   const tipLeft = e.clientX + 14 + tipWidth > window.innerWidth ? e.clientX - tipWidth - 14 : e.clientX + 14;
   const tipTop = e.clientY + 16 + tipHeight > window.innerHeight ? e.clientY - tipHeight - 16 : e.clientY + 16;
-  return { tipLeft, tipTop, gridX: cell.x, gridY: cell.y, code, hex };
+  return {tipLeft, tipTop, gridX: cell.x, gridY: cell.y, code, hex};
 }
 
 function onWrapWheel(e: WheelEvent) {
@@ -1105,7 +1131,7 @@ function onCanvasPointerDown(e: PointerEvent) {
   if (spaceDown.value) {
     const wrap = interactiveCanvasRef.value?.parentElement as HTMLElement | null;
     isPanning.value = true;
-    panStart.value = { x: e.clientX, y: e.clientY, sl: wrap?.scrollLeft ?? 0, st: wrap?.scrollTop ?? 0 };
+    panStart.value = {x: e.clientX, y: e.clientY, sl: wrap?.scrollLeft ?? 0, st: wrap?.scrollTop ?? 0};
     (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
     return;
   }
@@ -1122,16 +1148,8 @@ function onCanvasPointerDown(e: PointerEvent) {
   }
   if (paintMode.value) {
     const paletteIndex = lastAppliedColor.value;
-    if (paletteIndex == null) {
-      layer.msg('请先选择颜色', { icon: 2 });
-      return;
-    }
-    if (paintTool.value === 'eraser') {
-      beginPaintStrokeUndo();
-      isPainting.value = true;
-      paintLastCell.value = cell;
-      eraseCell(cell);
-      (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
+    if (!eraseMode.value && paletteIndex == null) {
+      layer.msg('请先选择颜色', {icon: 2});
       return;
     }
     if (paintTool.value === 'bucket') {
@@ -1139,14 +1157,22 @@ function onCanvasPointerDown(e: PointerEvent) {
       isPainting.value = false;
       paintLastCell.value = null;
       paintStrokeUndoCaptured.value = false;
-      fillCellRegion(cell, paletteIndex);
+      if (eraseMode.value) {
+        eraseCellRegion(cell);
+      } else if (paletteIndex != null) {
+        fillCellRegion(cell, paletteIndex);
+      }
       (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
       return;
     }
     beginPaintStrokeUndo();
     isPainting.value = true;
     paintLastCell.value = cell;
-    paintCell(cell, paletteIndex);
+    if (eraseMode.value) {
+      eraseCell(cell);
+    } else if (paletteIndex != null) {
+      paintCell(cell, paletteIndex);
+    }
     (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
     return;
   }
@@ -1172,7 +1198,7 @@ function onCanvasPointerMove(e: PointerEvent) {
     if (!cell || !paintLastCell.value || (cell.x === paintLastCell.value.x && cell.y === paintLastCell.value.y)) {
       return;
     }
-    if (paintTool.value === 'eraser') {
+    if (eraseMode.value) {
       paintLastCell.value = cell;
       eraseCell(cell);
       return;
@@ -1235,7 +1261,7 @@ function applyColorToSelected(paletteIndex: number) {
     return;
   }
   if (!selectedCells.value.length) {
-    layer.msg('请先在预览图中点击或拖拽选择豆格', { icon: 2 });
+    layer.msg('请先在预览图中点击或拖拽选择豆格', {icon: 2});
     return;
   }
   if (paletteIndex < 0 || paletteIndex >= resp.palette.length) {
@@ -1253,35 +1279,13 @@ function applyColorToSelected(paletteIndex: number) {
   syncPreviewBase64(resp);
 }
 
-function applyWhiteToSelected() {
-  const resp = generateResp.value;
-  if (!resp?.grid || !resp.palette) {
-    return;
-  }
-  if (!selectedCells.value.length) {
-    layer.msg('请先在预览图中点击或拖拽选择豆格', { icon: 2 });
-    return;
-  }
-  captureCanvasUndoState();
-  const index = whitePaletteIndex();
-  for (const c of selectedCells.value) {
-    const row = resp.grid[c.y];
-    if (row && c.x >= 0 && c.x < row.length) {
-      row[c.x] = index;
-    }
-  }
-  lastAppliedColor.value = index;
-  renderInteractiveGrid();
-  syncPreviewBase64(resp);
-}
-
 function eraseSelectedCells() {
   const resp = generateResp.value;
   if (!resp?.grid) {
     return;
   }
   if (!selectedCells.value.length) {
-    layer.msg('???????????', { icon: 2 });
+    layer.msg('请先在预览图中点击或拖拽选择豆格', {icon: 2});
     return;
   }
   let hasChange = false;
@@ -1293,7 +1297,7 @@ function eraseSelectedCells() {
     }
   }
   if (!hasChange) {
-    layer.msg('?????????', { icon: 2 });
+    layer.msg('所选豆格已经是无颜色状态', {icon: 2});
     return;
   }
   captureCanvasUndoState();
@@ -1310,38 +1314,19 @@ function eraseSelectedCells() {
 }
 
 function handlePaletteClick(paletteIndex: number) {
-  if (paintMode.value) {
-    lastAppliedColor.value = paletteIndex;
+  if (selectMode.value) {
+    applyColorToSelected(paletteIndex);
     return;
   }
-  applyColorToSelected(paletteIndex);
+  lastAppliedColor.value = paletteIndex;
 }
 
-function handleWhitePaletteClick() {
-  const index = whitePaletteIndex();
-  if (paintMode.value) {
-    lastAppliedColor.value = index;
+function handleNoColorClick() {
+  if (selectMode.value) {
+    eraseSelectedCells();
     return;
   }
-  applyWhiteToSelected();
-}
-
-/**
- * 返回白色在色板中的下标；若色板尚无白色，则在末尾追加 T1 白色。
- * 空豆格（去背景的外围）仍保持 null，不会被标色或计入用量。
- */
-function whitePaletteIndex(): number {
-  const resp = generateResp.value;
-  if (!resp?.palette) {
-    return -1;
-  }
-  const existing = resp.palette.findIndex(color => (color.hex || '').toUpperCase() === '#FFFFFF');
-  if (existing >= 0) {
-    return existing;
-  }
-  const index = resp.palette.length;
-  resp.palette.push({ index: index + 1, code: 'T1', hex: '#FFFFFF' });
-  return index;
+  editMode.value = 'erase';
 }
 
 // 一次性测量容器宽度后固定画布大小，不再随窗口变化自动缩放。
@@ -1364,7 +1349,7 @@ watch([activeStep, generateResp], () => {
     isDragging.value = false;
     isPainting.value = false;
     paintLastCell.value = null;
-    paintMode.value = true;
+    editMode.value = 'paint';
     paintTool.value = 'brush';
     lastAppliedColor.value = null;
     nextTick(() => {
@@ -1376,7 +1361,7 @@ watch([activeStep, generateResp], () => {
 
 async function handleGenerate() {
   if (!sourceFile.value) {
-    layer.msg('??????', { icon: 2 });
+    layer.msg('请先上传图片', {icon: 2});
     return;
   }
   generating.value = true;
@@ -1397,12 +1382,12 @@ async function handleGenerate() {
       confirmResp.value = null;
       canvasUndoStack.value = [];
       activeStep.value = 1;
-      layer.msg('预览生成成功', { icon: 1 });
+      layer.msg('预览生成成功', {icon: 1});
     } else if (res.code !== 500) {
-      layer.msg(res.msg || '生成失败', { icon: 2 });
+      layer.msg(res.msg || '生成失败', {icon: 2});
     }
   } catch (e: any) {
-    layer.msg(e?.msg || '生成失败，请稍后重试', { icon: 2 });
+    layer.msg(e?.msg || '生成失败，请稍后重试', {icon: 2});
   } finally {
     generating.value = false;
   }
@@ -1410,12 +1395,12 @@ async function handleGenerate() {
 
 function openCompare() {
   if (!sourceImageUrl.value) {
-    layer.msg('暂无原图可对比', { icon: 2 });
+    layer.msg('暂无原图可对比', {icon: 2});
     return;
   }
   const preview = generateResp.value?.grid && generateResp.value?.palette?.length
-    ? renderComparePreviewFromGrid(generateResp.value.grid, generateResp.value.palette)
-    : (generateResp.value?.previewBase64 || '');
+      ? renderComparePreviewFromGrid(generateResp.value.grid, generateResp.value.palette)
+      : (generateResp.value?.previewBase64 || '');
   layer.open({
     type: 1,
     title: '原图与拼豆预览对比',
@@ -1427,8 +1412,8 @@ function openCompare() {
         <div style="flex: 1 1 260px; min-width: 240px; text-align: center;">
           <div style="font-weight: 600; margin-bottom: 8px; color: #162033;">拼豆预览</div>
           ${preview
-            ? `<img src="${preview}" style="max-width: 100%; max-height: 420px; border: 1px solid #edf1f7; border-radius: 8px; background: #fff; object-fit: contain;" />`
-            : '<div style="color: #7d869f; padding: 48px 0;">暂无预览</div>'}
+        ? `<img src="${preview}" style="max-width: 100%; max-height: 420px; border: 1px solid #edf1f7; border-radius: 8px; background: #fff; object-fit: contain;" />`
+        : '<div style="color: #7d869f; padding: 48px 0;">暂无预览</div>'}
         </div>
       </div>`,
     shade: true,
@@ -1448,7 +1433,7 @@ function openCompare() {
 function openConfirm() {
   const preview = generateResp.value?.previewBase64;
   if (!preview) {
-    layer.msg('请先生成预览图', { icon: 2 });
+    layer.msg('请先生成预览图', {icon: 2});
     return;
   }
   layer.open({
@@ -1482,7 +1467,7 @@ function openConfirm() {
 async function doConfirmGenerate() {
   const resp = generateResp.value;
   if (!resp) {
-    layer.msg('请先生成预览图', { icon: 2 });
+    layer.msg('请先生成预览图', {icon: 2});
     return;
   }
   try {
@@ -1497,19 +1482,19 @@ async function doConfirmGenerate() {
     if (res.code === 200) {
       confirmResp.value = res.data || null;
       activeStep.value = 2;
-      layer.msg('拼豆图纸生成成功', { icon: 1 });
+      layer.msg('拼豆图纸生成成功', {icon: 1});
     } else if (res.code !== 500) {
-      layer.msg(res.msg || '生成失败', { icon: 2 });
+      layer.msg(res.msg || '生成失败', {icon: 2});
     }
   } catch (e: any) {
-    layer.msg(e?.msg || '生成失败，请稍后重试', { icon: 2 });
+    layer.msg(e?.msg || '生成失败，请稍后重试', {icon: 2});
   }
 }
 
 function downloadPngClean() {
   const dataUrl = confirmResp.value?.patternPngCleanBase64;
   if (!dataUrl) {
-    layer.msg('暂无可下载的纯净 PNG 文件', { icon: 2 });
+    layer.msg('暂无可下载的纯净 PNG 文件', {icon: 2});
     return;
   }
   const a = document.createElement('a');
@@ -1523,7 +1508,7 @@ function downloadPngClean() {
 function downloadPng() {
   const dataUrl = confirmResp.value?.patternPngBase64;
   if (!dataUrl) {
-    layer.msg('暂无可下载的 PNG 文件', { icon: 2 });
+    layer.msg('暂无可下载的 PNG 文件', {icon: 2});
     return;
   }
   const a = document.createElement('a');
@@ -1537,10 +1522,10 @@ function downloadPng() {
 function downloadSvg() {
   const svg = confirmResp.value?.patternSvg;
   if (!svg) {
-    layer.msg('暂无可下载的 SVG 文件', { icon: 2 });
+    layer.msg('暂无可下载的 SVG 文件', {icon: 2});
     return;
   }
-  const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+  const blob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1958,8 +1943,9 @@ onBeforeUnmount(() => {
   border: 1px solid #d9e1ee;
 }
 
-.white-swatch {
-  background: #ffffff;
+.no-color-swatch {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 25%, rgba(238, 242, 247, 0.95) 25%, rgba(238, 242, 247, 0.95) 50%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.95) 75%, rgba(238, 242, 247, 0.95) 75%);
+  background-size: 10px 10px;
   box-shadow: inset 0 0 0 1px #e3e8f0;
 }
 

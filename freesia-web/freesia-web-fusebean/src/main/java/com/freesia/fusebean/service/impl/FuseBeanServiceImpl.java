@@ -92,7 +92,7 @@ public class FuseBeanServiceImpl implements FuseBeanService {
         if (useAiStyle) {
             pixelSource = preprocessSource(source, removeBg, flip);
             message = "由 " + properties.getAi().getModel() + " 按提示词重绘后生成";
-        } else if (source != null || UEmpty.isNotEmpty(prompt)) {
+        } else if (UEmpty.isNotEmpty(prompt)) {
             byte[] externalInput = imageBytes == null ? new byte[0] : imageBytes;
             if (source != null && (flip || removeBg)) {
                 BufferedImage transformed = preprocessSource(source, removeBg, flip);
