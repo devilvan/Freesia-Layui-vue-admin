@@ -71,4 +71,8 @@ const changeSelectedKey = (key: string) => {
   font-size: 12px!important;
   padding: 3px 0px;
 }
+
+.layui-side .layui-nav-tree .layui-nav-child {
+  margin-bottom: 0 !important;
+}
 </style>
