@@ -1,6 +1,10 @@
 package com.freesia.fusebean.util;
 
 import com.freesia.fusebean.vo.FuseBeanColorVo;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -23,46 +27,28 @@ import java.util.Map;
  * 并提供像素预览图、图纸网格图、SVG 矢量图、色号统计等渲染能力。
  * @date 2026-08-26
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FuseBeanPixelArtUtil {
 
     private static final String DATA_URL_PREFIX = "data:image/png;base64,";
 
-    private FuseBeanPixelArtUtil() {
-    }
-
     /**
      * 网格化结果
      */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GridResult {
-        /** grid[y][x] 存储色板索引 */
-        private final int[][] grid;
-        /** 色板 ARGB 颜色数组 */
-        private final int[] palette;
-        private final int width;
-        private final int height;
-
-        public GridResult(int[][] grid, int[] palette, int width, int height) {
-            this.grid = grid;
-            this.palette = palette;
-            this.width = width;
-            this.height = height;
-        }
-
-        public int[][] getGrid() {
-            return grid;
-        }
-
-        public int[] getPalette() {
-            return palette;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
+        /**
+         * grid[y][x] 存储色板索引
+         */
+        private int[][] grid;
+        /**
+         * 色板 ARGB 颜色数组
+         */
+        private int[] palette;
+        private int width;
+        private int height;
     }
 
     /**
@@ -366,8 +352,8 @@ public class FuseBeanPixelArtUtil {
     /**
      * 统计每个色号的使用数量
      *
-     * @param grid    网格数据
-     * @param palette 色板
+     * @param grid        网格数据
+     * @param paletteSize 色板大小
      * @return index -> count
      */
     public static int[] colorStats(List<List<Integer>> grid, int paletteSize) {
