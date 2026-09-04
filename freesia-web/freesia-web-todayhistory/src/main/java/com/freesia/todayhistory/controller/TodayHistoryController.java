@@ -1,5 +1,6 @@
 package com.freesia.todayhistory.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.freesia.controller.BaseController;
 import com.freesia.pojo.PageQuery;
 import com.freesia.exception.ServiceException;
@@ -37,12 +38,14 @@ public class TodayHistoryController extends BaseController {
         return todayHistoryService.findPage(queryVo, pageQuery);
     }
 
+    @SaIgnore
     @Operation(summary = "查询历史上的今天详情")
     @GetMapping("findTodayHistoryDetail/{historyKey}")
     public R<TodayHistoryPageDto> findTodayHistoryDetail(@PathVariable String historyKey) {
         return R.ok(todayHistoryService.findDetail(historyKey));
     }
 
+    @SaIgnore
     @Operation(summary = "手动同步指定日期")
     @PostMapping("syncTodayHistory")
     public R<TodayHistoryPageDto> syncTodayHistory(@RequestBody TodayHistorySyncVo syncVo) {
@@ -61,6 +64,7 @@ public class TodayHistoryController extends BaseController {
         return R.ok(todayHistoryService.syncDay(monthValue, dayValue, forceRefresh));
     }
 
+    @SaIgnore
     @Operation(summary = "同步全部历史上的今天页面")
     @PostMapping("syncAllTodayHistory")
     public R<List<TodayHistoryPageDto>> syncAllTodayHistory(@RequestBody(required = false) TodayHistorySyncVo syncVo) {

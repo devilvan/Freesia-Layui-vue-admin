@@ -1,10 +1,15 @@
-package com.freesia.todayhistory;
+package com.freesia.todayhistory.constant;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.Arrays;
 
 /**
  * 大事记时代分类。
  */
+@Getter
+@AllArgsConstructor
 public enum TodayHistoryEraType {
     PRE_19TH("PRE_19TH", "19世纪以前"),
     NINETEENTH("NINETEENTH", "19世纪"),
@@ -14,19 +19,6 @@ public enum TodayHistoryEraType {
 
     private final String code;
     private final String label;
-
-    TodayHistoryEraType(String code, String label) {
-        this.code = code;
-        this.label = label;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getLabel() {
-        return label;
-    }
 
     public static TodayHistoryEraType fromCode(String code) {
         if (code == null) {

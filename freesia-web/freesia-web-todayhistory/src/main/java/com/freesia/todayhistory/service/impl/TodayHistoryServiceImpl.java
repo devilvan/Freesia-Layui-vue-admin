@@ -24,6 +24,7 @@ import com.freesia.todayhistory.repository.TodayHistoryItemRepository;
 import com.freesia.todayhistory.repository.TodayHistoryLinkRepository;
 import com.freesia.todayhistory.repository.TodayHistoryPageRepository;
 import com.freesia.todayhistory.service.TodayHistoryService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopContext;
@@ -34,13 +35,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.criteria.Predicate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 历史上的今天业务实现。
@@ -279,8 +275,10 @@ public class TodayHistoryServiceImpl implements TodayHistoryService {
     }
 
     private String fetchPageHtml(String pageUrl) {
-        try (HttpResponse response = HttpRequest.get(pageUrl)
+        try (HttpResponse response = HttpRequest.post(pageUrl)
                 .header("User-Agent", WIKIPEDIA_USER_AGENT)
+                .header("Accept-Language", "zh-CN, zh;q=0.9")
+                .setHttpProxy("127.0.0.1", 7897)
                 .timeout(20000)
                 .execute()) {
             if (!response.isOk()) {

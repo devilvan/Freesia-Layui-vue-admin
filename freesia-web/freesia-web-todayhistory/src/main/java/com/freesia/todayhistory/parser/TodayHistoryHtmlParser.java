@@ -2,8 +2,8 @@ package com.freesia.todayhistory.parser;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import com.freesia.todayhistory.TodayHistoryEraType;
-import com.freesia.todayhistory.TodayHistoryItemType;
+import com.freesia.todayhistory.constant.TodayHistoryEraType;
+import com.freesia.todayhistory.constant.TodayHistoryItemType;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;

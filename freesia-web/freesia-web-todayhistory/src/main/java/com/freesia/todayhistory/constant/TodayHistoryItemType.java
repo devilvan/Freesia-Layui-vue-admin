@@ -1,10 +1,15 @@
-package com.freesia.todayhistory;
+package com.freesia.todayhistory.constant;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.Arrays;
 
 /**
  * 历史上的今天条目类型。
  */
+@Getter
+@AllArgsConstructor
 public enum TodayHistoryItemType {
     EVENT("EVENT", "大事记"),
     BIRTH("BIRTH", "出生"),
@@ -14,19 +19,6 @@ public enum TodayHistoryItemType {
 
     private final String code;
     private final String label;
-
-    TodayHistoryItemType(String code, String label) {
-        this.code = code;
-        this.label = label;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getLabel() {
-        return label;
-    }
 
     public static TodayHistoryItemType fromHeading(String heading) {
         if (heading == null) {
