@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.todayhistory.mapper.TodayHistoryPageMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.todayhistory.po.TodayHistoryPagePo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="MONTH_VALUE" property="monthValue"/>
+        <result column="DAY_VALUE" property="dayValue"/>
+        <result column="HISTORY_KEY" property="historyKey"/>
+        <result column="PAGE_TITLE" property="pageTitle"/>
+        <result column="PAGE_URL" property="pageUrl"/>
+        <result column="CONTENT_HASH" property="contentHash"/>
+        <result column="LAST_SYNC_TIME" property="lastSyncTime"/>
+        <result column="ITEM_COUNT" property="itemCount"/>
+        <result column="RAW_HTML" property="rawHtml"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, MONTH_VALUE, DAY_VALUE, HISTORY_KEY, PAGE_TITLE, PAGE_URL, CONTENT_HASH, LAST_SYNC_TIME, ITEM_COUNT, RAW_HTML
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_PAGE
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.monthValue != null">
+            AND MONTH_VALUE = #{dto.monthValue}
+        </if>
+        <if test="dto.dayValue != null">
+            AND DAY_VALUE = #{dto.dayValue}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.pageTitle != null and dto.pageTitle != ''">
+            AND PAGE_TITLE = #{dto.pageTitle}
+        </if>
+        <if test="dto.pageUrl != null and dto.pageUrl != ''">
+            AND PAGE_URL = #{dto.pageUrl}
+        </if>
+        <if test="dto.contentHash != null and dto.contentHash != ''">
+            AND CONTENT_HASH = #{dto.contentHash}
+        </if>
+        <if test="dto.lastSyncTime != null">
+            AND LAST_SYNC_TIME = #{dto.lastSyncTime}
+        </if>
+        <if test="dto.itemCount != null">
+            AND ITEM_COUNT = #{dto.itemCount}
+        </if>
+        <if test="dto.rawHtml != null and dto.rawHtml != ''">
+            AND RAW_HTML = #{dto.rawHtml}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_PAGE
+        WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}}
+        </if>
+        <if test="dto.monthValue != null">
+            AND MONTH_VALUE = #{dto.monthValue}
+        </if>
+        <if test="dto.dayValue != null">
+            AND DAY_VALUE = #{dto.dayValue}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.pageTitle != null and dto.pageTitle != ''">
+            AND PAGE_TITLE = #{dto.pageTitle}
+        </if>
+        <if test="dto.pageUrl != null and dto.pageUrl != ''">
+            AND PAGE_URL = #{dto.pageUrl}
+        </if>
+        <if test="dto.contentHash != null and dto.contentHash != ''">
+            AND CONTENT_HASH = #{dto.contentHash}
+        </if>
+        <if test="dto.lastSyncTime != null">
+            AND LAST_SYNC_TIME = #{dto.lastSyncTime}
+        </if>
+        <if test="dto.itemCount != null">
+            AND ITEM_COUNT = #{dto.itemCount}
+        </if>
+        <if test="dto.rawHtml != null and dto.rawHtml != ''">
+            AND RAW_HTML = #{dto.rawHtml}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_PAGE
+        WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}}
+        </if>
+        <if test="dto.monthValue != null">
+            AND MONTH_VALUE = #{dto.monthValue}
+        </if>
+        <if test="dto.dayValue != null">
+            AND DAY_VALUE = #{dto.dayValue}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.pageTitle != null and dto.pageTitle != ''">
+            AND PAGE_TITLE = #{dto.pageTitle}
+        </if>
+        <if test="dto.pageUrl != null and dto.pageUrl != ''">
+            AND PAGE_URL = #{dto.pageUrl}
+        </if>
+        <if test="dto.contentHash != null and dto.contentHash != ''">
+            AND CONTENT_HASH = #{dto.contentHash}
+        </if>
+        <if test="dto.lastSyncTime != null">
+            AND LAST_SYNC_TIME = #{dto.lastSyncTime}
+        </if>
+        <if test="dto.itemCount != null">
+            AND ITEM_COUNT = #{dto.itemCount}
+        </if>
+        <if test="dto.rawHtml != null and dto.rawHtml != ''">
+            AND RAW_HTML = #{dto.rawHtml}
+        </if>
+        LIMIT 1
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO TODAY_HISTORY_PAGE
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        MONTH_VALUE, 
+        DAY_VALUE, 
+        HISTORY_KEY, 
+        PAGE_TITLE, 
+        PAGE_URL, 
+        CONTENT_HASH, 
+        LAST_SYNC_TIME, 
+        ITEM_COUNT, 
+        RAW_HTML
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.monthValue}, 
+            #{item.dayValue}, 
+            #{item.historyKey}, 
+            #{item.pageTitle}, 
+            #{item.pageUrl}, 
+            #{item.contentHash}, 
+            #{item.lastSyncTime}, 
+            #{item.itemCount}, 
+            #{item.rawHtml}
+            )
+        </foreach>
+    </insert>
+</mapper>

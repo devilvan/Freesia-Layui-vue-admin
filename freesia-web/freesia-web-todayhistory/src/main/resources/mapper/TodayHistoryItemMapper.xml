@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.todayhistory.mapper.TodayHistoryItemMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.todayhistory.po.TodayHistoryItemPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="PAGE_ID" property="pageId"/>
+        <result column="HISTORY_KEY" property="historyKey"/>
+        <result column="ITEM_TYPE" property="itemType"/>
+        <result column="ERA_TYPE" property="eraType"/>
+        <result column="SECTION_TITLE" property="sectionTitle"/>
+        <result column="EVENT_YEAR" property="eventYear"/>
+        <result column="SORT_NO" property="sortNo"/>
+        <result column="ITEM_HASH" property="itemHash"/>
+        <result column="CONTENT" property="content"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, PAGE_ID, HISTORY_KEY, ITEM_TYPE, ERA_TYPE, SECTION_TITLE, EVENT_YEAR, SORT_NO, ITEM_HASH, CONTENT
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_ITEM
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.pageId != null">
+            AND PAGE_ID = #{dto.pageId}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.itemType != null and dto.itemType != ''">
+            AND ITEM_TYPE = #{dto.itemType}
+        </if>
+        <if test="dto.eraType != null and dto.eraType != ''">
+            AND ERA_TYPE = #{dto.eraType}
+        </if>
+        <if test="dto.sectionTitle != null and dto.sectionTitle != ''">
+            AND SECTION_TITLE = #{dto.sectionTitle}
+        </if>
+        <if test="dto.eventYear != null">
+            AND EVENT_YEAR = #{dto.eventYear}
+        </if>
+        <if test="dto.sortNo != null">
+            AND SORT_NO = #{dto.sortNo}
+        </if>
+        <if test="dto.itemHash != null and dto.itemHash != ''">
+            AND ITEM_HASH = #{dto.itemHash}
+        </if>
+        <if test="dto.content != null and dto.content != ''">
+            AND CONTENT = #{dto.content}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_ITEM
+        WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}}
+        </if>
+        <if test="dto.pageId != null">
+            AND PAGE_ID = #{dto.pageId}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.itemType != null and dto.itemType != ''">
+            AND ITEM_TYPE = #{dto.itemType}
+        </if>
+        <if test="dto.eraType != null and dto.eraType != ''">
+            AND ERA_TYPE = #{dto.eraType}
+        </if>
+        <if test="dto.sectionTitle != null and dto.sectionTitle != ''">
+            AND SECTION_TITLE = #{dto.sectionTitle}
+        </if>
+        <if test="dto.eventYear != null">
+            AND EVENT_YEAR = #{dto.eventYear}
+        </if>
+        <if test="dto.sortNo != null">
+            AND SORT_NO = #{dto.sortNo}
+        </if>
+        <if test="dto.itemHash != null and dto.itemHash != ''">
+            AND ITEM_HASH = #{dto.itemHash}
+        </if>
+        <if test="dto.content != null and dto.content != ''">
+            AND CONTENT = #{dto.content}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_ITEM
+        WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}}
+        </if>
+        <if test="dto.pageId != null">
+            AND PAGE_ID = #{dto.pageId}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.itemType != null and dto.itemType != ''">
+            AND ITEM_TYPE = #{dto.itemType}
+        </if>
+        <if test="dto.eraType != null and dto.eraType != ''">
+            AND ERA_TYPE = #{dto.eraType}
+        </if>
+        <if test="dto.sectionTitle != null and dto.sectionTitle != ''">
+            AND SECTION_TITLE = #{dto.sectionTitle}
+        </if>
+        <if test="dto.eventYear != null">
+            AND EVENT_YEAR = #{dto.eventYear}
+        </if>
+        <if test="dto.sortNo != null">
+            AND SORT_NO = #{dto.sortNo}
+        </if>
+        <if test="dto.itemHash != null and dto.itemHash != ''">
+            AND ITEM_HASH = #{dto.itemHash}
+        </if>
+        <if test="dto.content != null and dto.content != ''">
+            AND CONTENT = #{dto.content}
+        </if>
+        LIMIT 1
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO TODAY_HISTORY_ITEM
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        PAGE_ID, 
+        HISTORY_KEY, 
+        ITEM_TYPE, 
+        ERA_TYPE, 
+        SECTION_TITLE, 
+        EVENT_YEAR, 
+        SORT_NO, 
+        ITEM_HASH, 
+        CONTENT
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.pageId}, 
+            #{item.historyKey}, 
+            #{item.itemType}, 
+            #{item.eraType}, 
+            #{item.sectionTitle}, 
+            #{item.eventYear}, 
+            #{item.sortNo}, 
+            #{item.itemHash}, 
+            #{item.content}
+            )
+        </foreach>
+    </insert>
+</mapper>

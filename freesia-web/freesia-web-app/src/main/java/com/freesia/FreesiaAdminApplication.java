@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.freesia.account.mapper",
         "com.freesia.icon.mapper",
         "com.freesia.worldclock.mapper",
+        "com.freesia.todayhistory.mapper",
         "com.freesia.deepseek.mapper",
 }, sqlSessionFactoryRef = "mysqlSqlSessionFactory")
 @EnableJpaRepositories(basePackages = {
@@ -36,6 +37,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.freesia.account.repository",
         "com.freesia.icon.repository",
         "com.freesia.worldclock.repository",
+        "com.freesia.todayhistory.repository",
         "com.freesia.deepseek.repository",
 })
 @EntityScan(basePackages = {
@@ -43,6 +45,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.freesia.account.po",
         "com.freesia.icon.po",
         "com.freesia.worldclock.po",
+        "com.freesia.todayhistory.po",
         "com.freesia.deepseek.po",
 })
 public class FreesiaAdminApplication {

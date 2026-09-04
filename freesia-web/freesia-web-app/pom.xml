@@ -156,6 +156,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.freesia</groupId>
+            <artifactId>freesia-web-todayhistory</artifactId>
+            <version>${freesia.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

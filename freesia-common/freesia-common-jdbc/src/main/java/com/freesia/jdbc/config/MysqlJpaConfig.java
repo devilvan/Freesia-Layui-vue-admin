@@ -49,7 +49,8 @@ public class MysqlJpaConfig {
                         "com.freesia.account.po",
                         "com.freesia.icon.po",
                         "com.freesia.worldclock.po",
-                        "com.freesia.deepseek.po")
+                        "com.freesia.deepseek.po",
+                        "com.freesia.todayhistory.po")
                 .persistenceUnit("mysql")
                 .properties(properties)
                 .build();

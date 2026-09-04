@@ -24,7 +24,7 @@ public class ${dataBaseDto.className}Vo extends BaseVo {
     <#list dataBaseDto.fieldList as field>
     @Schema(description = "${field.remark ! ''}")
     @JsonAlias(value = {"${field.fieldName}"})
-    private <#if field.columnType == 'BIT'>Boolean<#else>${field.javaType}</#if> ${field.fieldName};
+    private ${field.javaType} ${field.fieldName};
     </#list>
 </#if>
 }

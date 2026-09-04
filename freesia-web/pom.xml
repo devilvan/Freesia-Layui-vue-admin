@@ -21,6 +21,7 @@
         <module>freesia-web-worldclock</module>
         <module>freesia-web-chat</module>
         <module>freesia-web-fusebean</module>
+        <module>freesia-web-todayhistory</module>
     </modules>
 
     <dependencyManagement>
@@ -175,6 +176,11 @@
             <dependency>
                 <groupId>com.freesia</groupId>
                 <artifactId>freesia-web-fusebean</artifactId>
+                <version>${freesia.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.freesia</groupId>
+                <artifactId>freesia-web-todayhistory</artifactId>
                 <version>${freesia.version}</version>
             </dependency>
         </dependencies>

@@ -62,11 +62,11 @@ public class CodeGenerator {
             generateVo(dataBaseDto);
             generateDto(dataBaseDto);
             generatePo(dataBaseDto);
-            generateController(dataBaseDto);
-            generateService(dataBaseDto);
-            generateServiceImpl(dataBaseDto);
+//            generateController(dataBaseDto);
+//            generateService(dataBaseDto);
+//            generateServiceImpl(dataBaseDto);
             generateConverter(dataBaseDto);
-            generateRepository(dataBaseDto);
+//            generateRepository(dataBaseDto);
             generateMapper(dataBaseDto);
             generateMapperXml(dataBaseDto);
 
@@ -102,6 +102,9 @@ public class CodeGenerator {
         } else {
             packageName = pro.get("packageName").toString();
         }
+        for (String name : pro.stringPropertyNames()) {
+            map.put(name, pro.getProperty(name));
+        }
         map.put("tableName", tableName);
         map.put("projectDirectory", projectDirectory);
         map.put("secondaryModule", secondaryModule);
@@ -124,10 +127,10 @@ public class CodeGenerator {
         YamlPropertiesFactoryBean ymlFactory = new YamlPropertiesFactoryBean();
         ymlFactory.setResources(resource);
         Properties pro = Optional.ofNullable(ymlFactory.getObject()).orElseThrow(() -> new BaseException("获取配置失败！"));
-        String driver = String.valueOf(pro.get("spring.datasource.driver-class-name"));
-        String url = String.valueOf(pro.get("spring.datasource.url"));
-        String uname = String.valueOf(pro.get("spring.datasource.username"));
-        String pwd = String.valueOf(pro.get("spring.datasource.password"));
+        String driver = resolveRequiredProperty(pro, "spring.datasource.mysql.driver-class-name", "spring.datasource.driver-class-name");
+        String url = resolveRequiredProperty(pro, "spring.datasource.mysql.jdbc-url", "spring.datasource.mysql.url", "spring.datasource.url");
+        String uname = resolveRequiredProperty(pro, "spring.datasource.mysql.username", "spring.datasource.username");
+        String pwd = resolveRequiredProperty(pro, "spring.datasource.mysql.password", "spring.datasource.password");
         TableDto tbDto = new TableDto(driver, url, uname, pwd);
         tbDto.setTableList(tableList);
         return tbDto;
@@ -139,6 +142,28 @@ public class CodeGenerator {
      * @param tbDto 数据源信息
      * @return 数据表、字段信息
      */
+    private static String resolveRequiredProperty(Properties pro, String... keys) {
+        for (String key : keys) {
+            String value = resolveProperty(pro, key);
+            if (StrUtil.isNotBlank(value)) {
+                return value;
+            }
+        }
+        throw new BaseException("缺少数据库连接配置，请检查 basic.properties 或 application.yml");
+    }
+
+    private static String resolveProperty(Properties pro, String key) {
+        Object value = basicMap.get(key);
+        if (value != null && StrUtil.isNotBlank(value.toString()) && !"null".equalsIgnoreCase(value.toString())) {
+            return value.toString().trim();
+        }
+        value = pro.get(key);
+        if (value != null && StrUtil.isNotBlank(value.toString()) && !"null".equalsIgnoreCase(value.toString())) {
+            return value.toString().trim();
+        }
+        return null;
+    }
+
     private static List<DataBaseDto> printTableStructure(TableDto tbDto) {
         List<DataBaseDto> dataBaseDtoList = new ArrayList<>();
         // 每张表默认的审计字段，在生成的Model中只显示业务字段，而通过继承一个BasePo管理这些审计字段

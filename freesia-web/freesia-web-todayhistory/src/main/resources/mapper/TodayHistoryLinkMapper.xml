@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freesia.todayhistory.mapper.TodayHistoryLinkMapper">
+    <resultMap id="BaseResultMap" type="com.freesia.todayhistory.po.TodayHistoryLinkPo">
+        <id column="ID" property="id"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER" property="modifier"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LOGIC_DEL" property="logicDel"/>
+        <result column="REC_VER" property="recVer"/>
+        <result column="BUILD_IN" property="buildIn"/>
+        <result column="TENANT_ID" property="tenantId"/>
+        <result column="PAGE_ID" property="pageId"/>
+        <result column="ITEM_ID" property="itemId"/>
+        <result column="HISTORY_KEY" property="historyKey"/>
+        <result column="LINK_TEXT" property="linkText"/>
+        <result column="LINK_URL" property="linkUrl"/>
+        <result column="LINK_TITLE" property="linkTitle"/>
+        <result column="INTERNAL_FLAG" property="internalFlag"/>
+        <result column="SORT_NO" property="sortNo"/>
+        <result column="LINK_HASH" property="linkHash"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, PAGE_ID, ITEM_ID, HISTORY_KEY, LINK_TEXT, LINK_URL, LINK_TITLE, INTERNAL_FLAG, SORT_NO, LINK_HASH
+    </sql>
+    <select id="findPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_LINK
+        WHERE
+        LOGIC_DEL = 0
+        <if test="dto.pageId != null">
+            AND PAGE_ID = #{dto.pageId}
+        </if>
+        <if test="dto.itemId != null">
+            AND ITEM_ID = #{dto.itemId}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.linkText != null and dto.linkText != ''">
+            AND LINK_TEXT = #{dto.linkText}
+        </if>
+        <if test="dto.linkUrl != null and dto.linkUrl != ''">
+            AND LINK_URL = #{dto.linkUrl}
+        </if>
+        <if test="dto.linkTitle != null and dto.linkTitle != ''">
+            AND LINK_TITLE = #{dto.linkTitle}
+        </if>
+        <if test="dto.internalFlag != null and dto.internalFlag != ''">
+            AND INTERNAL_FLAG = #{dto.internalFlag}
+        </if>
+        <if test="dto.sortNo != null">
+            AND SORT_NO = #{dto.sortNo}
+        </if>
+        <if test="dto.linkHash != null and dto.linkHash != ''">
+            AND LINK_HASH = #{dto.linkHash}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_LINK
+        WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}}
+        </if>
+        <if test="dto.pageId != null">
+            AND PAGE_ID = #{dto.pageId}
+        </if>
+        <if test="dto.itemId != null">
+            AND ITEM_ID = #{dto.itemId}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.linkText != null and dto.linkText != ''">
+            AND LINK_TEXT = #{dto.linkText}
+        </if>
+        <if test="dto.linkUrl != null and dto.linkUrl != ''">
+            AND LINK_URL = #{dto.linkUrl}
+        </if>
+        <if test="dto.linkTitle != null and dto.linkTitle != ''">
+            AND LINK_TITLE = #{dto.linkTitle}
+        </if>
+        <if test="dto.internalFlag != null and dto.internalFlag != ''">
+            AND INTERNAL_FLAG = #{dto.internalFlag}
+        </if>
+        <if test="dto.sortNo != null">
+            AND SORT_NO = #{dto.sortNo}
+        </if>
+        <if test="dto.linkHash != null and dto.linkHash != ''">
+            AND LINK_HASH = #{dto.linkHash}
+        </if>
+        ORDER BY MODIFY_TIME DESC
+    </select>
+    <select id="findOne" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_LINK
+        WHERE LOGIC_DEL = 0
+        <if test="dto.id != null">
+            AND ID = #{dto.id}}
+        </if>
+        <if test="dto.pageId != null">
+            AND PAGE_ID = #{dto.pageId}
+        </if>
+        <if test="dto.itemId != null">
+            AND ITEM_ID = #{dto.itemId}
+        </if>
+        <if test="dto.historyKey != null and dto.historyKey != ''">
+            AND HISTORY_KEY = #{dto.historyKey}
+        </if>
+        <if test="dto.linkText != null and dto.linkText != ''">
+            AND LINK_TEXT = #{dto.linkText}
+        </if>
+        <if test="dto.linkUrl != null and dto.linkUrl != ''">
+            AND LINK_URL = #{dto.linkUrl}
+        </if>
+        <if test="dto.linkTitle != null and dto.linkTitle != ''">
+            AND LINK_TITLE = #{dto.linkTitle}
+        </if>
+        <if test="dto.internalFlag != null and dto.internalFlag != ''">
+            AND INTERNAL_FLAG = #{dto.internalFlag}
+        </if>
+        <if test="dto.sortNo != null">
+            AND SORT_NO = #{dto.sortNo}
+        </if>
+        <if test="dto.linkHash != null and dto.linkHash != ''">
+            AND LINK_HASH = #{dto.linkHash}
+        </if>
+        LIMIT 1
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO TODAY_HISTORY_LINK
+        (
+        ID,
+        CREATOR,
+        CREATE_TIME,
+        MODIFIER,
+        MODIFY_TIME,
+        LOGIC_DEL,
+        REC_VER,
+        BUILD_IN,
+        TENANT_ID,
+        PAGE_ID, 
+        ITEM_ID, 
+        HISTORY_KEY, 
+        LINK_TEXT, 
+        LINK_URL, 
+        LINK_TITLE, 
+        INTERNAL_FLAG, 
+        SORT_NO, 
+        LINK_HASH
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.creator},
+            #{item.createTime},
+            #{item.modifier},
+            #{item.modifyTime},
+            #{item.logicDel},
+            #{item.recVer},
+            #{item.buildIn},
+            #{item.tenantId},
+            #{item.pageId}, 
+            #{item.itemId}, 
+            #{item.historyKey}, 
+            #{item.linkText}, 
+            #{item.linkUrl}, 
+            #{item.linkTitle}, 
+            #{item.internalFlag}, 
+            #{item.sortNo}, 
+            #{item.linkHash}
+            )
+        </foreach>
+    </insert>
+</mapper>

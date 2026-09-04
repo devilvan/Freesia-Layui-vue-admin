@@ -3,7 +3,7 @@ project:
 ---
 spring:
   profiles:
-    # 闁哄秷顫夊畵浣姐亹閹惧啿顤呮繛鍙夋缁岊剟鎮抽姘兼殧闁圭娲ら悾鍓р偓鐢垫嚀缁ㄦ煡鎯?application闁哄倸娲ｅ▎?
+    # 根据当前活跃环境指定对应的 application文件
     active: @profiles.active@
 ---
 spring:
