@@ -275,12 +275,23 @@ public class TodayHistoryServiceImpl implements TodayHistoryService {
     }
 
     private String fetchPageHtml(String pageUrl) {
-        try (HttpResponse response = HttpRequest.post(pageUrl)
+        try {
+            return doFetchPageHtml(pageUrl, true);
+        } catch (ServiceException proxyFailure) {
+            log.warn("代理抓取失败，尝试直连抓取: {}", proxyFailure.getMessage());
+            return doFetchPageHtml(pageUrl, false);
+        }
+    }
+
+    private String doFetchPageHtml(String pageUrl, boolean useProxy) {
+        HttpRequest request = HttpRequest.get(pageUrl)
                 .header("User-Agent", WIKIPEDIA_USER_AGENT)
                 .header("Accept-Language", "zh-CN, zh;q=0.9")
-                .setHttpProxy("127.0.0.1", 7897)
-                .timeout(20000)
-                .execute()) {
+                .timeout(20000);
+        if (useProxy) {
+            request.setHttpProxy("127.0.0.1", 7897);
+        }
+        try (HttpResponse response = request.execute()) {
             if (!response.isOk()) {
                 throw new ServiceException("抓取历史页面失败: " + response.getStatus());
             }

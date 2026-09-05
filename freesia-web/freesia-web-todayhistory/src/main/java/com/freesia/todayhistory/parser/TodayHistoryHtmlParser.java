@@ -53,7 +53,7 @@ public class TodayHistoryHtmlParser {
         int currentSort = 1;
         for (Element child : content.children()) {
             if (isHeading(child)) {
-                SectionState nextState = classifyHeading(child.text(), sectionState);
+                SectionState nextState = classifyHeading(extractHeadingText(child), sectionState);
                 if (!sectionState.isSameSection(nextState)) {
                     currentSort = 1;
                 }
@@ -100,13 +100,13 @@ public class TodayHistoryHtmlParser {
             state.sectionTitle = itemType.getLabel();
             return state;
         }
-        if (currentState.itemType == TodayHistoryItemType.EVENT) {
-            TodayHistoryEraType eraType = TodayHistoryEraType.fromHeading(normalized);
-            if (eraType != TodayHistoryEraType.NONE) {
-                SectionState state = currentState.copy();
-                state.eraType = eraType;
-                return state;
-            }
+        TodayHistoryEraType eraType = TodayHistoryEraType.fromHeading(normalized);
+        if (eraType != TodayHistoryEraType.NONE) {
+            SectionState state = currentState.itemType == TodayHistoryItemType.EVENT ? currentState.copy() : new SectionState();
+            state.itemType = TodayHistoryItemType.EVENT;
+            state.eraType = eraType;
+            state.sectionTitle = TodayHistoryItemType.EVENT.getLabel();
+            return state;
         }
         SectionState state = new SectionState();
         state.itemType = TodayHistoryItemType.UNKNOWN;
@@ -268,10 +268,22 @@ public class TodayHistoryHtmlParser {
             return true;
         }
         if ("div".equalsIgnoreCase(tagName)) {
+            // 维基百科新版标题常由 .mw-heading 容器包裹，直接看容器内的 h2/h3/h4 更稳。
+            if (element.selectFirst("h2, h3, h4") != null) {
+                return true;
+            }
             String text = normalizeText(element.text());
-            return StrUtil.isNotBlank(text) && text.endsWith("[编辑]");
+            return StrUtil.isNotBlank(text) && (text.endsWith("[编辑]") || text.endsWith("编辑"));
         }
         return false;
+    }
+
+    private String extractHeadingText(Element element) {
+        Element headingElement = element.selectFirst("h2, h3, h4");
+        if (headingElement != null) {
+            return headingElement.text();
+        }
+        return element.text();
     }
 
     private boolean isList(String tagName) {

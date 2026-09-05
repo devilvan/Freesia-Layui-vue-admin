@@ -28,13 +28,13 @@ public enum TodayHistoryItemType {
         if (normalized.contains("出生")) {
             return BIRTH;
         }
-        if (normalized.contains("逝世") || normalized.contains("死亡")) {
+        if (normalized.contains("逝世") || normalized.contains("死亡") || normalized.contains("辭世") || normalized.contains("辞世") || normalized.contains("去世")) {
             return DEATH;
         }
-        if (normalized.contains("节假日") || normalized.contains("习俗")) {
+        if (normalized.contains("节假日") || normalized.contains("習俗") || normalized.contains("习俗") || normalized.contains("節假日")) {
             return HOLIDAY;
         }
-        if (normalized.contains("大事记") || normalized.contains("事件") || normalized.contains("历史")) {
+        if (normalized.contains("大事记") || normalized.contains("大事紀") || normalized.contains("事件") || normalized.contains("历史") || normalized.contains("歷史")) {
             return EVENT;
         }
         return UNKNOWN;

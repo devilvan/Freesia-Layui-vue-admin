@@ -2,6 +2,8 @@ package com.freesia.todayhistory.repository;
 
 import com.freesia.todayhistory.po.TodayHistoryLinkPo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,5 +15,7 @@ import java.util.List;
 public interface TodayHistoryLinkRepository extends JpaRepository<TodayHistoryLinkPo, Long> {
     List<TodayHistoryLinkPo> findByPageIdOrderBySortNoAsc(Long pageId);
 
-    void deleteByPageId(Long pageId);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete from TodayHistoryLinkPo link where link.pageId = :pageId")
+    int deleteByPageId(Long pageId);
 }

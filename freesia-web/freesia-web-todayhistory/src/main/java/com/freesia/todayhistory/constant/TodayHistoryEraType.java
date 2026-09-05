@@ -35,16 +35,16 @@ public enum TodayHistoryEraType {
             return NONE;
         }
         String normalized = heading.replace(" ", "");
-        if (normalized.contains("前19世纪") || normalized.contains("19世纪以前") || normalized.contains("公元前")) {
+        if (normalized.contains("前19世纪") || normalized.contains("18世纪以前") || normalized.contains("18世紀以前") || normalized.contains("19世纪以前") || normalized.contains("19世紀以前") || normalized.contains("公元前")) {
             return PRE_19TH;
         }
-        if (normalized.contains("21世纪")) {
+        if (normalized.contains("21世纪") || normalized.contains("21世紀")) {
             return TWENTY_FIRST;
         }
-        if (normalized.contains("20世纪")) {
+        if (normalized.contains("20世纪") || normalized.contains("20世紀")) {
             return TWENTIETH;
         }
-        if (normalized.contains("19世纪")) {
+        if (normalized.contains("19世纪") || normalized.contains("19世紀")) {
             return NINETEENTH;
         }
         return NONE;

@@ -11,49 +11,62 @@ export const constantRoutes = [
     {
         path: '/login',
         component: Login,
-        meta: {title: '登录页面'},
+        meta: {title: '鐧诲綍椤甸潰'},
     },
     {
         path: '/workSpace',
         redirect: '/workSpace/worldclock/index',
         component: BaseLayout,
-        meta: {title: '世界时钟'},
+        meta: {title: '涓栫晫鏃堕挓'},
     },
     {
         path: '/oauth/callback/:provider',
         component: () => import('@/views/login/oauthCallback.vue'),
-        meta: {title: 'OAuth 登录回调'},
+        meta: {title: 'OAuth 鐧诲綍鍥炶皟'},
     },
     {
         path: '/chat/deepseek',
         component: BaseLayout,
-        meta: {title: 'DeepSeek AI 对话'},
+        meta: {title: 'DeepSeek AI 瀵硅瘽'},
         children: [
             {
                 path: 'index',
                 component: () => import('@/views/chat/deepseek/index.vue'),
                 name: 'DeepseekChat',
-                meta: {title: 'DeepSeek AI 对话', affix: false, cache: false, closable: true}
+                meta: {title: 'DeepSeek AI 瀵硅瘽', affix: false, cache: false, closable: true}
             }
         ]
     },
     {
         path: '/fusebean/home',
         component: BaseLayout,
-        meta: {title: '拼豆图纸'},
+        meta: {title: '鎷艰眴鍥剧焊'},
         children: [
             {
                 path: 'index',
                 component: () => import('@/views/fusebean/home/index.vue'),
                 name: 'FuseBeanHome',
-                meta: {title: '拼豆图纸生成', affix: false, cache: false, closable: true}
+                meta: {title: '鎷艰眴鍥剧焊鐢熸垚', affix: false, cache: false, closable: true}
+            }
+        ]
+    },
+    {
+        path: '/workSpace/todayhistory',
+        component: BaseLayout,
+        meta: {title: '鍘嗗彶涓婄殑浠婂ぉ'},
+        children: [
+            {
+                path: 'index',
+                component: () => import('@/views/workSpace/todayhistory/index.vue'),
+                name: 'TodayHistory',
+                meta: {title: '鍘嗗彶涓婄殑浠婂ぉ', affix: false, cache: false, closable: true}
             }
         ]
     },
     {
         path: '/error/:code',
         component: ErrorCode,
-        meta: {title: '错误页面'},
+        meta: {title: '閿欒椤甸潰'},
     },
     {
         path: "/:pathMatch(.*)*",
@@ -74,7 +87,7 @@ export const dynamicRoutes = [
                 path: 'assignRole/:userId(\\d+)',
                 component: () => import('@/views/system/user/assignRole.vue'),
                 name: 'UserAssignRole',
-                meta: {title: '分配角色', affix: false, cache: false, closable: true}
+                meta: {title: '鍒嗛厤瑙掕壊', affix: false, cache: false, closable: true}
             }
         ]
     },
@@ -88,7 +101,7 @@ export const dynamicRoutes = [
                 path: 'assignUser/:roleId(\\d+)',
                 component: () => import('@/views/system/role/assignUser.vue'),
                 name: 'RoleAssignUser',
-                meta: {title: '分配用户', affix: false, cache: false, closable: true}
+                meta: {title: '鍒嗛厤鐢ㄦ埛', affix: false, cache: false, closable: true}
             }
         ]
     },
@@ -102,7 +115,7 @@ export const dynamicRoutes = [
                 path: 'assignButton/:roleId(\\d+)',
                 component: () => import('@/views/system/role/assignButton.vue'),
                 name: 'RoleAssignButton',
-                meta: {title: '分配按钮权限', affix: false, cache: false, closable: true}
+                meta: {title: '鍒嗛厤鎸夐挳鏉冮檺', affix: false, cache: false, closable: true}
             }
         ]
     },
@@ -116,7 +129,7 @@ export const dynamicRoutes = [
                 path: 'assignUser/:tenantId(\\d+)',
                 component: () => import('@/views/system/tenant/assignUser.vue'),
                 name: 'TenantAssignUser',
-                meta: {title: '分配用户', affix: false, cache: false, closable: true}
+                meta: {title: '鍒嗛厤鐢ㄦ埛', affix: false, cache: false, closable: true}
             }
         ]
     },
@@ -130,7 +143,7 @@ export const dynamicRoutes = [
                 path: 'assignRole/:deptId(\\d+)',
                 component: () => import('@/views/system/dept/assignRole.vue'),
                 name: 'DeptAssignRole',
-                meta: {title: '分配用户', affix: false, cache: false, closable: true}
+                meta: {title: '鍒嗛厤鐢ㄦ埛', affix: false, cache: false, closable: true}
             }
         ]
     },
@@ -144,7 +157,7 @@ export const dynamicRoutes = [
                 path: 'iconTemplateDetail/:headerId(\\d+)',
                 component: () => import('@/views/common/iconTemplate/iconTemplateDetail.vue'),
                 name: 'IconTemplateDetail',
-                meta: {title: '图标模板明细', affix: false, cache: false, closable: true}
+                meta: {title: '鍥炬爣妯℃澘鏄庣粏', affix: false, cache: false, closable: true}
             }
         ]
     },
