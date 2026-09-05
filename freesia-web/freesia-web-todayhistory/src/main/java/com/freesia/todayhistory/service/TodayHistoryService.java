@@ -4,6 +4,7 @@ import com.freesia.pojo.PageQuery;
 import com.freesia.pojo.TableResult;
 import com.freesia.todayhistory.dto.TodayHistoryPageDto;
 import com.freesia.todayhistory.dto.TodayHistoryQueryVo;
+import com.freesia.todayhistory.dto.TodayHistorySearchResultDto;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public interface TodayHistoryService {
     TableResult<TodayHistoryPageDto> findPage(TodayHistoryQueryVo queryVo, PageQuery pageQuery);
 
     TodayHistoryPageDto findDetail(String historyKey);
+
+    List<TodayHistorySearchResultDto> searchGlobal(String keyword);
 
     TodayHistoryPageDto syncDay(int monthValue, int dayValue, boolean forceRefresh);
 

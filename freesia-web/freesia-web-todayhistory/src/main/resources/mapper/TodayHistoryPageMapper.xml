@@ -65,7 +65,7 @@
         FROM TODAY_HISTORY_PAGE
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.monthValue != null">
             AND MONTH_VALUE = #{dto.monthValue}
@@ -102,7 +102,7 @@
         FROM TODAY_HISTORY_PAGE
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.monthValue != null">
             AND MONTH_VALUE = #{dto.monthValue}

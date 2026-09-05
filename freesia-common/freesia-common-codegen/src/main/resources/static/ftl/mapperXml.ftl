@@ -43,7 +43,7 @@
         FROM ${dataBaseDto.tableName}
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = <#noparse>#{</#noparse>dto.id}<#noparse>}</#noparse>
+            AND ID = <#noparse>#{</#noparse>dto.id<#noparse>}</#noparse>
         </if>
         <#list dataBaseDto.fieldList as field>
         <#if field.javaType == "String">

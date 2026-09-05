@@ -13,6 +13,9 @@ import com.freesia.todayhistory.dto.TodayHistoryItemDto;
 import com.freesia.todayhistory.dto.TodayHistoryLinkDto;
 import com.freesia.todayhistory.dto.TodayHistoryPageDto;
 import com.freesia.todayhistory.dto.TodayHistoryQueryVo;
+import com.freesia.todayhistory.dto.TodayHistorySearchResultDto;
+import com.freesia.todayhistory.mapper.TodayHistoryItemMapper;
+import com.freesia.todayhistory.mapper.TodayHistoryLinkMapper;
 import com.freesia.todayhistory.parser.TodayHistoryHtmlParser;
 import com.freesia.todayhistory.parser.TodayHistoryHtmlParser.ParsedTodayHistoryItem;
 import com.freesia.todayhistory.parser.TodayHistoryHtmlParser.ParsedTodayHistoryLink;
@@ -49,6 +52,8 @@ public class TodayHistoryServiceImpl implements TodayHistoryService {
     private final TodayHistoryPageRepository todayHistoryPageRepository;
     private final TodayHistoryItemRepository todayHistoryItemRepository;
     private final TodayHistoryLinkRepository todayHistoryLinkRepository;
+    private final TodayHistoryItemMapper todayHistoryItemMapper;
+    private final TodayHistoryLinkMapper todayHistoryLinkMapper;
     private final TodayHistoryHtmlParser todayHistoryHtmlParser;
 
     @Override
@@ -66,6 +71,31 @@ public class TodayHistoryServiceImpl implements TodayHistoryService {
         TodayHistoryPagePo pagePo = todayHistoryPageRepository.findByHistoryKey(normalizeHistoryKey(historyKey))
                 .orElseThrow(() -> new ServiceException("历史日期不存在: " + historyKey));
         return buildDetail(pagePo);
+    }
+
+    @Override
+    public List<TodayHistorySearchResultDto> searchGlobal(String keyword) {
+        if (StrUtil.isBlank(keyword)) {
+            return List.of();
+        }
+
+        String normalizedKeyword = keyword.trim();
+        List<TodayHistorySearchResultDto> resultList = todayHistoryItemMapper.searchGlobal(normalizedKeyword);
+        if (CollUtil.isEmpty(resultList)) {
+            return List.of();
+        }
+
+        List<Long> itemIds = resultList.stream()
+                .map(TodayHistorySearchResultDto::getId)
+                .filter(Objects::nonNull)
+                .toList();
+        if (CollUtil.isNotEmpty(itemIds)) {
+            Map<Long, List<TodayHistoryLinkDto>> linkMap = buildSearchLinkMap(itemIds);
+            for (TodayHistorySearchResultDto item : resultList) {
+                item.setLinks(linkMap.getOrDefault(item.getId(), List.of()));
+            }
+        }
+        return resultList;
     }
 
     @Override
@@ -98,8 +128,8 @@ public class TodayHistoryServiceImpl implements TodayHistoryService {
         pagePo.setItemCount(parsedPage.getItems().size());
         pagePo = todayHistoryPageRepository.saveAndFlush(pagePo);
 
-        todayHistoryItemRepository.deleteByPageId(pagePo.getId());
-        todayHistoryLinkRepository.deleteByPageId(pagePo.getId());
+        todayHistoryItemMapper.deleteByPageId(pagePo.getId());
+        todayHistoryLinkMapper.deleteByPageId(pagePo.getId());
 
         List<TodayHistoryItemPo> itemPoList = new ArrayList<>();
         for (ParsedTodayHistoryItem parsedItem : parsedPage.getItems()) {
@@ -229,8 +259,8 @@ public class TodayHistoryServiceImpl implements TodayHistoryService {
 
     private TodayHistoryPageDto buildDetail(TodayHistoryPagePo pagePo) {
         TodayHistoryPageDto dto = convertPageSummary(pagePo);
-        List<TodayHistoryItemPo> itemPoList = todayHistoryItemRepository.findByPageIdOrderBySortNoAsc(pagePo.getId());
-        List<TodayHistoryLinkPo> linkPoList = todayHistoryLinkRepository.findByPageIdOrderBySortNoAsc(pagePo.getId());
+        List<TodayHistoryItemPo> itemPoList = todayHistoryItemMapper.findByPageIdOrderBySortNoAsc(pagePo.getId());
+        List<TodayHistoryLinkPo> linkPoList = todayHistoryLinkMapper.findByPageIdOrderBySortNoAsc(pagePo.getId());
         Map<Long, List<TodayHistoryLinkDto>> linkMap = new LinkedHashMap<>();
         for (TodayHistoryLinkPo linkPo : linkPoList) {
             TodayHistoryLinkDto linkDto = convertLink(linkPo);
@@ -244,6 +274,16 @@ public class TodayHistoryServiceImpl implements TodayHistoryService {
         }
         dto.setItems(itemDtos);
         return dto;
+    }
+
+    private Map<Long, List<TodayHistoryLinkDto>> buildSearchLinkMap(List<Long> itemIds) {
+        List<TodayHistoryLinkPo> linkPoList = todayHistoryLinkMapper.findByItemIdInOrderByItemIdAscSortNoAsc(itemIds);
+        Map<Long, List<TodayHistoryLinkDto>> linkMap = new LinkedHashMap<>();
+        for (TodayHistoryLinkPo linkPo : linkPoList) {
+            TodayHistoryLinkDto linkDto = convertLink(linkPo);
+            linkMap.computeIfAbsent(linkPo.getItemId(), key -> new ArrayList<>()).add(linkDto);
+        }
+        return linkMap;
     }
 
     private TodayHistoryItemDto convertItem(TodayHistoryItemPo po) {

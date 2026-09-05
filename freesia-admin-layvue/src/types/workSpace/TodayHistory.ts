@@ -19,6 +19,10 @@ export interface TodayHistoryItemDto {
     id?: number;
     pageId?: number;
     historyKey?: string;
+    monthValue?: number;
+    dayValue?: number;
+    pageTitle?: string;
+    pageUrl?: string;
     itemType?: TodayHistoryItemTypeCode;
     eraType?: TodayHistoryEraTypeCode;
     sectionTitle?: string;
@@ -27,6 +31,13 @@ export interface TodayHistoryItemDto {
     itemHash?: string;
     content?: string;
     links?: TodayHistoryLinkDto[];
+}
+
+export interface TodayHistorySearchResultDto extends TodayHistoryItemDto {
+    monthValue?: number;
+    dayValue?: number;
+    pageTitle?: string;
+    pageUrl?: string;
 }
 
 export interface TodayHistoryPageDto {

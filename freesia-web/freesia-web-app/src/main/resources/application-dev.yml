@@ -125,6 +125,9 @@ freesia:
         - SYS_COLUMN_MIDDLE
         - CHAT_CONVERSATION
         - CHAT_MESSAGE
+        - TODAY_HISTORY_ITEM
+        - TODAY_HISTORY_LINK
+        - TODAY_HISTORY_PAGE
   # RAG 知识库检索配置
   rag:
     # 相似度阈值(0~1)：低于该相似度的检索片段视为无关，不注入对话上下文。

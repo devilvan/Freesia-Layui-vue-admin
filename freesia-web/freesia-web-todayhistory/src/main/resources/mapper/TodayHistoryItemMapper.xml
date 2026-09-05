@@ -21,15 +21,16 @@
         <result column="ITEM_HASH" property="itemHash"/>
         <result column="CONTENT" property="content"/>
     </resultMap>
+
     <sql id="Base_Column_List">
         ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, PAGE_ID, HISTORY_KEY, ITEM_TYPE, ERA_TYPE, SECTION_TITLE, EVENT_YEAR, SORT_NO, ITEM_HASH, CONTENT
     </sql>
+
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM TODAY_HISTORY_ITEM
-        WHERE
-        LOGIC_DEL = 0
+        WHERE LOGIC_DEL = 0
         <if test="dto.pageId != null">
             AND PAGE_ID = #{dto.pageId}
         </if>
@@ -57,15 +58,16 @@
         <if test="dto.content != null and dto.content != ''">
             AND CONTENT = #{dto.content}
         </if>
-        ORDER BY create_time DESC
+        ORDER BY CREATE_TIME DESC
     </select>
+
     <select id="findList" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM TODAY_HISTORY_ITEM
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.pageId != null">
             AND PAGE_ID = #{dto.pageId}
@@ -96,13 +98,14 @@
         </if>
         ORDER BY MODIFY_TIME DESC
     </select>
+
     <select id="findOne" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM TODAY_HISTORY_ITEM
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.pageId != null">
             AND PAGE_ID = #{dto.pageId}
@@ -133,6 +136,52 @@
         </if>
         LIMIT 1
     </select>
+
+    <select id="findByPageIdOrderBySortNoAsc" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_ITEM
+        WHERE LOGIC_DEL = 0
+          AND PAGE_ID = #{pageId}
+        ORDER BY SORT_NO ASC, ID ASC
+    </select>
+
+    <delete id="deleteByPageId">
+        DELETE FROM TODAY_HISTORY_ITEM
+        WHERE PAGE_ID = #{pageId}
+    </delete>
+
+    <select id="searchGlobal" resultType="com.freesia.todayhistory.dto.TodayHistorySearchResultDto">
+        SELECT DISTINCT i.ID            AS id,
+                        i.PAGE_ID       AS pageId,
+                        i.HISTORY_KEY   AS historyKey,
+                        i.ITEM_TYPE     AS itemType,
+                        i.ERA_TYPE      AS eraType,
+                        i.SECTION_TITLE AS sectionTitle,
+                        i.EVENT_YEAR    AS eventYear,
+                        i.SORT_NO       AS sortNo,
+                        i.ITEM_HASH     AS itemHash,
+                        i.CONTENT       AS content,
+                        p.MONTH_VALUE   AS monthValue,
+                        p.DAY_VALUE     AS dayValue,
+                        p.PAGE_TITLE    AS pageTitle,
+                        p.PAGE_URL      AS pageUrl
+        FROM TODAY_HISTORY_ITEM i
+                 INNER JOIN TODAY_HISTORY_PAGE p ON p.ID = i.PAGE_ID AND p.LOGIC_DEL = 0
+                 LEFT JOIN TODAY_HISTORY_LINK l ON l.ITEM_ID = i.ID AND l.LOGIC_DEL = 0
+        WHERE i.LOGIC_DEL = 0
+          AND (
+            p.PAGE_TITLE LIKE CONCAT('%', #{keyword}, '%')
+                OR p.HISTORY_KEY LIKE CONCAT('%', #{keyword}, '%')
+                OR i.SECTION_TITLE LIKE CONCAT('%', #{keyword}, '%')
+                OR i.CONTENT LIKE CONCAT('%', #{keyword}, '%')
+                OR l.LINK_TEXT LIKE CONCAT('%', #{keyword}, '%')
+                OR l.LINK_TITLE LIKE CONCAT('%', #{keyword}, '%')
+                OR l.LINK_URL LIKE CONCAT('%', #{keyword}, '%')
+            )
+        ORDER BY i.EVENT_YEAR, p.MONTH_VALUE, p.DAY_VALUE, i.SORT_NO, i.ID
+    </select>
+
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO TODAY_HISTORY_ITEM
         (
@@ -145,14 +194,14 @@
         REC_VER,
         BUILD_IN,
         TENANT_ID,
-        PAGE_ID, 
-        HISTORY_KEY, 
-        ITEM_TYPE, 
-        ERA_TYPE, 
-        SECTION_TITLE, 
-        EVENT_YEAR, 
-        SORT_NO, 
-        ITEM_HASH, 
+        PAGE_ID,
+        HISTORY_KEY,
+        ITEM_TYPE,
+        ERA_TYPE,
+        SECTION_TITLE,
+        EVENT_YEAR,
+        SORT_NO,
+        ITEM_HASH,
         CONTENT
         )
         VALUES
@@ -167,14 +216,14 @@
             #{item.recVer},
             #{item.buildIn},
             #{item.tenantId},
-            #{item.pageId}, 
-            #{item.historyKey}, 
-            #{item.itemType}, 
-            #{item.eraType}, 
-            #{item.sectionTitle}, 
-            #{item.eventYear}, 
-            #{item.sortNo}, 
-            #{item.itemHash}, 
+            #{item.pageId},
+            #{item.historyKey},
+            #{item.itemType},
+            #{item.eraType},
+            #{item.sectionTitle},
+            #{item.eventYear},
+            #{item.sortNo},
+            #{item.itemHash},
             #{item.content}
             )
         </foreach>

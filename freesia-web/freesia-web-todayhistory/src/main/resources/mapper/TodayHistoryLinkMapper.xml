@@ -21,15 +21,16 @@
         <result column="SORT_NO" property="sortNo"/>
         <result column="LINK_HASH" property="linkHash"/>
     </resultMap>
+
     <sql id="Base_Column_List">
         ID, CREATOR, CREATE_TIME, MODIFIER, MODIFY_TIME, LOGIC_DEL, REC_VER, BUILD_IN, TENANT_ID, PAGE_ID, ITEM_ID, HISTORY_KEY, LINK_TEXT, LINK_URL, LINK_TITLE, INTERNAL_FLAG, SORT_NO, LINK_HASH
     </sql>
+
     <select id="findPage" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM TODAY_HISTORY_LINK
-        WHERE
-        LOGIC_DEL = 0
+        WHERE LOGIC_DEL = 0
         <if test="dto.pageId != null">
             AND PAGE_ID = #{dto.pageId}
         </if>
@@ -57,15 +58,16 @@
         <if test="dto.linkHash != null and dto.linkHash != ''">
             AND LINK_HASH = #{dto.linkHash}
         </if>
-        ORDER BY create_time DESC
+        ORDER BY CREATE_TIME DESC
     </select>
+
     <select id="findList" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM TODAY_HISTORY_LINK
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.pageId != null">
             AND PAGE_ID = #{dto.pageId}
@@ -96,13 +98,14 @@
         </if>
         ORDER BY MODIFY_TIME DESC
     </select>
+
     <select id="findOne" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM TODAY_HISTORY_LINK
         WHERE LOGIC_DEL = 0
         <if test="dto.id != null">
-            AND ID = #{dto.id}}
+            AND ID = #{dto.id}
         </if>
         <if test="dto.pageId != null">
             AND PAGE_ID = #{dto.pageId}
@@ -133,6 +136,33 @@
         </if>
         LIMIT 1
     </select>
+
+    <select id="findByPageIdOrderBySortNoAsc" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_LINK
+        WHERE LOGIC_DEL = 0
+          AND PAGE_ID = #{pageId}
+        ORDER BY SORT_NO ASC, ID ASC
+    </select>
+
+    <select id="findByItemIdInOrderByItemIdAscSortNoAsc" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM TODAY_HISTORY_LINK
+        WHERE LOGIC_DEL = 0
+          AND ITEM_ID IN
+        <foreach collection="itemIds" item="itemId" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+        ORDER BY ITEM_ID ASC, SORT_NO ASC, ID ASC
+    </select>
+
+    <delete id="deleteByPageId">
+        DELETE FROM TODAY_HISTORY_LINK
+        WHERE PAGE_ID = #{pageId}
+    </delete>
+
     <insert id="insertBatch" parameterType="java.util.List">
         INSERT INTO TODAY_HISTORY_LINK
         (
@@ -145,14 +175,14 @@
         REC_VER,
         BUILD_IN,
         TENANT_ID,
-        PAGE_ID, 
-        ITEM_ID, 
-        HISTORY_KEY, 
-        LINK_TEXT, 
-        LINK_URL, 
-        LINK_TITLE, 
-        INTERNAL_FLAG, 
-        SORT_NO, 
+        PAGE_ID,
+        ITEM_ID,
+        HISTORY_KEY,
+        LINK_TEXT,
+        LINK_URL,
+        LINK_TITLE,
+        INTERNAL_FLAG,
+        SORT_NO,
         LINK_HASH
         )
         VALUES
@@ -167,14 +197,14 @@
             #{item.recVer},
             #{item.buildIn},
             #{item.tenantId},
-            #{item.pageId}, 
-            #{item.itemId}, 
-            #{item.historyKey}, 
-            #{item.linkText}, 
-            #{item.linkUrl}, 
-            #{item.linkTitle}, 
-            #{item.internalFlag}, 
-            #{item.sortNo}, 
+            #{item.pageId},
+            #{item.itemId},
+            #{item.historyKey},
+            #{item.linkText},
+            #{item.linkUrl},
+            #{item.linkTitle},
+            #{item.internalFlag},
+            #{item.sortNo},
             #{item.linkHash}
             )
         </foreach>

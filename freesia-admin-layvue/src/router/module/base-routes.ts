@@ -11,62 +11,62 @@ export const constantRoutes = [
     {
         path: '/login',
         component: Login,
-        meta: {title: '鐧诲綍椤甸潰'},
+        meta: {title: '登录页面'},
     },
     {
         path: '/workSpace',
         redirect: '/workSpace/worldclock/index',
         component: BaseLayout,
-        meta: {title: '涓栫晫鏃堕挓'},
+        meta: {title: '世界时钟'},
     },
     {
         path: '/oauth/callback/:provider',
         component: () => import('@/views/login/oauthCallback.vue'),
-        meta: {title: 'OAuth 鐧诲綍鍥炶皟'},
+        meta: {title: 'OAuth 登录回调'},
     },
     {
         path: '/chat/deepseek',
         component: BaseLayout,
-        meta: {title: 'DeepSeek AI 瀵硅瘽'},
+        meta: {title: 'DeepSeek AI 对话'},
         children: [
             {
                 path: 'index',
                 component: () => import('@/views/chat/deepseek/index.vue'),
                 name: 'DeepseekChat',
-                meta: {title: 'DeepSeek AI 瀵硅瘽', affix: false, cache: false, closable: true}
+                meta: {title: 'DeepSeek AI 对话', affix: false, cache: false, closable: true}
             }
         ]
     },
     {
         path: '/fusebean/home',
         component: BaseLayout,
-        meta: {title: '鎷艰眴鍥剧焊'},
+        meta: {title: '拼豆图纸'},
         children: [
             {
                 path: 'index',
                 component: () => import('@/views/fusebean/home/index.vue'),
                 name: 'FuseBeanHome',
-                meta: {title: '鎷艰眴鍥剧焊鐢熸垚', affix: false, cache: false, closable: true}
+                meta: {title: '拼豆图纸生成', affix: false, cache: false, closable: true}
             }
         ]
     },
     {
         path: '/workSpace/todayhistory',
         component: BaseLayout,
-        meta: {title: '鍘嗗彶涓婄殑浠婂ぉ'},
+        meta: {title: '历史上的今天'},
         children: [
             {
                 path: 'index',
                 component: () => import('@/views/workSpace/todayhistory/index.vue'),
                 name: 'TodayHistory',
-                meta: {title: '鍘嗗彶涓婄殑浠婂ぉ', affix: false, cache: false, closable: true}
+                meta: {title: '历史上的今天', affix: false, cache: false, closable: true}
             }
         ]
     },
     {
         path: '/error/:code',
         component: ErrorCode,
-        meta: {title: '閿欒椤甸潰'},
+        meta: {title: '错误页面'},
     },
     {
         path: "/:pathMatch(.*)*",
